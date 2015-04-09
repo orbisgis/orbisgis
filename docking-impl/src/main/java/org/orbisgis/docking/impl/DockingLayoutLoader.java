@@ -55,6 +55,7 @@ public class DockingLayoutLoader {
     private DockingManager dockingManager;
     private AtomicLong lastDockableUpdate = new AtomicLong(0);
     private AtomicBoolean watchDockableUpdateThread = new AtomicBoolean(false);
+    private boolean initialised = false;
 
     @Reference
     public void setViewWorkspace(ViewWorkspace viewWorkspace) {
@@ -75,16 +76,29 @@ public class DockingLayoutLoader {
     }
 
     @Activate
+    public void init() {
+        initialised = true;
+        refreshConfig();
+    }
+
+    public void deactivate() {
+        initialised = false;
+    }
+
+
     public void refreshConfig() {
-        SwingUtilities.invokeLater(new ReloadLayout(dockingManager, viewWorkspace.getDockingLayoutPath()));
+        if(initialised) {
+            SwingUtilities.invokeLater(new ReloadLayout(dockingManager, viewWorkspace.getDockingLayoutPath()));
+        }
     }
 
     private void updateDockableState() {
-        lastDockableUpdate.set(System.currentTimeMillis());
-        if(!watchDockableUpdateThread.getAndSet(true)) {
-            LoadDockingLayout loadDockingLayout = new LoadDockingLayout(lastDockableUpdate, watchDockableUpdateThread,
-                    this);
-            loadDockingLayout.execute();
+        if(initialised) {
+            lastDockableUpdate.set(System.currentTimeMillis());
+            if (!watchDockableUpdateThread.getAndSet(true)) {
+                LoadDockingLayout loadDockingLayout = new LoadDockingLayout(lastDockableUpdate, watchDockableUpdateThread, this);
+                loadDockingLayout.execute();
+            }
         }
     }
 

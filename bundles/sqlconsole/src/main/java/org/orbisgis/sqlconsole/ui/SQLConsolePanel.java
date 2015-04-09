@@ -34,6 +34,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.EventHandler;
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import javax.sql.DataSource;
@@ -51,12 +52,15 @@ import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.components.findReplace.FindReplaceDialog;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
 import org.orbisgis.sif.multiInputPanel.MIPValidationInteger;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.sqlconsole.api.SQLAction;
 import org.orbisgis.sqlconsole.api.SQLConsoleEditor;
+import org.orbisgis.sqlconsole.api.SQLElement;
 import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
 import org.orbisgis.sqlconsole.icons.SQLConsoleIcon;
 import org.orbisgis.sqlconsole.actions.ExecuteScriptProcess;
@@ -106,27 +110,33 @@ public class SQLConsolePanel extends JPanel {
         private DefaultAction blockCommentAction;
         private DefaultAction formatSQLAction;
         private DefaultAction saveAction;
+        private DefaultAction saveAsAction;
         private DataSource dataSource;
         private int timeOut =0;
         private ExecutorService executorService;
-        
-        /**
+        private SQLElement sqlElement;
+        private DeactivableSplitPane split;
+
+    /**
          * Creates a console for sql.
          */
-        public SQLConsolePanel(DataSource dataSource) {
+        public SQLConsolePanel(DataSource dataSource, SQLElement sqlElement) {
                 super(new BorderLayout());
                 this.dataSource = dataSource;
                 sqlFunctionsPanel = new SQLFunctionsPanel(dataSource);
                 initActions();
-                JPanel split = new JPanel();
-                split.setLayout(new BorderLayout());
-                split.add(sqlFunctionsPanel, BorderLayout.EAST);
-                split.add(getCenterPanel(), BorderLayout.CENTER);
+                split = new DeactivableSplitPane(JSplitPane.HORIZONTAL_SPLIT,getCenterPanel(),sqlFunctionsPanel);
                 add(split, BorderLayout.CENTER);
                 add(getStatusToolBar(), BorderLayout.SOUTH);
+                this.sqlElement = sqlElement;
+                onShowHideFunctionPanel();
         }
 
-        public void addActionFactory(SQLAction sqlAction, SQLConsoleEditor sqlConsoleEditor) {
+    public void setSqlElement(SQLElement sqlElement) {
+        this.sqlElement = sqlElement;
+    }
+
+    public void addActionFactory(SQLAction sqlAction, SQLConsoleEditor sqlConsoleEditor) {
                 actions.addActionFactory(sqlAction, sqlConsoleEditor);
                 actions.setAccelerators(scriptPanel, WHEN_FOCUSED,false, sqlAction);
         }
@@ -237,6 +247,16 @@ public class SQLConsolePanel extends JPanel {
                         KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
                        ).setLogicalGroup("custom");
                 actions.addAction(saveAction);
+                // Save As
+                saveAsAction = new DefaultAction(SQLAction.A_SAVE,
+                        I18N.tr("Save As"),
+                        I18N.tr("Save the editor content into a new file"),
+                        SQLConsoleIcon.getIcon("page_white_save"),
+                        EventHandler.create(ActionListener.class,this,"onSaveAsNewFile"),
+                        KeyStroke.getKeyStroke("ctrl maj s")
+                ).setLogicalGroup("custom");
+                actions.addAction(saveAsAction);
+
                 //Open action
                 actions.addAction(new DefaultAction(SQLAction.A_OPEN,
                         I18N.tr("Open"),
@@ -250,7 +270,7 @@ public class SQLConsolePanel extends JPanel {
                         I18N.tr("SQL list"),
                         I18N.tr("Show/Hide SQL function list"),
                         SQLConsoleIcon.getIcon("builtinfunctionmap"),
-                        EventHandler.create(ActionListener.class,sqlFunctionsPanel,"switchPanelVisibilityState"),
+                        EventHandler.create(ActionListener.class,this,"onShowHideFunctionPanel"),
                         null).setLogicalGroup("custom"));
                 //Time out action
                 actions.addAction(new DefaultAction(SQLAction.A_SQL_TIMEOUT,
@@ -260,6 +280,23 @@ public class SQLConsolePanel extends JPanel {
                         EventHandler.create(ActionListener.class,this,"onSQLTimeOut"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK)
                 ).setLogicalGroup("custom"));
+        }
+
+        public void onShowHideFunctionPanel() {
+            if(sqlFunctionsPanel.isVisible()) {
+                // If shown, hide
+                sqlFunctionsPanel.setVisible(false);
+                split.setDividerLocation(split.getWidth());
+                split.setResizeWeight(1);
+                split.setDeactivateScroll(true);
+            } else {
+                sqlFunctionsPanel.setVisible(true);
+                split.setDeactivateScroll(false);
+                split.setDividerLocation((int) Math.min(split.getMaximumDividerLocation(),
+                        split.getMaximumDividerLocation() - split.getRightComponent().getPreferredSize().getWidth()));
+                split.setResizeWeight(0.75);
+                sqlFunctionsPanel.repackPanel();
+            }
         }
 
         /**
@@ -325,20 +362,28 @@ public class SQLConsolePanel extends JPanel {
          * Open a dialog that let the user to select a file and save the content
          * of the sql editor into this file.
          */
-        public void onSaveFile() {
-                final SaveFilePanel outfilePanel = new SaveFilePanel(
-                        "sqlConsoleOutFile", I18N.tr("Save script"));
-                outfilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
-                outfilePanel.loadState();
-                if (UIFactory.showDialog(outfilePanel)) {
-                        try {
-                                FileUtils.writeStringToFile(outfilePanel.getSelectedFile(), scriptPanel.getText());
-                        } catch (IOException e1) {
-                                LOGGER.error(I18N.tr("IO error."), e1);
-                                return;
-                        }
-                        setStatusMessage(I18N.tr("The file has been saved."));
+        public void onSaveAsNewFile() {
+            File oldDocPath = sqlElement.getDocumentPath();
+            sqlElement.setDocumentPath(null);
+            onSaveFile();
+            if(sqlElement.getDocumentPath() == null && oldDocPath != null) {
+                // If canceled
+                sqlElement.setDocumentPath(oldDocPath);
+            }
+        }
 
+        /**
+         * Open a dialog that let the user to select a file and save the content
+         * of the sql editor into this file.
+         */
+        public void onSaveFile() {
+                try {
+                    sqlElement.save();
+                } catch (EditableElementException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
+                if (!sqlElement.isModified()) {
+                        setStatusMessage(I18N.tr("The file has been saved."));
                 } else {
                         setStatusMessage("");
                 }
@@ -352,9 +397,13 @@ public class SQLConsolePanel extends JPanel {
                 final OpenFilePanel inFilePanel = new OpenFilePanel("sqlConsoleInFile",
                         I18N.tr("Open script"));
                 inFilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
-                inFilePanel.loadState();
+                if(sqlElement.getDocumentPathString().isEmpty()) {
+                    inFilePanel.loadState();
+                } else {
+                    inFilePanel.setCurrentDirectory(sqlElement.getDocumentPath());
+                }
                 if (UIFactory.showDialog(inFilePanel)) {
-                        int answer = JOptionPane.NO_OPTION;
+                        int answer = JOptionPane.YES_OPTION;
                         if (scriptPanel.getDocument().getLength() > 0) {
                                 answer = JOptionPane.showConfirmDialog(
                                         this,
@@ -373,6 +422,8 @@ public class SQLConsolePanel extends JPanel {
                         
                         if (answer == JOptionPane.YES_OPTION) {
                                 scriptPanel.setText(text);
+                                sqlElement.setDocumentPath(inFilePanel.getSelectedFile());
+                                sqlElement.setModified(false);
                         } else if (answer == JOptionPane.NO_OPTION) {
                                 scriptPanel.append(text);
                         }
@@ -679,4 +730,34 @@ public class SQLConsolePanel extends JPanel {
                         formatSQLAction.setEnabled(true);
                 }
         }
+
+    private static class DeactivableSplitPane extends JSplitPane {
+        private boolean deactivateScroll = false;
+
+        public DeactivableSplitPane(int newOrientation, Component newLeftComponent, Component newRightComponent) {
+            super(newOrientation, newLeftComponent, newRightComponent);
+        }
+
+        public void setDeactivateScroll(boolean deactivateScroll) {
+            this.deactivateScroll = deactivateScroll;
+        }
+
+        @Override
+        public int getDividerLocation() {
+            if(!deactivateScroll) {
+                return super.getDividerLocation();
+            } else {
+                return getMaximumDividerLocation();
+            }
+        }
+
+        @Override
+        public int getLastDividerLocation() {
+            if(!deactivateScroll) {
+                return super.getLastDividerLocation();
+            } else {
+                return getMaximumDividerLocation();
+            }
+        }
+    }
 }

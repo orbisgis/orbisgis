@@ -28,25 +28,23 @@
  */
 package org.orbisgis.sqlconsole;
 
-import org.fife.rsta.ac.LanguageSupport;
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorFactory;
-import org.orbisgis.sif.edition.EditorManager;
-import org.orbisgis.sqlparserapi.ScriptSplitterFactory;
+import org.orbisgis.sqlconsole.api.SQLElement;
+import org.osgi.service.component.ComponentFactory;
+import org.osgi.service.component.ComponentInstance;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -55,15 +53,13 @@ import java.util.Set;
  *
  * @author Nicolas Fortin
  */
-//@Component(service = EditorFactory.class, immediate = true)
+@Component(service = EditorFactory.class, immediate = true)
 public class SQLConsoleFactory implements EditorFactory {
 
     public static final String factoryId = "SQLConsoleFactory";
     protected final static I18n I18N = I18nFactory.getI18n(SQLConsoleFactory.class);
-    private DataSource dataSource;
-    private ScriptSplitterFactory scriptSplitterFactory;
-    private Set<LanguageSupport> languageSupports = new HashSet<>();
-    private EditorManager editorManager;
+    private ComponentFactory componentFactory;
+    private List<ComponentInstance> instanceList = new ArrayList<>();
 
     /**
      * Default constructor
@@ -72,72 +68,14 @@ public class SQLConsoleFactory implements EditorFactory {
 
     }
 
-    public List<SQLConsole> getSQLConsoleList() {
-        List<SQLConsole> sqlConsoleList = new ArrayList<>();
-        for(EditorDockable editorDockable : editorManager.getEditors()) {
-            if(editorDockable instanceof SQLConsole) {
-                sqlConsoleList.add((SQLConsole)editorDockable);
-            }
-        }
-        return sqlConsoleList;
+    @Reference(target = "(component.factory="+SQLConsole.SERVICE_FACTORY_ID+")")
+    public void setComponentFactory(ComponentFactory componentFactory) {
+        this.componentFactory = componentFactory;
     }
 
-
-    @Reference
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public void unsetComponentFactory(ComponentFactory componentFactory) {
+        this.componentFactory = null;
     }
-
-    public void unsetDataSource(DataSource dataSource) {
-        this.dataSource = null;
-    }
-
-    @Reference
-    public void setEditorManager(EditorManager editorManager) {
-        this.editorManager = editorManager;
-    }
-
-    public void unsetEditorManager(EditorManager editorManager) {
-        this.editorManager = null;
-    }
-
-    @Reference
-    public void setScriptSplitterFactory(ScriptSplitterFactory scriptSplitterFactory) {
-        this.scriptSplitterFactory = scriptSplitterFactory;
-    }
-
-    public void unsetScriptSplitterFactory(ScriptSplitterFactory scriptSplitterFactory) {
-        setScriptSplitterFactory(null);
-    }
-
-    @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC)
-    public void addLanguageSupport(LanguageSupport languageSupport) {
-        languageSupports.add(languageSupport);
-        for(SQLConsole sqlConsole : getSQLConsoleList()) {
-            languageSupport.install(sqlConsole.getScriptPanel());
-        }
-    }
-
-    public void removeLanguageSupport(LanguageSupport languageSupport) {
-        languageSupports.remove(languageSupport);
-        for(SQLConsole sqlConsole : getSQLConsoleList()) {
-            languageSupport.uninstall(sqlConsole.getScriptPanel());
-        }
-    }
-
-    /*
-    @Override
-    public EditorDockable[] getSinglePanels() {
-        if (sqlConsole == null) {
-            sqlConsole = new SQLConsole(dataSource);
-            sqlConsole.setSplitterFactory(scriptSplitterFactory);
-            for (LanguageSupport languageSupport : languageSupports) {
-                languageSupport.install(sqlConsole.getScriptPanel());
-            }
-        }
-        return new EditorDockable[]{sqlConsole};
-    }
-    */
 
     @Override
     public String getId() {
@@ -146,31 +84,41 @@ public class SQLConsoleFactory implements EditorFactory {
 
     @Override
     public void dispose() {
-        for(SQLConsole sqlConsole : getSQLConsoleList()) {
-            for (LanguageSupport languageSupport : languageSupports) {
-                languageSupport.install(sqlConsole.getScriptPanel());
-            }
-            sqlConsole.dispose();
+    }
+
+    @Deactivate
+    public void deactivate() {
+        for(ComponentInstance  componentInstance : instanceList) {
+            componentInstance.dispose();
         }
+        instanceList.clear();
     }
 
     @Override
     public DockingPanelLayout makeEditableLayout(EditableElement editable) {
-        return null;
+        if(editable instanceof SQLElement) {
+            return (SQLElement) editable;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public DockingPanelLayout makeEmptyLayout() {
-        return null;
+        return new SQLElement();
     }
 
     @Override
     public boolean match(DockingPanelLayout layout) {
-        return false;
+        return layout instanceof SQLElement;
     }
 
     @Override
     public EditorDockable create(DockingPanelLayout layout) {
-        return null;
+        Dictionary<String,Object> initValues = new Hashtable<>();
+        initValues.put("editableElement", layout);
+        ComponentInstance sqlPanelFactory = componentFactory.newInstance(initValues);
+        instanceList.add(sqlPanelFactory);
+        return (SQLConsole) sqlPanelFactory.getInstance();
     }
 }

@@ -124,6 +124,10 @@ public class EditorManagerImpl implements EditorManager {
         }
     }
 
+    public void onEditorClose() {
+
+    }
+
 
 
     /**

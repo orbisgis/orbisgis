@@ -232,8 +232,6 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
      * Serialise the entire panels workspace
      */
     private void readXML() {
-        XElement backup = new XElement("layout");
-        commonControl.writeXML(backup);
         try {
             // Read the entire XML file in memory
             BufferedInputStream in = new BufferedInputStream(new FileInputStream(dockingState));
@@ -253,12 +251,8 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                     }
                 }
             }
-        } catch (IOException ex) {
+        } catch (IOException | IllegalArgumentException ex) {
             LOGGER.error(I18N.tr("Unable to load the docking layout."), ex);
-            commonControl.readXML(backup);
-        } catch (IllegalArgumentException ex) {
-            LOGGER.error(I18N.tr("Unable to load the docking layout."), ex);
-            commonControl.readXML(backup);
         }
         // When reading a layout file, all components that are not in the layout file are hidden by DockingFrames
         // Some components cannot be hidden or shown by the user, the following lines
@@ -477,6 +471,7 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
             InternalCommonFactory iFactory = (InternalCommonFactory) factory;
             CustomMultipleCDockable dockItem = iFactory.read(new DockingPanelLayoutDecorator(panelLayout));
             if (dockItem != null) {
+                OrbisGISView.applyDefaultLocation(dockItem, dockItem.getDockingPanel(), commonControl);
                 commonControl.addDockable(dockItem);
             }
         }

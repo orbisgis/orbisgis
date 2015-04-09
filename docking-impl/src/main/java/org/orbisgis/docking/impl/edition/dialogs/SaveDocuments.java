@@ -32,6 +32,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ public class SaveDocuments extends JDialog {
          * @param documents
          * @return Expected application behaviour, Close application or Cancel this process
          */
-        public static CHOICE showModal(JFrame owner ,List<EditableElement> documents) {
+        public static CHOICE showModal(Window owner ,List<EditableElement> documents) {
                 SaveDocuments saveDocuments = new SaveDocuments(owner,documents);
                 saveDocuments.setModalityType(ModalityType.APPLICATION_MODAL);
                 saveDocuments.create();
@@ -107,7 +108,7 @@ public class SaveDocuments extends JDialog {
          * @param owner Owner of the dialog
          * @param documents Modified document
          */
-        private SaveDocuments(JFrame owner ,List<EditableElement> documents) {
+        private SaveDocuments(Window owner ,List<EditableElement> documents) {
                 super(owner);
                 setTitle(I18N.tr("Save documents"));
                 this.documents = documents;

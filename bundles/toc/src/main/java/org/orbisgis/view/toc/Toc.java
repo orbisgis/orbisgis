@@ -85,9 +85,12 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -725,13 +728,13 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                 if(!layer.getTableReference().isEmpty()) {
                     if(MetaData.isTableIdentifierEquals(event.getTableName(), layer.getTableReference())) {
                         treeRenderer.clearTableIconCache(layer.getTableReference());
-                        treeModel.nodeChanged(new TocTreeNodeLayer(layer));
+                        SwingUtilities.invokeLater(new NodeChangeEvent(treeModel, new TocTreeNodeLayer(layer)));
                     }
                 }
             }
         }
 
-    /**
+        /**
          * Recursively remove the property listeners of the provided node
          * @param node 
          */
@@ -1359,7 +1362,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         }
                         pmSources.endTask();
                     }
-                    treeModel.nodeChanged(new TocTreeNodeLayer(dropNode));
+                    SwingUtilities.invokeAndWait(new NodeChangeEvent(treeModel, new TocTreeNodeLayer(dropNode)));
                     // Select the new layer(s) if there is no selection
                     if(tree.getSelectionCount()==0) {
                         tree.setSelectionPaths(dropPaths.toArray(new TreePath[dropPaths.size()]));
@@ -1448,4 +1451,18 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         }
                 }
         }
+    private static class NodeChangeEvent implements Runnable {
+        private final DefaultTreeModel treeModel;
+        private final MutableTreeNode nodeChanged;
+
+        public NodeChangeEvent(DefaultTreeModel treeModel, MutableTreeNode nodeChanged) {
+            this.treeModel = treeModel;
+            this.nodeChanged = nodeChanged;
+        }
+
+        @Override
+        public void run() {
+            treeModel.nodeChanged(nodeChanged);
+        }
+    }
 }
