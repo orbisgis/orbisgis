@@ -30,11 +30,14 @@ package org.orbisgis.docking.impl.internals;
 
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.CLocation;
+import bibliothek.gui.dock.common.DefaultMultipleCDockable;
 import bibliothek.gui.dock.common.MultipleCDockable;
+import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import bibliothek.gui.dock.common.SingleCDockable;
 import bibliothek.gui.dock.common.action.CAction;
 import bibliothek.gui.dock.common.action.CSeparator;
 import bibliothek.gui.dock.common.intern.AbstractCDockable;
+import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import org.orbisgis.docking.impl.internals.actions.ToolBarActions;
 import org.orbisgis.sif.docking.DockingLocation;
@@ -44,6 +47,7 @@ import org.orbisgis.sif.docking.DockingPanelParameters;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Map;
 import javax.swing.*;
 
 
@@ -109,6 +113,14 @@ public class OrbisGISView {
             if(mDockable!=null) {
                     return mDockable.getBaseLocation();
             }
+            // Maybe referencing the panel factory
+            MultipleCDockableFactory<?, ?> factory = ccontrol.getMultipleDockableFactory(panelName);
+            if(factory != null) {
+                List<MultipleCDockable> cDockables = ccontrol.getRegister().listMultipleDockables(factory);
+                if(!cDockables.isEmpty()) {
+                    return cDockables.get(0).getBaseLocation();
+                }
+            }
             return CLocation.base();
     }
     /**
@@ -117,7 +129,7 @@ public class OrbisGISView {
      * @param dockingPanel
      * @param ccontrol 
      */
-    private static void applyDefaultLocation(AbstractCDockable dockItem,DockingPanel dockingPanel, CControl ccontrol) {
+    public static void applyDefaultLocation(AbstractCDockable dockItem,DockingPanel dockingPanel, CControl ccontrol) {
             DockingLocation dockingLocation = dockingPanel.getDockingParameters().getDefaultDockingLocation();
             CLocation referenceLocation = getPanelLocation(ccontrol, dockingLocation.getReferenceName());
             switch(dockingLocation.getPosition()) {

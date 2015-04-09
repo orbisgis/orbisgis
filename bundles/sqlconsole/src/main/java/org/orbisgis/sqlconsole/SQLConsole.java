@@ -93,7 +93,8 @@ public class SQLConsole implements EditorDockable, SQLConsoleEditor {
                 dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
                 dockingPanelParameters.setTitleIcon(SQLConsoleIcon.getIcon("sql_code"));
                 dockingPanelParameters.setDockActions(sqlPanel.getActions().getActions());
-                dockingPanelParameters.setDefaultDockingLocation(new DockingLocation(DockingLocation.Location.STACKED_ON,"sqlconsole"));
+                dockingPanelParameters.setDefaultDockingLocation(new DockingLocation(DockingLocation.Location.STACKED_ON
+                        ,SQLConsoleFactory.class.getSimpleName()));
                 // Tools that will be created later will also be set in the docking panel
                 // thanks to this listener
                 sqlPanel.getActions().addPropertyChangeListener(

@@ -471,6 +471,7 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
             InternalCommonFactory iFactory = (InternalCommonFactory) factory;
             CustomMultipleCDockable dockItem = iFactory.read(new DockingPanelLayoutDecorator(panelLayout));
             if (dockItem != null) {
+                OrbisGISView.applyDefaultLocation(dockItem, dockItem.getDockingPanel(), commonControl);
                 commonControl.addDockable(dockItem);
             }
         }
