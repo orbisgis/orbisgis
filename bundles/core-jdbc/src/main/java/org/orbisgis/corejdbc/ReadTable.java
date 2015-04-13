@@ -123,7 +123,7 @@ public class ReadTable {
                         int i = 0;
                         while(rs.next()) {
                             Object obj = rs.getObject(1);
-                            if(!(obj instanceof Comparable)) {
+                            if(obj != null && !(obj instanceof Comparable)) {
                                 throw new SQLException(I18N.tr("Could only sort comparable database object type"));
                             }
                             cache[i++] = (Comparable)obj;

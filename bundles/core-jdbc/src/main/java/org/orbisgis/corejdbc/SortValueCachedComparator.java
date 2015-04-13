@@ -46,7 +46,14 @@ public class SortValueCachedComparator implements Comparator<Integer> {
         
         @Override
         public int compare(Integer t, Integer t1) {
-                int res = values[t-1].compareTo(values[t1-1]);
+                final Comparable<Object> left = values[t-1];
+                final Comparable<Object> right = values[t1-1];
+                if (right == null) {
+                    return (left == null) ? t.compareTo(t1) : 1;
+                } else if (left == null) {
+                    return -1;
+                }
+                int res = left.compareTo(right);
                 if(res==0) {
                         res = t.compareTo(t1); //TreeSet remove duplicates
                 }
