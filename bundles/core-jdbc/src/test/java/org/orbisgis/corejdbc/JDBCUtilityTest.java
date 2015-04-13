@@ -126,6 +126,56 @@ public class JDBCUtilityTest {
         }
     }
 
+    @Test
+    public void testSortNullPk() throws SQLException {
+        try(Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE INTTABLE IF EXISTS");
+            st.execute("CREATE TABLE INTTABLE (id integer primary key, \"vals\" integer)");
+            st.execute("INSERT INTO INTTABLE VALUES (1,20), (2,null), (4,15), (8,4), (16,null)");
+            // Test ascending
+            Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", true, new NullProgressMonitor());
+            Iterator<Integer> itTest = sortedRowId.iterator();
+            assertEquals(2, itTest.next().intValue());
+            assertEquals(5, itTest.next().intValue());
+            assertEquals(4, itTest.next().intValue());
+            assertEquals(3, itTest.next().intValue());
+            assertEquals(1, itTest.next().intValue());
+            // Test descending
+            sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", false, new NullProgressMonitor());
+            itTest = sortedRowId.iterator();
+            assertEquals(1, itTest.next().intValue());
+            assertEquals(3, itTest.next().intValue());
+            assertEquals(4, itTest.next().intValue());
+            assertEquals(2, itTest.next().intValue());
+            assertEquals(5, itTest.next().intValue());
+        }
+    }
+
+
+    @Test
+    public void testSortNullNoPk() throws SQLException {
+        try(Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE INTTABLE IF EXISTS");
+            st.execute("CREATE TABLE INTTABLE (\"vals\" integer)");
+            st.execute("INSERT INTO INTTABLE VALUES (20), (null), (15), (4), (null)");
+            // Test ascending
+            Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", true, new NullProgressMonitor());
+            Iterator<Integer> itTest = sortedRowId.iterator();
+            assertEquals(2, itTest.next().intValue());
+            assertEquals(5, itTest.next().intValue());
+            assertEquals(4, itTest.next().intValue());
+            assertEquals(3, itTest.next().intValue());
+            assertEquals(1, itTest.next().intValue());
+            // Test descending
+            sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", false, new NullProgressMonitor());
+            itTest = sortedRowId.iterator();
+            assertEquals(1, itTest.next().intValue());
+            assertEquals(3, itTest.next().intValue());
+            assertEquals(4, itTest.next().intValue());
+            assertEquals(5, itTest.next().intValue());
+            assertEquals(2, itTest.next().intValue());
+        }
+    }
     private static void checkStats(String[] props) {
         assertEquals(0, Double.valueOf(props[ReadTable.STATS.MIN.ordinal()]).intValue());
         assertEquals(78, Double.valueOf(props[ReadTable.STATS.MAX.ordinal()]).intValue());
