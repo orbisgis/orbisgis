@@ -34,6 +34,6 @@ import org.orbisgis.sif.components.actions.ActionFactoryService;
  * Menu extension of GeoCatalog
  * @author Nicolas Fortin
  */
-public interface GeoCatalogMenu extends ActionFactoryService<TitleActionBar> {
+public interface DBTreeMenu extends ActionFactoryService<TitleActionBar> {
     public static final String M_ADD_FILTER = "addFilter";
 }

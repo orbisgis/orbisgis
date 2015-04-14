@@ -113,14 +113,22 @@ public class GeoCatalogTreeAction extends DefaultAction {
         return this;
     }
 
+    public TreeSelectionIterable<GeoCatalogTreeNode> getSelectedTreeNodes() {
+        TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
+        if(paths != null && paths.length > 0) {
+            return new TreeSelectionIterable<>(paths, GeoCatalogTreeNode.class);
+        } else {
+            return new TreeSelectionIterable<>(new TreePath[0], GeoCatalogTreeNode.class);
+        }
+    }
+
     @Override
     public boolean isEnabled() {
-        TreePath[] paths = tree.getSelectionModel().getSelectionPaths();
         boolean foundIncompatible = false;
-        if(paths != null && paths.length > 0 && !nodeFilter.isEmpty()) {
-            TreeSelectionIterable<GeoCatalogTreeNode> selection = new TreeSelectionIterable<>(paths,
-                    GeoCatalogTreeNode.class);
-            for(GeoCatalogTreeNode node : selection) {
+        boolean hasSelection = false;
+        if(!nodeFilter.isEmpty()) {
+            for(GeoCatalogTreeNode node : getSelectedTreeNodes()) {
+                hasSelection = true;
                 if(!nodeFilter.contains(node.getNodeType())) {
                     foundIncompatible = true;
                     break;
@@ -136,7 +144,7 @@ public class GeoCatalogTreeAction extends DefaultAction {
                 }
             }
         }
-        return super.isEnabled() && (nodeFilter.isEmpty() || (paths!= null && paths.length > 0 && !foundIncompatible));
+        return super.isEnabled() && (nodeFilter.isEmpty() || (hasSelection && !foundIncompatible));
     }
 
     public GeoCatalogTreeAction check(String attributeName, Object attributeValue) {
@@ -146,6 +154,14 @@ public class GeoCatalogTreeAction extends DefaultAction {
     public GeoCatalogTreeAction checkNot(String attributeName, Object attributeValue) {
         checkAttributeList.add(new CheckAttribute(attributeName, attributeValue, false));
         return this;
+    }
+
+    /**
+     * Tree associated with the action
+     * @return
+     */
+    public JTree getTree() {
+        return tree;
     }
 
     private static class CheckAttribute {

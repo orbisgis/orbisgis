@@ -110,7 +110,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 @Component(service = DockingPanel.class)
 public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpandListener, DatabaseView, DatabaseProgressionListener, PopupTarget {
-    private JTree dbTree;
+    private final JTree dbTree = new JTree(new String[0]);
     private DefaultTreeModel defaultTreeModel;
     private DockingPanelParameters dockingParameters = new DockingPanelParameters();
     private static final I18n I18N = I18nFactory.getI18n(CatalogPanel.class);
@@ -187,7 +187,6 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
     public void init() {
         defaultTreeNodeFactory = new TreeNodeFactoryImpl(dataManager);
         addTreeNodeFactory(defaultTreeNodeFactory);
-        dbTree = new JTree(new String[0]);
         dbTree.addMouseListener(EventHandler.create(MouseListener.class, this,
                 "onMouseActionOnSourceList", "")); //This method ask the event data as argument
         //Items can be selected freely
