@@ -41,6 +41,14 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
 import javax.swing.SwingUtilities;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
+import javax.swing.text.Position;
+import javax.swing.text.Segment;
+import javax.swing.text.StringContent;
+import javax.swing.undo.UndoableEdit;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
@@ -88,35 +96,39 @@ public class ExecuteScriptProcess extends SwingWorkerPM {
         }
 
         private void parseAndExecuteScript(ProgressMonitor pm, Statement st) throws SQLException {
-            ScriptSplitter splitter = splitterFactory.create(panel.getScriptPanel().getDocument(), true);
+            // Clone SQL script
+            AbstractDocument.Content sqlScript = new StringContent(panel.getScriptPanel().getDocument().getLength());
             try {
-                panel.getScriptPanel().setEditable(false);
-                int totalRequests = 0;
-                while (splitter.hasNext()) {
-                    if (!splitter.next().trim().isEmpty()) {
-                        totalRequests++;
-                    }
+                sqlScript.insertString(0, panel.getScriptPanel().getText());
+            } catch (BadLocationException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+                return;
+            }
+            Document sqlDocument = new PlainDocument(sqlScript);
+            ScriptSplitter splitter = splitterFactory.create(sqlDocument, true);
+            int totalRequests = 0;
+            while (splitter.hasNext()) {
+                if (!splitter.next().trim().isEmpty()) {
+                    totalRequests++;
                 }
-                splitter = splitterFactory.create(panel.getScriptPanel().getDocument(), true);
-                int currentRequest = 0;
-                while (splitter.hasNext()) {
-                    currentRequest++;
-                    String query = splitter.next().trim();
-                    if (!query.isEmpty()) {
-                        // Some queries need to be shown to the user
-                        LOGGER.info(I18N.tr("Execute request {0}/{1}: {2}", currentRequest, totalRequests, query));
-                        long debQuery = System.currentTimeMillis();
-                        if (st.execute(query)) {
-                            ResultSet rs = st.getResultSet();
-                            LOGGER.info("\n" + ReadTable.resultSetToString(rs, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true, true));
+            }
+            splitter = splitterFactory.create(sqlDocument, true);
+            int currentRequest = 0;
+            while (splitter.hasNext()) {
+                currentRequest++;
+                String query = splitter.next().trim();
+                if (!query.isEmpty()) {
+                    // Some queries need to be shown to the user
+                    LOGGER.info(I18N.tr("Execute request {0}/{1}: {2}", currentRequest, totalRequests, query));
+                    long debQuery = System.currentTimeMillis();
+                    if (st.execute(query)) {
+                        ResultSet rs = st.getResultSet();
+                        LOGGER.info("\n" + ReadTable.resultSetToString(rs, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, true, true));
 
-                        }
-                        LOGGER.info(I18N.tr("Done in {0} seconds\n", (System.currentTimeMillis() - debQuery) / 1000.));
-                        pm.endTask();
                     }
+                    LOGGER.info(I18N.tr("Done in {0} seconds\n", (System.currentTimeMillis() - debQuery) / 1000.));
+                    pm.endTask();
                 }
-            } finally {
-                panel.getScriptPanel().setEditable(true);
             }
         }
 
