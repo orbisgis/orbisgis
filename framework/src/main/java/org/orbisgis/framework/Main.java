@@ -29,8 +29,12 @@
 package org.orbisgis.framework;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -114,34 +118,56 @@ final class Main {
             // Create CoreWorkspace instance
             CoreWorkspaceImpl coreWorkspace = new CoreWorkspaceImpl(version.getMajor(), version.getMinor(),
                     version.getMicro(), version.getQualifier(), LOGGER);
-            // Fetch cache folder
-            File felixBundleCache = new File(coreWorkspace.getPluginCache());
-            // If safe mode delete cache
-            if(noFailMode && felixBundleCache.isDirectory()) {
-                System.err.println("Safe mode engaged, clear the following folder in 5 seconds..\n" + felixBundleCache);
+            // Create Lock file if not exists
+            File lockFile = new File(coreWorkspace.getApplicationFolder(), "instance.lock");
+            if(!lockFile.exists()) {
                 try {
-                    Thread.sleep(SAFE_MODE_COUNTDOWN_DELETE);
-                    FileUtils.deleteDirectory(felixBundleCache);
-                } catch (InterruptedException ex) {
-                    return;
+                    if(!lockFile.createNewFile()) {
+                        LOGGER.log(Logger.LOG_ERROR, "Cannot create lock file !\n"+lockFile.getAbsolutePath());
+                        return;
+                    }
                 } catch (IOException ex) {
-                    LOGGER.log(Logger.LOG_ERROR, ex.getLocalizedMessage(), ex);
+                    LOGGER.log(Logger.LOG_ERROR, "Application cache folder is not accessible !\n"+lockFile.getAbsolutePath());
+                    return;
                 }
             }
-            // Delete snapshot fragments bundles
-            long beginDeleteFragments = System.currentTimeMillis();
-            bundleTools.deleteFragmentInCache(felixBundleCache);
-            deploymentTime += System.currentTimeMillis() - beginDeleteFragments;
-            LOGGER.log(Logger.LOG_INFO, I18N.tr("Waiting for bundle stability, deployment of built-in bundles done in" +
-                    " {0} s", deploymentTime / 1000.0));
-            // Start main of felix framework
-            try {
-                String[] felixArgs = new String[]{"-b", BundleTools.BUNDLE_DIRECTORY,
-                        felixBundleCache.getAbsolutePath()};
-                LOGGER.log(Logger.LOG_INFO, "Start Apache Felix:\n" + Arrays.toString(felixArgs));
-                startFelix(BundleTools.BUNDLE_DIRECTORY, felixBundleCache.getAbsolutePath());
-            } catch (Exception ex) {
-                LOGGER.log(Logger.LOG_ERROR, ex.getLocalizedMessage(), ex);
+            try(FileOutputStream fileOutputStream = new FileOutputStream(lockFile);
+                    FileLock lock = fileOutputStream.getChannel().tryLock()) {
+                if(lock == null) {
+                    LOGGER.log(Logger.LOG_ERROR, "Only a single instance of OrbisGIS can be run, please close other instance");
+                    return;
+                }
+                // Fetch cache folder
+                File felixBundleCache = new File(coreWorkspace.getPluginCache());
+                // If safe mode delete cache
+                if (noFailMode && felixBundleCache.isDirectory()) {
+                    System.err.println("Safe mode engaged, clear the following folder in 5 seconds..\n" + felixBundleCache);
+                    try {
+                        Thread.sleep(SAFE_MODE_COUNTDOWN_DELETE);
+                        FileUtils.deleteDirectory(felixBundleCache);
+                    } catch (InterruptedException ex) {
+                        return;
+                    } catch (IOException ex) {
+                        LOGGER.log(Logger.LOG_ERROR, ex.getLocalizedMessage(), ex);
+                    }
+                }
+                // Delete snapshot fragments bundles
+                long beginDeleteFragments = System.currentTimeMillis();
+                bundleTools.deleteFragmentInCache(felixBundleCache);
+                deploymentTime += System.currentTimeMillis() - beginDeleteFragments;
+                LOGGER.log(Logger.LOG_INFO, I18N.tr("Waiting for bundle stability, deployment of built-in bundles done in" + " {0} s", deploymentTime / 1000.0));
+                // Start main of felix framework
+                try {
+                    String[] felixArgs = new String[]{"-b", BundleTools.BUNDLE_DIRECTORY, felixBundleCache.getAbsolutePath()};
+                    LOGGER.log(Logger.LOG_INFO, "Start Apache Felix:\n" + Arrays.toString(felixArgs));
+                    startFelix(BundleTools.BUNDLE_DIRECTORY, felixBundleCache.getAbsolutePath());
+                } catch (Exception ex) {
+                    LOGGER.log(Logger.LOG_ERROR, ex.getLocalizedMessage(), ex);
+                }
+            } catch (OverlappingFileLockException ex) {
+                LOGGER.log(Logger.LOG_ERROR, "Only a single instance of OrbisGIS can be run, please close other instance");
+            } catch (IOException ex) {
+                LOGGER.log(Logger.LOG_ERROR, "Application cache folder is not accessible !\n"+lockFile.getAbsolutePath());
             }
         }
     }
