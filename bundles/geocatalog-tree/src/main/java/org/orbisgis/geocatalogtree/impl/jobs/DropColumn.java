@@ -26,51 +26,53 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+
 package org.orbisgis.geocatalogtree.impl.jobs;
 
+import java.awt.Component;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashSet;
+import java.util.List;
+import javax.sql.DataSource;
 import org.jooq.DSLContext;
 import org.jooq.conf.RenderNameStyle;
 import org.jooq.conf.Settings;
 import org.jooq.impl.DSL;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.dbjobs.api.DatabaseView;
+import org.orbisgis.geocatalogtree.impl.SQLMessageDialog;
+import org.orbisgis.geocatalogtree.impl.nodes.TableAndField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.sql.DataSource;
-import javax.swing.JOptionPane;
-import java.awt.Component;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-
 /**
- * Drop index job
- * @author Nicolas Fortin
+ * Drop the selected columns on the same table
+ * @author Erwan Bocher
  */
-public class DropIndex extends SwingWorkerPM {
-    private static final I18n I18N = I18nFactory.getI18n(DropIndex.class);
-    private static final Logger LOGGER = LoggerFactory.getLogger(DropIndex.class);
-
-    private List<String> indexIdentifier;
+public class DropColumn extends SwingWorkerPM{
+    
+    private static final I18n I18N = I18nFactory.getI18n(DropColumn.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DropColumn.class);
+    private List<TableAndField> indexIdentifier;
     private DatabaseView dbView;
     private DataSource dataSource;
 
-    public DropIndex(List<String> indexIdentifier, DatabaseView dbView, DataSource dataSource) {
+    public DropColumn(List<TableAndField> indexIdentifier, DatabaseView dbView, DataSource dataSource) {
         super(indexIdentifier.size());
         this.indexIdentifier = indexIdentifier;
         this.dbView = dbView;
         this.dataSource = dataSource;
     }
 
-    @Override
+     @Override
     protected Object doInBackground() throws Exception {
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
-            String query = getSQLDropIndex(connection, indexIdentifier);
+            String query = getSQLDropColumn(connection, indexIdentifier);
             LOGGER.info(I18N.tr("Execute drop index command:\n{0}", query));
             st.execute(query);
         } catch (SQLException ex) {
@@ -78,50 +80,58 @@ public class DropIndex extends SwingWorkerPM {
         }
         return null;
     }
-
-    private static String getSQLDropIndex(Connection connection, List<String> indexIdentifier) throws SQLException {
+    
+    /**
+     * Return the SQL representation of drop column
+     * @param connection
+     * @param indexIdentifier
+     * @return
+     * @throws SQLException 
+     */
+    private static String getSQLDropColumn(Connection connection, List<TableAndField> indexIdentifier) throws SQLException {
         StringBuilder query = new StringBuilder();
         DSLContext dslContext = DSL.using(connection, new Settings().withRenderNameStyle(RenderNameStyle.AS_IS));
-        for (String index : indexIdentifier) {
+        for (TableAndField tableAndField : indexIdentifier) {
             if( query.length()>0 ) {
                 query.append("\n");
             }
-            query.append(dslContext.dropIndex(index).getSQL());
+            query.append(dslContext.alterTable(tableAndField.getTableName()).drop(tableAndField.getFieldName()).getSQL());
             query.append(";");
         }
         return query.toString();
     }
-
-    @Override
-    protected void done() {
-        dbView.onDatabaseUpdate(DatabaseView.DB_ENTITY.INDEX.toString(),
-                indexIdentifier.toArray(new String[indexIdentifier.size()]));
-    }
-
-    public static DropIndex onMenuDropIndex(DataSource dataSource, List<String> indexIdentifier, Component parentComponent, DatabaseView dbView) throws SQLException {
+    
+    public static DropColumn onMenuDropColumn(DataSource dataSource, List<TableAndField> indexIdentifier, Component parentComponent, DatabaseView dbView) throws SQLException {
         if(indexIdentifier.isEmpty()) {
             return null;
         }
-        String message = I18N.tr("Are you sure to delete the selected index ?");
-        // Uncomment to show sql commands before drop index
-        //String query;
-        //try(Connection connection = dataSource.getConnection()) {
-        //    query = getSQLDropIndex(connection, indexIdentifier);
-        //}
-        //JPanel body = new JPanel(new BorderLayout(2,2));
-        //body.add(new JLabel(message), BorderLayout.NORTH);
-        //RSyntaxTextArea textArea = new RSyntaxTextArea();
-        //textArea.setLineWrap(true);
-        //textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SQL);
-        //textArea.setEditable(false);
-        //textArea.setText(query);
-        //body.add(new RTextScrollPane(textArea));
-        int option = JOptionPane.showConfirmDialog(parentComponent, message , I18N.tr("Delete columns index"),
-                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-        if (option == JOptionPane.YES_OPTION) {
-            return new DropIndex(indexIdentifier, dbView, dataSource);
-        } else {
+        String query;
+        try(Connection connection = dataSource.getConnection()) {
+           query = getSQLDropColumn(connection, indexIdentifier);
+        }
+        String message = I18N.tr("Are you sure to drop the selected column ?");
+        SQLMessageDialog.CHOICE option = SQLMessageDialog.showModal(null,I18N.tr("Drop column"), message, query);
+        
+        if(option==SQLMessageDialog.CHOICE.OK){
+            return new DropColumn(indexIdentifier, dbView, dataSource);
+        }
+        else{
             return null;
         }
+    }
+    
+    @Override
+    protected void done() {
+        HashSet<String> tables = new HashSet<>();
+        for (TableAndField tableAndField : indexIdentifier) {
+            tables.add(tableAndField.getTableName());            
+        }       
+        dbView.onDatabaseUpdate(DatabaseView.DB_ENTITY.INDEX.toString(),
+                tables.toArray(new String[tables.size()]));
+    }
+
+    @Override
+    public String toString() {
+        return I18N.tr("Dropping column");
     }
 }

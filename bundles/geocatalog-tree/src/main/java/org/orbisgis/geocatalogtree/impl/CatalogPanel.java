@@ -84,7 +84,9 @@ import org.orbisgis.geocatalogtree.api.TreeNodeFactory;
 import org.orbisgis.geocatalogtree.icons.GeocatalogIcon;
 import org.orbisgis.geocatalogtree.impl.jobs.CreateIndex;
 import org.orbisgis.geocatalogtree.impl.jobs.CreateSpatialIndex;
+import org.orbisgis.geocatalogtree.impl.jobs.DropColumn;
 import org.orbisgis.geocatalogtree.impl.jobs.DropIndex;
+import org.orbisgis.geocatalogtree.impl.nodes.TableAndField;
 import org.orbisgis.geocatalogtree.impl.nodes.TreeNodeFactoryImpl;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
@@ -339,6 +341,11 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         createSpatialIndex.addNodeTypeFilter(GeoCatalogTreeNode.NODE_COLUMN);
         createSpatialIndex.check(GeoCatalogTreeNode.PROP_COLUMN_SPATIAL, true);
         popupActions.addAction(createSpatialIndex);
+        GeoCatalogTreeAction dropColumn = new GeoCatalogTreeAction(PopupMenu.M_DROP_COLUMN,
+                I18N.tr("Drop column"), GeocatalogIcon.getIcon("remove"),
+                EventHandler.create(ActionListener.class, this, "onMenuDropColumn"), dbTree);
+        popupActions.addAction(dropColumn.addNodeTypeFilter(GeoCatalogTreeNode.NODE_COLUMN).setLogicalGroup(PopupMenu
+                .GROUP_CLOSE));
     }
 
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
@@ -392,6 +399,26 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
                 execute(new CreateSpatialIndex(table, new TableLocation(fieldNode.getNodeIdentifier()).toString(isH2()),
                         this, dataManager.getDataSource()));
             }
+        }
+    }
+    
+    /**
+     * User click on dropColumn
+     */
+    public void onMenuDropColumn() {
+        List<TableAndField> fields = new ArrayList<TableAndField>(dbTree.getSelectionCount());
+        for (GeoCatalogTreeNode treeNode : new TreeSelectionIterable<>(dbTree.getSelectionPaths(), GeoCatalogTreeNode.class)) {
+            if (GeoCatalogTreeNode.NODE_COLUMN.equals(treeNode.getNodeType())) {
+                fields.add(new TableAndField(treeNode.getParent().getParent().getNodeIdentifier(), treeNode.getNodeIdentifier()));
+            }
+        }
+        try {
+            DropColumn job = DropColumn.onMenuDropColumn(dataManager.getDataSource(), fields, this, this);
+            if (job != null) {
+                execute(job);
+            }
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
     }
     
@@ -515,6 +542,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         }
     }
 
+    @Override
     public void refreshSourceList() {
         if(loadingNodeChildren.compareAndSet(false, true)) {
             if (!dbTree.isSelectionEmpty()) {

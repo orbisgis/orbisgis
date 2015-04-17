@@ -58,6 +58,7 @@ public interface PopupMenu extends ActionFactoryService<PopupTarget> {
     // Remove item
     public static final String M_REMOVE = "M_REMOVE";
     public static final String M_REMOVE_INDEX = "M_REMOVE_INDEX";
+    public static final String M_DROP_COLUMN = "M_DROP_COLUMN";
 
     // Create
     public static final String M_CREATE_SPATIAL_INDEX = "CREATE_SPATIAL_INDEX";
