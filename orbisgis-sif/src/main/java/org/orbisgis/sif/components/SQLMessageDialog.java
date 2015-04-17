@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.geocatalogtree.impl;
+package org.orbisgis.sif.components;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -42,7 +42,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import net.miginfocom.swing.MigLayout;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -87,6 +86,13 @@ public class SQLMessageDialog extends JDialog {
         return sqlmd.userCoice;
     }
 
+    /**
+     * A custom JDialog to display a message and a SQL command(s)
+     * @param owner
+     * @param title
+     * @param message
+     * @param details 
+     */
     public SQLMessageDialog(Window owner, String title, String message, String details) {
         super(owner);
         setTitle(title);
@@ -119,7 +125,9 @@ public class SQLMessageDialog extends JDialog {
     }
 
 
-    
+    /**
+     * Main panel that display the message and the SQL script.
+     */
     public class MainPane extends JPanel {
 
         private MessagePane messagePane;
@@ -259,10 +267,5 @@ public class SQLMessageDialog extends JDialog {
 
         }
 
-    }
-
-
-    public static void main(String[] args) {
-        SQLMessageDialog.showModal(null, "Titre", "Message dddddddddddddddddddddddddddddddddddddddd ", "select blia\n dsdsdsdsds\ndsdsds\n");
     }
 }

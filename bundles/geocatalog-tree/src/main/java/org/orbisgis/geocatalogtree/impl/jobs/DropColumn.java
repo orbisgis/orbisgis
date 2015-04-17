@@ -42,7 +42,7 @@ import org.jooq.conf.Settings;
 import org.jooq.impl.DSL;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.dbjobs.api.DatabaseView;
-import org.orbisgis.geocatalogtree.impl.SQLMessageDialog;
+import org.orbisgis.sif.components.SQLMessageDialog;
 import org.orbisgis.geocatalogtree.impl.nodes.TableAndField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
