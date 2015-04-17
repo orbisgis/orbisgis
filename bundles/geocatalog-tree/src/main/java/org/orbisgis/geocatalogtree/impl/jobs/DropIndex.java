@@ -40,12 +40,12 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
-import javax.swing.JOptionPane;
 import java.awt.Component;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import org.orbisgis.geocatalogtree.impl.SQLMessageDialog;
 
 /**
  * Drop index job
@@ -103,25 +103,23 @@ public class DropIndex extends SwingWorkerPM {
             return null;
         }
         String message = I18N.tr("Are you sure to delete the selected index ?");
-        // Uncomment to show sql commands before drop index
-        //String query;
-        //try(Connection connection = dataSource.getConnection()) {
-        //    query = getSQLDropIndex(connection, indexIdentifier);
-        //}
-        //JPanel body = new JPanel(new BorderLayout(2,2));
-        //body.add(new JLabel(message), BorderLayout.NORTH);
-        //RSyntaxTextArea textArea = new RSyntaxTextArea();
-        //textArea.setLineWrap(true);
-        //textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SQL);
-        //textArea.setEditable(false);
-        //textArea.setText(query);
-        //body.add(new RTextScrollPane(textArea));
-        int option = JOptionPane.showConfirmDialog(parentComponent, message , I18N.tr("Delete columns index"),
-                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-        if (option == JOptionPane.YES_OPTION) {
+        String query;
+        try (Connection connection = dataSource.getConnection()) {
+            query = getSQLDropIndex(connection, indexIdentifier);
+        }
+        SQLMessageDialog.CHOICE option = SQLMessageDialog.showModal(null, I18N.tr("Drop index"), message, query);
+
+        if (option == SQLMessageDialog.CHOICE.OK) {
             return new DropIndex(indexIdentifier, dbView, dataSource);
         } else {
             return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return I18N.tr("Droping index");
+    }
+    
+    
 }
