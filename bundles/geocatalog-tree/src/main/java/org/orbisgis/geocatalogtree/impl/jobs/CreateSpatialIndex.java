@@ -106,4 +106,11 @@ public class CreateSpatialIndex extends SwingWorkerPM {
     protected void done() {
         databaseView.onDatabaseUpdate(DatabaseView.DB_ENTITY.TABLE.name(), table.toString());
     }
+
+    @Override
+    public String toString() {
+        return I18N.tr("Building spatial index");
+    }
+    
+    
 }
