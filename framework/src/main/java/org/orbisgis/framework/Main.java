@@ -122,12 +122,13 @@ final class Main {
             File lockFile = new File(coreWorkspace.getApplicationFolder(), "instance.lock");
             if(!lockFile.exists()) {
                 try {
+                    new File(coreWorkspace.getApplicationFolder()).mkdirs();
                     if(!lockFile.createNewFile()) {
                         LOGGER.log(Logger.LOG_ERROR, "Cannot create lock file !\n"+lockFile.getAbsolutePath());
                         return;
                     }
                 } catch (IOException ex) {
-                    LOGGER.log(Logger.LOG_ERROR, "Application cache folder is not accessible !\n"+lockFile.getAbsolutePath());
+                    LOGGER.log(Logger.LOG_ERROR, "Application cache folder is not accessible !\n"+lockFile.getAbsolutePath(), ex);
                     return;
                 }
             }
@@ -167,7 +168,7 @@ final class Main {
             } catch (OverlappingFileLockException ex) {
                 LOGGER.log(Logger.LOG_ERROR, "Only a single instance of OrbisGIS can be run, please close other instance");
             } catch (IOException ex) {
-                LOGGER.log(Logger.LOG_ERROR, "Application cache folder is not accessible !\n"+lockFile.getAbsolutePath());
+                LOGGER.log(Logger.LOG_ERROR, "Application cache folder is not accessible !\n"+lockFile.getAbsolutePath(), ex);
             }
         }
     }
