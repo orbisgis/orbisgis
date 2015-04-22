@@ -287,33 +287,35 @@ public class MapControl extends JComponent implements ContainerListener {
             // if the image itself is dirty
             if (status == DIRTY && mapContext!=null) {
                 if(!awaitingDrawing.getAndSet(true)) {
-                    setStatus(UPDATED);
-                    // is never null, except at first loading with no layer
-                    // in that case we do not draw anything
-                    int width = this.getWidth();
-                    int height = this.getHeight();
+                    try {
+                        setStatus(UPDATED);
+                        // is never null, except at first loading with no layer
+                        // in that case we do not draw anything
+                        int width = this.getWidth();
+                        int height = this.getHeight();
 
-                    // getting an image to draw in
-                    GraphicsConfiguration configuration = GraphicsEnvironment
-                            .getLocalGraphicsEnvironment().getDefaultScreenDevice()
-                            .getDefaultConfiguration();
-                    BufferedImage inProcessImage = configuration
-                            .createCompatibleImage(width, height,
-                                    BufferedImage.TYPE_INT_ARGB);
+                        // getting an image to draw in
+                        GraphicsConfiguration configuration = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+                        BufferedImage inProcessImage = configuration.createCompatibleImage(width, height,
+                                BufferedImage.TYPE_INT_ARGB);
 
-                    Graphics gImg = inProcessImage.createGraphics();
+                        Graphics gImg = inProcessImage.createGraphics();
 
-                    // filling image
-                    gImg.setColor(backColor);
-                    gImg.fillRect(0, 0, getWidth(), getHeight());
+                        // filling image
+                        gImg.setColor(backColor);
+                        gImg.fillRect(0, 0, getWidth(), getHeight());
 
-                    // this is the new image
-                    // mapTransform will update the AffineTransform
-                    mapTransform.setImage(inProcessImage);
+                        // this is the new image
+                        // mapTransform will update the AffineTransform
+                        mapTransform.setImage(inProcessImage);
 
-                    // now we start the actual drawer
-                    drawer = new Drawer(mapContext, awaitingDrawing, this, resultSetProviderFactory);
-                    execute(drawer);
+                        // now we start the actual drawer
+                        drawer = new Drawer(mapContext, awaitingDrawing, this, resultSetProviderFactory);
+                        execute(drawer);
+                    } catch (Exception ex) {
+                        awaitingDrawing.set(false);
+                        throw ex;
+                    }
                 } else {
                     // Currently drawing with a mix of old and new map context !
                     // Stop the drawing
