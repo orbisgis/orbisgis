@@ -43,6 +43,7 @@ public class MessageOverlay extends LayerUI<Container> implements ImageObserver 
     private Font messageFont;
     private long lastMessageUpdate = 0;
     public enum MESSAGE_TYPE { INFO, ERROR}
+    private Rectangle2D cachedTextSize = null;
 
     public MessageOverlay(int maxLength) {
         max_length = maxLength;
@@ -98,7 +99,11 @@ public class MessageOverlay extends LayerUI<Container> implements ImageObserver 
         Graphics2D g2 = (Graphics2D)g.create();
         g2.setFont(messageFont);
         FontMetrics fm = g2.getFontMetrics();
-        Rectangle2D textSize = fm.getStringBounds(message, g2);
+        Rectangle2D textSize = cachedTextSize;
+        if(textSize == null) {
+            cachedTextSize = fm.getStringBounds(message, g2);
+            textSize = cachedTextSize;
+        }
         float fade = Math.max(0, Math.min(1, (float) interpolationCount / (float) INTERPOLATION_MAX));
         Composite urComposite = g2.getComposite();
         // Set alpha
@@ -147,6 +152,7 @@ public class MessageOverlay extends LayerUI<Container> implements ImageObserver 
      */
     public void setMessage(String message, MESSAGE_TYPE message_type) {
         this.message = message.substring(0, Math.min(message.length(),max_length));
+        cachedTextSize = null;
         switch (message_type) {
             case ERROR:
                 icon = iconError;
