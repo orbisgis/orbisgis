@@ -23,6 +23,8 @@ import java.beans.PropertyChangeEvent;
  * @author Nicolas Fortin
  */
 public class MessageOverlay extends LayerUI<Container> implements ImageObserver {
+    private final static int DEFAULT_MAX_LENGTH = 120;
+    private final int max_length;
     private static final int INTERPOLATION_MAX = 4;
     private static final float LAYER_OPACITY = 0.75f;
     /** Stop the overlay if the message has not change during this time */
@@ -41,14 +43,19 @@ public class MessageOverlay extends LayerUI<Container> implements ImageObserver 
     private Font messageFont;
     private long lastMessageUpdate = 0;
     public enum MESSAGE_TYPE { INFO, ERROR}
+    private Rectangle2D cachedTextSize = null;
 
-    public MessageOverlay() {
+    public MessageOverlay(int maxLength) {
+        max_length = maxLength;
         iconInfo = new ImageIcon(MessageOverlay.class.getResource("info.gif"));
         iconInfo.setImageObserver(this);
         iconError = new ImageIcon(MessageOverlay.class.getResource("error.gif"));
         iconError.setImageObserver(this);
         icon = iconInfo;
         messageFont = new JLabel().getFont().deriveFont(Font.BOLD);
+    }
+    public MessageOverlay() {
+        this(DEFAULT_MAX_LENGTH);
     }
 
     @Override
@@ -92,7 +99,11 @@ public class MessageOverlay extends LayerUI<Container> implements ImageObserver 
         Graphics2D g2 = (Graphics2D)g.create();
         g2.setFont(messageFont);
         FontMetrics fm = g2.getFontMetrics();
-        Rectangle2D textSize = fm.getStringBounds(message, g2);
+        Rectangle2D textSize = cachedTextSize;
+        if(textSize == null) {
+            cachedTextSize = fm.getStringBounds(message, g2);
+            textSize = cachedTextSize;
+        }
         float fade = Math.max(0, Math.min(1, (float) interpolationCount / (float) INTERPOLATION_MAX));
         Composite urComposite = g2.getComposite();
         // Set alpha
@@ -140,7 +151,8 @@ public class MessageOverlay extends LayerUI<Container> implements ImageObserver 
      * @param message Shown message
      */
     public void setMessage(String message, MESSAGE_TYPE message_type) {
-        this.message = message;
+        this.message = message.substring(0, Math.min(message.length(),max_length));
+        cachedTextSize = null;
         switch (message_type) {
             case ERROR:
                 icon = iconError;
