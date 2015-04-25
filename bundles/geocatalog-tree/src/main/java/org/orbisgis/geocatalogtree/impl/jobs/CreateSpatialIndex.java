@@ -28,6 +28,7 @@
  */
 package org.orbisgis.geocatalogtree.impl.jobs;
 
+import java.awt.Component;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.ProgressMonitor;
@@ -44,23 +45,27 @@ import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
+import java.util.List;
+import org.orbisgis.geocatalogtree.impl.nodes.TableAndField;
+import org.orbisgis.sif.components.SQLMessageDialog;
 
 /**
  * Create spatial index on a field
  * @author Nicolas Fortin
  */
 public class CreateSpatialIndex extends SwingWorkerPM {
-    private TableLocation table;
-    private String field;
+
+   
     private DatabaseView databaseView;
     private DataSource dataSource;
     private static final I18n I18N = I18nFactory.getI18n(CreateSpatialIndex.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateSpatialIndex.class);
+    private final List<TableAndField> tablesAndField;
 
 
-    public CreateSpatialIndex(TableLocation table, String field, DatabaseView databaseView, DataSource dataSource) {
-        this.table = table;
-        this.field = field;
+    public CreateSpatialIndex(List<TableAndField> tablesAndField, DatabaseView databaseView, DataSource dataSource) {
+        this.tablesAndField = tablesAndField;
         this.databaseView = databaseView;
         this.dataSource = dataSource;
         setTaskName(I18N.tr("Create spatial index"));
@@ -74,25 +79,11 @@ public class CreateSpatialIndex extends SwingWorkerPM {
             getProgressMonitor().addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
             try {
                 boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-                StringBuilder sb = new StringBuilder();
-                sb.append("CREATE ");
-                if (isH2) {
-                    sb.append("SPATIAL INDEX ON ");
-                } else {
-                    sb.append("INDEX ON ");
+                for (TableAndField tableAndField : tablesAndField) {
+                    String query = getSQLCreateSpatialIndex(tableAndField.getTable(), tableAndField.getFieldName(), isH2);
+                    LOGGER.info(I18N.tr("Create spatial index query:\n{0}", query));
+                    st.execute(query);
                 }
-                sb.append(table.toString(isH2));
-                if (isH2) {
-                    sb.append("(");
-                    sb.append(field);
-                    sb.append(")");
-                } else {
-                    sb.append(" USING GIST(");
-                    sb.append(field);
-                    sb.append(")");
-                }
-                LOGGER.info(I18N.tr("Create spatial index query:\n{0}", sb.toString()));
-                st.execute(sb.toString());
             } finally {
                 getProgressMonitor().removePropertyChangeListener(listener);
             }
@@ -101,10 +92,42 @@ public class CreateSpatialIndex extends SwingWorkerPM {
         }
         return null;
     }
+    
+    /**
+     * Create the SQL query
+     * 
+     * @param table
+     * @param isH2
+     * @return 
+     */
+    private static String getSQLCreateSpatialIndex(TableLocation table, String fieldName, boolean isH2) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("CREATE ");
+        if (isH2) {
+            sb.append("SPATIAL INDEX ON ");
+        } else {
+            sb.append("INDEX ON ");
+        }
+        sb.append(table.toString(isH2));
+        if (isH2) {
+            sb.append("(");
+            sb.append(fieldName);
+            sb.append(")");
+        } else {
+            sb.append(" USING GIST(");
+            sb.append(fieldName);
+            sb.append(")");
+        }
+        return sb.toString();
+    }
 
     @Override
     protected void done() {
-        databaseView.onDatabaseUpdate(DatabaseView.DB_ENTITY.TABLE.name(), table.toString());
+        HashSet<String> tables = new HashSet<>();
+        for (TableAndField tableAndField : tablesAndField) {
+            tables.add(tableAndField.getTable().toString());           
+        }    
+        databaseView.onDatabaseUpdate(DatabaseView.DB_ENTITY.TABLE.name(), tables.toArray(new String[tables.size()]));
     }
 
     @Override
@@ -112,5 +135,26 @@ public class CreateSpatialIndex extends SwingWorkerPM {
         return I18N.tr("Building spatial index");
     }
     
+    public static CreateSpatialIndex onMenuCreateSpatialIndex(DataSource dataSource, List<TableAndField> indexIdentifier, Component parentComponent, DatabaseView dbView, boolean isH2) throws SQLException {
+        if (indexIdentifier.isEmpty()) {
+            return null;
+        }
+        StringBuilder query = new StringBuilder();
+        for (TableAndField tableAndField : indexIdentifier) {
+            if (query.length() > 0) {
+                query.append("\n");
+            }
+            query.append(getSQLCreateSpatialIndex(tableAndField.getTable(), tableAndField.getFieldName(), isH2));
+            query.append(";");
+        }        
+        String message = I18N.tr("Are you sure to create a spatial index on the selected column ?");
+        SQLMessageDialog.CHOICE option = SQLMessageDialog.showModal(null, I18N.tr("Create spatial index"), message, query.toString());
+
+        if (option == SQLMessageDialog.CHOICE.OK) {
+            return new CreateSpatialIndex(indexIdentifier, dbView, dataSource);
+        } else {
+            return null;
+        }
+    }
     
 }

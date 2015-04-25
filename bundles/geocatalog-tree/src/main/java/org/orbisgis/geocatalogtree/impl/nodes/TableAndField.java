@@ -28,17 +28,19 @@
  */
 package org.orbisgis.geocatalogtree.impl.nodes;
 
+import org.h2gis.utilities.TableLocation;
+
 /**
- * Class to manage the name of table and a field
+ * Class to manage the table and a field
  * @author Erwan Bocher
  */
 public class TableAndField {
 
-    String tableName;
+    TableLocation table;
     String fieldName;
 
-    public TableAndField(String tableName, String fieldName) {
-        this.tableName = tableName;
+    public TableAndField(TableLocation table, String fieldName) {
+        this.table = table;
         this.fieldName = fieldName;
     }
 
@@ -52,12 +54,12 @@ public class TableAndField {
     }
 
     /**
-     * Return table name
+     * Return the table
      *
      * @return
      */
-    public String getTableName() {
-        return tableName;
+    public TableLocation getTable() {
+        return table;
     }
 
 }

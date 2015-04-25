@@ -36,6 +36,7 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.List;
 import javax.sql.DataSource;
+import org.h2gis.utilities.JDBCUtilities;
 import org.jooq.DSLContext;
 import org.jooq.conf.RenderNameStyle;
 import org.jooq.conf.Settings;
@@ -91,11 +92,12 @@ public class DropColumn extends SwingWorkerPM{
     private static String getSQLDropColumn(Connection connection, List<TableAndField> indexIdentifier) throws SQLException {
         StringBuilder query = new StringBuilder();
         DSLContext dslContext = DSL.using(connection, new Settings().withRenderNameStyle(RenderNameStyle.AS_IS));
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         for (TableAndField tableAndField : indexIdentifier) {
             if( query.length()>0 ) {
                 query.append("\n");
             }
-            query.append(dslContext.alterTable(tableAndField.getTableName()).drop(tableAndField.getFieldName()).getSQL());
+            query.append(dslContext.alterTable(tableAndField.getTable().toString(isH2)).drop(tableAndField.getFieldName()).getSQL());
             query.append(";");
         }
         return query.toString();
@@ -124,7 +126,7 @@ public class DropColumn extends SwingWorkerPM{
     protected void done() {
         HashSet<String> tables = new HashSet<>();
         for (TableAndField tableAndField : indexIdentifier) {
-            tables.add(tableAndField.getTableName());            
+            tables.add(tableAndField.getTable().toString());            
         }       
         dbView.onDatabaseUpdate(DatabaseView.DB_ENTITY.INDEX.toString(),
                 tables.toArray(new String[tables.size()]));
