@@ -41,10 +41,13 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
 import java.awt.Component;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.components.SQLMessageDialog;
 
 /**
@@ -64,15 +67,22 @@ public class DropIndex extends SwingWorkerPM {
         this.indexIdentifier = indexIdentifier;
         this.dbView = dbView;
         this.dataSource = dataSource;
+        setTaskName(I18N.tr("Drop index"));
     }
 
     @Override
     protected Object doInBackground() throws Exception {
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
+            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+            getProgressMonitor().addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
+            try {
             String query = getSQLDropIndex(connection, indexIdentifier);
             LOGGER.info(I18N.tr("Execute drop index command:\n{0}", query));
             st.execute(query);
+            } finally {
+                getProgressMonitor().removePropertyChangeListener(listener);
+            }
         } catch (SQLException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
@@ -115,11 +125,4 @@ public class DropIndex extends SwingWorkerPM {
             return null;
         }
     }
-
-    @Override
-    public String toString() {
-        return I18N.tr("Droping index");
-    }
-    
-    
 }
