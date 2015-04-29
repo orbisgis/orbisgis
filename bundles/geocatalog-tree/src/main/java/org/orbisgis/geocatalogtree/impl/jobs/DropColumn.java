@@ -107,7 +107,7 @@ public class DropColumn extends SwingWorkerPM{
             if( query.length()>0 ) {
                 query.append("\n");
             }
-            query.append(dslContext.alterTable(tableAndField.getTable().toString(isH2)).drop(tableAndField.getFieldName()).getSQL());
+            query.append(dslContext.alterTable(tableAndField.getTable()).drop(tableAndField.getFieldName()).getSQL());
             query.append(";");
         }
         return query.toString();
@@ -136,7 +136,7 @@ public class DropColumn extends SwingWorkerPM{
     protected void done() {
         HashSet<String> tables = new HashSet<>();
         for (TableAndField tableAndField : indexIdentifier) {
-            tables.add(tableAndField.getTable().toString());            
+            tables.add(tableAndField.getTable());            
         }       
         dbView.onDatabaseUpdate(DatabaseView.DB_ENTITY.INDEX.toString(),
                 tables.toArray(new String[tables.size()]));

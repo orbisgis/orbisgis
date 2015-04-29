@@ -373,16 +373,24 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
      * User click on create index
      */
     public void onMenuCreateIndex() {
-        Object nodeObj = dbTree.getLastSelectedPathComponent();
-        if(nodeObj instanceof GeoCatalogTreeNode
-                && GeoCatalogTreeNode.NODE_COLUMN.equals(((GeoCatalogTreeNode) nodeObj).getNodeType())) {
-            GeoCatalogTreeNode fieldNode = (GeoCatalogTreeNode) nodeObj;
-            TableLocation table = TableLocation.parse(fieldNode.getParent().getParent()
-                    .getNodeIdentifier());
-            if (!checkIndexExists(fieldNode, table)) {
-                execute(new CreateIndex(table, new TableLocation(fieldNode.getNodeIdentifier()).toString(isH2()),
-                        this, dataManager.getDataSource()));
+        List<TableAndField> fields = new ArrayList<TableAndField>(dbTree.getSelectionCount());
+        for (GeoCatalogTreeNode treeNode : new TreeSelectionIterable<>(dbTree.getSelectionPaths(), GeoCatalogTreeNode.class)) {
+            if (GeoCatalogTreeNode.NODE_COLUMN.equals(treeNode.getNodeType())) {
+                GeoCatalogTreeNode fieldNode = (GeoCatalogTreeNode) treeNode;
+                TableLocation table = TableLocation.parse(fieldNode.getParent().getParent()
+                        .getNodeIdentifier());
+                if (!checkIndexExists(fieldNode, table)) {
+                    fields.add(new TableAndField(TableLocation.parse(treeNode.getParent().getParent().getNodeIdentifier()).toString(isH2()), treeNode.getNodeIdentifier()));
+                }
             }
+        }
+        try {
+            CreateIndex job = CreateIndex.onMenuCreateIndex(dataManager.getDataSource(), fields, this, this, isH2());
+            if (job != null) {
+                execute(job);
+            }
+        } catch (SQLException ex) {
+            LOGGER.error(ex.getLocalizedMessage(), ex);
         }
     }
 
@@ -397,7 +405,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
                 TableLocation table = TableLocation.parse(fieldNode.getParent().getParent()
                         .getNodeIdentifier());
                 if (!checkIndexExists(fieldNode, table)) {
-                    fields.add(new TableAndField(TableLocation.parse(treeNode.getParent().getParent().getNodeIdentifier()), treeNode.getNodeIdentifier()));
+                    fields.add(new TableAndField(TableLocation.parse(treeNode.getParent().getParent().getNodeIdentifier()).toString(isH2()), treeNode.getNodeIdentifier()));
                 }
             }
         }
@@ -418,7 +426,7 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
         List<TableAndField> fields = new ArrayList<TableAndField>(dbTree.getSelectionCount());
         for (GeoCatalogTreeNode treeNode : new TreeSelectionIterable<>(dbTree.getSelectionPaths(), GeoCatalogTreeNode.class)) {
             if (GeoCatalogTreeNode.NODE_COLUMN.equals(treeNode.getNodeType())) {
-                fields.add(new TableAndField( TableLocation.parse(treeNode.getParent().getParent().getNodeIdentifier()), treeNode.getNodeIdentifier()));
+                fields.add(new TableAndField( TableLocation.parse(treeNode.getParent().getParent().getNodeIdentifier()).toString(isH2()), treeNode.getNodeIdentifier()));
             }
         }
         try {

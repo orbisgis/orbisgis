@@ -109,7 +109,7 @@ public class CreateSpatialIndex extends SwingWorkerPM {
             } else {
                 sb.append("INDEX ON ");
             }
-            sb.append(tableAndField.getTable().toString(isH2));
+            sb.append(tableAndField.getTable());
             if (isH2) {
                 sb.append("(");
                 sb.append(tableAndField.getFieldName());
@@ -128,7 +128,7 @@ public class CreateSpatialIndex extends SwingWorkerPM {
     protected void done() {
         HashSet<String> tables = new HashSet<>();
         for (TableAndField tableAndField : tablesAndField) {
-            tables.add(tableAndField.getTable().toString());           
+            tables.add(tableAndField.getTable());           
         }    
         databaseView.onDatabaseUpdate(DatabaseView.DB_ENTITY.TABLE.name(), tables.toArray(new String[tables.size()]));
     }
