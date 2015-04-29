@@ -29,17 +29,21 @@
 
 package org.orbisgis.geocatalogtree.impl.jobs;
 
+import java.awt.Component;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
+import java.util.List;
 import javax.sql.DataSource;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.dbjobs.api.DatabaseView;
+import org.orbisgis.geocatalogtree.impl.nodes.TableAndField;
+import org.orbisgis.sif.components.SQLMessageDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -50,18 +54,16 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Erwan Bocher
  */
 public class CreateIndex extends SwingWorkerPM {
-
-    private TableLocation table;
-    private String field;
+   
     private DatabaseView databaseView;
     private DataSource dataSource;
     private static final I18n I18N = I18nFactory.getI18n(CreateIndex.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateIndex.class);
+    private final List<TableAndField> tablesAndField;
 
 
-    public CreateIndex(TableLocation table, String field, DatabaseView databaseView, DataSource dataSource) {
-        this.table = table;
-        this.field = field;
+    public CreateIndex(List<TableAndField> tablesAndField, DatabaseView databaseView, DataSource dataSource) {
+        this.tablesAndField = tablesAndField;        
         this.databaseView = databaseView;
         this.dataSource = dataSource;
         setTaskName(I18N.tr("Create index"));
@@ -74,14 +76,10 @@ public class CreateIndex extends SwingWorkerPM {
             PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
             getProgressMonitor().addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
             try {
-                StringBuilder sb = new StringBuilder();
-                sb.append("CREATE INDEX ON ");
-                sb.append(table.toString(JDBCUtilities.isH2DataBase(connection.getMetaData())));
-                sb.append("(");
-                sb.append(field);
-                sb.append(")");
-                LOGGER.info(I18N.tr("Create index query:\n{0}", sb.toString()));
-                st.execute(sb.toString());
+                boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                String query = getSQLCreateIndex(tablesAndField, isH2);
+                LOGGER.info(I18N.tr("Create index query:\n{0}", query));
+                st.execute(query);
             } finally {
                 getProgressMonitor().removePropertyChangeListener(listener);
             }
@@ -93,14 +91,48 @@ public class CreateIndex extends SwingWorkerPM {
 
     @Override
     protected void done() {
-        databaseView.onDatabaseUpdate(DatabaseView.DB_ENTITY.TABLE.name(), table.toString());
+        HashSet<String> tables = new HashSet<>();
+        for (TableAndField tableAndField : tablesAndField) {
+            tables.add(tableAndField.getTable());
+        }
+        databaseView.onDatabaseUpdate(DatabaseView.DB_ENTITY.TABLE.name(), tables.toArray(new String[tables.size()]));
     }
+    
+    public static CreateIndex onMenuCreateIndex(DataSource dataSource, List<TableAndField> indexIdentifier, Component parentComponent, DatabaseView dbView, boolean isH2) throws SQLException {
+        if (indexIdentifier.isEmpty()) {
+            return null;
+        }
+        String message = I18N.tr("Are you sure to create an index on the selected column ?");
+        SQLMessageDialog.CHOICE option = SQLMessageDialog.showModal(null, I18N.tr("Create index"), message,
+                getSQLCreateIndex(indexIdentifier, isH2));
+        if (option == SQLMessageDialog.CHOICE.OK) {
+            return new CreateIndex(indexIdentifier, dbView, dataSource);
+        } else {
+            return null;
+        }
+    }
+    
+     /**
+     * Create the SQL query
+     * 
+     * @param tablesAndField
+     * @param isH2
+     * @return 
+     */
+    private static String getSQLCreateIndex(List<TableAndField> tablesAndField, boolean isH2) {
+        StringBuilder sb = new StringBuilder();        
+        for (TableAndField tableAndField : tablesAndField) {
+            if (sb.length() > 0) {
+                sb.append("\n");
+            }
+            sb.append("CREATE INDEX ON ");
+            sb.append(tableAndField.getTable());
+            sb.append("(");
+            sb.append(tableAndField.getFieldName());
+            sb.append(")");
+            sb.append(";");
+        }
+        return sb.toString();
+    }   
 
-    @Override
-    public String toString() {
-        return I18N.tr("Building index");
-    }
-    
-    
-    
 }

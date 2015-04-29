@@ -30,16 +30,20 @@
 package org.orbisgis.geocatalogtree.impl.jobs;
 
 import java.awt.Component;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.List;
 import javax.sql.DataSource;
+import org.h2gis.utilities.JDBCUtilities;
 import org.jooq.DSLContext;
 import org.jooq.conf.RenderNameStyle;
 import org.jooq.conf.Settings;
 import org.jooq.impl.DSL;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.dbjobs.api.DatabaseView;
 import org.orbisgis.sif.components.SQLMessageDialog;
@@ -66,15 +70,22 @@ public class DropColumn extends SwingWorkerPM{
         this.indexIdentifier = indexIdentifier;
         this.dbView = dbView;
         this.dataSource = dataSource;
+        setTaskName(I18N.tr("Drop column"));
     }
 
-     @Override
+    @Override
     protected Object doInBackground() throws Exception {
-        try(Connection connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
-            String query = getSQLDropColumn(connection, indexIdentifier);
-            LOGGER.info(I18N.tr("Execute drop index command:\n{0}", query));
-            st.execute(query);
+            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+            getProgressMonitor().addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
+            try {
+                String query = getSQLDropColumn(connection, indexIdentifier);
+                LOGGER.info(I18N.tr("Execute drop index command:\n{0}", query));
+                st.execute(query);
+            } finally {
+                getProgressMonitor().removePropertyChangeListener(listener);
+            }
         } catch (SQLException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
@@ -91,11 +102,12 @@ public class DropColumn extends SwingWorkerPM{
     private static String getSQLDropColumn(Connection connection, List<TableAndField> indexIdentifier) throws SQLException {
         StringBuilder query = new StringBuilder();
         DSLContext dslContext = DSL.using(connection, new Settings().withRenderNameStyle(RenderNameStyle.AS_IS));
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         for (TableAndField tableAndField : indexIdentifier) {
             if( query.length()>0 ) {
                 query.append("\n");
             }
-            query.append(dslContext.alterTable(tableAndField.getTableName()).drop(tableAndField.getFieldName()).getSQL());
+            query.append(dslContext.alterTable(tableAndField.getTable()).drop(tableAndField.getFieldName()).getSQL());
             query.append(";");
         }
         return query.toString();
@@ -124,7 +136,7 @@ public class DropColumn extends SwingWorkerPM{
     protected void done() {
         HashSet<String> tables = new HashSet<>();
         for (TableAndField tableAndField : indexIdentifier) {
-            tables.add(tableAndField.getTableName());            
+            tables.add(tableAndField.getTable());            
         }       
         dbView.onDatabaseUpdate(DatabaseView.DB_ENTITY.INDEX.toString(),
                 tables.toArray(new String[tables.size()]));

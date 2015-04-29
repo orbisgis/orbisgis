@@ -28,14 +28,11 @@
  */
 package org.orbisgis.tablegui.impl;
 
-import com.sun.imageio.plugins.common.I18N;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.geocatalogtree.api.DBTreeMenu;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeAction;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
 import org.orbisgis.geocatalogtree.api.PopupMenu;
 import org.orbisgis.geocatalogtree.api.PopupTarget;
-import org.orbisgis.geocatalogtree.api.TitleActionBar;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.osgi.service.component.annotations.Component;
