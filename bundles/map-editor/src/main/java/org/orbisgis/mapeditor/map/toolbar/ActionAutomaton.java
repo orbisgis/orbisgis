@@ -30,15 +30,17 @@
 package org.orbisgis.mapeditor.map.toolbar;
 
 import org.orbisgis.mainframe.api.ToolBarAction;
+import org.orbisgis.mapeditor.map.MapEditor;
+import org.orbisgis.mapeditorapi.MapEditorExtension;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.mapeditor.map.ext.AutomatonHolder;
 import org.orbisgis.mapeditor.map.ext.MapEditorAction;
-import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
 import org.orbisgis.mapeditor.map.tool.Automaton;
 import org.orbisgis.mapeditor.map.tool.ToolListener;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
-import javax.swing.*;
+
+import javax.swing.Action;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 
@@ -67,8 +69,8 @@ public class ActionAutomaton extends ActionMapContext implements AutomatonHolder
         putValue(Action.SHORT_DESCRIPTION,automaton.getTooltip());
         putValue(ActionTools.TOGGLE_GROUP, MapEditorAction.TOGGLE_GROUP_AUTOMATONS); //radio group
         putValue(ActionTools.LOGICAL_GROUP, ToolBarAction.DRAWING_GROUP);
-        if(extension.getToolManager()!=null) {
-            putValue(Action.SELECTED_KEY,isEqual(extension.getToolManager().getTool()));
+        if(((MapEditor)extension).getToolManager() != null) {
+            putValue(Action.SELECTED_KEY,isEqual(((MapEditor)extension).getToolManager().getTool()));
         }
     }
 

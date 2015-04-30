@@ -1,9 +1,7 @@
-package org.orbisgis.mapeditor.map.ext;
+package org.orbisgis.mapeditorapi;
 
-import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.docking.PropertyHost;
 import org.orbisgis.sif.edition.EditorDockable;
-import org.orbisgis.mapeditor.map.tool.ToolManager;
 
 /**
  * @author Nicolas Fortin
@@ -17,4 +15,8 @@ public interface MapEditorExtension extends EditorDockable, PropertyHost {
      */
     public MapElement getMapElement();
 
+    /**
+     * @return Internal data of maps manager
+     */
+    public MapsManagerData getMapsManagerData();
 }

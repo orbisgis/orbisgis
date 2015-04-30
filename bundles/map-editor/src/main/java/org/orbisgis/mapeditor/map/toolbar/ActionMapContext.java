@@ -30,9 +30,10 @@
 package org.orbisgis.mapeditor.map.toolbar;
 
 import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.mapeditor.map.MapEditor;
+import org.orbisgis.mapeditorapi.MapEditorExtension;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.components.actions.DefaultAction;
-import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
 
 import javax.swing.*;
 import java.beans.EventHandler;
@@ -51,7 +52,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Nicolas Fortin
  */
 public abstract class ActionMapContext extends DefaultAction implements ActionDisposable {
-    private MapEditorExtension extension;
+    private MapEditor extension;
     // To install, uninstall listener on MapContext
     private PropertyChangeListener mapEditorListener = EventHandler.create(PropertyChangeListener.class, this, "onMapEditorUpdate","");
     // To update this Action Enabled state
@@ -70,7 +71,7 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
         super(actionId, name);
         putValue(Action.SMALL_ICON,icon);
         putValue(Action.LARGE_ICON_KEY,icon);
-        this.extension = extension;
+        this.extension = ((MapEditor)extension);
     }
 
     @Override
@@ -82,7 +83,7 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
     /**
      * @return The Map extension linked with this Automaton Action
      */
-    public MapEditorExtension getExtension() {
+    public MapEditor getExtension() {
         return extension;
     }
 
