@@ -63,7 +63,7 @@ public class TreeNodeLocalRoot extends AbstractTreeNodeContainer implements Popu
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeLocalRoot.class);
         private static final Logger LOGGER = LoggerFactory.getLogger(TreeNodeLocalRoot.class);
         // This list must be updated to the current state of shown servers
-        private MapsManagerPersistence mapsManagerPersistence;
+        private MapsManagerPersistenceImpl mapsManagerPersistence;
         private TreeNodeFileFactoryManager factoryManager;
                
         /**
@@ -80,10 +80,10 @@ public class TreeNodeLocalRoot extends AbstractTreeNodeContainer implements Popu
          * The server list will keep this instance updated
          * @param mapsManagerPersistence
          */
-        public void setMapsManagerPersistence(MapsManagerPersistence mapsManagerPersistence) {
+        public void setMapsManagerPersistence(MapsManagerPersistenceImpl mapsManagerPersistence) {
             this.mapsManagerPersistence = mapsManagerPersistence;
             // Track property change
-            mapsManagerPersistence.addPropertyChangeListener(MapsManagerPersistence.PROP_FOLDER_LIST,
+            mapsManagerPersistence.addPropertyChangeListener(MapsManagerPersistenceImpl.PROP_FOLDER_LIST,
                     EventHandler.create(PropertyChangeListener.class, this, "onFolderListPropertyChange","newValue"));
             onFolderListPropertyChange(mapsManagerPersistence.getMapCatalogFolderList());
         }

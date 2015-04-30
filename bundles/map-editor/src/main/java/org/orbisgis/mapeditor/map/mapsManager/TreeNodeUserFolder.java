@@ -16,7 +16,7 @@ import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
  * @author Nicolas Fortin
  */
 public class TreeNodeUserFolder extends TreeNodeDiskFolder {
-    private MapsManagerPersistence mapsManagerPersistence;
+    private MapsManagerPersistenceImpl mapsManagerPersistence;
 
     /**
      * Constructor
@@ -25,7 +25,7 @@ public class TreeNodeUserFolder extends TreeNodeDiskFolder {
      * @param mapsManagerPersistence Container of other TreeNodeUserFolder references
      * @throws IllegalArgumentException If the provided path represent a file
      */
-    public TreeNodeUserFolder(File folderPath, TreeNodeFileFactoryManager factoryManager, MapsManagerPersistence mapsManagerPersistence) {
+    public TreeNodeUserFolder(File folderPath, TreeNodeFileFactoryManager factoryManager, MapsManagerPersistenceImpl mapsManagerPersistence) {
         super(folderPath, factoryManager);
         this.mapsManagerPersistence = mapsManagerPersistence;
     }

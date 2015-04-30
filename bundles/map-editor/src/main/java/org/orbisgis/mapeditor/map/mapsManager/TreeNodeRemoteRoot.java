@@ -64,7 +64,7 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
         private static final Logger LOGGER = LoggerFactory.getLogger(TreeNodeRemoteRoot.class);
         // This list must be updated to the current state of shown servers
         private List<String> serverList;
-        private MapsManagerPersistence mapsManagerPersistence;
+        private MapsManagerPersistenceImpl mapsManagerPersistence;
         private AtomicBoolean onUpdateSerialisation = new AtomicBoolean(false);
         private DataManager dataManager;
         private File mapsFolder;
@@ -83,10 +83,10 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
          * The server list will keep this instance updated
          * @param mapsManagerPersistence
          */
-        public void setMapsManagerPersistence(MapsManagerPersistence mapsManagerPersistence) {
+        public void setMapsManagerPersistence(MapsManagerPersistenceImpl mapsManagerPersistence) {
             this.mapsManagerPersistence = mapsManagerPersistence;
             // Install listeners
-            mapsManagerPersistence.addPropertyChangeListener(MapsManagerPersistence.PROP_SERVER_URI_LIST, EventHandler.create(PropertyChangeListener.class, this, "onMapServerListUpdate"));
+            mapsManagerPersistence.addPropertyChangeListener(MapsManagerPersistenceImpl.PROP_SERVER_URI_LIST, EventHandler.create(PropertyChangeListener.class, this, "onMapServerListUpdate"));
             onMapServerListUpdate();
         }
         private void updateServerList() {

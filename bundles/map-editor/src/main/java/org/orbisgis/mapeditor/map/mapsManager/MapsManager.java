@@ -115,7 +115,7 @@ public class MapsManager extends JPanel {
          * The server list will keep this instance updated
          * @param mapsManagerPersistence
          */
-        public void setMapsManagerPersistence(MapsManagerPersistence mapsManagerPersistence) {
+        public void setMapsManagerPersistence(MapsManagerPersistenceImpl mapsManagerPersistence) {
             rootRemote.setMapsManagerPersistence(mapsManagerPersistence);
             rootFolder.setMapsManagerPersistence(mapsManagerPersistence);
         }

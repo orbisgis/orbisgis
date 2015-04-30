@@ -28,6 +28,7 @@
  */
 package org.orbisgis.mapeditor.map.ext;
 
+import org.orbisgis.mapeditorapi.MapEditorExtension;
 import org.orbisgis.sif.components.actions.ActionFactoryService;
 
 /**

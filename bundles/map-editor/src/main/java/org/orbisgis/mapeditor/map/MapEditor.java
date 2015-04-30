@@ -60,7 +60,14 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.TreeExpansionListener;
 import org.apache.commons.io.FilenameUtils;
 import org.orbisgis.commons.progress.SwingWorkerPM;
@@ -75,7 +82,6 @@ import org.orbisgis.coremap.process.ZoomToSelection;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
 import org.orbisgis.editorjdbc.jobs.CreateSourceFromSelection;
 import org.orbisgis.mapeditor.map.ext.MapEditorAction;
-import org.orbisgis.mapeditor.map.ext.MapEditorExtension;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.jobs.ReadMapContextJob;
 import org.orbisgis.mapeditor.map.mapsManager.MapsManager;
@@ -85,9 +91,11 @@ import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
 import org.orbisgis.mapeditor.map.toolbar.ActionAutomaton;
 import org.orbisgis.mapeditor.map.tools.*;
+import org.orbisgis.mapeditorapi.MapEditorExtension;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.commons.progress.ProgressMonitor;
+import org.orbisgis.mapeditorapi.MapsManagerData;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.sif.components.SaveFilePanel;
@@ -107,7 +115,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -117,7 +124,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * The Map Editor Panel
  */
 @Component(service = EditorDockable.class)
-public class MapEditor extends JPanel implements TransformListener, MapEditorExtension   {
+public class MapEditor extends JPanel implements TransformListener, MapEditorExtension {
     private static final I18n I18N = I18nFactory.getI18n(MapEditor.class);
     private static final Logger GUILOGGER = LoggerFactory.getLogger("gui." + MapEditor.class);
     //The UID must be incremented when the serialization is not compatible with the new version of this class
@@ -939,7 +946,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 });
     }
 
-    @Override
+
     public ToolManager getToolManager() {
         return mapControl.getToolManager();
     }
@@ -1020,6 +1027,11 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 // Ignore
             }
         }
+    }
+
+    @Override
+    public MapsManagerData getMapsManagerData() {
+        return mapEditorPersistence.getMapsManagerPersistence();
     }
 
     /**

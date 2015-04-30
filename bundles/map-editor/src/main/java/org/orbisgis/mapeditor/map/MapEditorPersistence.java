@@ -35,7 +35,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import org.orbisgis.sif.docking.DockingPanelLayout;
-import org.orbisgis.mapeditor.map.mapsManager.MapsManagerPersistence;
+import org.orbisgis.mapeditor.map.mapsManager.MapsManagerPersistenceImpl;
 import org.orbisgis.sif.docking.PropertyHost;
 import org.orbisgis.sif.docking.XElement;
 
@@ -45,7 +45,7 @@ import org.orbisgis.sif.docking.XElement;
  */
 public class MapEditorPersistence implements DockingPanelLayout, Serializable, PropertyHost {
         private static final long serialVersionUID = 3L; // One by new property
-        private MapsManagerPersistence mapsManagerPersistence = new MapsManagerPersistence();
+        private MapsManagerPersistenceImpl mapsManagerPersistence = new MapsManagerPersistenceImpl();
         private static final String MAP_EDITOR_NODE = "mapEditor";
         /**
          * Map Context file name to show on application start.
@@ -68,7 +68,7 @@ public class MapEditorPersistence implements DockingPanelLayout, Serializable, P
         /**
          * @return Serialisation class related to the maps manager
          */
-        public MapsManagerPersistence getMapsManagerPersistence() {
+        public MapsManagerPersistenceImpl getMapsManagerPersistence() {
             return mapsManagerPersistence;
         }
 
