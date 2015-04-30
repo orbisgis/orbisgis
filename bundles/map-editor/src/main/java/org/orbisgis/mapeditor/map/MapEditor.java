@@ -939,7 +939,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 });
     }
 
-    @Override
+
     public ToolManager getToolManager() {
         return mapControl.getToolManager();
     }

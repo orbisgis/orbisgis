@@ -13,14 +13,8 @@ public interface MapEditorExtension extends EditorDockable, PropertyHost {
     public static final String PROP_TOOL_MANAGER = "toolManager";
 
     /**
-     * Get the loaded map element
-     * @return
+     * @return loaded map element
      */
     public MapElement getMapElement();
 
-    /**
-     *  Get the Manager of Automatons
-     * @return Manager of Automatons or null if the ToolManager is not instancied
-     */
-    public ToolManager getToolManager();
 }
