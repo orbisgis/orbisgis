@@ -29,6 +29,7 @@
 
 package org.orbisgis.mapeditor.map.mapsManager;
 
+import org.orbisgis.mapeditorapi.MapsManagerData;
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.docking.PropertyHost;
 import org.orbisgis.sif.docking.XElement;
@@ -47,14 +48,9 @@ import java.util.List;
  * Data to keep between application start/stop.
  * @author Nicolas Fortin
  */
-public class MapsManagerPersistence implements DockingPanelLayout, Serializable, PropertyHost {
+public class MapsManagerPersistenceImpl implements DockingPanelLayout, Serializable, MapsManagerData {
     private static final long serialVersionUID = 2L;
     private static final String ORBISGIS_MAPCATALOG_SERVER= "http://services.orbisgis.org/map";
-    /**
-     * Property of server uri list {@link org.orbisgis.mapeditor.map.MapEditorPersistence#getMapsManagerPersistence()}
-     */
-    public static final String PROP_SERVER_URI_LIST = "mapCatalogUrlList";
-    public static final String PROP_FOLDER_LIST = "mapCatalogUrlList";
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     private List<String> mapCatalogUrlList = new ArrayList<>();
@@ -82,19 +78,14 @@ public class MapsManagerPersistence implements DockingPanelLayout, Serializable,
         propertyChangeSupport.firePropertyChange(PROP_SERVER_URI_LIST,oldList,getMapCatalogUrlList());
     }
 
-    /**
-     * Retrieve the list of map context
-     * @return Remote map catalog urls
-     */
+    @Override
     public List<String> getMapCatalogUrlList() {
         return Collections.unmodifiableList(mapCatalogUrlList);
     }
 
-    /**
-     * @return The list of user defined map's folders.
-     */
+    @Override
     public List<String> getMapCatalogFolderList() {
-        return mapCatalogFolderList;
+        return Collections.unmodifiableList(mapCatalogFolderList);
     }
 
     /**
