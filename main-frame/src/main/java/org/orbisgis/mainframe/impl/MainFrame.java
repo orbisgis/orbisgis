@@ -38,6 +38,7 @@ import java.awt.event.WindowListener;
 import java.beans.EventHandler;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -74,6 +75,7 @@ import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.docking.DockingManager;
+import org.orbisgis.wkguiapi.ViewWorkspace;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -113,6 +115,8 @@ public class MainFrame extends JFrame implements MainWindow {
 
     @Reference(bind = "setCoreWorkspace", unbind = "unsetCoreWorkspace")
     private CoreWorkspace coreWorkspace;
+    @Reference(bind = "setViewWorkspace", unbind = "unsetViewWorkspace")
+    private ViewWorkspace viewWorkspace;
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL_UNARY,policy = ReferencePolicy.DYNAMIC, policyOption =
             ReferencePolicyOption.GREEDY, bind = "setDockingManager", unbind = "unsetDockingManager")
@@ -155,6 +159,12 @@ public class MainFrame extends JFrame implements MainWindow {
         }
         // Very ugly, heritage from monolithic architecture
         UIFactory.setMainFrame(this);
+        UIFactory.setDefaultImageIcon(MainFrameIcon.getIcon("orbisgis"));        // Load SIF properties
+        try {
+            UIFactory.loadState(new File(viewWorkspace.getSIFPath()));
+        } catch (IOException ex) {
+            LOGGER.error(I18N.tr("Error while loading dialogs informations."), ex);
+        }
 
         //When the user ask to close OrbisGis it call
         //the shutdown method here,
@@ -209,6 +219,11 @@ public class MainFrame extends JFrame implements MainWindow {
         if(dockingManager != null) {
             dockingManager.saveLayout();
         }
+        try {
+            UIFactory.saveState(new File(viewWorkspace.getSIFPath()));
+        } catch (IOException ex) {
+            LOGGER.error(I18N.tr("Error while saving dialogs informations."), ex);
+        }
         if(configurationAdmin != null) {
             try {
                 Configuration configuration = configurationAdmin.getConfiguration(MainFrame.class.getName());
@@ -254,6 +269,20 @@ public class MainFrame extends JFrame implements MainWindow {
     }
     public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
 
+    }
+
+    /**
+     * @param viewWorkspace View workspace instance
+     */
+    public void setViewWorkspace(ViewWorkspace viewWorkspace) {
+        this.viewWorkspace = viewWorkspace;
+    }
+
+    /**
+     * @param viewWorkspace View workspace instance
+     */
+    public void unsetViewWorkspace(ViewWorkspace viewWorkspace) {
+        this.viewWorkspace = null;
     }
 
     @Override
