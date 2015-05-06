@@ -29,6 +29,7 @@
 package org.orbisgis.scp;
 
 import org.fife.rsta.ac.AbstractLanguageSupport;
+import org.fife.rsta.ac.LanguageSupport;
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.parser.Parser;
@@ -59,7 +60,7 @@ import java.util.Properties;
  * @author Antoine Gourlay
  * @author Nicolas Fortin
  */
-@Component(servicefactory = true, property = {"language=sql"})
+@Component(service = LanguageSupport.class ,servicefactory = true, property = {"language=sql"})
 public class SQLLanguageSupport extends AbstractLanguageSupport {
         private Logger log = LoggerFactory.getLogger(SQLLanguageSupport.class);
         private RSyntaxSQLParser parser;
@@ -84,7 +85,7 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
                         //textArea.addParser(parser);
 
                         // install auto-completion
-                        sqlCompletionProvider = new SQLCompletionProvider(dataSource);
+                        sqlCompletionProvider = new SQLCompletionProvider(dataSource, false);
                         AutoCompletion autoCompletion = createAutoCompletion(sqlCompletionProvider);
                         autoCompletion.install(textArea);
                         installImpl(textArea, autoCompletion);
@@ -100,7 +101,7 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
         @Reference
         public void setDataSource(DataSource dataSource) {
             this.dataSource = dataSource;
-            if( parser!=null ) {
+            if( parser != null ) {
                 parser.setDataSource(dataSource);
             }
             if(sqlCompletionProvider!=null) {
