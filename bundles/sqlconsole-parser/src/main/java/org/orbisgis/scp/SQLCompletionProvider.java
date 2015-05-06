@@ -29,13 +29,24 @@
 package org.orbisgis.scp;
 
 import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 import javax.sql.DataSource;
+import javax.swing.SwingWorker;
 import javax.swing.text.JTextComponent;
 
 import org.fife.ui.autocomplete.BasicCompletion;
@@ -43,6 +54,9 @@ import org.fife.ui.autocomplete.Completion;
 import org.fife.ui.autocomplete.CompletionProvider;
 import org.fife.ui.autocomplete.CompletionProviderBase;
 import org.h2.bnf.Bnf;
+import org.h2.bnf.RuleHead;
+import org.h2.bnf.RuleList;
+import org.h2.bnf.Sentence;
 import org.h2.bnf.context.DbContents;
 import org.h2.bnf.context.DbContextRule;
 import org.slf4j.Logger;
@@ -60,13 +74,16 @@ public class SQLCompletionProvider extends CompletionProviderBase {
     private Bnf parser;
     private Logger log = LoggerFactory.getLogger(SQLCompletionProvider.class);
     private static final int UPDATE_INTERVAL = 30000; // ms, metadata update interval
+    private static final int UPDATE_TIMEOUT = 1000;
     private long lastUpdate = 0;
+    private UpdateParserThread fetchingParser = null;
+    private final static Pattern LTRIM = Pattern.compile("^\\s+");
 
-    public SQLCompletionProvider(DataSource dataSource) {
+    public SQLCompletionProvider(DataSource dataSource, boolean immediateInit) {
         this.dataSource = dataSource;
         try {
             // Use h2 internal grammar
-            updateParser(dataSource);
+            updateParser(dataSource, immediateInit);
         } catch (Exception ex) {
             log.warn("Could not load auto-completion engine", ex);
         }
@@ -78,7 +95,7 @@ public class SQLCompletionProvider extends CompletionProviderBase {
     public void setDataSource(DataSource ds) {
         this.dataSource = ds;
         try {
-            updateParser(ds);
+            updateParser(ds, false);
         } catch (Exception ex) {
             log.error(ex.getLocalizedMessage(), ex);
         }
@@ -88,30 +105,14 @@ public class SQLCompletionProvider extends CompletionProviderBase {
      * Read the data source in order to update parser grammar.
      * @param dataSource New DataSource, to extract meta data, can be null
      */
-    public void updateParser(DataSource dataSource) throws SQLException, IOException {
+    public void updateParser(DataSource dataSource, boolean immediateInit) throws SQLException, IOException {
         if(dataSource != null) {
             lastUpdate = System.currentTimeMillis();
-            parser = Bnf.getInstance(null);
-            try (Connection connection = dataSource.getConnection()) {
-                DbContents contents = new DbContents();
-                contents.readContents(connection.getMetaData().getURL(), connection);
-                DbContextRule columnRule = new DbContextRule(contents, DbContextRule.COLUMN);
-                DbContextRule newAliasRule = new DbContextRule(contents, DbContextRule.NEW_TABLE_ALIAS);
-                DbContextRule aliasRule = new DbContextRule(contents, DbContextRule.TABLE_ALIAS);
-                DbContextRule tableRule = new DbContextRule(contents, DbContextRule.TABLE);
-                DbContextRule schemaRule = new DbContextRule(contents, DbContextRule.SCHEMA);
-                DbContextRule columnAliasRule = new DbContextRule(contents, DbContextRule.COLUMN_ALIAS);
-                DbContextRule procedureRule = new DbContextRule(contents, DbContextRule.PROCEDURE);
-                parser.updateTopic("column_name", columnRule);
-                parser.updateTopic("new_table_alias", newAliasRule);
-                parser.updateTopic("table_alias", aliasRule);
-                parser.updateTopic("column_alias", columnAliasRule);
-                parser.updateTopic("table_name", tableRule);
-                parser.updateTopic("schema_name", schemaRule);
-                parser.updateTopic("expression", procedureRule);
-                parser.linkStatements();
-            } catch (SQLException ex) {
-                log.error(ex.getLocalizedMessage(), ex);
+            fetchingParser = new UpdateParserThread(dataSource);
+            if(!immediateInit) {
+                fetchingParser.execute();
+            } else {
+                fetchingParser.run();
             }
         }
     }
@@ -128,15 +129,21 @@ public class SQLCompletionProvider extends CompletionProviderBase {
 
 
     public List<Completion> getCompletionsAtIndex(JTextComponent jTextComponent, int charIndex) {
-        long now = System.currentTimeMillis();
-        if(lastUpdate + UPDATE_INTERVAL < now) {
-            try {
-                updateParser(dataSource);
-            } catch (Exception ex) {
-                log.warn("Could not update auto-completion engine", ex);
+        UpdateParserThread fetchingParserTmp = fetchingParser;
+        if(fetchingParserTmp != null) {
+            if(!fetchingParserTmp.isDone()) {
+                try {
+                    // Wait until update is done
+                    fetchingParserTmp.get(UPDATE_TIMEOUT, TimeUnit.MILLISECONDS);
+                } catch (Exception ex) {
+                    return new ArrayList<>();
+                }
+            } else {
+                parser = fetchingParserTmp.getParser();
             }
+        } if(parser == null) {
+            return new ArrayList<>();
         }
-
         //Completion completion = new BasicCompletion(this, token);
         List<Completion> completionList = new LinkedList<Completion>();
 
@@ -147,15 +154,25 @@ public class SQLCompletionProvider extends CompletionProviderBase {
             statement = documentReader.next();
         }
         // Last word for filtering results
-        String wordBegin = "";
         int completionPosition = charIndex - documentReader.getPosition();
-        String partialStatement = statement.substring(0, completionPosition);
+        String partialStatement = LTRIM.matcher(statement.substring(0, completionPosition)).replaceAll("");
         // Ask parser for completion list
+        // Left trim the string
         Map<String,String> autoComplete = parser.getNextTokenList(partialStatement);
         for(Map.Entry<String, String> entry : autoComplete.entrySet()) {
             String token =  entry.getKey().substring(entry.getKey().indexOf("#") + 1);
             Completion completion = new BnfAutoCompletion(this, token, entry.getValue());
             completionList.add(completion);
+        }
+
+        // Update table list if it has not be done more than UPDATE_INTERVAL ms ago
+        long now = System.currentTimeMillis();
+        if(lastUpdate + UPDATE_INTERVAL < now) {
+            try {
+                updateParser(dataSource, false);
+            } catch (Exception ex) {
+                log.warn("Could not update auto-completion engine", ex);
+            }
         }
         return completionList;
     }
@@ -187,6 +204,53 @@ public class SQLCompletionProvider extends CompletionProviderBase {
         public String getAlreadyEntered(JTextComponent comp) {
             String completeToken = getReplacementText();
             return completeToken.substring(0, completeToken.length() - append.length());
+        }
+    }
+
+    private static class UpdateParserThread extends SwingWorker<Object, Object> {
+        private static final Logger LOGGER = LoggerFactory.getLogger(UpdateParserThread.class);
+        private DataSource dataSource;
+        private Bnf parser;
+
+
+        public UpdateParserThread(DataSource dataSource) {
+            this.dataSource = dataSource;
+        }
+
+        public Bnf getParser() {
+            return parser;
+        }
+
+        @Override
+        protected Object doInBackground() {
+            try (Connection connection = dataSource.getConnection()) {
+                // Read copy of h2 syntax, temporary until #118 not merged
+                // https://github.com/h2database/h2database/pull/118
+                try(InputStreamReader fileReader = new InputStreamReader(SQLCompletionProvider.class.getResourceAsStream("exthelp.csv"))) {
+                    parser = Bnf.getInstance(fileReader);
+                }
+                DbContents contents = new DbContents();
+                contents.readContents(connection.getMetaData().getURL(), connection);
+                DbContextRule columnRule = new DbContextRule(contents, DbContextRule.COLUMN);
+                DbContextRule newAliasRule = new DbContextRule(contents, DbContextRule.NEW_TABLE_ALIAS);
+                DbContextRule aliasRule = new DbContextRule(contents, DbContextRule.TABLE_ALIAS);
+                DbContextRule tableRule = new DbContextRule(contents, DbContextRule.TABLE);
+                DbContextRule schemaRule = new DbContextRule(contents, DbContextRule.SCHEMA);
+                DbContextRule columnAliasRule = new DbContextRule(contents, DbContextRule.COLUMN_ALIAS);
+                DbContextRule procedureRule = new ProcedureContextRule(contents, DbContextRule.PROCEDURE);
+
+                parser.updateTopic("procedure", procedureRule);
+                parser.updateTopic("new_table_alias", newAliasRule);
+                parser.updateTopic("table_alias", aliasRule);
+                parser.updateTopic("column_alias", columnAliasRule);
+                parser.updateTopic("schema_name", schemaRule);
+                parser.updateTopic("table_name", tableRule);
+                parser.updateTopic("column_name", columnRule);
+                parser.linkStatements();
+            } catch (SQLException|IOException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+            }
+            return null;
         }
     }
 }

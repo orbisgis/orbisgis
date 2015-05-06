@@ -6,10 +6,8 @@ import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
 import org.h2.util.OsgiDataSourceFactory;
 import org.junit.Test;
-import sun.awt.HeadlessToolkit;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.GraphicsEnvironment;
 import java.util.List;
 import java.util.Properties;
 
