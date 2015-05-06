@@ -237,7 +237,7 @@ public class SQLCompletionProvider extends CompletionProviderBase {
                 DbContextRule tableRule = new DbContextRule(contents, DbContextRule.TABLE);
                 DbContextRule schemaRule = new DbContextRule(contents, DbContextRule.SCHEMA);
                 DbContextRule columnAliasRule = new DbContextRule(contents, DbContextRule.COLUMN_ALIAS);
-                DbContextRule procedureRule = new ProcedureContextRule(contents, DbContextRule.PROCEDURE);
+                DbContextRule procedureRule = new DbContextRule(contents, DbContextRule.PROCEDURE);
 
                 parser.updateTopic("procedure", procedureRule);
                 parser.updateTopic("new_table_alias", newAliasRule);
