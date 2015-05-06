@@ -55,7 +55,9 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -66,6 +68,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -197,6 +200,7 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
         loadNodes(parent, parentQueryPart, connection, jTree, allNodes, allNodesQueryPart);
         Map<String, GeoCatalogTreeNode> oldNodes = parent.getChildrenIdentifier();
         // Check if the node already exist in the tree or if old nodes has been removed from db
+        List<MutableTreeNode> nodeToInsert = new ArrayList<>(allNodes.size());
         for(int nodeId=0; nodeId < allNodes.size(); nodeId++) {
             GeoCatalogTreeNodeImpl node=allNodes.get(nodeId);
             QueryPart nodeQueryPart = allNodesQueryPart.get(nodeId);
@@ -218,18 +222,20 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                 }
             } else {
                 // New node, add it in the tree
-                treeModel.insertNodeInto(node, parent, parent.getChildCount());
+                nodeToInsert.add(node);
             }
         }
+        // Add remove nodes on model using Swing event thread
+        List<MutableTreeNode> nodesToRemove = new ArrayList<>(oldNodes.isEmpty() ? 1 : oldNodes.size());
         if(!oldNodes.isEmpty()) {
             // Removed nodes
             for(GeoCatalogTreeNode node : oldNodes.values()) {
                 if(isNodeMadeByThis(node)) {
-                    treeModel.removeNodeFromParent(node);
+                    nodesToRemove.add(node);
                 }
             }
         }
-
+        SwingUtilities.invokeLater(new TreeModelOperation(treeModel, nodeToInsert,nodesToRemove, parent));
     }
 
     protected boolean isNodeMadeByThis(GeoCatalogTreeNode node) {
@@ -439,6 +445,45 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
             transferable = new StringSelection(sb.toString());
         }
         return transferable;
+    }
+
+
+    /**
+     * Insertion/Deletion of nodes into the model. Has to be done in the Swing Event thread to avoid gui problems.
+     */
+    private static class TreeModelOperation implements Runnable {
+        private DefaultTreeModel defaultTreeModel;
+        private List<MutableTreeNode> newChilds;
+        private List<MutableTreeNode> nodesToRemove;
+        private MutableTreeNode parent;
+
+        public TreeModelOperation(DefaultTreeModel defaultTreeModel, List<MutableTreeNode> newChilds,List<MutableTreeNode> nodesToRemove, MutableTreeNode
+                parent) {
+            this.defaultTreeModel = defaultTreeModel;
+            this.newChilds = newChilds;
+            this.nodesToRemove = nodesToRemove;
+            this.parent = parent;
+        }
+
+        @Override
+        public void run() {
+            // First remove deprecated nodes
+            for(MutableTreeNode node : nodesToRemove) {
+                defaultTreeModel.removeNodeFromParent(node);
+            }
+            // Insert alphabetically
+            List<String> modelNodes = new ArrayList<>(parent.getChildCount() + newChilds.size());
+            for(int nodeId = 0; nodeId < parent.getChildCount(); nodeId++) {
+                modelNodes.add(parent.getChildAt(nodeId).toString());
+            }
+            while (!newChilds.isEmpty()) {
+                MutableTreeNode nodeToInsert = newChilds.remove(0);
+                int index = Collections.binarySearch(modelNodes, nodeToInsert.toString());
+                index = index >= 0 ? index : (-(index) - 1);
+                defaultTreeModel.insertNodeInto(nodeToInsert, parent, index);
+                modelNodes.add(index, nodeToInsert.toString());
+            }
+        }
     }
 }
 
