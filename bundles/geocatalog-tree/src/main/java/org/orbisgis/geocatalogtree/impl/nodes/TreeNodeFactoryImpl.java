@@ -55,7 +55,9 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -66,6 +68,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -163,7 +166,7 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
                 break;
             case NODE_TABLE:
                 allNodes.add(new GeoCatalogTreeNodeImpl(this, NODE_COLUMNS, I18N.tr("Columns"),
-                        GeocatalogIcon.getIcon("column"), GeocatalogIcon.getIcon("column")));
+                        GeocatalogIcon.getIcon("column"), GeocatalogIcon.getIcon("column")).setSortChildren(false));
                 allNodesQueryPart.add(parentQueryPart);
                 allNodes.add(new GeoCatalogTreeNodeImpl(this, NODE_INDEXES, I18N.tr("Index"),
                         GeocatalogIcon.getIcon("index_folder"),GeocatalogIcon.getIcon("index_folder")));
@@ -196,40 +199,47 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
         List<QueryPart> allNodesQueryPart = new ArrayList<>(parent.getChildCount());
         loadNodes(parent, parentQueryPart, connection, jTree, allNodes, allNodesQueryPart);
         Map<String, GeoCatalogTreeNode> oldNodes = parent.getChildrenIdentifier();
-        // Check if the node already exist in the tree or if old nodes has been removed from db
-        for(int nodeId=0; nodeId < allNodes.size(); nodeId++) {
-            GeoCatalogTreeNodeImpl node=allNodes.get(nodeId);
-            QueryPart nodeQueryPart = allNodesQueryPart.get(nodeId);
-            GeoCatalogTreeNode existingNode = oldNodes.get(node.getNodeIdentifier());
-            if(existingNode != null) {
-                // Node already exists
-                oldNodes.remove(node.getNodeIdentifier());
-                // Update the node if it contains at least one child
-                TreePath existingNodePath = new TreePath (((DefaultTreeModel) jTree.getModel())
-                        .getPathToRoot(existingNode));
-                if(existingNode.getChildCount() > 0 || jTree.isExpanded(existingNodePath)) {
-                    TreeNodeFactory treeNodeFactory = existingNode.getFactory();
-                    if(treeNodeFactory instanceof TreeNodeFactoryImpl) {
-                        TreeNodeFactoryImpl childFactory = (TreeNodeFactoryImpl)treeNodeFactory;
-                        childFactory.updateChildren(existingNode, nodeQueryPart, connection, jTree);
-                    } else if(treeNodeFactory != null) {
-                        treeNodeFactory.updateChildren(node, connection, jTree);
+        List<MutableTreeNode> nodeToInsert = new ArrayList<>(allNodes.size());
+        if(parent.isChildrenSorted()) {
+            // Check if the node already exist in the tree or if old nodes has been removed from db
+            for (int nodeId = 0; nodeId < allNodes.size(); nodeId++) {
+                GeoCatalogTreeNodeImpl node = allNodes.get(nodeId);
+                QueryPart nodeQueryPart = allNodesQueryPart.get(nodeId);
+                GeoCatalogTreeNode existingNode = oldNodes.get(node.getNodeIdentifier());
+                if (existingNode != null) {
+                    // Node already exists
+                    oldNodes.remove(node.getNodeIdentifier());
+                    // Update the node if it contains at least one child
+                    TreePath existingNodePath = new TreePath(((DefaultTreeModel) jTree.getModel()).getPathToRoot(existingNode));
+                    if (existingNode.getChildCount() > 0 || jTree.isExpanded(existingNodePath)) {
+                        TreeNodeFactory treeNodeFactory = existingNode.getFactory();
+                        if (treeNodeFactory instanceof TreeNodeFactoryImpl) {
+                            TreeNodeFactoryImpl childFactory = (TreeNodeFactoryImpl) treeNodeFactory;
+                            childFactory.updateChildren(existingNode, nodeQueryPart, connection, jTree);
+                        } else if (treeNodeFactory != null) {
+                            treeNodeFactory.updateChildren(node, connection, jTree);
+                        }
                     }
+                } else {
+                    // New node, add it in the tree
+                    nodeToInsert.add(node);
                 }
-            } else {
-                // New node, add it in the tree
-                treeModel.insertNodeInto(node, parent, parent.getChildCount());
             }
+        } else {
+            // In order to keep the parsed order we have to remove all old node (loosing tree states also)
+            nodeToInsert.addAll(allNodes);
         }
+        // Add remove nodes on model using Swing event thread
+        List<MutableTreeNode> nodesToRemove = new ArrayList<>(oldNodes.isEmpty() ? 1 : oldNodes.size());
         if(!oldNodes.isEmpty()) {
             // Removed nodes
             for(GeoCatalogTreeNode node : oldNodes.values()) {
                 if(isNodeMadeByThis(node)) {
-                    treeModel.removeNodeFromParent(node);
+                    nodesToRemove.add(node);
                 }
             }
         }
-
+        SwingUtilities.invokeLater(new TreeModelOperation(treeModel, nodeToInsert,nodesToRemove, parent));
     }
 
     protected boolean isNodeMadeByThis(GeoCatalogTreeNode node) {
@@ -439,6 +449,51 @@ public class TreeNodeFactoryImpl implements TreeNodeFactory {
             transferable = new StringSelection(sb.toString());
         }
         return transferable;
+    }
+
+
+    /**
+     * Insertion/Deletion of nodes into the model. Has to be done in the Swing Event thread to avoid gui problems.
+     */
+    private static class TreeModelOperation implements Runnable {
+        private DefaultTreeModel defaultTreeModel;
+        private List<MutableTreeNode> newChildren;
+        private List<MutableTreeNode> nodesToRemove;
+        private GeoCatalogTreeNode parent;
+
+        public TreeModelOperation(DefaultTreeModel defaultTreeModel, List<MutableTreeNode> newChildren
+                ,List<MutableTreeNode> nodesToRemove, GeoCatalogTreeNode parent) {
+            this.defaultTreeModel = defaultTreeModel;
+            this.newChildren = newChildren;
+            this.nodesToRemove = nodesToRemove;
+            this.parent = parent;
+        }
+
+        @Override
+        public void run() {
+            // First remove deprecated nodes
+            for(MutableTreeNode node : nodesToRemove) {
+                defaultTreeModel.removeNodeFromParent(node);
+            }
+            if(parent.isChildrenSorted()) {
+                // Insert alphabetically
+                List<String> modelNodes = new ArrayList<>(parent.getChildCount() + newChildren.size());
+                for (int nodeId = 0; nodeId < parent.getChildCount(); nodeId++) {
+                    modelNodes.add(parent.getChildAt(nodeId).toString());
+                }
+                while (!newChildren.isEmpty()) {
+                    MutableTreeNode nodeToInsert = newChildren.remove(0);
+                    int index = Collections.binarySearch(modelNodes, nodeToInsert.toString());
+                    index = index >= 0 ? index : (-(index) - 1);
+                    defaultTreeModel.insertNodeInto(nodeToInsert, parent, index);
+                    modelNodes.add(index, nodeToInsert.toString());
+                }
+            } else {
+                for(MutableTreeNode nodeToInsert : newChildren) {
+                    defaultTreeModel.insertNodeInto(nodeToInsert, parent, parent.getChildCount());
+                }
+            }
+        }
     }
 }
 

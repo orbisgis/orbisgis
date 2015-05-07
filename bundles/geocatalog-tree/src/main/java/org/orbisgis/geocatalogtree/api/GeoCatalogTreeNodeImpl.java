@@ -50,6 +50,7 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
     private ImageIcon collapsedIcon;
     private ImageIcon leafIcon;
     private Map<String, Object> attributes = new HashMap<>();
+    private boolean sortChildren = true;
 
     public GeoCatalogTreeNodeImpl(TreeNodeFactory treeNodeFactory, String nodeType,String name) {
         super(name);
@@ -71,6 +72,20 @@ public class GeoCatalogTreeNodeImpl extends DefaultMutableTreeNode implements Ge
         this.treeNodeFactory = treeNodeFactory;
         this.nodeType = nodeType;
         this.leafIcon = leafIcon;
+    }
+
+    /**
+     * @param sortChildren New state of ordering of children
+     * @return this
+     */
+    public GeoCatalogTreeNodeImpl setSortChildren(boolean sortChildren) {
+        this.sortChildren = sortChildren;
+        return this;
+    }
+
+    @Override
+    public boolean isChildrenSorted() {
+        return sortChildren;
     }
 
     /**

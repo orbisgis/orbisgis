@@ -55,6 +55,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
@@ -745,7 +746,8 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
                             nodeBusy = new TreeNodeBusy();
                             DefaultTreeModel treeModel = (DefaultTreeModel) catalogPanel.getDbTree().getModel();
                             nodeBusy.setModel(treeModel);
-                            treeModel.insertNodeInto(nodeBusy, node, 0);
+                            // Model change should be done on swing event thread
+                            SwingUtilities.invokeAndWait(new InsertBusyNode(treeModel, nodeBusy, node));
                             nodeBusy.setDoAnimation(true);
                         }
                         catalogPanel.updateNode(node);
@@ -759,6 +761,23 @@ public class CatalogPanel extends JPanel implements DockingPanel, TreeWillExpand
                 loadingNodeChildren.set(false);
             }
             return null;
+        }
+    }
+
+    private static class InsertBusyNode implements Runnable {
+        private DefaultTreeModel treeModel;
+        private TreeNodeBusy nodeBusy;
+        private GeoCatalogTreeNode node;
+
+        public InsertBusyNode(DefaultTreeModel treeModel, TreeNodeBusy nodeBusy, GeoCatalogTreeNode node) {
+            this.treeModel = treeModel;
+            this.nodeBusy = nodeBusy;
+            this.node = node;
+        }
+
+        @Override
+        public void run() {
+            treeModel.insertNodeInto(nodeBusy, node, 0);
         }
     }
 
