@@ -58,6 +58,8 @@ public interface GeoCatalogTreeNode extends MutableTreeNode {
     String PROP_COLUMN_SPATIAL = "COLUMN_SPATIAL";
     /** string, Column type identifier {@link java.sql.Types} */
     String PROP_COLUMN_TYPE_NAME = "COLUMN_TYPE_NAME";
+    /** Is children has to be sorted */
+    String PROP_ALPHABETICAL_SORTED_CHILDREN = "PROP_ALPHABETICAL_SORTED_CHILDREN";
 
     /**
      * @return Node type
@@ -68,6 +70,11 @@ public interface GeoCatalogTreeNode extends MutableTreeNode {
      * @return The factory that create this node
      */
     TreeNodeFactory getFactory();
+
+    /**
+     * @return True if children has to be sorted
+     */
+    boolean isChildrenSorted();
 
     /**
      * @return Node identifier
