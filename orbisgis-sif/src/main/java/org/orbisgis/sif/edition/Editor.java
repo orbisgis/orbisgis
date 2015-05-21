@@ -1,4 +1,4 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
@@ -6,7 +6,7 @@
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -28,13 +28,30 @@
  */
 package org.orbisgis.sif.edition;
 
-
-import org.orbisgis.sif.docking.DockingPanel;
-
 /**
- * This particular panel is an editor.
- * It has methods related to editable management. 
+ * @author Nicolas Fortin
  */
-public interface EditorDockable extends DockingPanel, Editor {
+public interface Editor {
+    /**
+     * Return true if this editor would replace the current editable by this one.
+     * If this editor return true and the old editable is marked has modified
+     * then a dialog is shown to save the old editable
+     * @param editableElement
+     * @return
+     */
+    boolean match(EditableElement editableElement);
 
+    /**
+     * Return the currently open editable
+     * @return An instance of EditableElement or null
+     */
+    EditableElement getEditableElement();
+
+    /**
+     * Load the specified editable element.
+     * Only called if match was
+     * previously called with the same editable.
+     * @param editableElement
+     */
+    void setEditableElement(EditableElement editableElement);
 }

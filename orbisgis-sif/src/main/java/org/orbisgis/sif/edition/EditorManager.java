@@ -21,15 +21,15 @@ public interface EditorManager {
 
     /**
      * Add single instance editor.Only one frame.The user cannot close it. just hidden by user.
-     * @param editor EditorDockable instance
+     * @param editor Editor instance
      */
-    void addEditor(EditorDockable editor);
+    void addEditor(Editor editor);
 
     /**
-     * Remove single instance edito
-     * @param editor EditorDockable instance
+     * Remove single instance editor
+     * @param editor Editor instance
      */
-    void removeEditor(EditorDockable editor);
+    void removeEditor(Editor editor);
 
     /**
      * Return all editor's editable
@@ -41,7 +41,7 @@ public interface EditorManager {
      *
      * @return All shown editors
      */
-    Collection<EditorDockable> getEditors();
+    Collection<Editor> getEditors();
 
     /**
     * Open this editable with all compatible factories.

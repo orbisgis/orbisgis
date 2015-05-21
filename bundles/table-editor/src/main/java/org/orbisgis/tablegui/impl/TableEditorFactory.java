@@ -31,6 +31,7 @@ package org.orbisgis.tablegui.impl;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.Editor;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.sif.edition.EditorFactory;
@@ -96,7 +97,7 @@ public class TableEditorFactory implements EditorFactory {
 
         
         private boolean isEditableAlreadyOpened(EditableElement editable) {
-                for(EditorDockable editor : editorManager.getEditors()) {
+                for(Editor editor : editorManager.getEditors()) {
                         if(editor instanceof TableEditor && editable.equals(editor.getEditableElement())) {
                                 return true;
                         }
