@@ -35,6 +35,7 @@ import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.Editor;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorFactory;
 import org.orbisgis.sif.edition.EditorManager;
@@ -67,6 +68,8 @@ import java.util.Set;
 @Component
 public class EditorManagerImpl implements EditorManager {
     private List<EditorFactory> factories = new ArrayList<>();
+    // Editors that are not managed by docking manager.
+    private List<Editor> nonDockableEditors = new ArrayList<>();
     private DockingManager dockingManager;
     private final VetoableChangeListener exitListener = EventHandler.create(VetoableChangeListener.class, //The listener class
             this, //The event target object
@@ -159,16 +162,31 @@ public class EditorManagerImpl implements EditorManager {
         }
     }
 
-    @Override
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
             ReferencePolicyOption.GREEDY)
-    public void addEditor(EditorDockable editor) {
+    public void addEditorDockable(EditorDockable editor) {
         dockingManager.addDockingPanel(editor);
     }
 
-    @Override
-    public void removeEditor(EditorDockable editor) {
+    public void removeEditorDockable(EditorDockable editor) {
         dockingManager.removeDockingPanel(editor.getDockingParameters().getName());
+    }
+
+
+    @Override
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
+            ReferencePolicyOption.GREEDY)
+    public void addEditor(Editor editor) {
+        if(!(editor instanceof EditorDockable)) {
+            nonDockableEditors.add(editor);
+        }
+    }
+
+    @Override
+    public void removeEditor(Editor editor) {
+        if(!(editor instanceof EditorDockable)) {
+            nonDockableEditors.remove(editor);
+        }
     }
 
     @Override
@@ -188,7 +206,7 @@ public class EditorManagerImpl implements EditorManager {
     @Override
     public Collection<EditableElement> getEditableElements() {
         Set<EditableElement> editables = new HashSet<EditableElement>();
-        for (EditorDockable editor : getEditors()) {
+        for (Editor editor : getEditors()) {
             if (editor.getEditableElement() != null) {
                 editables.add(editor.getEditableElement());
             }
@@ -197,12 +215,15 @@ public class EditorManagerImpl implements EditorManager {
     }
 
     @Override
-    public Collection<EditorDockable> getEditors() {
-        List<EditorDockable> editors = new ArrayList<>();
+    public Collection<Editor> getEditors() {
+        List<Editor> editors = new ArrayList<>();
         for (DockingPanel panel : dockingManager.getPanels()) {
             if (panel instanceof EditorDockable) {
                 editors.add((EditorDockable) panel);
             }
+        }
+        for(Editor editor : nonDockableEditors) {
+            editors.add(editor);
         }
         return editors;
     }
@@ -211,7 +232,7 @@ public class EditorManagerImpl implements EditorManager {
     public void openEditable(EditableElement editableElement) {
         Set<EditableElement> ignoreModifiedEditables = new HashSet<EditableElement>();
         // Open the element in editors
-        for (EditorDockable editor : getEditors()) {
+        for (Editor editor : getEditors()) {
             if (editor.match(editableElement)) {
                 // Get the current loaded document
                 EditableElement oldEditable = editor.getEditableElement();
