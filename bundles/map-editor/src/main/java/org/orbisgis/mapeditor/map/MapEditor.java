@@ -123,7 +123,7 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * The Map Editor Panel
  */
-@Component(service = EditorDockable.class)
+@Component(service = {EditorDockable.class, MapEditorExtension.class})
 public class MapEditor extends JPanel implements TransformListener, MapEditorExtension {
     private static final I18n I18N = I18nFactory.getI18n(MapEditor.class);
     private static final Logger GUILOGGER = LoggerFactory.getLogger("gui." + MapEditor.class);
