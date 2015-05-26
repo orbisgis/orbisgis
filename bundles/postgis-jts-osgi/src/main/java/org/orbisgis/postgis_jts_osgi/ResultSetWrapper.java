@@ -58,6 +58,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -69,7 +70,7 @@ import java.util.StringTokenizer;
 public class ResultSetWrapper implements ResultSet {
     private Statement statementWrapper;
     private ResultSet rs;
-    private static final Set<String> GEOMETRY_COLUMNS = new HashSet<>(Arrays.asList("geometry", "box2d", "box3d"));
+    public static final Set<String> GEOMETRY_COLUMNS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("geometry", "box2d", "box3d")));
     private Set<Integer> spatialFields = new HashSet<Integer>();
     private Set<Integer> tidFields = new HashSet<>();
     private GeometryFactory geometryFactory = new GeometryFactory();
@@ -1097,6 +1098,6 @@ public class ResultSetWrapper implements ResultSet {
 
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return rs.getMetaData();
+        return new ResultSetMetaDataWrapper(rs.getMetaData());
     }
 }
