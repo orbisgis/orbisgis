@@ -29,6 +29,7 @@
 package org.orbisgis.coremap.renderer.se.parameter.string;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 
@@ -36,10 +37,12 @@ import javax.xml.bind.JAXBElement;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.orbisgis.coremap.renderer.se.parameter.ValueReference;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * The {@code ValueReference} implementation of {@code StringParameter}. That means that 
- * this class is used to retrieve string values by using a GDMS 
+ * this class is used to retrieve string values by using a table 
  * {@code DataSet} as specified in {@link ValueReference ValueReference}.</p>
  * <p>Note that the {@code DataSet} is not directly attached to the class,
  * and must be specified each time you call {@code getValue}.
@@ -47,6 +50,7 @@ import org.orbisgis.coremap.renderer.se.parameter.ValueReference;
  */
 public class StringAttribute extends ValueReference implements StringParameter{
 
+    private static final I18n I18N = I18nFactory.getI18n(StringAttribute.class);
 
     private String[] restriction;
 
@@ -63,6 +67,7 @@ public class StringAttribute extends ValueReference implements StringParameter{
      * Create a new instance of {@code StringAttribute}, using a {@code JAXBElement} to retrieve
      * all the needed informations.
      * @param expr
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public StringAttribute(JAXBElement<String> expr) throws InvalidStyle {
         super(expr);
@@ -76,8 +81,8 @@ public class StringAttribute extends ValueReference implements StringParameter{
             }
 			Object fieldValue = getFieldValue(rs, fid);
 			return fieldValue.toString();
-        } catch (Exception e) {
-            throw new ParameterException("Could not fetch feature attribute \""+ getColumnName() +"\" (" + e + ")");
+        } catch (SQLException e) {
+            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"")+ getColumnName() +"\" (" + e + ")");
         }
     }
 
