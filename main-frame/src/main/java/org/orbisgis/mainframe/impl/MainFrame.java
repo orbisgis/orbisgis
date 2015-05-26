@@ -246,6 +246,8 @@ public class MainFrame extends JFrame implements MainWindow {
      */
     public void onMainWindowClosing() {
         if(closeWindowSaveState()) {
+            // Hide window for fastest close
+            mainPanel.setVisible(false);
             // Stop application
             try {
                 if (bundleContext != null) {
@@ -415,17 +417,19 @@ public class MainFrame extends JFrame implements MainWindow {
     public void onChangeWorkspace() {
         if(bundleContext != null) {
             if(closeWindowSaveState()) {
-                new RestartWorkspaceSelectionBundle(bundleContext).execute();
+                new RestartWorkspaceSelectionBundle(bundleContext, mainPanel).execute();
             }
         }
     }
 
     private static class RestartWorkspaceSelectionBundle extends SwingWorker {
         private BundleContext bundleContext;
+        private JPanel mainPanel;
         private static final Logger LOGGER = LoggerFactory.getLogger(RestartWorkspaceSelectionBundle.class);
 
-        public RestartWorkspaceSelectionBundle(BundleContext bundleContext) {
+        public RestartWorkspaceSelectionBundle(BundleContext bundleContext, JPanel mainPanel) {
             this.bundleContext = bundleContext;
+            this.mainPanel = mainPanel;
         }
 
         Bundle findWorkspaceGUIBundle() {
@@ -443,6 +447,7 @@ public class MainFrame extends JFrame implements MainWindow {
             // Retrieve workspace-gui
             Bundle wkBundle = findWorkspaceGUIBundle();
             if(wkBundle != null) {
+                mainPanel.setVisible(false);
                 wkBundle.stop();
                 // Wait 1s
                 Thread.sleep(1000);
