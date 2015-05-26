@@ -40,10 +40,11 @@ import org.orbisgis.coremap.renderer.se.SymbolizerNode;
 /**
  * <code>Literal</code>s are the concrete realizations of <code>SeParameter</code>.
  * While when using <code>ValueReference</code> objects, data will be retrieved
- * from a GDMS table, <code>Literal</code>s will directly embed their datum.</p>
+ * from a table, <code>Literal</code>s will directly embed their datum.</p>
  * <p>A <code>Literal</code> is associated with a list of listeners, in order to 
  * simplify the propagation of changes that could occur in it.
  * @author Maxence Laurent
+ * @author Bocher Erwan
  */
 public abstract class Literal extends AbstractSymbolizerNode implements Comparable, SeParameter {
 

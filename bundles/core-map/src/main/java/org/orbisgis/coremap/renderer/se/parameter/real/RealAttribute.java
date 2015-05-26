@@ -29,6 +29,7 @@
 package org.orbisgis.coremap.renderer.se.parameter.real;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 import net.opengis.fes._2.ValueReferenceType;
 
@@ -36,16 +37,20 @@ import net.opengis.fes._2.ValueReferenceType;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.orbisgis.coremap.renderer.se.parameter.ValueReference;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * The {@code ValueReference} implementation of {@code RealParameter}. That means that 
- * this class is used to retrieve real (numeric) values by using a GDMS 
+ * this class is used to retrieve real (numeric) values by using a table 
  * {@code DataSet} as specified in {@link ValueReference ValueReference}.</p>
  * <p>Note that the {@code DataSet} is not directly attached to the class,
  * and must be specified each time you call {@code getValue}.
  * @author Alexis Guéganno, Maxence Laurent
  */
 public class RealAttribute extends ValueReference implements RealParameter {
+    
+    private static final I18n I18N = I18nFactory.getI18n(RealAttribute.class);
 
     private RealParameterContext ctx;
 
@@ -70,6 +75,7 @@ public class RealAttribute extends ValueReference implements RealParameter {
      * Create a new instance of {@code RealAttribute}, using a {@code JAXBElement} to retrieve
      * all the needed informations.
      * @param expr
+     * @throws org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle
      */
     public RealAttribute(ValueReferenceType expr) throws InvalidStyle {
         super(expr);
@@ -88,8 +94,8 @@ public class RealAttribute extends ValueReference implements RealParameter {
             } else {
                 return null;
             }
-        } catch (Exception e) {
-            throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"", e);
+        } catch (SQLException e) {
+            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"") + getColumnName() + "\"", e);
         }
     }
 
@@ -102,8 +108,8 @@ public class RealAttribute extends ValueReference implements RealParameter {
             } else {
                 return null;
             }
-        } catch (Exception e) {
-            throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"", e);
+        } catch (ParameterException e) {
+            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"") + getColumnName() + "\"", e);
         }
     }
 

@@ -46,6 +46,7 @@ import java.beans.EventHandler;
  *
  * @author Alexis Guéganno
  * @author Adam Gouge
+ * @author Erwan Bocher
  */
 public final class PnlRule extends JPanel implements ISELegendPanel {
         private static final I18n I18N = I18nFactory.getI18n(PnlRule.class);
