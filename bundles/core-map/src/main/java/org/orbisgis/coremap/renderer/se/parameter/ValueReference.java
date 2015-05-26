@@ -166,7 +166,7 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
                 return idcolumn;
             }
         }
-        throw new SQLException(I18N.tr("Field not found ")+fieldName);
+        throw new SQLException(I18N.tr("Field not found \"{0}\"", fieldName));
     }
     /**
      * Get the {@code Value} associated to this reference in the given

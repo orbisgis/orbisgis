@@ -82,7 +82,7 @@ public class StringAttribute extends ValueReference implements StringParameter{
 			Object fieldValue = getFieldValue(rs, fid);
 			return fieldValue.toString();
         } catch (SQLException e) {
-            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"")+ getColumnName() +"\" (" + e + ")");
+            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"{0}\"", getColumnName()),e);
         }
     }
 

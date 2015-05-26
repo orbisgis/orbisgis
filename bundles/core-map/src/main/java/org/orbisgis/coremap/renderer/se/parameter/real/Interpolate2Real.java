@@ -148,6 +148,7 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
          * @param map
          * @return
          * The interpolated <code>Double</code> value.
+         * @throws org.orbisgis.coremap.renderer.se.parameter.ParameterException
          */
         @Override
         public Double getValue(Map<String,Object> map) throws ParameterException {

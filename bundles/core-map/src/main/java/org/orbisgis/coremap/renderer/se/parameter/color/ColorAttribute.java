@@ -75,7 +75,8 @@ public class ColorAttribute extends ValueReference implements ColorParameter {
         try {
             return Color.getColor(getFieldValue(rs, fid).toString());
         } catch (SQLException e) {
-            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"") + getColumnName() + "\"",e);
+            
+            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"{0}\"", getColumnName()),e);
         }
     }
 
@@ -84,7 +85,7 @@ public class ColorAttribute extends ValueReference implements ColorParameter {
         try {
             return Color.getColor(getFieldValue(map).toString());
         } catch (ParameterException e) {
-            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"") + getColumnName() + "\"",e);
+            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"{0}\"", getColumnName()),e);
         }
     }
 }

@@ -95,7 +95,8 @@ public class RealAttribute extends ValueReference implements RealParameter {
                 return null;
             }
         } catch (SQLException e) {
-            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"") + getColumnName() + "\"", e);
+            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"{0}\"", getColumnName()), e);
+
         }
     }
 
@@ -109,7 +110,7 @@ public class RealAttribute extends ValueReference implements RealParameter {
                 return null;
             }
         } catch (ParameterException e) {
-            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"") + getColumnName() + "\"", e);
+            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"{0}\"", getColumnName()), e);
         }
     }
 
