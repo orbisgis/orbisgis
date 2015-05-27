@@ -341,7 +341,7 @@ public class SimpleStyleEditor extends JPanel implements UIPanel, LegendContext 
      * @return A new unique ID
      */
     public static String createNewID() {
-        String name = "gdms" + System.currentTimeMillis();
+        String name = "orbisgis" + System.currentTimeMillis();
         while (name.equals(lastUID)) {
             name = "" + System.currentTimeMillis();
         }

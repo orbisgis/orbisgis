@@ -45,7 +45,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Provides the support for Gdms SQL syntax in the console.
+ * Provides the support for SQL syntax in the console.
  * 
  * This class needs a registered SQLMetadataManager in order to work, i.e.
  * the code below should return a valid instance of SQLMetadataManager

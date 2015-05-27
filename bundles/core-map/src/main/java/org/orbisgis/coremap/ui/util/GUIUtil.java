@@ -36,16 +36,20 @@ import javax.swing.SwingUtilities;
 
 public class GUIUtil {
 
-	/**
-	 * GUI operations should be performed only on the AWT event dispatching
-	 * thread. Blocks until the Runnable is finished.
-	 */
-	public static void invokeOnEventThread(Runnable r)
-			throws InterruptedException, InvocationTargetException {
-		if (SwingUtilities.isEventDispatchThread()) {
-			r.run();
-		} else {
-			SwingUtilities.invokeAndWait(r);
-		}
-	}
+    /**
+     * GUI operations should be performed only on the AWT event dispatching
+     * thread. Blocks until the Runnable is finished.
+     *
+     * @param r
+     * @throws java.lang.InterruptedException
+     * @throws java.lang.reflect.InvocationTargetException
+     */
+    public static void invokeOnEventThread(Runnable r)
+            throws InterruptedException, InvocationTargetException {
+        if (SwingUtilities.isEventDispatchThread()) {
+            r.run();
+        } else {
+            SwingUtilities.invokeAndWait(r);
+        }
+    }
 }

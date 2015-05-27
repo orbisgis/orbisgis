@@ -61,11 +61,13 @@ public class ParserWMS1_3 extends AbstractParser {
     public ParserWMS1_3() {}
     
     
+    @Override
     protected String getRootPath() {
         return "WMS_Capabilities";
     }
     
     
+    @Override
     public Capabilities parseCapabilities(WMService service, Document doc) throws IOException {
         String title = getTitle(doc);
         MapLayer topLayer = wmsLayerFromNode(XMLTools.simpleXPath(doc, "WMS_Capabilities/Capability/Layer"));

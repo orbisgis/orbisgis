@@ -60,7 +60,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import static org.apache.commons.collections.ComparatorUtils.NATURAL_COMPARATOR;
 
 /**
- * Manage entries of GeoCatalog according to a GDMS SourceManager
+ * Manage entries of GeoCatalog according to a database
  * SourceListModel is a swing component that update the content of the geocatalog
  * according to the SourceManager content and the filter loaded.
  */

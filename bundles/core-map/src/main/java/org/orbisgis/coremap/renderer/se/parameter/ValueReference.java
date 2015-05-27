@@ -41,13 +41,19 @@ import net.opengis.se._2_0.core.ParameterValueType;
 import org.orbisgis.coremap.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.SymbolizerNode;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * An (abstract) representation of a Value in a GDMS table. 
- * @author Alexis Guéganno, Maxence Laurent
+ * An (abstract) representation of a Value in a table. 
+ * @author Maxence Laurent
+ * @author Alexis Guéganno
+ * @author Erwan Bocher
  */
 public abstract class ValueReference extends AbstractSymbolizerNode implements SeParameter{
 
+        private static final I18n I18N = I18nFactory.getI18n(ValueReference.class);
+        
 	private String fieldName;
 	private int fieldId;
 	private ArrayList<PropertyNameListener> listeners;
@@ -80,7 +86,7 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
 			this.fieldName = (String) pName.getContent().get(0);
 			this.fieldId = -1;
 		} else {
-			throw new InvalidStyle("Invalid field name");
+			throw new InvalidStyle(I18N.tr("Invalid field name"));
 		}
 	}
 
@@ -137,13 +143,15 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
 		return fieldName;
 	}
 
-        /**
-         * Get the GDMS {@code Object} associated to this Reference in the given
-         * table (represented by the {@code DataSet sds}) at line fid.
-         * @param sds ResultSet
-         * @param fid Field Id
-         * @return Field Value
-         */
+     /**
+     * Get the {@code Object} associated to this Reference in the given
+     * table (represented by the {@code DataSet sds}) at line fid.
+     *
+     * @param sds ResultSet
+     * @param fid Field Id
+     * @return Field Value
+     * @throws java.sql.SQLException
+     */
     public Object getFieldValue(ResultSet sds, long fid) throws SQLException {
         if (this.fieldId == -1) {
             this.fieldId = getFieldIndexFromLabel(sds, fieldName);
@@ -158,12 +166,13 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
                 return idcolumn;
             }
         }
-        throw new SQLException("Field not found "+fieldName);
+        throw new SQLException(I18N.tr("Field not found \"{0}\"", fieldName));
     }
     /**
-     * Get the GDMS {@code Value} associated to this reference in the given
+     * Get the {@code Value} associated to this reference in the given
      * {@code map}. The value returned by {@link ValueReference#getColumnName()}
      * is used as the key.
+     * @param map
      * @return Value
      * @throws ParameterException
      * If the value returned by {@link ValueReference#getColumnName()} is not
@@ -173,7 +182,7 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
         if(map.containsKey(fieldName)){
             return map.get(fieldName);
         } else {
-            throw new ParameterException("The given map does not contain the needed key/value pair.");
+            throw new ParameterException(I18N.tr("The given map does not contain the needed key/value pair."));
         }
     }
 

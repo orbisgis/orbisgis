@@ -30,22 +30,29 @@ package org.orbisgis.coremap.renderer.se.parameter.color;
 
 import java.awt.Color;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.orbisgis.coremap.renderer.se.parameter.ValueReference;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * The {@code ValueReference} implementation of {@code ColorParameter}. That means that 
- * this class is used to retrieve color values by using a GDMS 
+ * this class is used to retrieve color values by using a table 
  * {@code DataSet} as specified in {@link ValueReference ValueReference}.</p>
  * <p>Note that the {@code DataSet} is not directly attached to the class,
  * and must be specified each time you call {@code getValue}.
- * @author Alexis Guéganno, Maxence Laurent
+ * @author Maxence Laurent
+ * @author Alexis Guéganno
+ * @author Erwan Bocher
  */
 public class ColorAttribute extends ValueReference implements ColorParameter {
 
+     private static final I18n I18N = I18nFactory.getI18n(ColorAttribute.class);
+     
     /**
      * Instanciates the attribute with the name of the column where to search.
      * @param fieldName 
@@ -67,8 +74,9 @@ public class ColorAttribute extends ValueReference implements ColorParameter {
     public Color getColor(ResultSet rs, long fid) throws ParameterException {
         try {
             return Color.getColor(getFieldValue(rs, fid).toString());
-        } catch (Exception e) {
-            throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"",e);
+        } catch (SQLException e) {
+            
+            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"{0}\"", getColumnName()),e);
         }
     }
 
@@ -76,8 +84,8 @@ public class ColorAttribute extends ValueReference implements ColorParameter {
     public Color getColor(Map<String,Object> map) throws ParameterException {
         try {
             return Color.getColor(getFieldValue(map).toString());
-        } catch (Exception e) {
-            throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"",e);
+        } catch (ParameterException e) {
+            throw new ParameterException(I18N.tr("Could not fetch feature attribute \"{0}\"", getColumnName()),e);
         }
     }
 }

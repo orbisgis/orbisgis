@@ -38,7 +38,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.opengis.se._2_0.core.ElseFilterType;
 import net.opengis.se._2_0.core.RuleType;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.map.MapTransform;
@@ -51,6 +50,8 @@ import org.orbisgis.coremap.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.coremap.renderer.se.visitors.FeaturesVisitor;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Rules are used to group rendering instructions by feature-property conditions and map scales.
@@ -60,9 +61,11 @@ import org.h2gis.utilities.SFSUtilities;
  * a <code>CompositeSymbolizer</code> that will contain one -or more- actual <code>Symbolizer</code>
  * representation.
  * @author Maxence Laurent
+ * @author Erwan Bocher
  */
 public final class Rule extends AbstractSymbolizerNode {
 
+    private static final I18n I18N = I18nFactory.getI18n(Rule.class);
     /**
      * The name set to every rule, if not set externally.
      */
@@ -89,7 +92,7 @@ public final class Rule extends AbstractSymbolizerNode {
         if (name != null && !name.equalsIgnoreCase("")) {
             return name;
         } else {
-            return "Untitled rule";
+            return I18N.tr("Untitled rule");
         }
     }
 
@@ -104,7 +107,7 @@ public final class Rule extends AbstractSymbolizerNode {
     public Rule(ILayer layer) {
         this();
 
-        this.name = "Default Rule";
+        this.name = I18N.tr("Default Rule");
         createSymbolizer(layer);
 
     }
@@ -305,7 +308,7 @@ public final class Rule extends AbstractSymbolizerNode {
     }
 
     /**
-     * Build a OrderBy clause to be used to optimize GDMS queries.
+     * Build a OrderBy clause to be used to optimize SQL queries.
      * @return The "order by" clause
      */
     private String getOrderBy() {
