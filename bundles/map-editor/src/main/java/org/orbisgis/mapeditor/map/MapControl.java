@@ -60,6 +60,7 @@ import javax.swing.Timer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
@@ -313,9 +314,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
                         Graphics gImg = inProcessImage.createGraphics();
 
-                        // filling image
-                        gImg.setColor(backColor);
-                        gImg.fillRect(0, 0, getWidth(), getHeight());
+                        initImage(gImg);
 
                         // this is the new image
                         // mapTransform will update the AffineTransform
@@ -340,6 +339,12 @@ public class MapControl extends JComponent implements ContainerListener {
                 }
             }
         }
+
+    private void initImage(Graphics gImg) {
+        // filling image
+        gImg.setColor(backColor);
+        gImg.fillRect(0, 0, getWidth(), getHeight());
+    }
 
 	/**
 	 * Returns the drawn image
@@ -378,7 +383,10 @@ public class MapControl extends JComponent implements ContainerListener {
         private ResultSetProviderFactory resultSetProviderFactory;
         private static final int FIRST_DELAY_DRAWING = 1500;
         private static final int DELAY_DRAWING = 300; // drawing delay in ms
+        // Start drawing intermediate image only after this percentage of progression
+        private static final int MINIMAL_PROGRESSION_DRAWING_INTERMEDIATE = 20;
         private ImageRenderer renderer;
+        private BufferedImage rendererImage;
         private long beginDrawing = 0;
 
         private Drawer(MapContext mapContext, AtomicBoolean awaitingDrawing, MapControl mapControl, ResultSetProviderFactory resultSetProviderFactory,AtomicBoolean intermediateDrawing) {
@@ -398,8 +406,10 @@ public class MapControl extends JComponent implements ContainerListener {
                 renderer = new ImageRenderer();
                 renderer.setRsProvider(resultSetProviderFactory);
                 updateViewTime.start();
+                rendererImage = mapControl.getMapTransform().getImage();
                 renderer.draw(mapControl.getMapTransform(), mapContext.getLayerModel(), this.getProgressMonitor());
                 LOGGER.info(I18N.tr("Rendering done in {0} seconds",(System.currentTimeMillis() - beginDrawing) / 1000.0 ));
+                mapControl.getMapTransform().setImage(rendererImage);
             } catch (Exception ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
             } finally {
@@ -417,12 +427,28 @@ public class MapControl extends JComponent implements ContainerListener {
          */
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            // If the user has been waiting for update since x ms.
+            // Conditions to clean rendering of last complete image and
             if(!isCancelled() && awaitingDrawing.get() && (intermediateDrawing.get() ||
-                    beginDrawing + FIRST_DELAY_DRAWING > System.currentTimeMillis())) {
+                    (beginDrawing + FIRST_DELAY_DRAWING > System.currentTimeMillis() &&
+                            MINIMAL_PROGRESSION_DRAWING_INTERMEDIATE < getProgress()))) {
+                BufferedImage intermediateImg;
+                if(!intermediateDrawing.get()) {
+                    // Swap mapcontrol image with an intermediate rendering image
+                    MapTransform mt = mapControl.getMapTransform();
+                    intermediateImg = new BufferedImage(mt.getWidth(), mt.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    mapControl.getMapTransform().setImage(intermediateImg);
+                } else {
+                    // Clear image
+                    intermediateImg = mapControl.getMapTransform().getImage();
+                    mapControl.initImage(intermediateImg.createGraphics());
+                }
                 intermediateDrawing.set(true);
-                BufferedImage im = mapControl.getMapTransform().getImage();
-                renderer.updateImage(im.createGraphics());
+                // Build a new image target for intermediate drawing.
+                Graphics2D sG2 = intermediateImg.createGraphics();
+                // Add old layers image
+                sG2.drawImage(rendererImage, null, null);
+                // Add last layer image
+                renderer.updateImage(sG2);
                 mapControl.repaint();
             }
         }
