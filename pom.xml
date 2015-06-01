@@ -86,7 +86,7 @@
                 <maven-scr-plugin-version>1.15.0</maven-scr-plugin-version>
                 <h2-version>1.4.186</h2-version>
                 <h2-package>com.h2database</h2-package>
-                <h2-gis-version>1.2.2-SNAPSHOT</h2-gis-version>
+                <h2-gis-version>1.2.3-SNAPSHOT</h2-gis-version>
                 <sl4j-version>1.6.0</sl4j-version>
                 <rsyntax-version>2.0.7</rsyntax-version>
                 <rsyntax-ls-version>r795</rsyntax-ls-version>

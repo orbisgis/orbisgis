@@ -43,15 +43,15 @@ import org.orbisgis.coremap.renderer.se.Symbolizer;
  */
 public class ImageRenderer extends Renderer {
 
-    private List<BufferedImage> imgSymbs = null;
-    private List<Symbolizer> symbols = null;
-    private List<Graphics2D> graphics = null;
+    private List<BufferedImage> imgSymbs = new ArrayList<>();
+    private List<Symbolizer> symbols = new ArrayList<>();
+    private List<Graphics2D> graphics = new ArrayList<>();
 
     @Override
     protected void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {
-        imgSymbs = new ArrayList<BufferedImage>();
+        imgSymbs = new ArrayList<>();
         symbols = symbs;
-        graphics = new ArrayList<Graphics2D>();
+        graphics = new ArrayList<>();
         /**
          * Create one buffered image for each Symbolizer present in the style. This way allows
          * to render all symbolizer in one pass without encountering layer level issues
@@ -74,15 +74,22 @@ public class ImageRenderer extends Renderer {
     protected void releaseGraphics2D(Graphics2D g2) {
     }
 
+    /**
+     * Apply drawn features of last layer to input graphic
+     */
+    public void updateImage(Graphics2D g2) {
+        for (BufferedImage img : new ArrayList<>(imgSymbs)) {
+            g2.drawImage(img, null, null);
+        }
+    }
+
     @Override
     protected void disposeLayer(Graphics2D g2) {
         for (Graphics2D get : graphics){
             get.dispose();
         }
         graphics.clear();
-        for (BufferedImage img : imgSymbs) {
-            g2.drawImage(img, null, null);
-        }
+        updateImage(g2);
     }
 
     @Override
