@@ -381,7 +381,7 @@ public class MapControl extends JComponent implements ContainerListener {
         private AtomicBoolean intermediateDrawing;
         private MapControl mapControl;
         private ResultSetProviderFactory resultSetProviderFactory;
-        private static final int FIRST_DELAY_DRAWING = 4000;
+        private static final int FIRST_DELAY_DRAWING = 2500;
         private static final int DELAY_DRAWING = 250; // drawing delay in ms
         private ImageRenderer renderer;
         private BufferedImage rendererImage;
