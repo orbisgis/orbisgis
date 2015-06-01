@@ -56,12 +56,15 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.JComponent;
 import javax.swing.SwingWorker;
+import javax.swing.Timer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
@@ -69,6 +72,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.nio.Buffer;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.concurrent.ExecutorService;
@@ -103,6 +107,8 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	private Color backColor = Color.white;
 
+    // True if mapTransform is a intermediateDrawing and should be drawn instead of adapting updatedMapTranform image
+    private AtomicBoolean intermediateDrawing = new AtomicBoolean(false);
 	private MapTransform mapTransform = new MapTransform();
 
 	private MapContext mapContext;
@@ -259,8 +265,13 @@ public class MapControl extends JComponent implements ContainerListener {
             // if it exists
             if(updatedMapTranform.getImage() != null && !mapTransform.getAdjustedExtent().isNull()){
                 if(status == UPDATED && !awaitingDrawing.get()) {
+                    // Render last finished drawing
                     g.drawImage(updatedMapTranform.getImage(), 0, 0, null);
+                } else if(intermediateDrawing.get()) {
+                    // Render intermediate drawing
+                    g.drawImage(mapTransform.getImage(), 0, 0, null);
                 } else {
+                    // Render adapted last finished drawing (first ms of redraw)
                     // If the image extent is not the same as the current map context extent then
                     // Compute the translation to apply to the updated image
                     Envelope targetExtent = mapTransform.getAdjustedExtent();
@@ -289,6 +300,7 @@ public class MapControl extends JComponent implements ContainerListener {
                 if(!awaitingDrawing.getAndSet(true)) {
                     try {
                         setStatus(UPDATED);
+                        intermediateDrawing.set(false);
                         // is never null, except at first loading with no layer
                         // in that case we do not draw anything
                         int width = this.getWidth();
@@ -310,7 +322,7 @@ public class MapControl extends JComponent implements ContainerListener {
                         mapTransform.setImage(inProcessImage);
 
                         // now we start the actual drawer
-                        drawer = new Drawer(mapContext, awaitingDrawing, this, resultSetProviderFactory);
+                        drawer = new Drawer(mapContext, awaitingDrawing, this, resultSetProviderFactory, intermediateDrawing);
                         execute(drawer);
                     } catch (Exception ex) {
                         awaitingDrawing.set(false);
@@ -354,38 +366,65 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	public void invalidateImage() {
 		setStatus(DIRTY);
+        intermediateDrawing.set(false);
 		repaint();
 	}
 
-	private static class Drawer extends SwingWorkerPM {
+	private static class Drawer extends SwingWorkerPM implements ActionListener {
         private MapContext mapContext;
         private AtomicBoolean awaitingDrawing;
+        private AtomicBoolean intermediateDrawing;
         private MapControl mapControl;
         private ResultSetProviderFactory resultSetProviderFactory;
+        private static final int FIRST_DELAY_DRAWING = 1500;
+        private static final int DELAY_DRAWING = 300; // drawing delay in ms
+        private ImageRenderer renderer;
+        private long beginDrawing = 0;
 
-        private Drawer(MapContext mapContext, AtomicBoolean awaitingDrawing, MapControl mapControl, ResultSetProviderFactory resultSetProviderFactory) {
+        private Drawer(MapContext mapContext, AtomicBoolean awaitingDrawing, MapControl mapControl, ResultSetProviderFactory resultSetProviderFactory,AtomicBoolean intermediateDrawing) {
             this.mapContext = mapContext;
             this.awaitingDrawing = awaitingDrawing;
             this.mapControl = mapControl;
             this.resultSetProviderFactory = resultSetProviderFactory;
+            this.intermediateDrawing = intermediateDrawing;
             setTaskName(I18N.tr("Drawing"));
         }
 
         @Override
         protected Object doInBackground() throws Exception {
+            Timer updateViewTime = new Timer(DELAY_DRAWING, this);
             try {
-                long begin = System.currentTimeMillis();
-                Renderer renderer = new ImageRenderer();
+                beginDrawing = System.currentTimeMillis();
+                renderer = new ImageRenderer();
                 renderer.setRsProvider(resultSetProviderFactory);
+                updateViewTime.start();
                 renderer.draw(mapControl.getMapTransform(), mapContext.getLayerModel(), this.getProgressMonitor());
-                LOGGER.info(I18N.tr("Rendering done in {0} seconds",(System.currentTimeMillis() - begin) / 1000.0 ));
+                LOGGER.info(I18N.tr("Rendering done in {0} seconds",(System.currentTimeMillis() - beginDrawing) / 1000.0 ));
             } catch (Exception ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
             } finally {
+                intermediateDrawing.set(false);
                 awaitingDrawing.set(false);
+                updateViewTime.stop();
                 mapControl.repaint();
             }
             return null;
+        }
+
+        /**
+         * Some delay while drawing.
+         * The user may want to see the progression of drawing after some waiting time.
+         */
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            // If the user has been waiting for update since x ms.
+            if(!isCancelled() && awaitingDrawing.get() && (intermediateDrawing.get() ||
+                    beginDrawing + FIRST_DELAY_DRAWING > System.currentTimeMillis())) {
+                intermediateDrawing.set(true);
+                BufferedImage im = mapControl.getMapTransform().getImage();
+                renderer.updateImage(im.createGraphics());
+                mapControl.repaint();
+            }
         }
     }
 
