@@ -381,10 +381,8 @@ public class MapControl extends JComponent implements ContainerListener {
         private AtomicBoolean intermediateDrawing;
         private MapControl mapControl;
         private ResultSetProviderFactory resultSetProviderFactory;
-        private static final int FIRST_DELAY_DRAWING = 1500;
-        private static final int DELAY_DRAWING = 300; // drawing delay in ms
-        // Start drawing intermediate image only after this percentage of progression
-        private static final int MINIMAL_PROGRESSION_DRAWING_INTERMEDIATE = 20;
+        private static final int FIRST_DELAY_DRAWING = 4000;
+        private static final int DELAY_DRAWING = 250; // drawing delay in ms
         private ImageRenderer renderer;
         private BufferedImage rendererImage;
         private long beginDrawing = 0;
@@ -408,11 +406,12 @@ public class MapControl extends JComponent implements ContainerListener {
                 updateViewTime.start();
                 rendererImage = mapControl.getMapTransform().getImage();
                 renderer.draw(mapControl.getMapTransform(), mapContext.getLayerModel(), this.getProgressMonitor());
-                LOGGER.info(I18N.tr("Rendering done in {0} seconds",(System.currentTimeMillis() - beginDrawing) / 1000.0 ));
-                mapControl.getMapTransform().setImage(rendererImage);
+                LOGGER.info(I18N.tr("Rendering done in {0} seconds", (System.currentTimeMillis() - beginDrawing) /
+                        1000.0));
             } catch (Exception ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
             } finally {
+                mapControl.getMapTransform().setImage(rendererImage);
                 intermediateDrawing.set(false);
                 awaitingDrawing.set(false);
                 updateViewTime.stop();
@@ -429,8 +428,7 @@ public class MapControl extends JComponent implements ContainerListener {
         public void actionPerformed(ActionEvent actionEvent) {
             // Conditions to clean rendering of last complete image and
             if(!isCancelled() && awaitingDrawing.get() && (intermediateDrawing.get() ||
-                    (beginDrawing + FIRST_DELAY_DRAWING > System.currentTimeMillis() &&
-                            MINIMAL_PROGRESSION_DRAWING_INTERMEDIATE < getProgress()))) {
+                    (beginDrawing + FIRST_DELAY_DRAWING < System.currentTimeMillis()))) {
                 BufferedImage intermediateImg;
                 if(!intermediateDrawing.get()) {
                     // Swap mapcontrol image with an intermediate rendering image

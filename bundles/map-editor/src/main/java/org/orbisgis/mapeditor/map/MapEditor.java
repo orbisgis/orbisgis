@@ -172,7 +172,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         }
     }
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    @Reference
     public void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
         mapControl.setExecutorService(executorService);
