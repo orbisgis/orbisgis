@@ -57,6 +57,16 @@ public abstract class SwingWorkerPM<T, V> extends SwingWorker<T, V> {
         setListeners();
     }
 
+    @Override
+    public String toString() {
+        String taskName = progressMonitor.getCurrentTaskName();
+        if(taskName == null || taskName.isEmpty()) {
+            return this.getClass().getSimpleName();
+        } else {
+            return taskName;
+        }
+    }
+
     public void setTaskName(String taskName) {
         progressMonitor.setTaskName(taskName);
     }
