@@ -114,10 +114,10 @@ public class DataSourceService implements DataSource {
                 properties.setProperty(DataSourceFactory.JDBC_PASSWORD, coreWorkspace.getDataBasePassword());
             }
             // Fetch requested Driver
-            String OSGI_DRIVER_NAME = URI_DRIVER_TO_OSGI_DRIVER.get(driverName);
-            DataSourceFactory dataSourceFactory = dataSourceFactories.get(OSGI_DRIVER_NAME);
+            String osgiDriverName = URI_DRIVER_TO_OSGI_DRIVER.get(driverName);
+            DataSourceFactory dataSourceFactory = dataSourceFactories.get(osgiDriverName);
             if(dataSourceFactory != null) {
-                if(H2_OSGI_DRIVER_NAME.equals(OSGI_DRIVER_NAME) && !properties.containsKey(DataSourceFactory.JDBC_SERVER_NAME)) {
+                if(H2_OSGI_DRIVER_NAME.equals(osgiDriverName) && !properties.containsKey(DataSourceFactory.JDBC_SERVER_NAME)) {
                     //;DATABASE_EVENT_LISTENER='org.orbisgis.h2triggers.H2DatabaseEventListener'
                     // For local H2 Database link immediately with a database listener
                     // as it will allow open a database event if some db objects cannot be initialised
