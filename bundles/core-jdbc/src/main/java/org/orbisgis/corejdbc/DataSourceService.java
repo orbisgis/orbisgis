@@ -67,8 +67,9 @@ public class DataSourceService implements DataSource {
     private static final Map<String,String> URI_DRIVER_TO_OSGI_DRIVER = new HashMap<>();
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceService.class);
     private static final I18n I18N = I18nFactory.getI18n(DataSourceService.class);
+    private static final String H2_OSGI_DRIVER_NAME = "h2 jdbc driver";
     static {
-        URI_DRIVER_TO_OSGI_DRIVER.put("h2","h2 jdbc driver");
+        URI_DRIVER_TO_OSGI_DRIVER.put("h2",H2_OSGI_DRIVER_NAME);
         URI_DRIVER_TO_OSGI_DRIVER.put("postgresql","postgresql");
     }
 
@@ -113,8 +114,16 @@ public class DataSourceService implements DataSource {
                 properties.setProperty(DataSourceFactory.JDBC_PASSWORD, coreWorkspace.getDataBasePassword());
             }
             // Fetch requested Driver
-            DataSourceFactory dataSourceFactory = dataSourceFactories.get(URI_DRIVER_TO_OSGI_DRIVER.get(driverName));
+            String osgiDriverName = URI_DRIVER_TO_OSGI_DRIVER.get(driverName);
+            DataSourceFactory dataSourceFactory = dataSourceFactories.get(osgiDriverName);
             if(dataSourceFactory != null) {
+                if(H2_OSGI_DRIVER_NAME.equals(osgiDriverName) && !properties.containsKey(DataSourceFactory.JDBC_SERVER_NAME)) {
+                    //;DATABASE_EVENT_LISTENER='org.orbisgis.h2triggers.H2DatabaseEventListener'
+                    // For local H2 Database link immediately with a database listener
+                    // as it will allow open a database event if some db objects cannot be initialised
+                    // see https://github.com/orbisgis/orbisgis/issues/793
+                    properties.put("DATABASE_EVENT_LISTENER","'org.orbisgis.h2triggers.H2DatabaseEventListener'");
+                }
                 dataSource = SFSUtilities.wrapSpatialDataSource(dataSourceFactory.createDataSource(properties));
                 // Init spatial
                 try(Connection connection = dataSource.getConnection();
