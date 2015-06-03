@@ -351,7 +351,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     }
                 } else {
                     // Fetch block pk of current row
-                    int targetBatch = (int) rowId / fetchSize;
+                    int targetBatch = (int) (rowId - 1) / fetchSize;
                     if (currentBatchId != targetBatch) {
                         Long firstPk = null;
                         if (targetBatch < rowFetchFirstPk.size()) {
@@ -360,7 +360,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                             if (!rowFetchFirstPk.isEmpty()) {
                                 firstPk = rowFetchFirstPk.get(rowFetchFirstPk.size() - 1);
                             }
-                            while (targetBatch < rowFetchFirstPk.size()) {
+                            while (targetBatch >= rowFetchFirstPk.size()) {
                                 firstPk = fetchBatch(firstPk, false);
                                 if (firstPk != null) {
                                     rowFetchFirstPk.add(firstPk);
@@ -374,7 +374,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         currentBatchId = targetBatch;
                     }
                     // Ok, still in current batch
-                    cache.put(rowId, currentBatch.get((int)rowId % fetchSize));
+                    cache.put(rowId, currentBatch.get((int)(rowId - 1) % fetchSize));
                 }
             }
         }
@@ -719,6 +719,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         lruMap.putAll(cache);
         cache = lruMap;
         rowFetchFirstPk.clear();
+        currentBatch.clear();
+        currentBatchId = -1;
     }
 
     @Override
@@ -767,6 +769,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             moveCursorTo(rowId);
             currentRow = null;
             cache.clear();
+            rowFetchFirstPk.clear();
+            currentBatch.clear();
+            currentBatchId = -1;
             if(res.getResultSet().getRow() > 0 && !res.getResultSet().isAfterLast()) {
                 res.getResultSet().refreshRow();
             }
