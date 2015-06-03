@@ -33,15 +33,14 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.editorjdbc.EditableSourceImpl;
-import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
 
 /**
  * Interface to be implemented by those EditableElements that need to be edited
@@ -84,24 +83,6 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
         @Override
         public SortedSet<Long> getSelection() {
             return Collections.unmodifiableSortedSet(selectedGeometries);
-        }
-
-        @Override
-        public void setSelectionTableRow(SortedSet<Integer> selection) throws EditableElementException {
-            SortedSet<Long> modelRows = new LongUnion();
-            for(int rowNum : selection) {
-                modelRows.add(getRowSet().getRowPK(rowNum));
-            }
-            setSelection(modelRows);
-        }
-
-        @Override
-        public SortedSet<Integer> getSelectionTableRow() throws EditableElementException {
-            SortedSet<Integer> modelRows = new IntegerUnion();
-            for (long value : selectedGeometries) {
-                modelRows.add(getRowSet().getRowId(value));
-            }
-            return modelRows;
         }
 
         @Override

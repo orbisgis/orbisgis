@@ -7,6 +7,7 @@ import javax.sql.rowset.JdbcRowSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -46,20 +47,6 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
     public String getPkName();
 
     /**
-     * @param primaryKeyRowValue The {@link #getPkName()} value of a row
-     * @return Corresponding {@link #getRow()} value or null if there is no such object in the table.
-     * @see #getRowPK(int)
-     */
-    public int getRowId(Object primaryKeyRowValue);
-
-    /**
-     * @param rowNumber Table row number [1-n]
-     * @return Cached row primary key
-     * @see #getRowId(Object)
-     */
-    public long getRowPK(int rowNumber);
-
-    /**
      * @return The read lock on this result set
      */
     Lock getReadLock();
@@ -80,4 +67,16 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
      * @return The number of rows return by using next() from beforeFirst()
      */
     long getFilteredRowCount() throws SQLException;
+
+    /**
+     * @return The numeric, simple primary key of the current row. Used to identify a row.
+     */
+    long getPk() throws SQLException;
+
+    /**
+     * Fetch row number using primary key values.
+     * @param pkSet Primary key set {@link #getPk()}
+     * @return Row identifier set {@link #getRow()}
+     */
+    SortedSet<Integer> getRowNumberFromRowPk(SortedSet<Long> pkSet) throws SQLException;
 }

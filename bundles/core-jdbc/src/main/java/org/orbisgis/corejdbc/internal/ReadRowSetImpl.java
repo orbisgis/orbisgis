@@ -77,11 +77,13 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -107,21 +109,24 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private boolean wasNull = true;
     /** Used to managed table without primary key (ResultSet are kept {@link ResultSetHolder#RESULT_SET_TIMEOUT} */
     protected final ResultSetHolder resultSetHolder;
-    /** If the table contains a unique non null index then this variable contain the map between the row id [1-n] to the primary key value */
-    private BidiMap<Integer, Long> rowPk;
+    /** If the table contains a unique non null index then this variable contain the batch first row PK value */
+    private List<Long> rowFetchFirstPk = new ArrayList<>();
     private String pk_name = "";
     private String select_fields = "*";
     private int firstGeometryIndex = -1;
     private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
     private final Lock readLock = rwl.writeLock(); // Read here is exclusive
     private int fetchSize = 15;
+    // Cache of requested rows
     private Map<Long, Object[]> cache = new LRUMap<>(fetchSize + 1);
+    // Cache of last queried batch
+    private long currentBatchId = -1;
+    private List<Object[]> currentBatch = new ArrayList<>();
     private int fetchDirection = FETCH_UNKNOWN;
     // When close is called, in how many ms the result set is really closed
     private int closeDelay = 0;
     private IntegerUnion rowFilter;
     private ListIterator<Integer> rowFilterIterator;
-    private String orderBy = "";
     private boolean isH2;
 
 
@@ -162,35 +167,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         return readLock;
     }
 
-    private void cachePrimaryKey(ProgressMonitor pm) throws SQLException {
-        ProgressMonitor cachePm = pm.startTask(getRowCount());
-        if(rowPk == null) {
-            rowPk = new DualHashBidiMap<>();
-        } else {
-            rowPk.clear();
-        }
-        try(Connection connection = dataSource.getConnection();
-            Statement st = connection.createStatement()) {
-            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
-            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
-            st.setFetchSize(fetchSize);
-            connection.setAutoCommit(false); // Use postgre cursor
-            try(ResultSet rs = st.executeQuery("SELECT "+pk_name+" FROM "+location+" "+ orderBy)) {
-                // Cache the primary key values
-                int pkRowId = 0;
-                while (rs.next()) {
-                    pkRowId++;
-                    rowPk.put(pkRowId, rs.getLong(1));
-                    cachePm.endTask();
-                }
-            } finally {
-                pm.removePropertyChangeListener(listener);
-            }
-        } catch (SQLException ex) {
-            throw new IllegalArgumentException(ex);
-        }
-    }
-
     private void setWasNull(boolean wasNull) {
         this.wasNull = wasNull;
     }
@@ -199,6 +175,40 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         if(columnIndex < 1 || columnIndex > cachedColumnCount) {
             throw new SQLException(new IndexOutOfBoundsException("Column index "+columnIndex+" out of bound[1-"+cachedColumnCount+"]"));
         }
+    }
+
+    @Override
+    public long getPk() throws SQLException {
+        return getLong(pk_name);
+    }
+
+    @Override
+    public SortedSet<Integer> getRowNumberFromRowPk(SortedSet<Long> pkSet) throws SQLException {
+        SortedSet<Integer> rowsNum = new IntegerUnion();
+        if(rowFetchFirstPk == null) {
+            for(long pk : pkSet) {
+                rowsNum.add((int)pk);
+            }
+        } else {
+            // Use first Pk value of batch in order to fetch only batch that contains a selected pk
+            Iterator<Long> fetchPkIt = pkSet.iterator();
+            ListIterator<Long> cacheFirstPk = rowFetchFirstPk.listIterator();
+            Long nextBatchFirstPk = null;
+            while (fetchPkIt.hasNext()) {
+                long fetchPk = fetchPkIt.next();
+                // Iterate through batch until fetchPk is found
+                while (cacheFirstPk.hasNext() && (nextBatchFirstPk == null || !(nextBatchFirstPk > fetchPk))) {
+                    long batchFirstPk = cacheFirstPk.next();
+                    if(batchFirstPk > fetchPk) {
+                        nextBatchFirstPk = batchFirstPk;
+                    } else if(!cacheFirstPk.hasNext() && getRowCount() / fetchSize > rowFetchFirstPk.size()) {
+                        // Fetch next batch
+                        refreshRowCache();
+                    }
+                }
+            }
+        }
+        return rowsNum;
     }
 
     /**
@@ -234,6 +244,75 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         currentRow = null;
     }
 
+
+    /**
+     * Fetch a batch that start with firstPk
+     * @param firstPk First row PK
+     * @param cacheData False to only feed rowFetchFirstPk
+     * @throws SQLException
+     * @return Pk of next batch
+     */
+    private Long fetchBatch(Long firstPk, boolean cacheData) throws SQLException {
+        if(cacheData) {
+            currentBatch.clear();
+        }
+        final int columnCount = getColumnCount();
+        StringBuilder command = new StringBuilder();
+        boolean ignoreFirstColumn = !cachedColumnNames.containsKey(pk_name);
+        command.append("SELECT ");
+        if (ignoreFirstColumn) {
+            command.append(pk_name);
+            if(cacheData) {
+                command.append(",");
+            }
+        }
+        if(cacheData) {
+            command.append(select_fields);
+        }
+        command.append(" FROM ");
+        command.append(getTable());
+        if(firstPk != null) {
+            command.append(" WHERE ");
+            command.append(pk_name);
+            command.append(" >= ?");
+        }
+        command.append(" LIMIT ");
+        command.append(fetchSize + 1);
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement st = connection.prepareStatement(command.toString())) {
+            if(!rowFetchFirstPk.isEmpty()) {
+                if (isH2 || !pk_name.equals(MetaData.POSTGRE_ROW_IDENTIFIER)) {
+                    st.setLong(1, rowFetchFirstPk.get(rowFetchFirstPk.size() - 1));
+                } else {
+                    Ref pkRef = new Tid(rowFetchFirstPk.get(rowFetchFirstPk.size() - 1));
+                    st.setRef(1, pkRef);
+                }
+            }
+            int rsRow = 1;
+            try(ResultSet rsBatch = st.executeQuery()) {
+                while (rsBatch.next()) {
+                    long currentRowPk = rsBatch.getLong(pk_name);
+                    if(firstPk!=null && (rsRow == 1 && currentRowPk != firstPk)) {
+                        throw new SQLException("Illegal rowset state row shift in rowset "+firstPk+"!="+currentRowPk);
+                    }
+                    if (cacheData) {
+                        int offset = ignoreFirstColumn ? 1 : 0;
+                        Object[] row = new Object[columnCount];
+                        for (int idColumn = 1 + offset; idColumn <= columnCount + offset; idColumn++) {
+                            row[idColumn - 1 - offset] = rsBatch.getObject(idColumn);
+                        }
+                        currentBatch.add(row);
+                    }
+                    if(rsRow == fetchSize + 1) {
+                        return currentRowPk;
+                    }
+                    rsRow++;
+                }
+                return null;
+            }
+        }
+    }
+
     /**
      * Read the content of the DB near the current row id
      */
@@ -246,7 +325,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     cacheColumnNames();
                 }
                 // Do not use pk if not available or if using indeterminate fetch without filtering
-                if(rowPk == null) {
+                if(pk_name.isEmpty()) {
                     boolean validRow = false;
                     if(rs.getType() == ResultSet.TYPE_FORWARD_ONLY) {
                         if(rowId < rs.getRow()) {
@@ -271,87 +350,31 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         cache.put(rowId, row);
                     }
                 } else {
-                    List<Long> pkValues = new ArrayList<>(fetchSize);
-                    pkValues.add(rowPk.get((int) rowId));
-                    // Fetch next QUERY_PK_FETCH_ROWS rows
-                    if(rowFilter == null) {
-                        int fetchedRows = 0;
-                        for(long fetchRowId = rowId + 1; fetchRowId <= getRowCount(); fetchRowId++) {
-                            if(fetchedRows++ < fetchSize) {
-                                Long key = rowPk.get((int)fetchRowId);
-                                if(key != null) {
-                                    pkValues.add(key);
-                                }
-                            } else {
-                                break;
-                            }
-                        }
-                    } else {
-                        int fetchedRows = 0;
-                        Iterator<Integer> it = rowFilter.listIterator((int)rowId);
-                        while(it.hasNext()) {
-                            if(fetchedRows++ < fetchSize) {
-                                pkValues.add(rowPk.get(it.next()));
-                            } else {
-                                break;
-                            }
-                        }
-                    }
-                    StringBuilder whereClause = new StringBuilder();
-                    if(!pkValues.isEmpty()) {
-                        if (whereClause.length() > 0) {
-                            whereClause.append(" OR ");
-                        }
-                        whereClause.append(pk_name);
-                        whereClause.append(" IN (");
-                        for(int paramId = 0; paramId < pkValues.size(); paramId++) {
-                            if(paramId > 0) {
-                                whereClause.append(",");
-                            }
-                            whereClause.append("?");
-                        }
-                        whereClause.append(")");
-                    }
-                    String command;
-                    // if command doesn't contain the key then add the key
-                    if(cachedColumnNames == null) {
-                        cacheColumnNames();
-                    }
-                    boolean ignoreFirstColumn = !cachedColumnNames.containsKey(pk_name);
-                    if(whereClause.length()>0) {
-                        if (ignoreFirstColumn) {
-                            command = "SELECT " + pk_name + "," + select_fields + " FROM " + getTable() + " WHERE " + whereClause.toString() + " " + orderBy;
+                    // Fetch block pk of current row
+                    int targetBatch = (int) rowId / fetchSize;
+                    if (currentBatchId != targetBatch) {
+                        Long firstPk = null;
+                        if (targetBatch < rowFetchFirstPk.size()) {
+                            firstPk = rowFetchFirstPk.get(targetBatch);
                         } else {
-                            command = "SELECT " + select_fields + " FROM " + getTable() + " WHERE " + whereClause.toString() + " " + orderBy;
+                            if (!rowFetchFirstPk.isEmpty()) {
+                                firstPk = rowFetchFirstPk.get(rowFetchFirstPk.size() - 1);
+                            }
+                            while (targetBatch < rowFetchFirstPk.size()) {
+                                firstPk = fetchBatch(firstPk, false);
+                                if (firstPk != null) {
+                                    rowFetchFirstPk.add(firstPk);
+                                } else {
+                                    break;
+                                }
+                            }
                         }
-                        // Acquire row values by using primary key
-                        try (Connection connection = dataSource.getConnection()) {
-                            connection.setAutoCommit(false);
-                             try(PreparedStatement st = connection.prepareStatement(command)) {
-                                 int parameterIndex = 1;
-                                 if(isH2 || !pk_name.equals(MetaData.POSTGRE_ROW_IDENTIFIER)) {
-                                     for (long pk : pkValues) {
-                                         st.setLong(parameterIndex++, pk);
-                                     }
-                                 } else {
-                                     for (long pk : pkValues) {
-                                         Ref pkRef = new Tid(pk);
-                                         st.setRef(parameterIndex++, pkRef);
-                                     }
-                                 }
-                                 try (ResultSet lineRs = st.executeQuery()) {
-                                     int offset = ignoreFirstColumn ? 1 : 0;
-                                     while (lineRs.next()) {
-                                         Object[] row = new Object[columnCount];
-                                         for (int idColumn = 1 + offset; idColumn <= columnCount + offset; idColumn++) {
-                                             row[idColumn - 1 - offset] = lineRs.getObject(idColumn);
-                                         }
-                                         cache.put(rowPk.getKey(lineRs.getLong(pk_name)).longValue(), row);
-                                     }
-                                 }
-                             }
-                        }
+                        // Fetch all data of current batch
+                        fetchBatch(firstPk, true);
+                        currentBatchId = targetBatch;
                     }
+                    // Ok, still in current batch
+                    cache.put(rowId, currentBatch.get((int)rowId % fetchSize));
                 }
             }
         }
@@ -383,7 +406,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public String getCommand() {
-        return String.format("SELECT "+select_fields+" FROM %s "+orderBy, location);
+        return String.format("SELECT "+select_fields+" FROM %s", location);
     }
 
     @Override
@@ -392,11 +415,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         final Pattern selectFieldPattern = Pattern.compile("^select(.+?)from", Pattern.CASE_INSENSITIVE);
         final Pattern commandPattern = Pattern.compile("from\\s+((([\"`][^\"`]+[\"`])|(\\w+))\\.){0,2}(([\"`][^\"`]+[\"`])|(\\w+))", Pattern.CASE_INSENSITIVE);
         final Pattern commandPatternTable = Pattern.compile("^from\\s+", Pattern.CASE_INSENSITIVE);
-        final Pattern orderByPattern = Pattern.compile("order\\sby\\s+(\\w+)$", Pattern.CASE_INSENSITIVE);
         String table = "";
         Matcher matcher = commandPattern.matcher(s);
         Matcher selectFieldMatcher = selectFieldPattern.matcher(s);
-        Matcher orderByMatcher = orderByPattern.matcher(s);
         if(selectFieldMatcher.find()) {
             select_fields = selectFieldMatcher.group(1);
         }
@@ -405,9 +426,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             if(tableMatcher.find()) {
                 table = matcher.group().substring(tableMatcher.group().length());
             }
-        }
-        if(orderByMatcher.find()) {
-            orderBy = orderByMatcher.group();
         }
         if(table.isEmpty()) {
             throw new SQLException("Command does not contain a table name, should be like this \"select * from tablename\"");
@@ -446,7 +464,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         }
         if(!pk_name.isEmpty()) {
-            cachePrimaryKey(pm);
             // Always use PK to fetch rows
             resultSetHolder.setCommand(getCommand() + " LIMIT 0");
         } else {
@@ -701,6 +718,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         LRUMap<Long, Object[]> lruMap = new LRUMap<>(fetchSize + 1);
         lruMap.putAll(cache);
         cache = lruMap;
+        rowFetchFirstPk.clear();
     }
 
     @Override
@@ -1524,24 +1542,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public String getPkName() {
         return pk_name;
-    }
-
-    @Override
-    public int getRowId(Object primaryKeyRowValue) {
-        if(!pk_name.isEmpty()) {
-            return rowPk.getKey(primaryKeyRowValue);
-        } else {
-            throw new IllegalStateException("The RowSet has not been initialised");
-        }
-    }
-
-    @Override
-    public long getRowPK(int rowNumber) {
-        if(!pk_name.isEmpty()) {
-            return rowPk.get(rowNumber);
-        } else {
-            return Integer.valueOf(rowNumber).longValue();
-        }
     }
 
     @Override

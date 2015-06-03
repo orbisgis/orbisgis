@@ -65,6 +65,7 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.MetaData;
+import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.common.IntegerUnion;
@@ -1262,4 +1263,5 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             return true;
         }
     }
+
 }

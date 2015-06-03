@@ -268,7 +268,7 @@ public class RowSetTest {
             TableLocation table = TableLocation.parse("TEST");
             try (ReadRowSetImpl rs = new ReadRowSetImpl(dataSource)) {
                 //rs.initialize(table, "id",new NullProgressMonitor());
-                rs.setCommand("SELECT * FROM TEST ORDER BY flt");
+                rs.setCommand("SELECT * FROM TEST");
                 rs.execute();
                 rs.setFilter(Arrays.asList(1, 3, 4));
                 rs.beforeFirst();
