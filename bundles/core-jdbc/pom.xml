@@ -124,6 +124,12 @@
             <version>${sl4j-version}</version>
         </dependency>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${sl4j-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>h2drivers</artifactId>
             <version>${h2-gis-version}</version>

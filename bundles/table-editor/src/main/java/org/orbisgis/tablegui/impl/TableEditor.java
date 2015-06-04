@@ -223,13 +223,13 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 if (!onUpdateEditableSelection.getAndSet(true)) {
                     // Convert primary key value into row number
                     try {
-                        SortedSet<Integer> modelRows = tableEditableElement.getSelectionTableRow();
+                        SortedSet<Integer> modelRows = tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement.getSelection());
                         setRowSelection(modelRows, -1);
                         if(!modelRows.isEmpty()) {
                             // Scroll to first selection
                             scrollToRow(modelRows.first() - 1);
                         }
-                    } catch (EditableElementException ex) {
+                    } catch (EditableElementException | SQLException ex) {
                         LOGGER.error(ex.getLocalizedMessage(), ex);
                     } finally {
                             onUpdateEditableSelection.set(false);
@@ -819,11 +819,12 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 tableScrollPane.setRowHeaderView(tableRowHeader);
                 //Apply the selection
                 try {
-                    setRowSelection(tableEditableElement.getSelectionTableRow(), -1);
+                    setRowSelection(tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement
+                            .getSelection()), -1);
                     if (!table.getSelectionModel().isSelectionEmpty()) {
                         scrollToRow(table.getSelectionModel().getMinSelectionIndex());
                     }
-                } catch (EditableElementException ex) {
+                } catch (EditableElementException |SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
                 table.getSelectionModel().addListSelectionListener(
@@ -961,7 +962,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
         private void updateEditableSelection() {
                 try {
-                    tableEditableElement.setSelectionTableRow(getTableModelSelection(1));
+                    tableEditableElement.setSelection(ReadTable.getRowPkFromRowNumber(tableEditableElement.getRowSet(), getTableModelSelection(1)));
                     // Update layer selection
                     if (mapContext != null) {
                         TableLocation editorTable = TableLocation.parse(tableEditableElement.getTableReference());
@@ -976,7 +977,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                             }
                         }
                     }
-                } catch (EditableElementException ex) {
+                } catch (EditableElementException | SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 } finally {
                         onUpdateEditableSelection.set(false);

@@ -49,6 +49,7 @@ import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -262,6 +263,27 @@ public class RowSetTest {
                 assertEquals(i+1, rs.getInt("ID"));
                 assertEquals(Math.sqrt(i+1), rs.getDouble(2), 1e-6);
             }
+        }
+    }
+
+    /**
+     * @throws SQLException
+     */
+    public void testRowNumExtraction() throws SQLException {
+
+        DataManager factory = new DataManagerImpl(dataSource);
+        ReadRowSet rs = factory.createReadRowSet();
+        try (Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer primary key, y float) as select X * 10 id from " +
+                    "SYSTEM_RANGE(1, 50)");
+            rs.setCommand("SELECT * FROM TEST");
+            rs.execute();
+            assertEquals(new TreeSet<>(Arrays.asList(1, 5, 10)), rs.getRowNumberFromRowPk(new TreeSet<>(Arrays.asList
+                    (10l, 50l, 100l))));
+            assertEquals(new TreeSet<>(Arrays.asList(1, 50)), rs.getRowNumberFromRowPk(new TreeSet<>(Arrays
+                    .asList(10l, 500l))));
         }
     }
 
