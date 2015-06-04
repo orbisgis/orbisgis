@@ -646,7 +646,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         LRUMap<Long, Object[]> lruMap = new LRUMap<>(fetchSize + 1);
         lruMap.putAll(cache);
         cache = lruMap;
-        rowFetchFirstPk.clear();
+        rowFetchFirstPk = new ArrayList<>(Arrays.asList(new Long[]{null}));
         currentBatch.clear();
         currentBatchId = -1;
     }
@@ -697,8 +697,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             moveCursorTo(rowId);
             currentRow = null;
             cache.clear();
-            rowFetchFirstPk.clear();
-            currentBatch.clear();
+            rowFetchFirstPk = new ArrayList<>(Arrays.asList(new Long[]{null}));
+            currentBatch = new ArrayList<>(fetchSize + 1);
             currentBatchId = -1;
             if(res.getResultSet().getRow() > 0 && !res.getResultSet().isAfterLast()) {
                 res.getResultSet().refreshRow();
