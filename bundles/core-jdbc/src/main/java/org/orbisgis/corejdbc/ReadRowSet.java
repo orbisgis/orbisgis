@@ -58,17 +58,6 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
     void setCloseDelay(int milliseconds);
 
     /**
-     * Filter row id in order to return only theses rows. Values returned by {@link #getRow()} are unchanged.
-     * @param rowIdSet Row number [1-n] to keep
-     */
-    void setFilter(Collection<Integer> rowIdSet);
-
-    /**
-     * @return The number of rows return by using next() from beforeFirst()
-     */
-    long getFilteredRowCount() throws SQLException;
-
-    /**
      * @return The numeric, simple primary key of the current row. Used to identify a row.
      */
     long getPk() throws SQLException;

@@ -76,8 +76,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -110,7 +109,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     /** Used to managed table without primary key (ResultSet are kept {@link ResultSetHolder#RESULT_SET_TIMEOUT} */
     protected final ResultSetHolder resultSetHolder;
     /** If the table contains a unique non null index then this variable contain the batch first row PK value */
-    private List<Long> rowFetchFirstPk = new ArrayList<>();
+    private List<Long> rowFetchFirstPk = new ArrayList<>(Arrays.asList(new Long[]{null}));
     private String pk_name = "";
     private String select_fields = "*";
     private int firstGeometryIndex = -1;
@@ -125,8 +124,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private int fetchDirection = FETCH_UNKNOWN;
     // When close is called, in how many ms the result set is really closed
     private int closeDelay = 0;
-    private IntegerUnion rowFilter;
-    private ListIterator<Integer> rowFilterIterator;
     private boolean isH2;
 
 
@@ -138,28 +135,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public ReadRowSetImpl(DataSource dataSource) {
         this.dataSource = dataSource;
         resultSetHolder = new ResultSetHolder(fetchSize, this);
-    }
-
-    @Override
-    public void setFilter(Collection<Integer> rowIdSet) {
-        if(rowIdSet != null) {
-            rowFilter = new IntegerUnion(rowIdSet);
-            rowFilterIterator = rowFilter.listIterator();
-            if(!rowFilter.isEmpty()) {
-                rowId = rowFilter.first() - 1;
-            } else {
-                rowId = 0;
-            }
-            currentRow = null;
-        } else {
-            rowFilter = null;
-            rowFilterIterator = null;
-        }
-    }
-
-    @Override
-    public long getFilteredRowCount() throws SQLException {
-        return rowFilter == null ? getRowCount() : rowFilter.size();
     }
 
     @Override
@@ -260,7 +235,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         StringBuilder command = new StringBuilder();
         boolean ignoreFirstColumn = !cachedColumnNames.containsKey(pk_name);
         command.append("SELECT ");
-        if (ignoreFirstColumn) {
+        if (ignoreFirstColumn || !cacheData) {
             command.append(pk_name);
             if(cacheData) {
                 command.append(",");
@@ -276,15 +251,19 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             command.append(pk_name);
             command.append(" >= ?");
         }
+        if (isH2 || !pk_name.equals(MetaData.POSTGRE_ROW_IDENTIFIER)) {
+            command.append(" ORDER BY ");
+            command.append(pk_name);
+        }
         command.append(" LIMIT ");
         command.append(fetchSize + 1);
         try(Connection connection = dataSource.getConnection();
             PreparedStatement st = connection.prepareStatement(command.toString())) {
-            if(!rowFetchFirstPk.isEmpty()) {
+            if(firstPk != null) {
                 if (isH2 || !pk_name.equals(MetaData.POSTGRE_ROW_IDENTIFIER)) {
-                    st.setLong(1, rowFetchFirstPk.get(rowFetchFirstPk.size() - 1));
+                    st.setLong(1, firstPk);
                 } else {
-                    Ref pkRef = new Tid(rowFetchFirstPk.get(rowFetchFirstPk.size() - 1));
+                    Ref pkRef = new Tid(firstPk);
                     st.setRef(1, pkRef);
                 }
             }
@@ -606,20 +585,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public boolean first() throws SQLException {
-        if(rowFilter == null || rowFilter.isEmpty()) {
-            return moveCursorTo(1);
-        } else {
-            return moveCursorTo(rowFilter.first());
-        }
+        return moveCursorTo(1);
     }
 
     @Override
     public boolean last() throws SQLException {
-        if(rowFilter == null || rowFilter.isEmpty()) {
-            return moveCursorTo((int)getRowCount());
-        } else {
-            return moveCursorTo(rowFilter.last());
-        }
+        return moveCursorTo((int)getRowCount());
     }
 
     @Override
@@ -635,52 +606,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private boolean moveCursorTo(long i) throws SQLException {
         i = Math.max(0, i);
         i = Math.min(getRowCount() + 1, i);
-        if(rowFilter != null && !rowFilter.isEmpty()) {
-            i = Math.max(rowFilter.first() - 1, i);
-            i = Math.min(rowFilter.last() + 1, i);
-        }
         long oldRowId = rowId;
-        if(rowFilterIterator != null) {
-            if(i < oldRowId) {
-                // back until expected rowid
-                while(rowId > i) {
-                    if(rowFilterIterator.hasPrevious()) {
-                        rowId = rowFilterIterator.previous();
-                    } else {
-                        if(!rowFilter.isEmpty()) {
-                            rowId = rowFilter.first();
-                        } else {
-                            rowId = 1;
-                        }
-                        if(rowId > i) {
-                            // Before first
-                            rowId--;
-                        }
-                        break;
-                    }
-                }
-            } else if(i > oldRowId) {
-                while(rowId < i) {
-                    if(rowFilterIterator.hasNext()) {
-                        rowId = rowFilterIterator.next();
-                    } else {
-                        if(!rowFilter.isEmpty()) {
-                            rowId = rowFilter.last() + 1;
-                        } else {
-                            rowId = getRowCount() + 1;
-                        }
-                        if(rowId < i) {
-                            // After last
-                            rowId++;
-                        }
-                        break;
-                    }
-                }
-            }
-        } else {
-            rowId = i;
-        }
-        boolean validRow = !(rowId == 0 || rowId > getRowCount() || (rowFilter != null && !rowFilter.isEmpty() && (rowId < rowFilter.first() || rowId > rowFilter.last())));
+        rowId = i;
+        boolean validRow = !(rowId == 0 || rowId > getRowCount());
         if(validRow) {
             refreshRowCache();
         } else {

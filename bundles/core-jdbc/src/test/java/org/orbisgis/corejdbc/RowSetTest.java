@@ -230,6 +230,40 @@ public class RowSetTest {
         }
     }
 
+    @Test
+    public void testBatch() throws SQLException {
+        RowSetFactory factory = new DataManagerImpl(dataSource);
+        JdbcRowSet rs = factory.createJdbcRowSet();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer primary key, y float) as select X, SQRT(X::float) SQ from SYSTEM_RANGE(1, 2000)");
+            rs.setCommand("SELECT * FROM TEST");
+            rs.execute();
+            // First Test forward access mode
+            for(int i =0; i < 2000; i++) {
+                assertTrue(rs.next());
+                assertEquals(i+1, rs.getInt("ID"));
+                assertEquals(Math.sqrt(i+1), rs.getDouble(2), 1e-6);
+            }
+            assertFalse(rs.next());
+            // Second test backward access mode
+            rs.afterLast();
+            for(int i = 1999; i >= 0; i--) {
+                assertTrue(rs.previous());
+                assertEquals(i+1, rs.getInt("ID"));
+                assertEquals(Math.sqrt(i+1), rs.getDouble(2), 1e-6);
+            }
+            assertFalse(rs.previous());
+            // Third test Random access mode
+            for(int i : Arrays.asList(50, 500, 800, 15, 1850)) {
+                assertTrue(rs.absolute(i + 1));
+                assertEquals(i+1, rs.getInt("ID"));
+                assertEquals(Math.sqrt(i+1), rs.getDouble(2), 1e-6);
+            }
+        }
+    }
 
     private static class UnitTestRowSetListener implements RowSetListener {
         private boolean cursorMoved = false;
@@ -256,64 +290,4 @@ public class RowSetTest {
         }
     }
 
-    @Test
-    public void testFilterRowSet() throws SQLException {
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement()) {
-            st.execute("drop table if exists test");
-            st.execute("create table test (id serial, str varchar(30), flt float)");
-            st.execute("insert into test values (42, 'marvin', 5), (666, 'satan', 6)," +
-                    " (43, 'bob', 7), (44, 'cop', 8)");
-            TableLocation table = TableLocation.parse("TEST");
-            try (ReadRowSetImpl rs = new ReadRowSetImpl(dataSource)) {
-                //rs.initialize(table, "id",new NullProgressMonitor());
-                rs.setCommand("SELECT * FROM TEST");
-                rs.execute();
-                rs.setFilter(Arrays.asList(1, 3, 4));
-                rs.beforeFirst();
-                assertTrue(rs.next());
-                assertEquals(42, rs.getInt(1));
-                assertEquals("marvin", rs.getString(2));
-                assertEquals(5, rs.getFloat(3), 1e-6);
-                assertTrue(rs.next());
-                assertTrue(rs.previous());
-                assertEquals(42, rs.getInt(1));
-                assertEquals("marvin", rs.getString(2));
-                assertEquals(5, rs.getFloat(3), 1e-6);
-                assertTrue(rs.next());
-                assertEquals(43, rs.getInt(1));
-                assertEquals("bob", rs.getString(2));
-                assertEquals(7, rs.getFloat(3), 1e-6);
-                assertTrue(rs.next());
-                assertEquals(44, rs.getInt(1));
-                assertEquals("cop", rs.getString(2));
-                assertEquals(8, rs.getFloat(3), 1e-6);
-                assertTrue(rs.first());
-                assertEquals(42, rs.getInt(1));
-                assertEquals("marvin", rs.getString(2));
-                assertEquals(5, rs.getFloat(3), 1e-6);
-                assertTrue(rs.absolute(4));
-                assertEquals(44, rs.getInt(1));
-                assertEquals("cop", rs.getString(2));
-                assertEquals(8, rs.getFloat(3), 1e-6);
-                assertTrue(rs.absolute(1));
-                assertEquals(42, rs.getInt(1));
-                assertEquals("marvin", rs.getString(2));
-                assertEquals(1, rs.getRow());
-                rs.setFilter(Arrays.asList(3));
-                rs.beforeFirst();
-                assertTrue(rs.next());
-                assertEquals(3, rs.getRow());
-                assertEquals(43, rs.getInt(1));
-                assertEquals("bob", rs.getString(2));
-                assertEquals(7, rs.getFloat(3), 1e-6);
-                rs.setFilter(new ArrayList<Integer>());
-                rs.beforeFirst();
-                assertFalse(rs.first());
-                assertFalse(rs.next());
-            }
-            st.execute("drop table if exists test");
-        }
-    }
 }
