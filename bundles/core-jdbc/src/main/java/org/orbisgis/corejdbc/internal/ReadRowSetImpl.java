@@ -226,10 +226,11 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
      * Fetch a batch that start with firstPk
      * @param firstPk First row PK
      * @param cacheData False to only feed rowFetchFirstPk
+     * @param queryOffset Offset pk fetching by this number of rows
      * @throws SQLException
      * @return Pk of next batch
      */
-    private Long fetchBatch(Long firstPk, boolean cacheData) throws SQLException {
+    private Long fetchBatch(Long firstPk, boolean cacheData, int queryOffset) throws SQLException {
         if(cacheData) {
             currentBatch.clear();
         }
@@ -261,8 +262,11 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         if(cacheData) {
             command.append(fetchSize + 1);
         } else {
-            command.append("1 OFFSET ");
-            command.append(fetchSize);
+            command.append("1");
+        }
+        if(queryOffset > 0) {
+            command.append(" OFFSET ");
+            command.append(queryOffset);
         }
         try(Connection connection = dataSource.getConnection();
             PreparedStatement st = connection.prepareStatement(command.toString())) {
@@ -334,27 +338,33 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     int targetBatch = (int) (rowId - 1) / fetchSize;
                     if (currentBatchId != targetBatch) {
                         Long firstPk = null;
-                        if (targetBatch < rowFetchFirstPk.size()) {
+                        if (targetBatch < rowFetchFirstPk.size() && (targetBatch == 0 || rowFetchFirstPk.get(targetBatch) != null)) {
                             firstPk = rowFetchFirstPk.get(targetBatch);
                         } else {
-                            if (!rowFetchFirstPk.isEmpty()) {
-                                firstPk = rowFetchFirstPk.get(rowFetchFirstPk.size() - 1);
+                            // Using limit and offset in query try to reduce query time
+                            // There is another batchs between target batch and the end of cached batch PK, add null intermediate pk for those.
+                            if(targetBatch > rowFetchFirstPk.size() + 1) {
+                                Long[] intermediateSkipped = new Long[targetBatch - rowFetchFirstPk.size()];
+                                Arrays.fill(intermediateSkipped, null);
+                                rowFetchFirstPk.addAll(Arrays.asList(intermediateSkipped));
                             }
-                            while (targetBatch >= rowFetchFirstPk.size()) {
-                                firstPk = fetchBatch(firstPk, false);
-                                if (firstPk != null) {
-                                    rowFetchFirstPk.add(firstPk);
-                                } else {
-                                    break;
-                                }
+                            int offsetFetchPk = 0;
+                            int lastNullBatchPK = targetBatch;
+                            while(firstPk == null && lastNullBatchPK > 0) {
+                                firstPk = rowFetchFirstPk.get(--lastNullBatchPK);
+                                offsetFetchPk++;
+                            }
+                            firstPk = fetchBatch(firstPk, false, offsetFetchPk * fetchSize);
+                            if (firstPk != null) {
+                                rowFetchFirstPk.add(firstPk);
                             }
                         }
                         // Fetch all data of current batch
-                        fetchBatch(firstPk, true);
-                        currentBatchId = targetBatch;
+                        fetchBatch(firstPk, true, 0);
+                            currentBatchId = targetBatch;
                     }
                     // Ok, still in current batch
-                    cache.put(rowId, currentBatch.get((int)(rowId - 1) % fetchSize));
+                    cache.put(rowId, currentBatch.get((int) (rowId - 1) % fetchSize));
                 }
             }
         }
@@ -581,7 +591,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public void afterLast() throws SQLException {
-        moveCursorTo((int)(getRowCount() + 1));
+        moveCursorTo((int) (getRowCount() + 1));
     }
 
     @Override

@@ -249,6 +249,7 @@ public class RowSetTest {
                 assertEquals(Math.sqrt(i+1), rs.getDouble(2), 1e-6);
             }
             assertFalse(rs.next());
+            rs.refreshRow();
             // Second test backward access mode
             rs.afterLast();
             for(int i = 1999; i >= 0; i--) {
@@ -257,6 +258,7 @@ public class RowSetTest {
                 assertEquals(Math.sqrt(i+1), rs.getDouble(2), 1e-6);
             }
             assertFalse(rs.previous());
+            rs.refreshRow();
             // Third test Random access mode
             for(int i : Arrays.asList(50, 500, 800, 15, 1850)) {
                 assertTrue(rs.absolute(i + 1));
