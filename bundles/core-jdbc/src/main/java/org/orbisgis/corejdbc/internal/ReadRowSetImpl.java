@@ -95,6 +95,8 @@ import java.util.regex.Pattern;
  */
 public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSource, SpatialResultSetMetaData, ReadRowSet {
     private static final int WAITING_FOR_RESULTSET = 5;
+    public static final int DEFAULT_FETCH_SIZE = 30;
+    public static final int DEFAULT_CACHE_SIZE = 100;
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadRowSetImpl.class);
     private static final I18n I18N = I18nFactory.getI18n(ReadRowSetImpl.class, Locale.getDefault(), I18nFactory.FALLBACK);
     private TableLocation location;
@@ -115,9 +117,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private int firstGeometryIndex = -1;
     private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
     private final Lock readLock = rwl.writeLock(); // Read here is exclusive
-    private int fetchSize = 15;
+    private int fetchSize = DEFAULT_FETCH_SIZE;
     // Cache of requested rows
-    private Map<Long, Object[]> cache = new LRUMap<>(fetchSize + 1);
+    private Map<Long, Object[]> cache = new LRUMap<>(DEFAULT_CACHE_SIZE);
     // Cache of last queried batch
     private long currentBatchId = -1;
     private List<Object[]> currentBatch = new ArrayList<>();
@@ -256,7 +258,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             command.append(pk_name);
         }
         command.append(" LIMIT ");
-        command.append(fetchSize + 1);
+        if(cacheData) {
+            command.append(fetchSize + 1);
+        } else {
+            command.append("1 OFFSET ");
+            command.append(fetchSize);
+        }
         try(Connection connection = dataSource.getConnection();
             PreparedStatement st = connection.prepareStatement(command.toString())) {
             if(firstPk != null) {
@@ -267,13 +274,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     st.setRef(1, pkRef);
                 }
             }
-            int rsRow = 1;
             try(ResultSet rsBatch = st.executeQuery()) {
                 while (rsBatch.next()) {
                     long currentRowPk = rsBatch.getLong(pk_name);
-                    if(firstPk!=null && (rsRow == 1 && currentRowPk != firstPk)) {
-                        throw new SQLException("Illegal rowset state row shift in rowset "+firstPk+"!="+currentRowPk);
-                    }
                     if (cacheData) {
                         int offset = ignoreFirstColumn ? 1 : 0;
                         Object[] row = new Object[columnCount];
@@ -281,11 +284,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                             row[idColumn - 1 - offset] = rsBatch.getObject(idColumn);
                         }
                         currentBatch.add(row);
-                    }
-                    if(rsRow == fetchSize + 1) {
+                    } else {
                         return currentRowPk;
                     }
-                    rsRow++;
                 }
                 return null;
             }
