@@ -29,6 +29,7 @@
 package org.orbisgis.progressgui;
 
 import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.sif.common.ContainerItemProperties;
 
 import java.beans.EventHandler;
@@ -41,7 +42,7 @@ import javax.swing.SwingWorker;
  * called, always call the method dispose() when this instance is no longer used
  */
 
-public class JobListItem extends ContainerItemProperties {
+public class JobListItem extends ContainerItem<SwingWorker> {
         private static final long serialVersionUID = 1L;
         private SwingWorker job;
         private PropertyChangeListener listener =
@@ -55,12 +56,12 @@ public class JobListItem extends ContainerItemProperties {
         }
                 
         public JobListItem(SwingWorker job) {
-                super(job.toString(), job.toString());
+                super(job, job.toString());
                 this.job = job;
         }
 
         public JobListItem(SwingWorkerPM job) {
-            super(job.toString(), job.getProgressMonitor().getCurrentTaskName());
+            super(job, job.getProgressMonitor().getCurrentTaskName());
             this.job = job;
         }
 
