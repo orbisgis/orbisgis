@@ -349,18 +349,19 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         if (targetBatch >= rowFetchFirstPk.size() || (targetBatch != 0 && rowFetchFirstPk.get(targetBatch) == null)) {
                             // For optimisation sake
                             // Like binary search if the gap of target batch is too wide, require average PK values
-                            final int batchCount = (int)(getRowCount() / fetchSize);
-                            int middleBatch = batchCount / 2;
+                            int topBatchCount = (int)(getRowCount() / fetchSize);
+                            int middleBatch = topBatchCount / 2;
                             while(targetBatch < middleBatch) {
+                                topBatchCount = middleBatch;
                                 middleBatch = middleBatch / 2;
                             }
                             fetchBatchPk(middleBatch);
                             int intermediateBatchFetching = 1;
-                            middleBatch = middleBatch + (batchCount - middleBatch) / 2;
+                            middleBatch = middleBatch + (topBatchCount - middleBatch) / 2;
                             while(targetBatch > middleBatch && intermediateBatchFetching < MAX_INTERMEDIATE_BATCH) {
                                 fetchBatchPk(middleBatch);
                                 intermediateBatchFetching++;
-                                middleBatch = middleBatch + (batchCount - middleBatch) / 2;
+                                middleBatch = middleBatch + (topBatchCount - middleBatch) / 2;
                             }
                             fetchBatchPk(targetBatch);
                         }
