@@ -234,10 +234,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
      */
     private Long fetchBatch(Long firstPk, boolean cacheData, int queryOffset) throws SQLException {
         if(cacheData) {
-            LOGGER.info("Fetch batch "+firstPk+" with data");
             currentBatch.clear();
-        } else {
-            LOGGER.info("Fetch batch "+firstPk+" without data ("+(queryOffset / fetchSize)+")");
         }
         final int columnCount = getColumnCount();
         StringBuilder command = new StringBuilder();
@@ -350,18 +347,21 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                             // For optimisation sake
                             // Like binary search if the gap of target batch is too wide, require average PK values
                             int topBatchCount = (int)(getRowCount() / fetchSize);
-                            int middleBatch = topBatchCount / 2;
-                            while(targetBatch < middleBatch) {
-                                topBatchCount = middleBatch;
-                                middleBatch = middleBatch / 2;
-                            }
-                            fetchBatchPk(middleBatch);
-                            int intermediateBatchFetching = 1;
-                            middleBatch = middleBatch + (topBatchCount - middleBatch) / 2;
-                            while(targetBatch > middleBatch && intermediateBatchFetching < MAX_INTERMEDIATE_BATCH) {
-                                fetchBatchPk(middleBatch);
-                                intermediateBatchFetching++;
-                                middleBatch = middleBatch + (topBatchCount - middleBatch) / 2;
+                            int lowerBatchCount = 0;
+                            int intermediateBatchFetching = 0;
+                            while(lowerBatchCount + ((topBatchCount - lowerBatchCount) / 2) != targetBatch &&
+                                    intermediateBatchFetching < MAX_INTERMEDIATE_BATCH) {
+                                int midleBatchTarget = lowerBatchCount + ((topBatchCount - lowerBatchCount) / 2);
+                                if(targetBatch < midleBatchTarget) {
+                                    topBatchCount = midleBatchTarget;
+                                } else {
+                                    if(midleBatchTarget >= rowFetchFirstPk.size() ||
+                                            rowFetchFirstPk.get(midleBatchTarget) == null) {
+                                        fetchBatchPk(midleBatchTarget);
+                                        intermediateBatchFetching++;
+                                    }
+                                    lowerBatchCount = midleBatchTarget;
+                                }
                             }
                             fetchBatchPk(targetBatch);
                         }
