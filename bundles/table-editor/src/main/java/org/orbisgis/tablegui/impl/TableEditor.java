@@ -108,6 +108,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class TableEditor extends JPanel implements EditorDockable, SourceTable,TableEditListener {
         protected final static I18n I18N = I18nFactory.getI18n(TableEditor.class);
         private static final Logger LOGGER = LoggerFactory.getLogger("gui." + TableEditor.class);
+        private static final int TABLE_SCROLL_PERC = 5;
         
         private static final long serialVersionUID = 1L;
         private TableEditableElement tableEditableElement;
@@ -153,10 +154,10 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 this.tableEditableElement = element;
                 dockingPanelParameters = new DockingPanelParameters();
                 dockingPanelParameters.setTitleIcon(TableEditorIcon.getIcon("table"));
-                dockingPanelParameters.setDefaultDockingLocation(
-                        new DockingLocation(DockingLocation.Location.STACKED_ON, "map_editor"));
+                dockingPanelParameters.setDefaultDockingLocation(new DockingLocation(DockingLocation.Location
+                        .STACKED_ON, "map_editor"));
                 tableScrollPane = new JScrollPane(makeTable());
-                add(tableScrollPane,BorderLayout.CENTER);
+                add(tableScrollPane, BorderLayout.CENTER);
                 updateTitle();
                 // Fetch MapContext
                 if (editorManager != null) {
@@ -843,6 +844,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 dockingPanelParameters.setDockActions(getDockActions());
                 initPopupActions();
                 tableModel.fireTableStructureChanged();
+                tableScrollPane.getVerticalScrollBar().setBlockIncrement((int)(table.getHeight() / (TABLE_SCROLL_PERC / 100.)));
         }
         private void initPopupActions() {
                 // TODO Edition

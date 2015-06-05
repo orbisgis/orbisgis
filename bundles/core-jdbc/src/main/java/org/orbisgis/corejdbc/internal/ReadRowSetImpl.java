@@ -97,6 +97,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private static final int WAITING_FOR_RESULTSET = 5;
     public static final int DEFAULT_FETCH_SIZE = 30;
     public static final int DEFAULT_CACHE_SIZE = 100;
+    // Like binary search, max intermediate batch fetching
+    private static final int MAX_INTERMEDIATE_BATCH = 5;
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadRowSetImpl.class);
     private static final I18n I18N = I18nFactory.getI18n(ReadRowSetImpl.class, Locale.getDefault(), I18nFactory.FALLBACK);
     private TableLocation location;
@@ -232,7 +234,10 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
      */
     private Long fetchBatch(Long firstPk, boolean cacheData, int queryOffset) throws SQLException {
         if(cacheData) {
+            LOGGER.info("Fetch batch "+firstPk+" with data");
             currentBatch.clear();
+        } else {
+            LOGGER.info("Fetch batch "+firstPk+" without data ("+(queryOffset / fetchSize)+")");
         }
         final int columnCount = getColumnCount();
         StringBuilder command = new StringBuilder();
@@ -278,6 +283,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     st.setRef(1, pkRef);
                 }
             }
+            int curRow = 1;
             try(ResultSet rsBatch = st.executeQuery()) {
                 while (rsBatch.next()) {
                     long currentRowPk = rsBatch.getLong(pk_name);
@@ -288,6 +294,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                             row[idColumn - 1 - offset] = rsBatch.getObject(idColumn);
                         }
                         currentBatch.add(row);
+                        if(curRow++ == fetchSize + 1) {
+                            return rsBatch.getLong(pk_name);
+                        }
                     } else {
                         return currentRowPk;
                     }
@@ -335,33 +344,36 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     }
                 } else {
                     // Fetch block pk of current row
-                    int targetBatch = (int) (rowId - 1) / fetchSize;
+                    final int targetBatch = (int) (rowId - 1) / fetchSize;
                     if (currentBatchId != targetBatch) {
-                        Long firstPk = null;
-                        if (targetBatch < rowFetchFirstPk.size() && (targetBatch == 0 || rowFetchFirstPk.get(targetBatch) != null)) {
-                            firstPk = rowFetchFirstPk.get(targetBatch);
-                        } else {
-                            // Using limit and offset in query try to reduce query time
-                            // There is another batchs between target batch and the end of cached batch PK, add null intermediate pk for those.
-                            if(targetBatch > rowFetchFirstPk.size() + 1) {
-                                Long[] intermediateSkipped = new Long[targetBatch - rowFetchFirstPk.size()];
-                                Arrays.fill(intermediateSkipped, null);
-                                rowFetchFirstPk.addAll(Arrays.asList(intermediateSkipped));
+                        if (targetBatch >= rowFetchFirstPk.size() || (targetBatch != 0 && rowFetchFirstPk.get(targetBatch) == null)) {
+                            // For optimisation sake
+                            // Like binary search if the gap of target batch is too wide, require average PK values
+                            final int batchCount = (int)(getRowCount() / fetchSize);
+                            int middleBatch = batchCount / 2;
+                            while(targetBatch < middleBatch) {
+                                middleBatch = middleBatch / 2;
                             }
-                            int offsetFetchPk = 0;
-                            int lastNullBatchPK = targetBatch;
-                            while(firstPk == null && lastNullBatchPK > 0) {
-                                firstPk = rowFetchFirstPk.get(--lastNullBatchPK);
-                                offsetFetchPk++;
+                            fetchBatchPk(middleBatch);
+                            int intermediateBatchFetching = 1;
+                            middleBatch = middleBatch + (batchCount - middleBatch) / 2;
+                            while(targetBatch > middleBatch && intermediateBatchFetching < MAX_INTERMEDIATE_BATCH) {
+                                fetchBatchPk(middleBatch);
+                                intermediateBatchFetching++;
+                                middleBatch = middleBatch + (batchCount - middleBatch) / 2;
                             }
-                            firstPk = fetchBatch(firstPk, false, offsetFetchPk * fetchSize);
-                            if (firstPk != null) {
+                            fetchBatchPk(targetBatch);
+                        }
+                        // Fetch all data of current batch
+                        Long firstPk = fetchBatch(rowFetchFirstPk.get(targetBatch), true, 0);
+                        if(firstPk!=null) {
+                            if(targetBatch + 1 < rowFetchFirstPk.size()) {
+                                rowFetchFirstPk.set(targetBatch + 1, firstPk);
+                            } else {
                                 rowFetchFirstPk.add(firstPk);
                             }
                         }
-                        // Fetch all data of current batch
-                        fetchBatch(firstPk, true, 0);
-                            currentBatchId = targetBatch;
+                        currentBatchId = targetBatch;
                     }
                     // Ok, still in current batch
                     cache.put(rowId, currentBatch.get((int) (rowId - 1) % fetchSize));
@@ -369,6 +381,35 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             }
         }
         currentRow = cache.get(rowId);
+    }
+
+    private void fetchBatchPk(int targetBatch) throws SQLException {
+        Long firstPk = null;
+        if (targetBatch >= rowFetchFirstPk.size() || (targetBatch != 0 && rowFetchFirstPk.get(targetBatch) == null)) {
+            // Using limit and offset in query try to reduce query time
+            // There is another batchs between target batch and the end of cached batch PK, add null intermediate pk for those.
+            if(targetBatch > rowFetchFirstPk.size()) {
+                Long[] intermediateSkipped = new Long[targetBatch - rowFetchFirstPk.size()];
+                Arrays.fill(intermediateSkipped, null);
+                rowFetchFirstPk.addAll(Arrays.asList(intermediateSkipped));
+            }
+            int lastNullBatchPK = targetBatch - 1;
+            while(firstPk == null && lastNullBatchPK > 0) {
+                firstPk = rowFetchFirstPk.get(lastNullBatchPK);
+                if(firstPk == null) {
+                    lastNullBatchPK--;
+                }
+            }
+            firstPk = fetchBatch(firstPk, false, (targetBatch - lastNullBatchPK) * fetchSize);
+            if(firstPk == null) {
+                throw new SQLException("Algo error");
+            }
+            if(targetBatch >= rowFetchFirstPk.size()) {
+                rowFetchFirstPk.add(firstPk);
+            } else {
+                rowFetchFirstPk.set(targetBatch, firstPk);
+            }
+        }
     }
 
     /**
