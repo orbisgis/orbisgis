@@ -282,7 +282,7 @@ public class RowSetTest {
                 Statement st = connection.createStatement()) {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer primary key, y float) as select X * 10 id, SQRT(X) y from " +
-                    "SYSTEM_RANGE(1, 50)");
+                    "SYSTEM_RANGE(1, 120)");
             rs.setCommand("SELECT * FROM TEST");
             rs.execute();
             assertEquals(new TreeSet<>(Arrays.asList(1, 5, 10)), rs.getRowNumberFromRowPk(new TreeSet<>(Arrays.asList

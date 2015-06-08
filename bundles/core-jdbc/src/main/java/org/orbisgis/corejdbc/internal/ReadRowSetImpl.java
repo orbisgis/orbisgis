@@ -78,6 +78,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -172,31 +173,25 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         } else {
             // Use first Pk value of batch in order to fetch only batch that contains a selected pk
             Iterator<Long> fetchPkIt = pkSet.iterator();
-            ListIterator<Long> cacheFirstPk = rowFetchFirstPk.listIterator();
-            Long nextBatchFirstPk = null;
             int batchIterId = -1;
             List<Long> batchPK = new ArrayList<>(fetchSize);
             while (fetchPkIt.hasNext()) {
                 Long fetchPk = fetchPkIt.next();
                 if(fetchPk != null) {
-                    // Iterate through batch until fetchPk is in the current batch
                     if(batchIterId == -1 || fetchPk > batchPK.get(batchPK.size() - 1)) {
                         batchPK.clear();
-                        while (cacheFirstPk.hasNext() && (nextBatchFirstPk == null || !(nextBatchFirstPk > fetchPk))) {
-                            Long batchFirstPk = cacheFirstPk.next();
+                        // Iterate through batch until next PK is superior than search pk.
+                        // For optimisation sake, a binary search could be faster than serial search
+                        Long nextPk;
+                        do  {
                             batchIterId++;
-                            if (batchFirstPk == null) {
-                                fetchBatchPk(batchIterId);
-                                batchFirstPk = rowFetchFirstPk.get(batchIterId);
-                            }
-                            if (batchFirstPk > fetchPk) {
-                                nextBatchFirstPk = batchFirstPk;
-                            } else if (!cacheFirstPk.hasNext() && getRowCount() / fetchSize > rowFetchFirstPk.size()) {
-                                // Fetch next batch
+                            if (batchIterId + 1 >= rowFetchFirstPk.size() || rowFetchFirstPk.get(batchIterId + 1) == null) {
                                 fetchBatchPk(batchIterId + 1);
                             }
-                        }
+                            nextPk = rowFetchFirstPk.get(batchIterId + 1);
+                        } while (batchIterId + 1 < getBatchCount() && nextPk < fetchPk);
                     }
+                    fetchBatchPk(batchIterId);
                     Long batchFirstPk = rowFetchFirstPk.get(batchIterId);
                     // We are in good batch
                     // Query only PK for this batch
@@ -218,7 +213,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         }
                     }
                     // Target batch is in memory, just find the target pk index in it
-                    rowsNum.add(batchIterId * fetchSize + batchPK.indexOf(fetchPk) + 1);
+                    rowsNum.add(batchIterId * fetchSize + Collections.binarySearch(batchPK, fetchPk) + 1);
                 }
             }
         }
