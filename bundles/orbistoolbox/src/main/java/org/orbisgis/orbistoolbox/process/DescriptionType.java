@@ -21,13 +21,12 @@ package org.orbisgis.orbistoolbox.process;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * Process descriptions as well as the associated process inputs and outputs.
  * Other descriptive information shall be recorded in the Metadata element.
- * <p/>
+ *
  * For more information : http://docs.opengeospatial.org/is/14-065/14-065.html#19
  *
  * @author Sylvain PALOMINOS
@@ -35,31 +34,16 @@ import java.util.List;
 
 public class DescriptionType {
 
-    /**
-     * Title of a process, input, and output. Normally available for display to a human.
-     */
-    private String
-            title;
-    /**
-     * Brief narrative description of a process, input, and output. Normally available for display to a human.
-     */
-    private String
-            abstrac;
-    /**
-     * Keywords that characterize a process, its inputs, and outputs.
-     */
-    private String
-            keywords;
-    /**
-     * Unambiguous identifier of a process, input, and output.
-     */
-    private URI
-            identifier;
-    /**
-     * Reference to additional metadata about this item.
-     */
-    private List<Metadata>
-            metadata;
+    /** Title of a process, input, and output. Normally available for display to a human. */
+    private String title;
+    /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
+    private String abstrac;
+    /** Keywords that characterize a process, its inputs, and outputs. */
+    private List<String> keywords;
+    /** Unambiguous identifier of a process, input, and output. */
+    private URI identifier;
+    /** Reference to additional metadata about this item. */
+    private List<Metadata> metadata;
 
     /**
      * Unique constructor providing the necessary attributes according to the WPS specification.
@@ -69,30 +53,20 @@ public class DescriptionType {
      * @param identifier Not null unambiguous identifier of a process, input, and output.
      * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
      */
-    public DescriptionType(String title,
-                           URI identifier)
-            throws
-            IllegalArgumentException {
+    public DescriptionType(String title, URI identifier) throws IllegalArgumentException{
         //Verify if the parameters are not null
-        if (title ==
-                null) {
+        if (title == null) {
             throw new IllegalArgumentException("The parameter \"title\" can not be null");
         }
-        if (identifier ==
-                null) {
+        if (identifier == null) {
             throw new IllegalArgumentException("The parameter \"identifier\" can not be null");
         }
         //Sets the attributes
-        this.title =
-                title;
-        this.abstrac =
-                null;
-        this.keywords =
-                null;
-        this.identifier =
-                identifier;
-        this.metadata =
-                null;
+        this.title = title;
+        this.abstrac = null;
+        this.keywords = null;
+        this.identifier = identifier;
+        this.metadata = null;
     }
 
     /**
@@ -110,17 +84,13 @@ public class DescriptionType {
      * @param title Not null title.
      * @throws IllegalArgumentException Exception thrown if the title is null.
      */
-    public void setTitle(String title)
-            throws
-            IllegalArgumentException {
+    public void setTitle(String title) throws IllegalArgumentException {
         //Verify if the parameters are not null
-        if (title ==
-                null) {
+        if (title == null) {
             throw new IllegalArgumentException("The parameter \"title\" can not be null");
         }
         //Sets the attribute
-        this.title =
-                title;
+        this.title = title;
     }
 
     /**
@@ -138,8 +108,7 @@ public class DescriptionType {
      * @param abstrac The new abstract.
      */
     public void setAbstrac(String abstrac) {
-        this.abstrac =
-                abstrac;
+        this.abstrac = abstrac;
     }
 
     /**
@@ -148,7 +117,7 @@ public class DescriptionType {
      * @return The list of keywords.
      */
     public List<String> getKeywords() {
-        return Arrays.asList(this.keywords.split(" "));
+        return keywords;
     }
 
     /**
@@ -157,18 +126,14 @@ public class DescriptionType {
      * @param keyword Keyword to add.
      */
     public void addKeyword(String keyword) {
-        if (keyword !=
-                null &&
-                !this.keywords.contains(keyword)) {
-            if (this.keywords ==
-                    null) {
-                this.keywords =
-                        keyword;
-            } else {
-                this.keywords +=
-                        " " +
-                                keyword;
-            }
+        if (keyword == null){
+            return;
+        }
+        if (this.keywords == null) {
+            this.keywords = new ArrayList<>();
+        }
+        if(!this.keywords.contains(keyword)) {
+            this.keywords.add(keyword);
         }
     }
 
@@ -178,6 +143,9 @@ public class DescriptionType {
      * @param keywords List of keywords to add.
      */
     public void addAllKeywords(List<String> keywords) {
+        if(keywords == null){
+            return;
+        }
         for (String s : keywords) {
             addKeyword(s);
         }
@@ -189,39 +157,12 @@ public class DescriptionType {
      * @param keyword Keyword to remove.
      */
     public void removeKeyword(String keyword) {
-        if (keyword ==
-                null) {
+        if (keyword == null || this.keywords == null) {
             return;
         }
-        int
-                keywordPosition =
-                this.keywords.indexOf(keyword);
-        if (keywordPosition !=
-                -1) {
-            int
-                    wordPosition;
-            int
-                    nextWordPosition;
-            if (keywordPosition ==
-                    0) {
-                wordPosition =
-                        0;
-                nextWordPosition =
-                        keyword.length() +
-                                1;
-            } else {
-                wordPosition =
-                        keywordPosition -
-                                1;
-                nextWordPosition =
-                        wordPosition +
-                                keyword.length() +
-                                1;
-            }
-            this.keywords =
-                    this.keywords.substring(0,
-                            wordPosition) +
-                            this.keywords.substring(nextWordPosition);
+        this.keywords.remove(keyword);
+        if(this.keywords.isEmpty()){
+            this.keywords = null;
         }
     }
 
@@ -231,6 +172,9 @@ public class DescriptionType {
      * @param keywords List of keywords to remove.
      */
     public void removeAllKeywords(List<String> keywords) {
+        if(keywords == null){
+            return;
+        }
         for (String s : keywords) {
             removeKeyword(s);
         }
@@ -242,15 +186,10 @@ public class DescriptionType {
      * @param keywords New list of keywords.
      */
     public void setKeywords(List<String> keywords) {
-        if (keywords ==
-                null ||
-                keywords.size() ==
-                        0) {
-            this.keywords =
-                    null;
+        if (keywords == null || keywords.size() == 0) {
+            return;
         }
-        this.keywords =
-                "";
+        this.keywords = null;
         for (String keyword : keywords) {
             addKeyword(keyword);
         }
@@ -271,16 +210,12 @@ public class DescriptionType {
      * @param identifier Not null identifier.
      * @throws IllegalArgumentException Exception thrown if the title is null.
      */
-    public void setIdentifier(URI identifier)
-            throws
-            IllegalArgumentException {
+    public void setIdentifier(URI identifier) throws IllegalArgumentException {
         //Verify if the parameters are not null
-        if (identifier ==
-                null) {
+        if (identifier == null) {
             throw new IllegalArgumentException("The parameter \"identifier\" can not be null");
         }
-        this.identifier =
-                identifier;
+        this.identifier = identifier;
     }
 
     /**
@@ -298,16 +233,14 @@ public class DescriptionType {
      * @param metadata Metadata to add.
      */
     public void addMetadata(Metadata metadata) {
-        if (metadata !=
-                null) {
-            if (this.metadata ==
-                    null) {
-                this.metadata =
-                        new ArrayList<>();
-            }
-            if (!this.metadata.contains(metadata)) {
-                this.metadata.add(metadata);
-            }
+        if (metadata == null) {
+            return;
+        }
+        if (this.metadata == null) {
+            this.metadata = new ArrayList<>();
+        }
+        if (!this.metadata.contains(metadata)) {
+            this.metadata.add(metadata);
         }
     }
 
@@ -317,6 +250,9 @@ public class DescriptionType {
      * @param metadatas List of metadata to add.
      */
     public void addAllMetadata(List<Metadata> metadatas) {
+        if(metadatas == null){
+            return;
+        }
         for (Metadata m : metadatas) {
             addMetadata(m);
         }
@@ -328,9 +264,12 @@ public class DescriptionType {
      * @param metadata Metadata to remove.
      */
     public void removeMetadata(Metadata metadata) {
-        if (this.metadata !=
-                null) {
-            this.metadata.remove(metadata);
+        if(metadata == null || this.metadata == null){
+            return;
+        }
+        this.metadata.remove(metadata);
+        if(this.metadata.isEmpty()){
+            this.metadata = null;
         }
     }
 
@@ -340,7 +279,12 @@ public class DescriptionType {
      * @param metadatas List of metadata to remove
      */
     public void removeAllMetadatas(List<Metadata> metadatas) {
-        this.metadata.removeAll(metadatas);
+        if(metadatas == null) {
+            return;
+        }
+        for(Metadata metadata : metadatas){
+            removeMetadata(metadata);
+        }
     }
 
     /**
@@ -349,7 +293,12 @@ public class DescriptionType {
      * @param metadata New metadata list.
      */
     public void setMetadata(List<Metadata> metadata) {
-        this.metadata =
-                metadata;
+        if (metadata == null || metadata.size() == 0) {
+            return;
+        }
+        this.metadata = null;
+        for (Metadata meta : metadata) {
+            addMetadata(meta);
+        }
     }
 }
