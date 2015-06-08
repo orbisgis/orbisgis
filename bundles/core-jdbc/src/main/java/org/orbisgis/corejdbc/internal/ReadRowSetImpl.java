@@ -50,7 +50,6 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.sql.DataSource;
 import javax.sql.rowset.JdbcRowSet;
 import javax.sql.rowset.RowSetWarning;
-import javax.swing.plaf.nimbus.State;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.io.InputStream;
