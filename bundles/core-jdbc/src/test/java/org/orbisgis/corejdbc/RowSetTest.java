@@ -273,6 +273,7 @@ public class RowSetTest {
     /**
      * @throws SQLException
      */
+    @Test
     public void testRowNumExtraction() throws SQLException {
 
         DataManager factory = new DataManagerImpl(dataSource);
@@ -280,7 +281,7 @@ public class RowSetTest {
         try (Connection connection = dataSource.getConnection();
                 Statement st = connection.createStatement()) {
             st.execute("drop table if exists test");
-            st.execute("create table test (id integer primary key, y float) as select X * 10 id from " +
+            st.execute("create table test (id integer primary key, y float) as select X * 10 id, SQRT(X) y from " +
                     "SYSTEM_RANGE(1, 50)");
             rs.setCommand("SELECT * FROM TEST");
             rs.execute();

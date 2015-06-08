@@ -188,7 +188,7 @@ public abstract class Renderer {
                             ProgressMonitor rowSetProgress;
                             // Read row count for progress monitor
                             if(rs instanceof ReadRowSet) {
-                                rowSetProgress = rulesProgress.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", ((ReadRowSet) rs).getFilteredRowCount());
+                                rowSetProgress = rulesProgress.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", ((ReadRowSet) rs).getRowCount());
                             } else {
                                 rowSetProgress = rulesProgress.startTask("Drawing " + layer.getName() + " (Rule " + r.getName() + ")", 1);
                             }
