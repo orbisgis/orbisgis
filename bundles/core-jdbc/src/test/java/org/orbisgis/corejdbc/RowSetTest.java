@@ -24,7 +24,9 @@
  */
 package org.orbisgis.corejdbc;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.h2gis.utilities.SFSUtilities;
@@ -289,6 +291,28 @@ public class RowSetTest {
                     (10l, 50l, 100l))));
             assertEquals(new TreeSet<>(Arrays.asList(1, 50)), rs.getRowNumberFromRowPk(new TreeSet<>(Arrays
                     .asList(10l, 500l))));
+        }
+    }
+
+    @Test
+    public void testRowSetWhere() throws SQLException {
+        DataManager factory = new DataManagerImpl(dataSource);
+        try (Connection connection = dataSource.getConnection();
+             Statement st = connection.createStatement()) {
+            st.execute("drop table if exists BV_SAP");
+            st.execute("CALL FILE_TABLE('" + RowSetTest.class.getResource("bv_sap.shp").getPath() + "', 'BV_SAP');");
+            ReadRowSet rs = factory.createReadRowSet();
+            Envelope env = new Envelope(new Coordinate(308614,2256839));
+            env.expandBy(1200);
+            GeometryFactory geometryFactory = new GeometryFactory();
+            rs.setCommand("SELECT * FROM BV_SAP WHERE THE_GEOM && ?");
+            rs.setObject(1, geometryFactory.toGeometry(env));
+            rs.execute();
+            assertTrue(rs.next());
+            assertEquals("Gohards", rs.getString("BV"));
+            assertTrue(rs.next());
+            assertEquals("Pin sec", rs.getString("BV"));
+            assertFalse(rs.next());
         }
     }
 
