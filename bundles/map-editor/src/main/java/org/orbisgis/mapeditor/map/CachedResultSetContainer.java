@@ -29,6 +29,9 @@
 package org.orbisgis.mapeditor.map;
 
 import com.vividsolutions.jts.geom.Envelope;
+
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +41,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.vividsolutions.jts.geom.GeometryFactory;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
@@ -81,16 +86,18 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
                 boolean isH2;
                 String integerPK; // Not system PK
                 String tableRef;
+                String geometryField;
                 try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {
                     isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
                     tableRef = TableLocation.parse(layer.getTableReference(), isH2).toString(isH2);
                     integerPK = MetaData.getPkName(connection, tableRef, true);
+                    geometryField = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableRef)).get(0);
                 }
                 if(!isH2) {
                     // Always use cursor with PostGIS
                     return defaultFactory.getResultSetProvider(layer, pm);
                 }
-                return new CachedResultSet(tableRef, integerPK, layer.getDataManager());
+                return new CachedResultSet(tableRef, integerPK, layer.getDataManager(), geometryField, isH2);
             } else {
                 throw new SQLException("Cannot draw until layer data source is not initialized");
             }
@@ -118,11 +125,17 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
         private String pkName;
         private ReadRowSet readRowSet;
         private DataManager dataManager;
+        private String geometryField;
+        private PropertyChangeListener cancelListener;
+        private boolean isH2;
 
-        public CachedResultSet(String tableReference, String pkName, DataManager dataManager) {
+        public CachedResultSet(String tableReference, String pkName, DataManager dataManager, String geometryField,
+                               boolean isH2) {
             this.tableReference = tableReference;
             this.pkName = pkName;
             this.dataManager = dataManager;
+            this.geometryField = geometryField;
+            this.isH2 = isH2;
         }
 
         @Override
@@ -136,7 +149,10 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
             readRowSet.setFetchSize(FETCH_SIZE);
             readRowSet.setCloseDelay(ROWSET_FREE_DELAY);
             readRowSet.setFetchDirection(ResultSet.FETCH_FORWARD);
-            //String.format("select " + pkName + ",* from %s where %s && ?", tableReference, pkName);
+            readRowSet.setCommand("select * from " + tableReference + " WHERE " +
+                    TableLocation.capsIdentifier(geometryField, isH2) + " && ?");
+            readRowSet.setObject(1, new GeometryFactory().toGeometry(extent));
+            cancelListener = EventHandler.create(PropertyChangeListener.class, readRowSet, "cancel");
             readRowSet.initialize(tableReference, pkName, pm);
             return readRowSet;
         }

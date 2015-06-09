@@ -557,6 +557,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public void execute(ProgressMonitor pm) throws SQLException {
         try(Connection connection = dataSource.getConnection()) {
             isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            // Cache Rowcount here
+            getRowCount(pm);
         }
         resultSetHolder.setParameters(parameters);
         if(!pk_name.isEmpty()) {
@@ -604,17 +606,26 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         closeDelay = milliseconds;
     }
 
-    public long getRowCount() throws SQLException {
+    public long getRowCount(ProgressMonitor pm) throws SQLException {
         if(cachedRowCount == -1) {
             try (Connection connection = getConnection();
-                 PreparedStatement st = createPreparedStatement(connection, "COUNT(*) CPT", "");
-                 ResultSet rs = st.executeQuery()) {
-                if (rs.next()) {
-                    cachedRowCount = rs.getLong(1);
+                 PreparedStatement st = createPreparedStatement(connection, "COUNT(*) CPT", "")) {
+                PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
+                pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
+                try(ResultSet rs = st.executeQuery()) {
+                    if (rs.next()) {
+                        cachedRowCount = rs.getLong(1);
+                    }
+                } finally {
+                    pm.removePropertyChangeListener(listener);
                 }
             }
         }
         return cachedRowCount;
+    }
+
+    public long getRowCount() throws SQLException {
+        return getRowCount(new NullProgressMonitor());
     }
 
     protected PreparedStatement createPreparedStatement(Connection connection, String fields, String additionalWhere) throws SQLException {
