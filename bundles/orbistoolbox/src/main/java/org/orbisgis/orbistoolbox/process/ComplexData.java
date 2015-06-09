@@ -25,48 +25,100 @@ import java.util.List;
 /**
  * The ComplexData type does not describe the particular structure for value encoding.
  * Instead, the passed values must comply with the given format and the extended information, if provided.
- * <p/>
+ *
  * For more information : http://docs.opengeospatial.org/is/14-065/14-065.html#22
  *
  * @author Sylvain PALOMINOS
  */
 
-public abstract class ComplexData
-        extends DataDescription {
-    /**
-     * Other descriptive elements
-     */
-    private List<Object>
-            anys;
+public abstract class ComplexData extends DataDescription {
 
-    public ComplexData() {
-        super();
-        anys =
-                new ArrayList<>();
+    /** Other descriptive elements giving more information about the data format. */
+    private List<Object> anys;
+
+    /**
+     * Constructor giving the default format.
+     * The Format can not be null and should be set as the default one.
+     * @param format Not null default format.
+     * @throws IllegalArgumentException Exception get on setting a format which is null or is not the default one.
+     */
+    protected ComplexData(Format format) {
+        super(format);
     }
 
-    protected List<Object> getAnys() {
+    /**
+     * Constructor giving a list of format.
+     * The Format list can not be null and only one of the format should be set as the default one.
+     * @param formatList Not null default format.
+     * @throws IllegalArgumentException Exception get on setting a format which is null or is not the default one.
+     */
+    protected ComplexData(List<Format> formatList) {
+        super(formatList);
+    }
+
+    /**
+     * Returns the list of the descriptive elements.
+     * @return The list of the descriptive elements.
+     */
+    public List<Object> getAnys() {
         return anys;
     }
 
+    /**
+     * Adds a descriptive elements.
+     * @param any A descriptive element.
+     */
     protected void addAny(Object any) {
-        this.anys.add(any);
+        if(any != null) {
+            this.anys.add(any);
+        }
     }
 
+    /**
+     * Adds a list of descriptive elements.
+     * @param anys List of descriptive elements.
+     */
     protected void addAllAny(List<Object> anys) {
-        this.anys.addAll(anys);
+        if(anys != null) {
+            while(anys.contains(null)){
+                anys.remove(null);
+            }
+            this.anys.addAll(anys);
+        }
     }
 
+    /**
+     * Removes a descriptive elements.
+     * @param any A descriptive element.
+     */
     protected void removeAny(Object any) {
         this.anys.remove(any);
     }
 
+    /**
+     * Removes a list of descriptive elements.
+     * @param anys List of descriptive elements.
+     */
     protected void removeAllAny(List<Object> anys) {
-        this.anys.removeAll(anys);
+        if(anys != null) {
+            this.anys.removeAll(anys);
+        }
     }
 
+    /**
+     * Sets the list of the descriptive elements.
+     * @param anys A list of the descriptive elements.
+     */
     protected void setAnys(List<Object> anys) {
-        this.anys =
-                anys;
+        if(anys != null) {
+            while(anys.contains(null)){
+                anys.remove(null);
+            }
+            this.anys = new ArrayList<>();
+            this.anys.addAll(anys);
+        }
+        else{
+            this.anys = null;
+        }
     }
 }
