@@ -19,37 +19,66 @@
 
 package org.orbisgis.orbistoolbox.process;
 
+import java.util.List;
+
 /**
- * RawData extends the ComplexData class and can contain any Object as data.
+ * RawData extends the ComplexData class.
+ * It can content any Object as data and the data class is stored as descriptive element.
  *
  * @author Sylvain PALOMINOS
  */
 
-public class RawData
-        extends ComplexData {
-    private Object
-            data;
+public class RawData extends ComplexData {
 
-    public RawData() {
-        super();
-        data =
-                null;
+    /** Data object. */
+    private Object data;
+
+    /**
+     * Constructor giving the default format.
+     * The Format can not be null and should be set as the default one.
+     * @param format Not null default format.
+     * @throws IllegalArgumentException Exception get on setting a format which is null or is not the default one.
+     */
+    public RawData(Format format) {
+        super(format);
+        data = null;
     }
 
+    /**
+     * Constructor giving a list of format.
+     * The Format list can not be null and only one of the format should be set as the default one.
+     * @param formatList Not null default format.
+     * @throws IllegalArgumentException Exception get on setting a format which is null or is not the default one.
+     */
+    public RawData(List<Format> formatList) {
+        super(formatList);
+        data = null;
+    }
+
+    /**
+     * Sets the data contained and store its class as a descriptive element.
+     * @param data Data to store.
+     */
     public void setData(Object data) {
-        this.data =
-                data;
+        this.data = data;
         this.setAnys(null);
-        this.addAny(data.getClass());
+        this.addAny(data.getClass().getCanonicalName());
     }
 
+    /**
+     * Returns the data.
+     * @return The data.
+     */
     public Object getData() {
         return data;
     }
 
+    /**
+     * Returns the data class.
+     * @return The data class.
+     */
     public Class getDataClass() {
-        if (data ==
-                null) {
+        if (data == null) {
             return null;
         }
         return (Class) getAnys().get(0);

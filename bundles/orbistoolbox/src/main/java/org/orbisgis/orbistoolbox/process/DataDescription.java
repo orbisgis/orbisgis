@@ -77,6 +77,9 @@ public abstract class DataDescription {
                 flag = true;
             }
         }
+        if(!flag){
+            throw new IllegalArgumentException("One format can be set as the default one");
+        }
 
         this.formats = new ArrayList<>();
 
@@ -122,7 +125,7 @@ public abstract class DataDescription {
             }
         }
         if (!this.formats.contains(format)) {
-            formats.add(format);
+            this.formats.add(format);
         }
     }
 
@@ -150,11 +153,11 @@ public abstract class DataDescription {
      * containing more than one default format.
      */
     protected void setFormats(List<Format> formatList) throws IllegalArgumentException {
-        if(formats == null || formats.isEmpty()) {
+        if(formatList == null || formatList.isEmpty()) {
             throw new IllegalArgumentException("The parameter \"format\" can not be null or empty");
         }
-        while(formats.contains(null)){
-            formats.remove(null);
+        while(formatList.contains(null)){
+            formatList.remove(null);
         }
         boolean hasDefault = false;
 
@@ -166,6 +169,11 @@ public abstract class DataDescription {
                 hasDefault = true;
             }
         }
+
+        if(!hasDefault){
+            throw new IllegalArgumentException("One format can be set as the default one");
+        }
+
         this.formats = formatList;
     }
 }
