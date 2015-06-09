@@ -45,7 +45,7 @@ public abstract class DataDescription {
      * @param format Not null default format.
      * @throws IllegalArgumentException Exception get on setting a format which is null or is not the default one.
      */
-    public DataDescription(Format format) {
+    public DataDescription(Format format) throws IllegalArgumentException {
         if(format == null){
             throw new IllegalArgumentException("The parameter \"format\" can not be null");
         }
@@ -59,28 +59,28 @@ public abstract class DataDescription {
     /**
      * Constructor giving a list of format.
      * The Format list can not be null and only one of the format should be set as the default one.
-     * @param formatList Not null default format.
+     * @param formatList Not null format list containing a default format.
      * @throws IllegalArgumentException Exception get on setting a format which is null or is not the default one.
      */
-    public DataDescription(List<Format> formatList) {
-        if(formatList == null || formatList.isEmpty()){
-            throw new IllegalArgumentException("The parameter \"formatList\" can not be null or empty");
+    public DataDescription(List<Format> formatList)  throws IllegalArgumentException {
+        if(formatList == null || formatList.isEmpty() || formatList.contains(null)){
+            throw new IllegalArgumentException("The parameter \"formatList\" can not be null or empty or " +
+                    "containing a null value");
         }
         boolean flag = false;
-        List<Format> temp = this.formats;
-        this.formats = new ArrayList<>();
+
         for(Format format : formatList) {
-            if(format == null){
-                this.formats = temp;
-                throw new IllegalArgumentException("A format can not be null");
-            }
             if(flag && format.isDefaultFormat()){
-                this.formats = temp;
                 throw new IllegalArgumentException("Only one format can be set as the default one");
             }
             if(format.isDefaultFormat()){
                 flag = true;
             }
+        }
+
+        this.formats = new ArrayList<>();
+
+        for(Format format : formatList) {
             this.formats.add(format);
         }
     }
@@ -95,16 +95,31 @@ public abstract class DataDescription {
     }
 
     /**
-     * Adds a format to the list if it is not already in.
+     * Adds a format to the list following conditions :
+     * - The format is not null
+     * - The format is not already in the list
+     * - Only one format is set as the default one
      *
      * @param format Format to add.
+     * @throws IllegalArgumentException Exception get on setting a format which is null or
+     * setting more than one default format.
      */
-    public void addFormat(Format format) {
+    protected void addFormat(Format format) throws IllegalArgumentException {
         if(format == null){
             throw new IllegalArgumentException("The parameter \"format\" can not be null");
         }
         if (this.formats == null) {
+            if(!format.isDefaultFormat()){
+                throw new IllegalArgumentException("The parameter \"format\" should be the default format");
+            }
             this.formats = new ArrayList<>();
+        }
+        if(format.isDefaultFormat()) {
+            for (Format f : formats) {
+                if (f.isDefaultFormat()) {
+                    throw new IllegalArgumentException("Only one format can be set as the default one");
+                }
+            }
         }
         if (!this.formats.contains(format)) {
             formats.add(format);
@@ -112,44 +127,45 @@ public abstract class DataDescription {
     }
 
     /**
-     * Adds a list of format. If a format was already added, does nothing.
-     *
-     * @param formats List of keywords to add.
-     */
-    public void addAllFormat(List<Format> formats) {
-        for (Format f : formats) {
-            addFormat(f);
-        }
-    }
-
-    /**
-     * Removes a format from the list except if it is the last one.
+     * Removes a format from the list except if it is the last one or the default one.
      *
      * @param format Format to remove.
+     * @throws IllegalArgumentException Exception get on removing the last format or the default one
      */
-    public void removeFormat(Format format) {
-        if (this.formats == null || (this.formats.size() == 1 && this.formats.contains(format))) {
-            this.formats.remove(format);
+    protected void removeFormat(Format format) throws IllegalArgumentException {
+        if (this.formats == null ||
+                (this.formats.size() == 1 && this.formats.contains(format)) ||
+                format.isDefaultFormat()) {
+            throw new IllegalArgumentException("Can not remove the last format or the default one");
         }
+        this.formats.remove(format);
     }
 
     /**
-     * Removes a list of format except if the last format
+     * Sets the list of format with the given argument.
+     * The argument can not be null or empty or containing two formats sets as default.
      *
-     * @param formats List of formats to remove.
+     * @param formatList New list of formats.
+     * @throws IllegalArgumentException Exception get on setting a list of format which is null or empty or
+     * containing more than one default format.
      */
-    public void removeAllFormat(List<Format> formats) {
-        for (Format f : formats) {
-            removeFormat(f);
+    protected void setFormats(List<Format> formatList) throws IllegalArgumentException {
+        if(formats == null || formats.isEmpty()) {
+            throw new IllegalArgumentException("The parameter \"format\" can not be null or empty");
         }
-    }
+        while(formats.contains(null)){
+            formats.remove(null);
+        }
+        boolean hasDefault = false;
 
-    /**
-     * Sets the list of format.
-     *
-     * @param formats New list of formats.
-     */
-    public void setFormats(List<Format> formats) {
-        this.formats = formats;
+        for(Format format : formatList) {
+            if(hasDefault && format.isDefaultFormat()){
+                throw new IllegalArgumentException("Only one format can be set as the default one");
+            }
+            if(format.isDefaultFormat()){
+                hasDefault = true;
+            }
+        }
+        this.formats = formatList;
     }
 }
