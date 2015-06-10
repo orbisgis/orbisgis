@@ -161,7 +161,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
         }
 
         @Override
-            public SpatialResultSet execute(ProgressMonitor pm, Envelope extent) throws SQLException {
+        public SpatialResultSet execute(ProgressMonitor pm, Envelope extent) throws SQLException {
             lock = readRowSet.getReadLock();
             try {
                 lock.tryLock(LOCK_TIMEOUT, TimeUnit.SECONDS);

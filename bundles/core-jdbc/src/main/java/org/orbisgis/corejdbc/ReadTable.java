@@ -37,6 +37,8 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.commons.progress.ProgressMonitor;
+import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.LongUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -53,6 +55,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
@@ -146,6 +149,15 @@ public class ReadTable {
             }
             return columnValues;
         }
+    }
+
+    public static SortedSet<Long> getRowPkFromRowNumber(ReadRowSet rowSet, SortedSet<Integer> rowNumber) throws SQLException {
+        SortedSet<Long> modelRows = new LongUnion();
+        for (int rowNum : rowNumber) {
+            rowSet.absolute(rowNum);
+            modelRows.add(rowSet.getPk());
+        }
+        return modelRows;
     }
 
     public static long getRowCount(Connection connection, String tableReference) throws SQLException {

@@ -32,6 +32,7 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactory;
@@ -57,6 +58,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * Table extended filter using SQL where request
@@ -109,7 +111,7 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
         return textAndButton;
     }
     private static class SQLFilter implements TableSelectionFilter {
-        private final Set<Integer> filteredRows = new IntegerUnion();
+        private Set<Integer> filteredRows;
         String whereText;
 
         public SQLFilter(String whereText) {
@@ -137,11 +139,13 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
                                 TableLocation.quoteIdentifier(tablePk),
                                 source.getTableReference(), whereText));
                         LOGGER.info(I18N.tr("Find field value with the following request:\n{0}",request.toString()));
+                        SortedSet<Long> selectionPk = new LongUnion();
                         try(ResultSet rs = st.executeQuery(request.toString())) {
                             while(rs.next()) {
-                                filteredRows.add(rowSet.getRowId(rs.getLong(1)) - 1);
+                                selectionPk.add(rs.getLong(1));
                             }
                         }
+                        filteredRows = rowSet.getRowNumberFromRowPk(selectionPk);
                     }
                 } finally {
                     progress.removePropertyChangeListener(cancelListener);

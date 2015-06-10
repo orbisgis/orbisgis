@@ -694,20 +694,16 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 Lock readLock = activeLayerRowSet.getReadLock();
                 try {
                     if(readLock.tryLock(TRY_LOCK_TIME, TimeUnit.MILLISECONDS)) {
-                        // Fetch row num using selected pk
-                        SortedSet<Integer> modelRows = new IntegerUnion();
-                        for (long value : selection) {
-                            modelRows.add(activeLayerRowSet.getRowId(value));
-                        }
-                        activeLayerRowSet.setFilter(modelRows);
                         activeLayerRowSet.beforeFirst();
                         while (activeLayerRowSet.next()){
-                            Primitive p;
-                            Geometry geometry = activeLayerRowSet.getGeometry();
-                            if (geometry != null) {
-                                p = new Primitive(geometry, activeLayerRowSet.getLong(activeLayerRowSet.getPkName()));
-                                Handler[] handlers = p.getHandlers();
-                                currentHandlers.addAll(Arrays.asList(handlers));
+                            if(selection.contains(activeLayerRowSet.getPk())) {
+                                Primitive p;
+                                Geometry geometry = activeLayerRowSet.getGeometry();
+                                if (geometry != null) {
+                                    p = new Primitive(geometry, activeLayerRowSet.getPk());
+                                    Handler[] handlers = p.getHandlers();
+                                    currentHandlers.addAll(Arrays.asList(handlers));
+                                }
                             }
                         }
                     }

@@ -65,6 +65,7 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.MetaData;
+import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.common.IntegerUnion;
@@ -107,6 +108,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class TableEditor extends JPanel implements EditorDockable, SourceTable,TableEditListener {
         protected final static I18n I18N = I18nFactory.getI18n(TableEditor.class);
         private static final Logger LOGGER = LoggerFactory.getLogger("gui." + TableEditor.class);
+        private static final int TABLE_SCROLL_PERC = 5;
         
         private static final long serialVersionUID = 1L;
         private TableEditableElement tableEditableElement;
@@ -152,10 +154,10 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 this.tableEditableElement = element;
                 dockingPanelParameters = new DockingPanelParameters();
                 dockingPanelParameters.setTitleIcon(TableEditorIcon.getIcon("table"));
-                dockingPanelParameters.setDefaultDockingLocation(
-                        new DockingLocation(DockingLocation.Location.STACKED_ON, "map_editor"));
+                dockingPanelParameters.setDefaultDockingLocation(new DockingLocation(DockingLocation.Location
+                        .STACKED_ON, "map_editor"));
                 tableScrollPane = new JScrollPane(makeTable());
-                add(tableScrollPane,BorderLayout.CENTER);
+                add(tableScrollPane, BorderLayout.CENTER);
                 updateTitle();
                 // Fetch MapContext
                 if (editorManager != null) {
@@ -222,13 +224,13 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 if (!onUpdateEditableSelection.getAndSet(true)) {
                     // Convert primary key value into row number
                     try {
-                        SortedSet<Integer> modelRows = tableEditableElement.getSelectionTableRow();
+                        SortedSet<Integer> modelRows = tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement.getSelection());
                         setRowSelection(modelRows, -1);
                         if(!modelRows.isEmpty()) {
                             // Scroll to first selection
                             scrollToRow(modelRows.first() - 1);
                         }
-                    } catch (EditableElementException ex) {
+                    } catch (EditableElementException | SQLException ex) {
                         LOGGER.error(ex.getLocalizedMessage(), ex);
                     } finally {
                             onUpdateEditableSelection.set(false);
@@ -818,11 +820,12 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 tableScrollPane.setRowHeaderView(tableRowHeader);
                 //Apply the selection
                 try {
-                    setRowSelection(tableEditableElement.getSelectionTableRow(), -1);
+                    setRowSelection(tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement
+                            .getSelection()), -1);
                     if (!table.getSelectionModel().isSelectionEmpty()) {
                         scrollToRow(table.getSelectionModel().getMinSelectionIndex());
                     }
-                } catch (EditableElementException ex) {
+                } catch (EditableElementException |SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
                 table.getSelectionModel().addListSelectionListener(
@@ -841,6 +844,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 dockingPanelParameters.setDockActions(getDockActions());
                 initPopupActions();
                 tableModel.fireTableStructureChanged();
+                tableScrollPane.getVerticalScrollBar().setBlockIncrement((int)(table.getHeight() / (TABLE_SCROLL_PERC / 100.)));
         }
         private void initPopupActions() {
                 // TODO Edition
@@ -960,7 +964,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
         private void updateEditableSelection() {
                 try {
-                    tableEditableElement.setSelectionTableRow(getTableModelSelection(1));
+                    tableEditableElement.setSelection(ReadTable.getRowPkFromRowNumber(tableEditableElement.getRowSet(), getTableModelSelection(1)));
                     // Update layer selection
                     if (mapContext != null) {
                         TableLocation editorTable = TableLocation.parse(tableEditableElement.getTableReference());
@@ -975,7 +979,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                             }
                         }
                     }
-                } catch (EditableElementException ex) {
+                } catch (EditableElementException | SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 } finally {
                         onUpdateEditableSelection.set(false);
@@ -1262,4 +1266,5 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             return true;
         }
     }
+
 }
