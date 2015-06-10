@@ -22,95 +22,129 @@ package org.orbisgis.orbistoolbox.process;
 import java.util.List;
 
 /**
+ * Bounding box data serves a variety of purposes in spatial data processing.
+ * Some simple applications are the definition of extents for a clipping operation or the definition of an analysis region.
+ * This specification inherits the bounding box specification from OWS Common.
+ *
+ * For more informations : docs.opengeospatial.org/is/14-065/14-065.html#28
+ *
  * @author Sylvain PALOMINOS
  */
 
-public class BoundingBoxData
-        extends DataDescription {
-    private List<SupportedCRS>
-            supportedCRSs;
-    private BoundingBox
-            boundingBox;
+public class BoundingBoxData extends DataDescription {
+    /** The supported CRS for BoundingBox data. */
+    private List<SupportedCRS> supportedCRSs;
+    /** Bounding box. */
+    private BoundingBox boundingBox;
 
-    public BoundingBoxData(List<Format> formatList,
-                           List<SupportedCRS> supportedCRSList)
-            throws
-            IllegalArgumentException {
-        super();
-        if (formatList ==
-                null) {
-            throw new IllegalArgumentException("The parameter \"formatList\" can not be null");
+    /**
+     * Constructor with the fewest argument needed.
+     * All the arguments can not be null.
+     * @param formatList List of formats supported.
+     * @param supportedCRSList List of CRS supported. It should contain only one default CRS.
+     * @param boundingBox BoundingBox.
+     * @throws IllegalArgumentException Exception get if an argument is null or
+     * if the list of supported CRS does not contain only one default CRS.
+     */
+    public BoundingBoxData(List<Format> formatList, List<SupportedCRS> supportedCRSList, BoundingBox boundingBox)
+            throws IllegalArgumentException {
+        super(formatList);
+        if (supportedCRSList == null || supportedCRSList.isEmpty() || supportedCRSList.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"supportedCRSList\" can not be null or empty or" +
+                    "containing a null value");
         }
-        if (supportedCRSList ==
-                null) {
-            throw new IllegalArgumentException("The parameter \"literalDataDomainList\" can not be null");
-        }
-        if (boundingBox ==
-                null) {
-            throw new IllegalArgumentException("The parameter \"value\" can not be null");
+        if (boundingBox == null) {
+            throw new IllegalArgumentException("The parameter \"boundingBox\" can not be null");
         }
 
-        if (formatList.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"formatList\" can not be null");
+        boolean hasDefault = false;
+        for(SupportedCRS crs : supportedCRSList) {
+            if (hasDefault && crs.isDefaultCRS()) {
+                throw new IllegalArgumentException("The parameter \"supportedCRSList\" can only contain one" +
+                        " default CRS");
+            }
+            if(crs.isDefaultCRS()){
+                hasDefault = true;
+            }
         }
-        if (supportedCRSList.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"literalDataDomainList\" can not be null");
+
+        if(!hasDefault){
+            throw new IllegalArgumentException("The parameter \"supportedCRSList\" should contain a default CRS");
         }
 
         this.setFormats(formatList);
         this.setSupportedCRSs(supportedCRSList);
-        this.boundingBox =
-                boundingBox;
+        this.boundingBox = boundingBox;
     }
 
+    /**
+     * Returns the list of supported CRS.
+     * @return List of supported CRS.
+     */
     public List<SupportedCRS> getSupportedCRS() {
         return supportedCRSs;
     }
 
-    public void addSupportedCRS(SupportedCRS supportedCRS) {
-        if (supportedCRSs !=
-                null) {
-            this.supportedCRSs.add(supportedCRS);
+    /**
+     * Adds a supported CRS.
+     * @param supportedCRS Not nul supported CRS.
+     * @throws IllegalArgumentException Exception get if the argument is null or if there is more than one default CRS.
+     */
+    public void addSupportedCRS(SupportedCRS supportedCRS) throws IllegalArgumentException{
+        if (supportedCRSs == null) {
+            throw new IllegalArgumentException("The parameter \"supportedCRS\" can not be null");
         }
+        if (supportedCRS.isDefaultCRS()) {
+            throw new IllegalArgumentException("Only one CRS can be the default one");
+        }
+        this.supportedCRSs.add(supportedCRS);
     }
 
-    public void addAllSupportedCRSs(List<SupportedCRS> literalDataDomains) {
-        for (SupportedCRS ldd : supportedCRSs) {
-            this.addSupportedCRS(ldd);
+    /**
+     * Removes a supported CRS.
+     * @param supportedCRS Not null CRS to remove. It can not be the last one or the default one.
+     * @throws IllegalArgumentException Exception get on trying to remove the default CRS or the last one.
+     */
+    public void removeSupportedCRS(SupportedCRS supportedCRS) throws IllegalArgumentException {
+        if(supportedCRS == null) {
+            return;
         }
-    }
-
-    public void removeSupportedCRS(SupportedCRS supportedCRS)
-            throws
-            IllegalArgumentException {
-        if (this.supportedCRSs.size() ==
-                1 &&
-                this.supportedCRSs.contains(supportedCRS)) {
+        if(supportedCRS.isDefaultCRS()){
+            throw new IllegalArgumentException("Can not remove the default CRS");
+        }
+        if (this.supportedCRSs.size() == 1 && this.supportedCRSs.contains(supportedCRS)) {
             throw new IllegalArgumentException("The attribute \"supportedCRSs\" can not be empty");
         }
         this.supportedCRSs.remove(supportedCRS);
     }
 
-    public void removeAllSupportedCRSs(List<SupportedCRS> supportedCRSs)
-            throws
-            IllegalArgumentException {
-        if (this.supportedCRSs.size() ==
-                supportedCRSs.size() &&
-                this.supportedCRSs.containsAll(supportedCRSs)) {
-            throw new IllegalArgumentException("The attribute \"supportedCRSs\" can not be empty");
+    /**
+     * Sets the list of supported CRS.
+     * @param supportedCRSs List of supported CRS.
+     * @throws IllegalArgumentException Exception get if an argument is null or empty or
+     * if the list of supported CRS does not contain only one default CRS.
+     */
+    public void setSupportedCRSs(List<SupportedCRS> supportedCRSs) throws IllegalArgumentException {
+        if (supportedCRSs == null || supportedCRSs.isEmpty() || supportedCRSs.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"supportedCRSs\" can not be null or empty or" +
+                    "containing a null value");
         }
-        this.supportedCRSs.removeAll(supportedCRSs);
-    }
 
-    public void setSupportedCRSs(List<SupportedCRS> supportedCRSs)
-            throws
-            IllegalArgumentException {
-        if (supportedCRSs ==
-                null ||
-                supportedCRSs.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"supportedCRSs\" can not be null or empty");
+        boolean hasDefault = false;
+        for(SupportedCRS crs : supportedCRSs) {
+            if (hasDefault && crs.isDefaultCRS()) {
+                throw new IllegalArgumentException("The parameter \"supportedCRSs\" can only contain one" +
+                        " default CRS");
+            }
+            if(crs.isDefaultCRS()){
+                hasDefault = true;
+            }
         }
-        this.supportedCRSs =
-                supportedCRSs;
+
+        if(!hasDefault){
+            throw new IllegalArgumentException("The parameter \"supportedCRSs\" should contain a default CRS");
+        }
+
+        this.supportedCRSs = supportedCRSs;
     }
 }
