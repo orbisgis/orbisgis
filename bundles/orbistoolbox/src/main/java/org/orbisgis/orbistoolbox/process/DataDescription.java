@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -108,6 +108,9 @@ public abstract class DataDescription {
      * setting more than one default format.
      */
     protected void addFormat(Format format) throws IllegalArgumentException {
+        if(this.formats.contains(format)){
+            return;
+        }
         if(format == null){
             throw new IllegalArgumentException("The parameter \"format\" can not be null");
         }
@@ -124,9 +127,7 @@ public abstract class DataDescription {
                 }
             }
         }
-        if (!this.formats.contains(format)) {
-            this.formats.add(format);
-        }
+        this.formats.add(format);
     }
 
     /**

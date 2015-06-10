@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -127,5 +127,78 @@ public class RawDataTest {
         list.add(f2);
 
         rawData.setFormats(list);
+    }
+
+
+    /**
+     * Tests if the addFormat() method with a null format list returns an IllegalArgumentException.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public final void nullAddFormatTest() throws MalformedURLException {
+        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+        f1.setDefaultFormat(true);
+
+        RawData rawData = new RawData(f1);
+
+        rawData.addFormat(null);
+    }
+
+    /**
+     * Tests if the addFormat() method with two default format returns an IllegalArgumentException.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public final void multipleDefaultAddFormatTest() throws MalformedURLException {
+        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+        f1.setDefaultFormat(true);
+        Format f2 = new Format("test", new URL("http://orbisgis.org"));
+        f2.setDefaultFormat(true);
+
+        RawData rawData = new RawData(f1);
+
+        rawData.addFormat(f2);
+    }
+
+    /**
+     * Tests if the addFormat() method with no default format returns an IllegalArgumentException.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public final void noDefaultAddFormatTest() throws MalformedURLException {
+        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+        f1.setDefaultFormat(false);
+
+        RawData rawData = new RawData(f1);
+        Format f2 = new Format("test", new URL("http://orbisgis.org"));
+        f2.setDefaultFormat(false);
+
+        rawData.addFormat(f2);
+    }
+
+    /**
+     * Tests if the removeFormat() method returns an IllegalArgumentException if the last format is removed.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public final void removeLastFormatTest() throws MalformedURLException {
+        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+        f1.setDefaultFormat(true);
+
+        RawData rawData = new RawData(f1);
+
+        rawData.removeFormat(f1);
+    }
+
+    /**
+     * Tests if the removeFormat() method returns an IllegalArgumentException if the default format is removed.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public final void removeDefaultFormatTest() throws MalformedURLException {
+        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+        f1.setDefaultFormat(true);
+        Format f2 = new Format("test", new URL("http://orbisgis.org"));
+        f2.setDefaultFormat(false);
+
+        RawData rawData = new RawData(f1);
+        rawData.addFormat(f2);
+
+        rawData.removeFormat(f1);
     }
 }
