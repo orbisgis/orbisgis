@@ -43,6 +43,7 @@ import javax.sql.RowSetListener;
 import javax.sql.rowset.JdbcRowSet;
 import javax.sql.rowset.RowSetFactory;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -341,4 +342,51 @@ public class RowSetTest {
         }
     }
 
+    /**
+     * Edition is not accepted on table without integer PK.
+     * @throws SQLException
+     */
+    @Test(expected = SQLException.class)
+    public void testRowSetEditionFail() throws SQLException {
+        RowSetFactory factory = new DataManagerImpl(dataSource);
+        JdbcRowSet rs = factory.createJdbcRowSet();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer, str varchar(30), flt float)");
+            st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
+            rs.setCommand("SELECT * FROM TEST");
+            rs.execute();
+            rs.absolute(1);
+            rs.updateDouble("flt", 15.);
+        }
+    }
+
+    public void testRowSetEdition() throws SQLException {
+        RowSetFactory factory = new DataManagerImpl(dataSource);
+        JdbcRowSet rs = factory.createJdbcRowSet();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer primary key, str varchar(30), flt float)");
+            st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
+            rs.setCommand("SELECT * FROM TEST");
+            rs.execute();
+            while(rs.next()) {
+                if(rs.getInt("id") == 42) {
+                    break;
+                }
+            }
+            rs.updateDouble("flt", 15.);
+            assertEquals(10.1010, rs.getDouble("flt"), 1e-6);
+            rs.updateRow();
+            assertEquals(15., rs.getDouble("flt"), 1e-6);
+            try(ResultSet rs2 = st.executeQuery("SELECT FLT FROM TEST WHERE ID = 42")) {
+                assertEquals(15., rs2.getDouble("flt"), 1e-6);
+            }
+        }
+
+    }
 }

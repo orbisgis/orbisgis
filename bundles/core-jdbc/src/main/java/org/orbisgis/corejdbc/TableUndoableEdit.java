@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 /**
  * A table edit that can be undone.
+ * The interface {@link javax.swing.undo.UndoableEdit} is not used because {@link javax.swing.undo.CannotUndoException} can not embed another exception.
  * @author Nicolas Fortin
  */
 public interface TableUndoableEdit {
