@@ -101,7 +101,7 @@ public class TablePanelLayout implements DockingPanelLayout {
                         mergedSelection = new LongUnion(selection);
                 }
                 if(mergedSelection.getValueRanges().size()>MAX_SELECTION_SERIALISATION_SIZE) {
-                        selectionOut.writeObject(new IntegerUnion());
+                        selectionOut.writeObject(new LongUnion());
                 } else {
                         selectionOut.writeObject(mergedSelection);
                 }
