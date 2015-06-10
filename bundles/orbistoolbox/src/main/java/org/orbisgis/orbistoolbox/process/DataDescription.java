@@ -177,4 +177,22 @@ public abstract class DataDescription {
 
         this.formats = formatList;
     }
+
+    /**
+     * Sets the given format as the default one.
+     * @param format Not null new default format.
+     * @throws IllegalArgumentException Exception get on setting a null or a not contained format as the default one.
+     */
+    protected void setDefaultFormat(Format format){
+        if(format == null){
+            throw new IllegalArgumentException("The parameter \"format\" can not be null;");
+        }
+        if(!this.formats.contains(format)) {
+            throw new IllegalArgumentException("The format list does not contain the given format");
+        }
+        for(Format f : formats){
+            f.setDefaultFormat(false);
+        }
+        format.setDefaultFormat(true);
+    }
 }

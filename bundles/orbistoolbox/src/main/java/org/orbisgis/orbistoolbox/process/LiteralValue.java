@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -22,85 +22,83 @@ package org.orbisgis.orbistoolbox.process;
 import java.net.URI;
 
 /**
+ * Value of a LiteralData
+ *
  * For more information : http://docs.opengeospatial.org/is/14-065/14-065.html#27
  *
  * @author Sylvain PALOMINOS
  */
 
 public class LiteralValue {
-    private String
-            value;
-    private DataType
-            dataType;
-    private URI
-            uom;
+    /** Value */
+    private Number value;
+    /** DataType of the value */
+    private DataType dataType;
+    /** URI to the unit of the value */
+    private URI uom;
 
-    public LiteralValue(String value)
-            throws
-            IllegalArgumentException {
-        if (value ==
-                null) {
+    /**
+     * Constructor giving the value represented.
+     * @param value Value represented. Can not be null.
+     * @throws IllegalArgumentException Exception get on setting a null value.
+     */
+    public LiteralValue(Number value) throws IllegalArgumentException {
+        if (value == null) {
             throw new IllegalArgumentException("The parameter \"value\" can not be null");
         }
-        this.value =
-                value;
-        this.dataType =
-                null;
-        this.uom =
-                null;
+        this.value = value;
+        this.dataType = null;
+        this.uom = null;
     }
 
-    public void setValue(String value)
-            throws
-            IllegalArgumentException {
-        if (value ==
-                null) {
+    /**
+     * Sets the value represented.
+     * @param value The new value represented. Can not be null.
+     * @throws IllegalArgumentException Exception get on setting a null value.
+     */
+    public void setValue(Number value) throws IllegalArgumentException {
+        if (value == null) {
             throw new IllegalArgumentException("The parameter \"value\" can not be null");
         }
-        this.value =
-                value;
+        this.value = value;
     }
 
-    public String getRawValue() {
+    /**
+     * Returns the value.
+     * @return The value.
+     */
+    public Number getValue() {
         return value;
     }
 
-    public Object getParsedValue() {
-        if (dataType ==
-                null) {
-            return value;
-        }
-        switch (dataType) {
-            case BOOLEAN:
-                return Boolean.parseBoolean(value);
-            case DECIMAL:
-                return Long.parseLong(value);
-            case DOUBLE:
-                return Double.parseDouble(value);
-            case FLOAT:
-                return Float.parseFloat(value);
-            case INTEGER:
-                return Integer.parseInt(value);
-            case STRING:
-                return value;
-        }
-        return value;
-    }
-
+    /**
+     * Sets the dataType of the value.
+     * @param dataType DataType of the value.
+     */
     public void setDataType(DataType dataType) {
-        this.dataType =
-                dataType;
+        this.dataType = dataType;
     }
 
+    /**
+     * Returns the DataType of the value.
+     * @return The DataType of the value.
+     */
     public DataType getDataType() {
         return dataType;
     }
 
+    /**
+     * Sets the unit of the value.
+     * @param uom The unit or the value.
+     */
     public void setUom(URI uom) {
-        this.uom =
-                uom;
+        this.uom = uom;
     }
 
+    /**
+     * Returns the unit of the value.
+     * @return The unit of the value.
+     */
     public URI getUom() {
         return uom;
     }

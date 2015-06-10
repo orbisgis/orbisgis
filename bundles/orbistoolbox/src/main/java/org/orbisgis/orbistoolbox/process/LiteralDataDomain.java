@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -23,134 +23,144 @@ import java.net.URI;
 
 /**
  * The valid domain for literal data.
- * <p/>
+ *
  * For more informations : http://docs.opengeospatial.org/is/14-065/14-065.html#26
  *
  * @author Sylvain PALOMINOS
  */
 
 public class LiteralDataDomain {
+    /** Identifies a valid format for an input or output. */
+    private PossibleLiteralValuesChoice plvc;
+    /** Reference to the data type of this set of values. */
+    private DataType dataType;
+    /** Indicates that this quantity has units and provides the unit of measurement. */
+    private URI uom;
+    /** Default value for this quantity. */
+    private Values defaultValue;
+    /** Indicates that this is the default/native domain. */
+    private boolean defaultDomain;
 
-    private PossibleLiteralValuesChoice
-            plvc;
-    private DataType
-            dataType;
-    private URI
-            uom;
-    private Values
-            defaultValue;
-    private boolean
-            defaultDomain;
-
-    public LiteralDataDomain(PossibleLiteralValuesChoice plvc,
-                             DataType dataType)
-            throws
-            IllegalArgumentException {
+    /**
+     * Constructor giving the fewest argument needed for the instantiation.
+     * All the arguments can not be null.
+     * @param plvc Identifies a valid format for an input or output.
+     * @param dataType Reference to the data type of this set of values.
+     * @param defaultValue Default value for this quantity.
+     * @throws IllegalArgumentException Exception get on giving a null argument.
+     */
+    public LiteralDataDomain(PossibleLiteralValuesChoice plvc, DataType dataType, Values defaultValue)
+            throws IllegalArgumentException {
         //Verify if the parameters are not null
-        if (plvc ==
-                null) {
+        if (plvc == null) {
             throw new IllegalArgumentException("The parameter \"plvc\" can not be null");
         }
-        if (dataType ==
-                null) {
+        if (dataType == null) {
             throw new IllegalArgumentException("The parameter \"dataType\" can not be null");
         }
-        this.plvc =
-                plvc;
-        this.dataType =
-                dataType;
-        this.uom =
-                null;
-        this.defaultValue =
-                null;
-        this.defaultDomain =
-                false;
+        if (defaultValue == null) {
+            throw new IllegalArgumentException("The parameter \"defaultValue\" can not be null");
+        }
+        this.plvc = plvc;
+        this.dataType = dataType;
+        this.uom = null;
+        this.defaultValue = defaultValue;
+        this.defaultDomain = false;
     }
 
+    /**
+     * Sets the PossibleLiteralValuesChoice.
+     * @param plvc Not null PossibleLiteralValuesChoice.
+     * @throws IllegalArgumentException Exception get on giving a null argument.
+     */
     public void setPossibleLiteralValuesChoice(PossibleLiteralValuesChoice plvc)
-            throws
-            IllegalArgumentException {
+            throws IllegalArgumentException {
         //Verify if the parameters are not null
-        if (plvc ==
-                null) {
+        if (plvc == null) {
             throw new IllegalArgumentException("The parameter \"plvc\" can not be null");
         }
-        this.plvc =
-                plvc;
+        this.plvc = plvc;
     }
 
+    /**
+     * Returns the PossibleLiteralValuesChoice.
+     * @return The PossibleLiteralValuesChoice.
+     */
     public PossibleLiteralValuesChoice getPossibleLiteralValuesChoice() {
         return plvc;
     }
 
-    public void setDataType(DataType dataType)
-            throws
-            IllegalArgumentException {
+    /**
+     * Sets the data type.
+     * @param dataType Not null DataType.
+     * @throws IllegalArgumentException Exception get on giving a null argument.
+     */
+    public void setDataType(DataType dataType) throws IllegalArgumentException {
         //Verify if the parameters are not null
-        if (dataType ==
-                null) {
+        if (dataType == null) {
             throw new IllegalArgumentException("The parameter \"dataType\" can not be null");
         }
-        this.dataType =
-                dataType;
+        this.dataType = dataType;
     }
 
+    /**
+     * Returns the data type.
+     * @return The data type.
+     */
     public DataType getDataType() {
         return dataType;
     }
 
+    /**
+     * Sets the URI to the unit of this quantity.
+     * If it is set to null it means that the quantity has no unit.
+     * @param uom Unit of the quantity.
+     */
     public void setUom(URI uom) {
-        this.uom =
-                uom;
+        this.uom = uom;
     }
 
+    /**
+     * Returns the URI of the unit of this quantity.
+     * If it return null it means that the quantity has no unit.
+     * @return The unit of this quantity.
+     */
     public URI getUom() {
         return this.uom;
     }
 
-    public void setDefaultDomain(boolean defaultDomain)
-            throws
-            IllegalArgumentException {
-        if (defaultDomain &&
-                this.defaultValue ==
-                        null) {
-            throw new IllegalArgumentException("The parameter \"defaultDomain\" can not be true if no defaultValue was specified");
-        }
-        this.defaultDomain =
-                defaultDomain;
+    /**
+     * Indicates if this domain is the default one or not.
+     * @param defaultDomain True if it is the default domain, false otherwise.
+     */
+    public void setDefaultDomain(boolean defaultDomain) throws IllegalArgumentException {
+        this.defaultDomain = defaultDomain;
     }
 
-    public void setDefaultDomain(boolean defaultDomain,
-                                 Values defaultValue)
-            throws
-            IllegalArgumentException {
-        if (defaultDomain &&
-                defaultValue ==
-                        null) {
-            throw new IllegalArgumentException("The parameter \"defaultDomain\" can not be true if \"defaultValue\" is null");
-        }
-        this.defaultDomain =
-                defaultDomain;
-        this.defaultValue =
-                defaultValue;
-    }
-
+    /**
+     * Returns if this domain is the default one.
+     * @return True if it is the default domain, false otherwise.
+     */
     public boolean isDefaultDomain() {
         return this.defaultDomain;
     }
 
-    public void setDefaultValue(Values defaultValue)
-            throws
-            IllegalArgumentException {
-        if (defaultDomain &&
-                defaultValue ==
-                        null) {
+    /**
+     * Sets the default value.
+     * @param defaultValue Not null default value.
+     * @throws IllegalArgumentException Exception get on setting a null default value.
+     */
+    public void setDefaultValue(Values defaultValue) throws IllegalArgumentException {
+        if (defaultDomain && defaultValue == null) {
             throw new IllegalArgumentException("The parameter \"defaultValue\" can not be null if \"defaultDomain\" is true");
         }
-        this.defaultValue =
-                defaultValue;
+        this.defaultValue = defaultValue;
     }
 
+    /**
+     * Returns the default value.
+     * @return The default value.
+     */
     public Values getDefaultValue() {
         return this.defaultValue;
     }

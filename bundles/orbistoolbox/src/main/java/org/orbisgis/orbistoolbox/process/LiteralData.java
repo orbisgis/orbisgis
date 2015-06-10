@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -25,99 +25,136 @@ import java.util.List;
  * The LiteralData type encodes atomic data such as scalars, linear units, or well-known names.
  * Domains for LiteralData are a combination of data types (e.g. Double, Integer, String),
  * a given value range, and an associated unit (e.g. meters, degrees Celsius).
- * <p/>
+ *
  * For more informations : http://docs.opengeospatial.org/is/14-065/14-065.html#25
  *
  * @author Sylvain PALOMINOS
  */
 
-public class LiteralData
-        extends DataDescription {
-    private List<LiteralDataDomain>
-            literalDataDomains;
-    private LiteralValue
-            value;
+public class LiteralData extends DataDescription {
+    /** The valid domain for literal data */
+    private List<LiteralDataDomain> literalDataDomains;
+    /** The literal value */
+    private LiteralValue value;
 
-    public LiteralData(List<Format> formatList,
-                       List<LiteralDataDomain> literalDataDomainList,
-                       LiteralValue value)
-            throws
-            IllegalArgumentException {
-        super();
-        if (formatList ==
-                null) {
-            throw new IllegalArgumentException("The parameter \"formatList\" can not be null");
+    /**
+     * Constructor giving a list of format, a list of valid domain and the literal value.
+     * The Format list can not be null and only one of the format should be set as the default one.
+     * @param formatList Not null default format..
+     * @param literalDataDomainList Not null valid domain list for literal data.
+     * @param value Not null value.
+     * @throws IllegalArgumentException Exception get on :
+     *  - giving a null, empty or containing null list of LiteralDataDomain
+     *  - giving a list of Format with less or more than one default LiteralDataDomain.
+     *  - giving a null, empty or containing null list of Format
+     *  - giving a list of Format with less or more than one default Format.
+     *  - giving a null value
+     */
+    public LiteralData(List<Format> formatList, List<LiteralDataDomain> literalDataDomainList, LiteralValue value)
+            throws IllegalArgumentException  {
+        super(formatList);
+        if (literalDataDomainList == null || literalDataDomainList.isEmpty() || literalDataDomainList.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"literalDataDomainList\" can not be null or empty or " +
+                    "containing a null value");
         }
-        if (literalDataDomainList ==
-                null) {
-            throw new IllegalArgumentException("The parameter \"literalDataDomainList\" can not be null");
-        }
-        if (value ==
-                null) {
+        if (value == null) {
             throw new IllegalArgumentException("The parameter \"value\" can not be null");
         }
-
-        if (formatList.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"formatList\" can not be null");
+        boolean hasDefault = false;
+        for(LiteralDataDomain ldd : literalDataDomainList){
+            if(ldd.isDefaultDomain() && hasDefault){
+                throw new IllegalArgumentException("Only one LiteralDataDomain can be the default one");
+            }
+            hasDefault = true;
         }
-        if (literalDataDomainList.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"literalDataDomainList\" can not be null");
+        if(!hasDefault){
+            throw new IllegalArgumentException("One LiteralDataDomain should be the default one");
         }
 
         this.setFormats(formatList);
         this.setLiteralDomainType(literalDataDomainList);
-        this.value =
-                value;
+        this.value = value;
     }
 
+    /**
+     * Returns the list of valid domains for literal data.
+     * @return The list of valid domains for literal data.
+     */
     public List<LiteralDataDomain> getLiteralDomainType() {
         return literalDataDomains;
     }
 
+    /**
+     * Adds a valid domain for literal data.
+     * @param literalDataDomain Not null valid domain.
+     * @throws IllegalArgumentException Exception get on giving a null argument.
+     */
     public void addLiteralDomainType(LiteralDataDomain literalDataDomain) {
-        if (literalDataDomain !=
-                null) {
-            this.literalDataDomains.add(literalDataDomain);
+        if (literalDataDomain == null) {
+            throw new IllegalArgumentException("The parameter \"literalDataDomain\" can not be null");
         }
+        this.literalDataDomains.add(literalDataDomain);
     }
 
-    public void addAllLiteralDomainType(List<LiteralDataDomain> literalDataDomains) {
-        for (LiteralDataDomain ldd : literalDataDomains) {
-            this.addLiteralDomainType(ldd);
-        }
-    }
-
-    public void removeLiteralDomainType(LiteralDataDomain literalDataDomain)
-            throws
-            IllegalArgumentException {
-        if (this.literalDataDomains.size() ==
-                1 &&
-                this.literalDataDomains.contains(literalDataDomain)) {
+    /**
+     * Removes a valid domain for literal data.
+     * @param literalDataDomain Valid domain.
+     */
+    public void removeLiteralDomainType(LiteralDataDomain literalDataDomain) {
+        if (this.literalDataDomains.size() == 1 && this.literalDataDomains.contains(literalDataDomain)) {
             throw new IllegalArgumentException("The attribute \"literalDataDomains\" can not be empty");
         }
         this.literalDataDomains.remove(literalDataDomain);
     }
 
-    public void removeAllLiteralDomainType(List<LiteralDataDomain> literalDataDomains)
-            throws
-            IllegalArgumentException {
-        if (this.literalDataDomains.size() ==
-                literalDataDomains.size() &&
-                this.literalDataDomains.containsAll(literalDataDomains)) {
-            throw new IllegalArgumentException("The attribute \"literalDataDomains\" can not be empty");
-        }
-        this.literalDataDomains.removeAll(literalDataDomains);
-    }
-
-    public void setLiteralDomainType(List<LiteralDataDomain> literalDataDomain)
-            throws
-            IllegalArgumentException {
-        if (literalDataDomain ==
-                null ||
-                literalDataDomain.isEmpty()) {
+    /**
+     * Sets the list of valid domain for literal data.
+     * @param literalDataDomains Not null list of not null valid domain.
+     */
+    public void setLiteralDomainType(List<LiteralDataDomain> literalDataDomains) {
+        if (literalDataDomains == null || literalDataDomains.isEmpty()) {
             throw new IllegalArgumentException("The parameter \"literalDataDomains\" can not be null or empty");
         }
         this.literalDataDomains =
-                literalDataDomain;
+                literalDataDomains;
+    }
+
+
+    /**
+     * Sets the given literalDataDomain as the default one.
+     * @param literalDataDomain Not null new default literalDataDomain.
+     * @throws IllegalArgumentException Exception get on setting a null or a not contained literalDataDomain as the default one.
+     */
+    protected void setDefaultLiteralDataDomain(LiteralDataDomain literalDataDomain){
+        if(literalDataDomain == null){
+            throw new IllegalArgumentException("The parameter \"literalDataDomain\" can not be null;");
+        }
+        if(!this.literalDataDomains.contains(literalDataDomain)) {
+            throw new IllegalArgumentException("The literalDataDomain list does not contain the given literalDataDomain");
+        }
+        for(LiteralDataDomain ldd : literalDataDomains){
+            ldd.setDefaultDomain(false);
+        }
+        literalDataDomain.setDefaultDomain(true);
+    }
+
+    /**
+     * Sets the value.
+     * @param value Not null new value.
+     * @throws IllegalArgumentException Exception get on setting a null value.
+     */
+    public void setValue(LiteralValue value) throws IllegalArgumentException {
+        if(value == null){
+            throw new IllegalArgumentException("The parameter \"value\" can not be null");
+        }
+        this.value = value;
+    }
+
+    /**
+     * Returns the value.
+     * @return The value.
+     */
+    public LiteralValue getValue(){
+        return this.value;
     }
 }
