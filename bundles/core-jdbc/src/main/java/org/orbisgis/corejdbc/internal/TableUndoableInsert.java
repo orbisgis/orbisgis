@@ -97,7 +97,7 @@ public class TableUndoableInsert implements TableUndoableEdit {
             if(!parameters.isEmpty()) {
                 query.append(", ");
             }
-            query.append(TableLocation.capsIdentifier(entry.getKey(),isH2));
+            query.append(TableLocation.quoteIdentifier(entry.getKey(),isH2));
             parameters.add(entry.getValue());
         }
         query.append(") VALUES (");

@@ -830,7 +830,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public void refreshRow() throws SQLException {
         try(Resource res = resultSetHolder.getResource()) {
-            moveCursorTo(rowId);
+            cachedRowCount = -1;
             currentRow = null;
             cache.clear();
             rowFetchFirstPk = new ArrayList<>(Arrays.asList(new Long[]{null}));
@@ -839,6 +839,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             if(res.getResultSet().getRow() > 0 && !res.getResultSet().isAfterLast()) {
                 res.getResultSet().refreshRow();
             }
+            moveCursorTo(Math.min(getRowCount(), rowId));
         } catch (SQLException ex) {
             LOGGER.warn(ex.getLocalizedMessage(), ex);
         }

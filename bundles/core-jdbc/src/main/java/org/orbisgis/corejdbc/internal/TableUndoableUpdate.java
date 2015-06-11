@@ -47,6 +47,7 @@ public class TableUndoableUpdate implements TableUndoableEdit {
     public static final String EDIT_IDENTIFIER = "UPDATE";
     private static final I18n I18N = I18nFactory.getI18n(TableUndoableUpdate.class);
     private final DataSource dataSource;
+    private boolean isH2;
     private final TableLocation tableLocation;
     private final String pkName;
     private final long rowIdentifier;
@@ -55,9 +56,10 @@ public class TableUndoableUpdate implements TableUndoableEdit {
     private final Object newValue;
 
 
-    public TableUndoableUpdate(DataSource dataSource, TableLocation tableLocation, String pkName, long rowIdentifier,
+    public TableUndoableUpdate(DataSource dataSource,boolean isH2, TableLocation tableLocation, String pkName, long rowIdentifier,
                                String columnName, Object oldValue, Object newValue) {
         this.dataSource = dataSource;
+        this.isH2 = isH2;
         this.tableLocation = tableLocation;
         this.pkName = pkName;
         this.rowIdentifier = rowIdentifier;
@@ -82,7 +84,7 @@ public class TableUndoableUpdate implements TableUndoableEdit {
 
     private void doUpdate(Long pk, Object value) throws SQLException {
         try(Connection connection = dataSource.getConnection();
-            PreparedStatement st = connection.prepareStatement("UPDATE "+tableLocation+" SET "+columnName+" = ? WHERE "+pkName+" = ?")) {
+            PreparedStatement st = connection.prepareStatement("UPDATE "+tableLocation+" SET "+TableLocation.quoteIdentifier(columnName, isH2)+" = ? WHERE "+pkName+" = ?")) {
             st.setObject(1, value);
             st.setLong(2, pk);
             st.execute();

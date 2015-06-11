@@ -221,7 +221,7 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
             if(updateRow == null) {
                 updateRow = new TableUndoableUpdate[getColumnCount()];
             }
-            updateRow[i - 1] = new TableUndoableUpdate(dataSource, location, pk_name, getPk(), getColumnName(i), getObject(i), o);
+            updateRow[i - 1] = new TableUndoableUpdate(dataSource,isH2, location, pk_name, getPk(), getColumnName(i), getObject(i), o);
         }
     }
 

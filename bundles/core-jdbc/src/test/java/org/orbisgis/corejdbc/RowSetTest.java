@@ -526,4 +526,34 @@ public class RowSetTest {
             eventList.add(event);
         }
     }
+
+    @Test
+    public void testUndoRedoRowSetInsert() throws SQLException {
+        DataManager factory = new DataManagerImpl(dataSource);
+        ReversibleRowSet rs = factory.createReversibleRowSet();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer primary key, str varchar(30))");
+            ListenerList listenerList = new ListenerList();
+            factory.addTableEditListener("TEST", listenerList, false);
+            rs.setCommand("SELECT * FROM TEST");
+            rs.execute();
+            rs.moveToInsertRow();
+            rs.updateInt("id", 1337);
+            rs.updateString("str", "leet");
+            rs.insertRow();
+            assertEquals(1, listenerList.eventList.size());
+            assertEquals(1l, rs.getRowCount());
+            // Undo insert
+            listenerList.eventList.get(0).getUndoableEdit().undo();
+            rs.refreshRow();
+            assertEquals(0l, rs.getRowCount());
+            // Redo insert
+            listenerList.eventList.get(0).getUndoableEdit().redo();
+            rs.refreshRow();
+            assertEquals(1l, rs.getRowCount());
+        }
+    }
 }
