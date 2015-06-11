@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -24,67 +24,97 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * cf OGC 06-121r9
+ * Bounding box.
  *
  * @author Sylvain PALOMINOS
  */
 
 public class BoundingBox {
-    private List<Number>
-            lowerCorner;
-    private List<Number>
-            upperCorner;
-    private URI
-            crs;
-    private int
-            dimensions;
+    /** Coordinates of bounding box corner at which the value of each coordinate normally
+     *  is the algebraic minimum a within this bounding box. */
+    private List<Double> lowerCorner;
+    /** Coordinates of bounding box corner at which the value of each coordinate normally
+     *  is the algebraic maximum a within this bounding box. */
+    private List<Double> upperCorner;
+    /** Reference to definition of the CRS used by the LowerCorner and UpperCorner coordinates. */
+    private URI crs;
+    /** The number of dimensions in this CRS (the length of a coordinate sequence). */
+    private int dimensions;
 
     public BoundingBox() {
-        lowerCorner =
-                new ArrayList<>();
-        upperCorner =
-                new ArrayList<>();
-        crs =
-                null;
-        dimensions =
-                0;
+        lowerCorner = new ArrayList<>();
+        upperCorner = new ArrayList<>();
+        crs = null;
+        dimensions = 0;
     }
 
-    public List<Number> getLowerCorner() {
+    /**
+     * Returns the lower corner.
+     * @return The lower corner.
+     */
+    public List<Double> getLowerCorner() {
         return lowerCorner;
     }
 
-    public void setLowerCorner(List<Number> lowerCorner) {
-        this.lowerCorner =
-                lowerCorner;
+    /**
+     * Sets the lower corner values.
+     * The list of Double should be at the same size as the bounding box dimension.
+     * @param lowerCorner List of double value of the corner.
+     */
+    public void setLowerCorner(List<Double> lowerCorner) {
+        if(lowerCorner.size() == this.dimensions) {
+            this.lowerCorner = lowerCorner;
+        }
     }
 
-    public List<Number> getUpperCorner() {
+    /**
+     * Returns the upper corner.
+     * @return The upper corner.
+     */
+    public List<Double> getUpperCorner() {
         return upperCorner;
     }
 
-    public void setUpperCorner(List<Number> upperCorner) {
-        this.upperCorner =
-                upperCorner;
+    /**
+     * Sets the upper corner.
+     * The list of Double should be at the same size as the bounding box dimension.
+     * @param upperCorner List of double value of the corner.
+     */
+    public void setUpperCorner(List<Double> upperCorner) {
+        if(upperCorner.size() == this.dimensions) {
+            this.upperCorner = upperCorner;
+        }
     }
 
+    /**
+     * Returns the URI to the bounding box CRS.
+     * @return The CRS URI.
+     */
     public URI getCrs() {
         return crs;
     }
 
+    /**
+     * Sets the URI of the bounding box CRS.
+     * @param crs New URI of the CRS.
+     */
     public void setCrs(URI crs) {
-        this.crs =
-                crs;
+        this.crs = crs;
     }
 
+    /**
+     * Returns the bounding box dimension.
+     * @return The bounding box dimension.
+     */
     public int getDimensions() {
         return dimensions;
     }
 
+    /**
+     * Sets the bounding box dimension.
+     * @param dimensions The bounding box dimension.
+     */
     public void setDimensions(int dimensions) {
-        this.dimensions =
-                dimensions;
+        this.dimensions = dimensions;
     }
-
-
 }

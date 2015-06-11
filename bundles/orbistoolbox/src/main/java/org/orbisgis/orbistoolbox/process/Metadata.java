@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -19,6 +19,7 @@
 
 package org.orbisgis.orbistoolbox.process;
 
+import java.net.URI;
 import java.net.URL;
 
 /**
@@ -26,54 +27,86 @@ import java.net.URL;
  */
 
 public class Metadata {
-    private String
-            title;
-    private String
-            linkType =
-            "simple";
-    private URL
-            role;
-    private URL
-            href;
+    /** Title of the documentation. Normally available for display to a human. */
+    private String title;
+    /** Type of the xlink, fixed to simple. */
+    private String linkType = "simple";
+    /** Role identifier, indicating the role of the linked document. */
+    private URI role;
+    /** Reference to a documentation site for a process, input, or output. */
+    private URI href;
 
-    public Metadata() {
-        this.title =
-                "";
-        this.role =
-                null;
-        this.href =
-                null;
+    /**
+     * Main constructor.
+     * All the argument needed can no be null.
+     * @param title Title of the documentation.
+     * @param role Role identifier.
+     * @param href Reference to the documentation.
+     * @throws IllegalArgumentException Exception get on giving a null values as argument
+     */
+    public Metadata(String title, URI role, URI href) {
+        if(title == null || role == null || href == null){
+            throw new IllegalArgumentException("None of the arguments can be null");
+        }
+        this.title = title;
+        this.role = role;
+        this.href = href;
 
     }
 
+    /**
+     * Returns the documentation title.
+     * @return The documentation title.
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Sets the documentation title.
+     * @param title The documentation title.
+     */
     public void setTitle(String title) {
-        this.title =
-                title;
+        this.title = title;
     }
 
+    /**
+     * Returns the link type.
+     * @return The link type.
+     */
     public String getLinkType() {
         return linkType;
     }
 
-    public URL getRole() {
+    /**
+     * Returns the documentation role.
+     * @return The documentation role.
+     */
+    public URI getRole() {
         return role;
     }
 
-    public void setRole(URL role) {
-        this.role =
-                role;
+    /**
+     * Sets the documentation role.
+     * @param role The documentation role.
+     */
+    public void setRole(URI role) {
+        this.role = role;
     }
 
-    public URL getHref() {
+    /**
+     * Returns the documentation reference.
+     * @return The documentation reference.
+     */
+    public URI getHref() {
         return href;
     }
 
-    public void setHref(URL href) {
-        this.href =
-                href;
+    /**
+     * Sets the documentation reference.
+     * @param href The documentation reference.
+     */
+    public void setHref(URI href) {
+        this.href = href;
     }
 }

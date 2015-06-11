@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -63,16 +63,12 @@ public class SupportedCRS {
      * @throws IllegalArgumentException Exception get on trying to set the CRS to null
      */
     public SupportedCRS(List<URI> crsList, boolean defaultCRS) throws IllegalArgumentException {
-        if (crsList == null || !crsList.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"crsList\" can not be null or empty");
+        if (crsList == null || crsList.isEmpty() || crsList.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"crsList\" can not be null or empty or " +
+                    "containing null values");
         }
         this.crs = new ArrayList<>();
-        for(URI crs : crsList) {
-            if (crs == null) {
-                throw new IllegalArgumentException("The parameter \"crs\" can not be null");
-            }
-            this.crs.add(crs);
-        }
+        this.crs.addAll(crsList);
         this.defaultCRS = defaultCRS;
     }
 
@@ -98,16 +94,12 @@ public class SupportedCRS {
      * @throws IllegalArgumentException Exception get on trying to add a null CRS.
      */
     public void setCRS(List<URI> crsList) throws IllegalArgumentException {
-        if (crsList == null || !crsList.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"defaultValue\" can not be null or empty");
+        if (crsList == null || crsList.isEmpty() || crsList.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"defaultValue\" can not be null or empty or " +
+                    "containing null value");
         }
         this.crs = new ArrayList<>();
-        for(URI crs : crsList) {
-            if (crs == null) {
-                throw new IllegalArgumentException("The parameter \"crs\" can not be null");
-            }
-            this.crs.add(crs);
-        }
+        this.crs.addAll(crsList);
     }
 
     /**

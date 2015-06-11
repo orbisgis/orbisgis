@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -22,45 +22,40 @@ package org.orbisgis.orbistoolbox.process;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
+ * A process is a function that for each input returns a corresponding output.
+ *
+ * For more information : http://docs.opengeospatial.org/is/14-065/14-065.html#31
+ *
  * @author Sylvain PALOMINOS
  */
 
-public class Process
-        extends DescriptionType {
-    private List<Input>
-            input;
-    private List<Output>
-            output;
-    private String
-            language =
-            "en";
+public class Process extends DescriptionType {
+    /** List of the process input. */
+    private List<Input> input;
+    /** List of the process output. */
+    private List<Output> output;
+    /** Language of the process. */
+    private Locale language;
 
     /**
-     * constructor providing the necessary attributes according to the WPS specification.
+     * Constructor providing the necessary attributes according to the WPS specification.
      * All the parameters should not be null.
      *
-     * @param title      Not null title of a process, input, output.
-     * @param identifier Not null unambiguous identifier of a process, input, and output.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
+     * @param title      Not null title of the process.
+     * @param identifier Not null unambiguous identifier of the process.
+     * @param output     Not null output.
      */
-    public Process(String title,
-                   URI identifier,
-                   Output output)
-            throws
-            IllegalArgumentException {
-        super(title,
-                identifier);
-        if (output ==
-                null) {
+    public Process(String title, URI identifier, Output output) {
+        super(title, identifier);
+        if(output == null) {
             throw new IllegalArgumentException("The parameter \"output\" can not be null");
         }
-        this.output =
-                new ArrayList<>();
+        this.output = new ArrayList<>();
         this.output.add(output);
-        this.input =
-                new ArrayList<>();
+        this.input = new ArrayList<>();
     }
 
     /**
@@ -69,136 +64,133 @@ public class Process
      *
      * @param title      Not null title of a process, input, output.
      * @param identifier Not null unambiguous identifier of a process, input, and output.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
+     * @param outputList Not null list of not null output.
+     * @throws IllegalArgumentException Exception thrown if one of the parameters is null or an empty list.
      */
-    public Process(String title,
-                   URI identifier,
-                   List<Output> output)
-            throws
-            IllegalArgumentException {
-        super(title,
-                identifier);
-        if (output ==
-                null ||
-                output.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"output\" can not be null or empty");
+    public Process(String title, URI identifier, List<Output> outputList) {
+        super(title, identifier);
+        if(outputList == null || outputList.isEmpty() || outputList.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"output\" can not be null or empty or " +
+                    "containing a null value");
         }
-        this.output =
-                new ArrayList<>();
-        this.output.addAll(output);
-        this.input =
-                new ArrayList<>();
+        this.output = new ArrayList<>();
+        this.output.addAll(outputList);
+        this.input = new ArrayList<>();
     }
 
-    public String getLanguage() {
+    /**
+     * Returns the language of the script.
+     * @return The language of the script
+     */
+    public Locale getLanguage() {
         return language;
     }
 
-    public void setInput(List<Input> input) {
-        this.input =
-                new ArrayList<>();
-        for (Input i : input) {
+    /**
+     * Sets the list of inputs.
+     * @param inputList List of input.
+     * @throws IllegalArgumentException Exception thrown if the parameters is null or empty or containing a null value.
+     */
+    public void setInput(List<Input> inputList) {
+        if(inputList == null || inputList.isEmpty() || inputList.contains(null)){
+            throw new IllegalArgumentException("The parameter \"inputList\" can not be null or empty or " +
+                    "containing a null value");
+        }
+        this.input = new ArrayList<>();
+        for(Input i : inputList) {
             this.addInput(i);
         }
     }
 
+    /**
+     * Add a new input.
+     * @param input The new Input.
+     * @throws IllegalArgumentException Exception thrown if the parameters is null.
+     */
     public void addInput(Input input) {
-        if (input ==
-                null) {
-            return;
+        if(input == null){
+            throw new IllegalArgumentException("The parameter \"input\" can not be null");
         }
-        if (this.input ==
-                null) {
-            this.input =
-                    new ArrayList<>();
+        if(this.input == null) {
+            this.input = new ArrayList<>();
         }
         this.input.add(input);
     }
 
-    public void addAllInput(List<Input> input) {
-        for (Input i : input) {
-            this.addInput(i);
-        }
-    }
-
+    /**
+     * Removes the given input.
+     * @param input The input to remove.
+     * @throws IllegalArgumentException Exception get on removing the last input or a null one.
+     */
     public void removeInput(Input input) {
         this.input.remove(input);
-        if (this.input.isEmpty()) {
+        if(this.input.isEmpty()) {
             this.input =
                     null;
         }
     }
 
-    public void removeAllInput(List<Input> inputList) {
-        for (Input i : inputList) {
-            this.removeInput(i);
-        }
-    }
-
+    /**
+     * Returns the list of input.
+     * @return The list of inputs.
+     */
     public List<Input> getInput() {
         return input;
     }
 
-    public void setOutput(List<Output> output) {
-        if (output ==
-                null |
-                output.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"output\" can not be null or empty");
+    /**
+     * Sets the list of outputs.
+     * @param outputList List of output.
+     * @throws IllegalArgumentException Exception thrown if the parameters is null or empty or containing a null value.
+     */
+    public void setOutput(List<Output> outputList) {
+        if(outputList == null | outputList.isEmpty() || outputList.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"output\" can not be null or empty or " +
+                    "containing null value");
         }
-        this.output =
-                new ArrayList<>();
-        for (Output o : output) {
+        this.output = new ArrayList<>();
+        for(Output o : outputList) {
             this.addOutput(o);
         }
     }
 
+    /**
+     * Add a new output.
+     * @param output The new output.
+     * @throws IllegalArgumentException Exception thrown if the parameters is null.
+     */
     public void addOutput(Output output) {
-        if (output ==
-                null) {
+        if(output == null) {
             throw new IllegalArgumentException("The parameter \"output\" can not be null");
         }
-        if (output ==
-                null) {
-            return;
-        }
-        if (this.output ==
-                null) {
-            this.output =
-                    new ArrayList<>();
+        if(this.output == null) {
+            this.output = new ArrayList<>();
         }
         this.output.add(output);
     }
 
-    public void addAllOutput(List<Output> output) {
-        if (output ==
-                null |
-                output.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"output\" can not be null or empty");
+    /**
+     * Removes the given output.
+     * @param output The input to remove.
+     * @throws IllegalArgumentException Exception get on removing the last output or a null one.
+     */
+    public void removeOutput(Output output) throws IllegalArgumentException{
+        if(output == null) {
+            throw new IllegalArgumentException("The attribute \"output\" can not be null");
         }
-        for (Output i : output) {
-            this.addOutput(i);
-        }
-    }
-
-    public void removeOutput(Output output) {
-        if (this.output.size() ==
-                1 &&
-                this.output.contains(output)) {
+        if(this.output.size() == 1 && this.output.contains(output)) {
             throw new IllegalArgumentException("The attribute \"output\" can not be empty");
         }
         this.output.remove(output);
-        if (this.output.isEmpty()) {
-            this.output =
-                    null;
+        if(this.output.isEmpty()) {
+            this.output = null;
         }
     }
 
-    public void removeAllOutput(List<Output> outputList) {
-        for (Output i : outputList) {
-            this.removeOutput(i);
-        }
-    }
-
+    /**
+     * Returns the list of output.
+     * @return The list of output.
+     */
     public List<Output> getOutput() {
         return output;
     }

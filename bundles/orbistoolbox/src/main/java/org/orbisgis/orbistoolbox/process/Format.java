@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -22,37 +22,24 @@ package org.orbisgis.orbistoolbox.process;
 import java.net.URL;
 
 /**
+ * Format of an input or of an output.
+ *
  * For more information : http://docs.opengeospatial.org/is/14-065/14-065.html#20
  *
  * @author Sylvain PALOMINOS
  */
 
 public class Format {
-    /**
-     * Media type of the data.
-     */
-    private String
-            mimeType;
-    /**
-     * Encoding procedure or character set of the data
-     */
-    private String
-            encoding;
-    /**
-     * Identification of the data schema.
-     */
-    private URL
-            schema;
-    /**
-     * The maximum size of the input data, in megabytes.
-     */
-    private Integer
-            maximumMegaBytes;
-    /**
-     * Indicates that this format is the default format.
-     */
-    private boolean
-            defaultFormat;
+    /** Media type of the data. */
+    private String mimeType;
+    /** Encoding procedure or character set of the data.*/
+    private String encoding;
+    /** Identification of the data schema.*/
+    private URL schema;
+    /** The maximum size of the input data, in megabytes.*/
+    private Integer maximumMegaBytes;
+    /** Indicates that this format is the default format.*/
+    private boolean defaultFormat;
 
     /**
      * Unique constructor providing the necessary attributes according to the WPS specification.
@@ -62,28 +49,18 @@ public class Format {
      * @param schema   Identification of the data schema.
      * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
      */
-    public Format(String mimeType,
-                  URL schema)
-            throws
-            IllegalArgumentException {
-        if (mimeType ==
-                null) {
+    public Format(String mimeType, URL schema) throws IllegalArgumentException {
+        if (mimeType == null) {
             throw new IllegalArgumentException("The parameter \"mimeType\" can not be null");
         }
-        if (schema ==
-                null) {
+        if (schema == null) {
             throw new IllegalArgumentException("The parameter \"schema\" can not be null");
         }
-        this.mimeType =
-                mimeType;
-        this.encoding =
-                "simple";
-        this.schema =
-                schema;
-        this.maximumMegaBytes =
-                null;
-        this.defaultFormat =
-                false;
+        this.mimeType = mimeType;
+        this.encoding = "simple";
+        this.schema = schema;
+        this.maximumMegaBytes = null;
+        this.defaultFormat = false;
     }
 
     /**
@@ -101,15 +78,11 @@ public class Format {
      * @param mimeType The media type of the data
      * @throws IllegalArgumentException Exception thrown if the parameters is null.
      */
-    public void setMimeType(String mimeType)
-            throws
-            IllegalArgumentException {
-        if (mimeType ==
-                null) {
+    public void setMimeType(String mimeType) throws IllegalArgumentException {
+        if (mimeType == null) {
             throw new IllegalArgumentException("The parameter \"mimeType\" can not be null");
         }
-        this.mimeType =
-                mimeType;
+        this.mimeType = mimeType;
     }
 
     /**
@@ -136,15 +109,11 @@ public class Format {
      * @param schema The data schema.
      * @throws IllegalArgumentException Exception thrown if the parameters is null.
      */
-    public void setSchema(URL schema)
-            throws
-            IllegalArgumentException {
-        if (schema ==
-                null) {
+    public void setSchema(URL schema) throws IllegalArgumentException {
+        if (schema == null) {
             throw new IllegalArgumentException("The parameter \"schema\" can not be null");
         }
-        this.schema =
-                schema;
+        this.schema = schema;
     }
 
     /**
@@ -162,20 +131,25 @@ public class Format {
      * @param maximumMegaBytes Maximum size of the input data.
      */
     public void setMaximumMegaBytes(int maximumMegaBytes) {
-        if (maximumMegaBytes <
-                0) {
-            this.maximumMegaBytes =
-                    null;
+        if (maximumMegaBytes < 0) {
+            this.maximumMegaBytes = null;
         } else {
-            this.maximumMegaBytes =
-                    maximumMegaBytes;
+            this.maximumMegaBytes = maximumMegaBytes;
         }
     }
 
+    /**
+     * Sets the format as the default one.
+     * @param defaultFormat True if it is the default format, false otherwise.
+     */
     public void setDefaultFormat(boolean defaultFormat){
         this.defaultFormat = defaultFormat;
     }
 
+    /**
+     * Tells if the format is the default one.
+     * @return True if it is the default format, false otherwise.
+     */
     public boolean isDefaultFormat(){
         return this.defaultFormat;
     }

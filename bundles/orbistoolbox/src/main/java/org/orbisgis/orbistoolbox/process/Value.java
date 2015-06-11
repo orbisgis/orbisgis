@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -28,18 +28,14 @@ package org.orbisgis.orbistoolbox.process;
 
 public class Value extends Values {
     /** String representation of the value. */
-    private String value;
+    private double value;
 
     /**
      * Main constructor in which the value must be passed as a String.
      * The value can not be null.
      * @param value Not null value.
-     * @throws IllegalArgumentException Exception get when the parameter "value" is null.
      */
-    public Value(String value) throws IllegalArgumentException {
-        if (value == null) {
-            throw new IllegalArgumentException("The parameter \"value\" can not be null");
-        }
+    public Value(double value) {
         this.value = value;
     }
 
@@ -47,19 +43,15 @@ public class Value extends Values {
      * Returns the value.
      * @return The value.
      */
-    public String getValue() {
+    public double getValue() {
         return value;
     }
 
     /**
      * Sets the the value. The value given as parameter can not be null.
      * @param value Not null value.
-     * @throws IllegalArgumentException Exception get when the parameter "value" is null.
      */
-    public void setValue(String value) throws IllegalArgumentException {
-        if (value == null) {
-            throw new IllegalArgumentException("The parameter \"value\" can not be null");
-        }
+    public void setValue(double value) {
         this.value = value;
     }
 }

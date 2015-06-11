@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -19,50 +19,68 @@
 
 package org.orbisgis.orbistoolbox.process;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Dexcribes the possible literal value that can be use. It can be :
+ * - A list of allowed values
+ *      or
+ * - A list valid with a renference
+ *      or
+ * - Any values
+ *
  * For more informations : http://docs.opengeospatial.org/is/14-065/14-065.html#26
  *
  * @author Sylvain PALOMINOS
  */
 
 public class PossibleLiteralValuesChoice {
-    private List<Values>
-            allowedValues;
-    private Boolean
-            anyValue =
-            true;
-    private String
-            valuesReference;
+    /** List of all valid values and/or ranges of values for this quantity. */
+    private List<Values> allowedValues;
+    /** Specifies that any value is allowed for this quantity. */
+    private boolean anyValue;
+    /** Reference to list of all valid values and/or ranges of values for this quantity. */
+    private URI valuesReference;
 
-    public PossibleLiteralValuesChoice(List<Values> allowedValues)
-            throws
-            IllegalArgumentException {
+    /**
+     * Sets the allowed values as a list of valid values.
+     * @param allowedValues List of valid values.
+     * @throws IllegalArgumentException Exception ge on setting a list which is null, empty or containing null value.
+     */
+    public PossibleLiteralValuesChoice(List<Values> allowedValues) throws IllegalArgumentException {
         //Verify if the parameters are not null
-        if (allowedValues ==
-                null) {
-            throw new IllegalArgumentException("The parameter \"allowedValues\" can not be null");
+        if (allowedValues == null || allowedValues.isEmpty() || allowedValues.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"allowedValues\" can not be null or empty or " +
+                    "containing null value");
         }
-        if (allowedValues.isEmpty()) {
-            throw new IllegalArgumentException("Both parameters can not be empty");
-        }
-        this.allowedValues =
-                new ArrayList<>();
+        this.allowedValues = new ArrayList<>();
         this.allowedValues.addAll(allowedValues);
-        this.anyValue =
-                null;
-        this.valuesReference =
-                null;
+        this.anyValue = false;
+        this.valuesReference = null;
     }
 
-    public PossibleLiteralValuesChoice(String valuesReference) {
-        this.allowedValues =
-                null;
-        this.anyValue =
-                null;
-        this.valuesReference =
-                valuesReference;
+    /**
+     * Sets the allowed values as all the values valid with a reference.
+     * @param valuesReference Reference for the valid values.
+     * @throws IllegalArgumentException Exception get on setting a null reference.
+     */
+    public PossibleLiteralValuesChoice(URI valuesReference) throws IllegalArgumentException {
+        if (valuesReference == null) {
+            throw new IllegalArgumentException("The parameter \"valuesReference\" can not be null");
+        }
+        this.allowedValues = null;
+        this.anyValue = false;
+        this.valuesReference = valuesReference;
+    }
+
+    /**
+     * Sets all the values as valid.
+     */
+    public PossibleLiteralValuesChoice() {
+        this.allowedValues = null;
+        this.anyValue = true;
+        this.valuesReference = null;
     }
 }

@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -31,112 +31,126 @@ package org.orbisgis.orbistoolbox.process;
  */
 
 public class Range extends Values {
-    /** Minimum value of the range (can not be null) */
-    private String minimumValue;
-    /** Maximum value of the range (can not be null) */
-    private String maximumValue;
-    /** Spacing between two values */
-    private String spacing;
+    /**
+     * Minimum value of the range (can not be null)
+     */
+    private double minimumValue;
+    /**
+     * Maximum value of the range (can not be null)
+     */
+    private double maximumValue;
+    /**
+     * Spacing between two values
+     */
+    private double spacing;
 
     /**
      * Constructor defining a range without spacing between values.
+     *
      * @param minimumValue Maximum value of the range (can not be null).
      * @param maximumValue Minimum value of the range (can not be null).
-     * @throws IllegalArgumentException Exception get on trying to set maximumValue or minimumValue to null.
+     * @throws IllegalArgumentException Exception get if maximum < minimum.
      */
-    public Range(String minimumValue, String maximumValue) throws IllegalArgumentException {
-        if (minimumValue == null) {
-            throw new IllegalArgumentException("The parameter \"minimumValue\" can not be null");
-        }
-        if (maximumValue == null) {
-            throw new IllegalArgumentException("The parameter \"maximumValue\" can not be null");
+    public Range(double minimumValue, double maximumValue) throws IllegalArgumentException {
+        if(maximumValue<minimumValue){
+            throw new IllegalArgumentException("The maximum can not be less than the minimum");
         }
         this.minimumValue = minimumValue;
         this.maximumValue = maximumValue;
-        this.spacing = null;
+        this.spacing = 0;
     }
 
     /**
      * Constructor defining a range with spacing between values.
+     *
      * @param minimumValue Maximum value of the range (can not be null).
      * @param maximumValue Minimum value of the range (can not be null).
-     * @param spacing Spacing between value. If set to null or 0, it means there is no spacing.
-     * @throws IllegalArgumentException Exception get on trying to set maximumValue or minimumValue to null.
+     * @param spacing      Spacing between value. If set to null or 0, it means there is no spacing.
+     * @throws IllegalArgumentException Exception get if maximum < minimum or if spacing > maximum-minimum.
      */
-    public Range(String minimumValue, String maximumValue, String spacing) throws IllegalArgumentException {
-        if (minimumValue == null) {
-            throw new IllegalArgumentException("The parameter \"minimumValue\" can not be null");
+    public Range(double minimumValue, double maximumValue, double spacing) throws IllegalArgumentException {
+        if(maximumValue<minimumValue){
+            throw new IllegalArgumentException("The maximum can not be less than the minimum");
         }
-        if (maximumValue == null) {
-            throw new IllegalArgumentException("The parameter \"maximumValue\" can not be null");
+        if(spacing > maximumValue-minimumValue){
+            throw new IllegalArgumentException("The spacing can not be more than the diference between maximum and minumim");
         }
         this.minimumValue = minimumValue;
         this.maximumValue = maximumValue;
-        if(spacing.equals("0")){
-            this.spacing = null;
+        if(spacing <0){
+            this.spacing = 0;
         }
-        else {
-            this.spacing = spacing;
-        }
+        this.spacing = spacing;
     }
 
     /**
      * Returns the maximum value of the range.
+     *
      * @return The maximum value of the range.
      */
-    public String getMaximumValue() {
+    public double getMaximumValue() {
         return maximumValue;
     }
 
     /**
      * Sets the maximum value of the range. The maximumValue parameter can not be null.
+     *
      * @param maximumValue Maximum value of the range (can not be null).
-     * @throws IllegalArgumentException Exception get on trying to set maximumValue to null.
+     * @throws IllegalArgumentException Exception get on trying to set a maximumValue < minimumValue.
      */
-    public void setMaximumValue(String maximumValue) throws IllegalArgumentException {
-        if (maximumValue == null) {
-            throw new IllegalArgumentException("The parameter \"maximumValue\" can not be null");
+    public void setMaximumValue(double maximumValue) throws IllegalArgumentException {
+        if (maximumValue < minimumValue) {
+            throw new IllegalArgumentException("The the maximum can not be less than the minimum");
         }
-        this.maximumValue =
-                maximumValue;
+        this.maximumValue = maximumValue;
     }
 
 
     /**
      * Returns the minimum value value of the range.
+     *
      * @return The minimum value value of the range.
      */
-    public String getMinimumValue() {
+    public double getMinimumValue() {
         return minimumValue;
     }
 
 
     /**
      * Sets the minimum value of the range. The minimumValue parameter can not be null.
+     *
      * @param minimumValue Minimum value of the range (can not be null).
-     * @throws IllegalArgumentException Exception get on trying to set minimumValue to null.
+     * @throws IllegalArgumentException Exception get on trying to set minimumValue > maximumValue.
      */
-    public void setMinimumValue(String minimumValue) throws IllegalArgumentException {
-        if (minimumValue == null) {
-            throw new IllegalArgumentException("The parameter \"minimumValue\" can not be null");
+    public void setMinimumValue(double minimumValue) throws IllegalArgumentException {
+        if (minimumValue > maximumValue) {
+            throw new IllegalArgumentException("The minimum can not be more than the maximum");
         }
         this.minimumValue = minimumValue;
     }
 
     /**
      * Sets the spacing value. If it is set to null or 0, it means there is no spacing.
+     *
      * @param spacing Spacing between value.
+     * @throws IllegalArgumentException Exception get on trying to set spacing > minimumValue - maximumValue.
      */
-    public void setSpacingValue(String spacing) {
-        this.spacing =
-                spacing;
+    public void setSpacingValue(double spacing) throws IllegalArgumentException {
+        if (spacing > minimumValue - maximumValue) {
+            throw new IllegalArgumentException("The minimum can not be more than the maximum");
+        }
+        if(spacing <0){
+            this.spacing = 0;
+        }
+        this.spacing = spacing;
     }
 
     /**
      * Returns the spacing value.
+     *
      * @return The spacing value.
      */
-    public String getSpacing() {
+    public double getSpacing() {
         return spacing;
     }
 }

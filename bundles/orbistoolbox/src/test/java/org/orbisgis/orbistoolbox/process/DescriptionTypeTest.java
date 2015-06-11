@@ -19,6 +19,7 @@
 
 package org.orbisgis.orbistoolbox.process;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.net.URI;
@@ -26,9 +27,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
-
 /**
+ * Tests for the DescriptionType class.
+ *
  * @author Sylvain PALOMINOS
  */
 
@@ -111,7 +112,7 @@ public class DescriptionTypeTest {
         stringList.add("gis");
         stringList.add("test");
 
-        assertTrue(descriptionType.getKeywords().size() == stringList.size()
+        Assert.assertTrue(descriptionType.getKeywords().size() == stringList.size()
                 && descriptionType.getKeywords().containsAll(stringList));
     }
 
@@ -157,7 +158,7 @@ public class DescriptionTypeTest {
         list.add(metadata4);
         list.add(metadata6);
 
-        assertTrue(descriptionType.getMetadata().size() == list.size()
+        Assert.assertTrue(descriptionType.getMetadata().size() == list.size()
                 && descriptionType.getMetadata().containsAll(list));
     }
 }
