@@ -34,7 +34,14 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Nicolas Fortin
@@ -46,37 +53,85 @@ public class TableUndoableInsert implements TableUndoableEdit {
     private final DataSource dataSource;
     private final TableLocation tableLocation;
     private final String pkName;
-    private final Object[] newValues;
+    private final Map<String, Object> newValues;
+    private Long primaryKey = null;
+    private boolean isH2;
 
-    public TableUndoableInsert(DataSource dataSource, TableLocation tableLocation, String pkName, int columnCount) {
+    public TableUndoableInsert(DataSource dataSource, TableLocation tableLocation, String pkName, boolean isH2) {
         this.dataSource = dataSource;
         this.tableLocation = tableLocation;
         this.pkName = pkName;
-        this.newValues = new Object[columnCount];
+        this.newValues = new HashMap<>();
+        this.isH2 = isH2;
     }
 
-    public void setValue(int column, Object value) {
-        newValues[column] = value;
+    public void setValue(String column, Object value) {
+        newValues.put(column, value);
     }
 
     @Override
     public void undo() throws SQLException {
+        if(canUndo()) {
+            try(Connection connection = dataSource.getConnection();
+                PreparedStatement st = connection.prepareStatement("DELETE FROM "+tableLocation+" WHERE "+pkName+" = ?")) {
+                st.setLong(1, primaryKey);
+                st.execute();
+                primaryKey = null;
+            }
+        }
 
     }
 
     @Override
     public boolean canUndo() {
-        return false;
+        return primaryKey != null;
     }
 
     @Override
     public void redo() throws SQLException {
-
+        StringBuilder query = new StringBuilder("INSERT INTO ");
+        query.append(tableLocation);
+        List<Object> parameters = new ArrayList<>(newValues.size());
+        query.append("(");
+        for(Map.Entry<String, Object> entry : newValues.entrySet()) {
+            if(!parameters.isEmpty()) {
+                query.append(", ");
+            }
+            query.append(TableLocation.capsIdentifier(entry.getKey(),isH2));
+            parameters.add(entry.getValue());
+        }
+        query.append(") VALUES (");
+        for(int idParam = 0; idParam < parameters.size(); idParam++) {
+            if(idParam > 0) {
+                query.append(", ?");
+            } else {
+                query.append("?");
+            }
+        }
+        query.append(")");
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement st = connection.prepareStatement(query.toString())) {
+            for(int idParam = 0; idParam < parameters.size(); idParam++) {
+                st.setObject(idParam + 1, parameters.get(idParam));
+            }
+            st.execute();
+            Object pk = newValues.get(pkName);
+            if(pk != null) {
+                primaryKey = Long.valueOf(pk.toString());
+            } else {
+                //Store PK if null (auto increment)
+                try (ResultSet rs = st.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        primaryKey = rs.getLong(1);
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public boolean canRedo() {
-        return false;
+        return primaryKey == null;
     }
 
     @Override
@@ -86,26 +141,26 @@ public class TableUndoableInsert implements TableUndoableEdit {
 
     @Override
     public boolean isSignificant() {
-        return false;
+        return true;
     }
 
     @Override
     public String getEditIdentifier() {
-        return null;
+        return EDIT_IDENTIFIER;
     }
 
     @Override
     public String getPresentationName() {
-        return null;
+        return I18N.tr("Insert row");
     }
 
     @Override
     public String getUndoPresentationName() {
-        return null;
+        return I18N.tr("Remove inserted row");
     }
 
     @Override
     public String getRedoPresentationName() {
-        return null;
+        return I18N.tr("Redo insert row");
     }
 }

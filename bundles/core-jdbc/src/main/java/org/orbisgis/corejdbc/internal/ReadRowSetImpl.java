@@ -108,7 +108,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     protected Object[] currentRow;
     protected long rowId = 0;
     /** If the table has been updated or never read, rowCount is set to -1 (unknown) */
-    private long cachedRowCount = -1;
+    protected long cachedRowCount = -1;
     private int cachedColumnCount = -1;
     protected BidiMap<String, Integer> cachedColumnNames;
     private boolean wasNull = true;

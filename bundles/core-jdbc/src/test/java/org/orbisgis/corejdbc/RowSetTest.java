@@ -49,6 +49,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -390,5 +391,139 @@ public class RowSetTest {
             }
         }
 
+    }
+
+    @Test
+    public void testRowSetEditionPK() throws SQLException {
+        RowSetFactory factory = new DataManagerImpl(dataSource);
+        JdbcRowSet rs = factory.createJdbcRowSet();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer primary key, str varchar(30), flt float)");
+            st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
+            rs.setCommand("SELECT * FROM TEST");
+            rs.execute();
+            while(rs.next()) {
+                if(rs.getInt("id") == 42) {
+                    break;
+                }
+            }
+            rs.updateInt("id", 43);
+            assertEquals(42, rs.getInt("ID"));
+            rs.updateRow();
+            rs.close();
+            try(ResultSet rs2 = st.executeQuery("SELECT ID FROM TEST WHERE STR = 'marvin'")) {
+                assertTrue(rs2.next());
+                assertEquals(43, rs2.getInt("ID"));
+            }
+        }
+
+    }
+
+
+    @Test
+    public void testRowSetMultipleEdition() throws SQLException {
+        RowSetFactory factory = new DataManagerImpl(dataSource);
+        JdbcRowSet rs = factory.createJdbcRowSet();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer primary key, str varchar(30), flt float)");
+            st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
+            rs.setCommand("SELECT * FROM TEST");
+            rs.execute();
+            while(rs.next()) {
+                if(rs.getInt("id") == 42) {
+                    break;
+                }
+            }
+            rs.updateDouble("flt", 15.);
+            rs.updateString("str", "ultimate answer");
+            assertEquals(10.1010, rs.getDouble("flt"), 1e-6);
+            assertEquals("marvin", rs.getString("str"));
+            rs.updateRow();
+            assertEquals(15., rs.getDouble("flt"), 1e-6);
+            assertEquals("ultimate answer", rs.getString("str"));
+            try(ResultSet rs2 = st.executeQuery("SELECT FLT,STR FROM TEST WHERE ID = 42")) {
+                assertTrue(rs2.next());
+                assertEquals(15., rs2.getDouble("flt"), 1e-6);
+                assertEquals("ultimate answer", rs2.getString("str"));
+            }
+        }
+
+    }
+
+    @Test
+    public void testRowSetInsert() throws SQLException {
+        RowSetFactory factory = new DataManagerImpl(dataSource);
+        JdbcRowSet rs = factory.createJdbcRowSet();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer primary key, str varchar(30))");
+            rs.setCommand("SELECT * FROM TEST");
+            rs.execute();
+            rs.moveToInsertRow();
+            rs.updateInt("id", 1337);
+            rs.updateString("str", "leet");
+            rs.insertRow();
+            rs.updateInt("id", 1984);
+            rs.updateString("str", "big brother");
+            rs.insertRow();
+        }
+    }
+
+    @Test
+    public void testUndoRowSetInsert() throws SQLException {
+        DataManager factory = new DataManagerImpl(dataSource);
+        JdbcRowSet rs = factory.createJdbcRowSet();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer primary key, str varchar(30))");
+            ListenerList listenerList = new ListenerList();
+            factory.addTableEditListener("TEST", listenerList, false);
+            rs.setCommand("SELECT * FROM TEST");
+            rs.execute();
+            rs.moveToInsertRow();
+            rs.updateInt("id", 1337);
+            rs.updateString("str", "leet");
+            rs.insertRow();
+            assertEquals(1, listenerList.eventList.size());
+            rs.updateInt("id", 1984);
+            rs.updateString("str", "big brother");
+            assertEquals(1, listenerList.eventList.size());
+            rs.insertRow();
+            rs.close();
+            assertEquals(2, listenerList.eventList.size());
+            // Undo last event
+            listenerList.eventList.remove(1).getUndoableEdit().undo();
+            // Check table content
+            try(ResultSet resultSet = st.executeQuery("SELECT * FROM TEST")) {
+                assertTrue(resultSet.next());
+                assertEquals("leet", resultSet.getString("str"));
+                assertFalse(resultSet.next());
+            }
+            // Undo to empty table
+            listenerList.eventList.remove(0).getUndoableEdit().undo();
+            // Check table content
+            try(ResultSet resultSet = st.executeQuery("SELECT * FROM TEST")) {
+                assertFalse(resultSet.next());
+            }
+        }
+    }
+
+    private static class ListenerList implements TableEditListener {
+        public List<TableEditEvent> eventList = new ArrayList<>();
+
+        @Override
+        public void tableChange(TableEditEvent event) {
+            eventList.add(event);
+        }
     }
 }

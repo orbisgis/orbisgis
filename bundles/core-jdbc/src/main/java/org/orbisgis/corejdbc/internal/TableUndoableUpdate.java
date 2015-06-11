@@ -68,7 +68,11 @@ public class TableUndoableUpdate implements TableUndoableEdit {
 
     @Override
     public void undo() throws SQLException {
-        doUpdate(oldValue);
+        if(pkName.equals(columnName)) {
+            doUpdate((Long)newValue, oldValue);
+        } else {
+            doUpdate(rowIdentifier, oldValue);
+        }
     }
 
     @Override
@@ -76,18 +80,18 @@ public class TableUndoableUpdate implements TableUndoableEdit {
         return true;
     }
 
-    private void doUpdate(Object value) throws SQLException {
+    private void doUpdate(Long pk, Object value) throws SQLException {
         try(Connection connection = dataSource.getConnection();
             PreparedStatement st = connection.prepareStatement("UPDATE "+tableLocation+" SET "+columnName+" = ? WHERE "+pkName+" = ?")) {
             st.setObject(1, value);
-            st.setLong(2, rowIdentifier);
+            st.setLong(2, pk);
             st.execute();
         }
     }
 
     @Override
     public void redo() throws SQLException {
-        doUpdate(newValue);
+        doUpdate(rowIdentifier, newValue);
     }
 
     @Override

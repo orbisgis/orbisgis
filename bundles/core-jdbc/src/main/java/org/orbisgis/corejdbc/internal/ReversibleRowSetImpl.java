@@ -102,9 +102,19 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
         }
         if(pk_name.isEmpty() || !cachedColumnNames.containsKey(pk_name)) {
             throw new SQLException(I18N.tr("Edition is disabled on table without single numeric primary key."));
-        } else if(cachedColumnNames.get(pk_name) == column) {
-            throw new SQLException(I18N.tr("Can not edit primary key values"));
         }
+        //else if(cachedColumnNames.get(pk_name) == column) {
+        //    throw new SQLException(I18N.tr("Can not edit primary key values"));
+        //}
+    }
+
+
+    @Override
+    protected void checkCurrentRow() throws SQLException {
+        if(insertRow != null) {
+            throw new SQLException(I18N.tr("On insert row"));
+        }
+        super.checkCurrentRow();
     }
 
     @Override
@@ -206,7 +216,7 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
     public void updateObject(int i, Object o) throws SQLException {
         checkUpdate(i);
         if(insertRow != null) {
-            insertRow.setValue(i, o);
+            insertRow.setValue(getColumnName(i), o);
         } else {
             if(updateRow == null) {
                 updateRow = new TableUndoableUpdate[getColumnCount()];
@@ -316,8 +326,9 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
             throw new SQLException(I18N.tr("RowSet not moved to insert row"));
         }
         insertRow.redo();
+        cachedRowCount++;
         manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), insertRow));
-        insertRow = null;
+        moveToInsertRow();
     }
 
     @Override
@@ -326,17 +337,27 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
             throw new SQLException("On insert row");
         }
         if(updateRow != null) {
-            for(TableUndoableUpdate update : updateRow) {
-                if(update != null) {
+            int pkColumnId = cachedColumnNames.get(pk_name);
+            for(int updateColumn = 0; updateColumn < updateRow.length; updateColumn++) {
+                TableUndoableUpdate update = updateRow[updateColumn];
+                if(update != null && updateColumn != pkColumnId ) {
                     update.redo();
                     manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), update));
                 }
             }
-            updateRow = null;
-            cache.remove(rowId);
-            currentRow = null;
-            currentBatch.clear();
-            currentBatchId = -1;
+            if(updateRow[pkColumnId] != null) {
+                TableUndoableUpdate update = updateRow[pkColumnId];
+                update.redo();
+                manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), update));
+                refreshRow();
+                updateRow = null;
+            } else {
+                updateRow = null;
+                cache.remove(rowId);
+                currentRow = null;
+                currentBatch.clear();
+                currentBatchId = -1;
+            }
         }
     }
 
@@ -352,12 +373,11 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
 
     @Override
     public void moveToInsertRow() throws SQLException {
-        insertRow = new TableUndoableInsert(dataSource, location, pk_name, getColumnCount());
+        insertRow = new TableUndoableInsert(dataSource, location, pk_name, isH2);
     }
 
     @Override
     public void moveToCurrentRow() throws SQLException {
-        insertRow = null;
         absolute((int)rowId);
     }
 
