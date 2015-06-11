@@ -599,6 +599,33 @@ public class RowSetTest {
                 assertEquals(15., rs2.getDouble("flt"), 1e-6);
             }
         }
+    }
 
+    @Test
+    public void testDeleteRow() throws SQLException {
+
+        DataManager factory = new DataManagerImpl(dataSource);
+        ReversibleRowSet rs = factory.createReversibleRowSet();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer primary key, str varchar(30), flt float)");
+            ListenerList listenerList = new ListenerList();
+            factory.addTableEditListener("TEST", listenerList, false);
+            st.execute("insert into test values (42, 'marvin', 10.1010)");
+            rs.setCommand("SELECT * FROM TEST");
+            rs.execute();
+            assertTrue(rs.next());
+            rs.deleteRow();
+            assertEquals(0, rs.getRowCount());
+            assertEquals(1, listenerList.eventList.size());
+            listenerList.eventList.get(0).getUndoableEdit().undo();
+            rs.refreshRow();
+            assertEquals(1, rs.getRowCount());
+            listenerList.eventList.get(0).getUndoableEdit().redo();
+            rs.refreshRow();
+            assertEquals(0, rs.getRowCount());
+        }
     }
 }

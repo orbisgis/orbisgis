@@ -363,12 +363,19 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
 
     @Override
     public void deleteRow() throws SQLException {
-        // TODO
+        checkCurrentRow();
+        TableUndoableDelete deleteEvt = new TableUndoableDelete(dataSource, location, pk_name, isH2);
+        for(int idColumn = 0; idColumn < currentRow.length; idColumn++) {
+            deleteEvt.setValue(getColumnLabel(idColumn + 1), currentRow[idColumn]);
+        }
+        deleteEvt.redo();
+        refreshRow();
+        manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), deleteEvt));
     }
 
     @Override
     public void cancelRowUpdates() throws SQLException {
-        // TODO
+        updateRow = null;
     }
 
     @Override

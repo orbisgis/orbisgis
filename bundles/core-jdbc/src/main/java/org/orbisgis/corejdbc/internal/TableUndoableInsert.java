@@ -44,18 +44,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Undoable insertion on a table through JDBC.
  * @author Nicolas Fortin
  */
 public class TableUndoableInsert implements TableUndoableEdit {
 
     public static final String EDIT_IDENTIFIER = "INSERT";
-    private static final I18n I18N = I18nFactory.getI18n(TableUndoableInsert.class);
-    private final DataSource dataSource;
-    private final TableLocation tableLocation;
-    private final String pkName;
-    private final Map<String, Object> newValues;
-    private Long primaryKey = null;
-    private boolean isH2;
+    protected static final I18n I18N = I18nFactory.getI18n(TableUndoableInsert.class);
+    protected final DataSource dataSource;
+    protected final TableLocation tableLocation;
+    protected final String pkName;
+    protected final Map<String, Object> newValues;
+    protected Long primaryKey = null;
+    protected boolean isH2;
 
     public TableUndoableInsert(DataSource dataSource, TableLocation tableLocation, String pkName, boolean isH2) {
         this.dataSource = dataSource;
@@ -71,7 +72,7 @@ public class TableUndoableInsert implements TableUndoableEdit {
 
     @Override
     public void undo() throws SQLException {
-        if(canUndo()) {
+        if(primaryKey != null) {
             try(Connection connection = dataSource.getConnection();
                 PreparedStatement st = connection.prepareStatement("DELETE FROM "+tableLocation+" WHERE "+pkName+" = ?")) {
                 st.setLong(1, primaryKey);
@@ -97,7 +98,7 @@ public class TableUndoableInsert implements TableUndoableEdit {
             if(!parameters.isEmpty()) {
                 query.append(", ");
             }
-            query.append(TableLocation.quoteIdentifier(entry.getKey(),isH2));
+            query.append(TableLocation.quoteIdentifier(entry.getKey(), isH2));
             parameters.add(entry.getValue());
         }
         query.append(") VALUES (");
