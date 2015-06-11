@@ -556,4 +556,49 @@ public class RowSetTest {
             assertEquals(1l, rs.getRowCount());
         }
     }
+
+
+
+    @Test
+    public void testRowSetRedoUndoEdition() throws SQLException {
+        DataManager factory = new DataManagerImpl(dataSource);
+        JdbcRowSet rs = factory.createJdbcRowSet();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer primary key, str varchar(30), flt float)");
+            ListenerList listenerList = new ListenerList();
+            factory.addTableEditListener("TEST", listenerList, false);
+            st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
+            rs.setCommand("SELECT * FROM TEST");
+            rs.execute();
+            while(rs.next()) {
+                if(rs.getInt("id") == 42) {
+                    break;
+                }
+            }
+            rs.updateDouble("flt", 15.);
+            assertEquals(10.1010, rs.getDouble("flt"), 1e-6);
+            rs.updateRow();
+            assertEquals(15., rs.getDouble("flt"), 1e-6);
+            try(ResultSet rs2 = st.executeQuery("SELECT FLT FROM TEST WHERE ID = 42")) {
+                assertTrue(rs2.next());
+                assertEquals(15., rs2.getDouble("flt"), 1e-6);
+            }
+            // Undo
+            listenerList.eventList.get(0).getUndoableEdit().undo();
+            try(ResultSet rs2 = st.executeQuery("SELECT FLT FROM TEST WHERE ID = 42")) {
+                assertTrue(rs2.next());
+                assertEquals(10.1010, rs2.getDouble("flt"), 1e-6);
+            }
+            // Redo
+            listenerList.eventList.get(0).getUndoableEdit().redo();
+            try(ResultSet rs2 = st.executeQuery("SELECT FLT FROM TEST WHERE ID = 42")) {
+                assertTrue(rs2.next());
+                assertEquals(15., rs2.getDouble("flt"), 1e-6);
+            }
+        }
+
+    }
 }
