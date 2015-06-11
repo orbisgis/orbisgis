@@ -363,6 +363,7 @@ public class RowSetTest {
         }
     }
 
+    @Test
     public void testRowSetEdition() throws SQLException {
         RowSetFactory factory = new DataManagerImpl(dataSource);
         JdbcRowSet rs = factory.createJdbcRowSet();
@@ -384,6 +385,7 @@ public class RowSetTest {
             rs.updateRow();
             assertEquals(15., rs.getDouble("flt"), 1e-6);
             try(ResultSet rs2 = st.executeQuery("SELECT FLT FROM TEST WHERE ID = 42")) {
+                assertTrue(rs2.next());
                 assertEquals(15., rs2.getDouble("flt"), 1e-6);
             }
         }

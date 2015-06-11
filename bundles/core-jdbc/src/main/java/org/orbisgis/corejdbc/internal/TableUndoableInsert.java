@@ -34,65 +34,49 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
-import javax.swing.undo.UndoableEdit;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
- * Call to {@link javax.sql.RowSet#updateObject(int, Object)}
  * @author Nicolas Fortin
  */
-public class TableUndoableUpdate implements TableUndoableEdit {
-    public static final String EDIT_IDENTIFIER = "UPDATE";
-    private static final I18n I18N = I18nFactory.getI18n(TableUndoableUpdate.class);
+public class TableUndoableInsert implements TableUndoableEdit {
+
+    public static final String EDIT_IDENTIFIER = "INSERT";
+    private static final I18n I18N = I18nFactory.getI18n(TableUndoableInsert.class);
     private final DataSource dataSource;
     private final TableLocation tableLocation;
     private final String pkName;
-    private final long rowIdentifier;
-    private final String columnName;
-    private final Object oldValue;
-    private final Object newValue;
+    private final Object[] newValues;
 
-
-    public TableUndoableUpdate(DataSource dataSource, TableLocation tableLocation, String pkName, long rowIdentifier,
-                               String columnName, Object oldValue, Object newValue) {
+    public TableUndoableInsert(DataSource dataSource, TableLocation tableLocation, String pkName, int columnCount) {
         this.dataSource = dataSource;
         this.tableLocation = tableLocation;
         this.pkName = pkName;
-        this.rowIdentifier = rowIdentifier;
-        this.columnName = columnName;
-        this.oldValue = oldValue;
-        this.newValue = newValue;
+        this.newValues = new Object[columnCount];
+    }
+
+    public void setValue(int column, Object value) {
+        newValues[column] = value;
     }
 
     @Override
     public void undo() throws SQLException {
-        doUpdate(oldValue);
+
     }
 
     @Override
     public boolean canUndo() {
-        return true;
-    }
-
-    private void doUpdate(Object value) throws SQLException {
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement st = connection.prepareStatement("UPDATE "+tableLocation+" SET "+columnName+" = ? WHERE "+pkName+" = ?")) {
-            st.setObject(1, value);
-            st.setLong(2, rowIdentifier);
-            st.execute();
-        }
+        return false;
     }
 
     @Override
     public void redo() throws SQLException {
-        doUpdate(newValue);
+
     }
 
     @Override
     public boolean canRedo() {
-        return true;
+        return false;
     }
 
     @Override
@@ -102,27 +86,26 @@ public class TableUndoableUpdate implements TableUndoableEdit {
 
     @Override
     public boolean isSignificant() {
-        return true;
+        return false;
     }
 
     @Override
     public String getEditIdentifier() {
-        return EDIT_IDENTIFIER;
+        return null;
     }
 
     @Override
     public String getPresentationName() {
-        return I18N.tr("Update of the column {0}", columnName);
+        return null;
     }
 
     @Override
     public String getUndoPresentationName() {
-        return I18N.tr("Revert the update of the column {0}", columnName);
+        return null;
     }
 
     @Override
     public String getRedoPresentationName() {
-        return I18N.tr("Redo the update of the column {0}", columnName);
+        return null;
     }
-
 }

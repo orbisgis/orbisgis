@@ -30,6 +30,7 @@ package org.orbisgis.corejdbc.internal;
 
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.commons.progress.ProgressMonitor;
@@ -57,6 +58,8 @@ import java.sql.Timestamp;
  */
 public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRowSet {
     private DataManager manager;
+    private TableUndoableUpdate[] updateRow = null;
+    private TableUndoableInsert insertRow = null;
 
 
     public ReversibleRowSetImpl(DataSource dataSource, DataManager manager) {
@@ -64,10 +67,17 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
         this.manager = manager;
     }
 
+    @Override
+    public boolean absolute(int i) throws SQLException {
+        updateRow = null;
+        insertRow = null;
+        return super.absolute(i);
+    }
+
     /**
      * Initialize this row set
      * @param location Table location
-     * @param pk_name Primary key name {@link org.orbisgis.core.jdbc.ReadRowSetImpl#getPkName(javax.sql.DataSource, org.h2gis.utilities.TableLocation)}
+     * @param pk_name Primary key name {@link ReadRowSetImpl#getPkName()}
      * @param pm Progress monitor Progression of primary key caching
      */
     public ReversibleRowSetImpl(DataSource dataSource, DataManager manager, TableLocation location, String pk_name, ProgressMonitor pm) throws SQLException {
@@ -194,7 +204,15 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
 
     @Override
     public void updateObject(int i, Object o) throws SQLException {
-        //TODO
+        checkUpdate(i);
+        if(insertRow != null) {
+            insertRow.setValue(i, o);
+        } else {
+            if(updateRow == null) {
+                updateRow = new TableUndoableUpdate[getColumnCount()];
+            }
+            updateRow[i - 1] = new TableUndoableUpdate(dataSource, location, pk_name, getPk(), getColumnName(i), getObject(i), o);
+        }
     }
 
     @Override
@@ -294,12 +312,32 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
 
     @Override
     public void insertRow() throws SQLException {
-        // TODO
+        if(insertRow == null) {
+            throw new SQLException(I18N.tr("RowSet not moved to insert row"));
+        }
+        insertRow.redo();
+        manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), insertRow));
+        insertRow = null;
     }
 
     @Override
     public void updateRow() throws SQLException {
-        // TODO
+        if(insertRow != null) {
+            throw new SQLException("On insert row");
+        }
+        if(updateRow != null) {
+            for(TableUndoableUpdate update : updateRow) {
+                if(update != null) {
+                    update.redo();
+                    manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), update));
+                }
+            }
+            updateRow = null;
+            cache.remove(rowId);
+            currentRow = null;
+            currentBatch.clear();
+            currentBatchId = -1;
+        }
     }
 
     @Override
@@ -314,12 +352,13 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
 
     @Override
     public void moveToInsertRow() throws SQLException {
-        // TODO
+        insertRow = new TableUndoableInsert(dataSource, location, pk_name, getColumnCount());
     }
 
     @Override
     public void moveToCurrentRow() throws SQLException {
-        // TODO
+        insertRow = null;
+        absolute((int)rowId);
     }
 
     @Override
