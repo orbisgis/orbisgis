@@ -23,19 +23,23 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Annotation for the Metadata declaration.
+ * Annotation for the DescriptionType declaration.
+ *
+ * @see org.orbisgis.orbistoolbox.process.DescriptionType
  *
  * @author Sylvain PALOMINOS
  */
 
 @Retention(RetentionPolicy.RUNTIME)
-@interface Metadata {
-    /** Title of the documentation. Normally available for display to a human. */
-    String title()
-    /** Type of the xlink, fixed to simple. */
-    String linkType() default "simple"
-    /** Role identifier, indicating the role of the linked document. */
-    String role()
-    /** Reference to a documentation site for a process, input, or output. */
-    String href()
+@interface DescriptionType {
+    /** Title of a process, input, and output. Normally available for display to a human. */
+    String title() default ""
+    /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
+    String abstrac() default ""
+    /** Coma separated keywords that characterize a process, its inputs, and outputs. */
+    String keywords() default ""
+    /** Unambiguous identifier of a process, input, and output. */
+    String identifier() default ""
+    /** Reference to additional metadata about this item. */
+    Metadata[] metadata() default []
 }

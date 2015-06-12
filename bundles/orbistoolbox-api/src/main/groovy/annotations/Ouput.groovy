@@ -19,23 +19,24 @@
 
 package annotations
 
+import groovy.transform.AnnotationCollector
+import groovy.transform.Field
+
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Annotation for the Metadata declaration.
+ * This annotation in used to declare the WPS Output fields.
  *
  * @author Sylvain PALOMINOS
  */
-
 @Retention(RetentionPolicy.RUNTIME)
-@interface Metadata {
-    /** Title of the documentation. Normally available for display to a human. */
-    String title()
-    /** Type of the xlink, fixed to simple. */
-    String linkType() default "simple"
-    /** Role identifier, indicating the role of the linked document. */
-    String role()
-    /** Reference to a documentation site for a process, input, or output. */
-    String href()
-}
+@interface WpsOutput {}
+
+/**
+ * Thanks to the annotation AnnotationCollector, this annotation combine the annotation Field and WpsInput.
+ *
+ * @author Sylvain PALOMINOS
+ */
+@AnnotationCollector([Field, WpsOutput, DescriptionType])
+public @interface Output {}
