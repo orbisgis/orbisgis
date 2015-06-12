@@ -17,29 +17,34 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package annotations
+package org.orbisgis.orbistoolboxapi.annotations
 
+import groovy.transform.AnnotationCollector
+import groovy.transform.Field
+
+import java.lang.annotation.ElementType
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
+import java.lang.annotation.Target;
 
 /**
- * Annotation for the DescriptionType declaration.
- *
- * @see org.orbisgis.orbistoolbox.process.DescriptionType
+ * This annotation in used to declare the WPS Input fields.
  *
  * @author Sylvain PALOMINOS
  */
-
 @Retention(RetentionPolicy.RUNTIME)
-@interface DescriptionType {
-    /** Title of a process, input, and output. Normally available for display to a human. */
-    String title() default ""
-    /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
-    String abstrac() default ""
-    /** Coma separated keywords that characterize a process, its inputs, and outputs. */
-    String keywords() default ""
-    /** Unambiguous identifier of a process, input, and output. */
-    String identifier() default ""
-    /** Reference to additional metadata about this item. */
-    Metadata[] metadata() default []
+@interface WpsInput {
+    /** Minimum number of times that values for this parameter are required. */
+    int minOccurs() default 1
+    /** Maximum number of times that this parameter may be present. */
+    int maxOccurs() default 1
 }
+
+/**
+ * Thanks to the annotation AnnotationCollector, this annotation combine the annotation Field and WpsInput.
+ *
+ * @author Sylvain PALOMINOS
+ */
+@Target(ElementType.FIELD)
+@AnnotationCollector([Field, WpsInput, DescriptionType])
+public @interface Input {}

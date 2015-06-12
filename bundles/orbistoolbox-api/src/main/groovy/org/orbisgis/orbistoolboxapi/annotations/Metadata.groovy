@@ -17,25 +17,25 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package annotations
+package org.orbisgis.orbistoolboxapi.annotations
 
-import groovy.transform.AnnotationCollector
-import groovy.transform.Field
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
 
 /**
- * This annotation in used to declare the WPS Process.
+ * Annotation for the Metadata declaration.
  *
  * @author Sylvain PALOMINOS
  */
-@interface WPSProcess {
-    /** Language of the process. */
-    String language() default "en"
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface Metadata {
+    /** Title of the documentation. Normally available for display to a human. */
+    String title()
+    /** Type of the xlink, fixed to simple. */
+    String linkType() default "simple"
+    /** Role identifier, indicating the role of the linked document. */
+    String role()
+    /** Reference to a documentation site for a process, input, or output. */
+    String href()
 }
-
-/**
- * Thanks to the annotation AnnotationCollector, this annotation combine the annotation Field and WpsInput.
- *
- * @author Sylvain PALOMINOS
- */
-@AnnotationCollector([Field, WPSProcess, DescriptionType])
-public @interface Process {}
