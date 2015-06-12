@@ -29,11 +29,10 @@
 
 package org.orbisgis.tablegui.impl;
 
-import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -58,7 +57,7 @@ public class ActionAddRow extends AbstractAction {
      * @param editable Table editable instance
      */
     public ActionAddRow(TableEditableElement editable) {
-        super(I18N.tr("Add a row"), OrbisGISIcon.getIcon("add_row"));
+        super(I18N.tr("Add a row"), TableEditorIcon.getIcon("add_row"));
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
         putValue(ActionTools.MENU_ID, TableEditorActions.A_ADD_ROW);
         this.editable = editable;

@@ -179,7 +179,11 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
         @Override
         public void tableChange(TableEditEvent event) {
-            executorService.execute(new RefreshTableJob(tableModel, tableEditableElement));
+            if(event.getUndoableEdit() == null) {
+                executorService.execute(new RefreshTableJob(tableModel, tableEditableElement));
+            } else {
+                undoManager.addEdit(new EditorUndoableEdit(event.getUndoableEdit()));
+            }
         }
 
         private List<Action> getDockActions() {
@@ -329,7 +333,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         public void onApplySelectionFilter() {
                 List<TableSelectionFilter> filters = filterManager.getFilters();
                 if(!filterRunning.getAndSet(true)) {
-                        executorService.execute(new SearchJob(filters.get(0), table, tableEditableElement,filterRunning));
+                        executorService.execute(new SearchJob(filters.get(0), table, tableEditableElement,
+                                filterRunning));
                 } else {
                         LOGGER.info(I18N.tr("Searching request is already launched. Please wait a moment, or cancel it."));
                 }
@@ -517,8 +522,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         LOGGER.error("MapContext lost between popup creation and click");
                         return;
                 }                
-                executorService.execute(new ZoomToSelectedFeatures(dataManager, tableEditableElement.getTableReference()
-                        , tableEditableElement.getSelection(), mapContext));
+                executorService.execute(new ZoomToSelectedFeatures(dataManager, tableEditableElement
+                        .getTableReference(), tableEditableElement.getSelection(), mapContext));
         }
         
         /**
@@ -552,9 +557,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     // If newName is not null, then the user clicked OK and entered
                     // a valid name.
                     if (newName != null) {
-                        executorService.execute(new CreateSourceFromSelection(
-                                        dataSource,
-                                        tableEditableElement.getSelection(), tableEditableElement.getTableReference(), newName));
+                        executorService.execute(new CreateSourceFromSelection(dataSource, tableEditableElement
+                                .getSelection(), tableEditableElement.getTableReference(), newName));
                     }
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
@@ -746,7 +750,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 if (selectionModelRowId.isEmpty() && tableSorter.isFiltered()) {
                         selectionModelRowId.addAll(tableSorter.getViewToModelIndex());
                 }
-                executorService.execute(new ComputeFieldStatistics(selectionModelRowId, dataSource, popupCellAdress.x, tableEditableElement.getTableReference()));
+                executorService.execute(new ComputeFieldStatistics(selectionModelRowId, dataSource, popupCellAdress
+                        .x, tableEditableElement.getTableReference()));
         }
 
         /**

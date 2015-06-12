@@ -31,8 +31,8 @@ package org.orbisgis.tablegui.impl;
 
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -57,7 +57,7 @@ public class ActionAddColumn extends AbstractAction implements ActionDispose {
      * @param editable Table editable instance
      */
     public ActionAddColumn(TableEditableElement editable) {
-        super(I18N.tr("Add a column"), OrbisGISIcon.getIcon("add_field"));
+        super(I18N.tr("Add a column"), TableEditorIcon.getIcon("add_field"));
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
         putValue(ActionTools.MENU_ID,TableEditorActions.A_ADD_FIELD);
         this.editable = editable;

@@ -30,8 +30,8 @@ package org.orbisgis.tablegui.impl;
 
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 
 import javax.swing.undo.CannotRedoException;
@@ -46,7 +46,7 @@ public class ActionRedo extends ActionAbstractEdition {
     private final UndoManager undoManager;
 
     public ActionRedo(TableEditableElement editable,UndoManager undoManager) {
-        super(I18N.tr("Redo"),OrbisGISIcon.getIcon("edit-redo"),editable);
+        super(I18N.tr("Redo"), TableEditorIcon.getIcon("edit-redo"),editable);
         this.undoManager = undoManager;
         putValue(SHORT_DESCRIPTION,I18N.tr("Redo the last modification"));
         putValue(ActionTools.MENU_ID, TableEditorActions.A_REDO);

@@ -32,8 +32,8 @@ package org.orbisgis.tablegui.impl;
 import org.orbisgis.editorjdbc.jobs.DeleteSelectedRows;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -61,7 +61,7 @@ public class ActionRemoveRow extends AbstractAction {
          * @param editable Table editable instance
          */
         public ActionRemoveRow(TableEditableElement editable, Component parentComponent,ExecutorService executorService) {
-                super(I18N.tr("Delete selected rows"), OrbisGISIcon.getIcon("delete_row"));
+                super(I18N.tr("Delete selected rows"), TableEditorIcon.getIcon("delete_row"));
                 this.parentComponent = parentComponent;
                 this.executorService = executorService;
                 putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);

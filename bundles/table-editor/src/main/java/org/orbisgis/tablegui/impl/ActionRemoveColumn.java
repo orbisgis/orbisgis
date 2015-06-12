@@ -34,9 +34,9 @@ import org.orbisgis.sif.UIFactory;
 
 import org.orbisgis.sif.components.SQLMessageDialog;
 import org.orbisgis.sif.components.actions.ActionTools;
+import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.SourceTable;
 import org.orbisgis.tablegui.impl.ext.TableEditorPopupActions;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +67,7 @@ public class ActionRemoveColumn extends AbstractAction {
          * @param editor Table editor instance
          */
         public ActionRemoveColumn(SourceTable editor, Component parentComponent) {
-                super(I18N.tr("Remove a column"), OrbisGISIcon.getIcon("delete_field"));
+                super(I18N.tr("Remove a column"), TableEditorIcon.getIcon("delete_field"));
                 putValue(ActionTools.MENU_ID, TableEditorPopupActions.A_REMOVE_COLUMN);
                 this.editor = editor;
                 this.parentComponent = parentComponent;
