@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.process;
+package org.orbisgis.orbistoolbox.process.model;
 
 import java.util.ArrayList;
 import java.util.List;

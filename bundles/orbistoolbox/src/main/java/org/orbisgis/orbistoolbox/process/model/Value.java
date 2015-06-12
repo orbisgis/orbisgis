@@ -17,39 +17,41 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.process;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
+package org.orbisgis.orbistoolbox.process.model;
 
 /**
- * Enumeration of the LiteralData type.
+ * Simple value. The value is represented as a String.
+ * This class comes from the OWS specification : ows:ValueType and ows:Value
  *
  * @author Sylvain PALOMINOS
  */
 
+public class Value extends Values {
+    /** String representation of the value. */
+    private double value;
 
-public enum DataType {
-    STRING("http://www.w3.org/2001/XMLSchema#string"),
-    INTEGER("http://www.w3.org/2001/XMLSchema#integer"),
-    DECIMAL("http://www.w3.org/2001/XMLSchema#decimal"),
-    BOOLEAN("http://www.w3.org/2001/XMLSchema#boolean"),
-    DOUBLE("http://www.w3.org/2001/XMLSchema#double"),
-    FLOAT("http://www.w3.org/2001/XMLSchema#float");
-
-    /** URI for the data type. */
-    private URI uri;
-
-    DataType(String uri) {
-        try {
-            this.uri = new URI(uri);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+    /**
+     * Main constructor in which the value must be passed as a String.
+     * The value can not be null.
+     * @param value Not null value.
+     */
+    public Value(double value) {
+        this.value = value;
     }
 
-    public URI getUri() {
-        return uri;
+    /**
+     * Returns the value.
+     * @return The value.
+     */
+    public double getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the the value. The value given as parameter can not be null.
+     * @param value Not null value.
+     */
+    public void setValue(double value) {
+        this.value = value;
     }
 }

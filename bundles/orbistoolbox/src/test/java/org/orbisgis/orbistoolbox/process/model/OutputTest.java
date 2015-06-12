@@ -17,10 +17,14 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.process;
+package org.orbisgis.orbistoolbox.process.model;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.orbisgis.orbistoolbox.process.model.DataDescription;
+import org.orbisgis.orbistoolbox.process.model.Format;
+import org.orbisgis.orbistoolbox.process.model.Output;
+import org.orbisgis.orbistoolbox.process.model.RawData;
 
 import java.net.URI;
 import java.net.URISyntaxException;

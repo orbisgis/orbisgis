@@ -17,14 +17,39 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
+package org.orbisgis.orbistoolbox.process.model;
 
-package org.orbisgis.orbistoolbox.process;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 
 /**
- * This class represent a value and is the super class of Range and Value.
+ * Enumeration of the LiteralData type.
  *
  * @author Sylvain PALOMINOS
  */
 
-public abstract class Values {
+
+public enum DataType {
+    STRING("http://www.w3.org/2001/XMLSchema#string"),
+    INTEGER("http://www.w3.org/2001/XMLSchema#integer"),
+    DECIMAL("http://www.w3.org/2001/XMLSchema#decimal"),
+    BOOLEAN("http://www.w3.org/2001/XMLSchema#boolean"),
+    DOUBLE("http://www.w3.org/2001/XMLSchema#double"),
+    FLOAT("http://www.w3.org/2001/XMLSchema#float");
+
+    /** URI for the data type. */
+    private URI uri;
+
+    DataType(String uri) {
+        try {
+            this.uri = new URI(uri);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public URI getUri() {
+        return uri;
+    }
 }
