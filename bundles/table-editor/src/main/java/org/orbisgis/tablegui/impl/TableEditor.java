@@ -613,7 +613,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         EventHandler.create(ActionListener.class,this,
                         "onMenuOptimalWidth"));
                 pop.add(optimalWidth);
-                // Additionnal functions for specific columns
+                // Additional functions for specific columns
                 boolean isGeometryField = false;
                 try(Connection connection = dataSource.getConnection()) {
                     List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableEditableElement.getTableReference()));
@@ -842,8 +842,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 tableScrollPane.getVerticalScrollBar().setBlockIncrement((int)(table.getHeight() / (TABLE_SCROLL_PERC / 100.)));
         }
         private void initPopupActions() {
-                // TODO Edition
-                // popupActions.addAction(new ActionRemoveColumn(this));
+                if(tableEditableElement.isEditable()) {
+                    popupActions.addAction(new ActionRemoveColumn(this));
+                }
         }
         /**
          * Frame visibility state change
@@ -851,7 +852,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
          */
         public void onChangeVisibility(boolean visible) {
                 if(!visible) {
-                        dataManager.removeTableEditListener(tableEditableElement.getTableReference() ,this);
+                        dataManager.removeTableEditListener(tableEditableElement.getTableReference(), this);
                         if(mapContext != null) {
                             mapContext.getLayerModel().removeLayerListenerRecursively(layerListener);
                         }
@@ -943,15 +944,15 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         if (!onUpdateEditableSelection.getAndSet(true)) {
                                 SwingUtilities.invokeLater(new Runnable() {
 
-                                        @Override
-                                        public void run() {
-                                                try {
-                                                        updateEditableSelection();
-                                                } finally {
-                                                        onUpdateEditableSelection.set(false);
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            updateEditableSelection();
+                                        } finally {
+                                            onUpdateEditableSelection.set(false);
 
-                                                }
                                         }
+                                    }
                                 });
                         }
                 }
