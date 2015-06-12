@@ -38,6 +38,7 @@ import org.orbisgis.sif.edition.EditableElementException;
  */
 public interface EditableSource extends EditableElement {
     public static final String EDITABLE_RESOURCE_TYPE = "EditableSource";
+    public static final String PROP_EDITING = "editing";
 
     /**
      * @return True if the table can be modified

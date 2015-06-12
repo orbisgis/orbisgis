@@ -26,13 +26,16 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
-import org.gdms.driver.DriverException;
-import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.sif.components.actions.ActionTools;
+import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.ext.TableEditorActions;
 
+
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.UndoManager;
 import java.awt.event.ActionEvent;
 
 /**
@@ -40,9 +43,11 @@ import java.awt.event.ActionEvent;
  * @author Nicolas Fortin
  */
 public class ActionRedo extends ActionAbstractEdition {
+    private final UndoManager undoManager;
 
-    public ActionRedo(TableEditableElement editable) {
+    public ActionRedo(TableEditableElement editable,UndoManager undoManager) {
         super(I18N.tr("Redo"),OrbisGISIcon.getIcon("edit-redo"),editable);
+        this.undoManager = undoManager;
         putValue(SHORT_DESCRIPTION,I18N.tr("Redo the last modification"));
         putValue(ActionTools.MENU_ID, TableEditorActions.A_REDO);
         onSourceUpdate();
@@ -50,14 +55,14 @@ public class ActionRedo extends ActionAbstractEdition {
 
     @Override
     public void onSourceUpdate() {
-        setEnabled(editable.getDataSource().canRedo());
+        setEnabled(undoManager.canRedo());
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         try {
-            editable.getDataSource().redo();
-        } catch (DriverException ex) {
+            undoManager.redo();
+        } catch (CannotRedoException ex) {
             LOGGER.error(ex.getLocalizedMessage(),ex);
         }
     }

@@ -26,14 +26,15 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
-import org.gdms.driver.DriverException;
-import org.orbisgis.view.components.actions.ActionTools;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.ext.TableEditorActions;
+import org.orbisgis.sif.components.actions.ActionTools;
+import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.icons.TableEditorIcon;
+import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 
-import javax.swing.*;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 import java.awt.event.ActionEvent;
 
 /**
@@ -41,9 +42,11 @@ import java.awt.event.ActionEvent;
  * @author Nicolas Fortin
  */
 public class ActionUndo extends ActionAbstractEdition {
+    private UndoManager undoManager;
 
-    public ActionUndo(TableEditableElement editable) {
-        super(I18N.tr("Undo"),OrbisGISIcon.getIcon("edit-undo"),editable);
+    public ActionUndo(TableEditableElement editable,UndoManager undoManager) {
+        super(I18N.tr("Undo"), TableEditorIcon.getIcon("edit-undo"),editable);
+        this.undoManager = undoManager;
         putValue(ActionTools.MENU_ID, TableEditorActions.A_UNDO);
         putValue(SHORT_DESCRIPTION,I18N.tr("Undo the last modification"));
         onSourceUpdate();
@@ -51,14 +54,14 @@ public class ActionUndo extends ActionAbstractEdition {
 
     @Override
     public void onSourceUpdate() {
-        setEnabled(editable.getDataSource().canUndo());
+        setEnabled(undoManager.canUndo());
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         try {
-            editable.getDataSource().undo();
-        } catch (DriverException ex) {
+            undoManager.undo();
+        } catch (CannotUndoException ex) {
             LOGGER.error(ex.getLocalizedMessage(),ex);
         }
     }

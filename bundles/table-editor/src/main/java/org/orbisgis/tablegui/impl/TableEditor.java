@@ -44,6 +44,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.DataSource;
 import javax.swing.*;
@@ -58,6 +59,7 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.undo.UndoManager;
 
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
@@ -109,7 +111,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         protected final static I18n I18N = I18nFactory.getI18n(TableEditor.class);
         private static final Logger LOGGER = LoggerFactory.getLogger("gui." + TableEditor.class);
         private static final int TABLE_SCROLL_PERC = 5;
-        
+        private final UndoManager undoManager = new UndoManager();
         private static final long serialVersionUID = 1L;
         private TableEditableElement tableEditableElement;
         private DockingPanelParameters dockingPanelParameters;
@@ -138,14 +140,16 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         /** Last fetched selected row in selection navigation */
         private int currentSelectionNavigation = 0;
         private EditorManager editorManager;
+        private ExecutorService executorService;
 
         /**
          * Constructor
          * @param element Source to read and edit
          */
-        public TableEditor(TableEditableElement element, DataManager dataManager, EditorManager editorManager) {
+        public TableEditor(TableEditableElement element, DataManager dataManager, EditorManager editorManager, ExecutorService executorService) {
                 super(new BorderLayout());
                 this.editorManager = editorManager;
+                this.executorService = executorService;
                 layerListener = new MCLayerListener(element);
                 this.dataManager = dataManager;
                 this.dataSource = dataManager.getDataSource();
@@ -175,7 +179,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
         @Override
         public void tableChange(TableEditEvent event) {
-            new RefreshTableJob(tableModel, tableEditableElement).execute();
+            executorService.execute(new RefreshTableJob(tableModel, tableEditableElement));
         }
 
         private List<Action> getDockActions() {
@@ -199,13 +203,11 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
                 // Edition is only available if there is a primary key
                 if(tableEditableElement.isEditable()) {
-                        //actions.add(new ActionAddColumn(tableEditableElement));
-                        //actions.add(new ActionAddRow(tableEditableElement));
-                        //actions.add(new ActionRemoveRow(tableEditableElement));
-                        //actions.add(new ActionCancel(tableEditableElement));
-                        //actions.add(new ActionUndo(tableEditableElement));
-                        //actions.add(new ActionRedo(tableEditableElement));
-                        //actions.add(new ActionSave(tableEditableElement));
+                        actions.add(new ActionAddColumn(tableEditableElement));
+                        actions.add(new ActionAddRow(tableEditableElement));
+                        actions.add(new ActionRemoveRow(tableEditableElement, this, executorService));
+                        actions.add(new ActionUndo(tableEditableElement, undoManager));
+                        actions.add(new ActionRedo(tableEditableElement, undoManager));
                         actions.add(new ActionEdition(tableEditableElement));
                 }
                 return actions;
@@ -327,7 +329,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         public void onApplySelectionFilter() {
                 List<TableSelectionFilter> filters = filterManager.getFilters();
                 if(!filterRunning.getAndSet(true)) {
-                        new SearchJob(filters.get(0), table, tableEditableElement,filterRunning).execute();
+                        executorService.execute(new SearchJob(filters.get(0), table, tableEditableElement,filterRunning));
                 } else {
                         LOGGER.info(I18N.tr("Searching request is already launched. Please wait a moment, or cancel it."));
                 }
@@ -515,8 +517,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         LOGGER.error("MapContext lost between popup creation and click");
                         return;
                 }                
-                new ZoomToSelectedFeatures(dataManager, tableEditableElement.getTableReference()
-                        , tableEditableElement.getSelection(), mapContext).execute();
+                executorService.execute(new ZoomToSelectedFeatures(dataManager, tableEditableElement.getTableReference()
+                        , tableEditableElement.getSelection(), mapContext));
         }
         
         /**
@@ -550,9 +552,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     // If newName is not null, then the user clicked OK and entered
                     // a valid name.
                     if (newName != null) {
-                        new CreateSourceFromSelection(
+                        executorService.execute(new CreateSourceFromSelection(
                                         dataSource,
-                                        tableEditableElement.getSelection(), tableEditableElement.getTableReference(), newName).execute();
+                                        tableEditableElement.getSelection(), tableEditableElement.getTableReference(), newName));
                     }
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
@@ -744,14 +746,14 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 if (selectionModelRowId.isEmpty() && tableSorter.isFiltered()) {
                         selectionModelRowId.addAll(tableSorter.getViewToModelIndex());
                 }
-                new ComputeFieldStatistics(selectionModelRowId, dataSource, popupCellAdress.x, tableEditableElement.getTableReference()).execute();
+                executorService.execute(new ComputeFieldStatistics(selectionModelRowId, dataSource, popupCellAdress.x, tableEditableElement.getTableReference()));
         }
 
         /**
          * Compute the optimal width for this column
          */
         public void onMenuOptimalWidth() {
-                new OptimalWidthJob(table, popupCellAdress.x).execute();
+                executorService.execute(new OptimalWidthJob(table, popupCellAdress.x));
         }
 
         /**
@@ -785,7 +787,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         public void addNotify() {
                 super.addNotify();
                 if(!initialised.getAndSet(true)) {
-                        new OpenEditableElement(this, tableEditableElement).execute();
+                        executorService.execute(new OpenEditableElement(this, tableEditableElement));
                 }
         }
         
@@ -843,7 +845,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         }
         private void initPopupActions() {
                 if(tableEditableElement.isEditable()) {
-                    popupActions.addAction(new ActionRemoveColumn(this));
+                    popupActions.addAction(new ActionRemoveColumn(this, this));
                 }
         }
         /**

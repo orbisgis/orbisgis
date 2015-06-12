@@ -27,21 +27,25 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
-import org.apache.log4j.Logger;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.core.Services;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.components.actions.ActionTools;
+
+import org.orbisgis.sif.components.SQLMessageDialog;
+import org.orbisgis.sif.components.actions.ActionTools;
+import org.orbisgis.tablegui.impl.ext.SourceTable;
+import org.orbisgis.tablegui.impl.ext.TableEditorPopupActions;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.ext.SourceTable;
-import org.orbisgis.view.table.ext.TableEditorPopupActions;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
 import javax.swing.*;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -54,17 +58,19 @@ import java.sql.SQLException;
  */
 public class ActionRemoveColumn extends AbstractAction {
         private final SourceTable editor;
+        private Component parentComponent;
         private static final I18n I18N = I18nFactory.getI18n(ActionRemoveColumn.class);
-        private final Logger logger = Logger.getLogger(ActionRemoveColumn.class);
+        private final Logger logger = LoggerFactory.getLogger(ActionRemoveColumn.class);
 
         /**
          * Constructor
          * @param editor Table editor instance
          */
-        public ActionRemoveColumn(SourceTable editor) {
+        public ActionRemoveColumn(SourceTable editor, Component parentComponent) {
                 super(I18N.tr("Remove a column"), OrbisGISIcon.getIcon("delete_field"));
                 putValue(ActionTools.MENU_ID, TableEditorPopupActions.A_REMOVE_COLUMN);
                 this.editor = editor;
+                this.parentComponent = parentComponent;
         }
 
         @Override
@@ -78,7 +84,7 @@ public class ActionRemoveColumn extends AbstractAction {
                 if(editor.getTableEditableElement().isEditing()) {
                         TableLocation table = TableLocation.parse(editor.getTableEditableElement().getTableReference());
                         int columnIndex = editor.getPopupCellAdress().x + 1;
-                        DataSource dataSource = Services.getService(DataSource.class);
+                        DataSource dataSource = editor.getTableEditableElement().getDataManager().getDataSource();
                         try(Connection connection = dataSource.getConnection()) {
                             String columnName = "";
                             // Read column name
@@ -94,12 +100,10 @@ public class ActionRemoveColumn extends AbstractAction {
                             if(columnName.isEmpty()) {
                                 throw new SQLException(I18N.tr("Column not found"));
                             }
-                            int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
-                                    I18N.tr("Are you sure you want to remove the column {0} ?",columnName),
-                                    I18N.tr("Deletion of a column"),
-                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-                            if(response==JOptionPane.YES_OPTION) {
-                                    connection.createStatement().execute(String.format("ALTER TABLE %s DROP COLUMN `%s`",table, columnName));
+                            String sqlQuery = String.format("ALTER TABLE %s DROP COLUMN `%s`",table, columnName);
+                            if( SQLMessageDialog.showModal(SwingUtilities.getWindowAncestor(parentComponent),I18N.tr("Deletion of a column"),
+                                    I18N.tr("Are you sure you want to remove the column {0} ?",columnName),sqlQuery) == SQLMessageDialog.CHOICE.OK) {
+                                    connection.createStatement().execute(sqlQuery);
                             }
                         } catch (SQLException ex ) {
                             logger.error(ex.getLocalizedMessage(), ex);

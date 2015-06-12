@@ -27,18 +27,14 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
-import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.TypeDefinition;
-import org.gdms.driver.Driver;
-import org.gdms.driver.DriverException;
-import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.components.actions.ActionTools;
-import org.orbisgis.view.components.gdms.FieldEditor;
+import org.orbisgis.sif.components.actions.ActionTools;
+import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.ext.TableEditorActions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.AbstractAction;
@@ -50,10 +46,11 @@ import java.beans.PropertyChangeListener;
  * Add a column in the DataSource.
  * @author Nicolas Fortin
  */
-public class ActionAddColumn extends AbstractAction {
+public class ActionAddColumn extends AbstractAction implements ActionDispose {
     private final TableEditableElement editable;
     private static final I18n I18N = I18nFactory.getI18n(ActionAddColumn.class);
-    private final Logger logger = Logger.getLogger(ActionAddColumn.class);
+    private final Logger logger = LoggerFactory.getLogger(ActionAddColumn.class);
+    private final PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, this, "updateEnabledState");
 
     /**
      * Constructor
@@ -66,7 +63,7 @@ public class ActionAddColumn extends AbstractAction {
         this.editable = editable;
         updateEnabledState();
         editable.addPropertyChangeListener(TableEditableElement.PROP_EDITING,
-                EventHandler.create(PropertyChangeListener.class, this, "updateEnabledState"));
+                listener);
     }
 
     /**
@@ -75,20 +72,16 @@ public class ActionAddColumn extends AbstractAction {
     public void updateEnabledState() {
         setEnabled(editable.isEditing());
     }
+
+    @Override
+    public void dispose() {
+        editable.removePropertyChangeListener(listener);
+    }
+
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if(editable.isEditing()) {
-            DataSource source = editable.getDataSource();
-            Driver driver = source.getDriver();
-            TypeDefinition[] typeDefinitions = driver.getTypesDefinitions();
-            FieldEditor fieldEditor = new FieldEditor(typeDefinitions);
-            if(UIFactory.showDialog(fieldEditor)) {
-                try {
-                    source.addField(fieldEditor.getFieldName(),fieldEditor.getType());
-                } catch (DriverException ex) {
-                    logger.error(ex.getLocalizedMessage(),ex);
-                }
-            }
+
         }
     }
 }

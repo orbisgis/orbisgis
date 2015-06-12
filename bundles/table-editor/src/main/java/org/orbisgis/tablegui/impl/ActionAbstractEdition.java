@@ -1,4 +1,4 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
@@ -27,17 +27,21 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
-import org.apache.log4j.Logger;
-import org.gdms.data.DataSourceListener;
-import org.gdms.data.edition.EditionListener;
-import org.orbisgis.view.components.actions.ActionTools;
-import org.orbisgis.view.table.ext.TableEditorActions;
+import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
+import org.orbisgis.sif.components.actions.ActionTools;
+import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.impl.ext.TableEditorActions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.SwingUtilities;
 import java.beans.EventHandler;
 
 /**
@@ -47,9 +51,8 @@ import java.beans.EventHandler;
 public abstract class ActionAbstractEdition extends AbstractAction implements ActionDispose {
     protected TableEditableElement editable;
     protected static final I18n I18N = I18nFactory.getI18n(ActionAbstractEdition.class);
-    protected static final Logger LOGGER = Logger.getLogger(ActionAbstractEdition.class);
-    private final EditionListener editionListener = EventHandler.create(EditionListener.class, this, "sourceEvent");
-    private final DataSourceListener dataSourceListener = EventHandler.create(DataSourceListener.class, this, "sourceEvent");
+    protected static final Logger LOGGER = LoggerFactory.getLogger(ActionAbstractEdition.class);
+    private TableEditListener listener = EventHandler.create(TableEditListener.class, this, "sourceEvent", "");
 
     protected ActionAbstractEdition(TableEditableElement editable) {
         setEditable(editable);
@@ -57,8 +60,7 @@ public abstract class ActionAbstractEdition extends AbstractAction implements Ac
     }
     private void setEditable(TableEditableElement editable) {
         this.editable = editable;
-        editable.getDataSource().addEditionListener(editionListener);
-        editable.getDataSource().addDataSourceListener(dataSourceListener);
+        editable.getDataManager().addTableEditListener(editable.getTableReference(), listener);
     }
     protected ActionAbstractEdition(String s, Icon icon, TableEditableElement editable) {
         super(s, icon);
@@ -70,17 +72,30 @@ public abstract class ActionAbstractEdition extends AbstractAction implements Ac
      * Called when DataSource fire an event.
      */
     public abstract void onSourceUpdate();
-    public final void sourceEvent() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                onSourceUpdate();
-            }
-        });
+
+
+    public void sourceEvent(TableEditEvent event) {
+        if(SwingUtilities.isEventDispatchThread()) {
+            onSourceUpdate();
+        } else {
+            SwingUtilities.invokeLater(new SourceEvent(this));
+        }
     }
     @Override
     public void dispose() {
-        editable.getDataSource().removeEditionListener(editionListener);
-        editable.getDataSource().removeDataSourceListener(dataSourceListener);
+        editable.getDataManager().removeTableEditListener(editable.getTableReference(), listener);
+    }
+
+    private static class SourceEvent implements Runnable {
+        ActionAbstractEdition abstractEdition;
+
+        public SourceEvent(ActionAbstractEdition abstractEdition) {
+            this.abstractEdition = abstractEdition;
+        }
+
+        @Override
+        public void run() {
+            abstractEdition.onSourceUpdate();
+        }
     }
 }

@@ -134,7 +134,6 @@
             <artifactId>h2drivers</artifactId>
             <version>${h2-gis-version}</version>
             <scope>test</scope>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

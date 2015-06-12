@@ -43,6 +43,8 @@ import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  *  This factory receive the {@link TableEditableElementImpl} and open a new editor.
  */
@@ -53,6 +55,7 @@ public class TableEditorFactory implements EditorFactory {
         protected final static I18n I18N = I18nFactory.getI18n(TableEditorFactory.class);
         private DataManager dataManager;
         private EditorManager editorManager;
+        private ExecutorService executorService;
 
         @Override
         public DockingPanelLayout makeEditableLayout(EditableElement editable) {
@@ -68,7 +71,16 @@ public class TableEditorFactory implements EditorFactory {
             }
         }
 
-        /**
+        @Reference
+        public void setExecutorService(ExecutorService executorService) {
+            this.executorService = executorService;
+        }
+
+        public void unsetExecutorService(ExecutorService executorService) {
+            this.executorService = null;
+        }
+
+    /**
          * Set editor manager instance in order to check if a table editor is already opened
          * @param editorManager
          */
@@ -119,7 +131,7 @@ public class TableEditorFactory implements EditorFactory {
         public EditorDockable create(DockingPanelLayout layout) {
                 TableEditableElement editableTable = ((TablePanelLayout)layout).getTableEditableElement();
                 //Check the DataSource state
-                return new TableEditor(editableTable, dataManager, editorManager);
+                return new TableEditor(editableTable, dataManager, editorManager, executorService);
         }
 
         @Override

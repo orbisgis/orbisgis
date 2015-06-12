@@ -27,35 +27,24 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.table;
+package org.orbisgis.tablegui.impl;
 
-import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
-import org.orbisgis.corejdbc.common.IntegerUnion;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.DefaultJobId;
-import org.orbisgis.view.components.actions.ActionTools;
-import org.orbisgis.view.components.gdms.DeleteRows;
+import org.orbisgis.editorjdbc.jobs.DeleteSelectedRows;
+import org.orbisgis.sif.components.actions.ActionTools;
+import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.ext.TableEditorActions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Remove selected rows in the DataSource.
@@ -64,13 +53,17 @@ import java.util.Set;
 public class ActionRemoveRow extends AbstractAction {
         private final TableEditableElement editable;
         private static final I18n I18N = I18nFactory.getI18n(ActionRemoveRow.class);
+        private Component parentComponent;
+        private ExecutorService executorService;
 
         /**
          * Constructor
          * @param editable Table editable instance
          */
-        public ActionRemoveRow(TableEditableElement editable) {
+        public ActionRemoveRow(TableEditableElement editable, Component parentComponent,ExecutorService executorService) {
                 super(I18N.tr("Delete selected rows"), OrbisGISIcon.getIcon("delete_row"));
+                this.parentComponent = parentComponent;
+                this.executorService = executorService;
                 putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
                 putValue(ActionTools.MENU_ID,TableEditorActions.A_REMOVE_ROW);
                 this.editable = editable;
@@ -93,15 +86,15 @@ public class ActionRemoveRow extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
                 if(editable.isEditing()) {
-                        Set<Integer> selectedRows = editable.getSelection();
-                        int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                        Set<Long> selectedRows = editable.getSelection();
+                        int response = JOptionPane.showConfirmDialog(parentComponent,
                                 I18N.tr("Are you sure to remove the {0} selected rows ?", selectedRows.size()),
                                 I18N.tr("Delete selected rows"),
                                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-                        if(response==JOptionPane.YES_OPTION) {
+                        if(response == JOptionPane.YES_OPTION) {
                                 // Launch process
-                                BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
-                                backgroundManager.nonBlockingBackgroundOperation(new DefaultJobId("DeleteRows"),new DeleteRows(editable.getSelection(),editable.getDataSource()));
+                                executorService.execute(new DeleteSelectedRows(editable.getSelection(),
+                                        editable.getTableReference(), editable.getDataManager().getDataSource()));
                         }
                 }
         }
