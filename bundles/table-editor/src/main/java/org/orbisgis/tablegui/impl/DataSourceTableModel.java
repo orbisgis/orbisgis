@@ -55,16 +55,14 @@ public class DataSourceTableModel extends AbstractTableModel {
         private long lastFetchRowCount = 0;
         private long lastFetchRowCountTime = 0;
         private static long FETCH_ROW_COUNT_DELAY = 2000;
-        private final AtomicBoolean editionActivated;
         //private ModificationListener dataSourceListener;
 
         /**
          * Constructor
          * @param element DataSource to show
          */
-        public DataSourceTableModel(EditableSource element, AtomicBoolean editionActivated) {
+        public DataSourceTableModel(EditableSource element) {
                 this.element = element;
-                this.editionActivated = editionActivated;
         }
 
         public RowSet getRowSet() throws SQLException {
@@ -212,7 +210,7 @@ public class DataSourceTableModel extends AbstractTableModel {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return editionActivated.get();
+                return element.isEditing();
         }
 
         @Override

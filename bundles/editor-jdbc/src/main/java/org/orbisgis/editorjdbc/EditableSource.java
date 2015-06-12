@@ -63,6 +63,12 @@ public interface EditableSource extends EditableElement {
      */
     public boolean isEditing();
 
+
+    /**
+     * @param editing New state of this editable
+     */
+    void setEditing(boolean editing);
+
     /**
      * @return Data manager where the source come from.
      */

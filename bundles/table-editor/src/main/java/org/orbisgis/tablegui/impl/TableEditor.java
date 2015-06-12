@@ -196,23 +196,18 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     EventHandler.create(ActionListener.class, this, "onNextSelection"),
                     KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.CTRL_DOWN_MASK))
                         .setLogicalGroup(TableEditorActions.LGROUP_READ));
-                /*
-                TODO Edition
-                if(tableEditableElement.getDataSource().isEditable()) {
-                        try {
-                                actions.add(new ActionAddColumn(tableEditableElement));
-                                actions.add(new ActionAddRow(tableEditableElement));
-                                actions.add(new ActionRemoveRow(tableEditableElement));
-                                actions.add(new ActionCancel(tableEditableElement));
-                                actions.add(new ActionUndo(tableEditableElement));
-                                actions.add(new ActionRedo(tableEditableElement));
-                                actions.add(new ActionSave(tableEditableElement));
-                                actions.add(new ActionEdition(tableEditableElement));
-                        } catch (UnsupportedOperationException ex) {
-                                LOGGER.error(ex.getLocalizedMessage(),ex);
-                        }
+
+                // Edition is only available if there is a primary key
+                if(tableEditableElement.isEditable()) {
+                        //actions.add(new ActionAddColumn(tableEditableElement));
+                        //actions.add(new ActionAddRow(tableEditableElement));
+                        //actions.add(new ActionRemoveRow(tableEditableElement));
+                        //actions.add(new ActionCancel(tableEditableElement));
+                        //actions.add(new ActionUndo(tableEditableElement));
+                        //actions.add(new ActionRedo(tableEditableElement));
+                        //actions.add(new ActionSave(tableEditableElement));
+                        actions.add(new ActionEdition(tableEditableElement));
                 }
-                */
                 return actions;
         }
 
@@ -1232,8 +1227,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
-                table.close(this.getProgressMonitor());
-                table.open(this.getProgressMonitor());
+                table.getRowSet().refreshRow();
                 try {
                     ResultSetMetaData meta = table.getRowSet().getMetaData();
                     for(int col=1; col < meta.getColumnCount();col++) {

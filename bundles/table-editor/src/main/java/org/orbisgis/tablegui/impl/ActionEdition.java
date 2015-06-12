@@ -30,6 +30,7 @@
 package org.orbisgis.tablegui.impl;
 
 
+import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.sif.components.actions.ActionTools;
@@ -47,14 +48,14 @@ import java.beans.PropertyChangeListener;
  * @author Nicolas Fortin
  */
 public class ActionEdition extends AbstractAction {
-    private final TableEditableElementImpl editable;
+    private final TableEditableElement editable;
     private final I18n i18N = I18nFactory.getI18n(ActionEdition.class);
 
     /**
      * Constructor
      * @param editable Editable instance
      */
-    public ActionEdition(TableEditableElementImpl editable) {
+    public ActionEdition(TableEditableElement editable) {
         putValue(ActionTools.MENU_ID, TableEditorActions.A_EDITION);
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_EDITION);
         this.editable = editable;
