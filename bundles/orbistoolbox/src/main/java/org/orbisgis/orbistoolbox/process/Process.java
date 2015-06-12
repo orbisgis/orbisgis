@@ -87,6 +87,14 @@ public class Process extends DescriptionType {
     }
 
     /**
+     * Sets the language of the script.
+     * @param language The language of the script
+     */
+    public void setLanguage(Locale language) {
+        this.language = language;
+    }
+
+    /**
      * Sets the list of inputs.
      * @param inputList List of input.
      * @throws IllegalArgumentException Exception thrown if the parameters is null or empty or containing a null value.

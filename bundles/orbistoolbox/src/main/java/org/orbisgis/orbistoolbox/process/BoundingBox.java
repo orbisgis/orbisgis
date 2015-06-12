@@ -63,7 +63,8 @@ public class BoundingBox {
      */
     public void setLowerCorner(List<Double> lowerCorner) {
         if(lowerCorner.size() == this.dimensions) {
-            this.lowerCorner = lowerCorner;
+            this.lowerCorner = new ArrayList<>();
+            this.lowerCorner.addAll(lowerCorner);
         }
     }
 
@@ -82,7 +83,8 @@ public class BoundingBox {
      */
     public void setUpperCorner(List<Double> upperCorner) {
         if(upperCorner.size() == this.dimensions) {
-            this.upperCorner = upperCorner;
+            this.upperCorner = new ArrayList<>();
+            this.upperCorner.addAll(upperCorner);
         }
     }
 

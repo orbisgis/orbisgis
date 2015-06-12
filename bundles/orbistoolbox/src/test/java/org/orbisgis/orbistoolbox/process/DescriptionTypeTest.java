@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -123,12 +123,12 @@ public class DescriptionTypeTest {
     public final void metadataTest() throws URISyntaxException {
         DescriptionType descriptionType = new DescriptionType("test", new URI("test"));
 
-        Metadata metadata1 = new Metadata();
-        Metadata metadata2 = new Metadata();
-        Metadata metadata3 = new Metadata();
-        Metadata metadata4 = new Metadata();
-        Metadata metadata5 = new Metadata();
-        Metadata metadata6 = new Metadata();
+        Metadata metadata1 = new Metadata("test", new URI("test"), new URI("test"));
+        Metadata metadata2 = new Metadata("test", new URI("test"), new URI("test"));
+        Metadata metadata3 = new Metadata("test", new URI("test"), new URI("test"));
+        Metadata metadata4 = new Metadata("test", new URI("test"), new URI("test"));
+        Metadata metadata5 = new Metadata("test", new URI("test"), new URI("test"));
+        Metadata metadata6 = new Metadata("test", new URI("test"), new URI("test"));
 
         List<Metadata> list = new ArrayList<>();
         list.add(metadata1);

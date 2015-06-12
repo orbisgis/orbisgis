@@ -19,7 +19,7 @@
 
 package org.orbisgis.orbistoolbox.process;
 
-import java.net.URL;
+import java.net.URI;
 
 /**
  * Format of an input or of an output.
@@ -35,7 +35,7 @@ public class Format {
     /** Encoding procedure or character set of the data.*/
     private String encoding;
     /** Identification of the data schema.*/
-    private URL schema;
+    private URI schema;
     /** The maximum size of the input data, in megabytes.*/
     private Integer maximumMegaBytes;
     /** Indicates that this format is the default format.*/
@@ -49,7 +49,7 @@ public class Format {
      * @param schema   Identification of the data schema.
      * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
      */
-    public Format(String mimeType, URL schema) throws IllegalArgumentException {
+    public Format(String mimeType, URI schema) throws IllegalArgumentException {
         if (mimeType == null) {
             throw new IllegalArgumentException("The parameter \"mimeType\" can not be null");
         }
@@ -99,7 +99,7 @@ public class Format {
      *
      * @return The data schema
      */
-    public URL getSchema() {
+    public URI getSchema() {
         return schema;
     }
 
@@ -109,7 +109,7 @@ public class Format {
      * @param schema The data schema.
      * @throws IllegalArgumentException Exception thrown if the parameters is null.
      */
-    public void setSchema(URL schema) throws IllegalArgumentException {
+    public void setSchema(URI schema) throws IllegalArgumentException {
         if (schema == null) {
             throw new IllegalArgumentException("The parameter \"schema\" can not be null");
         }

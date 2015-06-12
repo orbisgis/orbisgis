@@ -9,7 +9,7 @@
  * later version.
  *
  * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for moredetails.
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
  * <http://www.gnu.org/licenses/>.
@@ -22,10 +22,8 @@ package org.orbisgis.orbistoolbox.process;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +37,8 @@ public class OutputTest {
      * Tests if the constructor with a null title returns an IllegalArgumentException.
      */
     @Test(expected = IllegalArgumentException.class)
-    public final void nullTitleConstructorTest() throws URISyntaxException, MalformedURLException {
-        Format f = new Format("test", new URL("http://orbisgis.org"));
+    public final void nullTitleConstructorTest() throws URISyntaxException {
+        Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
         new Output(null, new URI("test"), new RawData(f));
     }
@@ -49,8 +47,8 @@ public class OutputTest {
      * Tests if the constructor with a null identifier returns an IllegalArgumentException.
      */
     @Test(expected = IllegalArgumentException.class)
-    public final void nullURIConstructorTest() throws MalformedURLException {
-        Format f = new Format("test", new URL("http://orbisgis.org"));
+    public final void nullURIConstructorTest() throws URISyntaxException {
+        Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
         new Output("test", null, new RawData(f));
     }
@@ -84,8 +82,8 @@ public class OutputTest {
      * Tests if the constructor with a output list containing a null output returns an IllegalArgumentException.
      */
     @Test(expected = IllegalArgumentException.class)
-    public final void containingNullOutputConstructorTest() throws URISyntaxException, MalformedURLException {
-        Format f = new Format("test", new URL("http://orbisgis.org"));
+    public final void containingNullOutputConstructorTest() throws URISyntaxException {
+        Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
         Output output = new Output("test", new URI("test"), new RawData(f));
         List<Output> nullList = new ArrayList<>();
@@ -98,8 +96,8 @@ public class OutputTest {
      * Tests if setting the output list sets the data description to null.
      */
     @Test()
-    public final void setOutputTest() throws URISyntaxException, MalformedURLException {
-        Format f = new Format("test", new URL("http://orbisgis.org"));
+    public final void setOutputTest() throws URISyntaxException {
+        Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
         Output output1 = new Output("test", new URI("test"), new RawData(f));
         Output output2 = new Output("test", new URI("test"), new RawData(f));
@@ -117,8 +115,8 @@ public class OutputTest {
      * Tests if setting the data description sets the output list to null.
      */
     @Test()
-    public final void setDataDescriptionTest() throws URISyntaxException, MalformedURLException {
-        Format f = new Format("test", new URL("http://orbisgis.org"));
+    public final void setDataDescriptionTest() throws URISyntaxException {
+        Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
         Output output = new Output("test", new URI("test"), new RawData(f));
 

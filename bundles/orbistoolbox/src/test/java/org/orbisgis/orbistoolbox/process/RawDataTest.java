@@ -21,8 +21,8 @@ package org.orbisgis.orbistoolbox.process;
 
 import org.junit.Test;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URISyntaxException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,8 +46,8 @@ public class RawDataTest {
      * Tests if the constructor with a not default format returns an IllegalArgumentException.
      */
     @Test(expected = IllegalArgumentException.class)
-    public final void noDefaultFormatConstructorTest() throws MalformedURLException {
-        Format f = new Format("test", new URL("http://orbisgis.org"));
+    public final void noDefaultFormatConstructorTest() throws URISyntaxException {
+        Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(false);
         new RawData(f);
     }
@@ -72,10 +72,10 @@ public class RawDataTest {
      * Tests if the constructor with a format list without default format returns an IllegalArgumentException.
      */
     @Test(expected = IllegalArgumentException.class)
-    public final void noDefaultFormatListConstructorTest() throws MalformedURLException {
-        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+    public final void noDefaultFormatListConstructorTest() throws URISyntaxException {
+        Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(false);
-        Format f2 = new Format("test", new URL("http://orbisgis.org"));
+        Format f2 = new Format("test", new URI("http://orbisgis.org"));
         f2.setDefaultFormat(false);
 
         List<Format> list = new ArrayList<>();
@@ -89,8 +89,8 @@ public class RawDataTest {
      * Tests if the setFormat() method with a null format list returns an IllegalArgumentException.
      */
     @Test(expected = IllegalArgumentException.class)
-    public final void nullSetFormatTest() throws MalformedURLException {
-        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+    public final void nullSetFormatTest() throws URISyntaxException {
+        Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
 
         RawData rawData = new RawData(f1);
@@ -102,8 +102,8 @@ public class RawDataTest {
      * Tests if the setFormat() method with an empty format list returns an IllegalArgumentException.
      */
     @Test(expected = IllegalArgumentException.class)
-    public final void emptySetFormatTest() throws MalformedURLException {
-        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+    public final void emptySetFormatTest() throws URISyntaxException {
+        Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
 
         RawData rawData = new RawData(f1);
@@ -115,12 +115,12 @@ public class RawDataTest {
      * Tests if the setFormat() method with a format list without default format returns an IllegalArgumentException.
      */
     @Test(expected = IllegalArgumentException.class)
-    public final void noDefaultSetFormatTest() throws MalformedURLException {
-        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+    public final void noDefaultSetFormatTest() throws URISyntaxException {
+        Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
 
         RawData rawData = new RawData(f1);
-        Format f2 = new Format("test", new URL("http://orbisgis.org"));
+        Format f2 = new Format("test", new URI("http://orbisgis.org"));
         f2.setDefaultFormat(false);
 
         List<Format> list = new ArrayList<>();
@@ -134,8 +134,8 @@ public class RawDataTest {
      * Tests if the addFormat() method with a null format list returns an IllegalArgumentException.
      */
     @Test(expected = IllegalArgumentException.class)
-    public final void nullAddFormatTest() throws MalformedURLException {
-        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+    public final void nullAddFormatTest() throws URISyntaxException {
+        Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
 
         RawData rawData = new RawData(f1);
@@ -147,10 +147,10 @@ public class RawDataTest {
      * Tests if the addFormat() method with two default format returns an IllegalArgumentException.
      */
     @Test(expected = IllegalArgumentException.class)
-    public final void multipleDefaultAddFormatTest() throws MalformedURLException {
-        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+    public final void multipleDefaultAddFormatTest() throws URISyntaxException {
+        Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
-        Format f2 = new Format("test", new URL("http://orbisgis.org"));
+        Format f2 = new Format("test", new URI("http://orbisgis.org"));
         f2.setDefaultFormat(true);
 
         RawData rawData = new RawData(f1);
@@ -162,12 +162,12 @@ public class RawDataTest {
      * Tests if the addFormat() method with no default format returns an IllegalArgumentException.
      */
     @Test(expected = IllegalArgumentException.class)
-    public final void noDefaultAddFormatTest() throws MalformedURLException {
-        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+    public final void noDefaultAddFormatTest() throws URISyntaxException {
+        Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(false);
 
         RawData rawData = new RawData(f1);
-        Format f2 = new Format("test", new URL("http://orbisgis.org"));
+        Format f2 = new Format("test", new URI("http://orbisgis.org"));
         f2.setDefaultFormat(false);
 
         rawData.addFormat(f2);
@@ -177,8 +177,8 @@ public class RawDataTest {
      * Tests if the removeFormat() method returns an IllegalArgumentException if the last format is removed.
      */
     @Test(expected = IllegalArgumentException.class)
-    public final void removeLastFormatTest() throws MalformedURLException {
-        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+    public final void removeLastFormatTest() throws URISyntaxException {
+        Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
 
         RawData rawData = new RawData(f1);
@@ -190,10 +190,10 @@ public class RawDataTest {
      * Tests if the removeFormat() method returns an IllegalArgumentException if the default format is removed.
      */
     @Test(expected = IllegalArgumentException.class)
-    public final void removeDefaultFormatTest() throws MalformedURLException {
-        Format f1 = new Format("test", new URL("http://orbisgis.org"));
+    public final void removeDefaultFormatTest() throws URISyntaxException {
+        Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
-        Format f2 = new Format("test", new URL("http://orbisgis.org"));
+        Format f2 = new Format("test", new URI("http://orbisgis.org"));
         f2.setDefaultFormat(false);
 
         RawData rawData = new RawData(f1);
