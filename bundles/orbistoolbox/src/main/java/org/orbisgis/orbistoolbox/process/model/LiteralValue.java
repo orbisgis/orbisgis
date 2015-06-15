@@ -31,73 +31,82 @@ import java.net.URI;
 
 public class LiteralValue {
     /** Value */
-    private Number value;
-    /** DataType of the value */
+    private Values data;
+    /** DataType of the data */
     private DataType dataType;
-    /** URI to the unit of the value */
+    /** URI to the unit of the data */
     private URI uom;
 
     /**
-     * Constructor giving the value represented.
-     * @param value Value represented. Can not be null.
-     * @throws IllegalArgumentException Exception get on setting a null value.
+     * Constructor giving the data represented.
+     * @param data Data represented. Can not be null.
+     * @throws IllegalArgumentException Exception get on setting a null data.
      */
-    public LiteralValue(Number value) throws IllegalArgumentException {
-        if (value == null) {
-            throw new IllegalArgumentException("The parameter \"value\" can not be null");
+    public LiteralValue(Values data) throws IllegalArgumentException {
+        if (data == null) {
+            throw new IllegalArgumentException("The parameter \"data\" can not be null");
         }
-        this.value = value;
+        this.data = data;
         this.dataType = null;
         this.uom = null;
     }
 
     /**
-     * Sets the value represented.
-     * @param value The new value represented. Can not be null.
-     * @throws IllegalArgumentException Exception get on setting a null value.
+     * Constructor with no data, so the default data will be used.
      */
-    public void setValue(Number value) throws IllegalArgumentException {
-        if (value == null) {
-            throw new IllegalArgumentException("The parameter \"value\" can not be null");
+    public LiteralValue() {
+        this.data = null;
+        this.dataType = null;
+        this.uom = null;
+    }
+
+    /**
+     * Sets the data represented.
+     * @param data The new data represented. Can not be null.
+     * @throws IllegalArgumentException Exception get on setting a null data.
+     */
+    public void setData(Values data) throws IllegalArgumentException {
+        if (data == null) {
+            throw new IllegalArgumentException("The parameter \"data\" can not be null");
         }
-        this.value = value;
+        this.data = data;
     }
 
     /**
-     * Returns the value.
-     * @return The value.
+     * Returns the data.
+     * @return The data.
      */
-    public Number getValue() {
-        return value;
+    public Values getData() {
+        return data;
     }
 
     /**
-     * Sets the dataType of the value.
-     * @param dataType DataType of the value.
+     * Sets the dataType of the data.
+     * @param dataType DataType of the data.
      */
     public void setDataType(DataType dataType) {
         this.dataType = dataType;
     }
 
     /**
-     * Returns the DataType of the value.
-     * @return The DataType of the value.
+     * Returns the DataType of the data.
+     * @return The DataType of the data.
      */
     public DataType getDataType() {
         return dataType;
     }
 
     /**
-     * Sets the unit of the value.
-     * @param uom The unit or the value.
+     * Sets the unit of the data.
+     * @param uom The unit or the data.
      */
     public void setUom(URI uom) {
         this.uom = uom;
     }
 
     /**
-     * Returns the unit of the value.
-     * @return The unit of the value.
+     * Returns the unit of the data.
+     * @return The unit of the data.
      */
     public URI getUom() {
         return uom;

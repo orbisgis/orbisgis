@@ -74,6 +74,13 @@ public class LiteralData extends DataDescription {
         this.setFormats(formatList);
         this.setLiteralDomainType(literalDataDomainList);
         this.value = value;
+        if(value.getData() == null){
+            for(LiteralDataDomain ldd : literalDataDomainList){
+                if(ldd.isDefaultDomain()){
+                    value.setData(ldd.getDefaultValue());
+                }
+            }
+        }
     }
 
     /**

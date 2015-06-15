@@ -26,16 +26,16 @@ package org.orbisgis.orbistoolbox.process.model;
  * @author Sylvain PALOMINOS
  */
 
-public class Value extends Values {
+public class Value<T> extends Values {
     /** String representation of the value. */
-    private double value;
+    private T value;
 
     /**
      * Main constructor in which the value must be passed as a String.
      * The value can not be null.
      * @param value Not null value.
      */
-    public Value(double value) {
+    public Value(T value) {
         this.value = value;
     }
 
@@ -43,7 +43,7 @@ public class Value extends Values {
      * Returns the value.
      * @return The value.
      */
-    public double getValue() {
+    public T getValue() {
         return value;
     }
 
@@ -51,7 +51,7 @@ public class Value extends Values {
      * Sets the the value. The value given as parameter can not be null.
      * @param value Not null value.
      */
-    public void setValue(double value) {
+    public void setValue(T value) {
         this.value = value;
     }
 }
