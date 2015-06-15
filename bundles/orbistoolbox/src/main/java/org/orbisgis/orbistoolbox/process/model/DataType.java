@@ -26,17 +26,22 @@ import java.net.URISyntaxException;
 /**
  * Enumeration of the LiteralData type.
  *
+ * For more information :
+ *
  * @author Sylvain PALOMINOS
  */
 
 
 public enum DataType {
-    STRING("http://www.w3.org/2001/XMLSchema#string"),
-    INTEGER("http://www.w3.org/2001/XMLSchema#integer"),
-    DECIMAL("http://www.w3.org/2001/XMLSchema#decimal"),
-    BOOLEAN("http://www.w3.org/2001/XMLSchema#boolean"),
-    DOUBLE("http://www.w3.org/2001/XMLSchema#double"),
-    FLOAT("http://www.w3.org/2001/XMLSchema#float");
+    STRING("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#string"),
+    INTEGER("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#integer"),
+    BOOLEAN("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#boolean"),
+    DOUBLE("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#double"),
+    FLOAT("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#float"),
+    SHORT("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#short"),
+    BYTE("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#byte"),
+    UNSIGNED_BYTE("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#unsignedByte"),
+    LONG("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#long");
 
     /** URI for the data type. */
     private URI uri;
