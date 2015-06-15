@@ -31,7 +31,7 @@ import java.lang.annotation.RetentionPolicy
  */
 
 @Retention(RetentionPolicy.RUNTIME)
-@interface DescriptionType {
+@interface DescriptionTypeAttribute {
     /** Title of a process, input, and output. Normally available for display to a human. */
     String title() default ""
     /** Brief narrative description of a process, input, and output. Normally available for display to a human. */

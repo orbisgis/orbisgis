@@ -46,5 +46,5 @@ import java.lang.annotation.Target;
  * @author Sylvain PALOMINOS
  */
 @Target(ElementType.FIELD)
-@AnnotationCollector([Field, WpsInput, DescriptionType])
-public @interface Input {}
+@AnnotationCollector([Field, WpsInput, DescriptionTypeAttribute])
+public @interface InputAttribute {}

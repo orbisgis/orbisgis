@@ -44,5 +44,5 @@ import java.lang.annotation.Target
  * @author Sylvain PALOMINOS
  */
 @Target(ElementType.METHOD)
-@AnnotationCollector([Field, WPSProcess, DescriptionType])
-public @interface Process {}
+@AnnotationCollector([Field, WPSProcess, DescriptionTypeAttribute])
+public @interface ProcessAttribute {}

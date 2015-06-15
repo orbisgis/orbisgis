@@ -41,5 +41,5 @@ import java.lang.annotation.Target
  * @author Sylvain PALOMINOS
  */
 @Target(ElementType.FIELD)
-@AnnotationCollector([Field, WpsOutput, DescriptionType])
-public @interface Output {}
+@AnnotationCollector([Field, WpsOutput, DescriptionTypeAttribute])
+public @interface OutputAttribute {}
