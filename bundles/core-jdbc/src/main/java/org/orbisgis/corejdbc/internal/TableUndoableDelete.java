@@ -54,18 +54,14 @@ public class TableUndoableDelete extends TableUndoableInsert {
 
     @Override
     public void undo() throws SQLException {
-        super.redo();
+        doRedo(true);
     }
 
     @Override
     public void undo(boolean callListeners) throws SQLException {
-        super.redo(callListeners);
+        doRedo(callListeners);
     }
 
-    @Override
-    public void redo(boolean callListeners) throws SQLException {
-        super.undo(callListeners);
-    }
 
     @Override
     public boolean canUndo() {
@@ -74,7 +70,12 @@ public class TableUndoableDelete extends TableUndoableInsert {
 
     @Override
     public void redo() throws SQLException {
-        super.undo();
+        super.doUndo(true);
+    }
+
+    @Override
+    public void redo(boolean callListeners) throws SQLException {
+        super.doUndo(callListeners);
     }
 
     @Override

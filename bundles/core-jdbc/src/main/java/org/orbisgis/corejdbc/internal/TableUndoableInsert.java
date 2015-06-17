@@ -73,12 +73,8 @@ public class TableUndoableInsert implements TableUndoableEdit {
         newValues.put(column, value);
     }
 
-    @Override
-    public void undo() throws SQLException {
-        undo(true);
-    }
 
-    public void undo(boolean callListeners) throws SQLException {
+    protected void doUndo(boolean callListeners) throws SQLException {
         if(primaryKey != null) {
             try(Connection connection = dataManager.getDataSource().getConnection();
                 PreparedStatement st = connection.prepareStatement("DELETE FROM "+tableLocation+" WHERE "+pkName+" = ?")) {
@@ -86,7 +82,20 @@ public class TableUndoableInsert implements TableUndoableEdit {
                 st.execute();
                 primaryKey = null;
             }
+            if(callListeners) {
+                dataManager.fireTableEditHappened(new TableEditEvent(tableLocation.toString(isH2),
+                        TableModelEvent.ALL_COLUMNS, null, null, TableModelEvent.DELETE));
+            }
         }
+    }
+
+    @Override
+    public void undo() throws SQLException {
+        doUndo(true);
+    }
+
+    public void undo(boolean callListeners) throws SQLException {
+        doUndo(callListeners);
     }
 
     @Override
@@ -96,10 +105,9 @@ public class TableUndoableInsert implements TableUndoableEdit {
 
     @Override
     public void redo() throws SQLException {
-        redo(true);
+        doRedo(true);
     }
-
-    public void redo(boolean callListeners) throws SQLException {
+    public void doRedo(boolean callListeners) throws SQLException {
         StringBuilder query = new StringBuilder("INSERT INTO ");
         query.append(tableLocation);
         List<Object> parameters = new ArrayList<>(newValues.size());
@@ -142,6 +150,10 @@ public class TableUndoableInsert implements TableUndoableEdit {
             dataManager.fireTableEditHappened(new TableEditEvent(tableLocation.toString(isH2),
                     TableModelEvent.ALL_COLUMNS, primaryKey, primaryKey, TableModelEvent.INSERT));
         }
+    }
+
+    public void redo(boolean callListeners) throws SQLException {
+        doRedo(callListeners);
     }
 
     @Override

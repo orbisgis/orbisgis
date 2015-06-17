@@ -326,7 +326,7 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
         if(insertRow == null) {
             throw new SQLException(I18N.tr("RowSet not moved to insert row"));
         }
-        insertRow.redo();
+        insertRow.redo(false);
         cachedRowCount++;
         manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), insertRow,
                 TableModelEvent.ALL_COLUMNS, insertRow.getPrimaryKey(), insertRow.getPrimaryKey(),
@@ -345,6 +345,8 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
                 TableUndoableUpdate update = updateRow[updateColumn];
                 if(update != null && updateColumn != pkColumnId ) {
                     update.redo(false);
+                    manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), update, updateColumn,
+                            getPk(), getPk(), TableModelEvent.DELETE));
                 }
             }
             if(updateRow[pkColumnId] != null) {
@@ -352,6 +354,8 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
                 update.redo(false);
                 refreshRow();
                 updateRow = null;
+                manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), update, pkColumnId, getPk() ,
+                        getPk() , TableModelEvent.DELETE));
             } else {
                 updateRow = null;
                 cache.remove(rowId);

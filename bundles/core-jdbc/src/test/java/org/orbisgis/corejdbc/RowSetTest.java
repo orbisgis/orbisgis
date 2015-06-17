@@ -523,7 +523,9 @@ public class RowSetTest {
 
         @Override
         public void tableChange(TableEditEvent event) {
-            eventList.add(event);
+            if(event.getUndoableEdit() != null) {
+                eventList.add(event);
+            }
         }
     }
 
