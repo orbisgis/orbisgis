@@ -36,6 +36,7 @@ import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.commons.progress.ProgressMonitor;
 
 import javax.sql.DataSource;
+import javax.swing.event.TableModelEvent;
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -221,7 +222,7 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
             if(updateRow == null) {
                 updateRow = new TableUndoableUpdate[getColumnCount()];
             }
-            updateRow[i - 1] = new TableUndoableUpdate(dataSource,isH2, location, pk_name, getPk(), getColumnName(i), getObject(i), o);
+            updateRow[i - 1] = new TableUndoableUpdate(manager,isH2, location, pk_name, getPk(), getColumnName(i), getObject(i), o, this);
         }
     }
 
@@ -327,7 +328,9 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
         }
         insertRow.redo();
         cachedRowCount++;
-        manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), insertRow));
+        manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), insertRow,
+                TableModelEvent.ALL_COLUMNS, insertRow.getPrimaryKey(), insertRow.getPrimaryKey(),
+                TableModelEvent.INSERT));
         moveToInsertRow();
     }
 
@@ -341,14 +344,12 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
             for(int updateColumn = 0; updateColumn < updateRow.length; updateColumn++) {
                 TableUndoableUpdate update = updateRow[updateColumn];
                 if(update != null && updateColumn != pkColumnId ) {
-                    update.redo();
-                    manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), update));
+                    update.redo(false);
                 }
             }
             if(updateRow[pkColumnId] != null) {
                 TableUndoableUpdate update = updateRow[pkColumnId];
-                update.redo();
-                manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), update));
+                update.redo(false);
                 refreshRow();
                 updateRow = null;
             } else {
@@ -364,13 +365,14 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
     @Override
     public void deleteRow() throws SQLException {
         checkCurrentRow();
-        TableUndoableDelete deleteEvt = new TableUndoableDelete(dataSource, location, pk_name, isH2);
+        TableUndoableDelete deleteEvt = new TableUndoableDelete(manager, location, pk_name, isH2);
         for(int idColumn = 0; idColumn < currentRow.length; idColumn++) {
             deleteEvt.setValue(getColumnLabel(idColumn + 1), currentRow[idColumn]);
         }
-        deleteEvt.redo();
+        deleteEvt.redo(false);
         refreshRow();
-        manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), deleteEvt));
+        manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), deleteEvt, TableModelEvent
+                .ALL_COLUMNS, deleteEvt.getPrimaryKey(), deleteEvt.getPrimaryKey(), TableModelEvent.DELETE));
     }
 
     @Override
@@ -380,7 +382,7 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
 
     @Override
     public void moveToInsertRow() throws SQLException {
-        insertRow = new TableUndoableInsert(dataSource, location, pk_name, isH2);
+        insertRow = new TableUndoableInsert(manager, location, pk_name, isH2);
     }
 
     @Override

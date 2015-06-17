@@ -29,6 +29,7 @@
 package org.orbisgis.corejdbc.internal;
 
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.DataManager;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -39,8 +40,8 @@ import java.sql.SQLException;
 public class TableUndoableDelete extends TableUndoableInsert {
     public static final String DELETE_IDENTIFIER = "DELETE";
 
-    public TableUndoableDelete(DataSource dataSource, TableLocation tableLocation, String pkName, boolean isH2) {
-        super(dataSource, tableLocation, pkName, isH2);
+    public TableUndoableDelete(DataManager dataManager, TableLocation tableLocation, String pkName, boolean isH2) {
+        super(dataManager, tableLocation, pkName, isH2);
     }
 
     @Override
@@ -54,6 +55,16 @@ public class TableUndoableDelete extends TableUndoableInsert {
     @Override
     public void undo() throws SQLException {
         super.redo();
+    }
+
+    @Override
+    public void undo(boolean callListeners) throws SQLException {
+        super.redo(callListeners);
+    }
+
+    @Override
+    public void redo(boolean callListeners) throws SQLException {
+        super.undo(callListeners);
     }
 
     @Override

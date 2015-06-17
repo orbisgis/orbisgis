@@ -28,16 +28,20 @@
  */
 package org.orbisgis.corejdbc.internal;
 
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.ReversibleRowSet;
+import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableUndoableEdit;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import javax.sql.DataSource;
-import javax.swing.undo.UndoableEdit;
+import javax.swing.event.TableModelEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Call to {@link javax.sql.RowSet#updateObject(int, Object)}
@@ -46,7 +50,7 @@ import java.sql.SQLException;
 public class TableUndoableUpdate implements TableUndoableEdit {
     public static final String EDIT_IDENTIFIER = "UPDATE";
     private static final I18n I18N = I18nFactory.getI18n(TableUndoableUpdate.class);
-    private final DataSource dataSource;
+    private final DataManager dataManager;
     private boolean isH2;
     private final TableLocation tableLocation;
     private final String pkName;
@@ -54,11 +58,12 @@ public class TableUndoableUpdate implements TableUndoableEdit {
     private final String columnName;
     private final Object oldValue;
     private final Object newValue;
+    private final ReversibleRowSet reversibleRowSet;
 
 
-    public TableUndoableUpdate(DataSource dataSource,boolean isH2, TableLocation tableLocation, String pkName, long rowIdentifier,
-                               String columnName, Object oldValue, Object newValue) {
-        this.dataSource = dataSource;
+    public TableUndoableUpdate(DataManager dataManager,boolean isH2, TableLocation tableLocation, String pkName, long rowIdentifier,
+                               String columnName, Object oldValue, Object newValue,ReversibleRowSet reversibleRowSet) {
+        this.dataManager = dataManager;
         this.isH2 = isH2;
         this.tableLocation = tableLocation;
         this.pkName = pkName;
@@ -66,14 +71,19 @@ public class TableUndoableUpdate implements TableUndoableEdit {
         this.columnName = columnName;
         this.oldValue = oldValue;
         this.newValue = newValue;
+        this.reversibleRowSet = reversibleRowSet;
     }
 
     @Override
     public void undo() throws SQLException {
+        undo(true);
+    }
+
+    public void undo(boolean callListeners) throws SQLException {
         if(pkName.equals(columnName)) {
-            doUpdate((Long)newValue, oldValue);
+            doUpdate((Long)newValue, oldValue, callListeners);
         } else {
-            doUpdate(rowIdentifier, oldValue);
+            doUpdate(rowIdentifier, oldValue, callListeners);
         }
     }
 
@@ -82,18 +92,34 @@ public class TableUndoableUpdate implements TableUndoableEdit {
         return true;
     }
 
-    private void doUpdate(Long pk, Object value) throws SQLException {
-        try(Connection connection = dataSource.getConnection();
+    private void doUpdate(Long pk, Object value, boolean callListeners) throws SQLException {
+        try(Connection connection = dataManager.getDataSource().getConnection();
             PreparedStatement st = connection.prepareStatement("UPDATE "+tableLocation+" SET "+TableLocation.quoteIdentifier(columnName, isH2)+" = ? WHERE "+pkName+" = ?")) {
             st.setObject(1, value);
             st.setLong(2, pk);
             st.execute();
+            if(callListeners) {
+                try (Statement stat = connection.createStatement();
+                     ResultSet rs = stat.executeQuery("SELECT * from " + tableLocation.toString(isH2) + " LIMIT 0")) {
+                    // Fire with the new PK Value
+                    Long pkToFire = pk;
+                    if( columnName.equals(pkName)) {
+                        pkToFire = Long.valueOf(value.toString());
+                    }
+                    dataManager.fireTableEditHappened(new TableEditEvent(tableLocation.toString(isH2), JDBCUtilities.getFieldIndex(rs.getMetaData(), columnName), pkToFire, pkToFire, TableModelEvent.UPDATE));
+                }
+            }
         }
     }
 
     @Override
     public void redo() throws SQLException {
-        doUpdate(rowIdentifier, newValue);
+        redo(true);
+    }
+
+
+    public void redo(boolean callListeners) throws SQLException {
+        doUpdate(rowIdentifier, newValue, callListeners);
     }
 
     @Override

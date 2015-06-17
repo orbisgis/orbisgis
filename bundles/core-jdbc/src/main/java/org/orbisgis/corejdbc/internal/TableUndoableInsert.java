@@ -29,11 +29,14 @@
 package org.orbisgis.corejdbc.internal;
 
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableUndoableEdit;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
+import javax.swing.event.TableModelEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,15 +54,15 @@ public class TableUndoableInsert implements TableUndoableEdit {
 
     public static final String EDIT_IDENTIFIER = "INSERT";
     protected static final I18n I18N = I18nFactory.getI18n(TableUndoableInsert.class);
-    protected final DataSource dataSource;
+    private final DataManager dataManager;
     protected final TableLocation tableLocation;
     protected final String pkName;
     protected final Map<String, Object> newValues;
     protected Long primaryKey = null;
     protected boolean isH2;
 
-    public TableUndoableInsert(DataSource dataSource, TableLocation tableLocation, String pkName, boolean isH2) {
-        this.dataSource = dataSource;
+    public TableUndoableInsert(DataManager dataManager, TableLocation tableLocation, String pkName, boolean isH2) {
+        this.dataManager = dataManager;
         this.tableLocation = tableLocation;
         this.pkName = pkName;
         this.newValues = new HashMap<>();
@@ -72,15 +75,18 @@ public class TableUndoableInsert implements TableUndoableEdit {
 
     @Override
     public void undo() throws SQLException {
+        undo(true);
+    }
+
+    public void undo(boolean callListeners) throws SQLException {
         if(primaryKey != null) {
-            try(Connection connection = dataSource.getConnection();
+            try(Connection connection = dataManager.getDataSource().getConnection();
                 PreparedStatement st = connection.prepareStatement("DELETE FROM "+tableLocation+" WHERE "+pkName+" = ?")) {
                 st.setLong(1, primaryKey);
                 st.execute();
                 primaryKey = null;
             }
         }
-
     }
 
     @Override
@@ -90,6 +96,10 @@ public class TableUndoableInsert implements TableUndoableEdit {
 
     @Override
     public void redo() throws SQLException {
+        redo(true);
+    }
+
+    public void redo(boolean callListeners) throws SQLException {
         StringBuilder query = new StringBuilder("INSERT INTO ");
         query.append(tableLocation);
         List<Object> parameters = new ArrayList<>(newValues.size());
@@ -110,7 +120,7 @@ public class TableUndoableInsert implements TableUndoableEdit {
             }
         }
         query.append(")");
-        try(Connection connection = dataSource.getConnection();
+        try(Connection connection = dataManager.getDataSource().getConnection();
             PreparedStatement st = connection.prepareStatement(query.toString())) {
             for(int idParam = 0; idParam < parameters.size(); idParam++) {
                 st.setObject(idParam + 1, parameters.get(idParam));
@@ -128,6 +138,10 @@ public class TableUndoableInsert implements TableUndoableEdit {
                 }
             }
         }
+        if(callListeners) {
+            dataManager.fireTableEditHappened(new TableEditEvent(tableLocation.toString(isH2),
+                    TableModelEvent.ALL_COLUMNS, primaryKey, primaryKey, TableModelEvent.INSERT));
+        }
     }
 
     @Override
@@ -138,6 +152,13 @@ public class TableUndoableInsert implements TableUndoableEdit {
     @Override
     public void die() {
 
+    }
+
+    /**
+     * @return Primary key of insert, available if {@link #canUndo()} is true.
+     */
+    public Long getPrimaryKey() {
+        return primaryKey;
     }
 
     @Override
