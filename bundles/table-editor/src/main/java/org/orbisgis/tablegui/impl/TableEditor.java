@@ -72,6 +72,7 @@ import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.commons.progress.NullProgressMonitor;
+import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.process.ZoomToSelectedFeatures;
@@ -180,7 +181,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         @Override
         public void tableChange(TableEditEvent event) {
             if (event.getUndoableEdit() == null && !table.isEditing()) {
-                executorService.execute(new RefreshTableJob(tableModel, tableEditableElement));
+                executorService.execute(new RefreshTableJob(tableModel, tableEditableElement, event));
             } else {
                 undoManager.addEdit(new EditorUndoableEdit(event.getUndoableEdit()));
             }
@@ -1207,10 +1208,12 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         private DataSourceTableModel model;
         private TableEditableElement table;
         private List<TableModelEvent> evts = new ArrayList<>();
+        private TableEditEvent event;
 
-        private RefreshTableJob(DataSourceTableModel model, TableEditableElement table) {
+        private RefreshTableJob(DataSourceTableModel model, TableEditableElement table, TableEditEvent event) {
             this.model = model;
             this.table = table;
+            this.event = event;
             setTaskName(I18N.tr("Refresh table content"));
         }
 
@@ -1228,47 +1231,54 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
         @Override
         protected Boolean doInBackground() throws Exception {
-            List<String> columnTypes = new ArrayList<>();
-            List<String> columnNames = new ArrayList<>();
-            try {
+            if(event.getColumn() == TableModelEvent.ALL_COLUMNS || event.getFirstRowPK() == null || event.getLastRowPK() == null) {
+                List<String> columnTypes = new ArrayList<>();
+                List<String> columnNames = new ArrayList<>();
                 try {
-                    ResultSetMetaData meta = table.getRowSet().getMetaData();
-                    for(int col=1; col < meta.getColumnCount();col++) {
-                        columnNames.add(meta.getColumnName(col));
-                        columnTypes.add(meta.getColumnTypeName(col));
+                    try {
+                        ResultSetMetaData meta = table.getRowSet().getMetaData();
+                        for (int col = 1; col < meta.getColumnCount(); col++) {
+                            columnNames.add(meta.getColumnName(col));
+                            columnTypes.add(meta.getColumnTypeName(col));
+                        }
+                    } catch (SQLException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
                     }
-                } catch (SQLException ex) {
-                    LOGGER.error(ex.getLocalizedMessage(), ex);
-                }
-                table.getRowSet().refreshRow();
-                try {
-                    ResultSetMetaData meta = table.getRowSet().getMetaData();
-                    for(int col=1; col < meta.getColumnCount();col++) {
-                        if(col <= columnNames.size()) {
-                            if(!columnNames.get(col - 1).equals(meta.getColumnName(col)) ||
-                                    !columnTypes.get(col - 1).equals(meta.getColumnTypeName(col))) {
-                                evts.add(new TableModelEvent(model,TableModelEvent.HEADER_ROW,
-                                        TableModelEvent.HEADER_ROW,col - 1,TableModelEvent.UPDATE));
+                    table.getRowSet().refreshRow();
+                    try {
+                        ResultSetMetaData meta = table.getRowSet().getMetaData();
+                        for (int col = 1; col < meta.getColumnCount(); col++) {
+                            if (col <= columnNames.size()) {
+                                if (!columnNames.get(col - 1).equals(meta.getColumnName(col)) || !columnTypes.get(col - 1).equals(meta.getColumnTypeName(col))) {
+                                    evts.add(new TableModelEvent(model, TableModelEvent.HEADER_ROW, TableModelEvent.HEADER_ROW, col - 1, TableModelEvent.UPDATE));
+                                }
+                                //columnTypes.add(meta.getColumnTypeName(col + offset));
+                            } else {
+                                //New column
+                                evts.add(new TableModelEvent(model, TableModelEvent.HEADER_ROW, TableModelEvent.HEADER_ROW, col - 1, TableModelEvent.INSERT));
                             }
-                            //columnTypes.add(meta.getColumnTypeName(col + offset));
-                        } else {
-                            //New column
-                            evts.add(new TableModelEvent(model,TableModelEvent.HEADER_ROW,
-                                    TableModelEvent.HEADER_ROW,col - 1,TableModelEvent.INSERT));
                         }
-                    }
-                    // Deleted columns
-                    if(meta.getColumnCount() < columnNames.size()) {
-                        for(int insertId = meta.getColumnCount();insertId <= columnNames.size(); insertId++) {
-                            new TableModelEvent(model,TableModelEvent.HEADER_ROW,
-                                    TableModelEvent.HEADER_ROW,meta.getColumnCount() - 1,TableModelEvent.DELETE);
+                        // Deleted columns
+                        if (meta.getColumnCount() < columnNames.size()) {
+                            for (int insertId = meta.getColumnCount(); insertId <= columnNames.size(); insertId++) {
+                                evts.add(new TableModelEvent(model, TableModelEvent.HEADER_ROW, TableModelEvent.HEADER_ROW, meta.getColumnCount() - 1, TableModelEvent.DELETE));
+                            }
                         }
+                    } catch (SQLException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
                     }
-                } catch (SQLException ex) {
+                } catch (EditableElementException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
-            } catch (EditableElementException ex) {
-                LOGGER.error(ex.getLocalizedMessage(), ex);
+            } else {
+              // Simple row event
+                IntegerUnion updatedRows = new IntegerUnion(table.getRowSet().getRowNumberFromRowPk(new LongUnion(event.getFirstRowPK(), event.getLastRowPK())));
+                Iterator<Integer> intervals = updatedRows.getValueRanges().iterator();
+                while (intervals.hasNext()) {
+                    int firstRow = intervals.next();
+                    int lastRow = intervals.next();
+                    evts.add(new TableModelEvent(model, firstRow, lastRow, event.getColumn(), event.getType() ));
+                }
             }
             return true;
         }
