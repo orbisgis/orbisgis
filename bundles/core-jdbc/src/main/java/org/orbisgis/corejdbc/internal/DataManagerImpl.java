@@ -286,7 +286,7 @@ public class DataManagerImpl implements DataManager {
             }
             List<TableEditListener> listeners = tableEditionListener.get(table.toString(true));
             if(listeners != null) {
-                for(TableEditListener listener : listeners) {
+                for(TableEditListener listener : new ArrayList<>(listeners)) {
                     try {
                         listener.tableChange(e);
                     } catch (Exception ex) {
@@ -324,7 +324,7 @@ public class DataManagerImpl implements DataManager {
     public void fireDatabaseProgression(StateEvent event) {
         ArrayList<DatabaseProgressionListener> listenerList = progressionListenerMap.get(event.getStateIdentifier());
         if(listenerList != null) {
-            for(DatabaseProgressionListener listener : listenerList) {
+            for(DatabaseProgressionListener listener : new ArrayList<>(listenerList)) {
                 listener.progressionUpdate(event);
             }
         }

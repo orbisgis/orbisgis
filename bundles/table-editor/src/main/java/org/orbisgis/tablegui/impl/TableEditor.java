@@ -174,15 +174,20 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         }
 
         public void onMenuRefresh() {
-            tableChange(new TableEditEvent(tableEditableElement.getTableReference()));
+            tableChange(new TableEditEvent(tableEditableElement.getTableReference(), TableModelEvent.ALL_COLUMNS, null, null, TableModelEvent.UPDATE));
         }
 
         @Override
         public void tableChange(TableEditEvent event) {
-            if(event.getUndoableEdit() == null) {
+            if (event.getUndoableEdit() == null && !table.isEditing()) {
                 executorService.execute(new RefreshTableJob(tableModel, tableEditableElement));
             } else {
                 undoManager.addEdit(new EditorUndoableEdit(event.getUndoableEdit()));
+            }
+            for (Action action : getDockActions()) {
+                if (action instanceof ActionAbstractEdition) {
+                    ((ActionAbstractEdition) action).onSourceUpdate();
+                }
             }
         }
 
