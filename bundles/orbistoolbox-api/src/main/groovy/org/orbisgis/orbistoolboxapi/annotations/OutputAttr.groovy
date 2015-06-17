@@ -19,13 +19,16 @@
 
 package org.orbisgis.orbistoolboxapi.annotations
 
-import groovy.transform.AnnotationCollector
-import groovy.transform.Field
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
 
 /**
- * Groovy annotation that can be used in a groovy script to declare an input field.
+ * Input annotation used in orbistoolbox to retrieve output information from the groovy WPS script.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, InputAttr])
-public @interface Input {}
+@Retention(RetentionPolicy.RUNTIME)
+@interface OutputAttr {
+    /** Description type attribute of the output. */
+    DescriptionTypeAttribute descriptionTypeAttribute() default @DescriptionTypeAttribute()
+}

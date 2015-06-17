@@ -19,27 +19,18 @@
 
 package org.orbisgis.orbistoolboxapi.annotations
 
-import groovy.transform.AnnotationCollector
-import groovy.transform.Field
-
-import java.lang.annotation.ElementType
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
-import java.lang.annotation.Target
 
 /**
- * This annotation in used to declare the WPS Output fields.
+ * Input annotation used in orbistoolbox to retrieve process information from the groovy WPS script.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface WpsOutput {}
-
-/**
- * Thanks to the annotation AnnotationCollector, this annotation combine the annotation Field and WpsInput.
- *
- * @author Sylvain PALOMINOS
- */
-@Target(ElementType.FIELD)
-@AnnotationCollector([Field, WpsOutput, DescriptionTypeAttribute])
-public @interface OutputAttribute {}
+@interface ProcessAttr {
+    /** Minimum number of times that values for this parameter are required. */
+    String language() default "en"
+    /** Description type attribute of the process. */
+    DescriptionTypeAttribute descriptionTypeAttribute() default @DescriptionTypeAttribute()
+}

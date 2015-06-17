@@ -17,17 +17,27 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.process.controller;
+package org.orbisgis.orbistoolboxapi.annotations
 
-import org.orbisgis.orbistoolbox.process.model.Process;
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
 
 /**
- * Factory instantiating processes.
+ * Annotation for the DescriptionType declaration.
  *
  * @author Sylvain PALOMINOS
  */
 
-public class ProcessFactory {
-
-    public static final Process createProcess()
+@Retention(RetentionPolicy.RUNTIME)
+@interface DescriptionTypeAttribute {
+    /** Title of a process, input, and output. Normally available for display to a human. */
+    String title() default ""
+    /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
+    String abstrac() default ""
+    /** Coma separated keywords that characterize a process, its inputs, and outputs. */
+    String keywords() default ""
+    /** Unambiguous identifier of a process, input, and output. */
+    String identifier() default ""
+    /** Reference to additional metadata about this item. */
+    Metadata[] metadata() default []
 }

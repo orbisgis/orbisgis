@@ -19,27 +19,13 @@
 
 package org.orbisgis.orbistoolboxapi.annotations
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
+import groovy.transform.AnnotationCollector
+import groovy.transform.Field
 
 /**
- * Annotation for the DescriptionType declaration.
- *
- * @see org.orbisgis.orbistoolbox.process.DescriptionType
+ * Groovy annotation that can be used in a groovy script to declare an output field.
  *
  * @author Sylvain PALOMINOS
  */
-
-@Retention(RetentionPolicy.RUNTIME)
-@interface DescriptionTypeAttribute {
-    /** Title of a process, input, and output. Normally available for display to a human. */
-    String title() default ""
-    /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
-    String abstrac() default ""
-    /** Coma separated keywords that characterize a process, its inputs, and outputs. */
-    String keywords() default ""
-    /** Unambiguous identifier of a process, input, and output. */
-    String identifier() default ""
-    /** Reference to additional metadata about this item. */
-    Metadata[] metadata() default []
-}
+@AnnotationCollector([Field, OutputAttr])
+public @interface Output {}
