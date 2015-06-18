@@ -30,6 +30,7 @@ package org.orbisgis.tablegui.impl;
 
 import java.awt.BorderLayout;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -44,6 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.DataSource;
@@ -181,7 +183,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         @Override
         public void tableChange(TableEditEvent event) {
             if (event.getUndoableEdit() == null && !table.isEditing()) {
-                executorService.execute(new RefreshTableJob(tableModel, tableEditableElement, event));
+                executorService.execute(new RefreshTableJob(tableModel, tableEditableElement, event, table));
             } else {
                 undoManager.addEdit(new EditorUndoableEdit(event.getUndoableEdit()));
             }
@@ -1206,14 +1208,16 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
     private class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
         private DataSourceTableModel model;
+        private JTable tableComp;
         private TableEditableElement table;
         private List<TableModelEvent> evts = new ArrayList<>();
         private TableEditEvent event;
 
-        private RefreshTableJob(DataSourceTableModel model, TableEditableElement table, TableEditEvent event) {
+        private RefreshTableJob(DataSourceTableModel model, TableEditableElement table, TableEditEvent event, JTable tableComp) {
             this.model = model;
             this.table = table;
             this.event = event;
+            this.tableComp = tableComp;
             setTaskName(I18N.tr("Refresh table content"));
         }
 
@@ -1222,11 +1226,29 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             model.setLastFetchRowCountTime(0);
             // Swing Thread
             // Send columns delete/insert/update events
-            for(TableModelEvent evt : evts) {
-                model.fireTableChanged(evt);
+            Rectangle rect = tableComp.getVisibleRect();
+            int firstVisibleRow = tableComp.rowAtPoint(rect.getLocation());
+            int lastVisibleRow = tableComp.rowAtPoint(new Point(rect.x, rect.y + rect.height - 1));
+            if(firstVisibleRow < lastVisibleRow && firstVisibleRow >= 0 && lastVisibleRow <= tableComp.getRowCount()) {
+                SortedSet<Integer> rowsToClean = new TreeSet<>();
+                for(int viewRow = firstVisibleRow; viewRow <= lastVisibleRow; viewRow++) {
+                    rowsToClean.add(tableComp.convertRowIndexToModel(viewRow));
+                }
+                try {
+                    table.getRowSet().refreshRows(rowsToClean);
+                } catch (SQLException | EditableElementException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
             }
-            // Refresh shown data
-            model.fireTableDataChanged();
+
+            if(evts.isEmpty()) {
+                // Refresh shown data
+                model.fireTableDataChanged();
+            } else {
+                for (TableModelEvent evt : evts) {
+                    model.fireTableChanged(evt);
+                }
+            }
         }
 
         @Override
@@ -1244,7 +1266,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     } catch (SQLException ex) {
                         LOGGER.error(ex.getLocalizedMessage(), ex);
                     }
-                    table.getRowSet().refreshRow();
+                    // The row count may have changed, reset the rowset
+                    table.getRowSet().execute();
                     try {
                         ResultSetMetaData meta = table.getRowSet().getMetaData();
                         for (int col = 1; col < meta.getColumnCount(); col++) {
@@ -1271,7 +1294,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
             } else {
-              // Simple row event
+                // Simple row event
                 IntegerUnion updatedRows = new IntegerUnion(table.getRowSet().getRowNumberFromRowPk(new LongUnion(event.getFirstRowPK(), event.getLastRowPK())));
                 Iterator<Integer> intervals = updatedRows.getValueRanges().iterator();
                 while (intervals.hasNext()) {

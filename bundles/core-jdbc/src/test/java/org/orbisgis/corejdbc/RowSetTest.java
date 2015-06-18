@@ -293,6 +293,28 @@ public class RowSetTest {
                     (10l, 50l, 100l))));
             assertEquals(new TreeSet<>(Arrays.asList(1, 50)), rs.getRowNumberFromRowPk(new TreeSet<>(Arrays
                     .asList(10l, 500l))));
+            assertEquals(new TreeSet<>(Arrays.asList(119)), rs.getRowNumberFromRowPk(new TreeSet<>(Arrays
+                    .asList(1190l))));
+        }
+    }
+
+    /**
+     * @throws SQLException
+     */
+    @Test
+    public void testRowNumExtraction2() throws SQLException {
+
+        DataManager factory = new DataManagerImpl(dataSource);
+        ReadRowSet rs = factory.createReadRowSet();
+        try (Connection connection = dataSource.getConnection();
+             Statement st = connection.createStatement()) {
+            st.execute("drop table if exists test");
+            st.execute("create table test (id integer primary key, y float) as select X * 10 id, SQRT(X) y from " +
+                    "SYSTEM_RANGE(1, 122)");
+            rs.setCommand("SELECT * FROM TEST");
+            rs.execute();
+            assertEquals(new TreeSet<>(Arrays.asList(121)), rs.getRowNumberFromRowPk(new TreeSet<>(Arrays
+                    .asList(1210l))));
         }
     }
 
@@ -550,11 +572,11 @@ public class RowSetTest {
             assertEquals(1l, rs.getRowCount());
             // Undo insert
             listenerList.eventList.get(0).getUndoableEdit().undo();
-            rs.refreshRow();
+            rs.execute();
             assertEquals(0l, rs.getRowCount());
             // Redo insert
             listenerList.eventList.get(0).getUndoableEdit().redo();
-            rs.refreshRow();
+            rs.execute();
             assertEquals(1l, rs.getRowCount());
         }
     }
@@ -623,10 +645,10 @@ public class RowSetTest {
             assertEquals(0, rs.getRowCount());
             assertEquals(1, listenerList.eventList.size());
             listenerList.eventList.get(0).getUndoableEdit().undo();
-            rs.refreshRow();
+            rs.execute();
             assertEquals(1, rs.getRowCount());
             listenerList.eventList.get(0).getUndoableEdit().redo();
-            rs.refreshRow();
+            rs.execute();
             assertEquals(0, rs.getRowCount());
         }
     }

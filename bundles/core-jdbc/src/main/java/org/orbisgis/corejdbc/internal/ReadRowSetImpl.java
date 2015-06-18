@@ -79,11 +79,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -186,13 +188,17 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         // Iterate through batch until next PK is superior than search pk.
                         // For optimisation sake, a binary search could be faster than serial search
                         Long nextPk;
+                        final int batchCount = getBatchCount();
                         do  {
                             batchIterId++;
                             if (batchIterId + 1 >= rowFetchFirstPk.size() || rowFetchFirstPk.get(batchIterId + 1) == null) {
                                 fetchBatchPk(batchIterId + 1);
                             }
                             nextPk = rowFetchFirstPk.get(batchIterId + 1);
-                        } while (batchIterId + 1 < getBatchCount() && nextPk < fetchPk);
+                        } while (nextPk < fetchPk && batchIterId + 1 < batchCount - 1);
+                        if(nextPk <= fetchPk) {
+                            batchIterId++;
+                        }
                     }
                     fetchBatchPk(batchIterId);
                     Long batchFirstPk = rowFetchFirstPk.get(batchIterId);
@@ -218,7 +224,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     }
 
     private int getBatchCount() throws SQLException {
-        return (int)(getRowCount() / fetchSize);
+        return (int)Math.ceil(getRowCount() / (double)fetchSize);
     }
 
     /**
@@ -558,28 +564,33 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         try(Connection connection = dataSource.getConnection()) {
             isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             // Cache Rowcount here
+            cachedRowCount = -1;
             getRowCount(pm);
         }
-        resultSetHolder.setParameters(parameters);
-        if(!pk_name.isEmpty()) {
-            // Always use PK to fetch rows
-            resultSetHolder.setCommand(getCommand() + " LIMIT 0");
-        } else {
-            resultSetHolder.setCommand(getCommand());
-            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
-            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
-            try(Resource resource = resultSetHolder.getResource()) {
-            } finally {
-                pm.removePropertyChangeListener(listener);
+        if(resultSetHolder.getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
+            resultSetHolder.setParameters(parameters);
+            if (!pk_name.isEmpty()) {
+                // Always use PK to fetch rows
+                resultSetHolder.setCommand(getCommand() + " LIMIT 0");
+            } else {
+                resultSetHolder.setCommand(getCommand());
+                PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
+                pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
+                try (Resource resource = resultSetHolder.getResource()) {
+                } finally {
+                    pm.removePropertyChangeListener(listener);
+                }
             }
+        } else {
+            // Clear cache of all rows
+            rowFetchFirstPk = new ArrayList<>(Arrays.asList(new Long[]{null}));
+            moveCursorTo(Math.min(getRowCount(), rowId));
+            refreshRow();
         }
     }
 
     @Override
     public void execute() throws SQLException {
-        if(resultSetHolder.getCommand() != null) {
-            throw new SQLException("This row set is already executed");
-        }
         if(location == null) {
             throw new SQLException("You must execute RowSet.setCommand(String sql) first");
         }
@@ -828,18 +839,33 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     }
 
     @Override
+    public void refreshRows(SortedSet<Integer> rowsIndex) throws SQLException {
+        Set<Integer> batchIds = new HashSet<>();
+        for(int refRowId : rowsIndex) {
+            batchIds.add(refRowId / fetchSize);
+        }
+        for(int batchId : batchIds) {
+            if(batchId < rowFetchFirstPk.size() && batchId >= 0) {
+                rowFetchFirstPk.set(batchId, null);
+            }
+            if(batchId == currentBatchId) {
+                currentBatchId = -1;
+                currentBatch.clear();
+            }
+        }
+        cache.clear();
+    }
+
+    @Override
     public void refreshRow() throws SQLException {
         try(Resource res = resultSetHolder.getResource()) {
-            cachedRowCount = -1;
             currentRow = null;
             cache.clear();
-            rowFetchFirstPk = new ArrayList<>(Arrays.asList(new Long[]{null}));
             currentBatch = new ArrayList<>(fetchSize + 1);
             currentBatchId = -1;
             if(res.getResultSet().getRow() > 0 && !res.getResultSet().isAfterLast()) {
                 res.getResultSet().refreshRow();
             }
-            moveCursorTo(Math.min(getRowCount(), rowId));
         } catch (SQLException ex) {
             LOGGER.warn(ex.getLocalizedMessage(), ex);
         }

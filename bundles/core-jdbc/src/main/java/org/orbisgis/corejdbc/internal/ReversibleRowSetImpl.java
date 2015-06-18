@@ -374,6 +374,7 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
             deleteEvt.setValue(getColumnLabel(idColumn + 1), currentRow[idColumn]);
         }
         deleteEvt.redo(false);
+        cachedRowCount--;
         refreshRow();
         manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), deleteEvt, TableModelEvent
                 .ALL_COLUMNS, deleteEvt.getPrimaryKey(), deleteEvt.getPrimaryKey(), TableModelEvent.DELETE));
