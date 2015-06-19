@@ -840,20 +840,23 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public void refreshRows(SortedSet<Integer> rowsIndex) throws SQLException {
-        Set<Integer> batchIds = new HashSet<>();
-        for(int refRowId : rowsIndex) {
-            batchIds.add(refRowId / fetchSize);
-        }
-        for(int batchId : batchIds) {
-            if(batchId < rowFetchFirstPk.size() && batchId >= 0) {
-                rowFetchFirstPk.set(batchId, null);
+        try(Resource res = resultSetHolder.getResource()) {
+            Set<Integer> batchIds = new HashSet<>();
+            for(int refRowId : rowsIndex) {
+                batchIds.add(refRowId / fetchSize);
             }
-            if(batchId == currentBatchId) {
-                currentBatchId = -1;
-                currentBatch.clear();
+            for(int batchId : batchIds) {
+                if(batchId < rowFetchFirstPk.size() && batchId >= 0) {
+                    rowFetchFirstPk.set(batchId, null);
+                }
+                if(batchId == currentBatchId) {
+                    currentBatchId = -1;
+                    currentBatch = new ArrayList<>(fetchSize + 1);
+                }
             }
+        } catch (SQLException ex) {
+            LOGGER.warn(ex.getLocalizedMessage(), ex);
         }
-        cache.clear();
     }
 
     @Override

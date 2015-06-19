@@ -45,6 +45,9 @@ public class EditorUndoableEdit implements UndoableEdit {
     private static final Logger LOGGER = LoggerFactory.getLogger(EditorUndoableEdit.class);
 
     public EditorUndoableEdit(TableUndoableEdit tableUndoableEdit) {
+        if(tableUndoableEdit == null) {
+            throw new IllegalArgumentException("tableUndoableEdit cannto be null");
+        }
         this.tableUndoableEdit = tableUndoableEdit;
     }
 

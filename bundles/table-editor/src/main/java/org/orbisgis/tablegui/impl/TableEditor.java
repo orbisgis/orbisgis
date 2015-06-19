@@ -185,7 +185,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             if (event.getUndoableEdit() == null && !table.isEditing()) {
                 executorService.execute(new RefreshTableJob(tableModel, tableEditableElement, event, table));
             } else {
-                undoManager.addEdit(new EditorUndoableEdit(event.getUndoableEdit()));
+                if(event.getUndoableEdit() != null) {
+                    undoManager.addEdit(new EditorUndoableEdit(event.getUndoableEdit()));
+                }
             }
             for (Action action : getDockActions()) {
                 if (action instanceof ActionAbstractEdition) {
@@ -815,7 +817,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
          */
         private void readDataSource() {
                 tableModel = new DataSourceTableModel(tableEditableElement);
-                tableEditableElement.getDataManager().addTableEditListener(tableEditableElement.getTableReference(), this);
+                tableEditableElement.getDataManager().addTableEditListener(tableEditableElement.getTableReference(), this, false);
                 tableModel.addTableModelListener(new FieldResetListener(this));
                 table.setModel(tableModel);
                 updateTableColumnModel();
@@ -1230,12 +1232,19 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             int firstVisibleRow = tableComp.rowAtPoint(rect.getLocation());
             int lastVisibleRow = tableComp.rowAtPoint(new Point(rect.x, rect.y + rect.height - 1));
             if(firstVisibleRow < lastVisibleRow && firstVisibleRow >= 0 && lastVisibleRow <= tableComp.getRowCount()) {
-                SortedSet<Integer> rowsToClean = new TreeSet<>();
+                IntegerUnion rowsToClean = new IntegerUnion();
                 for(int viewRow = firstVisibleRow; viewRow <= lastVisibleRow; viewRow++) {
-                    rowsToClean.add(tableComp.convertRowIndexToModel(viewRow));
+                    rowsToClean.add(tableComp.convertRowIndexToModel(viewRow) + 1);
                 }
                 try {
                     table.getRowSet().refreshRows(rowsToClean);
+                    // Update rendered rows
+                    Iterator<Integer> intervals = rowsToClean.getValueRanges().iterator();
+                    while(intervals.hasNext()) {
+                        int start = intervals.next();
+                        int end = intervals.next();
+                        model.fireTableRowsUpdated(start, end);
+                    }
                 } catch (SQLException | EditableElementException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
@@ -1300,7 +1309,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 while (intervals.hasNext()) {
                     int firstRow = intervals.next();
                     int lastRow = intervals.next();
-                    evts.add(new TableModelEvent(model, firstRow, lastRow, event.getColumn(), event.getType() ));
+                    evts.add(new TableModelEvent(model, firstRow - 1, lastRow - 1, event.getColumn(), event.getType() ));
                 }
             }
             return true;
