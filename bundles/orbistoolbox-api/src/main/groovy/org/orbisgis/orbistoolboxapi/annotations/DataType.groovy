@@ -19,16 +19,21 @@
 
 package org.orbisgis.orbistoolboxapi.annotations
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
- * Output annotation used in orbistoolbox to retrieve output information from the groovy WPS script.
+ * Enumeration for the DataType.
  *
  * @author Sylvain PALOMINOS
  */
-@Retention(RetentionPolicy.RUNTIME)
-@interface OutputAttr {
-    /** Description type attribute of the output. */
-    DescriptionTypeAttribute descriptionTypeAttribute() default @DescriptionTypeAttribute()
+
+enum DataType {
+    STRING,
+    INTEGER,
+    BOOLEAN,
+    DOUBLE,
+    FLOAT,
+    SHORT,
+    BYTE,
+    UNSIGNED_BYTE,
+    LONG,
+    NONE
 }

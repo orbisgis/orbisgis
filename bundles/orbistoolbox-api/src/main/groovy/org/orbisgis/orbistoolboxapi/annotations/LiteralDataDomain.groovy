@@ -19,16 +19,21 @@
 
 package org.orbisgis.orbistoolboxapi.annotations
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
- * Output annotation used in orbistoolbox to retrieve output information from the groovy WPS script.
+ * Groovy annotation that can be used in a groovy script to declare a literal data domain.
  *
  * @author Sylvain PALOMINOS
  */
-@Retention(RetentionPolicy.RUNTIME)
-@interface OutputAttr {
-    /** Description type attribute of the output. */
-    DescriptionTypeAttribute descriptionTypeAttribute() default @DescriptionTypeAttribute()
+
+@interface LiteralDataDomain{
+    /** Identifies a valid format for an input or output. */
+    PossibleLiteralValuesChoice plvc();
+    /** Reference to the data type of this set of values. */
+    DataType dataType();
+    /** Indicates that this quantity has units and provides the unit of measurement. */
+    String uom() default "";
+    /** Default value for this quantity. */
+    Values defaultValue();
+    /** Indicates that this is the default/native domain. */
+    boolean defaultDomain() default false;
 }

@@ -19,16 +19,21 @@
 
 package org.orbisgis.orbistoolboxapi.annotations
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
- * Output annotation used in orbistoolbox to retrieve output information from the groovy WPS script.
+ * Groovy annotation that can be used in a groovy script to declare a Format.
  *
  * @author Sylvain PALOMINOS
  */
-@Retention(RetentionPolicy.RUNTIME)
-@interface OutputAttr {
-    /** Description type attribute of the output. */
-    DescriptionTypeAttribute descriptionTypeAttribute() default @DescriptionTypeAttribute()
+
+@interface Format {
+    /** Media type of the data. */
+    String mimeType()
+    /** Encoding procedure or character set of the data.*/
+    String encoding() default "simple"
+    /** Identification of the data schema.*/
+    String schema()
+    /** The maximum size of the input data, in megabytes.*/
+    int maximumMegaBytes() default 0
+    /** Indicates that this format is the default format.*/
+    boolean defaultFormat() default false
 }

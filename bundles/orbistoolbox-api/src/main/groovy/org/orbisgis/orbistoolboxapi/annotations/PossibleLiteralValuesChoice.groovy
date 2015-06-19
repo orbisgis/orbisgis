@@ -19,16 +19,15 @@
 
 package org.orbisgis.orbistoolboxapi.annotations
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-
 /**
- * Output annotation used in orbistoolbox to retrieve output information from the groovy WPS script.
+ * Groovy annotation that can be used in a groovy script to declare a possible literal values choice.
  *
  * @author Sylvain PALOMINOS
  */
-@Retention(RetentionPolicy.RUNTIME)
-@interface OutputAttr {
-    /** Description type attribute of the output. */
-    DescriptionTypeAttribute descriptionTypeAttribute() default @DescriptionTypeAttribute()
+
+@interface PossibleLiteralValuesChoice {
+    /** List of all valid values and/or ranges of values for this quantity. */
+    Values[] allowedValues() default []
+    /** Reference to list of all valid values and/or ranges of values for this quantity. */
+    String valuesReference() default ""
 }
