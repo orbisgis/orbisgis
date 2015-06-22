@@ -61,7 +61,7 @@ public class Input extends DescriptionType {
     public Input(String title, URI identifier, DataDescription dataDescription) throws IllegalArgumentException {
         super(title, identifier);
         if(dataDescription == null ){
-            throw new IllegalArgumentException("The argument \"dataDescription\" should not be null");
+            throw new IllegalArgumentException("The argument \"dataDescription\" can not be null");
         }
         this.minOccurs = 1;
         this.maxOccurs = 1;
@@ -78,13 +78,18 @@ public class Input extends DescriptionType {
      * @param title      Not null title of a process, input, input.
      * @param identifier Not null unambiguous identifier of a process, input, and input.
      * @param inputList Not null DataDescription of this input.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
+     * @throws IllegalArgumentException Exception thrown if one of the parameters is null or empty or containing null.
      */
     public Input(String title, URI identifier, List<Input> inputList) throws IllegalArgumentException {
         super(title, identifier);
-        if(inputList == null || inputList.isEmpty() || inputList.contains(null)){
-            throw new IllegalArgumentException("The argument \"inputList\" should not be null or empty or " +
-                    "containing a null value");
+        if(inputList == null){
+            throw new IllegalArgumentException("The argument \"inputList\" can not be null");
+        }
+        if(inputList.isEmpty()){
+            throw new IllegalArgumentException("The argument \"inputList\" can not be empty");
+        }
+        if(inputList.contains(null)){
+            throw new IllegalArgumentException("The argument \"inputList\" can not contain a null value");
         }
         this.minOccurs = 1;
         this.maxOccurs = 1;
@@ -98,7 +103,7 @@ public class Input extends DescriptionType {
      */
     public void setDataDescription(DataDescription dataDescription) throws IllegalArgumentException {
         if (dataDescription == null) {
-            throw new IllegalArgumentException("The argument \"dataDescription\" should not be null");
+            throw new IllegalArgumentException("The argument \"dataDescription\" can not be null");
         }
         input = null;
         this.dataDescription = dataDescription;
@@ -117,11 +122,17 @@ public class Input extends DescriptionType {
      * Sets the input list with the not null/empty list and set the dataDescription to null.
      * The list should not contain null value.
      * @param inputList List of nested input.
+     * @throws IllegalArgumentException Exception thrown if one of the parameters is null or empty or containing null.
      */
     public void setInput(List<Input> inputList) throws IllegalArgumentException {
-        if (inputList == null || inputList.isEmpty() || inputList.contains(null)) {
-            throw new IllegalArgumentException("The argument \"inputList\" should not be null or empty or " +
-                    "containing a null value");
+        if (inputList == null) {
+            throw new IllegalArgumentException("The argument \"inputList\" can not be null");
+        }
+        if (inputList.isEmpty()) {
+            throw new IllegalArgumentException("The argument \"inputList\" can not be empty");
+        }
+        if (inputList.contains(null)) {
+            throw new IllegalArgumentException("The argument \"inputList\" can not contain a null value");
         }
         input = new ArrayList<>();
         for(Input i : inputList) {

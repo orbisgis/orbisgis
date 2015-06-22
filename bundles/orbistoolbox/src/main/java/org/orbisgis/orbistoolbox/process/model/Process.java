@@ -47,8 +47,9 @@ public class Process extends DescriptionType {
      * @param title      Not null title of the process.
      * @param identifier Not null unambiguous identifier of the process.
      * @param output     Not null output.
+     * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
      */
-    public Process(String title, URI identifier, Output output) {
+    public Process(String title, URI identifier, Output output) throws IllegalArgumentException {
         super(title, identifier);
         if(output == null) {
             throw new IllegalArgumentException("The parameter \"output\" can not be null");
@@ -65,13 +66,19 @@ public class Process extends DescriptionType {
      * @param title      Not null title of a process, input, output.
      * @param identifier Not null unambiguous identifier of a process, input, and output.
      * @param outputList Not null list of not null output.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null or an empty list.
+     * @throws IllegalArgumentException Exception thrown if one of the parameters is null or an empty list or
+     * containing value.
      */
-    public Process(String title, URI identifier, List<Output> outputList) {
+    public Process(String title, URI identifier, List<Output> outputList) throws IllegalArgumentException {
         super(title, identifier);
-        if(outputList == null || outputList.isEmpty() || outputList.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"output\" can not be null or empty or " +
-                    "containing a null value");
+        if(outputList == null) {
+            throw new IllegalArgumentException("The parameter \"output\" can not contain a null value");
+        }
+        if(outputList.isEmpty()) {
+            throw new IllegalArgumentException("The parameter \"output\" can not be empty");
+        }
+        if(outputList.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"output\" can not be null");
         }
         this.output = new ArrayList<>();
         this.output.addAll(outputList);
@@ -99,10 +106,15 @@ public class Process extends DescriptionType {
      * @param inputList List of input.
      * @throws IllegalArgumentException Exception thrown if the parameters is null or empty or containing a null value.
      */
-    public void setInput(List<Input> inputList) {
-        if(inputList == null || inputList.isEmpty() || inputList.contains(null)){
-            throw new IllegalArgumentException("The parameter \"inputList\" can not be null or empty or " +
-                    "containing a null value");
+    public void setInput(List<Input> inputList) throws IllegalArgumentException {
+        if(inputList == null){
+            throw new IllegalArgumentException("The parameter \"inputList\" can not be null");
+        }
+        if(inputList.isEmpty()){
+            throw new IllegalArgumentException("The parameter \"inputList\" can not be empty");
+        }
+        if(inputList.contains(null)){
+            throw new IllegalArgumentException("The parameter \"inputList\" can not contain a null value");
         }
         this.input = new ArrayList<>();
         for(Input i : inputList) {
@@ -115,7 +127,7 @@ public class Process extends DescriptionType {
      * @param input The new Input.
      * @throws IllegalArgumentException Exception thrown if the parameters is null.
      */
-    public void addInput(Input input) {
+    public void addInput(Input input) throws IllegalArgumentException {
         if(input == null){
             throw new IllegalArgumentException("The parameter \"input\" can not be null");
         }
@@ -151,10 +163,15 @@ public class Process extends DescriptionType {
      * @param outputList List of output.
      * @throws IllegalArgumentException Exception thrown if the parameters is null or empty or containing a null value.
      */
-    public void setOutput(List<Output> outputList) {
-        if(outputList == null | outputList.isEmpty() || outputList.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"output\" can not be null or empty or " +
-                    "containing null value");
+    public void setOutput(List<Output> outputList) throws IllegalArgumentException {
+        if(outputList == null) {
+            throw new IllegalArgumentException("The parameter \"output\" can not be null");
+        }
+        if(outputList.isEmpty()) {
+            throw new IllegalArgumentException("The parameter \"output\" can not be empty");
+        }
+        if(outputList.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"output\" can not contain null value");
         }
         this.output = new ArrayList<>();
         for(Output o : outputList) {
@@ -167,7 +184,7 @@ public class Process extends DescriptionType {
      * @param output The new output.
      * @throws IllegalArgumentException Exception thrown if the parameters is null.
      */
-    public void addOutput(Output output) {
+    public void addOutput(Output output) throws IllegalArgumentException {
         if(output == null) {
             throw new IllegalArgumentException("The parameter \"output\" can not be null");
         }

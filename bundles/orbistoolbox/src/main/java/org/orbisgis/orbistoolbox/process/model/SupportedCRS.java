@@ -60,12 +60,17 @@ public class SupportedCRS {
      * Constructor which define a CRS and if it is the default one.
      * @param crsList References to a CRS definition.
      * @param defaultCRS True if the CRS is the default one, false otherwise.
-     * @throws IllegalArgumentException Exception get on trying to set the CRS to null
+     * @throws IllegalArgumentException Exception ge on setting a list which is null, empty or containing null value.
      */
     public SupportedCRS(List<URI> crsList, boolean defaultCRS) throws IllegalArgumentException {
-        if (crsList == null || crsList.isEmpty() || crsList.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"crsList\" can not be null or empty or " +
-                    "containing null values");
+        if (crsList == null) {
+            throw new IllegalArgumentException("The parameter \"crsList\" can not be null");
+        }
+        if (crsList.isEmpty()) {
+            throw new IllegalArgumentException("The parameter \"crsList\" can not be empty");
+        }
+        if (crsList.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"crsList\" can not contain null values");
         }
         this.crs = new ArrayList<>();
         this.crs.addAll(crsList);
@@ -91,12 +96,17 @@ public class SupportedCRS {
     /**
      * Sets the CRS list.
      * @param crsList The new CRS list.
-     * @throws IllegalArgumentException Exception get on trying to add a null CRS.
+     * @throws IllegalArgumentException Exception ge on setting a list which is null, empty or containing null value.
      */
     public void setCRS(List<URI> crsList) throws IllegalArgumentException {
-        if (crsList == null || crsList.isEmpty() || crsList.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"defaultValue\" can not be null or empty or " +
-                    "containing null value");
+        if (crsList == null) {
+            throw new IllegalArgumentException("The parameter \"defaultValue\" can not be null");
+        }
+        if (crsList.isEmpty()) {
+            throw new IllegalArgumentException("The parameter \"defaultValue\" can not be empty");
+        }
+        if (crsList.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"defaultValue\" can not contain null value");
         }
         this.crs = new ArrayList<>();
         this.crs.addAll(crsList);

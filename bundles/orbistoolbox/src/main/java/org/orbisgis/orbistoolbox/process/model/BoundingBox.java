@@ -41,6 +41,9 @@ public class BoundingBox {
     /** The number of dimensions in this CRS (the length of a coordinate sequence). */
     private int dimensions;
 
+    /**
+     * Main void constructor.
+     */
     public BoundingBox() {
         lowerCorner = new ArrayList<>();
         upperCorner = new ArrayList<>();

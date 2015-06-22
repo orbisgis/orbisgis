@@ -23,7 +23,8 @@ import java.util.List;
 
 /**
  * Bounding box data serves a variety of purposes in spatial data processing.
- * Some simple applications are the definition of extents for a clipping operation or the definition of an analysis region.
+ * Some simple applications are the definition of extents for a clipping operation or the definition of
+ * an analysis region.
  * This specification inherits the bounding box specification from OWS Common.
  *
  * For more informations : docs.opengeospatial.org/is/14-065/14-065.html#28
@@ -49,15 +50,21 @@ public class BoundingBoxData extends DataDescription {
     public BoundingBoxData(List<Format> formatList, List<SupportedCRS> supportedCRSList, BoundingBox boundingBox)
             throws IllegalArgumentException {
         super(formatList);
-        if (supportedCRSList == null || supportedCRSList.isEmpty() || supportedCRSList.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"supportedCRSList\" can not be null or empty or" +
-                    "containing a null value");
+        if (supportedCRSList == null) {
+            throw new IllegalArgumentException("The parameter \"supportedCRSList\" can not be null");
+        }
+        if (supportedCRSList.isEmpty()) {
+            throw new IllegalArgumentException("The parameter \"supportedCRSList\" can not be empty");
+        }
+        if (supportedCRSList.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"supportedCRSList\" can not contain a null value");
         }
         if (boundingBox == null) {
             throw new IllegalArgumentException("The parameter \"boundingBox\" can not be null");
         }
 
         boolean hasDefault = false;
+        //Verify that the Supported CRS list contains exactly one default CRS
         for(SupportedCRS crs : supportedCRSList) {
             if (hasDefault && crs.isDefaultCRS()) {
                 throw new IllegalArgumentException("The parameter \"supportedCRSList\" can only contain one" +
@@ -126,10 +133,16 @@ public class BoundingBoxData extends DataDescription {
      */
     public void setSupportedCRSs(List<SupportedCRS> supportedCRSs) throws IllegalArgumentException {
         if (supportedCRSs == null || supportedCRSs.isEmpty() || supportedCRSs.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"supportedCRSs\" can not be null or empty or" +
-                    "containing a null value");
+            throw new IllegalArgumentException("The parameter \"supportedCRSs\" can not be null");
+        }
+        if (supportedCRSs.isEmpty()) {
+            throw new IllegalArgumentException("The parameter \"supportedCRSs\" can not be empty");
+        }
+        if (supportedCRSs.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"supportedCRSs\" can not contain a null value");
         }
 
+        //Verify that the Supported CRS list contain exactly one default CRS
         boolean hasDefault = false;
         for(SupportedCRS crs : supportedCRSs) {
             if (hasDefault && crs.isDefaultCRS()) {
@@ -146,5 +159,13 @@ public class BoundingBoxData extends DataDescription {
         }
 
         this.supportedCRSs = supportedCRSs;
+    }
+
+    /**
+     * Returns the bounding box.
+     * @return The bounding box.
+     */
+    public BoundingBox getBoundingBox(){
+        return boundingBox;
     }
 }

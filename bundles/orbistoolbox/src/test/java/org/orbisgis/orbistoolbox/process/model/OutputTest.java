@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Test for the Output class.
+ *
  * @author Sylvain PALOMINOS
  */
 

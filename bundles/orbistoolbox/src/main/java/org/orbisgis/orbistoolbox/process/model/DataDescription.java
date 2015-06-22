@@ -63,12 +63,18 @@ public abstract class DataDescription {
      * @throws IllegalArgumentException Exception get on setting a format which is null or is not the default one.
      */
     public DataDescription(List<Format> formatList)  throws IllegalArgumentException {
-        if(formatList == null || formatList.isEmpty() || formatList.contains(null)){
-            throw new IllegalArgumentException("The parameter \"formatList\" can not be null or empty or " +
-                    "containing a null value");
+        if(formatList == null){
+            throw new IllegalArgumentException("The parameter \"formatList\" can not be null");
+        }
+        if(formatList.isEmpty()){
+            throw new IllegalArgumentException("The parameter \"formatList\" can not be empty");
+        }
+        if(formatList.contains(null)){
+            throw new IllegalArgumentException("The parameter \"formatList\" can not contain a null value");
         }
         boolean flag = false;
 
+        //Verify that the Format list contains exactly one default format
         for(Format format : formatList) {
             if(flag && format.isDefaultFormat()){
                 throw new IllegalArgumentException("Only one format can be set as the default one");
@@ -93,7 +99,7 @@ public abstract class DataDescription {
      *
      * @return The list of format.
      */
-    public List<Format> getFormats() {
+    public final List<Format> getFormats() {
         return formats;
     }
 
@@ -107,7 +113,7 @@ public abstract class DataDescription {
      * @throws IllegalArgumentException Exception get on setting a format which is null or
      * setting more than one default format.
      */
-    protected void addFormat(Format format) throws IllegalArgumentException {
+    protected final void addFormat(Format format) throws IllegalArgumentException {
         if(this.formats.contains(format)){
             return;
         }
@@ -136,7 +142,7 @@ public abstract class DataDescription {
      * @param format Format to remove.
      * @throws IllegalArgumentException Exception get on removing the last format or the default one
      */
-    protected void removeFormat(Format format) throws IllegalArgumentException {
+    protected final void removeFormat(Format format) throws IllegalArgumentException {
         if (this.formats == null ||
                 (this.formats.size() == 1 && this.formats.contains(format)) ||
                 format.isDefaultFormat()) {
@@ -153,7 +159,7 @@ public abstract class DataDescription {
      * @throws IllegalArgumentException Exception get on setting a list of format which is null or empty or
      * containing more than one default format.
      */
-    protected void setFormats(List<Format> formatList) throws IllegalArgumentException {
+    protected final void setFormats(List<Format> formatList) throws IllegalArgumentException {
         if(formatList == null || formatList.isEmpty()) {
             throw new IllegalArgumentException("The parameter \"format\" can not be null or empty");
         }
@@ -162,6 +168,7 @@ public abstract class DataDescription {
         }
         boolean hasDefault = false;
 
+        //Verify that the Format list contain exactly one default format
         for(Format format : formatList) {
             if(hasDefault && format.isDefaultFormat()){
                 throw new IllegalArgumentException("Only one format can be set as the default one");
@@ -183,7 +190,7 @@ public abstract class DataDescription {
      * @param format Not null new default format.
      * @throws IllegalArgumentException Exception get on setting a null or a not contained format as the default one.
      */
-    protected void setDefaultFormat(Format format){
+    protected final void setDefaultFormat(Format format) throws IllegalArgumentException {
         if(format == null){
             throw new IllegalArgumentException("The parameter \"format\" can not be null;");
         }

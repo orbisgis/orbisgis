@@ -57,7 +57,7 @@ public class Output extends DescriptionType {
     public Output(String title, URI identifier, DataDescription dataDescription) throws IllegalArgumentException {
         super(title, identifier);
         if(dataDescription == null ){
-            throw new IllegalArgumentException("The argument \"dataDescription\" should not be null");
+            throw new IllegalArgumentException("The argument \"dataDescription\" can not be null");
         }
         this.dataDescription = dataDescription;
         this.output = null;
@@ -72,13 +72,18 @@ public class Output extends DescriptionType {
      * @param title      Not null title of a process, output, output.
      * @param identifier Not null unambiguous identifier of a process, output, and output.
      * @param outputList Not null DataDescription of this output.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
+     * @throws IllegalArgumentException Exception thrown if one of the parameters is null or empty or containing null.
      */
     public Output(String title, URI identifier, List<Output> outputList) throws IllegalArgumentException {
         super(title, identifier);
-        if(outputList == null || outputList.isEmpty() || outputList.contains(null)){
-            throw new IllegalArgumentException("The argument \"outputList\" should not be null or empty or " +
-                    "containing a null value");
+        if(outputList == null){
+            throw new IllegalArgumentException("The argument \"outputList\" can not be null");
+        }
+        if(outputList.isEmpty()){
+            throw new IllegalArgumentException("The argument \"outputList\" can not be empty");
+        }
+        if(outputList.contains(null)){
+            throw new IllegalArgumentException("The argument \"outputList\" can not contain a null value");
         }
         this.dataDescription = null;
         this.output = outputList;
@@ -87,10 +92,11 @@ public class Output extends DescriptionType {
     /**
      * Sets the DataDescription of this output (the argument should not be null) and set to null the output list.
      * @param dataDescription New DataDescription.
+     * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
      */
     public void setDataDescription(DataDescription dataDescription) throws IllegalArgumentException {
         if (dataDescription == null) {
-            throw new IllegalArgumentException("The argument \"dataDescription\" should not be null");
+            throw new IllegalArgumentException("The argument \"dataDescription\" can not be null");
         }
         output = null;
         this.dataDescription = dataDescription;
@@ -109,11 +115,17 @@ public class Output extends DescriptionType {
      * Sets the output list with the not null/empty list and set the dataDescription to null.
      * The list should not contain null value.
      * @param outputList List of nested output.
+     * @throws IllegalArgumentException Exception thrown if one of the parameters is null or empty or containing null.
      */
     public void setOutput(List<Output> outputList) throws IllegalArgumentException {
-        if (outputList == null || outputList.isEmpty() || outputList.contains(null)) {
-            throw new IllegalArgumentException("The argument \"outputList\" should not be null or empty or " +
-                    "containing a null value");
+        if (outputList == null) {
+            throw new IllegalArgumentException("The argument \"outputList\" can not be null");
+        }
+        if (outputList.isEmpty()) {
+            throw new IllegalArgumentException("The argument \"outputList\" can not empty");
+        }
+        if (outputList.contains(null)) {
+            throw new IllegalArgumentException("The argument \"outputList\" can not contain a null value");
         }
         output = new ArrayList<>();
         for(Output i : outputList) {

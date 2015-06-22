@@ -50,10 +50,14 @@ public class PossibleLiteralValuesChoice {
      * @throws IllegalArgumentException Exception ge on setting a list which is null, empty or containing null value.
      */
     public PossibleLiteralValuesChoice(List<Values> allowedValues) throws IllegalArgumentException {
-        //Verify if the parameters are not null
-        if (allowedValues == null || allowedValues.isEmpty() || allowedValues.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"allowedValues\" can not be null or empty or " +
-                    "containing null value");
+        if (allowedValues == null) {
+            throw new IllegalArgumentException("The parameter \"allowedValues\" can not be null");
+        }
+        if (allowedValues.isEmpty()) {
+            throw new IllegalArgumentException("The parameter \"allowedValues\" can not be empty");
+        }
+        if (allowedValues.contains(null)) {
+            throw new IllegalArgumentException("The parameter \"allowedValues\" can not contain null value");
         }
         this.allowedValues = new ArrayList<>();
         this.allowedValues.addAll(allowedValues);

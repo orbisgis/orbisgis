@@ -26,7 +26,7 @@ import java.net.URISyntaxException;
 /**
  * Enumeration of the LiteralData type.
  *
- * For more information :
+ * For more information : http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html
  *
  * @author Sylvain PALOMINOS
  */
@@ -46,14 +46,22 @@ public enum DataType {
     /** URI for the data type. */
     private URI uri;
 
-    DataType(String uri) {
+    /**
+     * Main constructor.
+     * @param uriString String of the URI to the reference of the type.
+     */
+    DataType(String uriString) {
         try {
-            this.uri = new URI(uri);
+            this.uri = new URI(uriString);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Returns the URI of the type.
+     * @return The URI of the type.
+     */
     public URI getUri() {
         return uri;
     }

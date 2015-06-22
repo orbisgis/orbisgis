@@ -44,9 +44,15 @@ public class Metadata {
      * @param href Reference to the documentation.
      * @throws IllegalArgumentException Exception get on giving a null values as argument
      */
-    public Metadata(String title, URI role, URI href) {
-        if(title == null || role == null || href == null){
-            throw new IllegalArgumentException("None of the arguments can be null");
+    public Metadata(String title, URI role, URI href) throws IllegalArgumentException {
+        if(title == null){
+            throw new IllegalArgumentException("The argument\"title\" can not be null");
+        }
+        if(role == null){
+            throw new IllegalArgumentException("The argument\"role\" can not be null");
+        }
+        if(href == null){
+            throw new IllegalArgumentException("The argument\"href\" can not be null");
         }
         this.title = title;
         this.role = role;
@@ -64,9 +70,13 @@ public class Metadata {
 
     /**
      * Sets the documentation title.
-     * @param title The documentation title.
+     * @param title Not null documentation title.
+     * @throws IllegalArgumentException Exception get on giving a null values as argument
      */
-    public void setTitle(String title) {
+    public void setTitle(String title) throws IllegalArgumentException {
+        if(title == null){
+            throw new IllegalArgumentException("The argument\"title\" can not be null");
+        }
         this.title = title;
     }
 
@@ -88,9 +98,13 @@ public class Metadata {
 
     /**
      * Sets the documentation role.
-     * @param role The documentation role.
+     * @param role Not null documentation role.
+     * @throws IllegalArgumentException Exception get on giving a null values as argument
      */
-    public void setRole(URI role) {
+    public void setRole(URI role) throws IllegalArgumentException {
+        if(role == null){
+            throw new IllegalArgumentException("The argument\"role\" can not be null");
+        }
         this.role = role;
     }
 
@@ -104,9 +118,13 @@ public class Metadata {
 
     /**
      * Sets the documentation reference.
-     * @param href The documentation reference.
+     * @param href Not null documentation reference.
+     * @throws IllegalArgumentException Exception get on giving a null values as argument
      */
-    public void setHref(URI href) {
+    public void setHref(URI href) throws IllegalArgumentException {
+        if(href == null){
+            throw new IllegalArgumentException("The argument\"href\" can not be null");
+        }
         this.href = href;
     }
 }

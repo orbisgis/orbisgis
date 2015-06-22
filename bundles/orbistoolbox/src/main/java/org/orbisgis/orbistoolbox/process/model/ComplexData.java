@@ -60,7 +60,7 @@ public abstract class ComplexData extends DataDescription {
      * Returns the list of the descriptive elements.
      * @return The list of the descriptive elements.
      */
-    public List<Object> getAnys() {
+    public final List<Object> getAnys() {
         return anys;
     }
 
@@ -68,7 +68,7 @@ public abstract class ComplexData extends DataDescription {
      * Adds a descriptive elements.
      * @param any A descriptive element.
      */
-    protected void addAny(Object any) {
+    protected final void addAny(Object any) {
         if(any != null) {
             this.anys.add(any);
         }
@@ -78,7 +78,7 @@ public abstract class ComplexData extends DataDescription {
      * Adds a list of descriptive elements.
      * @param anys List of descriptive elements.
      */
-    protected void addAllAny(List<Object> anys) {
+    protected final void addAllAny(List<Object> anys) {
         if(anys != null) {
             while(anys.contains(null)){
                 anys.remove(null);
@@ -91,7 +91,7 @@ public abstract class ComplexData extends DataDescription {
      * Removes a descriptive elements.
      * @param any A descriptive element.
      */
-    protected void removeAny(Object any) {
+    protected final void removeAny(Object any) {
         this.anys.remove(any);
     }
 
@@ -99,7 +99,7 @@ public abstract class ComplexData extends DataDescription {
      * Removes a list of descriptive elements.
      * @param anys List of descriptive elements.
      */
-    protected void removeAllAny(List<Object> anys) {
+    protected final void removeAllAny(List<Object> anys) {
         if(anys != null) {
             this.anys.removeAll(anys);
         }
@@ -109,7 +109,7 @@ public abstract class ComplexData extends DataDescription {
      * Sets the list of the descriptive elements.
      * @param anys A list of the descriptive elements.
      */
-    protected void setAnys(List<Object> anys) {
+    protected final void setAnys(List<Object> anys) {
         if(anys != null) {
             while(anys.contains(null)){
                 anys.remove(null);

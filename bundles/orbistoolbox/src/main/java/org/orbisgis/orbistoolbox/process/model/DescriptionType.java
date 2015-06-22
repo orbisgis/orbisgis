@@ -53,7 +53,7 @@ public class DescriptionType {
      * @param identifier Not null unambiguous identifier of a process, input, and output.
      * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
      */
-    public DescriptionType(String title, URI identifier) throws IllegalArgumentException{
+    public DescriptionType(String title, URI identifier) throws IllegalArgumentException {
         //Verify if the parameters are not null
         if (title == null) {
             throw new IllegalArgumentException("The parameter \"title\" can not be null");

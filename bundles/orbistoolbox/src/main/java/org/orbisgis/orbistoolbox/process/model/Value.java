@@ -32,7 +32,6 @@ public class Value<T> extends Values {
 
     /**
      * Main constructor in which the value must be passed as a String.
-     * The value can not be null.
      * @param value Not null value.
      */
     public Value(T value) {
