@@ -17,14 +17,40 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-
-package org.orbisgis.orbistoolbox.process.model;
+package org.orbisgis.orbistoolbox.model;
 
 /**
- * This class represent a value and is the super class of Range and Value.
+ * Simple value. The value is represented as a String.
+ * This class comes from the OWS specification : ows:ValueType and ows:Value
  *
  * @author Sylvain PALOMINOS
  */
 
-public abstract class Values {
+public class Value<T> extends Values {
+    /** String representation of the value. */
+    private T value;
+
+    /**
+     * Main constructor in which the value must be passed as a String.
+     * @param value Not null value.
+     */
+    public Value(T value) {
+        this.value = value;
+    }
+
+    /**
+     * Returns the value.
+     * @return The value.
+     */
+    public T getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the the value. The value given as parameter can not be null.
+     * @param value Not null value.
+     */
+    public void setValue(T value) {
+        this.value = value;
+    }
 }
