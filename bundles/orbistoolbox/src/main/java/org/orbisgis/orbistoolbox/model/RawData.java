@@ -58,11 +58,12 @@ public class RawData extends ComplexData {
     /**
      * Sets the data contained and store its class as a descriptive element.
      * @param data Data to store.
+     * @param dataClass Data class.
      */
-    public void setData(Object data) {
+    public void setData(Object data, Class dataClass) {
         this.data = data;
         this.setAnys(null);
-        this.addAny(data.getClass().getCanonicalName());
+        this.addAny(dataClass);
     }
 
     /**
