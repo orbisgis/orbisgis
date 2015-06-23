@@ -17,12 +17,17 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.model
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a boundingbox.
+ * Groovy annotation that can be used in a groovy script to declare a literal value.
  *
  * @author Sylvain PALOMINOS
  */
-@interface BoundingBoxData {
+
+@interface LiteralValueAttribute {
+    /** DataType of the data */
+    DataTypeAttribute dataType() default DataTypeAttribute.NONE
+    /** URI to the unit of the data */
+    String uom() default ""
 }

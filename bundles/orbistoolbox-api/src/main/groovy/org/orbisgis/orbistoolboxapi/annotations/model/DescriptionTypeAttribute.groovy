@@ -17,18 +17,27 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.model
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Output annotation used in orbistoolbox to retrieve output information from the groovy WPS script.
+ * Annotation for the DescriptionType declaration.
  *
  * @author Sylvain PALOMINOS
  */
+
 @Retention(RetentionPolicy.RUNTIME)
-@interface OutputAttr {
-    /** Description type attribute of the output. */
-    DescriptionTypeAttribute descriptionTypeAttribute() default @DescriptionTypeAttribute()
+@interface DescriptionTypeAttribute {
+    /** Title of a process, input, and output. Normally available for display to a human. */
+    String title() default ""
+    /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
+    String abstrac() default ""
+    /** Coma separated keywords that characterize a process, its inputs, and outputs. */
+    String keywords() default ""
+    /** Unambiguous identifier of a process, input, and output. */
+    String identifier() default ""
+    /** Reference to additional metadata about this item. */
+    MetadataAttribute[] metadata() default []
 }

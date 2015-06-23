@@ -17,17 +17,17 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.model
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a literal value.
+ * Groovy annotation that can be used in a groovy script to declare a possible literal values choice.
  *
  * @author Sylvain PALOMINOS
  */
 
-@interface LiteralValue{
-    /** DataType of the data */
-    DataType dataType() default DataType.NONE
-    /** URI to the unit of the data */
-    String uom() default ""
+@interface PossibleLiteralValuesChoiceAttribute {
+    /** List of all valid values and/or ranges of values for this quantity. */
+    ValuesAttribute[] allowedValues() default []
+    /** Reference to list of all valid values and/or ranges of values for this quantity. */
+    String valuesReference() default ""
 }

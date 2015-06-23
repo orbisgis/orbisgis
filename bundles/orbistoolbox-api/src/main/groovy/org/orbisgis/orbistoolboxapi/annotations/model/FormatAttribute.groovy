@@ -17,20 +17,23 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
-
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
+package org.orbisgis.orbistoolboxapi.annotations.model
 
 /**
- * Input annotation used in orbistoolbox to retrieve process information from the groovy WPS script.
+ * Groovy annotation that can be used in a groovy script to declare a Format.
  *
  * @author Sylvain PALOMINOS
  */
-@Retention(RetentionPolicy.RUNTIME)
-@interface ProcessAttr {
-    /** Minimum number of times that values for this parameter are required. */
-    String language() default "en"
-    /** Description type attribute of the process. */
-    DescriptionTypeAttribute descriptionTypeAttribute() default @DescriptionTypeAttribute()
+
+@interface FormatAttribute {
+    /** Media type of the data. */
+    String mimeType()
+    /** Encoding procedure or character set of the data.*/
+    String encoding() default "simple"
+    /** Identification of the data schema.*/
+    String schema()
+    /** The maximum size of the input data, in megabytes.*/
+    int maximumMegaBytes() default 0
+    /** Indicates that this format is the default format.*/
+    boolean defaultFormat() default false
 }

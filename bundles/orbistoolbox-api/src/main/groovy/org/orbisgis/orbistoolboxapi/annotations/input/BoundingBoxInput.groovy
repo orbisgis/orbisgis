@@ -17,15 +17,17 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.input
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.BoundingBoxDataAttribute
 
 /**
- * Groovy annotation that can be used in a groovy script to declare an output field.
+ * Groovy annotation that can be used in a groovy script to declare a bounding box input field.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, OutputAttr])
-public @interface Output {}
+
+@AnnotationCollector([Field, BoundingBoxDataAttribute, Input])
+@interface BoundingBoxInput {}

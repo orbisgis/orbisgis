@@ -17,17 +17,29 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.model
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a possible literal values choice.
+ * Groovy annotation that can be used in a groovy script to declare a value.
+ * It can be a simple value (by default) or a range of values.
  *
  * @author Sylvain PALOMINOS
  */
 
-@interface PossibleLiteralValuesChoice {
-    /** List of all valid values and/or ranges of values for this quantity. */
-    Values[] allowedValues() default []
-    /** Reference to list of all valid values and/or ranges of values for this quantity. */
-    String valuesReference() default ""
+@interface ValuesAttribute {
+    /** Only used if the type is VALUE Value represented */
+    String value()
+    /** Type of the value, it can be a simple value, or a range */
+    ValuesType type() default ValueType.VALUE
+    /** Only used if the type is RANGE, indicates the range maximum */
+    String maximum() default ""
+    /** Only used if the type is RANGE, indicates the range minimum */
+    String minimum() default ""
+    /** Only used if the type is RANGE, indicates the spacing between two values */
+    String spacing() default ""
+}
+
+enum ValuesType{
+    RANGE,
+    VALUE
 }

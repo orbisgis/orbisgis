@@ -17,15 +17,17 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.input
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataAttribute
 
 /**
- * Groovy annotation that can be used in a groovy script to declare an input field.
+ * Groovy annotation that can be used in a groovy script to declare a literal data input field.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, InputAttr])
-public @interface Input {}
+
+@AnnotationCollector([Field, LiteralDataAttribute, Input])
+@interface LiteralDataInput {}

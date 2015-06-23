@@ -17,14 +17,18 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.model
+
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a raw data.
+ * Output annotation used in orbistoolbox to retrieve output information from the groovy WPS script.
  *
  * @author Sylvain PALOMINOS
  */
-@interface RawData {
-    /** List of supported formats */
-    Format[] formats()
+@Retention(RetentionPolicy.RUNTIME)
+@interface OutputAttribute {
+    /** Description type attribute of the output. */
+    DescriptionTypeAttribute descriptionTypeAttribute() default @DescriptionTypeAttribute()
 }

@@ -17,27 +17,17 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.input
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
+import groovy.transform.AnnotationCollector
+import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.RawDataAttribute
 
 /**
- * Annotation for the DescriptionType declaration.
+ * Groovy annotation that can be used in a groovy script to declare a raw input field.
  *
  * @author Sylvain PALOMINOS
  */
 
-@Retention(RetentionPolicy.RUNTIME)
-@interface DescriptionTypeAttribute {
-    /** Title of a process, input, and output. Normally available for display to a human. */
-    String title() default ""
-    /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
-    String abstrac() default ""
-    /** Coma separated keywords that characterize a process, its inputs, and outputs. */
-    String keywords() default ""
-    /** Unambiguous identifier of a process, input, and output. */
-    String identifier() default ""
-    /** Reference to additional metadata about this item. */
-    Metadata[] metadata() default []
-}
+@AnnotationCollector([Field, RawDataAttribute, Input])
+@interface RawDataInput {}

@@ -17,25 +17,23 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
-
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
+package org.orbisgis.orbistoolboxapi.annotations.model
 
 /**
- * Annotation for the Metadata declaration.
+ * Enumeration for the DataType.
  *
  * @author Sylvain PALOMINOS
  */
 
-@Retention(RetentionPolicy.RUNTIME)
-@interface Metadata {
-    /** Title of the documentation. Normally available for display to a human. */
-    String title()
-    /** Type of the xlink, fixed to simple. */
-    String linkType() default "simple"
-    /** Role identifier, indicating the role of the linked document. */
-    String role()
-    /** Reference to a documentation site for a process, input, or output. */
-    String href()
+public final enum DataTypeAttribute {
+    STRING,
+    INTEGER,
+    BOOLEAN,
+    DOUBLE,
+    FLOAT,
+    SHORT,
+    BYTE,
+    UNSIGNED_BYTE,
+    LONG,
+    NONE
 }

@@ -17,14 +17,25 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.model
+
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a value (value and .
+ * Annotation for the Metadata declaration.
  *
  * @author Sylvain PALOMINOS
  */
 
-@interface Values {
-
+@Retention(RetentionPolicy.RUNTIME)
+@interface MetadataAttribute {
+    /** Title of the documentation. Normally available for display to a human. */
+    String title()
+    /** Type of the xlink, fixed to simple. */
+    String linkType() default "simple"
+    /** Role identifier, indicating the role of the linked document. */
+    String role()
+    /** Reference to a documentation site for a process, input, or output. */
+    String href()
 }

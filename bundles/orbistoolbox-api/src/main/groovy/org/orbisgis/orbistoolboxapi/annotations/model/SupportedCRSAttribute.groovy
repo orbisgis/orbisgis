@@ -17,23 +17,17 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.model
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a literal data domain.
+ * Groovy annotation that can be used in a groovy script to declare a supported CRS field.
  *
  * @author Sylvain PALOMINOS
  */
 
-@interface LiteralDataDomain{
-    /** Identifies a valid format for an input or output. */
-    PossibleLiteralValuesChoice plvc();
-    /** Reference to the data type of this set of values. */
-    DataType dataType();
-    /** Indicates that this quantity has units and provides the unit of measurement. */
-    String uom() default "";
-    /** Default value for this quantity. */
-    Values defaultValue();
-    /** Indicates that this is the default/native domain. */
-    boolean defaultDomain() default false;
+@interface SupportedCRSAttribute {
+    /** List of URI to the represented CRS */
+    String[] uriList()
+    /** True if it is the default CRS, false otherwise */
+    boolean defaultCRS() default false
 }

@@ -17,15 +17,22 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.model
 
-import groovy.transform.AnnotationCollector
-import groovy.transform.Field
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
 
 /**
- * Groovy annotation that can be used in a groovy script to declare the process information.
+ * Input annotation used in orbistoolbox to receive input information from the groovy WPS script.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, ProcessAttr])
-public @interface Process {}
+@Retention(RetentionPolicy.RUNTIME)
+@interface InputAttribute {
+    /** Minimum number of times that values for this parameter are required. */
+    int minOccurs() default 1
+    /** Maximum number of times that this parameter may be present. */
+    int maxOccurs() default 1
+    /** Description type attribute of the input. */
+    DescriptionTypeAttribute descriptionTypeAttribute() default @DescriptionTypeAttribute()
+}

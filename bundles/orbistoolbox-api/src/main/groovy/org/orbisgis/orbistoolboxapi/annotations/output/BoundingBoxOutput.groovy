@@ -17,23 +17,18 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.output
+
+import groovy.transform.AnnotationCollector
+import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.BoundingBoxDataAttribute
+import org.orbisgis.orbistoolboxapi.annotations.input.Input
 
 /**
- * Enumeration for the DataType.
+ * Groovy annotation that can be used in a groovy script to declare a bounding box output field.
  *
  * @author Sylvain PALOMINOS
  */
 
-enum DataType {
-    STRING,
-    INTEGER,
-    BOOLEAN,
-    DOUBLE,
-    FLOAT,
-    SHORT,
-    BYTE,
-    UNSIGNED_BYTE,
-    LONG,
-    NONE
-}
+@AnnotationCollector([Field, BoundingBoxDataAttribute, Input])
+@interface BoundingBoxOutput {}

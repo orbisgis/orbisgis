@@ -17,23 +17,15 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.model
+
+import groovy.transform.AnnotationCollector
+import groovy.transform.Field
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a Format.
+ * Groovy annotation that can be used in a groovy script to declare the process information.
  *
  * @author Sylvain PALOMINOS
  */
-
-@interface Format {
-    /** Media type of the data. */
-    String mimeType()
-    /** Encoding procedure or character set of the data.*/
-    String encoding() default "simple"
-    /** Identification of the data schema.*/
-    String schema()
-    /** The maximum size of the input data, in megabytes.*/
-    int maximumMegaBytes() default 0
-    /** Indicates that this format is the default format.*/
-    boolean defaultFormat() default false
-}
+@AnnotationCollector([Field, ProcessAttribute])
+public @interface Process {}

@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
+package org.orbisgis.orbistoolboxapi.annotations.model
 
 /**
  * Groovy annotation that can be used in a groovy script to declare a literal data field.
@@ -25,11 +25,11 @@ package org.orbisgis.orbistoolboxapi.annotations
  * @author Sylvain PALOMINOS
  */
 
-@interface LiteralData {
+@interface LiteralDataAttribute {
     /** List of supported formats */
-    Format[] formats()
+    FormatAttribute[] formats()
     /** The valid domain for literal data */
-    LiteralDataDomain[] literalDataDomains()
+    LiteralDataDomainAttribute[] literalDataDomains()
     /** The literal value information */
-    LiteralValue literalValue()
+    LiteralValueAttribute literalValue()
 }
