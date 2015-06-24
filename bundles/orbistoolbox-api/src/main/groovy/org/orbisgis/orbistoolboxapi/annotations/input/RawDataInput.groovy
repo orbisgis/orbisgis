@@ -21,6 +21,7 @@ package org.orbisgis.orbistoolboxapi.annotations.input
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.RawDataAttribute
 
 /**
@@ -28,6 +29,5 @@ import org.orbisgis.orbistoolboxapi.annotations.model.RawDataAttribute
  *
  * @author Sylvain PALOMINOS
  */
-
-@AnnotationCollector([Field, RawDataAttribute, Input])
+@AnnotationCollector([RawDataAttribute, Input, InputAttribute])
 @interface RawDataInput {}

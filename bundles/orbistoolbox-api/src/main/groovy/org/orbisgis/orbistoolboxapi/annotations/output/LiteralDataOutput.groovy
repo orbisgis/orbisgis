@@ -23,12 +23,14 @@ import groovy.transform.AnnotationCollector
 import groovy.transform.Field
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataAttribute
 import org.orbisgis.orbistoolboxapi.annotations.input.Input
+import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a literal data input field.
+ * Groovy annotation that can be used in a groovy script to declare a literal data output field.
+ * This annotation define a field as a literal data.
+ * It is used for basic type (boolean, char, String, int double ...)
  *
  * @author Sylvain PALOMINOS
  */
-
-@AnnotationCollector([Field, LiteralDataAttribute, Input])
+@AnnotationCollector([LiteralDataAttribute, Output, OutputAttribute])
 @interface LiteralDataOutput {}

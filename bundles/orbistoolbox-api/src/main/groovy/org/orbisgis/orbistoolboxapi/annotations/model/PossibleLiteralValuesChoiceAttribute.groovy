@@ -24,7 +24,6 @@ package org.orbisgis.orbistoolboxapi.annotations.model
  *
  * @author Sylvain PALOMINOS
  */
-
 @interface PossibleLiteralValuesChoiceAttribute {
     /** List of all valid values and/or ranges of values for this quantity. */
     ValuesAttribute[] allowedValues() default []

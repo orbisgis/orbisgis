@@ -32,5 +32,5 @@ import java.lang.annotation.RetentionPolicy
     /** Minimum number of times that values for this parameter are required. */
     String language() default "en"
     /** Description type attribute of the process. */
-    DescriptionTypeAttribute descriptionTypeAttribute() default @DescriptionTypeAttribute()
+    DescriptionTypeAttribute descriptionTypeAttribute()
 }

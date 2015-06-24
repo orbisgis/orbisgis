@@ -24,7 +24,6 @@ package org.orbisgis.orbistoolboxapi.annotations.model
  *
  * @author Sylvain PALOMINOS
  */
-
 @interface FormatAttribute {
     /** Media type of the data. */
     String mimeType()

@@ -20,19 +20,11 @@
 package org.orbisgis.orbistoolboxapi.annotations.model
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a literal data domain.
+ * Enumeration to define if the value is a simple value or a range.
  *
  * @author Sylvain PALOMINOS
  */
-@interface LiteralDataDomainAttribute {
-    /** Identifies a valid format for an input or output. */
-    PossibleLiteralValuesChoiceAttribute plvc()
-    /** Reference to the data type of this set of values. */
-    DataTypeAttribute dataType()
-    /** Indicates that this quantity has units and provides the unit of measurement. */
-    String uom() default ""
-    /** Default value for this quantity. */
-    ValuesAttribute defaultValue()
-    /** Indicates that this is the default/native domain. */
-    boolean isDefaultDomain()
+enum ValuesType{
+    RANGE,
+    VALUE
 }
