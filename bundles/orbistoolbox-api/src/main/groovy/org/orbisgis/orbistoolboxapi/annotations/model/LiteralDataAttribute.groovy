@@ -29,7 +29,7 @@ package org.orbisgis.orbistoolboxapi.annotations.model
     /** List of supported formats */
     FormatAttribute[] formats() default []
     /** The valid domain for literal data */
-    LiteralDataDomainAttribute[] validDomains()
+    LiteralDataDomainAttribute[] validDomains() default []
     /** The literal value information */
     LiteralValueAttribute valueAttribute()
 }

@@ -30,6 +30,4 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface OutputAttribute {
-    /**Description of the output (title, abstract, metadatas ...). */
-    DescriptionTypeAttribute description()
 }

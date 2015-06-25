@@ -26,7 +26,7 @@ package org.orbisgis.orbistoolboxapi.annotations.model
  */
 @interface LiteralValueAttribute {
     /** DataType of the data */
-    DataTypeAttribute dataType()
+    DataTypeAttribute dataType() default DataTypeAttribute.NONE
     /** URI to the unit of the data */
     String uom() default ""
 }

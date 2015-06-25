@@ -21,6 +21,7 @@ package org.orbisgis.orbistoolboxapi.annotations.input
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataAttribute
 
@@ -31,5 +32,5 @@ import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([LiteralDataAttribute, Input, InputAttribute])
+@AnnotationCollector([LiteralDataAttribute, Input, InputAttribute, DescriptionTypeAttribute])
 @interface LiteralDataInput {}

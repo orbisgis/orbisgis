@@ -19,10 +19,8 @@
 
 package org.orbisgis.orbistoolboxapi.annotations
 
-import org.orbisgis.orbistoolboxapi.annotations.input.Input
 import org.orbisgis.orbistoolboxapi.annotations.input.LiteralDataInput
 import org.orbisgis.orbistoolboxapi.annotations.model.DataTypeAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataDomainAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralValueAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.PossibleLiteralValuesChoiceAttribute
@@ -32,13 +30,17 @@ import org.orbisgis.orbistoolboxapi.annotations.output.LiteralDataOutput
 /**
  * This example script return the number of time that a word appear in an sentence.
  * It show how to use LiteralDataInput/Output.
- * Only the mandatory attributes a set, for the others, the default value is used.
+ * The 'sentence' input has only basics (mandatory) information.
+ * The 'word' input has much more information.
+ * The 'occur' output has the basic information and some other simple one.
  *
  * @author Sylvain PALOMINOS
  */
 
 @LiteralDataInput(
-        description = @DescriptionTypeAttribute(title = "word"),
+        title = "word",
+        abstrac = "Word to detect on a sentence",
+        keywords = "word,detection,input",
         validDomains = [
                 @LiteralDataDomainAttribute(
                         plvc = @PossibleLiteralValuesChoiceAttribute(),
@@ -46,24 +48,21 @@ import org.orbisgis.orbistoolboxapi.annotations.output.LiteralDataOutput
                         defaultValue = @ValuesAttribute(value = ""),
                         isDefaultDomain = true)
         ],
-        valueAttribute = @LiteralValueAttribute(dataType = DataTypeAttribute.STRING)
+        valueAttribute = @LiteralValueAttribute(dataType = DataTypeAttribute.STRING),
+        minOccurs = 1,
+        maxOccurs = 1
 )
 word = "Ring"
 
-@Input
+@LiteralDataInput(
+        title = "sentence"
+)
 sentence = "One Ring to rule them all, one Ring to find them,\n" +
         "One Ring to bring them all and in the darkness bind them"
 
 @LiteralDataOutput(
-    description = @DescriptionTypeAttribute(title = "word"),
-    validDomains = [
-            @LiteralDataDomainAttribute(
-                    plvc = @PossibleLiteralValuesChoiceAttribute(),
-                    dataType = DataTypeAttribute.STRING,
-                    defaultValue = @ValuesAttribute(value = ""),
-                    isDefaultDomain = true)
-    ],
-    valueAttribute = @LiteralValueAttribute(dataType = DataTypeAttribute.STRING)
+        title = "occurrence",
+        abstrac = "Occurrence of a word in a sentence"
 )
 int occur
 

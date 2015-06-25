@@ -34,6 +34,4 @@ import java.lang.annotation.RetentionPolicy
     int minOccurs() default 1
     /** Maximum number of times that this parameter may be present. */
     int maxOccurs() default 1
-    /** Description of the input (title, abstract, metadatas ...). */
-    DescriptionTypeAttribute description()
 }
