@@ -24,7 +24,6 @@ package org.orbisgis.orbistoolboxapi.annotations.model
  *
  * @author Sylvain PALOMINOS
  */
-
 @interface BoundingBoxAttribute {
     /** String URI to the CRS for the bounding box */
     String CRS() default ""

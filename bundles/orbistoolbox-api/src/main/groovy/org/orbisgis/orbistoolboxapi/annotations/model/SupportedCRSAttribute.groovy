@@ -24,7 +24,6 @@ package org.orbisgis.orbistoolboxapi.annotations.model
  *
  * @author Sylvain PALOMINOS
  */
-
 @interface SupportedCRSAttribute {
     /** List of URI to the represented CRS */
     String[] uriList()

@@ -23,12 +23,12 @@ import groovy.transform.AnnotationCollector
 import groovy.transform.Field
 import org.orbisgis.orbistoolboxapi.annotations.model.BoundingBoxDataAttribute
 import org.orbisgis.orbistoolboxapi.annotations.input.Input
+import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
 
 /**
  * Groovy annotation that can be used in a groovy script to declare a bounding box output field.
  *
  * @author Sylvain PALOMINOS
  */
-
-@AnnotationCollector([Field, BoundingBoxDataAttribute, Input])
+@AnnotationCollector([BoundingBoxDataAttribute, Output, OutputAttribute])
 @interface BoundingBoxOutput {}

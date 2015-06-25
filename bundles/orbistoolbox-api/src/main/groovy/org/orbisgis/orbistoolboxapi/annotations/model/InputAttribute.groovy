@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy
 
 /**
  * Input annotation used in orbistoolbox to receive input information from the groovy WPS script.
+ * It contains the information about the input itself : its occurrence, its name, abstract ...
  *
  * @author Sylvain PALOMINOS
  */
@@ -33,6 +34,4 @@ import java.lang.annotation.RetentionPolicy
     int minOccurs() default 1
     /** Maximum number of times that this parameter may be present. */
     int maxOccurs() default 1
-    /** Description type attribute of the input. */
-    DescriptionTypeAttribute descriptionTypeAttribute() default @DescriptionTypeAttribute()
 }

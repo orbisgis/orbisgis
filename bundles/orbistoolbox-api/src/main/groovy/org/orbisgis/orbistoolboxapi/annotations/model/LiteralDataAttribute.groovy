@@ -21,15 +21,15 @@ package org.orbisgis.orbistoolboxapi.annotations.model
 
 /**
  * Groovy annotation that can be used in a groovy script to declare a literal data field.
+ * This annotation define all the properties of the literal data represented such as its format, value and valid domain.
  *
  * @author Sylvain PALOMINOS
  */
-
 @interface LiteralDataAttribute {
     /** List of supported formats */
-    FormatAttribute[] formats()
+    FormatAttribute[] formats() default []
     /** The valid domain for literal data */
-    LiteralDataDomainAttribute[] literalDataDomains()
+    LiteralDataDomainAttribute[] validDomains() default []
     /** The literal value information */
-    LiteralValueAttribute literalValue()
+    LiteralValueAttribute valueAttribute()
 }

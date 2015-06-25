@@ -27,7 +27,6 @@ import java.lang.annotation.RetentionPolicy
  *
  * @author Sylvain PALOMINOS
  */
-
 @Retention(RetentionPolicy.RUNTIME)
 @interface MetadataAttribute {
     /** Title of the documentation. Normally available for display to a human. */
