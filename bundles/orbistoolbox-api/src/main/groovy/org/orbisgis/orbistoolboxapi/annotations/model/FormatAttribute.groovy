@@ -34,5 +34,5 @@ package org.orbisgis.orbistoolboxapi.annotations.model
     /** The maximum size of the input data, in megabytes.*/
     int maximumMegaBytes() default 0
     /** Indicates that this format is the default format.*/
-    boolean defaultFormat() default false
+    boolean isDefaultFormat() default false
 }

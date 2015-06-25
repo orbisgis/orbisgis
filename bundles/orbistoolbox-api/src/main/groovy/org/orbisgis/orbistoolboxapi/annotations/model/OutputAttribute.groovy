@@ -29,5 +29,4 @@ import java.lang.annotation.RetentionPolicy
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface OutputAttribute {
-}
+@interface OutputAttribute {}
