@@ -25,8 +25,12 @@ import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
 
 /**
  * Groovy annotation that can be used in a groovy script to declare an output field.
+ * This output annotation is the most simple one.
+ * There is no need to specify any field, the parser will try to set it automatically.
+ * The basic type (int, boolean, char, String ...) will be transformed as LiteralData, any other object will become
+ * a RawData.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, OutputAttribute])
+@AnnotationCollector([Field])
 public @interface Output {}

@@ -25,21 +25,15 @@ package org.orbisgis.orbistoolboxapi.annotations.model
  *
  * @author Sylvain PALOMINOS
  */
-
 @interface ValuesAttribute {
     /** Only used if the type is VALUE Value represented */
     String value()
     /** Type of the value, it can be a simple value, or a range */
-    ValuesType type() default ValueType.VALUE
+    ValuesType type() default ValuesType.VALUE
     /** Only used if the type is RANGE, indicates the range maximum */
     String maximum() default ""
     /** Only used if the type is RANGE, indicates the range minimum */
     String minimum() default ""
     /** Only used if the type is RANGE, indicates the spacing between two values */
     String spacing() default ""
-}
-
-enum ValuesType{
-    RANGE,
-    VALUE
 }

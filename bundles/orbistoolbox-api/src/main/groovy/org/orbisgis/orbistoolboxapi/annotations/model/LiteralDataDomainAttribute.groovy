@@ -24,16 +24,15 @@ package org.orbisgis.orbistoolboxapi.annotations.model
  *
  * @author Sylvain PALOMINOS
  */
-
 @interface LiteralDataDomainAttribute {
     /** Identifies a valid format for an input or output. */
-    PossibleLiteralValuesChoiceAttribute plvc();
+    PossibleLiteralValuesChoiceAttribute plvc()
     /** Reference to the data type of this set of values. */
-    DataTypeAttribute dataType();
+    DataTypeAttribute dataType()
     /** Indicates that this quantity has units and provides the unit of measurement. */
-    String uom() default "";
+    String uom() default ""
     /** Default value for this quantity. */
-    ValuesAttribute defaultValue();
+    ValuesAttribute defaultValue()
     /** Indicates that this is the default/native domain. */
-    boolean defaultDomain() default false;
+    boolean isDefaultDomain()
 }

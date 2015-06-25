@@ -24,11 +24,9 @@ import java.lang.annotation.RetentionPolicy
 
 /**
  * Output annotation used in orbistoolbox to retrieve output information from the groovy WPS script.
+ * It contains the information about the output itself : its name, abstract, metadata ...
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface OutputAttribute {
-    /** Description type attribute of the output. */
-    DescriptionTypeAttribute descriptionTypeAttribute() default @DescriptionTypeAttribute()
-}
+@interface OutputAttribute {}

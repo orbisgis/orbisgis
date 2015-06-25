@@ -27,11 +27,10 @@ import java.lang.annotation.RetentionPolicy
  *
  * @author Sylvain PALOMINOS
  */
-
 @Retention(RetentionPolicy.RUNTIME)
 @interface DescriptionTypeAttribute {
     /** Title of a process, input, and output. Normally available for display to a human. */
-    String title() default ""
+    String title()
     /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
     String abstrac() default ""
     /** Coma separated keywords that characterize a process, its inputs, and outputs. */

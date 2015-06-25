@@ -24,7 +24,6 @@ package org.orbisgis.orbistoolboxapi.annotations.model
  *
  * @author Sylvain PALOMINOS
  */
-
 @interface LiteralValueAttribute {
     /** DataType of the data */
     DataTypeAttribute dataType() default DataTypeAttribute.NONE

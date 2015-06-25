@@ -17,21 +17,14 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations.output
-
-import groovy.transform.AnnotationCollector
-import groovy.transform.Field
-import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataAttribute
-import org.orbisgis.orbistoolboxapi.annotations.input.Input
-import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
+package org.orbisgis.orbistoolboxapi.annotations.model
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a literal data output field.
- * This annotation define a field as a literal data.
- * It is used for basic type (boolean, char, String, int double ...)
+ * Enumeration to define if the value is a simple value or a range.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([LiteralDataAttribute, Output, OutputAttribute, DescriptionTypeAttribute])
-@interface LiteralDataOutput {}
+enum ValuesType{
+    RANGE,
+    VALUE
+}
