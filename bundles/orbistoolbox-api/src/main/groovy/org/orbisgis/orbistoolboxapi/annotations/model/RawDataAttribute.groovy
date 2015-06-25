@@ -26,5 +26,5 @@ package org.orbisgis.orbistoolboxapi.annotations.model
  */
 @interface RawDataAttribute {
     /** List of supported formats */
-    FormatAttribute[] formats()
+    FormatAttribute[] formats() default []
 }
