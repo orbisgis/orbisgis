@@ -151,31 +151,9 @@ public class DefaultParser implements Parser {
         Input input = new Input(f.getName(),
                 URI.create("orbisgis:wps:"+processName+":input:"+f.getName()),
                 data);
-
-        //Read the InputAttribute annotation to set the Input non mandatory attributes
-        InputAttribute wpsInput = f.getAnnotation(InputAttribute.class);
         input.setMinOccurs(0);
-        input.setMaxOccurs(wpsInput.maxOccurs());
-        input.setMinOccurs(wpsInput.minOccurs());
-
-        //Read the DescriptionTypeAttribute annotation to set the Input non mandatory attributes
-        DescriptionTypeAttribute descriptionTypeAttribute = wpsInput.descriptionTypeAttribute();
-        if(!descriptionTypeAttribute.title().equals("")){
-            input.setTitle(descriptionTypeAttribute.title());
-        }
-        if(!descriptionTypeAttribute.abstrac().equals("")){
-            input.setAbstrac(descriptionTypeAttribute.abstrac());
-        }
-        if(!descriptionTypeAttribute.identifier().equals("")){
-            input.setIdentifier(URI.create(descriptionTypeAttribute.identifier()));
-        }
-        if(!descriptionTypeAttribute.keywords().equals("")){
-            input.setKeywords(Arrays.asList(descriptionTypeAttribute.keywords().split(",")));
-        }
-        //TODO : implements for metadata.
-        if(!descriptionTypeAttribute.metadata().equals("")){
-            input.setMetadata(null);
-        }
+        input.setMaxOccurs(1);
+        input.setMinOccurs(1);
 
         return input;
     }
@@ -291,26 +269,6 @@ public class DefaultParser implements Parser {
         Output output = new Output(f.getName(),
                 URI.create("orbisgis:wps:"+processName+":output:"+f.getName()),
                 data);
-        OutputAttribute wpsOutput = f.getAnnotation(OutputAttribute.class);
-
-        //Read the DescriptionTypeAttribute annotation to set the Output non mandatory attributes
-        DescriptionTypeAttribute descriptionTypeAttribute = wpsOutput.descriptionTypeAttribute();
-        if(!descriptionTypeAttribute.title().equals("")){
-            output.setTitle(descriptionTypeAttribute.title());
-        }
-        if(!descriptionTypeAttribute.abstrac().equals("")){
-            output.setAbstrac(descriptionTypeAttribute.abstrac());
-        }
-        if(!descriptionTypeAttribute.identifier().equals("")){
-            output.setIdentifier(URI.create(descriptionTypeAttribute.identifier()));
-        }
-        if(!descriptionTypeAttribute.keywords().equals("")){
-            output.setKeywords(Arrays.asList(descriptionTypeAttribute.keywords().split(",")));
-        }
-        //TODO : implements for metadata.
-        if(!descriptionTypeAttribute.metadata().equals("")){
-            output.setMetadata(null);
-        }
 
         return output;
     }

@@ -46,7 +46,7 @@ public class RawDataParser implements Parser {
         RawDataAttribute rawDataAttribute = f.getAnnotation(RawDataAttribute.class);
         for(FormatAttribute formatAttribute : rawDataAttribute.formats()){
             Format format = new Format(formatAttribute.mimeType(), URI.create(formatAttribute.schema()));
-            format.setDefaultFormat(formatAttribute.defaultFormat());
+            format.setDefaultFormat(formatAttribute.isDefaultFormat());
             format.setMaximumMegaBytes(formatAttribute.maximumMegaBytes());
             formatList.add(format);
         }
@@ -65,7 +65,7 @@ public class RawDataParser implements Parser {
         input.setMinOccurs(wpsInput.minOccurs());
 
         //Read the DescriptionTypeAttribute annotation to set the Output non mandatory attributes
-        DescriptionTypeAttribute descriptionTypeAttribute = wpsInput.descriptionTypeAttribute();
+        DescriptionTypeAttribute descriptionTypeAttribute = f.getAnnotation(DescriptionTypeAttribute.class);
         if(!descriptionTypeAttribute.title().equals("")){
             input.setTitle(descriptionTypeAttribute.title());
         }
@@ -93,7 +93,7 @@ public class RawDataParser implements Parser {
         RawDataAttribute rawDataAttribute = f.getAnnotation(RawDataAttribute.class);
         for(FormatAttribute formatAttribute : rawDataAttribute.formats()){
             Format format = new Format(formatAttribute.mimeType(), URI.create(formatAttribute.schema()));
-            format.setDefaultFormat(formatAttribute.defaultFormat());
+            format.setDefaultFormat(formatAttribute.isDefaultFormat());
             format.setMaximumMegaBytes(formatAttribute.maximumMegaBytes());
             formatList.add(format);
         }
@@ -106,10 +106,9 @@ public class RawDataParser implements Parser {
         Output output = new Output(f.getName(),
                 URI.create("orbisgis:wps:"+processName+":output:"+f.getName()),
                 rawData);
-        OutputAttribute wpsOutput = f.getAnnotation(OutputAttribute.class);
 
         //Read the DescriptionTypeAttribute annotation to set the Output non mandatory attributes
-        DescriptionTypeAttribute descriptionTypeAttribute = wpsOutput.descriptionTypeAttribute();
+        DescriptionTypeAttribute descriptionTypeAttribute = f.getAnnotation(DescriptionTypeAttribute.class);
         if(!descriptionTypeAttribute.title().equals("")){
             output.setTitle(descriptionTypeAttribute.title());
         }

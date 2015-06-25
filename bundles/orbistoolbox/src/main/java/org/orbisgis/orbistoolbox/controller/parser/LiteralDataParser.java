@@ -45,13 +45,13 @@ public class LiteralDataParser implements Parser {
         List<Format> formatList = new ArrayList<>();
         for(FormatAttribute formatAttribute : literalDataAttribute.formats()){
             Format format = new Format(formatAttribute.mimeType(), URI.create(formatAttribute.schema()));
-            format.setDefaultFormat(formatAttribute.defaultFormat());
+            format.setDefaultFormat(formatAttribute.isDefaultFormat());
             format.setMaximumMegaBytes(formatAttribute.maximumMegaBytes());
             formatList.add(format);
         }
 
         List<LiteralDataDomain> lddList = new ArrayList<>();
-        for(LiteralDataDomainAttribute literalDataDomainAttribute : literalDataAttribute.literalDataDomains()){
+        for(LiteralDataDomainAttribute literalDataDomainAttribute : literalDataAttribute.validDomains()){
             PossibleLiteralValuesChoice possibleLiteralValuesChoice = null;
             if(literalDataDomainAttribute.plvc().allowedValues().length != 0){
                 List<Values> valuesList = new ArrayList<>();
@@ -107,8 +107,8 @@ public class LiteralDataParser implements Parser {
 
 
         LiteralValue literalValue = new LiteralValue();
-        literalValue.setUom(URI.create(literalDataAttribute.literalValue().uom()));
-        literalValue.setDataType(DataType.valueOf(literalDataAttribute.literalValue().dataType().name()));
+        literalValue.setUom(URI.create(literalDataAttribute.valueAttribute().uom()));
+        literalValue.setDataType(DataType.valueOf(literalDataAttribute.valueAttribute().dataType().name()));
 
         data = new LiteralData(formatList, lddList, literalValue);
 
@@ -124,7 +124,7 @@ public class LiteralDataParser implements Parser {
         input.setMinOccurs(wpsInput.minOccurs());
 
         //Read the DescriptionTypeAttribute annotation to set the Input non mandatory attributes
-        DescriptionTypeAttribute descriptionTypeAttribute = wpsInput.descriptionTypeAttribute();
+        DescriptionTypeAttribute descriptionTypeAttribute = f.getAnnotation(DescriptionTypeAttribute.class);
         if(!descriptionTypeAttribute.title().equals("")){
             input.setTitle(descriptionTypeAttribute.title());
         }
@@ -154,13 +154,13 @@ public class LiteralDataParser implements Parser {
         List<Format> formatList = new ArrayList<>();
         for(FormatAttribute formatAttribute : literalDataAttribute.formats()){
             Format format = new Format(formatAttribute.mimeType(), URI.create(formatAttribute.schema()));
-            format.setDefaultFormat(formatAttribute.defaultFormat());
+            format.setDefaultFormat(formatAttribute.isDefaultFormat());
             format.setMaximumMegaBytes(formatAttribute.maximumMegaBytes());
             formatList.add(format);
         }
 
         List<LiteralDataDomain> lddList = new ArrayList<>();
-        for(LiteralDataDomainAttribute literalDataDomainAttribute : literalDataAttribute.literalDataDomains()){
+        for(LiteralDataDomainAttribute literalDataDomainAttribute : literalDataAttribute.validDomains()){
             PossibleLiteralValuesChoice possibleLiteralValuesChoice = null;
             if(literalDataDomainAttribute.plvc().allowedValues().length != 0){
                 List<Values> valuesList = new ArrayList<>();
@@ -216,8 +216,8 @@ public class LiteralDataParser implements Parser {
 
 
         LiteralValue literalValue = new LiteralValue();
-        literalValue.setUom(URI.create(literalDataAttribute.literalValue().uom()));
-        literalValue.setDataType(DataType.valueOf(literalDataAttribute.literalValue().dataType().name()));
+        literalValue.setUom(URI.create(literalDataAttribute.valueAttribute().uom()));
+        literalValue.setDataType(DataType.valueOf(literalDataAttribute.valueAttribute().dataType().name()));
 
         data = new LiteralData(formatList, lddList, literalValue);
 
@@ -228,7 +228,7 @@ public class LiteralDataParser implements Parser {
 
         //Read the DescriptionTypeAttribute annotation to set the Output non mandatory attributes
         OutputAttribute wpsOutput = f.getAnnotation(OutputAttribute.class);
-        DescriptionTypeAttribute descriptionTypeAttribute = wpsOutput.descriptionTypeAttribute();
+        DescriptionTypeAttribute descriptionTypeAttribute = f.getAnnotation(DescriptionTypeAttribute.class);
         if(!descriptionTypeAttribute.title().equals("")){
             output.setTitle(descriptionTypeAttribute.title());
         }
