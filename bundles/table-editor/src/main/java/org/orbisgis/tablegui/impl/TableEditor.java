@@ -219,7 +219,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 if(tableEditableElement.isEditable()) {
                         actions.add(new ActionAddColumn(tableEditableElement));
                         actions.add(new ActionAddRow(tableEditableElement));
-                        actions.add(new ActionRemoveRow(tableEditableElement, this, executorService));
+                        actions.add(new ActionRemoveRow(tableEditableElement, this, executorService, undoManager.getLimit()));
                         actions.add(new ActionUndo(tableEditableElement, undoManager));
                         actions.add(new ActionRedo(tableEditableElement, undoManager));
                         actions.add(new ActionEdition(tableEditableElement));

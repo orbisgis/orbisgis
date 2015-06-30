@@ -33,7 +33,11 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.corejdbc.common.LongUnion;
+import org.orbisgis.corejdbc.internal.DataManagerImpl;
+import org.orbisgis.corejdbc.internal.ReversibleRowSetImpl;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -65,6 +69,30 @@ public class DeleteSelectedRowsTest {
             LongUnion pkToDelete = new LongUnion(1, 25);
             DeleteSelectedRows deleteSelectedRows = new DeleteSelectedRows(pkToDelete, "MY TABLE", dataSource);
             deleteSelectedRows.doInBackground();
+            // Check if rows are deleted
+            try(ResultSet rs = st.executeQuery("SELECT PK FROM \"MY TABLE\"")) {
+                for(long expectedPk : new LongUnion(26,50)) {
+                    assertTrue(rs.next());
+                    assertEquals(expectedPk, rs.getLong(1));
+                }
+                assertFalse(rs.next());
+            }
+        }
+    }
+    @Test
+    public void testDeleteWithRowSet() throws SQLException, InterruptedException {
+        try(Connection connection = dataSource.getConnection();
+            Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS \"MY TABLE\"");
+            st.execute("CREATE TABLE \"MY TABLE\"(PK INTEGER PRIMARY KEY) AS SELECT X FROM SYSTEM_RANGE(1,50);");
+            // Drop some rows
+            LongUnion pkToDelete = new LongUnion(1, 25);
+            DataManager dataManager = new DataManagerImpl(dataSource);
+            try(ReversibleRowSet reversibleRowSet = dataManager.createReversibleRowSet()) {
+                reversibleRowSet.setCommand("SELECT * FROM \"MY TABLE\"");
+                reversibleRowSet.execute();
+                DeleteSelectedRows.deleteUsingRowSet(reversibleRowSet, pkToDelete);
+            }
             // Check if rows are deleted
             try(ResultSet rs = st.executeQuery("SELECT PK FROM \"MY TABLE\"")) {
                 for(long expectedPk : new LongUnion(26,50)) {

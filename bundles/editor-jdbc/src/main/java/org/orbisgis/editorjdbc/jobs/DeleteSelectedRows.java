@@ -32,6 +32,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -40,8 +41,13 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Delete rows using Primary keys
@@ -52,6 +58,7 @@ public class DeleteSelectedRows extends SwingWorkerPM {
     private final String tableName;
     private final DataSource dataSource;
     private final static I18n I18N = I18nFactory.getI18n(DeleteSelectedRows.class);
+    private final static long TRY_LOCK_TIME  = 10;
 
     public DeleteSelectedRows(SortedSet<Long> rowPkToDelete, String tableName, DataSource dataSource) {
         this.rowPkToDelete = new LongUnion(rowPkToDelete);
@@ -85,5 +92,20 @@ public class DeleteSelectedRows extends SwingWorkerPM {
             }
         }
         return null;
+    }
+
+    public static void deleteUsingRowSet(ReversibleRowSet reversibleRowSet, SortedSet<Long> rowPkToDelete) throws SQLException, InterruptedException {
+        TreeSet<Integer> rowNumberToDelete = new TreeSet<>(reversibleRowSet.getRowNumberFromRowPk(rowPkToDelete));
+        Lock lock = reversibleRowSet.getReadLock();
+        lock.tryLock(TRY_LOCK_TIME, TimeUnit.SECONDS);
+        try {
+            // Rows must be deleted in descending order in order to not introduce shift
+            for(int rowNumber : rowNumberToDelete.descendingSet()) {
+                reversibleRowSet.absolute(rowNumber);
+                reversibleRowSet.deleteRow();
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 }

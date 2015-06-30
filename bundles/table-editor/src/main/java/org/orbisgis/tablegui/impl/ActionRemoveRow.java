@@ -31,9 +31,12 @@ package org.orbisgis.tablegui.impl;
 
 import org.orbisgis.editorjdbc.jobs.DeleteSelectedRows;
 import org.orbisgis.sif.components.actions.ActionTools;
+import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -43,7 +46,10 @@ import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -55,15 +61,18 @@ public class ActionRemoveRow extends AbstractAction {
         private static final I18n I18N = I18nFactory.getI18n(ActionRemoveRow.class);
         private Component parentComponent;
         private ExecutorService executorService;
+        private final int limitUndoableDelete;
+        private static final Logger LOGGER = LoggerFactory.getLogger(ActionRemoveRow.class);
 
         /**
          * Constructor
          * @param editable Table editable instance
          */
-        public ActionRemoveRow(TableEditableElement editable, Component parentComponent,ExecutorService executorService) {
+        public ActionRemoveRow(TableEditableElement editable, Component parentComponent,ExecutorService executorService, int limitUndoableDelete) {
                 super(I18N.tr("Delete selected rows"), TableEditorIcon.getIcon("delete_row"));
                 this.parentComponent = parentComponent;
                 this.executorService = executorService;
+                this.limitUndoableDelete = limitUndoableDelete;
                 putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
                 putValue(ActionTools.MENU_ID,TableEditorActions.A_REMOVE_ROW);
                 this.editable = editable;
@@ -92,9 +101,18 @@ public class ActionRemoveRow extends AbstractAction {
                                 I18N.tr("Delete selected rows"),
                                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
                         if(response == JOptionPane.YES_OPTION) {
-                                // Launch process
-                                executorService.execute(new DeleteSelectedRows(editable.getSelection(),
-                                        editable.getTableReference(), editable.getDataManager().getDataSource()));
+                                SortedSet<Long> pkToDelete = editable.getSelection();
+                                if(pkToDelete.size() > limitUndoableDelete) {
+                                    // Launch process without undoing capabilities
+                                    executorService.execute(new DeleteSelectedRows(editable.getSelection(), editable.getTableReference(), editable.getDataManager().getDataSource()));
+                                } else {
+                                    // Launch process with undoing capabilities
+                                    try {
+                                        DeleteSelectedRows.deleteUsingRowSet(editable.getRowSet(), pkToDelete);
+                                    } catch (EditableElementException | InterruptedException | SQLException ex) {
+                                        LOGGER.error(ex.getLocalizedMessage(), ex);
+                                    }
+                                }
                         }
                 }
         }
