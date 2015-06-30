@@ -844,6 +844,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             Set<Integer> batchIds = new HashSet<>();
             for(int refRowId : rowsIndex) {
                 batchIds.add(refRowId / fetchSize);
+                cache.remove(((long)refRowId));
             }
             for(int batchId : batchIds) {
                 if(batchId < rowFetchFirstPk.size() && batchId >= 0) {

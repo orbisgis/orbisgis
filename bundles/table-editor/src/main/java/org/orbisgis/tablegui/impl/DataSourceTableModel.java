@@ -150,10 +150,6 @@ public class DataSourceTableModel extends AbstractTableModel {
             lastFetchRowCount = 0;
             return 0;
         }
-        if(!tableExists()) {
-            lastFetchRowCount = 0;
-            return 0;
-        }
         try {
             RowSet rowSet = getRowSet();
             if(rowSet instanceof ReversibleRowSet) {

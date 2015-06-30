@@ -1243,7 +1243,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     while(intervals.hasNext()) {
                         int start = intervals.next();
                         int end = intervals.next();
-                        model.fireTableRowsUpdated(start, end);
+                        model.fireTableRowsUpdated(start - 1, end - 1);
                     }
                 } catch (SQLException | EditableElementException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
@@ -1311,6 +1311,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     int lastRow = intervals.next();
                     evts.add(new TableModelEvent(model, firstRow - 1, lastRow - 1, event.getColumn(), event.getType() ));
                 }
+                // Refresh rowset cache
+                table.getRowSet().refreshRows(new TreeSet<>(updatedRows));
             }
             return true;
         }

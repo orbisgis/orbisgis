@@ -42,6 +42,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.TreeSet;
 
 /**
  * Call to {@link javax.sql.RowSet#updateObject(int, Object)}
