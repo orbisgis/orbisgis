@@ -19,13 +19,29 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
  * Groovy annotation that can be used in a groovy script to declare a value.
  * It can be a simple value (by default) or a range of values.
  *
  * @author Sylvain PALOMINOS
  */
+@Retention(RetentionPolicy.RUNTIME)
 @interface ValuesAttribute {
+
+    /** Default value for the type attribute */
+    ValuesType defaultType = ValuesType.VALUE
+    /** Default value for the maximum attribute */
+    String defaultMaximum = ""
+    /** Default value for the minimum attribute */
+    String defaultMinimum = ""
+    /** Default value for the spacing attribute */
+    String defaultSpacing = ""
+
+
+
     /** Only used if the type is VALUE Value represented */
     String value()
     /** Type of the value, it can be a simple value, or a range */
@@ -34,6 +50,6 @@ package org.orbisgis.orbistoolboxapi.annotations.model
     String maximum() default ""
     /** Only used if the type is RANGE, indicates the range minimum */
     String minimum() default ""
-    /** Only used if the type is RANGE, indicates the spacing between two values */
+    /** Only used if the type is RANGE, indicates the spacing between two values. If not defined, there is no spacing */
     String spacing() default ""
 }

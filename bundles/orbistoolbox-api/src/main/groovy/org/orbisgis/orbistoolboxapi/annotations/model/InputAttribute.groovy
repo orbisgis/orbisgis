@@ -30,6 +30,12 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface InputAttribute {
+    /** Default value for the minOccurs attribute */
+    public static final int defaultMinOccurs = 1
+    /** Default value for the maxOccurs attribute */
+    public static final int defaultMaxOccurs = 1
+
+
     /** Minimum number of times that values for this parameter are required. */
     int minOccurs() default 1
     /** Maximum number of times that this parameter may be present. */

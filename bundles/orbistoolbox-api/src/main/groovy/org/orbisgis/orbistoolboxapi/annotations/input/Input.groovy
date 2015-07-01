@@ -32,5 +32,5 @@ import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field])
+@AnnotationCollector([Field, InputAttribute])
 public @interface Input {}

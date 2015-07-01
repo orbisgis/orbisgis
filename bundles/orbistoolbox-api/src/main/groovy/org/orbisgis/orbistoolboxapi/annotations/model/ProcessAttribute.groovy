@@ -29,8 +29,11 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface ProcessAttribute {
+
+    /** Default value for the language attribute */
+    String defaultLanguage = "en"
+
+
     /** Minimum number of times that values for this parameter are required. */
     String language() default "en"
-    /** Description type attribute of the process. */
-    DescriptionTypeAttribute description()
 }

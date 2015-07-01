@@ -19,12 +19,21 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
  * Groovy annotation that can be used in a groovy script to declare a raw data.
  *
  * @author Sylvain PALOMINOS
  */
+@Retention(RetentionPolicy.RUNTIME)
 @interface RawDataAttribute {
+
+    /** Default value for the formats attribute */
+    FormatAttribute[] defaultFormats = []
+
+
     /** List of supported formats */
     FormatAttribute[] formats() default []
 }

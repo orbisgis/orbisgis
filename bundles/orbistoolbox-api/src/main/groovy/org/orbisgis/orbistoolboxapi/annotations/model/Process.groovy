@@ -27,5 +27,5 @@ import groovy.transform.Field
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, ProcessAttribute])
+@AnnotationCollector([Field, ProcessAttribute, DescriptionTypeAttribute])
 public @interface Process {}

@@ -19,11 +19,15 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
  * Groovy annotation that can be used in a groovy script to declare a Format.
  *
  * @author Sylvain PALOMINOS
  */
+@Retention(RetentionPolicy.RUNTIME)
 @interface FormatAttribute {
     /** Media type of the data. */
     String mimeType()

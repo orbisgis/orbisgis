@@ -31,5 +31,5 @@ import org.orbisgis.orbistoolboxapi.annotations.input.Input
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([RawDataAttribute, Output, OutputAttribute, DescriptionTypeAttribute])
+@AnnotationCollector([Field, RawDataAttribute, OutputAttribute, OutputAttribute, DescriptionTypeAttribute])
 @interface RawDataOutput {}

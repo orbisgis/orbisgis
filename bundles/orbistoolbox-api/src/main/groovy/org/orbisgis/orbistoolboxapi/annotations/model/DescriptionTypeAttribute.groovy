@@ -29,6 +29,16 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface DescriptionTypeAttribute {
+    /** Default value for the abstrac attribute */
+    String defaultAbstrac = ""
+    /** Default value for the keywords attribute */
+    String defaultKeywords = ""
+    /** Default value for the identifier attribute */
+    String defaultIdentifier = ""
+    /** Default value for the metadata attribute */
+    MetadataAttribute[] defaultMetadata = []
+
+
     /** Title of a process, input, and output. Normally available for display to a human. */
     String title()
     /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
