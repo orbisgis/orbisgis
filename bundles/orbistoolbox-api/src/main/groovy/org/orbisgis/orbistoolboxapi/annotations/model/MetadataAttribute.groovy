@@ -29,6 +29,11 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface MetadataAttribute {
+
+    /** Default value for the linkType attribute */
+    String defaultLinkType = "simple"
+
+
     /** Title of the documentation. Normally available for display to a human. */
     String title()
     /** Type of the xlink, fixed to simple. */

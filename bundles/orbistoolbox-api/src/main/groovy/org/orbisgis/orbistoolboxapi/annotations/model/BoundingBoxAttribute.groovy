@@ -19,12 +19,20 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
  * Groovy annotation that can be used in a groovy script to declare a boundingbox.
  *
  * @author Sylvain PALOMINOS
  */
+@Retention(RetentionPolicy.RUNTIME)
 @interface BoundingBoxAttribute {
+    /** Default value for the CRS attribute */
+    String defaultCRS = ""
+
+
     /** String URI to the CRS for the bounding box */
     String CRS() default ""
 }

@@ -19,16 +19,25 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
  * Groovy annotation that can be used in a groovy script to declare a literal data domain.
  *
  * @author Sylvain PALOMINOS
  */
+@Retention(RetentionPolicy.RUNTIME)
 @interface LiteralDataDomainAttribute {
+
+    /** Default value for the uom attribute */
+    String defaultUom = ""
+
+
     /** Identifies a valid format for an input or output. */
     PossibleLiteralValuesChoiceAttribute plvc()
     /** Reference to the data type of this set of values. */
-    DataTypeAttribute dataType()
+    String dataType()
     /** Indicates that this quantity has units and provides the unit of measurement. */
     String uom() default ""
     /** Default value for this quantity. */

@@ -19,12 +19,24 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
  * Groovy annotation that can be used in a groovy script to declare a possible literal values choice.
  *
  * @author Sylvain PALOMINOS
  */
+@Retention(RetentionPolicy.RUNTIME)
 @interface PossibleLiteralValuesChoiceAttribute {
+
+    /** Default value for the allowedValues attribute */
+    ValuesAttribute[] defaultAllowedValues = []
+    /** Default value for the reference attribute */
+    String defaultReference = ""
+
+
+
     /** List of all valid values and/or ranges of values for this quantity. */
     ValuesAttribute[] allowedValues() default []
     /** Reference to list of all valid values and/or ranges of values for this quantity. */

@@ -19,14 +19,23 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
  * Groovy annotation that can be used in a groovy script to declare a supported CRS field.
  *
  * @author Sylvain PALOMINOS
  */
+@Retention(RetentionPolicy.RUNTIME)
 @interface SupportedCRSAttribute {
+
+    /** Default value for the isDefaultCRS attribute */
+    boolean defaultIsDefaultCRS = false;
+
+
     /** List of URI to the represented CRS */
     String[] uriList()
     /** True if it is the default CRS, false otherwise */
-    boolean defaultCRS() default false
+    boolean isDefaultCRS() default false
 }

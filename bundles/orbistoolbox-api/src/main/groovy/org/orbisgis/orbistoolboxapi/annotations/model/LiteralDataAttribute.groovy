@@ -19,13 +19,24 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
  * Groovy annotation that can be used in a groovy script to declare a literal data field.
  * This annotation define all the properties of the literal data represented such as its format, value and valid domain.
  *
  * @author Sylvain PALOMINOS
  */
+@Retention(RetentionPolicy.RUNTIME)
 @interface LiteralDataAttribute {
+
+    /** Default value for the formats attribute */
+    FormatAttribute[] defaultFormats =  []
+    /** Default value for the validDomain attribute */
+    LiteralDataDomainAttribute[] defaulValidDomains = []
+
+
     /** List of supported formats */
     FormatAttribute[] formats() default []
     /** The valid domain for literal data */

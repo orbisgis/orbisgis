@@ -19,14 +19,25 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
  * Groovy annotation that can be used in a groovy script to declare a literal value.
  *
  * @author Sylvain PALOMINOS
  */
+@Retention(RetentionPolicy.RUNTIME)
 @interface LiteralValueAttribute {
+
+    /** Default value for the dataType attribute */
+    String defaultDataType = "NONE"
+    /** Default value for the unit attribute */
+    String defaultUom = ""
+
+
     /** DataType of the data */
-    DataTypeAttribute dataType() default DataTypeAttribute.NONE
+    String dataType() default "NONE"
     /** URI to the unit of the data */
     String uom() default ""
 }

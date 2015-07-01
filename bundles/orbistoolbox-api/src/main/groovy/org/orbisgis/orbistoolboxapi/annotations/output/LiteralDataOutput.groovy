@@ -23,7 +23,6 @@ import groovy.transform.AnnotationCollector
 import groovy.transform.Field
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataAttribute
-import org.orbisgis.orbistoolboxapi.annotations.input.Input
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
 
 /**
@@ -33,5 +32,5 @@ import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([LiteralDataAttribute, Output, OutputAttribute, DescriptionTypeAttribute])
+@AnnotationCollector([Field, LiteralDataAttribute, OutputAttribute, DescriptionTypeAttribute])
 @interface LiteralDataOutput {}

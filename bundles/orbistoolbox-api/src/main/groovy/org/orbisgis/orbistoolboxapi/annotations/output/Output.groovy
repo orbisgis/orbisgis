@@ -32,5 +32,5 @@ import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field])
+@AnnotationCollector([Field, OutputAttribute])
 public @interface Output {}
