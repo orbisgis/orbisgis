@@ -32,6 +32,7 @@ public class ParserController {
 
     /** Parser list */
     private List<Parser> parserList;
+    private ProcessParser processParser;
 
     public ParserController(){
         parserList = new ArrayList<>();
@@ -39,5 +40,6 @@ public class ParserController {
         parserList.add(new LiteralDataParser());
         parserList.add(new BoundingBoxParser());
         parserList.add(new DefaultParser());
+        processParser = new ProcessParser();
     }
 }

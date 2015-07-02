@@ -23,6 +23,7 @@ import org.orbisgis.orbistoolboxapi.annotations.input.LiteralDataInput
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataDomainAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralValueAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.PossibleLiteralValuesChoiceAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.Process
 import org.orbisgis.orbistoolboxapi.annotations.model.ValuesAttribute
 import org.orbisgis.orbistoolboxapi.annotations.output.LiteralDataOutput
 /**
@@ -64,5 +65,8 @@ sentence = "One Ring to rule them all, one Ring to find them,\n" +
 )
 int occur
 
-/*
-occur = sentence.split(word).length-1*/
+
+@Process(title = "occurrence")
+def processing() {
+        occur = sentence.split(word).length - 1
+}

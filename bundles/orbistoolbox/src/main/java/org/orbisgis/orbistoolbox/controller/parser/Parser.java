@@ -53,12 +53,12 @@ public interface Parser {
      * Returns the groovy input annotation associated to this parser.
      * @return The grovvy input annotation associated to this parse.
      */
-    Class<? extends Annotation> getAnnotationInput();
+    Class getAnnotationInput();
 
     /**
      * Returns the groovy output annotation associated to this parser.
      * @return The grovvy output annotation associated to this parse.
      */
-    Class<? extends Annotation> getAnnotationOutput();
+    Class getAnnotationOutput();
 
 }

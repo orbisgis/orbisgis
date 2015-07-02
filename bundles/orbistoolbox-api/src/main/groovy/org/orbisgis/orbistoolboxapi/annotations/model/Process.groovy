@@ -22,10 +22,13 @@ package org.orbisgis.orbistoolboxapi.annotations.model
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
 
+import java.lang.annotation.ElementType
+import java.lang.annotation.Target
+
 /**
  * Groovy annotation that can be used in a groovy script to declare the process information.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, ProcessAttribute, DescriptionTypeAttribute])
+@AnnotationCollector([ProcessAttribute, DescriptionTypeAttribute])
 public @interface Process {}

@@ -22,6 +22,7 @@ package org.orbisgis.orbistoolboxapi.annotations
 import org.orbisgis.orbistoolboxapi.annotations.input.LiteralDataInput
 import org.orbisgis.orbistoolboxapi.annotations.input.RawDataInput
 import org.orbisgis.orbistoolboxapi.annotations.model.FormatAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.Process
 
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -55,4 +56,7 @@ File f = new File("file1.tar.gz");
 String name = "compressedFile"
 
 
-Files.copy(f.toPath(), new File(name+".tar.gz").toPath(), StandardCopyOption.REPLACE_EXISTING)
+@Process(title = "rename")
+def processing() {
+        Files.copy(f.toPath(), new File(name + ".tar.gz").toPath(), StandardCopyOption.REPLACE_EXISTING)
+}

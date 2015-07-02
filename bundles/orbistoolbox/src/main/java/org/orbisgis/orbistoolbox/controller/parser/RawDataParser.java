@@ -24,12 +24,8 @@ import org.orbisgis.orbistoolboxapi.annotations.input.RawDataInput;
 import org.orbisgis.orbistoolboxapi.annotations.model.*;
 import org.orbisgis.orbistoolboxapi.annotations.output.RawDataOutput;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Parser dedicated to the RawDataParsing.
@@ -41,65 +37,25 @@ public class RawDataParser implements Parser {
 
     @Override
     public Input parseInput(Field f, String processName) {
-        List<Format> formatList = new ArrayList<>();
-
-        RawDataAttribute rawDataAttribute = f.getAnnotation(RawDataAttribute.class);
-        for(FormatAttribute formatAttribute : rawDataAttribute.formats()){
-            Format format = new Format(formatAttribute.mimeType(), URI.create(formatAttribute.schema()));
-            format.setDefaultFormat(formatAttribute.isDefaultFormat());
-            format.setMaximumMegaBytes(formatAttribute.maximumMegaBytes());
-            formatList.add(format);
-        }
-
         //Instantiate the RawData
-        RawData rawData = new RawData(formatList);
+        RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class));
         rawData.setData(f, f.getType());
 
-        //Instantiate the returned output
+        //Instantiate the returned input
         Input input = new Input(f.getName(),
                 URI.create("orbisgis:wps:"+processName+":input:"+f.getName()),
                 rawData);
-        InputAttribute wpsInput = f.getAnnotation(InputAttribute.class);
-        input.setMinOccurs(0);
-        input.setMaxOccurs(wpsInput.maxOccurs());
-        input.setMinOccurs(wpsInput.minOccurs());
 
-        //Read the DescriptionTypeAttribute annotation to set the Output non mandatory attributes
-        DescriptionTypeAttribute descriptionTypeAttribute = f.getAnnotation(DescriptionTypeAttribute.class);
-        if(!descriptionTypeAttribute.title().equals("")){
-            input.setTitle(descriptionTypeAttribute.title());
-        }
-        if(!descriptionTypeAttribute.abstrac().equals("")){
-            input.setAbstrac(descriptionTypeAttribute.abstrac());
-        }
-        if(!descriptionTypeAttribute.identifier().equals("")){
-            input.setIdentifier(URI.create(descriptionTypeAttribute.identifier()));
-        }
-        if(!descriptionTypeAttribute.keywords().equals("")){
-            input.setKeywords(Arrays.asList(descriptionTypeAttribute.keywords().split(",")));
-        }
-        //TODO : implements for metadata.
-        if(!descriptionTypeAttribute.metadata().equals("")){
-            input.setMetadata(null);
-        }
+        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
+        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
 
         return input;
     }
 
     @Override
     public Output parseOutput(Field f, String processName) {
-        List<Format> formatList = new ArrayList<>();
-
-        RawDataAttribute rawDataAttribute = f.getAnnotation(RawDataAttribute.class);
-        for(FormatAttribute formatAttribute : rawDataAttribute.formats()){
-            Format format = new Format(formatAttribute.mimeType(), URI.create(formatAttribute.schema()));
-            format.setDefaultFormat(formatAttribute.isDefaultFormat());
-            format.setMaximumMegaBytes(formatAttribute.maximumMegaBytes());
-            formatList.add(format);
-        }
-
         //Instantiate the RawData
-        RawData rawData = new RawData(formatList);
+        RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class));
         rawData.setData(f, f.getType());
 
         //Instantiate the returned output
@@ -107,35 +63,18 @@ public class RawDataParser implements Parser {
                 URI.create("orbisgis:wps:"+processName+":output:"+f.getName()),
                 rawData);
 
-        //Read the DescriptionTypeAttribute annotation to set the Output non mandatory attributes
-        DescriptionTypeAttribute descriptionTypeAttribute = f.getAnnotation(DescriptionTypeAttribute.class);
-        if(!descriptionTypeAttribute.title().equals("")){
-            output.setTitle(descriptionTypeAttribute.title());
-        }
-        if(!descriptionTypeAttribute.abstrac().equals("")){
-            output.setAbstrac(descriptionTypeAttribute.abstrac());
-        }
-        if(!descriptionTypeAttribute.identifier().equals("")){
-            output.setIdentifier(URI.create(descriptionTypeAttribute.identifier()));
-        }
-        if(!descriptionTypeAttribute.keywords().equals("")){
-            output.setKeywords(Arrays.asList(descriptionTypeAttribute.keywords().split(",")));
-        }
-        //TODO : implements for metadata.
-        if(!descriptionTypeAttribute.metadata().equals("")){
-            output.setMetadata(null);
-        }
+        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
 
         return output;
     }
 
     @Override
-    public Class<? extends Annotation> getAnnotationInput() {
+    public Class getAnnotationInput() {
         return RawDataInput.class;
     }
 
     @Override
-    public Class<? extends Annotation> getAnnotationOutput() {
+    public Class getAnnotationOutput() {
         return RawDataOutput.class;
     }
 }
