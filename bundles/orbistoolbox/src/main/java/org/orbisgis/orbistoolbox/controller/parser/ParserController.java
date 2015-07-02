@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class ParserController {
         groovyClassLoader = new GroovyClassLoader();
     }
 
-    public Process parseProcess(String processPath){
+    public AbstractMap.SimpleEntry<Process, Class> parseProcess(String processPath){
         Class clazz = null;
         File process = new File(processPath);
         try {
@@ -104,10 +105,11 @@ public class ParserController {
         }
 
         try {
-            return processParser.parseProcess(inputList,
+            Process p = processParser.parseProcess(inputList,
                     outputList,
                     clazz.getDeclaredMethod("processing"),
                     process.getName());
+            return new AbstractMap.SimpleEntry<>(p, clazz);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
             return null;
