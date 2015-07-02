@@ -70,6 +70,9 @@ public abstract class ComplexData extends DataDescription {
      */
     protected final void addAny(Object any) {
         if(any != null) {
+            if(anys == null){
+                anys = new ArrayList<>();
+            }
             this.anys.add(any);
         }
     }

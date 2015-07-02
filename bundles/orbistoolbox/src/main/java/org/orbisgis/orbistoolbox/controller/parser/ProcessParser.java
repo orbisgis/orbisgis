@@ -43,6 +43,7 @@ public class ProcessParser {
                 process);
         ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(ProcessAttribute.class),
                 process);
+        process.setInput(inputList);
         return process;
     }
 }

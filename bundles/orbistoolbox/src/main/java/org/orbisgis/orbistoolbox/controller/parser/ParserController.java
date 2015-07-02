@@ -19,6 +19,17 @@
 
 package org.orbisgis.orbistoolbox.controller.parser;
 
+import groovy.lang.GroovyClassLoader;
+import org.orbisgis.orbistoolbox.model.Input;
+import org.orbisgis.orbistoolbox.model.Process;
+import org.orbisgis.orbistoolbox.model.Output;
+import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute;
+import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,14 +43,74 @@ public class ParserController {
 
     /** Parser list */
     private List<Parser> parserList;
+    private DefaultParser defaultParser;
     private ProcessParser processParser;
+    private GroovyClassLoader groovyClassLoader;
 
     public ParserController(){
         parserList = new ArrayList<>();
         parserList.add(new RawDataParser());
         parserList.add(new LiteralDataParser());
         parserList.add(new BoundingBoxParser());
-        parserList.add(new DefaultParser());
+        defaultParser = new DefaultParser();
         processParser = new ProcessParser();
+        groovyClassLoader = new GroovyClassLoader();
+    }
+
+    public Process parseProcess(String processPath){
+        Class clazz = null;
+        File process = new File(processPath);
+        try {
+            clazz = groovyClassLoader.parseClass(process);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        List<Input> inputList = new ArrayList<>();
+        List<Output> outputList = new ArrayList<>();
+
+        for(Field f : clazz.getDeclaredFields()){
+            for(Annotation a : f.getDeclaredAnnotations()){
+                if(a instanceof InputAttribute){
+                    boolean parsed = false;
+                    for(Annotation annotation : f.getDeclaredAnnotations()){
+                        for(Parser parser : parserList){
+                            if(parser.getAnnotationInput().isAssignableFrom(annotation.getClass())){
+                                inputList.add(parser.parseInput(f, process.getName()));
+                                parsed = true;
+                            }
+                        }
+                    }
+                    if(!parsed){
+                        inputList.add(defaultParser.parseInput(f, process.getName()));
+                    }
+                }
+                if(a instanceof OutputAttribute){
+                    boolean parsed = false;
+                    for(Annotation annotation : f.getDeclaredAnnotations()){
+                        for(Parser parser : parserList){
+                            if(parser.getAnnotationInput().isAssignableFrom(annotation.getClass())){
+                                outputList.add(parser.parseOutput(f, process.getName()));
+                                parsed = true;
+                            }
+                        }
+                    }
+                    if(!parsed){
+                        outputList.add(defaultParser.parseOutput(f, process.getName()));
+                    }
+                }
+            }
+        }
+
+        try {
+            return processParser.parseProcess(inputList,
+                    outputList,
+                    clazz.getDeclaredMethod("processing"),
+                    process.getName());
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
