@@ -23,15 +23,14 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Input annotation used in orbistoolbox to receive input information from the groovy WPS script.
- * It contains the information about the input itself : its occurrence, its name, abstract ...
+ * Groovy annotation that can be used in a groovy script to declare the boundingbox data.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface InputAttribute {
-    /** Minimum number of times that values for this parameter are required. */
-    int minOccurs() default 1
-    /** Maximum number of times that this parameter may be present. */
-    int maxOccurs() default 1
+@interface BoundingBoxDataAttribute {
+    /** Bounding box attribute */
+    BoundingBoxAttribute boundingBoxAttribute()
+    /** List of CRS supported by the boundingbox data */
+    SupportedCRSAttribute[] supportedCRSList()
 }

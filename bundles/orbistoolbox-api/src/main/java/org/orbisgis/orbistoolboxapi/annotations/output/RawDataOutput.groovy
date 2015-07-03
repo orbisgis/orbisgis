@@ -17,16 +17,19 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations.model
+package org.orbisgis.orbistoolboxapi.annotations.output
+
+import groovy.transform.AnnotationCollector
+import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.RawDataAttribute
+import org.orbisgis.orbistoolboxapi.annotations.input.Input
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a supported CRS field.
+ * Groovy annotation that can be used in a groovy script to declare a raw output field.
  *
  * @author Sylvain PALOMINOS
  */
-@interface SupportedCRSAttribute {
-    /** List of URI to the represented CRS */
-    String[] uriList()
-    /** True if it is the default CRS, false otherwise */
-    boolean defaultCRS() default false
-}
+@AnnotationCollector([Field, RawDataAttribute, OutputAttribute, OutputAttribute, DescriptionTypeAttribute])
+@interface RawDataOutput {}

@@ -19,12 +19,21 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
- * Groovy annotation that can be used in a groovy script to declare a raw data.
+ * Input annotation used in orbistoolbox to retrieve process information from the groovy WPS script.
  *
  * @author Sylvain PALOMINOS
  */
-@interface RawDataAttribute {
-    /** List of supported formats */
-    FormatAttribute[] formats() default []
+@Retention(RetentionPolicy.RUNTIME)
+@interface ProcessAttribute {
+
+    /** Default value for the language attribute */
+    String defaultLanguage = "en"
+
+
+    /** Minimum number of times that values for this parameter are required. */
+    String language() default "en"
 }

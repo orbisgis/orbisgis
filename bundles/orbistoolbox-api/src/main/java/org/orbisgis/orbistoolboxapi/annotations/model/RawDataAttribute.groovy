@@ -17,18 +17,23 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations.input
+package org.orbisgis.orbistoolboxapi.annotations.model
 
-import groovy.transform.AnnotationCollector
-import groovy.transform.Field
-import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.RawDataAttribute
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a raw input field.
+ * Groovy annotation that can be used in a groovy script to declare a raw data.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([RawDataAttribute, Input, InputAttribute, DescriptionTypeAttribute])
-@interface RawDataInput {}
+@Retention(RetentionPolicy.RUNTIME)
+@interface RawDataAttribute {
+
+    /** Default value for the formats attribute */
+    FormatAttribute[] defaultFormats = []
+
+
+    /** List of supported formats */
+    FormatAttribute[] formats() default []
+}

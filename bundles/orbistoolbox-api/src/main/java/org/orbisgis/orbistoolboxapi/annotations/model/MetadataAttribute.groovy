@@ -19,14 +19,27 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
- * Groovy annotation that can be used in a groovy script to declare the boundingbox data.
+ * Annotation for the Metadata declaration.
  *
  * @author Sylvain PALOMINOS
  */
-@interface BoundingBoxDataAttribute {
-    /** Bounding box attribute */
-    BoundingBoxAttribute boundingBoxAttribute()
-    /** List of CRS supported by the boundingbox data */
-    SupportedCRSAttribute[] supportedCRSList()
+@Retention(RetentionPolicy.RUNTIME)
+@interface MetadataAttribute {
+
+    /** Default value for the linkType attribute */
+    String defaultLinkType = "simple"
+
+
+    /** Title of the documentation. Normally available for display to a human. */
+    String title()
+    /** Type of the xlink, fixed to simple. */
+    String linkType() default "simple"
+    /** Role identifier, indicating the role of the linked document. */
+    String role()
+    /** Reference to a documentation site for a process, input, or output. */
+    String href()
 }

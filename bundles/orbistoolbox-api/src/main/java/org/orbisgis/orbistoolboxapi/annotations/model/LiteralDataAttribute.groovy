@@ -17,19 +17,30 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations.output
+package org.orbisgis.orbistoolboxapi.annotations.model
 
-import groovy.transform.AnnotationCollector
-import groovy.transform.Field
-import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.RawDataAttribute
-import org.orbisgis.orbistoolboxapi.annotations.input.Input
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a raw output field.
+ * Groovy annotation that can be used in a groovy script to declare a literal data field.
+ * This annotation define all the properties of the literal data represented such as its format, value and valid domain.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([RawDataAttribute, Output, OutputAttribute, DescriptionTypeAttribute])
-@interface RawDataOutput {}
+@Retention(RetentionPolicy.RUNTIME)
+@interface LiteralDataAttribute {
+
+    /** Default value for the formats attribute */
+    FormatAttribute[] defaultFormats =  []
+    /** Default value for the validDomain attribute */
+    LiteralDataDomainAttribute[] defaulValidDomains = []
+
+
+    /** List of supported formats */
+    FormatAttribute[] formats() default []
+    /** The valid domain for literal data */
+    LiteralDataDomainAttribute[] validDomains() default []
+    /** The literal value information */
+    LiteralValueAttribute valueAttribute()
+}

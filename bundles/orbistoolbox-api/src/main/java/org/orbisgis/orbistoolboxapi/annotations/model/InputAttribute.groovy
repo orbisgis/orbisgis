@@ -19,20 +19,25 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
- * Groovy annotation that can be used in a groovy script to declare a literal data domain.
+ * Input annotation used in orbistoolbox to receive input information from the groovy WPS script.
+ * It contains the information about the input itself : its occurrence, its name, abstract ...
  *
  * @author Sylvain PALOMINOS
  */
-@interface LiteralDataDomainAttribute {
-    /** Identifies a valid format for an input or output. */
-    PossibleLiteralValuesChoiceAttribute plvc()
-    /** Reference to the data type of this set of values. */
-    DataTypeAttribute dataType()
-    /** Indicates that this quantity has units and provides the unit of measurement. */
-    String uom() default ""
-    /** Default value for this quantity. */
-    ValuesAttribute defaultValue()
-    /** Indicates that this is the default/native domain. */
-    boolean isDefaultDomain()
+@Retention(RetentionPolicy.RUNTIME)
+@interface InputAttribute {
+    /** Default value for the minOccurs attribute */
+    public static final int defaultMinOccurs = 1
+    /** Default value for the maxOccurs attribute */
+    public static final int defaultMaxOccurs = 1
+
+
+    /** Minimum number of times that values for this parameter are required. */
+    int minOccurs() default 1
+    /** Maximum number of times that this parameter may be present. */
+    int maxOccurs() default 1
 }

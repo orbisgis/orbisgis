@@ -17,16 +17,20 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations.model
+package org.orbisgis.orbistoolboxapi.annotations.output
+
+import groovy.transform.AnnotationCollector
+import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a possible literal values choice.
+ * Groovy annotation that can be used in a groovy script to declare an output field.
+ * This output annotation is the most simple one.
+ * There is no need to specify any field, the parser will try to set it automatically.
+ * The basic type (int, boolean, char, String ...) will be transformed as LiteralData, any other object will become
+ * a RawData.
  *
  * @author Sylvain PALOMINOS
  */
-@interface PossibleLiteralValuesChoiceAttribute {
-    /** List of all valid values and/or ranges of values for this quantity. */
-    ValuesAttribute[] allowedValues() default []
-    /** Reference to list of all valid values and/or ranges of values for this quantity. */
-    String reference() default ""
-}
+@AnnotationCollector([Field, OutputAttribute])
+public @interface Output {}

@@ -17,20 +17,25 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations.output
+package org.orbisgis.orbistoolboxapi.annotations.model
 
-import groovy.transform.AnnotationCollector
-import groovy.transform.Field
-import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
 
 /**
- * Groovy annotation that can be used in a groovy script to declare an output field.
- * This output annotation is the most simple one.
- * There is no need to specify any field, the parser will try to set it automatically.
- * The basic type (int, boolean, char, String ...) will be transformed as LiteralData, any other object will become
- * a RawData.
+ * Groovy annotation that can be used in a groovy script to declare a supported CRS field.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field])
-public @interface Output {}
+@Retention(RetentionPolicy.RUNTIME)
+@interface SupportedCRSAttribute {
+
+    /** Default value for the isDefaultCRS attribute */
+    boolean defaultIsDefaultCRS = false;
+
+
+    /** List of URI to the represented CRS */
+    String[] uriList()
+    /** True if it is the default CRS, false otherwise */
+    boolean isDefaultCRS() default false
+}

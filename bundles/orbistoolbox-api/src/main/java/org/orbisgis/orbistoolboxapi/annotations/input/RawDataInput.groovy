@@ -17,15 +17,18 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations.model
+package org.orbisgis.orbistoolboxapi.annotations.input
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.RawDataAttribute
 
 /**
- * Groovy annotation that can be used in a groovy script to declare the process information.
+ * Groovy annotation that can be used in a groovy script to declare a raw input field.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, ProcessAttribute])
-public @interface Process {}
+@AnnotationCollector([Field, RawDataAttribute, InputAttribute, DescriptionTypeAttribute])
+@interface RawDataInput {}

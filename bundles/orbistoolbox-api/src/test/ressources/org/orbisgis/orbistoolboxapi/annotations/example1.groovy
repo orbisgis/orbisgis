@@ -20,13 +20,11 @@
 package org.orbisgis.orbistoolboxapi.annotations
 
 import org.orbisgis.orbistoolboxapi.annotations.input.LiteralDataInput
-import org.orbisgis.orbistoolboxapi.annotations.model.DataTypeAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataDomainAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralValueAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.PossibleLiteralValuesChoiceAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.ValuesAttribute
 import org.orbisgis.orbistoolboxapi.annotations.output.LiteralDataOutput
-
 /**
  * This example script return the number of time that a word appear in an sentence.
  * It show how to use LiteralDataInput/Output.
@@ -44,11 +42,11 @@ import org.orbisgis.orbistoolboxapi.annotations.output.LiteralDataOutput
         validDomains = [
                 @LiteralDataDomainAttribute(
                         plvc = @PossibleLiteralValuesChoiceAttribute(),
-                        dataType = DataTypeAttribute.STRING,
+                        dataType = "STRING",
                         defaultValue = @ValuesAttribute(value = ""),
                         isDefaultDomain = true)
         ],
-        valueAttribute = @LiteralValueAttribute(dataType = DataTypeAttribute.STRING),
+        valueAttribute = @LiteralValueAttribute(dataType = "STRING"),
         minOccurs = 1,
         maxOccurs = 1
 )
@@ -66,4 +64,5 @@ sentence = "One Ring to rule them all, one Ring to find them,\n" +
 )
 int occur
 
-occur = sentence.split(word).length-1
+/*
+occur = sentence.split(word).length-1*/

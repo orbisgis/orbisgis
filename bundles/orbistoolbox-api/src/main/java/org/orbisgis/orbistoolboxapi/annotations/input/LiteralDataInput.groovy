@@ -32,5 +32,5 @@ import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([LiteralDataAttribute, Input, InputAttribute, DescriptionTypeAttribute])
+@AnnotationCollector([Field, InputAttribute, LiteralDataAttribute, DescriptionTypeAttribute])
 @interface LiteralDataInput {}

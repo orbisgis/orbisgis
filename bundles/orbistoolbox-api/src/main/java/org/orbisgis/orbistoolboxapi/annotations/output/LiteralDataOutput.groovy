@@ -17,22 +17,20 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations.model
+package org.orbisgis.orbistoolboxapi.annotations.output
+
+import groovy.transform.AnnotationCollector
+import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a Format.
+ * Groovy annotation that can be used in a groovy script to declare a literal data output field.
+ * This annotation define a field as a literal data.
+ * It is used for basic type (boolean, char, String, int double ...)
  *
  * @author Sylvain PALOMINOS
  */
-@interface FormatAttribute {
-    /** Media type of the data. */
-    String mimeType()
-    /** Encoding procedure or character set of the data.*/
-    String encoding() default "simple"
-    /** Identification of the data schema.*/
-    String schema()
-    /** The maximum size of the input data, in megabytes.*/
-    int maximumMegaBytes() default 0
-    /** Indicates that this format is the default format.*/
-    boolean isDefaultFormat() default false
-}
+@AnnotationCollector([Field, LiteralDataAttribute, OutputAttribute, DescriptionTypeAttribute])
+@interface LiteralDataOutput {}

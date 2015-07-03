@@ -19,18 +19,13 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
+import groovy.transform.AnnotationCollector
+import groovy.transform.Field
 
 /**
- * Input annotation used in orbistoolbox to retrieve process information from the groovy WPS script.
+ * Groovy annotation that can be used in a groovy script to declare the process information.
  *
  * @author Sylvain PALOMINOS
  */
-@Retention(RetentionPolicy.RUNTIME)
-@interface ProcessAttribute {
-    /** Minimum number of times that values for this parameter are required. */
-    String language() default "en"
-    /** Description type attribute of the process. */
-    DescriptionTypeAttribute description()
-}
+@AnnotationCollector([Field, ProcessAttribute, DescriptionTypeAttribute])
+public @interface Process {}

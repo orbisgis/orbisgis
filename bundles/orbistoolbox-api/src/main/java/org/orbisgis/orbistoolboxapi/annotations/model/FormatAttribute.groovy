@@ -19,14 +19,24 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
- * Groovy annotation that can be used in a groovy script to declare a literal value.
+ * Groovy annotation that can be used in a groovy script to declare a Format.
  *
  * @author Sylvain PALOMINOS
  */
-@interface LiteralValueAttribute {
-    /** DataType of the data */
-    DataTypeAttribute dataType() default DataTypeAttribute.NONE
-    /** URI to the unit of the data */
-    String uom() default ""
+@Retention(RetentionPolicy.RUNTIME)
+@interface FormatAttribute {
+    /** Media type of the data. */
+    String mimeType()
+    /** Encoding procedure or character set of the data.*/
+    String encoding() default "simple"
+    /** Identification of the data schema.*/
+    String schema()
+    /** The maximum size of the input data, in megabytes.*/
+    int maximumMegaBytes() default 0
+    /** Indicates that this format is the default format.*/
+    boolean isDefaultFormat() default false
 }

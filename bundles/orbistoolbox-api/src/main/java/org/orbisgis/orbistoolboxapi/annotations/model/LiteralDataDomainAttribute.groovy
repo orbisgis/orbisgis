@@ -19,21 +19,29 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
- * Groovy annotation that can be used in a groovy script to declare a value.
- * It can be a simple value (by default) or a range of values.
+ * Groovy annotation that can be used in a groovy script to declare a literal data domain.
  *
  * @author Sylvain PALOMINOS
  */
-@interface ValuesAttribute {
-    /** Only used if the type is VALUE Value represented */
-    String value()
-    /** Type of the value, it can be a simple value, or a range */
-    ValuesType type() default ValuesType.VALUE
-    /** Only used if the type is RANGE, indicates the range maximum */
-    String maximum() default ""
-    /** Only used if the type is RANGE, indicates the range minimum */
-    String minimum() default ""
-    /** Only used if the type is RANGE, indicates the spacing between two values */
-    String spacing() default ""
+@Retention(RetentionPolicy.RUNTIME)
+@interface LiteralDataDomainAttribute {
+
+    /** Default value for the uom attribute */
+    String defaultUom = ""
+
+
+    /** Identifies a valid format for an input or output. */
+    PossibleLiteralValuesChoiceAttribute plvc()
+    /** Reference to the data type of this set of values. */
+    String dataType()
+    /** Indicates that this quantity has units and provides the unit of measurement. */
+    String uom() default ""
+    /** Default value for this quantity. */
+    ValuesAttribute defaultValue()
+    /** Indicates that this is the default/native domain. */
+    boolean isDefaultDomain()
 }
