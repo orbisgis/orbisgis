@@ -28,7 +28,6 @@
                 <version>2.3.2</version>
                 <configuration>
                     <compilerId>groovy-eclipse-compiler</compilerId>
-
                 </configuration>
                 <dependencies>
                     <dependency>
