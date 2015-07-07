@@ -22,16 +22,14 @@ package org.orbisgis.orbistoolbox.controller;
 import groovy.lang.GroovyObject;
 import org.orbisgis.orbistoolbox.controller.parser.ParserController;
 import org.orbisgis.orbistoolbox.model.Process;
+import org.orbisgis.orbistoolbox.view.ProcessIdentifier;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Class used to manage process.
@@ -40,12 +38,12 @@ import java.util.Map;
  **/
 
 public class ProcessManager {
-    private Map<Process, Class> mapProcessClass;
+    private List<ProcessIdentifier> processIdList;
     private ParserController parserController;
     private Map<URI, GroovyObject> processGroovyObjectMap;
 
     public ProcessManager(){
-        mapProcessClass = new HashMap<>();
+        processIdList = new ArrayList<>();
         parserController = new ParserController();
         processGroovyObjectMap = new HashMap<>();
     }
@@ -58,13 +56,27 @@ public class ProcessManager {
         for(File f : folder.listFiles()){
             if(f.getName().endsWith(".groovy")){
                 AbstractMap.SimpleEntry entry = parserController.parseProcess(f.getAbsolutePath());
-                mapProcessClass.put((Process)entry.getKey(), (Class)entry.getValue());
+                processIdList.add(new ProcessIdentifier((Class) entry.getValue(), (Process) entry.getKey(), f.getAbsolutePath()));
             }
         }
     }
 
+    public Process addScript(File f){
+        if(f.getName().endsWith(".groovy")){
+            AbstractMap.SimpleEntry entry = parserController.parseProcess(f.getAbsolutePath());
+            processIdList.add(new ProcessIdentifier((Class) entry.getValue(), (Process) entry.getKey(), f.getAbsolutePath()));
+            return (Process) entry.getKey();
+        }
+        return null;
+    }
+
     public void setProcessData(Map<URI, Object> inputMap, URI process){
-        Class clazz = mapProcessClass.get(getProcess(process));
+        Class clazz = null;
+        for(ProcessIdentifier pi : processIdList){
+            if(pi.getProcess().getIdentifier().equals(process)){
+                clazz = pi.getClazz();
+            }
+        }
         GroovyObject groovyObject;
         try {
             groovyObject = (GroovyObject)clazz.newInstance();
@@ -91,12 +103,21 @@ public class ProcessManager {
     }
 
     public Process getProcess(URI uri){
-        for(Process p : mapProcessClass.keySet()){
-            if(p.getIdentifier().equals(uri)){
-                return p;
+        for(ProcessIdentifier pi : processIdList){
+            if(pi.getProcess().getIdentifier().equals(uri)){
+                return pi.getProcess();
             }
         }
         return null;
+    }
+
+    public Process getProcess(File f){
+        for(ProcessIdentifier pi : processIdList){
+            if(pi.getAbsolutePath().equals(f.getAbsolutePath())){
+                return pi.getProcess();
+            }
+        }
+        return addScript(f);
     }
 
     public Field getField(Class clazz, URI uri){

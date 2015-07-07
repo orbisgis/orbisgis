@@ -20,6 +20,9 @@
 package org.orbisgis.orbistoolbox.view;
 
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
+import org.orbisgis.orbistoolbox.model.Input;
+import org.orbisgis.orbistoolbox.model.Output;
+import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.components.actions.DefaultAction;
@@ -27,48 +30,49 @@ import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Sylvain PALOMINOS
  **/
 
 @Component(service = DockingPanel.class)
-public class ToolBox extends JPanel implements DockingPanel {
+public class ToolBox implements DockingPanel {
 
     private static final String ADD_SOURCE = "ADD_SOURCE";
 
     private DockingPanelParameters parameters;
     private ActionCommands dockingActions;
-
     private ProcessManager processManager;
 
-    private static final I18n i18n = I18nFactory.getI18n(ToolBox.class);
+    private ToolBoxPanel toolBoxPanel;
 
     @Activate
     public void init(){
+        toolBoxPanel = new ToolBoxPanel(this);
         processManager = new ProcessManager();
 
         dockingActions = new ActionCommands();
 
         parameters = new DockingPanelParameters();
         parameters.setName("orbistoolbox");
-        parameters.setTitle(i18n.tr("OrbisToolBox"));
-        //parameters.setTitleIcon(ToolBoxIcon.getIcon("orbistoolbox"));
+        parameters.setTitle("OrbisToolBox");
+        parameters.setTitleIcon(ToolBoxIcon.getIcon("orbistoolbox"));
         parameters.setCloseable(true);
 
         dockingActions.addAction(
                 new DefaultAction(
                         ADD_SOURCE,
-                        i18n.tr("Add source"),
-                        i18n.tr("Add a local source"),
-                        null,//GeocatalogIcon.getIcon("add_source"),
-                        EventHandler.create(ActionListener.class, this, "addSource"),
+                        "Add source",
+                        "Add a local source",
+                        ToolBoxIcon.getIcon("add_source"),
+                        EventHandler.create(ActionListener.class, toolBoxPanel, "addSource"),
                         null
                 )
         );
@@ -84,10 +88,19 @@ public class ToolBox extends JPanel implements DockingPanel {
 
     @Override
     public JComponent getComponent() {
-        return this;
+        return toolBoxPanel;
     }
 
-    public void addSource(){
-
+    public void selectProcess(File f){
+        Process p = processManager.getProcess(f);
+        List<String> inputList = new ArrayList<>();
+        List<String> outputList = new ArrayList<>();
+        for(Input i : p.getInput()){
+            inputList.add(i.getTitle());
+        }
+        for(Output o : p.getOutput()){
+            outputList.add(o.getTitle());
+        }
+        toolBoxPanel.setProcessInfo(p.getTitle(), p.getAbstrac(), inputList, outputList);
     }
 }

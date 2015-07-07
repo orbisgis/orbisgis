@@ -55,7 +55,7 @@ public class ParserController {
         parserList.add(new BoundingBoxParser());
         defaultParser = new DefaultParser();
         processParser = new ProcessParser();
-        groovyClassLoader = new GroovyClassLoader();
+        groovyClassLoader = new GroovyClassLoader(this.getClass().getClassLoader());
     }
 
     public AbstractMap.SimpleEntry<Process, Class> parseProcess(String processPath){
