@@ -103,15 +103,28 @@ public class Layer extends BeanLayer {
                 try(ResultSet tablesRs = meta.getTables(table.getCatalog(),table.getSchema(),table.getTable(),null)) {
                     if(tablesRs.next()) {
                         String remarks = tablesRs.getString("REMARKS");
-                        if(remarks!= null && remarks.toLowerCase().startsWith("file:")) {
-                            try {
-                                // The table is extracted from a file
-                                URI fileUri =  URI.create(remarks);
-                                if(new File(fileUri).exists()) {
-                                    return fileUri;
+                        if(remarks != null) {
+                            if(remarks.toLowerCase().startsWith("file:")) {
+                                try {
+                                    // The table is extracted from a file
+                                    URI fileUri =  URI.create(remarks);
+                                    if(new File(fileUri).exists()) {
+                                        dataURI = fileUri;
+                                        return fileUri;
+                                    }
+                                } catch (Exception ex) {
+                                    //Ignore, not an URI
                                 }
-                            } catch (Exception ex) {
-                                //Ignore, not an URI
+                            } else {
+                                // Maybe a file
+                                try {
+                                    if (new File(remarks).exists()) {
+                                        dataURI = new File(remarks).toURI();
+                                        return dataURI;
+                                    }
+                                } catch (Exception ex) {
+                                    // Ignore, not a File
+                                }
                             }
                         }
                     }
