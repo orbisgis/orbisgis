@@ -105,7 +105,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private static final I18n I18N = I18nFactory.getI18n(ReadRowSetImpl.class, Locale.getDefault(), I18nFactory.FALLBACK);
     private TableLocation location;
     private final DataSource dataSource;
-    private Object[] currentRow;
+    private Row currentRow;
     private long rowId = 0;
     /** If the table has been updated or never read, rowCount is set to -1 (unknown) */
     private long cachedRowCount = -1;
@@ -126,10 +126,10 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private final Lock readLock = rwl.writeLock(); // Read here is exclusive
     private int fetchSize = DEFAULT_FETCH_SIZE;
     // Cache of requested rows
-    private Map<Long, Object[]> cache = new LRUMap<>(DEFAULT_CACHE_SIZE);
+    private Map<Long, Row> cache = new LRUMap<>(DEFAULT_CACHE_SIZE);
     // Cache of last queried batch
     private long currentBatchId = -1;
-    private List<Object[]> currentBatch = new ArrayList<>();
+    private List<Row> currentBatch = new ArrayList<>();
     private int fetchDirection = FETCH_UNKNOWN;
     // When close is called, in how many ms the result set is really closed
     private int closeDelay = 0;
@@ -163,7 +163,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public long getPk() throws SQLException {
-        return getLong(pk_name);
+        checkCurrentRow();
+        return currentRow.pk;
     }
 
     @Override
@@ -342,7 +343,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     for (int idColumn = 1 + offset; idColumn <= columnCount + offset; idColumn++) {
                         row[idColumn - 1 - offset] = rsBatch.getObject(idColumn);
                     }
-                    currentBatch.add(row);
+                    currentBatch.add(new Row(row, currentRowPk));
                     if (curRow++ == fetchSize + 1) {
                         return rsBatch.getLong(pk_name);
                     }
@@ -389,7 +390,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         for(int idColumn=1; idColumn <= columnCount; idColumn++) {
                             row[idColumn-1] = rs.getObject(idColumn);
                         }
-                        cache.put(rowId, row);
+                        cache.put(rowId, new Row(row, null));
                     }
                 } else {
                     // Fetch block pk of current row
@@ -672,7 +673,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public Object getObject(int i) throws SQLException {
         checkColumnIndex(i);
         checkCurrentRow();
-        Object cell = currentRow[i-1];
+        Object cell = currentRow.row[i-1];
         setWasNull(cell == null);
         return cell;
     }
@@ -779,7 +780,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public void setFetchSize(int i) throws SQLException {
         fetchSize = i;
-        LRUMap<Long, Object[]> lruMap = new LRUMap<>(fetchSize + 1);
+        LRUMap<Long, Row> lruMap = new LRUMap<>(fetchSize + 1);
         lruMap.putAll(cache);
         cache = lruMap;
         rowFetchFirstPk = new ArrayList<>(Arrays.asList(new Long[]{null}));
@@ -1833,6 +1834,16 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         @Override
         public void setObject(Object value) throws SQLException {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    private static class Row {
+        final Object[] row;
+        final Long pk;
+
+        public Row(Object[] row, Long pk) {
+            this.row = row;
+            this.pk = pk;
         }
     }
 }
