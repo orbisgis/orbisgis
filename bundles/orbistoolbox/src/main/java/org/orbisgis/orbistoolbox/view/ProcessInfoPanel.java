@@ -19,6 +19,8 @@
 
 package org.orbisgis.orbistoolbox.view;
 
+import net.miginfocom.swing.MigLayout;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -42,7 +44,7 @@ public class ProcessInfoPanel extends JPanel {
 
     public ProcessInfoPanel(){
         super();
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.setLayout(new MigLayout("", "", "[] 3 [] 15 [] 3 [] 15 [] 3 [] 15 [] 3 [] 15"));
         inputList = new ArrayList<>();
         outputList = new ArrayList<>();
 
@@ -62,23 +64,14 @@ public class ProcessInfoPanel extends JPanel {
 
         updateComponent();
 
-        this.add(titleLabel);
-        this.add(titleContentLabel);
-        this.add(abstracLabel);
-        this.add(abstracContentLabel);
-        this.add(inputListLabel);
-        this.add(inputListContentLabel);
-        this.add(outputListLabel);
-        this.add(outputListContentLabel);
-
-        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        titleContentLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        abstracLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        abstracContentLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        inputListLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        inputListContentLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        outputListLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        outputListContentLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        this.add(titleLabel, "wrap");
+        this.add(titleContentLabel, "wrap");
+        this.add(abstracLabel, "wrap");
+        this.add(abstracContentLabel, "wrap");
+        this.add(inputListLabel, "wrap");
+        this.add(inputListContentLabel, "wrap");
+        this.add(outputListLabel, "wrap");
+        this.add(outputListContentLabel, "wrap");
     }
 
     public void updateComponent(){
@@ -94,6 +87,8 @@ public class ProcessInfoPanel extends JPanel {
             output += s+"\n";
         }
         outputListContentLabel.setText(output);
+
+        MigLayout migLayout = new MigLayout();
     }
 
     public void setTitle(String title) {

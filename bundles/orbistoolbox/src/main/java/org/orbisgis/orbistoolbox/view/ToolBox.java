@@ -19,9 +19,10 @@
 
 package org.orbisgis.orbistoolbox.view;
 
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyShell;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
-import org.orbisgis.orbistoolbox.model.Input;
-import org.orbisgis.orbistoolbox.model.Output;
+import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
@@ -35,6 +36,7 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,10 +98,30 @@ public class ToolBox implements DockingPanel {
         List<String> inputList = new ArrayList<>();
         List<String> outputList = new ArrayList<>();
         for(Input i : p.getInput()){
-            inputList.add(i.getTitle());
+            String type = "";
+            if(i.getDataDescription() instanceof LiteralData){
+                for(LiteralDataDomain ldd : ((LiteralData) i.getDataDescription()).getLiteralDomainType()){
+                    type += ldd.getDataType().name().toLowerCase() + " ";
+                }
+                type += ": ";
+            }
+            else{
+                type = i.getDataDescription().getClass().getSimpleName() + " : ";
+            }
+            inputList.add(type + i.getTitle());
         }
         for(Output o : p.getOutput()){
-            outputList.add(o.getTitle());
+            String type = "";
+            if(o.getDataDescription() instanceof LiteralData){
+                for(LiteralDataDomain ldd : ((LiteralData) o.getDataDescription()).getLiteralDomainType()){
+                    type += ldd.getDataType() + " ";
+                }
+                type += ": ";
+            }
+            else{
+                type = o.getDataDescription().getClass().getSimpleName() + " : ";
+            }
+            outputList.add(type + o.getTitle());
         }
         toolBoxPanel.setProcessInfo(p.getTitle(), p.getAbstrac(), inputList, outputList);
     }

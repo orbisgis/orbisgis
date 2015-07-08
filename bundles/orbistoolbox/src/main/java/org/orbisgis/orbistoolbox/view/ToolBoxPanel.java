@@ -69,10 +69,8 @@ public class ToolBoxPanel extends JPanel {
     }
 
     public void onNodeSelected(TreeSelectionEvent event){
-        System.out.println(event.getSource());
         if(((FileTree)event.getSource()).getLastSelectedPathComponent() instanceof TreeNodeWps){
             TreeNodeWps node = (TreeNodeWps) ((FileTree)event.getSource()).getLastSelectedPathComponent();
-            System.out.println(node);
             toolBox.selectProcess(node.getFilePath());
         }
     }
@@ -82,6 +80,7 @@ public class ToolBoxPanel extends JPanel {
         processInfoPanel.setAbstrac(abstrac);
         processInfoPanel.setInputList(inputs);
         processInfoPanel.setOutputList(outputs);
+        processInfoPanel.updateComponent();
     }
 
     public void addSource(){

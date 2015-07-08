@@ -20,6 +20,7 @@
 package org.orbisgis.orbistoolbox.controller.parser;
 
 import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyShell;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.model.Output;
@@ -55,7 +56,7 @@ public class ParserController {
         parserList.add(new BoundingBoxParser());
         defaultParser = new DefaultParser();
         processParser = new ProcessParser();
-        groovyClassLoader = new GroovyClassLoader(this.getClass().getClassLoader());
+        groovyClassLoader = new GroovyShell().getClassLoader();
     }
 
     public AbstractMap.SimpleEntry<Process, Class> parseProcess(String processPath){
