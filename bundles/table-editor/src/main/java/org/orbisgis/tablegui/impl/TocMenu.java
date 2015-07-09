@@ -126,7 +126,7 @@ public class TocMenu implements TocActionFactory {
                     for (ILayer layer : mapContext.getSelectedLayers()) {
                         String tableRef = layer.getTableReference();
                         if(!tableRef.isEmpty()) {
-                            editorManager.openEditable(new TableEditableElementImpl(tableRef, dataManager));
+                            editorManager.openEditable(new TableEditableElementImpl(layer.getSelection() ,tableRef, dataManager));
                         }
                     }
                 }

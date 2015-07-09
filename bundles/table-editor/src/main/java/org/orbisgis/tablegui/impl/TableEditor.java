@@ -855,7 +855,6 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         editableSelectionListener);
                 dockingPanelParameters.setDockActions(getDockActions());
                 initPopupActions();
-                tableModel.fireTableStructureChanged();
                 tableScrollPane.getVerticalScrollBar().setBlockIncrement((int)(table.getHeight() / (TABLE_SCROLL_PERC / 100.)));
         }
         private void initPopupActions() {
