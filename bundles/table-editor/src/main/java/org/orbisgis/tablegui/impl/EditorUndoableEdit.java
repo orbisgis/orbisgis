@@ -38,6 +38,7 @@ import javax.swing.undo.UndoableEdit;
 import java.sql.SQLException;
 
 /**
+ * Decorator between Swing Undable and TableEdition
  * @author Nicolas Fortin
  */
 public class EditorUndoableEdit implements UndoableEdit {
