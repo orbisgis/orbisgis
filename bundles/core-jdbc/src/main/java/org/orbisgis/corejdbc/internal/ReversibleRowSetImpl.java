@@ -370,8 +370,8 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
     public void deleteRow() throws SQLException {
         checkCurrentRow();
         TableUndoableDelete deleteEvt = new TableUndoableDelete(manager, location, pk_name, isH2);
-        for(int idColumn = 0; idColumn < currentRow.length; idColumn++) {
-            deleteEvt.setValue(getColumnLabel(idColumn + 1), currentRow[idColumn]);
+        for(int idColumn = 0; idColumn < currentRow.row.length; idColumn++) {
+            deleteEvt.setValue(getColumnLabel(idColumn + 1), currentRow.row[idColumn]);
         }
         deleteEvt.redo(false);
         cachedRowCount--;

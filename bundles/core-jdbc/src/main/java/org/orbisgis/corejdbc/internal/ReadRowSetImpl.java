@@ -104,11 +104,11 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     // Like binary search, max intermediate batch fetching
     private static final int MAX_INTERMEDIATE_BATCH = 5;
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadRowSetImpl.class);
-    private static final I18n I18N = I18nFactory.getI18n(ReadRowSetImpl.class, Locale.getDefault(), I18nFactory.FALLBACK);
-    private TableLocation location;
-    private final DataSource dataSource;
-    private Row currentRow;
-    private long rowId = 0;
+    protected static final I18n I18N = I18nFactory.getI18n(ReadRowSetImpl.class, Locale.getDefault(), I18nFactory.FALLBACK);
+    protected TableLocation location;
+    protected final DataSource dataSource;
+    protected Row currentRow;
+    protected long rowId = 0;
     /** If the table has been updated or never read, rowCount is set to -1 (unknown) */
     protected long cachedRowCount = -1;
     private int cachedColumnCount = -1;
@@ -128,10 +128,10 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     protected final Lock readLock = rwl.writeLock(); // Read here is exclusive
     protected int fetchSize = DEFAULT_FETCH_SIZE;
     // Cache of requested rows
-    private Map<Long, Row> cache = new LRUMap<>(DEFAULT_CACHE_SIZE);
+    protected Map<Long, Row> cache = new LRUMap<>(DEFAULT_CACHE_SIZE);
     // Cache of last queried batch
-    private long currentBatchId = -1;
-    private List<Row> currentBatch = new ArrayList<>();
+    protected long currentBatchId = -1;
+    protected List<Row> currentBatch = new ArrayList<>();
     private int fetchDirection = FETCH_UNKNOWN;
     // When close is called, in how many ms the result set is really closed
     private int closeDelay = 0;
@@ -1868,9 +1868,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         }
     }
 
-    private static class Row {
-        final Object[] row;
-        final Long pk;
+    protected static class Row {
+        public final Object[] row;
+        public final Long pk;
 
         public Row(Object[] row, Long pk) {
             this.row = row;
