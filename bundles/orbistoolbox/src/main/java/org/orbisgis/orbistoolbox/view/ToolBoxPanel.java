@@ -46,6 +46,7 @@ public class ToolBoxPanel extends JPanel {
     private DefaultMutableTreeNode root;
     private FileTreeModel model;
     private ProcessInfoPanel processInfoPanel;
+    private JPanel panelProcess;
 
     public ToolBoxPanel(ToolBox toolBox){
         super(new BorderLayout());
@@ -60,7 +61,8 @@ public class ToolBoxPanel extends JPanel {
 
         JScrollPane treeScrollPane = new JScrollPane(tree);
         processInfoPanel = new ProcessInfoPanel();
-        JScrollPane infoScrollPane = new JScrollPane(processInfoPanel);
+        panelProcess = new JPanel(new BorderLayout());
+        JScrollPane infoScrollPane = new JScrollPane(panelProcess);
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, infoScrollPane);
         splitPane.setResizeWeight(0.5);
         this.add(splitPane, BorderLayout.CENTER);
@@ -75,12 +77,10 @@ public class ToolBoxPanel extends JPanel {
         }
     }
 
-    public void setProcessInfo(String title, String abstrac, List<String> inputs, List<String> outputs){
-        processInfoPanel.setTitle(title);
-        processInfoPanel.setAbstrac(abstrac);
-        processInfoPanel.setInputList(inputs);
-        processInfoPanel.setOutputList(outputs);
-        processInfoPanel.updateComponent();
+    public void setProcessUI(JComponent component){
+        panelProcess.removeAll();
+        panelProcess.add(component, BorderLayout.CENTER);
+        panelProcess.revalidate();
     }
 
     public void addSource(){

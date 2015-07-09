@@ -87,9 +87,9 @@ public class OutputTest {
     public final void containingNullOutputConstructorTest() throws URISyntaxException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
-        Output output = new Output("test", new URI("test"), new RawData(f));
+        Output simpleOutput = new Output("test", new URI("test"), new RawData(f));
         List<Output> nullList = new ArrayList<>();
-        nullList.add(output);
+        nullList.add(simpleOutput);
         nullList.add(null);
         new Output("test", new URI("test"), nullList);
     }
@@ -101,16 +101,16 @@ public class OutputTest {
     public final void setOutputTest() throws URISyntaxException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
-        Output output1 = new Output("test", new URI("test"), new RawData(f));
-        Output output2 = new Output("test", new URI("test"), new RawData(f));
+        Output simpleOutput1 = new Output("test", new URI("test"), new RawData(f));
+        Output simpleOutput2 = new Output("test", new URI("test"), new RawData(f));
 
         List<Output> list = new ArrayList<>();
-        list.add(output2);
+        list.add(simpleOutput2);
 
-        output1.setOutput(list);
+        simpleOutput1.setOutput(list);
 
-        Assert.assertEquals("The data description should be null.", null, output1.getDataDescription());
-        Assert.assertEquals("The output list is not the same as the one given.", list, output1.getOutput());
+        Assert.assertEquals("The data description should be null.", null, simpleOutput1.getDataDescription());
+        Assert.assertEquals("The output list is not the same as the one given.", list, simpleOutput1.getOutput());
     }
 
     /**
@@ -120,12 +120,12 @@ public class OutputTest {
     public final void setDataDescriptionTest() throws URISyntaxException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
-        Output output = new Output("test", new URI("test"), new RawData(f));
+        Output simpleOutput = new Output("test", new URI("test"), new RawData(f));
 
         DataDescription dataDescription = new RawData(f);
-        output.setDataDescription(dataDescription);
+        simpleOutput.setDataDescription(dataDescription);
 
-        Assert.assertEquals("The data description should be null.", null, output.getOutput());
-        Assert.assertEquals("The output list is not the same as the one given.", dataDescription, output.getDataDescription());
+        Assert.assertEquals("The data description should be null.", null, simpleOutput.getOutput());
+        Assert.assertEquals("The output list is not the same as the one given.", dataDescription, simpleOutput.getDataDescription());
     }
 }

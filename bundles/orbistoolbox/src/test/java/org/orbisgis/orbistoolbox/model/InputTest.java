@@ -87,9 +87,9 @@ public class InputTest {
     public final void containingNullInputConstructorTest() throws URISyntaxException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
-        Input input = new Input("test", new URI("test"), new RawData(f));
+        Input simpleInput = new Input("test", new URI("test"), new RawData(f));
         List<Input> nullList = new ArrayList<>();
-        nullList.add(input);
+        nullList.add(simpleInput);
         nullList.add(null);
         new Input("test", new URI("test"), nullList);
     }
@@ -101,16 +101,16 @@ public class InputTest {
     public final void setInputTest() throws URISyntaxException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
-        Input input1 = new Input("test", new URI("test"), new RawData(f));
-        Input input2 = new Input("test", new URI("test"), new RawData(f));
+        Input simpleInput1 = new Input("test", new URI("test"), new RawData(f));
+        Input simpleInput2 = new Input("test", new URI("test"), new RawData(f));
 
         List<Input> list = new ArrayList<>();
-        list.add(input2);
+        list.add(simpleInput2);
 
-        input1.setInput(list);
+        simpleInput1.setInput(list);
 
-        Assert.assertEquals("The data description should be null.", null, input1.getDataDescription());
-        Assert.assertEquals("The input list is not the same as the one given.", list, input1.getInput());
+        Assert.assertEquals("The data description should be null.", null, simpleInput1.getDataDescription());
+        Assert.assertEquals("The input list is not the same as the one given.", list, simpleInput1.getInput());
     }
 
     /**
@@ -120,13 +120,13 @@ public class InputTest {
     public final void setDataDescriptionTest() throws URISyntaxException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
-        Input input = new Input("test", new URI("test"), new RawData(f));
+        Input simpleInput = new Input("test", new URI("test"), new RawData(f));
 
         DataDescription dataDescription = new RawData(f);
-        input.setDataDescription(dataDescription);
+        simpleInput.setDataDescription(dataDescription);
 
-        Assert.assertEquals("The data description should be null.", null, input.getInput());
-        Assert.assertEquals("The input list is not the same as the one given.", dataDescription, input.getDataDescription());
+        Assert.assertEquals("The data description should be null.", null, simpleInput.getInput());
+        Assert.assertEquals("The input list is not the same as the one given.", dataDescription, simpleInput.getDataDescription());
     }
 
     /**
@@ -136,20 +136,20 @@ public class InputTest {
     public final void setOccurrenceTest() throws URISyntaxException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
-        Input input = new Input("test", new URI("test"), new RawData(f));
+        Input simpleInput = new Input("test", new URI("test"), new RawData(f));
 
-        input.setMaxOccurs(5);
-        input.setMinOccurs(0);
+        simpleInput.setMaxOccurs(5);
+        simpleInput.setMinOccurs(0);
 
-        input.setMinOccurs(6);
-        Assert.assertFalse("minOccurs can not be higher than maxOccurs", input.getMaxOccurs() < input.getMinOccurs());
+        simpleInput.setMinOccurs(6);
+        Assert.assertFalse("minOccurs can not be higher than maxOccurs", simpleInput.getMaxOccurs() < simpleInput.getMinOccurs());
 
-        input.setMinOccurs(3);
-        input.setMaxOccurs(1);
-        Assert.assertFalse("minOccurs can not be higher than maxOccurs", input.getMaxOccurs() < input.getMinOccurs());
+        simpleInput.setMinOccurs(3);
+        simpleInput.setMaxOccurs(1);
+        Assert.assertFalse("minOccurs can not be higher than maxOccurs", simpleInput.getMaxOccurs() < simpleInput.getMinOccurs());
 
-        input.setMinOccurs(-2);
-        Assert.assertFalse("minOccurs can not be negative", input.getMinOccurs() < 0);
+        simpleInput.setMinOccurs(-2);
+        Assert.assertFalse("minOccurs can not be negative", simpleInput.getMinOccurs() < 0);
 
     }
 }

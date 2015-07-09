@@ -21,6 +21,7 @@ package org.orbisgis.orbistoolbox.controller;
 
 import groovy.lang.GroovyObject;
 import org.orbisgis.orbistoolbox.controller.parser.ParserController;
+import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ProcessIdentifier;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
@@ -70,36 +71,39 @@ public class ProcessManager {
         return null;
     }
 
-    public void setProcessData(Map<URI, Object> inputMap, URI process){
-        Class clazz = null;
-        for(ProcessIdentifier pi : processIdList){
-            if(pi.getProcess().getIdentifier().equals(process)){
-                clazz = pi.getClazz();
+    public void executeProcess(Process process, Map<URI, Object> dataMap){
+        GroovyObject groovyObject = createProcess(process, dataMap);
+        groovyObject.invokeMethod("processing", null);
+    }
+
+    private GroovyObject createProcess(Process process, Map<URI, Object> dataMap){
+        ProcessIdentifier pi = null;
+        for(ProcessIdentifier proId : processIdList){
+            if(proId.getProcess().getIdentifier().equals(process.getIdentifier())){
+                pi = proId;
             }
+        }
+        if(pi == null){
+            return null;
         }
         GroovyObject groovyObject;
         try {
-            groovyObject = (GroovyObject)clazz.newInstance();
+            groovyObject = (GroovyObject) pi.getClazz().newInstance();
         } catch (InstantiationException|IllegalAccessException e) {
             e.printStackTrace();
-            return;
+            return null;
         }
         try {
-            for(URI uri : inputMap.keySet()) {
-                Field f = getField(clazz, uri);
+            for(Input i : process.getInput()) {
+                Field f = getField(pi.getClazz(), i.getIdentifier());
                 f.setAccessible(true);
-                f.set(groovyObject, inputMap.get(uri));
+                f.set(groovyObject, dataMap.get(i.getIdentifier()));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-            return;
+            return null;
         }
-        processGroovyObjectMap.put(process, groovyObject);
-    }
-
-    public void executeProcess(URI process){
-        GroovyObject groovyObject = processGroovyObjectMap.get(process);
-        groovyObject.invokeMethod("processing", null);
+        return groovyObject;
     }
 
     public Process getProcess(URI uri){

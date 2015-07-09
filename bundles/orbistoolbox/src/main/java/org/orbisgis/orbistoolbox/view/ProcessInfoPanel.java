@@ -22,7 +22,6 @@ package org.orbisgis.orbistoolbox.view;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 

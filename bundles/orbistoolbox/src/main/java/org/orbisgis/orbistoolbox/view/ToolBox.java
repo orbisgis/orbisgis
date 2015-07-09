@@ -19,10 +19,7 @@
 
 package org.orbisgis.orbistoolbox.view;
 
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.GroovyShell;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
-import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
@@ -36,9 +33,9 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Sylvain PALOMINOS
@@ -48,6 +45,7 @@ import java.util.List;
 public class ToolBox implements DockingPanel {
 
     private static final String ADD_SOURCE = "ADD_SOURCE";
+    private static final String RUN_SCRIPT = "RUN_SCRIPT";
 
     private DockingPanelParameters parameters;
     private ActionCommands dockingActions;
@@ -55,10 +53,15 @@ public class ToolBox implements DockingPanel {
 
     private ToolBoxPanel toolBoxPanel;
 
+    private ProcessUIBuilder processUIBuilder;
+    private Process selectedProcess;
+    private Map<URI, Object> dataMap;
+
     @Activate
     public void init(){
         toolBoxPanel = new ToolBoxPanel(this);
         processManager = new ProcessManager();
+        processUIBuilder = new ProcessUIBuilder();
 
         dockingActions = new ActionCommands();
 
@@ -78,9 +81,23 @@ public class ToolBox implements DockingPanel {
                         null
                 )
         );
+        dockingActions.addAction(
+                new DefaultAction(
+                        RUN_SCRIPT,
+                        "Run a script",
+                        "Run a script",
+                        ToolBoxIcon.getIcon("run"),
+                        EventHandler.create(ActionListener.class, this, "runScript"),
+                        null
+                )
+        );
 
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
+    }
+
+    public void runScript(){
+        processManager.executeProcess(selectedProcess, dataMap);
     }
 
     @Override
@@ -94,35 +111,8 @@ public class ToolBox implements DockingPanel {
     }
 
     public void selectProcess(File f){
-        Process p = processManager.getProcess(f);
-        List<String> inputList = new ArrayList<>();
-        List<String> outputList = new ArrayList<>();
-        for(Input i : p.getInput()){
-            String type = "";
-            if(i.getDataDescription() instanceof LiteralData){
-                for(LiteralDataDomain ldd : ((LiteralData) i.getDataDescription()).getLiteralDomainType()){
-                    type += ldd.getDataType().name().toLowerCase() + " ";
-                }
-                type += ": ";
-            }
-            else{
-                type = i.getDataDescription().getClass().getSimpleName() + " : ";
-            }
-            inputList.add(type + i.getTitle());
-        }
-        for(Output o : p.getOutput()){
-            String type = "";
-            if(o.getDataDescription() instanceof LiteralData){
-                for(LiteralDataDomain ldd : ((LiteralData) o.getDataDescription()).getLiteralDomainType()){
-                    type += ldd.getDataType() + " ";
-                }
-                type += ": ";
-            }
-            else{
-                type = o.getDataDescription().getClass().getSimpleName() + " : ";
-            }
-            outputList.add(type + o.getTitle());
-        }
-        toolBoxPanel.setProcessInfo(p.getTitle(), p.getAbstrac(), inputList, outputList);
+        dataMap = new HashMap<>();
+        selectedProcess = processManager.getProcess(f);
+        toolBoxPanel.setProcessUI(processUIBuilder.buildUI(selectedProcess, dataMap));
     }
 }
