@@ -31,7 +31,9 @@ package org.orbisgis.editorjdbc;
 import java.sql.*;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.MetaData;
@@ -56,6 +58,7 @@ public class AskValidRow extends MultiInputPanel {
     private TableLocation location;
     private List<Integer> types;
     private List<String> fieldsNameList;
+    private List<Boolean> generated;
 
     public AskValidRow(String title, DataSource ds,String tableReference) throws SQLException {
 		super(title);
@@ -63,11 +66,31 @@ public class AskValidRow extends MultiInputPanel {
         location = TableLocation.parse(tableReference);
         types = new ArrayList<>(10);
         fieldsNameList = new ArrayList<>(10);
+        generated = new ArrayList<>();
+        List<String> defaultValues = new ArrayList<>();
         try(Connection connection = ds.getConnection();
             ResultSet rs = connection.getMetaData().getColumns(location.getCatalog(), location.getSchema(), location.getTable(), null)) {
+            Set<String> availableAttributes = new HashSet<>();
+            ResultSetMetaData rsMeta = rs.getMetaData();
+            for(int i = 1; i <= rsMeta.getColumnCount(); i++) {
+                availableAttributes.add(rsMeta.getColumnName(i).toUpperCase());
+            }
             while(rs.next()) {
                 types.add(rs.getInt("DATA_TYPE"));
-                fieldsNameList.add(rs.getString("TABLE_NAME"));
+                fieldsNameList.add(rs.getString("COLUMN_NAME"));
+                if(availableAttributes.contains("COLUMN_DEF")) {
+                    defaultValues.add(rs.getString("COLUMN_DEF"));
+                } else {
+                    defaultValues.add("");
+                }
+                if(availableAttributes.contains("IS_GENERATEDCOLUMN")) {
+                    generated.add(rs.getBoolean("IS_GENERATEDCOLUMN"));
+                } else if(availableAttributes.contains("IS_AUTOINCREMENT")) {
+                    generated.add(rs.getBoolean("IS_AUTOINCREMENT"));
+                } else {
+                    generated.add(false);
+                }
+
                 this.fieldCount++;
             }
         }
@@ -78,12 +101,20 @@ public class AskValidRow extends MultiInputPanel {
             InputType input;
             int type = types.get(i);
             //Field
+            String defaultValue = defaultValues.get(i);
             switch (type) {
                 case Types.BOOLEAN:
-                    input = new CheckBoxChoice(false);
+                    input = new CheckBoxChoice(defaultValue != null && !defaultValue.isEmpty() && Boolean.getBoolean(defaultValues.get(i)));
                     break;
                 default:
                     input =  new TextBoxType();
+                    if(defaultValue != null && !defaultValue.isEmpty()) {
+                        input.setValue(defaultValue);
+                    }
+            }
+            // Generated field cannot be set
+            if(generated.get(i)) {
+                input.getComponent().setEnabled(false);
             }
             // Constraint
             switch (type) {
@@ -141,7 +172,7 @@ public class AskValidRow extends MultiInputPanel {
                 connection.rollback();
             }
             // Ok
-            return "";
+            return null;
         } catch (SQLException ex) {
             return ex.getLocalizedMessage();
         }

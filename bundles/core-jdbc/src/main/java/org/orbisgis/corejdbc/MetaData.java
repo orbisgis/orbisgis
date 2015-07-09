@@ -212,6 +212,9 @@ public class MetaData {
      * @throws NumberFormatException
      */
     public static Object castToSQLType(String userInput, int sqlType) throws NumberFormatException {
+        if(userInput == null || userInput.isEmpty()) {
+            return null;
+        }
         switch(sqlType) {
             case Types.CHAR:
             case Types.NCHAR:

@@ -29,6 +29,9 @@
 
 package org.orbisgis.tablegui.impl;
 
+import org.orbisgis.corejdbc.ReversibleRowSet;
+import org.orbisgis.editorjdbc.AskValidRow;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
@@ -38,10 +41,12 @@ import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Add a row in the DataSource.
@@ -75,7 +80,25 @@ public class ActionAddRow extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if(editable.isEditing()) {
-
+            DataSource source = editable.getDataManager().getDataSource();
+            try {
+                AskValidRow rowInput = new AskValidRow(I18N.tr("New row"), source, editable.getTableReference());
+                if(UIFactory.showDialog(rowInput)) {
+                    Object[] newRow = rowInput.getRow();
+                    ReversibleRowSet rowSet = editable.getRowSet();
+                    Lock lock = rowSet.getReadLock();
+                    if(lock.tryLock()) {
+                        rowSet.moveToInsertRow();
+                        for(int column = 0; column < newRow.length; column++) {
+                            rowSet.updateObject(column + 1, newRow[column]);
+                        }
+                        rowSet.insertRow();
+                        rowSet.moveToCurrentRow();
+                    }
+                }
+            } catch (Exception ex) {
+                logger.error(ex.getLocalizedMessage(),ex);
+            }
         }
     }
 }
