@@ -26,22 +26,27 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.map.tools;
+package org.orbisgis.mapeditor.map.tools;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
-import java.util.ArrayList;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Observable;
+import javax.sql.DataSource;
 import javax.swing.ImageIcon;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.*;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
+
+import org.h2gis.utilities.GeometryTypeCodes;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.tool.*;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
+import org.orbisgis.mapeditor.map.tool.Handler;
+import org.orbisgis.mapeditor.map.tool.ToolManager;
+import org.orbisgis.mapeditor.map.tool.TransitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class permits to complete a polygon based on the geometry difference.
@@ -49,19 +54,17 @@ import org.orbisgis.view.map.tool.*;
  */
 public class AutoCompletePolygonTool extends AbstractPolygonTool {
 
-        
+        private static final Logger LOGGER = LoggerFactory.getLogger(AutoCompletePolygonTool.class);
 
         @Override
         protected void polygonDone(Polygon pol,
                 MapContext mc, ToolManager tm) throws TransitionException {
-                DataSource sds = mc.getActiveLayer().getDataSource();
                 try {
-                        ArrayList<Handler> handlers = tm.getCurrentHandlers();
+                        List<Handler> handlers = tm.getCurrentHandlers();
                         Geometry geom = pol;
                         for (Handler handler : handlers) {
                                 geom = execute(handler, geom, sds);
                         }
-                        Value[] row = new Value[sds.getMetadata().getFieldCount()];
                         if (ToolUtilities.geometryTypeIs(mc, TypeFactory.createType(Type.POLYGON))) {
                                 for (int i = 0; i < geom.getNumGeometries(); i++) {
                                         row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(geom.getGeometryN(i));
@@ -108,7 +111,7 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
          * @return geometry
          * @throws DriverException
          */
-        private Geometry computeGeometryDifference(Geometry geometryA, Geometry geometryB) throws DriverException {
+        private Geometry computeGeometryDifference(Geometry geometryA, Geometry geometryB) throws SQLException {
                 if (geometryA.intersects(geometryB)) {
                         Geometry newGeomDiff = geometryB.difference(geometryA);
                         if (newGeomDiff.isValid()) {
@@ -121,7 +124,7 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
 
         }
 
-        private Geometry execute(Handler handler, Geometry drawingGeom, DataSource sds) throws DriverException {
+        private Geometry execute(Handler handler, Geometry drawingGeom, DataSource sds) throws SQLException {
                 System.out.println(drawingGeom.toText());
                 Geometry result = drawingGeom;
 
@@ -146,20 +149,14 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
 
         @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
-                return ToolUtilities.geometryTypeIs(
-                        vc,
-                        TypeFactory.createType(Type.POLYGON),
-                        TypeFactory.createType(Type.MULTIPOLYGON),
-                        TypeFactory.createType(Type.GEOMETRY,
-                        ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY,
-                        GeometryDimensionConstraint.DIMENSION_SURFACE)),
-                        TypeFactory.createType(Type.GEOMETRYCOLLECTION,
-                        ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY,
-                        GeometryDimensionConstraint.DIMENSION_SURFACE)))
-                        && ToolUtilities.isActiveLayerEditable(vc)
-                        && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1);
-
-
+            try(Connection connection = vc.getDataManager().getDataSource().getConnection()) {
+                return ToolUtilities.geometryTypeIs(connection,vc, GeometryTypeCodes.POLYGON,
+                        GeometryTypeCodes.MULTIPOLYGON, GeometryTypeCodes.GEOMETRY, GeometryTypeCodes.GEOMCOLLECTION)
+                     && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1);
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+                return false;
+            }
         }
 
         @Override
@@ -189,7 +186,7 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("edition/autocompletepolygon");
+            return MapEditorIcons.getIcon("edition/autocompletepolygon");
         }
 
         @Override
