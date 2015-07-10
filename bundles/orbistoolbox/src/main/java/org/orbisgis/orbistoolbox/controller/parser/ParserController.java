@@ -20,6 +20,7 @@
 package org.orbisgis.orbistoolbox.controller.parser;
 
 import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Process;
@@ -64,8 +65,7 @@ public class ParserController {
         File process = new File(processPath);
         try {
             clazz = groovyClassLoader.parseClass(process);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException|GroovyRuntimeException e) {
             return null;
         }
 
@@ -112,7 +112,6 @@ public class ParserController {
                     process.getName());
             return new AbstractMap.SimpleEntry<>(p, clazz);
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
             return null;
         }
     }

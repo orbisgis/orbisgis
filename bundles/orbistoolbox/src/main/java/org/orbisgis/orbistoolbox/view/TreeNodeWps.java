@@ -33,10 +33,16 @@ import java.io.File;
 public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCustomIcon, TreeNodePath {
 
     private File file;
+    private boolean isValid = true;
 
     @Override
     public ImageIcon getLeafIcon() {
-        return ToolBoxIcon.getIcon("script");
+        if(isValid) {
+            return ToolBoxIcon.getIcon("script");
+        }
+        else {
+            return ToolBoxIcon.getIcon("script_invalid");
+        }
     }
 
     @Override
@@ -57,5 +63,9 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
     public void setFilePath(File f){
         file = f;
         this.setUserObject(f.getName().replace(".groovy", ""));
+    }
+
+    public void setValid(boolean isValid) {
+        this.isValid = isValid;
     }
 }

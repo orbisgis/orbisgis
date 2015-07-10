@@ -42,25 +42,24 @@ import java.util.List;
 public class ToolBoxPanel extends JPanel {
 
     private ToolBox toolBox;
-    private FileTree tree;
-    private DefaultMutableTreeNode root;
+    private TreeNodeWps root;
     private FileTreeModel model;
-    private ProcessInfoPanel processInfoPanel;
     private JPanel panelProcess;
+    private FileTree tree;
 
     public ToolBoxPanel(ToolBox toolBox){
         super(new BorderLayout());
 
         this.toolBox = toolBox;
 
-        root = new DefaultMutableTreeNode();
+        root = new TreeNodeWps();
         root.setUserObject("Local script");
         model = new FileTreeModel(root);
         tree = new FileTree(model);
         tree.setCellRenderer(new CustomTreeCellRenderer(tree));
 
         JScrollPane treeScrollPane = new JScrollPane(tree);
-        processInfoPanel = new ProcessInfoPanel();
+        ProcessInfoPanel processInfoPanel = new ProcessInfoPanel();
         panelProcess = new JPanel(new BorderLayout());
         JScrollPane infoScrollPane = new JScrollPane(panelProcess);
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, infoScrollPane);
@@ -71,9 +70,12 @@ public class ToolBoxPanel extends JPanel {
     }
 
     public void onNodeSelected(TreeSelectionEvent event){
-        if(((FileTree)event.getSource()).getLastSelectedPathComponent() instanceof TreeNodeWps){
-            TreeNodeWps node = (TreeNodeWps) ((FileTree)event.getSource()).getLastSelectedPathComponent();
-            toolBox.selectProcess(node.getFilePath());
+        TreeNodeWps selectedNode = (TreeNodeWps) ((FileTree)event.getSource()).getLastSelectedPathComponent();
+        if(selectedNode != null) {
+            if (selectedNode.isLeaf()) {
+                boolean isValidProcess = toolBox.selectProcess(selectedNode.getFilePath());
+                selectedNode.setValid(isValidProcess);
+            }
         }
     }
 
@@ -94,8 +96,12 @@ public class ToolBoxPanel extends JPanel {
             file = openFolderPanel.getSelectedFile();
         }
 
+        addSource(file);
+    }
+
+    private TreeNodeWps addSource(File file){
         if(file == null) {
-            return;
+            return null;
         }
 
         boolean exists = false;
@@ -104,9 +110,10 @@ public class ToolBoxPanel extends JPanel {
                 exists = true;
             }
         }
+        TreeNodeWps source = new TreeNodeWps();
         if(!exists){
-            TreeNodeWps source = new TreeNodeWps();
             source.setUserObject(file.getName());
+            source.setFilePath(file);
             root.add(source);
             for(File f : getAllWpsScript(file)){
                 TreeNodeWps script = new TreeNodeWps();
@@ -116,7 +123,13 @@ public class ToolBoxPanel extends JPanel {
             }
         }
         model.reload();
+        return source;
+    }
 
+    public void refreshSource(){
+        TreeNodeWps node = ((TreeNodeWps)tree.getLastSelectedPathComponent());
+        root.remove(node);
+        addSource(node.getFilePath());
     }
 
     private List<File> getAllWpsScript(File file) {

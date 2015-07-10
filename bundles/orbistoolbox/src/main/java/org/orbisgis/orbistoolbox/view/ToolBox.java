@@ -46,9 +46,9 @@ public class ToolBox implements DockingPanel {
 
     private static final String ADD_SOURCE = "ADD_SOURCE";
     private static final String RUN_SCRIPT = "RUN_SCRIPT";
+    private static final String REFRESH_SOURCE = "REFRESH_SOURCE";
 
     private DockingPanelParameters parameters;
-    private ActionCommands dockingActions;
     private ProcessManager processManager;
 
     private ToolBoxPanel toolBoxPanel;
@@ -63,7 +63,7 @@ public class ToolBox implements DockingPanel {
         processManager = new ProcessManager();
         processUIBuilder = new ProcessUIBuilder();
 
-        dockingActions = new ActionCommands();
+        ActionCommands dockingActions = new ActionCommands();
 
         parameters = new DockingPanelParameters();
         parameters.setName("orbistoolbox");
@@ -91,6 +91,16 @@ public class ToolBox implements DockingPanel {
                         null
                 )
         );
+        dockingActions.addAction(
+                new DefaultAction(
+                        REFRESH_SOURCE,
+                        "Refresh a source",
+                        "Refresh a source",
+                        ToolBoxIcon.getIcon("refresh"),
+                        EventHandler.create(ActionListener.class, toolBoxPanel, "refreshSource"),
+                        null
+                )
+        );
 
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
@@ -110,9 +120,13 @@ public class ToolBox implements DockingPanel {
         return toolBoxPanel;
     }
 
-    public void selectProcess(File f){
+    public boolean selectProcess(File f){
         dataMap = new HashMap<>();
         selectedProcess = processManager.getProcess(f);
+        if(selectedProcess == null){
+            return false;
+        }
         toolBoxPanel.setProcessUI(processUIBuilder.buildUI(selectedProcess, dataMap));
+        return true;
     }
 }

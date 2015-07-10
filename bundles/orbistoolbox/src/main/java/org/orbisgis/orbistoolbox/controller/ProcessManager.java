@@ -63,10 +63,16 @@ public class ProcessManager {
     }
 
     public Process addScript(File f){
-        if(f.getName().endsWith(".groovy")){
+        if (f.getName().endsWith(".groovy")) {
             AbstractMap.SimpleEntry entry = parserController.parseProcess(f.getAbsolutePath());
-            processIdList.add(new ProcessIdentifier((Class) entry.getValue(), (Process) entry.getKey(), f.getAbsolutePath()));
-            return (Process) entry.getKey();
+            if(entry != null && entry.getKey() != null && entry.getValue() != null){
+                processIdList.add(new ProcessIdentifier(
+                        (Class) entry.getValue(),
+                        (Process) entry.getKey(),
+                        f.getAbsolutePath()
+                ));
+                return (Process) entry.getKey();
+            }
         }
         return null;
     }
