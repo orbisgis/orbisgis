@@ -19,18 +19,18 @@
 
 package org.orbisgis.orbistoolbox.view;
 
+import groovy.lang.GroovyObject;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.sif.SIFDialog;
-import org.orbisgis.sif.SIFWizard;
-import org.orbisgis.sif.SimplePanel;
+import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.orbisgis.sif.multiInputPanel.InputType;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -39,6 +39,7 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -119,8 +120,16 @@ public class ToolBox implements DockingPanel {
             ProcessInputConfiguration pic = new ProcessInputConfiguration();
             pic.buildUI(selectedProcess, processUIBuilder);
             if (UIFactory.showDialog(pic, true, true)) {
-                processManager.executeProcess(selectedProcess, pic.getData());
+                GroovyObject groovyObject = processManager.executeProcess(selectedProcess, pic.getData());
+
+                MultiInputPanel multiInputPanel = new MultiInputPanel("Results");
+                for(Field f : groovyObject.getClass().getDeclaredFields()) {
+                    if(f.getAnnotation(OutputAttribute.class) != null) {
+                        System.out.println(groovyObject.getProperty(f.getName()));
+                    }
+                }
             }
+
         }
     }
 
@@ -164,7 +173,7 @@ public class ToolBox implements DockingPanel {
         String type = "";
         if(o.getDataDescription() instanceof LiteralData){
             for(LiteralDataDomain ldd : ((LiteralData) o.getDataDescription()).getLiteralDomainType()){
-                    type += ldd.getDataType() + " ";
+                    type += ldd.getDataType().name().toLowerCase() + " ";
                 }
             type += ": ";
         }

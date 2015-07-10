@@ -45,9 +45,11 @@ public class ProcessUIBuilder {
     public JComponent buildUI(Process p, Map<URI, Object> dataMap){
         JPanel panel = new JPanel(new MigLayout());
 
+        panel.add(new JLabel("Title :"), "wrap");
         JLabel title = new JLabel(p.getTitle());
         panel.add(title, "wrap");
 
+        panel.add(new JLabel("Abstract :"), "wrap");
         JLabel abstrac = new JLabel(p.getAbstrac());
         panel.add(abstrac, "wrap");
 
@@ -66,7 +68,7 @@ public class ProcessUIBuilder {
             }
         }
 
-        JLabel outputs = new JLabel("Outputs : ");
+        /*JLabel outputs = new JLabel("Outputs : ");
         panel.add(outputs, "wrap");
 
         for(Output o : p.getOutput()){
@@ -74,7 +76,7 @@ public class ProcessUIBuilder {
             panel.add(inputTitle, "wrap");
             JLabel inputAbstrac = new JLabel(o.getAbstrac());
             panel.add(inputAbstrac, "wrap");
-        }
+        }*/
 
         return panel;
     }

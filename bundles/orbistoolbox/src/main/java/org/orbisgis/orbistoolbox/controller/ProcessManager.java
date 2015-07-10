@@ -77,9 +77,10 @@ public class ProcessManager {
         return null;
     }
 
-    public void executeProcess(Process process, Map<URI, Object> dataMap){
+    public GroovyObject executeProcess(Process process, Map<URI, Object> dataMap){
         GroovyObject groovyObject = createProcess(process, dataMap);
         groovyObject.invokeMethod("processing", null);
+        return groovyObject;
     }
 
     private GroovyObject createProcess(Process process, Map<URI, Object> dataMap){
