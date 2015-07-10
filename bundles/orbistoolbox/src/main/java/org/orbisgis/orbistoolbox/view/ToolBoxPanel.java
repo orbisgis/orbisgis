@@ -44,8 +44,8 @@ public class ToolBoxPanel extends JPanel {
     private ToolBox toolBox;
     private TreeNodeWps root;
     private FileTreeModel model;
-    private JPanel panelProcess;
     private FileTree tree;
+    private ProcessInfoPanel processInfoPanel;
 
     public ToolBoxPanel(ToolBox toolBox){
         super(new BorderLayout());
@@ -54,14 +54,16 @@ public class ToolBoxPanel extends JPanel {
 
         root = new TreeNodeWps();
         root.setUserObject("Local script");
+        root.setIsRoot(true);
+
         model = new FileTreeModel(root);
+
         tree = new FileTree(model);
         tree.setCellRenderer(new CustomTreeCellRenderer(tree));
 
         JScrollPane treeScrollPane = new JScrollPane(tree);
-        ProcessInfoPanel processInfoPanel = new ProcessInfoPanel();
-        panelProcess = new JPanel(new BorderLayout());
-        JScrollPane infoScrollPane = new JScrollPane(panelProcess);
+        processInfoPanel = new ProcessInfoPanel();
+        JScrollPane infoScrollPane = new JScrollPane(processInfoPanel);
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScrollPane, infoScrollPane);
         splitPane.setResizeWeight(0.5);
         this.add(splitPane, BorderLayout.CENTER);
@@ -79,10 +81,15 @@ public class ToolBoxPanel extends JPanel {
         }
     }
 
-    public void setProcessUI(JComponent component){
-        panelProcess.removeAll();
-        panelProcess.add(component, BorderLayout.CENTER);
-        panelProcess.revalidate();
+    public void setProcessInfo(String title, String abstrac, List<String> inputList, List<String> outputList){
+        processInfoPanel.setTitle(title);
+        processInfoPanel.setAbstrac(abstrac);
+        processInfoPanel.setInputList(inputList);
+        processInfoPanel.setOutputList(outputList);
+        processInfoPanel.updateComponent();
+        this.revalidate();
+        processInfoPanel.revalidate();
+        processInfoPanel.repaint();
     }
 
     public void addSource(){
@@ -128,8 +135,10 @@ public class ToolBoxPanel extends JPanel {
 
     public void refreshSource(){
         TreeNodeWps node = ((TreeNodeWps)tree.getLastSelectedPathComponent());
-        root.remove(node);
-        addSource(node.getFilePath());
+        if(!node.isRoot() && !node.isLeaf()) {
+            root.remove(node);
+            addSource(node.getFilePath());
+        }
     }
 
     private List<File> getAllWpsScript(File file) {

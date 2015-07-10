@@ -20,12 +20,18 @@
 package org.orbisgis.orbistoolbox.view;
 
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
+import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
+import org.orbisgis.sif.SIFDialog;
+import org.orbisgis.sif.SIFWizard;
+import org.orbisgis.sif.SimplePanel;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
@@ -34,7 +40,9 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -107,7 +115,13 @@ public class ToolBox implements DockingPanel {
     }
 
     public void runScript(){
-        processManager.executeProcess(selectedProcess, dataMap);
+        if(selectedProcess != null) {
+            ProcessInputConfiguration pic = new ProcessInputConfiguration();
+            pic.buildUI(selectedProcess, processUIBuilder);
+            if (UIFactory.showDialog(pic, true, true)) {
+                processManager.executeProcess(selectedProcess, pic.getData());
+            }
+        }
     }
 
     @Override
@@ -121,12 +135,46 @@ public class ToolBox implements DockingPanel {
     }
 
     public boolean selectProcess(File f){
+        if(f == null){
+            selectedProcess = null;
+            return false;
+        }
         dataMap = new HashMap<>();
         selectedProcess = processManager.getProcess(f);
         if(selectedProcess == null){
             return false;
         }
-        toolBoxPanel.setProcessUI(processUIBuilder.buildUI(selectedProcess, dataMap));
+
+        List<String> inputList = new ArrayList<>();
+        List<String> outputList = new ArrayList<>();
+        for(Input i : selectedProcess.getInput()){
+        String type = "";
+        if(i.getDataDescription() instanceof LiteralData){
+            for(LiteralDataDomain ldd : ((LiteralData) i.getDataDescription()).getLiteralDomainType()){
+                    type += ldd.getDataType().name().toLowerCase() + " ";
+                }
+            type += ": ";
+            }
+            else{
+                    type = i.getDataDescription().getClass().getSimpleName() + " : ";
+                }
+            inputList.add(type + i.getTitle());
+        }
+        for(Output o : selectedProcess.getOutput()){
+        String type = "";
+        if(o.getDataDescription() instanceof LiteralData){
+            for(LiteralDataDomain ldd : ((LiteralData) o.getDataDescription()).getLiteralDomainType()){
+                    type += ldd.getDataType() + " ";
+                }
+            type += ": ";
+        }
+        else{
+                type = o.getDataDescription().getClass().getSimpleName() + " : ";
+            }
+        outputList.add(type + o.getTitle());
+        }
+
+        toolBoxPanel.setProcessInfo(selectedProcess.getTitle(), selectedProcess.getAbstrac(), inputList, outputList);
         return true;
     }
 }

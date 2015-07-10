@@ -184,7 +184,6 @@ public class LiteralDataUI implements DataUI{
     }
 
     public void onDocumentChanged(Document document){
-        System.out.println("doc");
 
         Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
         URI uri = (URI) document.getProperty("uri");

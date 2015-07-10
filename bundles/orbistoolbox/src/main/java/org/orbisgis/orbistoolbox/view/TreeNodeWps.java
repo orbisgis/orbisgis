@@ -34,10 +34,14 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
 
     private File file;
     private boolean isValid = true;
+    private boolean isRoot = false;
 
     @Override
     public ImageIcon getLeafIcon() {
-        if(isValid) {
+        if(isRoot){
+            return ToolBoxIcon.getIcon("source");
+        }
+        else if(isValid) {
             return ToolBoxIcon.getIcon("script");
         }
         else {
@@ -47,12 +51,20 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
 
     @Override
     public ImageIcon getClosedIcon() {
-        return ToolBoxIcon.getIcon("closed_folder");
+        if (isRoot) {
+            return ToolBoxIcon.getIcon("source");
+        } else {
+            return ToolBoxIcon.getIcon("closed_folder");
+        }
     }
 
     @Override
     public ImageIcon getOpenIcon() {
-        return ToolBoxIcon.getIcon("open_folder");
+        if (isRoot) {
+            return ToolBoxIcon.getIcon("source");
+        } else {
+            return ToolBoxIcon.getIcon("open_folder");
+        }
     }
 
     @Override
@@ -63,6 +75,10 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
     public void setFilePath(File f){
         file = f;
         this.setUserObject(f.getName().replace(".groovy", ""));
+    }
+
+    public void setIsRoot(boolean isRoot){
+        this.isRoot = isRoot;
     }
 
     public void setValid(boolean isValid) {
