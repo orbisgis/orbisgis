@@ -36,6 +36,7 @@ import org.orbisgis.corejdbc.StateEvent;
 import org.orbisgis.corejdbc.TableEditEvent;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -53,6 +54,7 @@ public class TableTrigger implements Trigger {
     private boolean update;
     private final Queue<TableEditEvent> editStack = new ConcurrentLinkedQueue<>();
     private final AtomicBoolean stateEventProcessing = new AtomicBoolean(false);
+    private int pkColumn = -1;
 
     public TableTrigger(DataManager dataManager) {
         this.dataManager = dataManager;
@@ -67,6 +69,9 @@ public class TableTrigger implements Trigger {
                 st.execute("DROP TRIGGER IF EXISTS "+triggerName);
             }
             throw new SQLException("This trigger does not exists");
+        } else {
+            // Fetch primary key column
+            pkColumn = JDBCUtilities.getIntegerPrimaryKey(conn, tableIdentifier);
         }
     }
 
@@ -74,7 +79,17 @@ public class TableTrigger implements Trigger {
     public void fire(Connection conn, Object[] oldRow, Object[] newRow) throws SQLException {
         // Do not fire the event in the H2 thread in order to not raise
         // org.h2.jdbc.JdbcSQLException: Timeout trying to lock table XXX
-        fireEvent(new TableEditEvent(tableIdentifier));
+        int type = TableModelEvent.DELETE;
+        if(oldRow == null && newRow != null) {
+            type = TableModelEvent.INSERT;
+        } else if(oldRow != null && newRow != null) {
+            type = TableModelEvent.UPDATE;
+        }
+        Long pk = null;
+        if(pkColumn != -1 && newRow != null && newRow.length > pkColumn - 1 && newRow[pkColumn - 1] instanceof Long) {
+            pk = (Long)newRow[pkColumn - 1];
+        }
+        fireEvent(new TableEditEvent(tableIdentifier, TableModelEvent.ALL_COLUMNS, pk, pk, type));
     }
 
     @Override
@@ -86,7 +101,7 @@ public class TableTrigger implements Trigger {
     public void remove() throws SQLException {
         // Do not fire the event in the H2 thread in order to not raise
         // org.h2.jdbc.JdbcSQLException: Timeout trying to lock table XXX
-        fireEvent(new TableEditEvent(tableIdentifier));
+        fireEvent(new TableEditEvent(tableIdentifier, TableModelEvent.ALL_COLUMNS, null, null, TableModelEvent.DELETE));
     }
 
     private void fireEvent(TableEditEvent evt) {
@@ -108,6 +123,11 @@ public class TableTrigger implements Trigger {
             this.dataManager = dataManager;
             this.editStack = editStack;
             this.stateEventProcessing = stateEventProcessing;
+        }
+
+        @Override
+        public String toString() {
+            return "TableEditEventProcess editStack="+editStack.size();
         }
 
         @Override

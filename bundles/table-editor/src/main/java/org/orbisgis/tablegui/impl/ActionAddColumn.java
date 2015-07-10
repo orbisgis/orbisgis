@@ -29,55 +29,59 @@
 
 package org.orbisgis.tablegui.impl;
 
-
+import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.sif.components.actions.ActionTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-
-import javax.swing.*;
+import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 
 /**
- * Lock/Unlock table edition action.
+ * Add a column in the DataSource.
  * @author Nicolas Fortin
  */
-public class ActionEdition extends AbstractAction {
+public class ActionAddColumn extends AbstractAction implements ActionDispose {
     private final TableEditableElement editable;
-    private final I18n i18N = I18nFactory.getI18n(ActionEdition.class);
+    private static final I18n I18N = I18nFactory.getI18n(ActionAddColumn.class);
+    private final Logger logger = LoggerFactory.getLogger(ActionAddColumn.class);
+    private final PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, this, "updateEnabledState");
 
     /**
      * Constructor
-     * @param editable Editable instance
+     * @param editable Table editable instance
      */
-    public ActionEdition(TableEditableElement editable) {
-        putValue(ActionTools.MENU_ID, TableEditorActions.A_EDITION);
-        putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_EDITION);
+    public ActionAddColumn(TableEditableElement editable) {
+        super(I18N.tr("Add a column"), TableEditorIcon.getIcon("add_field"));
+        putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
+        putValue(ActionTools.MENU_ID,TableEditorActions.A_ADD_FIELD);
         this.editable = editable;
-        updateLabelAndIcon();
-        editable.addPropertyChangeListener(TableEditableElementImpl.PROP_EDITING,
-                EventHandler.create(PropertyChangeListener.class,this,"updateLabelAndIcon"));
+        updateEnabledState();
+        editable.addPropertyChangeListener(TableEditableElement.PROP_EDITING,
+                listener);
     }
 
     /**
-     * Called when the edition state of TableEditableElement change.
+     * Enable this action only if edition is enabled
      */
-    public final void updateLabelAndIcon() {
-        if(editable.isEditing()) {
-            putValue(NAME, i18N.tr("Stop editing"));
-            putValue(SMALL_ICON, TableEditorIcon.getIcon("edition/unlock"));
-        } else {
-            putValue(NAME, i18N.tr("Start editing"));
-            putValue(SMALL_ICON, TableEditorIcon.getIcon("edition/lock"));
-        }
+    public void updateEnabledState() {
+        setEnabled(editable.isEditing());
     }
+
+    @Override
+    public void dispose() {
+        editable.removePropertyChangeListener(listener);
+    }
+
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        editable.setEditing(!editable.isEditing());
+        if(editable.isEditing()) {
+
+        }
     }
 }

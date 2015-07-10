@@ -211,6 +211,11 @@ public class DataManagerImpl implements DataManager {
 
     @Override
     public void addTableEditListener(String table, TableEditListener listener) {
+        addTableEditListener(table, listener, true);
+    }
+
+    @Override
+    public void addTableEditListener(String table, TableEditListener listener, boolean addTrigger) {
         String parsedTable = TableLocation.parse(table, isH2).toString(isH2);
         List<TableEditListener> listeners = tableEditionListener.get(parsedTable);
         if(listeners == null) {
@@ -223,7 +228,7 @@ public class DataManagerImpl implements DataManager {
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
             // Add trigger
-            if(isLocalH2Table) {
+            if(isLocalH2Table && addTrigger) {
                     String triggerName = getH2TriggerName(table);
                     st.execute("CREATE FORCE TRIGGER IF NOT EXISTS "+triggerName+" AFTER INSERT, UPDATE, DELETE ON "+table+" CALL \""+H2TRIGGER+"\"");
             }
@@ -281,7 +286,7 @@ public class DataManagerImpl implements DataManager {
             }
             List<TableEditListener> listeners = tableEditionListener.get(table.toString(true));
             if(listeners != null) {
-                for(TableEditListener listener : listeners) {
+                for(TableEditListener listener : new ArrayList<>(listeners)) {
                     try {
                         listener.tableChange(e);
                     } catch (Exception ex) {
@@ -319,7 +324,7 @@ public class DataManagerImpl implements DataManager {
     public void fireDatabaseProgression(StateEvent event) {
         ArrayList<DatabaseProgressionListener> listenerList = progressionListenerMap.get(event.getStateIdentifier());
         if(listenerList != null) {
-            for(DatabaseProgressionListener listener : listenerList) {
+            for(DatabaseProgressionListener listener : new ArrayList<>(listenerList)) {
                 listener.progressionUpdate(event);
             }
         }

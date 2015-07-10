@@ -33,12 +33,18 @@ package org.orbisgis.corejdbc;
  */
 public class TableEditEvent extends java.util.EventObject {
     private TableUndoableEdit undoableEdit;
+    protected int column;
+    protected Long firstRowPK;
+    protected Long lastRowPK;
+    protected int type;
 
-    /**
-     * @param tableName Table identifier
-     */
-    public TableEditEvent(String tableName) {
+
+    public TableEditEvent(String tableName, int column, Long firstRowPK, Long lastRowPK, int type) {
         super(tableName);
+        this.column = column;
+        this.firstRowPK = firstRowPK;
+        this.lastRowPK = lastRowPK;
+        this.type = type;
     }
 
     /**
@@ -46,9 +52,14 @@ public class TableEditEvent extends java.util.EventObject {
      * @param tableName Table identifier
      * @param undoableEdit Edit undo-redo action
      */
-    public TableEditEvent(String tableName, TableUndoableEdit undoableEdit) {
+    public TableEditEvent(String tableName, TableUndoableEdit undoableEdit, int column, Long firstRowPK, Long lastRowPK, int
+            type) {
         super(tableName);
         this.undoableEdit = undoableEdit;
+        this.column = column;
+        this.firstRowPK = firstRowPK;
+        this.lastRowPK = lastRowPK;
+        this.type = type;
     }
 
     /**
@@ -63,5 +74,33 @@ public class TableEditEvent extends java.util.EventObject {
      */
     public TableUndoableEdit getUndoableEdit() {
         return undoableEdit;
+    }
+
+    /**
+     * @return See {@link javax.swing.event.TableModelEvent#getColumn()}
+     */
+    public int getColumn() {
+        return column;
+    }
+
+    /**
+     * @return The first updated row primary key. Null if not available.
+     */
+    public Long getFirstRowPK() {
+        return firstRowPK;
+    }
+
+    /**
+     * @return The last update row primary key. Null if not available.
+     */
+    public Long getLastRowPK() {
+        return lastRowPK;
+    }
+
+    /**
+     * @return See {@link javax.swing.event.TableModelEvent#getType()}
+     */
+    public int getType() {
+        return type;
     }
 }

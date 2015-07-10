@@ -68,4 +68,11 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
      * @return Row identifier set {@link #getRow()}
      */
     SortedSet<Integer> getRowNumberFromRowPk(SortedSet<Long> pkSet) throws SQLException;
+
+    /**
+     * Clear cache for theses rows
+     * @param rowsIndex Row numbers
+     * @throws SQLException
+     */
+    public void refreshRows(SortedSet<Integer> rowsIndex) throws SQLException;
 }

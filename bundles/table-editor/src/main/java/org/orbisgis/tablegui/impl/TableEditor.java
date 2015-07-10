@@ -30,6 +30,7 @@ package org.orbisgis.tablegui.impl;
 
 import java.awt.BorderLayout;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -44,6 +45,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.DataSource;
 import javax.swing.*;
@@ -58,6 +61,7 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.undo.UndoManager;
 
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
@@ -70,6 +74,7 @@ import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.commons.progress.NullProgressMonitor;
+import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.process.ZoomToSelectedFeatures;
@@ -109,7 +114,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         protected final static I18n I18N = I18nFactory.getI18n(TableEditor.class);
         private static final Logger LOGGER = LoggerFactory.getLogger("gui." + TableEditor.class);
         private static final int TABLE_SCROLL_PERC = 5;
-        
+        private final UndoManager undoManager = new UndoManager();
         private static final long serialVersionUID = 1L;
         private TableEditableElement tableEditableElement;
         private DockingPanelParameters dockingPanelParameters;
@@ -138,14 +143,16 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         /** Last fetched selected row in selection navigation */
         private int currentSelectionNavigation = 0;
         private EditorManager editorManager;
+        private ExecutorService executorService;
 
         /**
          * Constructor
          * @param element Source to read and edit
          */
-        public TableEditor(TableEditableElement element, DataManager dataManager, EditorManager editorManager) {
+        public TableEditor(TableEditableElement element, DataManager dataManager, EditorManager editorManager, ExecutorService executorService) {
                 super(new BorderLayout());
                 this.editorManager = editorManager;
+                this.executorService = executorService;
                 layerListener = new MCLayerListener(element);
                 this.dataManager = dataManager;
                 this.dataSource = dataManager.getDataSource();
@@ -170,12 +177,23 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         }
 
         public void onMenuRefresh() {
-            tableChange(new TableEditEvent(tableEditableElement.getTableReference()));
+            tableChange(new TableEditEvent(tableEditableElement.getTableReference(), TableModelEvent.ALL_COLUMNS, null, null, TableModelEvent.UPDATE));
         }
 
         @Override
         public void tableChange(TableEditEvent event) {
-            new RefreshTableJob(tableModel, tableEditableElement).execute();
+            if (event.getUndoableEdit() == null && !table.isEditing()) {
+                executorService.execute(new RefreshTableJob(tableModel, tableEditableElement, event, table));
+            } else {
+                if(event.getUndoableEdit() != null) {
+                    undoManager.addEdit(new EditorUndoableEdit(event.getUndoableEdit()));
+                }
+            }
+            for (Action action : getDockActions()) {
+                if (action instanceof ActionAbstractEdition) {
+                    ((ActionAbstractEdition) action).onSourceUpdate();
+                }
+            }
         }
 
         private List<Action> getDockActions() {
@@ -196,23 +214,16 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     EventHandler.create(ActionListener.class, this, "onNextSelection"),
                     KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.CTRL_DOWN_MASK))
                         .setLogicalGroup(TableEditorActions.LGROUP_READ));
-                /*
-                TODO Edition
-                if(tableEditableElement.getDataSource().isEditable()) {
-                        try {
-                                actions.add(new ActionAddColumn(tableEditableElement));
-                                actions.add(new ActionAddRow(tableEditableElement));
-                                actions.add(new ActionRemoveRow(tableEditableElement));
-                                actions.add(new ActionCancel(tableEditableElement));
-                                actions.add(new ActionUndo(tableEditableElement));
-                                actions.add(new ActionRedo(tableEditableElement));
-                                actions.add(new ActionSave(tableEditableElement));
-                                actions.add(new ActionEdition(tableEditableElement));
-                        } catch (UnsupportedOperationException ex) {
-                                LOGGER.error(ex.getLocalizedMessage(),ex);
-                        }
+
+                // Edition is only available if there is a primary key
+                if(tableEditableElement.isEditable()) {
+                        actions.add(new ActionAddColumn(tableEditableElement));
+                        actions.add(new ActionAddRow(tableEditableElement));
+                        actions.add(new ActionRemoveRow(tableEditableElement, this, executorService, undoManager.getLimit()));
+                        actions.add(new ActionUndo(tableEditableElement, undoManager));
+                        actions.add(new ActionRedo(tableEditableElement, undoManager));
+                        actions.add(new ActionEdition(tableEditableElement));
                 }
-                */
                 return actions;
         }
 
@@ -332,7 +343,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         public void onApplySelectionFilter() {
                 List<TableSelectionFilter> filters = filterManager.getFilters();
                 if(!filterRunning.getAndSet(true)) {
-                        new SearchJob(filters.get(0), table, tableEditableElement,filterRunning).execute();
+                        executorService.execute(new SearchJob(filters.get(0), table, tableEditableElement,
+                                filterRunning));
                 } else {
                         LOGGER.info(I18N.tr("Searching request is already launched. Please wait a moment, or cancel it."));
                 }
@@ -520,8 +532,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         LOGGER.error("MapContext lost between popup creation and click");
                         return;
                 }                
-                new ZoomToSelectedFeatures(dataManager, tableEditableElement.getTableReference()
-                        , tableEditableElement.getSelection(), mapContext).execute();
+                executorService.execute(new ZoomToSelectedFeatures(dataManager, tableEditableElement
+                        .getTableReference(), tableEditableElement.getSelection(), mapContext));
         }
         
         /**
@@ -555,9 +567,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     // If newName is not null, then the user clicked OK and entered
                     // a valid name.
                     if (newName != null) {
-                        new CreateSourceFromSelection(
-                                        dataSource,
-                                        tableEditableElement.getSelection(), tableEditableElement.getTableReference(), newName).execute();
+                        executorService.execute(new CreateSourceFromSelection(dataSource, tableEditableElement
+                                .getSelection(), tableEditableElement.getTableReference(), newName));
                     }
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
@@ -618,7 +629,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         EventHandler.create(ActionListener.class,this,
                         "onMenuOptimalWidth"));
                 pop.add(optimalWidth);
-                // Additionnal functions for specific columns
+                // Additional functions for specific columns
                 boolean isGeometryField = false;
                 try(Connection connection = dataSource.getConnection()) {
                     List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableEditableElement.getTableReference()));
@@ -749,14 +760,15 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 if (selectionModelRowId.isEmpty() && tableSorter.isFiltered()) {
                         selectionModelRowId.addAll(tableSorter.getViewToModelIndex());
                 }
-                new ComputeFieldStatistics(selectionModelRowId, dataSource, popupCellAdress.x, tableEditableElement.getTableReference()).execute();
+                executorService.execute(new ComputeFieldStatistics(selectionModelRowId, dataSource, popupCellAdress
+                        .x, tableEditableElement.getTableReference()));
         }
 
         /**
          * Compute the optimal width for this column
          */
         public void onMenuOptimalWidth() {
-                new OptimalWidthJob(table, popupCellAdress.x).execute();
+                executorService.execute(new OptimalWidthJob(table, popupCellAdress.x));
         }
 
         /**
@@ -790,7 +802,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         public void addNotify() {
                 super.addNotify();
                 if(!initialised.getAndSet(true)) {
-                        new OpenEditableElement(this, tableEditableElement).execute();
+                        executorService.execute(new OpenEditableElement(this, tableEditableElement));
                 }
         }
         
@@ -805,7 +817,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
          */
         private void readDataSource() {
                 tableModel = new DataSourceTableModel(tableEditableElement);
-                tableEditableElement.getDataManager().addTableEditListener(tableEditableElement.getTableReference(), this);
+                tableEditableElement.getDataManager().addTableEditListener(tableEditableElement.getTableReference(), this, false);
                 tableModel.addTableModelListener(new FieldResetListener(this));
                 table.setModel(tableModel);
                 updateTableColumnModel();
@@ -846,8 +858,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 tableScrollPane.getVerticalScrollBar().setBlockIncrement((int)(table.getHeight() / (TABLE_SCROLL_PERC / 100.)));
         }
         private void initPopupActions() {
-                // TODO Edition
-                // popupActions.addAction(new ActionRemoveColumn(this));
+                if(tableEditableElement.isEditable()) {
+                    popupActions.addAction(new ActionRemoveColumn(this, this));
+                }
         }
         /**
          * Frame visibility state change
@@ -855,7 +868,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
          */
         public void onChangeVisibility(boolean visible) {
                 if(!visible) {
-                        dataManager.removeTableEditListener(tableEditableElement.getTableReference() ,this);
+                        dataManager.removeTableEditListener(tableEditableElement.getTableReference(), this);
                         if(mapContext != null) {
                             mapContext.getLayerModel().removeLayerListenerRecursively(layerListener);
                         }
@@ -947,15 +960,15 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         if (!onUpdateEditableSelection.getAndSet(true)) {
                                 SwingUtilities.invokeLater(new Runnable() {
 
-                                        @Override
-                                        public void run() {
-                                                try {
-                                                        updateEditableSelection();
-                                                } finally {
-                                                        onUpdateEditableSelection.set(false);
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            updateEditableSelection();
+                                        } finally {
+                                            onUpdateEditableSelection.set(false);
 
-                                                }
                                         }
+                                    }
                                 });
                         }
                 }
@@ -1196,12 +1209,16 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
     private class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
         private DataSourceTableModel model;
+        private JTable tableComp;
         private TableEditableElement table;
         private List<TableModelEvent> evts = new ArrayList<>();
+        private TableEditEvent event;
 
-        private RefreshTableJob(DataSourceTableModel model, TableEditableElement table) {
+        private RefreshTableJob(DataSourceTableModel model, TableEditableElement table, TableEditEvent event, JTable tableComp) {
             this.model = model;
             this.table = table;
+            this.event = event;
+            this.tableComp = tableComp;
             setTaskName(I18N.tr("Refresh table content"));
         }
 
@@ -1210,57 +1227,91 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             model.setLastFetchRowCountTime(0);
             // Swing Thread
             // Send columns delete/insert/update events
-            for(TableModelEvent evt : evts) {
-                model.fireTableChanged(evt);
+            Rectangle rect = tableComp.getVisibleRect();
+            int firstVisibleRow = tableComp.rowAtPoint(rect.getLocation());
+            int lastVisibleRow = tableComp.rowAtPoint(new Point(rect.x, rect.y + rect.height - 1));
+            if(firstVisibleRow < lastVisibleRow && firstVisibleRow >= 0 && lastVisibleRow <= tableComp.getRowCount()) {
+                IntegerUnion rowsToClean = new IntegerUnion();
+                for(int viewRow = firstVisibleRow; viewRow <= lastVisibleRow; viewRow++) {
+                    rowsToClean.add(tableComp.convertRowIndexToModel(viewRow) + 1);
+                }
+                try {
+                    table.getRowSet().refreshRows(rowsToClean);
+                    // Update rendered rows
+                    Iterator<Integer> intervals = rowsToClean.getValueRanges().iterator();
+                    while(intervals.hasNext()) {
+                        int start = intervals.next();
+                        int end = intervals.next();
+                        model.fireTableRowsUpdated(start - 1, end - 1);
+                    }
+                } catch (SQLException | EditableElementException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
             }
-            // Refresh shown data
-            model.fireTableDataChanged();
+
+            if(evts.isEmpty()) {
+                // Refresh shown data
+                model.fireTableDataChanged();
+            } else {
+                for (TableModelEvent evt : evts) {
+                    model.fireTableChanged(evt);
+                }
+            }
         }
 
         @Override
         protected Boolean doInBackground() throws Exception {
-            List<String> columnTypes = new ArrayList<>();
-            List<String> columnNames = new ArrayList<>();
-            try {
+            if(event.getColumn() == TableModelEvent.ALL_COLUMNS || event.getFirstRowPK() == null || event.getLastRowPK() == null) {
+                List<String> columnTypes = new ArrayList<>();
+                List<String> columnNames = new ArrayList<>();
                 try {
-                    ResultSetMetaData meta = table.getRowSet().getMetaData();
-                    for(int col=1; col < meta.getColumnCount();col++) {
-                        columnNames.add(meta.getColumnName(col));
-                        columnTypes.add(meta.getColumnTypeName(col));
+                    try {
+                        ResultSetMetaData meta = table.getRowSet().getMetaData();
+                        for (int col = 1; col < meta.getColumnCount(); col++) {
+                            columnNames.add(meta.getColumnName(col));
+                            columnTypes.add(meta.getColumnTypeName(col));
+                        }
+                    } catch (SQLException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
                     }
-                } catch (SQLException ex) {
-                    LOGGER.error(ex.getLocalizedMessage(), ex);
-                }
-                table.close(this.getProgressMonitor());
-                table.open(this.getProgressMonitor());
-                try {
-                    ResultSetMetaData meta = table.getRowSet().getMetaData();
-                    for(int col=1; col < meta.getColumnCount();col++) {
-                        if(col <= columnNames.size()) {
-                            if(!columnNames.get(col - 1).equals(meta.getColumnName(col)) ||
-                                    !columnTypes.get(col - 1).equals(meta.getColumnTypeName(col))) {
-                                evts.add(new TableModelEvent(model,TableModelEvent.HEADER_ROW,
-                                        TableModelEvent.HEADER_ROW,col - 1,TableModelEvent.UPDATE));
+                    // The row count may have changed, reset the rowset
+                    table.getRowSet().execute();
+                    try {
+                        ResultSetMetaData meta = table.getRowSet().getMetaData();
+                        for (int col = 1; col < meta.getColumnCount(); col++) {
+                            if (col <= columnNames.size()) {
+                                if (!columnNames.get(col - 1).equals(meta.getColumnName(col)) || !columnTypes.get(col - 1).equals(meta.getColumnTypeName(col))) {
+                                    evts.add(new TableModelEvent(model, TableModelEvent.HEADER_ROW, TableModelEvent.HEADER_ROW, col - 1, TableModelEvent.UPDATE));
+                                }
+                                //columnTypes.add(meta.getColumnTypeName(col + offset));
+                            } else {
+                                //New column
+                                evts.add(new TableModelEvent(model, TableModelEvent.HEADER_ROW, TableModelEvent.HEADER_ROW, col - 1, TableModelEvent.INSERT));
                             }
-                            //columnTypes.add(meta.getColumnTypeName(col + offset));
-                        } else {
-                            //New column
-                            evts.add(new TableModelEvent(model,TableModelEvent.HEADER_ROW,
-                                    TableModelEvent.HEADER_ROW,col - 1,TableModelEvent.INSERT));
                         }
-                    }
-                    // Deleted columns
-                    if(meta.getColumnCount() < columnNames.size()) {
-                        for(int insertId = meta.getColumnCount();insertId <= columnNames.size(); insertId++) {
-                            new TableModelEvent(model,TableModelEvent.HEADER_ROW,
-                                    TableModelEvent.HEADER_ROW,meta.getColumnCount() - 1,TableModelEvent.DELETE);
+                        // Deleted columns
+                        if (meta.getColumnCount() < columnNames.size()) {
+                            for (int insertId = meta.getColumnCount(); insertId <= columnNames.size(); insertId++) {
+                                evts.add(new TableModelEvent(model, TableModelEvent.HEADER_ROW, TableModelEvent.HEADER_ROW, meta.getColumnCount() - 1, TableModelEvent.DELETE));
+                            }
                         }
+                    } catch (SQLException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
                     }
-                } catch (SQLException ex) {
+                } catch (EditableElementException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
-            } catch (EditableElementException ex) {
-                LOGGER.error(ex.getLocalizedMessage(), ex);
+            } else {
+                // Simple row event
+                IntegerUnion updatedRows = new IntegerUnion(table.getRowSet().getRowNumberFromRowPk(new LongUnion(event.getFirstRowPK(), event.getLastRowPK())));
+                Iterator<Integer> intervals = updatedRows.getValueRanges().iterator();
+                while (intervals.hasNext()) {
+                    int firstRow = intervals.next();
+                    int lastRow = intervals.next();
+                    evts.add(new TableModelEvent(model, firstRow - 1, lastRow - 1, event.getColumn(), event.getType() ));
+                }
+                // Refresh rowset cache
+                table.getRowSet().refreshRows(new TreeSet<>(updatedRows));
             }
             return true;
         }

@@ -26,58 +26,43 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-
 package org.orbisgis.tablegui.impl;
 
-
+import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.sif.components.actions.ActionTools;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
-
-import javax.swing.*;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 import java.awt.event.ActionEvent;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
 
 /**
  * Lock/Unlock table edition action.
  * @author Nicolas Fortin
  */
-public class ActionEdition extends AbstractAction {
-    private final TableEditableElement editable;
-    private final I18n i18N = I18nFactory.getI18n(ActionEdition.class);
+public class ActionUndo extends ActionAbstractEdition {
+    private UndoManager undoManager;
 
-    /**
-     * Constructor
-     * @param editable Editable instance
-     */
-    public ActionEdition(TableEditableElement editable) {
-        putValue(ActionTools.MENU_ID, TableEditorActions.A_EDITION);
-        putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_EDITION);
-        this.editable = editable;
-        updateLabelAndIcon();
-        editable.addPropertyChangeListener(TableEditableElementImpl.PROP_EDITING,
-                EventHandler.create(PropertyChangeListener.class,this,"updateLabelAndIcon"));
+    public ActionUndo(TableEditableElement editable,UndoManager undoManager) {
+        super(I18N.tr("Undo"), TableEditorIcon.getIcon("edit-undo"),editable);
+        this.undoManager = undoManager;
+        putValue(ActionTools.MENU_ID, TableEditorActions.A_UNDO);
+        putValue(SHORT_DESCRIPTION,I18N.tr("Undo the last modification"));
+        onSourceUpdate();
     }
 
-    /**
-     * Called when the edition state of TableEditableElement change.
-     */
-    public final void updateLabelAndIcon() {
-        if(editable.isEditing()) {
-            putValue(NAME, i18N.tr("Stop editing"));
-            putValue(SMALL_ICON, TableEditorIcon.getIcon("edition/unlock"));
-        } else {
-            putValue(NAME, i18N.tr("Start editing"));
-            putValue(SMALL_ICON, TableEditorIcon.getIcon("edition/lock"));
-        }
+    @Override
+    public void onSourceUpdate() {
+        setEnabled(undoManager.canUndo());
     }
+
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        editable.setEditing(!editable.isEditing());
+        try {
+            undoManager.undo();
+        } catch (CannotUndoException ex) {
+            LOGGER.error(ex.getLocalizedMessage(),ex);
+        }
     }
 }

@@ -86,6 +86,14 @@ public interface DataManager extends RowSetFactory {
      * Table update done through ReversibleRowSet will be fire through theses listeners
      * @param table Table identifier [[catalog.]schema.]table
      * @param listener Listener instance
+     * @param addTrigger True, add a trigger on the Database if possible
+     */
+    void addTableEditListener(String table, TableEditListener listener, boolean addTrigger);
+
+    /**
+     * Table update done through ReversibleRowSet will be fire through theses listeners
+     * @param table Table identifier [[catalog.]schema.]table
+     * @param listener Listener instance
      */
     void addTableEditListener(String table, TableEditListener listener);
 

@@ -32,6 +32,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.RowSet;
 import javax.swing.table.AbstractTableModel;
 import org.orbisgis.corejdbc.ReversibleRowSet;
@@ -136,6 +137,8 @@ public class DataSourceTableModel extends AbstractTableModel {
         this.lastFetchRowCountTime = lastFetchRowCountTime;
     }
 
+
+
     @Override
     public int getRowCount() {
         long time = System.currentTimeMillis();
@@ -144,10 +147,6 @@ public class DataSourceTableModel extends AbstractTableModel {
         }
         lastFetchRowCountTime = time;
         if(!element.isOpen()) {
-            lastFetchRowCount = 0;
-            return 0;
-        }
-        if(!tableExists()) {
             lastFetchRowCount = 0;
             return 0;
         }
@@ -209,152 +208,22 @@ public class DataSourceTableModel extends AbstractTableModel {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return false;
-                //TODO enable edition
-                /*
-                if (element.isEditable()) {
-                        try {
-                                Type fieldType = getMetadata().getFieldType(columnIndex);
-                                Constraint c = fieldType.getConstraint(Constraint.READONLY);
-                                return (fieldType.getTypeCode() != Type.RASTER)
-                                        && (c == null);
-                        } catch (DriverException e) {
-                                LOGGER.warn(e.getLocalizedMessage(), e);
-                                return false;
-                        }
-                } else {
-                        return false;
-                }
-                */
+                return element.isEditing();
         }
 
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-                //TODO enable edition
-                /*
-                try {
-                        Value v;
-                        if(aValue!=null) {
-                            if(!(aValue instanceof Value)) {
-                                    Type type = getMetadata().getFieldType(columnIndex);
-                                    String strValue = aValue.toString().trim();
-                                    v = ValueFactory.createValueByType(strValue, type.getTypeCode());
-                            } else {
-                                    v = (Value)aValue;
-                            }
-                        } else {
-                            v = ValueFactory.createNullValue();
-                        }
-                        dataSource.setFieldValue(rowIndex, columnIndex, v);
-                } catch (DriverException e1) {
-                        LOGGER.error(e1.getLocalizedMessage(), e1);
-                } catch (NumberFormatException e) {
-                        LOGGER.error(I18N.tr("Cannot parse number"), e); //$NON-NLS-1$
-                } catch (ParseException e) {
-                        LOGGER.error(e.getLocalizedMessage(), e);
+            try {
+                RowSet rowSet = getRowSet();
+                rowSet.absolute(rowIndex + 1);
+                rowSet.updateObject(columnIndex + 1, aValue);
+                rowSet.updateRow();
+            } catch (SQLException e) {
+                // Check if the table has been deleted
+                if(!tableExists()) {
+                    fireTableRowsDeleted(0, (int) (lastFetchRowCount - 1));
                 }
-                */
+                LOGGER.error(e.getLocalizedMessage(), e);
+            }
         }
-
-//
-//        /**
-//         * Track data source changes, update the table model
-//         */
-//        private class ModificationListener implements EditionListener,
-//                MetadataEditionListener {
-//
-//
-//                @Override
-//                public void multipleModification(MultipleEditionEvent me) {
-//                        LOGGER.debug("ModificationListener:multipleModification");
-//                        IntegerUnion deletedRows = new IntegerUnion();
-//                        IntegerUnion insertedRows = new IntegerUnion();
-//                        IntegerUnion updatedRows = new IntegerUnion();
-//
-//                        for (EditionEvent e : me.getEvents()) {
-//                                if (e.getType() == EditionEvent.RESYNC) {
-//                                        fireTableStructureChanged();
-//                                        LOGGER.debug("ModificationListener:Update whole table!");
-//                                        return;
-//                                }
-//                                int row = (int) e.getRowIndex();
-//                                if (e.getType() == EditionEvent.DELETE) {
-//                                        deletedRows.add(row);
-//                                } else if (e.getType() == EditionEvent.INSERT) {
-//                                        insertedRows.add(row);
-//                                } else {
-//                                        int fieldIndex = e.getFieldIndex();
-//                                        if (fieldIndex >= 0) {
-//                                                fireTableCellUpdated(row, fieldIndex);
-//                                        } else {
-//                                                updatedRows.add(row);
-//                                        }
-//                                }
-//                        }
-//                        if(!updatedRows.isEmpty()) {
-//                                LOGGER.debug("ModificationListener:Update rows");
-//                                Iterator<Integer> intervalsIt = updatedRows.getValueRanges().iterator();
-//                                while(intervalsIt.hasNext()) {
-//                                        int begin = intervalsIt.next();
-//                                        int end = intervalsIt.next();
-//                                        fireTableRowsUpdated(begin, end);
-//                                }
-//                        }
-//                        if(!deletedRows.isEmpty()) {
-//                                LOGGER.debug("ModificationListener:Delete rows");
-//                                Iterator<Integer> intervalsIt = deletedRows.getValueRanges().iterator();
-//                                while(intervalsIt.hasNext()) {
-//                                        int begin = intervalsIt.next();
-//                                        int end = intervalsIt.next();
-//                                        fireTableRowsDeleted(begin, end);
-//                                }
-//                        }
-//                        if(!insertedRows.isEmpty()) {
-//                                LOGGER.debug("ModificationListener:Insert rows");
-//                                Iterator<Integer> intervalsIt = insertedRows.getValueRanges().iterator();
-//                                while(intervalsIt.hasNext()) {
-//                                        int begin = intervalsIt.next();
-//                                        int end = intervalsIt.next();
-//                                        fireTableRowsInserted(begin, end);
-//                                }
-//                        }
-//                }
-//
-//                @Override
-//                public void singleModification(EditionEvent e) {
-//                        MultipleEditionEvent me = new MultipleEditionEvent();
-//                        me.addEvent(e);
-//                        multipleModification(me);
-//                }
-//
-//                /**
-//                 * New Column
-//                 * @param event
-//                 */
-//                @Override
-//                public void fieldAdded(FieldEditionEvent event) {
-//                        LOGGER.debug("ModificationListener:fieldAdded");
-//                        fireTableChanged(new TableModelEvent(DataSourceTableModel.this,TableModelEvent.HEADER_ROW,TableModelEvent.HEADER_ROW,event.getFieldIndex(),TableModelEvent.INSERT));
-//                }
-//
-//                /**
-//                 * Update column
-//                 * @param event
-//                 */
-//                @Override
-//                public void fieldModified(FieldEditionEvent event) {
-//                        LOGGER.debug("ModificationListener:fieldModified");
-//                        fireTableChanged(new TableModelEvent(DataSourceTableModel.this,TableModelEvent.HEADER_ROW,TableModelEvent.HEADER_ROW,event.getFieldIndex(),TableModelEvent.UPDATE));
-//                }
-//
-//                /**
-//                 * Remove column
-//                 * @param event
-//                 */
-//                @Override
-//                public void fieldRemoved(FieldEditionEvent event) {
-//                        LOGGER.debug("ModificationListener:fieldRemoved");
-//                        fireTableChanged(new TableModelEvent(DataSourceTableModel.this,TableModelEvent.HEADER_ROW,TableModelEvent.HEADER_ROW,event.getFieldIndex(),TableModelEvent.DELETE));
-//                }
-//        }
 }

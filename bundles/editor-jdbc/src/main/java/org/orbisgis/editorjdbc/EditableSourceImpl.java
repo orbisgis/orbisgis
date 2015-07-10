@@ -51,7 +51,6 @@ import java.sql.SQLException;
  */
 public class EditableSourceImpl extends AbstractEditableElement implements EditableSource {
 
-    public static final String PROP_EDITING = "editing";
     private String tableReference;
     private ReversibleRowSet rowSet; // Instantiated when editable source is open
     private boolean editing = false;
