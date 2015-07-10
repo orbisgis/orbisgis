@@ -1,4 +1,4 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
@@ -27,29 +27,16 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.map.toolbar;
+package org.orbisgis.mapeditor.map.toolbar;
 
-import org.orbisgis.view.main.frames.ext.MainWindow;
-import org.orbisgis.view.main.frames.ext.ToolBarAction;
-import org.orbisgis.view.map.ext.MapEditorExtension;
-import org.orbisgis.view.map.tool.Automaton;
-import org.orbisgis.view.map.tools.AutoCompletePolygonTool;
-import org.orbisgis.view.map.tools.CutPolygonTool;
-import org.orbisgis.view.map.tools.LineTool;
-import org.orbisgis.view.map.tools.MoveVertexTool;
-import org.orbisgis.view.map.tools.MultilineTool;
-import org.orbisgis.view.map.tools.MultipointTool;
-import org.orbisgis.view.map.tools.MultipolygonTool;
-import org.orbisgis.view.map.tools.PointTool;
-import org.orbisgis.view.map.tools.PolygonTool;
-import org.orbisgis.view.map.tools.SplitLineByPointTool;
-import org.orbisgis.view.map.tools.SplitPolygonTool;
-import org.orbisgis.view.map.tools.VertexAdditionTool;
-import org.orbisgis.view.map.tools.VertexDeletionTool;
+import org.orbisgis.mainframe.api.MainWindow;
+import org.orbisgis.mainframe.api.ToolBarAction;
+import org.orbisgis.mapeditorapi.MapEditorExtension;
+
 import javax.swing.Action;
 import java.util.LinkedList;
 import java.util.List;
-import org.orbisgis.view.map.tools.SplitLineByLineTool;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Generate the Actions for the Drawing ToolBar.
@@ -57,38 +44,38 @@ import org.orbisgis.view.map.tools.SplitLineByLineTool;
  */
 public class DrawingToolBar implements ToolBarAction {
     private MapEditorExtension mapEditor;
+    private ExecutorService executorService;
 
     /**
      * Constructor, this service implementation, register and un-register itself.
      * @param mapEditor
      */
-    public DrawingToolBar(MapEditorExtension mapEditor) {
+    public DrawingToolBar(MapEditorExtension mapEditor, ExecutorService executorService) {
         this.mapEditor = mapEditor;
+        this.executorService = executorService;
     }
 
     @Override
     public List<Action> createActions(MainWindow target) {
         List<Action> actions = new LinkedList<Action>();
         actions.add(new ActionStop(mapEditor));
-        actions.add(new ActionCancel(mapEditor));
         actions.add(new ActionUndo(mapEditor));
         actions.add(new ActionRedo(mapEditor));
-        actions.add(new ActionSave(mapEditor));
-        actions.add(new ActionDelete(mapEditor));
+        actions.add(new ActionDelete(mapEditor, executorService));
         add(actions,DRAW_AUTO_POLYGON, new AutoCompletePolygonTool());
-        add(actions,DRAW_CUT_POLYGON, new CutPolygonTool());
-        add(actions,DRAW_MULTI_POINT, new MultipointTool());
-        add(actions,DRAW_MULTI_LINE, new MultilineTool());
-        add(actions,DRAW_MULTI_POLYGON, new MultipolygonTool());
-        add(actions,DRAW_POINT, new PointTool());
-        add(actions,DRAW_LINE, new LineTool());
-        add(actions,DRAW_POLYGON, new PolygonTool());
-        add(actions,DRAW_SPLIT_LINESTRING, new SplitLineByPointTool());
-        add(actions,DRAW_SPLIT_LINE_BY_LINE, new SplitLineByLineTool());
-        add(actions,DRAW_SPLIT_POLYGON,new SplitPolygonTool());
-        add(actions,DRAW_MOVE_VERTEX, new MoveVertexTool());
-        add(actions,DRAW_VERTEX_ADDITION, new VertexAdditionTool());
-        add(actions,DRAW_VERTEX_DELETION, new VertexDeletionTool());
+//        add(actions,DRAW_CUT_POLYGON, new CutPolygonTool());
+//        add(actions,DRAW_MULTI_POINT, new MultipointTool());
+//        add(actions,DRAW_MULTI_LINE, new MultilineTool());
+//        add(actions,DRAW_MULTI_POLYGON, new MultipolygonTool());
+//        add(actions,DRAW_POINT, new PointTool());
+//        add(actions,DRAW_LINE, new LineTool());
+//        add(actions,DRAW_POLYGON, new PolygonTool());
+//        add(actions,DRAW_SPLIT_LINESTRING, new SplitLineByPointTool());
+//        add(actions,DRAW_SPLIT_LINE_BY_LINE, new SplitLineByLineTool());
+//        add(actions,DRAW_SPLIT_POLYGON,new SplitPolygonTool());
+//        add(actions,DRAW_MOVE_VERTEX, new MoveVertexTool());
+//        add(actions,DRAW_VERTEX_ADDITION, new VertexAdditionTool());
+//        add(actions,DRAW_VERTEX_DELETION, new VertexDeletionTool());
         return actions;
     }
     private ActionAutomaton add(List<Action> actions,String ID,Automaton action) {

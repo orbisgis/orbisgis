@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.tablegui.impl;
+package org.orbisgis.editorjdbc;
 
 import org.orbisgis.corejdbc.TableUndoableEdit;
 import org.slf4j.Logger;

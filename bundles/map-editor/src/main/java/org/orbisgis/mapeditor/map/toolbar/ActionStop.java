@@ -1,4 +1,4 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
@@ -27,18 +27,19 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.map.toolbar;
+package org.orbisgis.mapeditor.map.toolbar;
 
-import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
 import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.mainframe.api.ToolBarAction;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
+import org.orbisgis.mapeditorapi.MapEditorExtension;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.main.frames.ext.ToolBarAction;
-import org.orbisgis.view.map.ext.MapEditorExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.sql.DataSource;
 import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 
@@ -48,14 +49,14 @@ import java.awt.event.ActionEvent;
  */
 public class ActionStop extends ActionActiveLayer {
     private static final I18n I18N = I18nFactory.getI18n(ActionStop.class);
-    private static final Logger LOGGER = Logger.getLogger(ActionStop.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActionStop.class);
 
     /**
      * Constructor
      * @param extension MapExtension instance
      */
     public ActionStop(MapEditorExtension extension) {
-        super(ToolBarAction.DRAW_STOP, I18N.tr("Stop"), extension, OrbisGISIcon.getIcon("stop"));
+        super(ToolBarAction.DRAW_STOP, I18N.tr("Stop"), extension, MapEditorIcons.getIcon("stop"));
         setToolTipText(I18N.tr("Close the drawing toolbar"));
         setLogicalGroup(ToolBarAction.DRAWING_GROUP);
     }
@@ -64,7 +65,7 @@ public class ActionStop extends ActionActiveLayer {
     public void actionPerformed(ActionEvent ae) {
         ILayer activeLayer = getActiveLayer();
         if(activeLayer!=null) {
-            DataSource source = activeLayer.getDataSource();
+            DataSource source = activeLayer.getDataManager().getDataSource();
             if(source.isModified()) {
                     int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
                             I18N.tr("The edited layer has unsaved changes. Do you want to keep theses modifications ?"),

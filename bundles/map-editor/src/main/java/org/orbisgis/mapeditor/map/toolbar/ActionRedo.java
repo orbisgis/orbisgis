@@ -1,4 +1,4 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
@@ -27,28 +27,27 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.map.toolbar;
+package org.orbisgis.mapeditor.map.toolbar;
 
-import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
-import org.orbisgis.view.components.actions.ActionTools;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.main.frames.ext.ToolBarAction;
-import org.orbisgis.view.map.MapElement;
-import org.orbisgis.view.map.ext.MapEditorExtension;
+import org.orbisgis.mainframe.api.ToolBarAction;
+import org.orbisgis.mapeditor.map.toolbar.ActionActiveLayer;
+import org.orbisgis.mapeditorapi.MapEditorExtension;
+import org.orbisgis.sif.components.actions.ActionTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
 import java.awt.event.ActionEvent;
 
 /**
  * Cancel button on the Drawing ToolBar
  * @author Nicolas Fortin
  */
-public class ActionRedo extends ActionDataSource {
+public class ActionRedo extends ActionActiveLayer {
     private static final I18n I18N = I18nFactory.getI18n(ActionRedo.class);
-    private static final Logger LOGGER = Logger.getLogger(ActionRedo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActionRedo.class);
 
     /**
      * Constructor
@@ -65,7 +64,7 @@ public class ActionRedo extends ActionDataSource {
         super.checkActionState();
         // Active only if the DataSource is modified
         if(ActionTools.isVisible(this)) {
-            DataSource dataSource = getExtension().getMapElement().getMapContext().getActiveLayer().getDataSource();
+            DataSource dataSource = getExtension().getMapElement().getMapContext().getDataManager().getDataSource();
             setEnabled(dataSource!=null && dataSource.canRedo());
         }
     }

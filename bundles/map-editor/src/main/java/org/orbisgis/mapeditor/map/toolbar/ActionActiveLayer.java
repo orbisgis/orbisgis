@@ -1,4 +1,4 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
@@ -27,11 +27,11 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.map.toolbar;
+package org.orbisgis.mapeditor.map.toolbar;
 
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.view.map.ext.MapEditorExtension;
+import org.orbisgis.mapeditorapi.MapEditorExtension;
 
 import javax.swing.*;
 

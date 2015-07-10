@@ -27,18 +27,15 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.map.toolbar;
+package org.orbisgis.mapeditor.map.toolbar;
 
-import org.orbisgis.core.Services;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.editorjdbc.jobs.DeleteSelectedRows;
+import org.orbisgis.mainframe.api.ToolBarAction;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
+import org.orbisgis.mapeditorapi.MapEditorExtension;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.background.DefaultJobId;
-import org.orbisgis.view.components.gdms.DeleteRows;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.main.frames.ext.ToolBarAction;
-import org.orbisgis.view.map.ext.MapEditorExtension;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -48,6 +45,8 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Delete selected geometries.
@@ -55,14 +54,17 @@ import java.util.Set;
  */
 public class ActionDelete extends ActionActiveLayer {
     private static final I18n I18N = I18nFactory.getI18n(ActionDelete.class);
-    private PropertyChangeListener selectionChangeListener = EventHandler.create(PropertyChangeListener.class,this,"onSelectionUpdate");
+    private PropertyChangeListener selectionChangeListener = EventHandler.create(PropertyChangeListener.class, this,
+            "onSelectionUpdate");
+    private ExecutorService executorService;
 
     /**
      * Constructor
      * @param extension MapExtension instance
      */
-    public ActionDelete(MapEditorExtension extension) {
-        super(ToolBarAction.DRAW_DELETE, I18N.tr("Delete"), extension, OrbisGISIcon.getIcon("edition/delete"));
+    public ActionDelete(MapEditorExtension extension, ExecutorService executorService) {
+        super(ToolBarAction.DRAW_DELETE, I18N.tr("Delete"), extension, MapEditorIcons.getIcon("edition/delete"));
+        this.executorService = executorService;
         setToolTipText(I18N.tr("Delete selected geometries"));
         setLogicalGroup(ToolBarAction.DRAWING_GROUP);
     }
@@ -123,15 +125,15 @@ public class ActionDelete extends ActionActiveLayer {
     public void actionPerformed(ActionEvent ae) {
         ILayer activeLayer = getActiveLayer();
         if(activeLayer!=null) {
-            Set<Integer> selectedRows = activeLayer.getSelection();
+            Set<Long> selectedRows = activeLayer.getSelection();
             int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
                     I18N.tr("Are you sure to remove the {0} selected geometries ?", selectedRows.size()),
                     I18N.tr("Delete selected geometries"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if(response==JOptionPane.YES_OPTION) {
                 // Launch process
-                BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
-                backgroundManager.nonBlockingBackgroundOperation(new DefaultJobId("DeleteRows"),new DeleteRows(selectedRows,activeLayer.getDataSource()));
+                executorService.execute(new DeleteSelectedRows(new TreeSet<>(selectedRows),
+                        activeLayer.getTableReference(), activeLayer.getDataManager().getDataSource()));
             }
         }
     }

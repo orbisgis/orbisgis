@@ -1,4 +1,4 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
@@ -27,34 +27,35 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.map.toolbar;
+package org.orbisgis.mapeditor.map.toolbar;
 
-import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
-import org.orbisgis.view.components.actions.ActionTools;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.main.frames.ext.ToolBarAction;
-import org.orbisgis.view.map.MapElement;
-import org.orbisgis.view.map.ext.MapEditorExtension;
+import org.orbisgis.mainframe.api.ToolBarAction;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
+import org.orbisgis.mapeditorapi.MapEditorExtension;
+import org.orbisgis.mapeditorapi.MapElement;
+import org.orbisgis.sif.components.actions.ActionTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.undo.UndoManager;
 import java.awt.event.ActionEvent;
 
 /**
  * Cancel button on the Drawing ToolBar
  * @author Nicolas Fortin
  */
-public class ActionUndo extends ActionDataSource {
+public class ActionUndo extends ActionActiveLayer {
     private static final I18n I18N = I18nFactory.getI18n(ActionUndo.class);
-    private static final Logger LOGGER = Logger.getLogger(ActionUndo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActionUndo.class);
 
     /**
      * Constructor
      * @param extension MapEditor instance
      */
     public ActionUndo(MapEditorExtension extension) {
-        super(ToolBarAction.DRAW_UNDO, I18N.tr("Undo"), extension, OrbisGISIcon.getIcon("edit-undo"));
+        super(ToolBarAction.DRAW_UNDO, I18N.tr("Undo"), extension, MapEditorIcons.getIcon("edit-undo"));
         putValue(SHORT_DESCRIPTION,I18N.tr("Undo the last modification"));
         setLogicalGroup(ToolBarAction.DRAWING_GROUP);
     }
@@ -64,8 +65,8 @@ public class ActionUndo extends ActionDataSource {
         super.checkActionState();
         // Active only if the DataSource is modified
         if(ActionTools.isVisible(this)) {
-            DataSource dataSource = getExtension().getMapElement().getMapContext().getActiveLayer().getDataSource();
-            setEnabled(dataSource!=null && dataSource.canUndo());
+            UndoManager undoManager = getExtension().getMapElement().getMapUndoManager();
+            setEnabled(undoManager.canUndo());
         }
     }
 
@@ -73,11 +74,8 @@ public class ActionUndo extends ActionDataSource {
     public void actionPerformed(ActionEvent ae) {
         MapElement loadedMap = getExtension().getMapElement();
         if(loadedMap!=null) {
-            try {
-                loadedMap.getMapContext().getActiveLayer().getDataSource().undo();
-            } catch (DriverException ex) {
-                LOGGER.error(ex.getLocalizedMessage(),ex);
-            }
+            UndoManager undoManager = getExtension().getMapElement().getMapUndoManager();
+            undoManager.undo();
         }
     }
 }

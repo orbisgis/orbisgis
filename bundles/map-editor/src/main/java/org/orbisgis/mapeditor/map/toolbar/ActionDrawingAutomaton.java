@@ -27,11 +27,11 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.map.toolbar;
+package org.orbisgis.mapeditor.map.toolbar;
 
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.view.map.ext.MapEditorExtension;
-import org.orbisgis.view.map.tool.Automaton;
+import org.orbisgis.mapeditor.map.tool.Automaton;
+import org.orbisgis.mapeditorapi.MapEditorExtension;
 
 /**
  * Drawing Automaton Action, visible only when there is an edited layer
