@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view;
+package org.orbisgis.orbistoolbox.view.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.*;
@@ -29,6 +29,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Class Building the UI to configure a process before executing it.
+ * The UI is build according the the map containing the DataDescription linked to its DataUI.
+ *
  * @author Sylvain PALOMINOS
  **/
 
@@ -41,7 +44,12 @@ public class ProcessUIBuilder {
         dataUIMap.put(LiteralData.class, new LiteralDataUI());
     }
 
-
+    /**
+     * Build the UI of the given process according to the given data.
+     * @param p Process to use.
+     * @param dataMap Data to use.
+     * @return The UI for the configuration of the process.
+     */
     public JComponent buildUI(Process p, Map<URI, Object> dataMap){
         JPanel panel = new JPanel(new MigLayout());
 
@@ -67,16 +75,6 @@ public class ProcessUIBuilder {
                 panel.add(dataUI.createUI(i, dataMap), "wrap");
             }
         }
-
-        /*JLabel outputs = new JLabel("Outputs : ");
-        panel.add(outputs, "wrap");
-
-        for(Output o : p.getOutput()){
-            JLabel inputTitle = new JLabel(o.getTitle());
-            panel.add(inputTitle, "wrap");
-            JLabel inputAbstrac = new JLabel(o.getAbstrac());
-            panel.add(inputAbstrac, "wrap");
-        }*/
 
         return panel;
     }

@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view;
+package org.orbisgis.orbistoolbox.view.utils;
 
 import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.sif.components.fstree.TreeNodePath;

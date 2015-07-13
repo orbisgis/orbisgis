@@ -17,36 +17,36 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view;
+package org.orbisgis.orbistoolbox.controller;
 
-import org.orbisgis.sif.icons.BaseIcon;
-import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
-import java.awt.*;
+import org.orbisgis.orbistoolbox.model.Process;
 
 /**
- * Use this class to retrieve the data of an icon
  * @author Sylvain PALOMINOS
  **/
 
-public class ToolBoxIcon {
-    private static BaseIcon iconManager = new BaseIcon(LoggerFactory.getLogger(ToolBoxIcon.class));
+public class ProcessIdentifier {
 
-    /**
-     * Retrieve icon awt Image by its name
-     * @param iconName The icon name, without extension. All icons are stored in the png format.
-     * @return The Image content requested, or an Image corresponding to a Missing Resource
-     */
-    public static Image getIconImage(String iconName) {
-        return iconManager.getIconImage(ToolBoxIcon.class, iconName);
+    private Class clazz;
+    private Process process;
+    private String absolutePath;
+
+    public ProcessIdentifier(Class clazz, Process process, String absolutePath){
+        this.clazz = clazz;
+        this.process = process;
+        this.absolutePath = absolutePath;
     }
-    /**
-     * Retrieve icon by its name
-     * @param iconName The icon name, without extension. All icons are stored in the png format.
-     * @return The ImageIcon requested, or an ImageIcon corresponding to a Missing Resource
-     */
-    public static ImageIcon getIcon(String iconName) {
-        return iconManager.getIcon(ToolBoxIcon.class, iconName);
+
+
+    public Class getClazz() {
+        return clazz;
+    }
+
+    public Process getProcess() {
+        return process;
+    }
+
+    public String getAbsolutePath() {
+        return absolutePath;
     }
 }

@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view;
+package org.orbisgis.orbistoolbox.view.ui;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Simple panel containing the basic information about a process.
+ *
  * @author Sylvain PALOMINOS
  **/
 
@@ -86,8 +88,6 @@ public class ProcessInfoPanel extends JPanel {
             output += s+"\n";
         }
         outputListContentLabel.setText(output);
-
-        MigLayout migLayout = new MigLayout();
     }
 
     public void setTitle(String title) {

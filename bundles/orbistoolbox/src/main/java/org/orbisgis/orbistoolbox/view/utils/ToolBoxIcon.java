@@ -17,19 +17,36 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view;
+package org.orbisgis.orbistoolbox.view.utils;
 
-import org.orbisgis.orbistoolbox.model.Input;
+import org.orbisgis.sif.icons.BaseIcon;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.net.URI;
-import java.util.Map;
+import java.awt.*;
 
 /**
+ * Use this class to retrieve the data of an icon
  * @author Sylvain PALOMINOS
  **/
 
-public interface DataUI {
+public class ToolBoxIcon {
+    private static BaseIcon iconManager = new BaseIcon(LoggerFactory.getLogger(ToolBoxIcon.class));
 
-    public JComponent createUI(Input input, Map<URI, Object> dataMap);
+    /**
+     * Retrieve icon awt Image by its name
+     * @param iconName The icon name, without extension. All icons are stored in the png format.
+     * @return The Image content requested, or an Image corresponding to a Missing Resource
+     */
+    public static Image getIconImage(String iconName) {
+        return iconManager.getIconImage(ToolBoxIcon.class, iconName);
+    }
+    /**
+     * Retrieve icon by its name
+     * @param iconName The icon name, without extension. All icons are stored in the png format.
+     * @return The ImageIcon requested, or an ImageIcon corresponding to a Missing Resource
+     */
+    public static ImageIcon getIcon(String iconName) {
+        return iconManager.getIcon(ToolBoxIcon.class, iconName);
+    }
 }

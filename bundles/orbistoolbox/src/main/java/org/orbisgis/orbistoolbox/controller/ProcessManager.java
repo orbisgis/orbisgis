@@ -23,7 +23,6 @@ import groovy.lang.GroovyObject;
 import org.orbisgis.orbistoolbox.controller.parser.ParserController;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.view.ProcessIdentifier;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
 
 import java.io.File;
@@ -34,21 +33,29 @@ import java.util.*;
 
 /**
  * Class used to manage process.
+ * It manages the sources (remote or local) and keeps the list of instantiated processes.
  *
  * @author Sylvain PALOMINOS
  **/
 
 public class ProcessManager {
+    /** List of process identifier*/
     private List<ProcessIdentifier> processIdList;
+    /** Controller used to parse process */
     private ParserController parserController;
-    private Map<URI, GroovyObject> processGroovyObjectMap;
 
+    /**
+     * Main constructor.
+     */
     public ProcessManager(){
         processIdList = new ArrayList<>();
         parserController = new ParserController();
-        processGroovyObjectMap = new HashMap<>();
     }
 
+    /**
+     * Adds a local source to the toolbox and get all the groovy script.
+     * @param path Path to the local source.
+     */
     public void addLocalSource(String path){
         File folder = new File(path);
         if(!folder.exists() || !folder.isDirectory()){
@@ -62,7 +69,12 @@ public class ProcessManager {
         }
     }
 
-    public Process addScript(File f){
+    /**
+     * Add a local script.
+     * @param f File of the local script.
+     * @return The process corresponding to the script.
+     */
+    public Process addLocalScript(File f){
         if (f.getName().endsWith(".groovy")) {
             AbstractMap.SimpleEntry entry = parserController.parseProcess(f.getAbsolutePath());
             if(entry != null && entry.getKey() != null && entry.getValue() != null){
@@ -77,12 +89,24 @@ public class ProcessManager {
         return null;
     }
 
+    /**
+     * Execute the given process with the given data.
+     * @param process Process to execute.
+     * @param dataMap Map containing the data for the process.
+     * @return The groovy object on which the 'processing' method will be called.
+     */
     public GroovyObject executeProcess(Process process, Map<URI, Object> dataMap){
         GroovyObject groovyObject = createProcess(process, dataMap);
         groovyObject.invokeMethod("processing", null);
         return groovyObject;
     }
 
+    /**
+     * Create a groovy object corresponding to the process with the given datas.
+     * @param process Process that will generate the groovy object.
+     * @param dataMap Map of the data for the process.
+     * @return A groovy object representing the process with the given datas.
+     */
     private GroovyObject createProcess(Process process, Map<URI, Object> dataMap){
         ProcessIdentifier pi = null;
         for(ProcessIdentifier proId : processIdList){
@@ -113,9 +137,14 @@ public class ProcessManager {
         return groovyObject;
     }
 
-    public Process getProcess(URI uri){
+    /**
+     * Return the process corresponding to the given identifier.
+     * @param identifier Identifier of the desired process.
+     * @return The process.
+     */
+    public Process getProcess(URI identifier){
         for(ProcessIdentifier pi : processIdList){
-            if(pi.getProcess().getIdentifier().equals(uri)){
+            if(pi.getProcess().getIdentifier().equals(identifier)){
                 return pi.getProcess();
             }
         }
@@ -128,18 +157,24 @@ public class ProcessManager {
                 return pi.getProcess();
             }
         }
-        return addScript(f);
+        return addLocalScript(f);
     }
 
-    public Field getField(Class clazz, URI uri){
+    /**
+     * Return the field of the given class corresponding to the given identifier.
+     * @param clazz Class where is the field.
+     * @param identifier Identifier of the field.
+     * @return The field.
+     */
+    private Field getField(Class clazz, URI identifier){
         for(Field f : clazz.getDeclaredFields()){
             for(Annotation a : f.getDeclaredAnnotations()){
                 if(a instanceof DescriptionTypeAttribute){
-                    if(URI.create(((DescriptionTypeAttribute)a).identifier()).equals(uri)){
+                    if(URI.create(((DescriptionTypeAttribute)a).identifier()).equals(identifier)){
                         return f;
                     }
                 }
-                if(uri.toString().endsWith(":input:"+f.getName()) || uri.toString().endsWith(":output:"+f.getName())){
+                if(identifier.toString().endsWith(":input:"+f.getName()) || identifier.toString().endsWith(":output:"+f.getName())){
                     return f;
                 }
             }

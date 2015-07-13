@@ -17,36 +17,55 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view;
+package org.orbisgis.orbistoolbox.view.ui;
 
+import org.orbisgis.orbistoolbox.view.ui.ProcessUIBuilder;
+import org.orbisgis.sif.UIPanel;
 import org.orbisgis.orbistoolbox.model.Process;
 
+import java.awt.*;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
+ * SIF UIPanel for the configuration of a process before executing it.
+ *
  * @author Sylvain PALOMINOS
  **/
 
-public class ProcessIdentifier {
+public class ProcessInputConfiguration implements UIPanel {
 
-    private Class clazz;
-    private Process process;
-    private String absolutePath;
+    private Map<URI, Object> uriObjectMap;
+    private Component component;
 
-    public ProcessIdentifier(Class clazz, Process process, String absolutePath){
-        this.clazz = clazz;
-        this.process = process;
-        this.absolutePath = absolutePath;
+    @Override
+    public URL getIconURL() {
+        return null;
     }
 
-
-    public Class getClazz() {
-        return clazz;
+    @Override
+    public String getTitle() {
+        return "Process inputs configuration.";
     }
 
-    public Process getProcess() {
-        return process;
+    @Override
+    public String validateInput() {
+        return null;
     }
 
-    public String getAbsolutePath() {
-        return absolutePath;
+    @Override
+    public Component getComponent() {
+        return component;
+    }
+
+    public void buildUI(Process process, ProcessUIBuilder processUIBuilder){
+        uriObjectMap = new HashMap<>();
+        this.component = processUIBuilder.buildUI(process, uriObjectMap);
+    }
+
+    public Map<URI, Object> getData(){
+        return uriObjectMap;
     }
 }

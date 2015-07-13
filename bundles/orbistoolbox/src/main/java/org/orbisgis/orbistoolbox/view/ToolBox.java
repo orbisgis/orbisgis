@@ -23,6 +23,10 @@ import groovy.lang.GroovyObject;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
+import org.orbisgis.orbistoolbox.view.ui.ProcessInputConfiguration;
+import org.orbisgis.orbistoolbox.view.ui.ProcessUIBuilder;
+import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
+import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.actions.ActionCommands;
@@ -30,7 +34,6 @@ import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
-import org.orbisgis.sif.multiInputPanel.InputType;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -86,7 +89,7 @@ public class ToolBox implements DockingPanel {
                         "Add source",
                         "Add a local source",
                         ToolBoxIcon.getIcon("add_source"),
-                        EventHandler.create(ActionListener.class, toolBoxPanel, "addSource"),
+                        EventHandler.create(ActionListener.class, toolBoxPanel, "addLocalSource"),
                         null
                 )
         );

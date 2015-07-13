@@ -17,54 +17,27 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view;
+package org.orbisgis.orbistoolbox.view.ui;
 
-import org.orbisgis.sif.UIPanel;
-import org.orbisgis.orbistoolbox.model.Process;
+import org.orbisgis.orbistoolbox.model.Input;
 
-import java.awt.*;
+import javax.swing.*;
 import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Interface for the definition of the ui to give the input value for a data type (LiteralData, RawData ...).
+ *
  * @author Sylvain PALOMINOS
  **/
 
-public class ProcessInputConfiguration implements UIPanel {
+public interface DataUI {
 
-    private Process process;
-    private Map<URI, Object> uriObjectMap;
-    private Component component;
-
-    @Override
-    public URL getIconURL() {
-        return null;
-    }
-
-    @Override
-    public String getTitle() {
-        return "Process inputs configuration.";
-    }
-
-    @Override
-    public String validateInput() {
-        return null;
-    }
-
-    @Override
-    public Component getComponent() {
-        return component;
-    }
-
-    public void buildUI(Process process, ProcessUIBuilder processUIBuilder){
-        this.process = process;
-        uriObjectMap = new HashMap<>();
-        this.component = processUIBuilder.buildUI(process, uriObjectMap);
-    }
-
-    public Map<URI, Object> getData(){
-        return uriObjectMap;
-    }
+    /**
+     * Return the ui for the definition of the input data.
+     * @param input Input to render.
+     * @param dataMap Map that will contain the data.
+     * @return JComponent containing the ui.
+     */
+    public JComponent createUI(Input input, Map<URI, Object> dataMap);
 }

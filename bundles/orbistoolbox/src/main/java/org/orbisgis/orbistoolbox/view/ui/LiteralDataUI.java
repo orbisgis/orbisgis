@@ -17,13 +17,14 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view;
+package org.orbisgis.orbistoolbox.view.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.DataType;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.LiteralData;
 import org.orbisgis.orbistoolbox.model.LiteralDataDomain;
+import org.orbisgis.orbistoolbox.view.ui.DataUI;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -36,10 +37,12 @@ import java.net.URI;
 import java.util.Map;
 
 /**
+ * UI for the definition of the LiteralData inputs.
+ *
  * @author Sylvain PALOMINOS
  **/
 
-public class LiteralDataUI implements DataUI{
+public class LiteralDataUI implements DataUI {
 
     @Override
     public JComponent createUI(Input input, Map<URI, Object> dataMap) {
@@ -64,6 +67,10 @@ public class LiteralDataUI implements DataUI{
         return panel;
     }
 
+    /**
+     * Call on selecting the type of data to use.
+     * @param source The comboBox containing the data type to use.
+     */
     public void onBoxChange(Object source){
         String s = (String) ((JComboBox)source).getSelectedItem();
         JComponent dataComponent;
@@ -183,6 +190,10 @@ public class LiteralDataUI implements DataUI{
         panel.add(dataComponent);
     }
 
+    /**
+     * Call if the TextArea for the String type is changed.
+     * @param document
+     */
     public void onDocumentChanged(Document document){
 
         Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
@@ -196,6 +207,10 @@ public class LiteralDataUI implements DataUI{
         }
     }
 
+    /**
+     * Call if the JComponent where the value is defined is changed.
+     * @param source
+     */
     public void onDataChanged(Object source){
         Map<URI, Object> dataMap = (Map<URI, Object>) ((JComponent)source).getClientProperty("dataMap");
         URI uri = (URI) ((JComponent)source).getClientProperty("uri");
