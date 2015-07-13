@@ -45,11 +45,11 @@ public class SupportedCRS {
      * Constructor which define a CRS and if it is the default one.
      * @param crs Reference to a CRS definition.
      * @param defaultCRS True if the CRS is the default one, false otherwise.
-     * @throws IllegalArgumentException Exception get on trying to set the CRS to null
+     * @throws MalformedScriptException Exception get on trying to set the CRS to null
      */
-    public SupportedCRS(URI crs, boolean defaultCRS) throws IllegalArgumentException {
+    public SupportedCRS(URI crs, boolean defaultCRS) throws MalformedScriptException {
         if (crs == null) {
-            throw new IllegalArgumentException("The parameter \"crs\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "crs", "can not be null");
         }
         this.crs = new ArrayList<>();
         this.crs.add(crs);
@@ -60,17 +60,17 @@ public class SupportedCRS {
      * Constructor which define a CRS and if it is the default one.
      * @param crsList References to a CRS definition.
      * @param defaultCRS True if the CRS is the default one, false otherwise.
-     * @throws IllegalArgumentException Exception ge on setting a list which is null, empty or containing null value.
+     * @throws MalformedScriptException Exception ge on setting a list which is null, empty or containing null value.
      */
-    public SupportedCRS(List<URI> crsList, boolean defaultCRS) throws IllegalArgumentException {
+    public SupportedCRS(List<URI> crsList, boolean defaultCRS) throws MalformedScriptException {
         if (crsList == null) {
-            throw new IllegalArgumentException("The parameter \"crsList\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "crsList", "can not be null");
         }
         if (crsList.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"crsList\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "crsList", "can not be empty");
         }
         if (crsList.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"crsList\" can not contain null values");
+            throw new MalformedScriptException(this.getClass(), "crsList", "can not contain null values");
         }
         this.crs = new ArrayList<>();
         this.crs.addAll(crsList);
@@ -96,17 +96,17 @@ public class SupportedCRS {
     /**
      * Sets the CRS list.
      * @param crsList The new CRS list.
-     * @throws IllegalArgumentException Exception ge on setting a list which is null, empty or containing null value.
+     * @throws MalformedScriptException Exception ge on setting a list which is null, empty or containing null value.
      */
-    public void setCRS(List<URI> crsList) throws IllegalArgumentException {
+    public void setCRS(List<URI> crsList) throws MalformedScriptException {
         if (crsList == null) {
-            throw new IllegalArgumentException("The parameter \"defaultValue\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "defaultValue", "can not be null");
         }
         if (crsList.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"defaultValue\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "defaultValue", "can not be empty");
         }
         if (crsList.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"defaultValue\" can not contain null value");
+            throw new MalformedScriptException(this.getClass(), "defaultValue", "can not contain null value");
         }
         this.crs = new ArrayList<>();
         this.crs.addAll(crsList);

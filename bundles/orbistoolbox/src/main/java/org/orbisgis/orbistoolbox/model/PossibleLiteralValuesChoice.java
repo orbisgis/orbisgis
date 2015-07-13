@@ -47,17 +47,17 @@ public class PossibleLiteralValuesChoice {
     /**
      * Sets the allowed values as a list of valid values.
      * @param allowedValues List of valid values.
-     * @throws IllegalArgumentException Exception ge on setting a list which is null, empty or containing null value.
+     * @throws MalformedScriptException Exception ge on setting a list which is null, empty or containing null value.
      */
-    public PossibleLiteralValuesChoice(List<Values> allowedValues) throws IllegalArgumentException {
+    public PossibleLiteralValuesChoice(List<Values> allowedValues) throws MalformedScriptException {
         if (allowedValues == null) {
-            throw new IllegalArgumentException("The parameter \"allowedValues\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "allowedValues", "can not be null");
         }
         if (allowedValues.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"allowedValues\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "allowedValues", "can not be empty");
         }
         if (allowedValues.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"allowedValues\" can not contain null value");
+            throw new MalformedScriptException(this.getClass(), "allowedValues", "can not contain null value");
         }
         this.allowedValues = new ArrayList<>();
         this.allowedValues.addAll(allowedValues);
@@ -68,11 +68,11 @@ public class PossibleLiteralValuesChoice {
     /**
      * Sets the allowed values as all the values valid with a reference.
      * @param valuesReference Reference for the valid values.
-     * @throws IllegalArgumentException Exception get on setting a null reference.
+     * @throws MalformedScriptException Exception get on setting a null reference.
      */
-    public PossibleLiteralValuesChoice(URI valuesReference) throws IllegalArgumentException {
+    public PossibleLiteralValuesChoice(URI valuesReference) throws MalformedScriptException {
         if (valuesReference == null) {
-            throw new IllegalArgumentException("The parameter \"valuesReference\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "valuesReference", "can not be null");
         }
         this.allowedValues = null;
         this.anyValue = false;

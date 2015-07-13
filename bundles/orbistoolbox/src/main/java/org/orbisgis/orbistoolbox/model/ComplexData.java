@@ -40,9 +40,9 @@ public abstract class ComplexData extends DataDescription {
      * Constructor giving the default format.
      * The Format can not be null and should be set as the default one.
      * @param format Not null default format.
-     * @throws IllegalArgumentException Exception get on setting a format which is null or is not the default one.
+     * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
      */
-    protected ComplexData(Format format) {
+    protected ComplexData(Format format) throws MalformedScriptException{
         super(format);
     }
 
@@ -50,9 +50,9 @@ public abstract class ComplexData extends DataDescription {
      * Constructor giving a list of format.
      * The Format list can not be null and only one of the format should be set as the default one.
      * @param formatList Not null default format.
-     * @throws IllegalArgumentException Exception get on setting a format which is null or is not the default one.
+     * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
      */
-    protected ComplexData(List<Format> formatList) {
+    protected ComplexData(List<Format> formatList) throws MalformedScriptException {
         super(formatList);
     }
 

@@ -42,94 +42,91 @@ public class DefaultParser implements Parser {
         List<Format> formatList = new ArrayList<>();
         List<LiteralDataDomain> lddList = new ArrayList<>();
 
-        //Create a format list with an empty format
-        Format format = new Format("no/mimetype", URI.create("no/mimetype"));
-        format.setDefaultFormat(true);
-        formatList.add(format);
+        try {
+            //Create a format list with an empty format
+            Format format = new Format("no/mimetype", URI.create("no/mimetype"));
+            format.setDefaultFormat(true);
+            formatList.add(format);
 
-        //Check if the type of the field is Boolean, Character, Byte ... to instantiate a LiteralData
-        List<Values> valueList = new ArrayList<>();
-        PossibleLiteralValuesChoice plvc;
+            //Check if the type of the field is Boolean, Character, Byte ... to instantiate a LiteralData
+            List<Values> valueList = new ArrayList<>();
+            PossibleLiteralValuesChoice plvc;
 
-        if(f.getType().equals(Boolean.class)){
-            valueList.add(new Value<>(true));
-            valueList.add(new Value<>(false));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.BOOLEAN, new Value<>(false)));
+            if (f.getType().equals(Boolean.class)) {
+                valueList.add(new Value<>(true));
+                valueList.add(new Value<>(false));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.BOOLEAN, new Value<>(false)));
 
-            data = new LiteralData(formatList, lddList, new LiteralValue());
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Character.class)) {
+                valueList.add(new Range(Character.MIN_VALUE, Character.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.UNSIGNED_BYTE, new Value<>(' ')));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Byte.class)) {
+                valueList.add(new Range(Byte.MIN_VALUE, Byte.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.BYTE, new Value<>(0)));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Short.class)) {
+                valueList.add(new Range(Short.MIN_VALUE, Short.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.SHORT, new Value<>(0)));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Integer.class)) {
+                valueList.add(new Range(Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.INTEGER, new Value<>(0)));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Long.class)) {
+                valueList.add(new Range(Long.MIN_VALUE, Long.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.LONG, new Value<>(0)));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Float.class)) {
+                valueList.add(new Range(Float.MIN_VALUE, Float.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.FLOAT, new Value<>(0)));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Double.class)) {
+                valueList.add(new Range(Double.MIN_VALUE, Double.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.DOUBLE, new Value<>(0)));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(String.class)) {
+                plvc = new PossibleLiteralValuesChoice();
+                lddList.add(new LiteralDataDomain(plvc, DataType.STRING, new Value<>("")));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            }
+            //If the field can not be parsed as a LiteralData, parse it as a RawData
+            else {
+                RawData rawData = new RawData(formatList);
+                rawData.setData(f, f.getType());
+                data = rawData;
+            }
+
+            //Instantiate the returned input
+            Input input = new Input(f.getName(),
+                    URI.create("orbisgis:wps:" + processName + ":input:" + f.getName()),
+                    data);
+            input.setMinOccurs(0);
+            input.setMaxOccurs(1);
+            input.setMinOccurs(1);
+
+            return input;
+        } catch (MalformedScriptException e) {
+            e.printStackTrace();
+            return null;
         }
-        else if(f.getType().equals(Character.class)){
-            valueList.add(new Range(Character.MIN_VALUE, Character.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.UNSIGNED_BYTE, new Value<>(' ')));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(Byte.class)){
-            valueList.add(new Range(Byte.MIN_VALUE, Byte.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.BYTE, new Value<>(0)));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(Short.class)){
-            valueList.add(new Range(Short.MIN_VALUE, Short.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.SHORT, new Value<>(0)));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(Integer.class)){
-            valueList.add(new Range(Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.INTEGER, new Value<>(0)));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(Long.class)){
-            valueList.add(new Range(Long.MIN_VALUE, Long.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.LONG, new Value<>(0)));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(Float.class)){
-            valueList.add(new Range(Float.MIN_VALUE, Float.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.FLOAT, new Value<>(0)));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(Double.class)){
-            valueList.add(new Range(Double.MIN_VALUE, Double.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.DOUBLE, new Value<>(0)));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(String.class)){
-            plvc = new PossibleLiteralValuesChoice();
-            lddList.add(new LiteralDataDomain(plvc, DataType.STRING, new Value<>("")));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        //If the field can not be parsed as a LiteralData, parse it as a RawData
-        else{
-            RawData rawData = new RawData(formatList);
-            rawData.setData(f, f.getType());
-            data = rawData;
-        }
-
-        //Instantiate the returned input
-        Input input = new Input(f.getName(),
-                URI.create("orbisgis:wps:"+processName+":input:"+f.getName()),
-                data);
-        input.setMinOccurs(0);
-        input.setMaxOccurs(1);
-        input.setMinOccurs(1);
-
-        return input;
     }
 
     @Override
@@ -138,90 +135,87 @@ public class DefaultParser implements Parser {
         List<Format> formatList = new ArrayList<>();
         List<LiteralDataDomain> lddList = new ArrayList<>();
 
-        //Create a format list with an empty format
-        Format format = new Format("no/mimetype", URI.create("no/mimetype"));
-        format.setDefaultFormat(true);
-        formatList.add(format);
+        try {
+            //Create a format list with an empty format
+            Format format = new Format("no/mimetype", URI.create("no/mimetype"));
+            format.setDefaultFormat(true);
+            formatList.add(format);
 
-        //Check if the type of the field is Boolean, Character, Byte ... to instantiate a LiteralData
-        List<Values> valueList = new ArrayList<>();
-        PossibleLiteralValuesChoice plvc;
+            //Check if the type of the field is Boolean, Character, Byte ... to instantiate a LiteralData
+            List<Values> valueList = new ArrayList<>();
+            PossibleLiteralValuesChoice plvc;
 
-        if(f.getType().equals(Boolean.class)){
-            valueList.add(new Value<>(true));
-            valueList.add(new Value<>(false));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.BOOLEAN, new Value<>(false)));
+            if (f.getType().equals(Boolean.class)) {
+                valueList.add(new Value<>(true));
+                valueList.add(new Value<>(false));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.BOOLEAN, new Value<>(false)));
 
-            data = new LiteralData(formatList, lddList, new LiteralValue());
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Character.class)) {
+                valueList.add(new Range(Character.MIN_VALUE, Character.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.UNSIGNED_BYTE, new Value<>(' ')));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Byte.class)) {
+                valueList.add(new Range(Byte.MIN_VALUE, Byte.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.BYTE, new Value<>(0)));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Short.class)) {
+                valueList.add(new Range(Short.MIN_VALUE, Short.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.SHORT, new Value<>(0)));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Integer.class)) {
+                valueList.add(new Range(Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.INTEGER, new Value<>(0)));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Long.class)) {
+                valueList.add(new Range(Long.MIN_VALUE, Long.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.LONG, new Value<>(0)));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Float.class)) {
+                valueList.add(new Range(Float.MIN_VALUE, Float.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.FLOAT, new Value<>(0)));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(Double.class)) {
+                valueList.add(new Range(Double.MIN_VALUE, Double.MAX_VALUE, 1));
+                plvc = new PossibleLiteralValuesChoice(valueList);
+                lddList.add(new LiteralDataDomain(plvc, DataType.DOUBLE, new Value<>(0)));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            } else if (f.getType().equals(String.class)) {
+                plvc = new PossibleLiteralValuesChoice();
+                lddList.add(new LiteralDataDomain(plvc, DataType.STRING, new Value<>("")));
+
+                data = new LiteralData(formatList, lddList, new LiteralValue());
+            }
+            //If the field can not be parsed as a LiteralData, parse it as a RawData
+            else {
+                RawData rawData = new RawData(formatList);
+                rawData.setData(f, f.getType());
+                data = rawData;
+            }
+            //Instantiate the returned output
+            Output output = new Output(f.getName(),
+                    URI.create("orbisgis:wps:" + processName + ":output:" + f.getName()),
+                    data);
+
+            return output;
+        } catch(MalformedScriptException e){
+            e.printStackTrace();
+            return null;
         }
-        else if(f.getType().equals(Character.class)){
-            valueList.add(new Range(Character.MIN_VALUE, Character.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.UNSIGNED_BYTE, new Value<>(' ')));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(Byte.class)){
-            valueList.add(new Range(Byte.MIN_VALUE, Byte.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.BYTE, new Value<>(0)));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(Short.class)){
-            valueList.add(new Range(Short.MIN_VALUE, Short.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.SHORT, new Value<>(0)));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(Integer.class)){
-            valueList.add(new Range(Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.INTEGER, new Value<>(0)));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(Long.class)){
-            valueList.add(new Range(Long.MIN_VALUE, Long.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.LONG, new Value<>(0)));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(Float.class)){
-            valueList.add(new Range(Float.MIN_VALUE, Float.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.FLOAT, new Value<>(0)));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(Double.class)){
-            valueList.add(new Range(Double.MIN_VALUE, Double.MAX_VALUE, 1));
-            plvc = new PossibleLiteralValuesChoice(valueList);
-            lddList.add(new LiteralDataDomain(plvc, DataType.DOUBLE, new Value<>(0)));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        else if(f.getType().equals(String.class)){
-            plvc = new PossibleLiteralValuesChoice();
-            lddList.add(new LiteralDataDomain(plvc, DataType.STRING, new Value<>("")));
-
-            data = new LiteralData(formatList, lddList, new LiteralValue());
-        }
-        //If the field can not be parsed as a LiteralData, parse it as a RawData
-        else{
-            RawData rawData = new RawData(formatList);
-            rawData.setData(f, f.getType());
-            data = rawData;
-        }
-        //Instantiate the returned output
-        Output output = new Output(f.getName(),
-                URI.create("orbisgis:wps:"+processName+":output:"+f.getName()),
-                data);
-
-        return output;
     }
 
     @Override

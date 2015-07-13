@@ -36,43 +36,43 @@ import java.util.List;
 public class DescriptionTypeTest {
 
     /**
-     * Tests if the constructor with a null title returns an IllegalArgumentException.
+     * Tests if the constructor with a null title returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullTitleConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void nullTitleConstructorTest() throws URISyntaxException, MalformedScriptException {
         new DescriptionType(null, new URI("test"));
     }
 
     /**
-     * Tests if the constructor with a null identifier returns an IllegalArgumentException.
+     * Tests if the constructor with a null identifier returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullURIConstructorTest(){
+    @Test(expected = MalformedScriptException.class)
+    public final void nullURIConstructorTest() throws MalformedScriptException {
         new DescriptionType("test", null);
     }
 
     /**
-     * Tests if the constructor with a null title and null identifier returns an IllegalArgumentException.
+     * Tests if the constructor with a null title and null identifier returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullURITitleConstructorTest(){
+    @Test(expected = MalformedScriptException.class)
+    public final void nullURITitleConstructorTest() throws MalformedScriptException {
         new DescriptionType(null, null);
     }
 
     /**
-     * Tests if setting the title to null returns an IllegalArgumentException.
+     * Tests if setting the title to null returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void setTitleTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void setTitleTest() throws URISyntaxException, MalformedScriptException {
         DescriptionType descriptionType = new DescriptionType("test", new URI("test"));
         descriptionType.setTitle(null);
     }
 
     /**
-     * Tests if setting the identifier to null returns an IllegalArgumentException.
+     * Tests if setting the identifier to null returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void setIdentifierTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void setIdentifierTest() throws URISyntaxException, MalformedScriptException {
         DescriptionType descriptionType = new DescriptionType("test", new URI("test"));
         descriptionType.setIdentifier(null);
     }
@@ -81,7 +81,7 @@ public class DescriptionTypeTest {
      * Tests if the keywords methods work well even if null value are used.
      */
     @Test()
-    public final void keywordsTest() throws URISyntaxException {
+    public final void keywordsTest() throws URISyntaxException, MalformedScriptException {
         DescriptionType descriptionType = new DescriptionType("test", new URI("test"));
 
         List<String> stringList = new ArrayList<>();
@@ -120,7 +120,7 @@ public class DescriptionTypeTest {
      * Tests if the metadata methods work well even if null value are used.
      */
     @Test()
-    public final void metadataTest() throws URISyntaxException {
+    public final void metadataTest() throws URISyntaxException, MalformedScriptException {
         DescriptionType descriptionType = new DescriptionType("test", new URI("test"));
 
         Metadata metadata1 = new Metadata("test", new URI("test"), new URI("test"));

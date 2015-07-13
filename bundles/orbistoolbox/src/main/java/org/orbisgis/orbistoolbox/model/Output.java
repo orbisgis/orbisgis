@@ -52,12 +52,12 @@ public class Output extends DescriptionType {
      * @param title      Not null title of a process, output, output.
      * @param identifier Not null unambiguous identifier of a process, output, and output.
      * @param dataDescription Not null DataDescription of this output.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
+     * @throws MalformedScriptException Exception thrown if one of the parameters is null.
      */
-    public Output(String title, URI identifier, DataDescription dataDescription) throws IllegalArgumentException {
+    public Output(String title, URI identifier, DataDescription dataDescription) throws MalformedScriptException {
         super(title, identifier);
         if(dataDescription == null ){
-            throw new IllegalArgumentException("The argument \"dataDescription\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "dataDescription", "can not be null");
         }
         this.dataDescription = dataDescription;
         this.output = null;
@@ -72,18 +72,18 @@ public class Output extends DescriptionType {
      * @param title      Not null title of a process, output, output.
      * @param identifier Not null unambiguous identifier of a process, output, and output.
      * @param outputList Not null DataDescription of this output.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null or empty or containing null.
+     * @throws MalformedScriptException Exception thrown if one of the parameters is null or empty or containing null.
      */
-    public Output(String title, URI identifier, List<Output> outputList) throws IllegalArgumentException {
+    public Output(String title, URI identifier, List<Output> outputList) throws MalformedScriptException {
         super(title, identifier);
         if(outputList == null){
-            throw new IllegalArgumentException("The argument \"outputList\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "outputList", "can not be null");
         }
         if(outputList.isEmpty()){
-            throw new IllegalArgumentException("The argument \"outputList\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "outputList", "can not be empty");
         }
         if(outputList.contains(null)){
-            throw new IllegalArgumentException("The argument \"outputList\" can not contain a null value");
+            throw new MalformedScriptException(this.getClass(), "outputList", "can not contain a null value");
         }
         this.dataDescription = null;
         this.output = outputList;
@@ -92,11 +92,11 @@ public class Output extends DescriptionType {
     /**
      * Sets the DataDescription of this output (the argument should not be null) and set to null the output list.
      * @param dataDescription New DataDescription.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
+     * @throws MalformedScriptException Exception thrown if one of the parameters is null.
      */
-    public void setDataDescription(DataDescription dataDescription) throws IllegalArgumentException {
+    public void setDataDescription(DataDescription dataDescription) throws MalformedScriptException {
         if (dataDescription == null) {
-            throw new IllegalArgumentException("The argument \"dataDescription\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "dataDescription", "can not be null");
         }
         output = null;
         this.dataDescription = dataDescription;
@@ -115,17 +115,17 @@ public class Output extends DescriptionType {
      * Sets the output list with the not null/empty list and set the dataDescription to null.
      * The list should not contain null value.
      * @param outputList List of nested output.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null or empty or containing null.
+     * @throws MalformedScriptException Exception thrown if one of the parameters is null or empty or containing null.
      */
-    public void setOutput(List<Output> outputList) throws IllegalArgumentException {
+    public void setOutput(List<Output> outputList) throws MalformedScriptException {
         if (outputList == null) {
-            throw new IllegalArgumentException("The argument \"outputList\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "outputList", "can not be null");
         }
         if (outputList.isEmpty()) {
-            throw new IllegalArgumentException("The argument \"outputList\" can not empty");
+            throw new MalformedScriptException(this.getClass(), "outputList", "can not empty");
         }
         if (outputList.contains(null)) {
-            throw new IllegalArgumentException("The argument \"outputList\" can not contain a null value");
+            throw new MalformedScriptException(this.getClass(), "outputList", "can not contain a null value");
         }
         output = new ArrayList<>();
         for(Output i : outputList) {
