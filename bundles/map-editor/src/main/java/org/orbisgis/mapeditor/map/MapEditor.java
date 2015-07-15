@@ -90,6 +90,7 @@ import org.orbisgis.mapeditor.map.mapsManager.TreeLeafMapElement;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
 import org.orbisgis.mapeditor.map.toolbar.ActionAutomaton;
+import org.orbisgis.mapeditor.map.toolbar.DrawingToolBar;
 import org.orbisgis.mapeditor.map.tools.*;
 import org.orbisgis.mapeditorapi.MapEditorExtension;
 import org.orbisgis.mapeditorapi.MapElement;

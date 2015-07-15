@@ -34,6 +34,8 @@ import org.orbisgis.mainframe.api.ToolBarAction;
 import org.orbisgis.mapeditor.map.tool.Automaton;
 import org.orbisgis.mapeditor.map.tools.AutoCompletePolygonTool;
 import org.orbisgis.mapeditorapi.MapEditorExtension;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import javax.swing.Action;
 import java.util.LinkedList;
@@ -44,17 +46,27 @@ import java.util.concurrent.ExecutorService;
  * Generate the Actions for the Drawing ToolBar.
  * @author Nicolas Fortin
  */
+@Component
 public class DrawingToolBar implements ToolBarAction {
     private MapEditorExtension mapEditor;
     private ExecutorService executorService;
 
-    /**
-     * Constructor, this service implementation, register and un-register itself.
-     * @param mapEditor
-     */
-    public DrawingToolBar(MapEditorExtension mapEditor, ExecutorService executorService) {
+    @Reference
+    public void setMapEditor(MapEditorExtension mapEditor) {
         this.mapEditor = mapEditor;
+    }
+
+    public void unsetMapEditor(MapEditorExtension mapEditor) {
+        this.mapEditor = null;
+    }
+
+    @Reference
+    public void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
+    }
+
+    public void unsetExecutorService(ExecutorService executorService) {
+        this.executorService = null;
     }
 
     @Override
@@ -86,6 +98,7 @@ public class DrawingToolBar implements ToolBarAction {
         actions.add(newAction);
         return newAction;
     }
+
     @Override
     public void disposeActions(MainWindow target, List<Action> actions) {
         for(Action action : actions) {
