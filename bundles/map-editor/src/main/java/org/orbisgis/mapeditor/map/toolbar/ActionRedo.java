@@ -30,15 +30,16 @@
 package org.orbisgis.mapeditor.map.toolbar;
 
 import org.orbisgis.mainframe.api.ToolBarAction;
-import org.orbisgis.mapeditor.map.toolbar.ActionActiveLayer;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditorapi.MapEditorExtension;
+import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.sql.DataSource;
+import javax.swing.undo.CannotRedoException;
 import java.awt.event.ActionEvent;
 
 /**
@@ -54,7 +55,7 @@ public class ActionRedo extends ActionActiveLayer {
      * @param extension MapEditor instance
      */
     public ActionRedo(MapEditorExtension extension) {
-        super(ToolBarAction.DRAW_REDO, I18N.tr("Redo"), extension, OrbisGISIcon.getIcon("edit-redo"));
+        super(ToolBarAction.DRAW_REDO, I18N.tr("Redo"), extension, MapEditorIcons.getIcon("edit-redo"));
         putValue(SHORT_DESCRIPTION,I18N.tr("Redo the last modification"));
         setLogicalGroup(ToolBarAction.DRAWING_GROUP);
     }
@@ -64,8 +65,7 @@ public class ActionRedo extends ActionActiveLayer {
         super.checkActionState();
         // Active only if the DataSource is modified
         if(ActionTools.isVisible(this)) {
-            DataSource dataSource = getExtension().getMapElement().getMapContext().getDataManager().getDataSource();
-            setEnabled(dataSource!=null && dataSource.canRedo());
+            setVisible(getExtension().getMapElement().getMapUndoManager().canRedo());
         }
     }
 
@@ -74,8 +74,8 @@ public class ActionRedo extends ActionActiveLayer {
         MapElement loadedMap = getExtension().getMapElement();
         if(loadedMap!=null) {
             try {
-                loadedMap.getMapContext().getActiveLayer().getDataSource().redo();
-            } catch (DriverException ex) {
+                getExtension().getMapElement().getMapUndoManager().redo();
+            } catch (CannotRedoException ex) {
                 LOGGER.error(ex.getLocalizedMessage(),ex);
             }
         }

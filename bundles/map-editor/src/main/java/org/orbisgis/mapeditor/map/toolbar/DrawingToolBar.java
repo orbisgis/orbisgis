@@ -31,6 +31,8 @@ package org.orbisgis.mapeditor.map.toolbar;
 
 import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.mainframe.api.ToolBarAction;
+import org.orbisgis.mapeditor.map.tool.Automaton;
+import org.orbisgis.mapeditor.map.tools.AutoCompletePolygonTool;
 import org.orbisgis.mapeditorapi.MapEditorExtension;
 
 import javax.swing.Action;
@@ -78,8 +80,9 @@ public class DrawingToolBar implements ToolBarAction {
 //        add(actions,DRAW_VERTEX_DELETION, new VertexDeletionTool());
         return actions;
     }
+
     private ActionAutomaton add(List<Action> actions,String ID,Automaton action) {
-        ActionAutomaton newAction = new ActionDrawingAutomaton(ID,action,mapEditor);
+        ActionAutomaton newAction = new ActionDrawingAutomaton(ID, action, mapEditor);
         actions.add(newAction);
         return newAction;
     }

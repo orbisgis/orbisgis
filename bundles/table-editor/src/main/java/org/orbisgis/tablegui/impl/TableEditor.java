@@ -79,6 +79,7 @@ import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.process.ZoomToSelectedFeatures;
 import org.orbisgis.editorjdbc.EditableSource;
+import org.orbisgis.editorjdbc.EditorUndoableEdit;
 import org.orbisgis.editorjdbc.jobs.CreateSourceFromSelection;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.components.actions.ActionCommands;

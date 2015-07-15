@@ -65,28 +65,6 @@ public class ActionStop extends ActionActiveLayer {
     public void actionPerformed(ActionEvent ae) {
         ILayer activeLayer = getActiveLayer();
         if(activeLayer!=null) {
-            DataSource source = activeLayer.getDataManager().getDataSource();
-            if(source.isModified()) {
-                    int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
-                            I18N.tr("The edited layer has unsaved changes. Do you want to keep theses modifications ?"),
-                            I18N.tr("Save modifications"),
-                            JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
-                    if(response == JOptionPane.YES_OPTION) {
-                            try {
-                                    source.commit();
-                            } catch (Exception ex) {
-                                    LOGGER.error(I18N.tr("Unable to save the modifications"),ex);
-                            }
-                    } else if(response == JOptionPane.NO_OPTION) {
-                            try {
-                                    source.syncWithSource();
-                            } catch (DriverException ex) {
-                                    LOGGER.error(ex.getLocalizedMessage(),ex);
-                            }
-                    } else if(response==JOptionPane.CANCEL_OPTION) {
-                            return;
-                    }
-            }
             getExtension().getMapElement().getMapContext().setActiveLayer(null);
         }
     }
