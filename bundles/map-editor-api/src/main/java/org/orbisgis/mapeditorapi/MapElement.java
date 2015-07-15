@@ -236,7 +236,7 @@ public final class MapElement extends AbstractEditableElement implements TableEd
         }
         layer.addLayerListener(layerUpdateListener);
         if(layer.getTableReference() != null) {
-            mapContext.getDataManager().addTableEditListener(layer.getTableReference(),this,false);
+            mapContext.getDataManager().addTableEditListener(layer.getTableReference(), this, false);
         }
         ILayer[] layers = layer.getLayersRecursively();
         if (layers != null) {
@@ -258,6 +258,9 @@ public final class MapElement extends AbstractEditableElement implements TableEd
             return;
         }
         layer.removeLayerListener(layerUpdateListener);
+        if(layer.getTableReference() != null) {
+            mapContext.getDataManager().removeTableEditListener(layer.getTableReference(), this);
+        }
         ILayer[] layers = layer.getLayersRecursively();
         if (layers != null) {
             for (ILayer subLayer : layers) {

@@ -28,6 +28,7 @@
  */
 package org.orbisgis.corejdbc.internal;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.TableEditEvent;
@@ -613,6 +614,11 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
     @Override
     public void updateNClob(String s, Reader reader) throws SQLException {
         updateNClob(findColumn(s), reader);
+    }
+
+    @Override
+    public void updateGeometry(Geometry geometry) throws SQLException {
+        updateObject(getFirstGeometryFieldIndex(), geometry);
     }
 
     @Override

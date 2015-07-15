@@ -64,12 +64,15 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+/**
+ *
+ */
 public abstract class AbstractHandler implements Handler {
         protected static final I18n I18N = I18nFactory.getI18n(AbstractHandler.class);
-	protected static GeometryFactory gf = new GeometryFactory();
 	protected int vertexIndex;
 	protected Coordinate point;
 	protected Geometry geometry;
+    protected GeometryFactory gf = geometry.getFactory();
 	protected long geomIndex;
 
 	/**
@@ -82,7 +85,7 @@ public abstract class AbstractHandler implements Handler {
 	 * @param p
      * @param geomIndex
 	 */
-	public AbstractHandler(com.vividsolutions.jts.geom.Geometry g,
+	public AbstractHandler(Geometry g,
 			int vertexIndex, Coordinate p, long geomIndex) {
 		this.vertexIndex = vertexIndex;
 		this.point = p;
@@ -90,9 +93,6 @@ public abstract class AbstractHandler implements Handler {
 		this.geomIndex = geomIndex;
 	}
 
-	/**
-	 * @see org.orbisgis.plugins.core.ui.editors.map.tool.estouro.theme.Handler#draw(java.awt.Graphics2D)
-	 */
 	public void draw(Graphics2D g2, Color color, ToolManager tm,
 			MapTransform transform) {
 		g2.setColor(color);
@@ -115,7 +115,7 @@ public abstract class AbstractHandler implements Handler {
 	 * @throws CannotChangeGeometryException
 	 */
 	protected Coordinate[] removeVertex(int vertexIndex,
-			com.vividsolutions.jts.geom.Geometry g, int minNumVertex)
+			Geometry g, int minNumVertex)
 			throws CannotChangeGeometryException {
 		Coordinate[] coords = g.getCoordinates();
 		if (coords.length <= minNumVertex) {

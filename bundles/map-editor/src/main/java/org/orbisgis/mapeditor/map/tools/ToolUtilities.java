@@ -195,14 +195,14 @@ public class ToolUtilities {
          *      The OGC geometry type codes we are testing. They are listed in {@link org.h2gis.utilities.GeometryTypeCodes}.
          * @return 
          */
-	public static boolean geometryTypeIs(Connection connection, MapContext vc, int... geometryTypes) {
+	public static boolean geometryTypeIs(MapContext vc, int... geometryTypes) {
 		ILayer activeLayer = vc.getActiveLayer();
 		if (activeLayer != null && geometryTypes.length > 0) {
 			try {
 				String table = activeLayer.getTableReference();
                 if(!table.isEmpty()) {
                     TableLocation tableLocation = TableLocation.parse(activeLayer.getTableReference());
-                    int tableGeoType = SFSUtilities.getGeometryType(connection, tableLocation,"");
+                    int tableGeoType = SFSUtilities.getGeometryType(vc.getDataManager().getDataSource().getConnection(), tableLocation,"");
                     return tableGeoType == geometryTypes[0] ||  tableGeoType == GeometryTypeCodes.GEOMETRY;
                 }
             } catch (SQLException ex) {

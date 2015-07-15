@@ -32,14 +32,23 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Observable;
-import javax.sql.DataSource;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.locks.Lock;
 import javax.swing.ImageIcon;
 
 import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.SpatialResultSet;
+import org.orbisgis.commons.progress.NullProgressMonitor;
+import org.orbisgis.corejdbc.ReadTable;
+import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.Handler;
@@ -59,48 +68,55 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
         @Override
         protected void polygonDone(Polygon pol,
                 MapContext mc, ToolManager tm) throws TransitionException {
-                try {
+                ReversibleRowSet rowSet = tm.getActiveLayerRowSet();
+                Lock lock = rowSet.getReadLock();
+                if(lock.tryLock()) {
+                    try {
                         List<Handler> handlers = tm.getCurrentHandlers();
                         Geometry geom = pol;
+
+                        //Compute difference
+                        SortedSet<Long> selectedGeometries = new TreeSet<>();
                         for (Handler handler : handlers) {
-                                geom = execute(handler, geom, sds);
+                            selectedGeometries.add(handler.getGeometryPK());
                         }
-                        if (ToolUtilities.geometryTypeIs(mc, TypeFactory.createType(Type.POLYGON))) {
+                        try (Connection connection = mc.getDataManager().getDataSource().getConnection();
+                             ReadTable.FilteredResultSet filteredResultSet = new ReadTable.FilteredResultSet(connection, mc.getActiveLayer().getTableReference(), selectedGeometries, new NullProgressMonitor(), true, "")) {
+
+                            SpatialResultSet rs = filteredResultSet.getResultSet();
+                            while (rs.next()) {
+                                geom = geometryDifference(geom, rs.getGeometry());
+                            }
+                        } catch (IOException ex) {
+                            throw new SQLException(ex.getLocalizedMessage(), ex);
+                        }
+                        if (ToolUtilities.geometryTypeIs(mc, GeometryTypeCodes.POLYGON)) {
+                            rowSet.moveToInsertRow();
+                            for (int i = 0; i < geom.getNumGeometries(); i++) {
+                                rowSet.updateGeometry(geom.getGeometryN(i));
+                                rowSet.insertRow();
+                            }
+                        } else if (ToolUtilities.geometryTypeIs(mc, GeometryTypeCodes.MULTIPOLYGON, GeometryTypeCodes
+                                .GEOMETRY)) {
+                            if (geom instanceof Polygon) {
+                                Polygon polygon = (Polygon) geom;
+                                geom = geom.getFactory().createMultiPolygon(new Polygon[]{polygon});
+                                rowSet.updateGeometry(geom);
+                                rowSet.insertRow();
+                            } else if (geom instanceof MultiPolygon) {
                                 for (int i = 0; i < geom.getNumGeometries(); i++) {
-                                        row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(geom.getGeometryN(i));
-                                        row = ToolUtilities.populateNotNullFields(sds, row);
-                                        sds.insertFilledRow(row);
+                                    Polygon polygon = (Polygon) geom.getGeometryN(i);
+                                    geom = geom.getFactory().createMultiPolygon(new Polygon[]{polygon});
+                                    rowSet.updateGeometry(geom);
+                                    rowSet.insertRow();
                                 }
-                        } else if (ToolUtilities.geometryTypeIs(
-                                mc,
-                                TypeFactory.createType(Type.MULTIPOLYGON),
-                                TypeFactory.createType(Type.GEOMETRY,
-                                ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY,
-                                GeometryDimensionConstraint.DIMENSION_SURFACE)),
-                                TypeFactory.createType(Type.GEOMETRYCOLLECTION,
-                                ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY,
-                                GeometryDimensionConstraint.DIMENSION_SURFACE)))) {
-                                if (geom instanceof Polygon) {
-                                        Polygon polygon = (Polygon) geom;
-                                        geom = geom.getFactory().createMultiPolygon(new Polygon[]{polygon});
-                                        row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(geom);
-                                        row = ToolUtilities.populateNotNullFields(sds, row);
-                                        sds.insertFilledRow(row);
-                                } else if (geom instanceof MultiPolygon) {
-                                        for (int i = 0; i < geom.getNumGeometries(); i++) {
-                                                Polygon polygon = (Polygon) geom.getGeometryN(i);
-                                                geom = geom.getFactory().createMultiPolygon(new Polygon[]{polygon});
-                                                row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(geom);
-                                                row = ToolUtilities.populateNotNullFields(sds, row);
-                                                sds.insertFilledRow(row);
-                                        }
-
-                                }
+                            }
                         }
-
-
-                } catch (DriverException e) {
+                    } catch (SQLException e) {
                         throw new TransitionException(i18n.tr("Cannot Autocomplete the polygon"), e);
+                    } finally {
+                        lock.unlock();
+                    }
                 }
         }
 
@@ -109,7 +125,7 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
          * @param geometryA
          * @param geometryB
          * @return geometry
-         * @throws DriverException
+         * @throws java.sql.SQLException
          */
         private Geometry computeGeometryDifference(Geometry geometryA, Geometry geometryB) throws SQLException {
                 if (geometryA.intersects(geometryB)) {
@@ -124,33 +140,22 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
 
         }
 
-        private Geometry execute(Handler handler, Geometry drawingGeom, DataSource sds) throws SQLException {
-                System.out.println(drawingGeom.toText());
-                Geometry result = drawingGeom;
-
-                if (handler instanceof MultiPolygonHandler) {
-                        Geometry geom = sds.getGeometry(handler.getGeometryIndex());
-                        for (int i = 0; i < geom.getNumGeometries(); i++) {
-                                result = computeGeometryDifference(geom.getGeometryN(i), result);
-                        }
-                } else if (handler instanceof PolygonHandler) {
-                        Geometry geom = sds.getGeometry(handler.getGeometryIndex());
-                        result = computeGeometryDifference(geom, result);
-
-
+        private Geometry geometryDifference(Geometry drawingGeom, Geometry geom) throws SQLException {
+            Geometry result = drawingGeom;
+            if (geom instanceof MultiPolygon) {
+                for (int i = 0; i < geom.getNumGeometries(); i++) {
+                        result = computeGeometryDifference(geom.getGeometryN(i), result);
                 }
-
-                return result;
-
-
-
-
+            } else if (geom instanceof Polygon) {
+                result = computeGeometryDifference(geom, result);
+            }
+            return result;
         }
 
         @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
-            try(Connection connection = vc.getDataManager().getDataSource().getConnection()) {
-                return ToolUtilities.geometryTypeIs(connection,vc, GeometryTypeCodes.POLYGON,
+            try {
+                return ToolUtilities.geometryTypeIs(vc, GeometryTypeCodes.POLYGON,
                         GeometryTypeCodes.MULTIPOLYGON, GeometryTypeCodes.GEOMETRY, GeometryTypeCodes.GEOMCOLLECTION)
                      && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1);
             } catch (SQLException ex) {
@@ -167,10 +172,12 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
         }
 
         @Override
-        public double getInitialZ(MapContext mapContext) {
-                return ToolUtilities.getActiveLayerInitialZ(mapContext);
-
-
+        public double getInitialZ(MapContext mapContext) throws TransitionException {
+                try(Connection connection = mapContext.getDataManager().getDataSource().getConnection()) {
+                    return ToolUtilities.getActiveLayerInitialZ(connection, mapContext);
+                } catch (SQLException ex) {
+                    throw new TransitionException(ex.getLocalizedMessage(), ex);
+                }
         }
 
         @Override

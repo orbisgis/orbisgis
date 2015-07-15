@@ -29,6 +29,7 @@
 package org.orbisgis.mapeditor.map.tools;
 
 import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.mapeditor.map.tool.TransitionException;
 
 /**
  * Interface implemented by some tools that create new geometries and add them
@@ -46,6 +47,6 @@ public interface InsertionTool {
 	 * @return The desired Z component or Double.NaN if the coordinate does not
 	 *         have Z component
 	 */
-	double getInitialZ(MapContext mapContext);
+	double getInitialZ(MapContext mapContext) throws TransitionException;
 
 }
