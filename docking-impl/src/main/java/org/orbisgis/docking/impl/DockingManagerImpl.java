@@ -87,6 +87,7 @@ import org.orbisgis.docking.impl.internals.actions.ToolBarItem;
 import org.orbisgis.docking.impl.preferences.OrbisGISPreferenceTreeModel;
 import org.orbisgis.docking.impl.preferences.editors.UserInformationEditor;
 import org.orbisgis.mainframe.api.MainWindow;
+import org.orbisgis.mainframe.api.ToolBarAction;
 import org.orbisgis.sif.components.actions.ActionFactoryService;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.sif.components.actions.ActionsHolder;
@@ -132,9 +133,11 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
     // Action provided to this DockingManager
     private List<Action> addedToolBarActions = new LinkedList<Action>();
     private Map<ActionFactoryService, MenuTrackerAction> actionFromFactory = new HashMap<>();
+    private MainWindow mainWindow;
 
     @Reference
     public void setMainWindow(MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
         this.owner = mainWindow.getMainFrame();
         // Method bibliothek.gui.dock.util.DockUtilities.checkLayoutLocked(DockUtilities.java:723)
         // Throw a RuntimeException: java.lang.Error: Trampoline must not be defined by the bootstrap classloader
@@ -730,6 +733,16 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
             defaultLocation = defaultLocation.aside();
         }
         return defaultLocation;
+    }
+
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
+            ReferencePolicyOption.GREEDY)
+    public void addToolBarFactory(ToolBarAction factory) {
+        addActionFactory(factory, mainWindow);
+    }
+
+    public void removeToolBarFactory(ToolBarAction factory) {
+        removeActionFactory(factory);
     }
 
     @Override
