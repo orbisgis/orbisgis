@@ -180,4 +180,13 @@ public class ToolBoxPanel extends JPanel {
         }
         return scriptList;
     }
+
+    public void removeSelected(){
+        TreeNodeWps selected = (TreeNodeWps)tree.getLastSelectedPathComponent();
+        if(!selected.equals(root)){
+            model.removeNodeFromParent(selected);
+            model.reload();
+            toolBox.removeSelected();
+        }
+    }
 }

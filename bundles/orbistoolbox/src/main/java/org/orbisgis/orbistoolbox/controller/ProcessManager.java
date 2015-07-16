@@ -181,4 +181,16 @@ public class ProcessManager {
         }
         return null;
     }
+
+    public void removeProcess(Process process) {
+        ProcessIdentifier toRemove = null;
+        for(ProcessIdentifier pi : processIdList){
+            if(pi.getProcess().equals(process)){
+                toRemove = pi;
+            }
+        }
+        if(toRemove != null){
+            processIdList.remove(toRemove);
+        }
+    }
 }

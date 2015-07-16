@@ -59,6 +59,7 @@ public class ToolBox implements DockingPanel {
     private static final String ADD_SOURCE = "ADD_SOURCE";
     private static final String RUN_SCRIPT = "RUN_SCRIPT";
     private static final String REFRESH_SOURCE = "REFRESH_SOURCE";
+    private static final String REMOVE = "REMOVE";
 
     private DockingPanelParameters parameters;
     private ProcessManager processManager;
@@ -67,7 +68,6 @@ public class ToolBox implements DockingPanel {
 
     private ProcessUIBuilder processUIBuilder;
     private Process selectedProcess;
-    private Map<URI, Object> dataMap;
 
     @Activate
     public void init(){
@@ -113,6 +113,16 @@ public class ToolBox implements DockingPanel {
                         null
                 )
         );
+        dockingActions.addAction(
+                new DefaultAction(
+                        REMOVE,
+                        "Remove a source or a script",
+                        "Remove a source or a script",
+                        ToolBoxIcon.getIcon("remove"),
+                        EventHandler.create(ActionListener.class, toolBoxPanel, "removeSelected"),
+                        null
+                )
+        );
 
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
@@ -151,7 +161,6 @@ public class ToolBox implements DockingPanel {
             selectedProcess = null;
             return false;
         }
-        dataMap = new HashMap<>();
         selectedProcess = processManager.getProcess(f);
         if(selectedProcess == null){
             return false;
@@ -189,5 +198,10 @@ public class ToolBox implements DockingPanel {
                 inputList, inputDataTypeList, inputAbstractList,
                 outputList, outputDataTypeList, outputAbstractList);
         return true;
+    }
+
+    public void removeSelected(){
+        processManager.removeProcess(selectedProcess);
+        selectedProcess = null;
     }
 }
