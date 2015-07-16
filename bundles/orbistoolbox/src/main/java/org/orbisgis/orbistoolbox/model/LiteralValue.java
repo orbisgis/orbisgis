@@ -40,11 +40,11 @@ public class LiteralValue {
     /**
      * Constructor giving the data represented.
      * @param data Data represented. Can not be null.
-     * @throws IllegalArgumentException Exception get on setting a null data.
+     * @throws MalformedScriptException Exception get on setting a null data.
      */
-    public LiteralValue(Values data) throws IllegalArgumentException {
+    public LiteralValue(Values data) throws MalformedScriptException {
         if (data == null) {
-            throw new IllegalArgumentException("The parameter \"data\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "data", "can not be null");
         }
         this.data = data;
         this.dataType = null;
@@ -63,11 +63,11 @@ public class LiteralValue {
     /**
      * Sets the data represented.
      * @param data The new data represented. Can not be null.
-     * @throws IllegalArgumentException Exception get on setting a null data.
+     * @throws MalformedScriptException Exception get on setting a null data.
      */
-    public void setData(Values data) throws IllegalArgumentException {
+    public void setData(Values data) throws MalformedScriptException {
         if (data == null) {
-            throw new IllegalArgumentException("The parameter \"data\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "data", "can not be null");
         }
         this.data = data;
     }

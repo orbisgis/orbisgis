@@ -51,15 +51,15 @@ public class DescriptionType {
      *
      * @param title      Not null title of a process, input, output.
      * @param identifier Not null unambiguous identifier of a process, input, and output.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
+     * @throws MalformedScriptException Exception thrown if one of the parameters is null.
      */
-    public DescriptionType(String title, URI identifier) throws IllegalArgumentException {
+    public DescriptionType(String title, URI identifier) throws MalformedScriptException {
         //Verify if the parameters are not null
         if (title == null) {
-            throw new IllegalArgumentException("The parameter \"title\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "title", "can not be null");
         }
         if (identifier == null) {
-            throw new IllegalArgumentException("The parameter \"identifier\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "identifier", "can not be null");
         }
         //Sets the attributes
         this.title = title;
@@ -82,12 +82,12 @@ public class DescriptionType {
      * Sets the title. Should not be null.
      *
      * @param title Not null title.
-     * @throws IllegalArgumentException Exception thrown if the title is null.
+     * @throws MalformedScriptException Exception thrown if the title is null.
      */
-    public void setTitle(String title) throws IllegalArgumentException {
+    public void setTitle(String title) throws MalformedScriptException {
         //Verify if the parameters are not null
         if (title == null) {
-            throw new IllegalArgumentException("The parameter \"title\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "title", "can not be null");
         }
         //Sets the attribute
         this.title = title;
@@ -208,12 +208,12 @@ public class DescriptionType {
      * Sets the identifier. It should not be null
      *
      * @param identifier Not null identifier.
-     * @throws IllegalArgumentException Exception thrown if the title is null.
+     * @throws MalformedScriptException Exception thrown if the title is null.
      */
-    public void setIdentifier(URI identifier) throws IllegalArgumentException {
+    public void setIdentifier(URI identifier) throws MalformedScriptException {
         //Verify if the parameters are not null
         if (identifier == null) {
-            throw new IllegalArgumentException("The parameter \"identifier\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "identifier", "can not be null");
         }
         this.identifier = identifier;
     }

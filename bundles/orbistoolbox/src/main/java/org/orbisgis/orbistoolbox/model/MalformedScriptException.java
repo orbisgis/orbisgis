@@ -17,37 +17,24 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.controller.parser;
-
-import groovy.transform.AnnotationCollector;
-import org.orbisgis.orbistoolbox.model.Input;
-import org.orbisgis.orbistoolbox.model.Output;
-import org.orbisgis.orbistoolboxapi.annotations.input.BoundingBoxInput;
-import org.orbisgis.orbistoolboxapi.annotations.model.BoundingBoxAttribute;
-import org.orbisgis.orbistoolboxapi.annotations.output.BoundingBoxOutput;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
+package org.orbisgis.orbistoolbox.model;
 
 /**
- * BoundingBox parser< Not yet implemented.
+ * Exception thrown when a Groovy WPS script is malformed.
  *
  * @author Sylvain PALOMINOS
  **/
 
-public class BoundingBoxParser implements Parser {
-    @Override
-    public Input parseInput(Field f, String processName) {
-        return null;
-    }
+public class MalformedScriptException extends Exception {
 
-    @Override
-    public Output parseOutput(Field f, String processName) {
-        return null;
-    }
-
-    @Override
-    public Class getAnnotation() {
-        return BoundingBoxAttribute.class;
+    /**
+     * Create an exception with a message constructed that way :
+     * "Error on implementing '<wpsModelClass>', the argument '<wrongArgument>'<reason>"
+     * @param wpsModelClass Object that can not be instantiated.
+     * @param wrongArgument Wrong argument.
+     * @param reason Reason why the argument is wrong.
+     */
+    public MalformedScriptException(Class wpsModelClass, String wrongArgument, String reason){
+        super("Error on implementing '"+wpsModelClass.getSimpleName()+"', the argument '"+wrongArgument+"' "+reason);
     }
 }

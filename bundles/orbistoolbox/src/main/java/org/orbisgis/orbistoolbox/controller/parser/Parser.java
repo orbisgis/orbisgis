@@ -50,15 +50,9 @@ public interface Parser {
     Output parseOutput(Field f, String processName);
 
     /**
-     * Returns the groovy input annotation associated to this parser.
-     * @return The grovvy input annotation associated to this parse.
+     * Returns the groovy annotation associated to this parser.
+     * @return The grovvy annotation associated to this parse.
      */
-    Class getAnnotationInput();
-
-    /**
-     * Returns the groovy output annotation associated to this parser.
-     * @return The grovvy output annotation associated to this parse.
-     */
-    Class getAnnotationOutput();
+    Class getAnnotation();
 
 }

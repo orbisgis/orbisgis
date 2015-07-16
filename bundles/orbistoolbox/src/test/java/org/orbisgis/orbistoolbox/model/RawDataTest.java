@@ -35,44 +35,44 @@ import java.util.List;
 public class RawDataTest {
 
     /**
-     * Tests if the constructor with a null format returns an IllegalArgumentException.
+     * Tests if the constructor with a null format returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullFormatConstructorTest() {
+    @Test(expected = MalformedScriptException.class)
+    public final void nullFormatConstructorTest() throws MalformedScriptException {
         new RawData((Format)null);
     }
 
     /**
-     * Tests if the constructor with a not default format returns an IllegalArgumentException.
+     * Tests if the constructor with a not default format returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void noDefaultFormatConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void noDefaultFormatConstructorTest() throws MalformedScriptException, URISyntaxException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(false);
         new RawData(f);
     }
 
     /**
-     * Tests if the constructor with a null format list returns an IllegalArgumentException.
+     * Tests if the constructor with a null format list returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullFormatListConstructorTest() {
+    @Test(expected = MalformedScriptException.class)
+    public final void nullFormatListConstructorTest() throws MalformedScriptException {
         new RawData((List<Format>)null);
     }
 
     /**
-     * Tests if the constructor with an empty format list returns an IllegalArgumentException.
+     * Tests if the constructor with an empty format list returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void emptyFormatListConstructorTest() {
+    @Test(expected = MalformedScriptException.class)
+    public final void emptyFormatListConstructorTest() throws MalformedScriptException {
         new RawData(new ArrayList<Format>());
     }
 
     /**
-     * Tests if the constructor with a format list without default format returns an IllegalArgumentException.
+     * Tests if the constructor with a format list without default format returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void noDefaultFormatListConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void noDefaultFormatListConstructorTest() throws MalformedScriptException, URISyntaxException {
         Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(false);
         Format f2 = new Format("test", new URI("http://orbisgis.org"));
@@ -86,10 +86,10 @@ public class RawDataTest {
     }
 
     /**
-     * Tests if the setFormat() method with a null format list returns an IllegalArgumentException.
+     * Tests if the setFormat() method with a null format list returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullSetFormatTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void nullSetFormatTest() throws MalformedScriptException, URISyntaxException {
         Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
 
@@ -99,10 +99,10 @@ public class RawDataTest {
     }
 
     /**
-     * Tests if the setFormat() method with an empty format list returns an IllegalArgumentException.
+     * Tests if the setFormat() method with an empty format list returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void emptySetFormatTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void emptySetFormatTest() throws MalformedScriptException, URISyntaxException {
         Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
 
@@ -112,10 +112,10 @@ public class RawDataTest {
     }
 
     /**
-     * Tests if the setFormat() method with a format list without default format returns an IllegalArgumentException.
+     * Tests if the setFormat() method with a format list without default format returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void noDefaultSetFormatTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void noDefaultSetFormatTest() throws MalformedScriptException, URISyntaxException {
         Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
 
@@ -131,10 +131,10 @@ public class RawDataTest {
 
 
     /**
-     * Tests if the addFormat() method with a null format list returns an IllegalArgumentException.
+     * Tests if the addFormat() method with a null format list returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullAddFormatTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void nullAddFormatTest() throws MalformedScriptException, URISyntaxException {
         Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
 
@@ -144,10 +144,10 @@ public class RawDataTest {
     }
 
     /**
-     * Tests if the addFormat() method with two default format returns an IllegalArgumentException.
+     * Tests if the addFormat() method with two default format returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void multipleDefaultAddFormatTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void multipleDefaultAddFormatTest() throws URISyntaxException, MalformedScriptException {
         Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
         Format f2 = new Format("test", new URI("http://orbisgis.org"));
@@ -159,10 +159,10 @@ public class RawDataTest {
     }
 
     /**
-     * Tests if the addFormat() method with no default format returns an IllegalArgumentException.
+     * Tests if the addFormat() method with no default format returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void noDefaultAddFormatTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void noDefaultAddFormatTest() throws URISyntaxException,MalformedScriptException {
         Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(false);
 
@@ -174,10 +174,10 @@ public class RawDataTest {
     }
 
     /**
-     * Tests if the removeFormat() method returns an IllegalArgumentException if the last format is removed.
+     * Tests if the removeFormat() method returns an MalformedScriptException if the last format is removed.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void removeLastFormatTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void removeLastFormatTest() throws MalformedScriptException, URISyntaxException {
         Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
 
@@ -187,10 +187,10 @@ public class RawDataTest {
     }
 
     /**
-     * Tests if the removeFormat() method returns an IllegalArgumentException if the default format is removed.
+     * Tests if the removeFormat() method returns an MalformedScriptException if the default format is removed.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void removeDefaultFormatTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void removeDefaultFormatTest() throws MalformedScriptException, URISyntaxException {
         Format f1 = new Format("test", new URI("http://orbisgis.org"));
         f1.setDefaultFormat(true);
         Format f2 = new Format("test", new URI("http://orbisgis.org"));

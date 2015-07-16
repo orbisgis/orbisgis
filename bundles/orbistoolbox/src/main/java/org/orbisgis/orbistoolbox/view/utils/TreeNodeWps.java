@@ -39,31 +39,31 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
     @Override
     public ImageIcon getLeafIcon() {
         if(isRoot){
-            return ToolBoxIcon.getIcon("source");
+            return ToolBoxIcon.getIcon("folder");
         }
         else if(isValid) {
             return ToolBoxIcon.getIcon("script");
         }
         else {
-            return ToolBoxIcon.getIcon("script_invalid");
+            return ToolBoxIcon.getIcon("remove");
         }
     }
 
     @Override
     public ImageIcon getClosedIcon() {
         if (isRoot) {
-            return ToolBoxIcon.getIcon("source");
+            return ToolBoxIcon.getIcon("folder");
         } else {
-            return ToolBoxIcon.getIcon("closed_folder");
+            return ToolBoxIcon.getIcon("folder");
         }
     }
 
     @Override
     public ImageIcon getOpenIcon() {
         if (isRoot) {
-            return ToolBoxIcon.getIcon("source");
+            return ToolBoxIcon.getIcon("folder");
         } else {
-            return ToolBoxIcon.getIcon("open_folder");
+            return ToolBoxIcon.getIcon("folder_open");
         }
     }
 

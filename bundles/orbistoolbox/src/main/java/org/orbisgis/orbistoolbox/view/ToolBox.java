@@ -59,6 +59,7 @@ public class ToolBox implements DockingPanel {
     private static final String ADD_SOURCE = "ADD_SOURCE";
     private static final String RUN_SCRIPT = "RUN_SCRIPT";
     private static final String REFRESH_SOURCE = "REFRESH_SOURCE";
+    private static final String REMOVE = "REMOVE";
 
     private DockingPanelParameters parameters;
     private ProcessManager processManager;
@@ -67,7 +68,6 @@ public class ToolBox implements DockingPanel {
 
     private ProcessUIBuilder processUIBuilder;
     private Process selectedProcess;
-    private Map<URI, Object> dataMap;
 
     @Activate
     public void init(){
@@ -88,7 +88,7 @@ public class ToolBox implements DockingPanel {
                         ADD_SOURCE,
                         "Add source",
                         "Add a local source",
-                        ToolBoxIcon.getIcon("add_source"),
+                        ToolBoxIcon.getIcon("folder_add"),
                         EventHandler.create(ActionListener.class, toolBoxPanel, "addLocalSource"),
                         null
                 )
@@ -98,7 +98,7 @@ public class ToolBox implements DockingPanel {
                         RUN_SCRIPT,
                         "Run a script",
                         "Run a script",
-                        ToolBoxIcon.getIcon("run"),
+                        ToolBoxIcon.getIcon("execute"),
                         EventHandler.create(ActionListener.class, this, "runScript"),
                         null
                 )
@@ -110,6 +110,16 @@ public class ToolBox implements DockingPanel {
                         "Refresh a source",
                         ToolBoxIcon.getIcon("refresh"),
                         EventHandler.create(ActionListener.class, toolBoxPanel, "refreshSource"),
+                        null
+                )
+        );
+        dockingActions.addAction(
+                new DefaultAction(
+                        REMOVE,
+                        "Remove a source or a script",
+                        "Remove a source or a script",
+                        ToolBoxIcon.getIcon("remove"),
+                        EventHandler.create(ActionListener.class, toolBoxPanel, "removeSelected"),
                         null
                 )
         );
@@ -151,42 +161,47 @@ public class ToolBox implements DockingPanel {
             selectedProcess = null;
             return false;
         }
-        dataMap = new HashMap<>();
         selectedProcess = processManager.getProcess(f);
         if(selectedProcess == null){
             return false;
         }
 
         List<String> inputList = new ArrayList<>();
+        List<DataType> inputDataTypeList = new ArrayList<>();
+        List<String> inputAbstractList = new ArrayList<>();
         List<String> outputList = new ArrayList<>();
+        List<DataType> outputDataTypeList = new ArrayList<>();
+        List<String> outputAbstractList = new ArrayList<>();
         for(Input i : selectedProcess.getInput()){
-        String type = "";
-        if(i.getDataDescription() instanceof LiteralData){
-            for(LiteralDataDomain ldd : ((LiteralData) i.getDataDescription()).getLiteralDomainType()){
-                    type += ldd.getDataType().name().toLowerCase() + " ";
-                }
-            type += ": ";
+            if(i.getDataDescription() instanceof LiteralData){
+                inputDataTypeList.add(((LiteralData)i.getDataDescription()).getLiteralDomainType().get(0).getDataType());
             }
             else{
-                    type = i.getDataDescription().getClass().getSimpleName() + " : ";
-                }
-            inputList.add(type + i.getTitle());
-        }
-        for(Output o : selectedProcess.getOutput()){
-        String type = "";
-        if(o.getDataDescription() instanceof LiteralData){
-            for(LiteralDataDomain ldd : ((LiteralData) o.getDataDescription()).getLiteralDomainType()){
-                    type += ldd.getDataType().name().toLowerCase() + " ";
-                }
-            type += ": ";
-        }
-        else{
-                type = o.getDataDescription().getClass().getSimpleName() + " : ";
+                inputDataTypeList.add(null);
             }
-        outputList.add(type + o.getTitle());
+            inputList.add(i.getTitle());
+            inputAbstractList.add(i.getAbstrac());
         }
 
-        toolBoxPanel.setProcessInfo(selectedProcess.getTitle(), selectedProcess.getAbstrac(), inputList, outputList);
+        for(Output o : selectedProcess.getOutput()){
+            if(o.getDataDescription() instanceof LiteralData){
+                outputDataTypeList.add(((LiteralData)o.getDataDescription()).getLiteralDomainType().get(0).getDataType());
+            }
+            else{
+                outputDataTypeList.add(null);
+            }
+            outputList.add(o.getTitle());
+            outputAbstractList.add(o.getAbstrac());
+        }
+
+        toolBoxPanel.setProcessInfo(selectedProcess.getTitle(), selectedProcess.getAbstrac(),
+                inputList, inputDataTypeList, inputAbstractList,
+                outputList, outputDataTypeList, outputAbstractList);
         return true;
+    }
+
+    public void removeSelected(){
+        processManager.removeProcess(selectedProcess);
+        selectedProcess = null;
     }
 }

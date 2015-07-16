@@ -47,19 +47,19 @@ public class LiteralDataDomain {
      * @param plvc Identifies a valid format for an input or output.
      * @param dataType Reference to the data type of this set of values.
      * @param defaultValue Default value for this quantity.
-     * @throws IllegalArgumentException Exception get on giving a null argument.
+     * @throws MalformedScriptException Exception get on giving a null argument.
      */
     public LiteralDataDomain(PossibleLiteralValuesChoice plvc, DataType dataType, Values defaultValue)
-            throws IllegalArgumentException {
+            throws MalformedScriptException {
         //Verify if the parameters are not null
         if (plvc == null) {
-            throw new IllegalArgumentException("The parameter \"plvc\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "plvc", "can not be null");
         }
         if (dataType == null) {
-            throw new IllegalArgumentException("The parameter \"dataType\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "dataType", "can not be null");
         }
         if (defaultValue == null) {
-            throw new IllegalArgumentException("The parameter \"defaultValue\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "defaultValue", "can not be null");
         }
         this.plvc = plvc;
         this.dataType = dataType;
@@ -71,13 +71,13 @@ public class LiteralDataDomain {
     /**
      * Sets the PossibleLiteralValuesChoice.
      * @param plvc Not null PossibleLiteralValuesChoice.
-     * @throws IllegalArgumentException Exception get on giving a null argument.
+     * @throws MalformedScriptException Exception get on giving a null argument.
      */
     public void setPossibleLiteralValuesChoice(PossibleLiteralValuesChoice plvc)
-            throws IllegalArgumentException {
+            throws MalformedScriptException {
         //Verify if the parameters are not null
         if (plvc == null) {
-            throw new IllegalArgumentException("The parameter \"plvc\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "plvc", "can not be null");
         }
         this.plvc = plvc;
     }
@@ -93,12 +93,12 @@ public class LiteralDataDomain {
     /**
      * Sets the data type.
      * @param dataType Not null DataType.
-     * @throws IllegalArgumentException Exception get on giving a null argument.
+     * @throws MalformedScriptException Exception get on giving a null argument.
      */
-    public void setDataType(DataType dataType) throws IllegalArgumentException {
+    public void setDataType(DataType dataType) throws MalformedScriptException {
         //Verify if the parameters are not null
         if (dataType == null) {
-            throw new IllegalArgumentException("The parameter \"dataType\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "dataType", "can not be null");
         }
         this.dataType = dataType;
     }
@@ -133,7 +133,7 @@ public class LiteralDataDomain {
      * Indicates if this domain is the default one or not.
      * @param defaultDomain True if it is the default domain, false otherwise.
      */
-    public void setDefaultDomain(boolean defaultDomain) throws IllegalArgumentException {
+    public void setDefaultDomain(boolean defaultDomain) throws MalformedScriptException {
         this.defaultDomain = defaultDomain;
     }
 
@@ -148,11 +148,11 @@ public class LiteralDataDomain {
     /**
      * Sets the default value.
      * @param defaultValue Not null default value.
-     * @throws IllegalArgumentException Exception get on setting a null default value.
+     * @throws MalformedScriptException Exception get on setting a null default value.
      */
-    public void setDefaultValue(Values defaultValue) throws IllegalArgumentException {
+    public void setDefaultValue(Values defaultValue) throws MalformedScriptException {
         if (defaultDomain && defaultValue == null) {
-            throw new IllegalArgumentException("The parameter \"defaultValue\" can not be null if \"defaultDomain\" is true");
+            throw new MalformedScriptException(this.getClass(), "defaultValue", "can not be null if \"defaultDomain\" is true");
         }
         this.defaultValue = defaultValue;
     }

@@ -19,6 +19,7 @@
 
 package org.orbisgis.orbistoolbox.view.ui;
 
+import org.orbisgis.orbistoolbox.model.DataType;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.TreeNodeWps;
 import org.orbisgis.sif.UIFactory;
@@ -101,15 +102,16 @@ public class ToolBoxPanel extends JPanel {
      * @param inputList
      * @param outputList
      */
-    public void setProcessInfo(String title, String abstrac, List<String> inputList, List<String> outputList){
+    public void setProcessInfo(String title, String abstrac,
+                               List<String> inputList, List<DataType> inputDataTypes, List<String> inputAbstract,
+                               List<String> outputList, List<DataType> outputDataTypes, List<String> outputAbstract){
         processInfoPanel.setTitle(title);
         processInfoPanel.setAbstrac(abstrac);
-        processInfoPanel.setInputList(inputList);
-        processInfoPanel.setOutputList(outputList);
+        processInfoPanel.setInputList(inputList, inputDataTypes, inputAbstract);
+        processInfoPanel.setOutputList(outputList, outputDataTypes, outputAbstract);
         processInfoPanel.updateComponent();
         this.revalidate();
         processInfoPanel.revalidate();
-        processInfoPanel.repaint();
     }
 
     /**
@@ -177,5 +179,14 @@ public class ToolBoxPanel extends JPanel {
             }
         }
         return scriptList;
+    }
+
+    public void removeSelected(){
+        TreeNodeWps selected = (TreeNodeWps)tree.getLastSelectedPathComponent();
+        if(!selected.equals(root)){
+            model.removeNodeFromParent(selected);
+            model.reload();
+            toolBox.removeSelected();
+        }
     }
 }

@@ -36,55 +36,55 @@ import java.util.List;
 public class InputTest {
 
     /**
-     * Tests if the constructor with a null title returns an IllegalArgumentException.
+     * Tests if the constructor with a null title returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullTitleConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void nullTitleConstructorTest() throws URISyntaxException, MalformedScriptException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
         new Input(null, new URI("test"), new RawData(f));
     }
 
     /**
-     * Tests if the constructor with a null identifier returns an IllegalArgumentException.
+     * Tests if the constructor with a null identifier returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullURIConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void nullURIConstructorTest() throws URISyntaxException, MalformedScriptException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
         new Input("test", null, new RawData(f));
     }
 
     /**
-     * Tests if the constructor with a null dataDescription returns an IllegalArgumentException.
+     * Tests if the constructor with a null dataDescription returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullDataDescriptionConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void nullDataDescriptionConstructorTest() throws URISyntaxException, MalformedScriptException {
         new Input("test", new URI("test"), (List<Input>)null);
     }
 
     /**
-     * Tests if the constructor with a null input list returns an IllegalArgumentException.
+     * Tests if the constructor with a null input list returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullInputConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void nullInputConstructorTest() throws URISyntaxException, MalformedScriptException {
         new Input("test", new URI("test"), (DataDescription)null);
     }
 
     /**
-     * Tests if the constructor with an empty input list returns an IllegalArgumentException.
+     * Tests if the constructor with an empty input list returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void emptyInputConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void emptyInputConstructorTest() throws URISyntaxException, MalformedScriptException {
         List<Input> emptyList = new ArrayList<>();
         new Input("test", new URI("test"), emptyList);
     }
 
     /**
-     * Tests if the constructor with a input list containing a null input returns an IllegalArgumentException.
+     * Tests if the constructor with a input list containing a null input returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void containingNullInputConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void containingNullInputConstructorTest() throws URISyntaxException, MalformedScriptException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
         Input simpleInput = new Input("test", new URI("test"), new RawData(f));
@@ -98,7 +98,7 @@ public class InputTest {
      * Tests if setting the input list sets the data description to null.
      */
     @Test()
-    public final void setInputTest() throws URISyntaxException {
+    public final void setInputTest() throws URISyntaxException, MalformedScriptException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
         Input simpleInput1 = new Input("test", new URI("test"), new RawData(f));
@@ -117,7 +117,7 @@ public class InputTest {
      * Tests if setting the data description sets the input list to null.
      */
     @Test()
-    public final void setDataDescriptionTest() throws URISyntaxException {
+    public final void setDataDescriptionTest() throws URISyntaxException, MalformedScriptException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
         Input simpleInput = new Input("test", new URI("test"), new RawData(f));
@@ -133,7 +133,7 @@ public class InputTest {
      * Tests if setting false occurrence value do not break the Input.
      */
     @Test()
-    public final void setOccurrenceTest() throws URISyntaxException {
+    public final void setOccurrenceTest() throws URISyntaxException, MalformedScriptException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
         Input simpleInput = new Input("test", new URI("test"), new RawData(f));

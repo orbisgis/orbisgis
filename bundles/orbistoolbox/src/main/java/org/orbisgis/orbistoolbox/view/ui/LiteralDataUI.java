@@ -100,7 +100,6 @@ public class LiteralDataUI implements DataUI {
                         "source"));
                 break;
             case INTEGER:
-                System.out.println(DataType.valueOf(s.toUpperCase()));
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
                 dataComponent.putClientProperty("type", DataType.INTEGER);
                 dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));

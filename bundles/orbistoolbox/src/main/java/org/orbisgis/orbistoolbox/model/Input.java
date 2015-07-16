@@ -56,12 +56,12 @@ public class Input extends DescriptionType {
      * @param title      Not null title of a process, input, input.
      * @param identifier Not null unambiguous identifier of a process, input, and input.
      * @param dataDescription Not null DataDescription of this input.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
+     * @throws MalformedScriptException Exception thrown if one of the parameters is null.
      */
-    public Input(String title, URI identifier, DataDescription dataDescription) throws IllegalArgumentException {
+    public Input(String title, URI identifier, DataDescription dataDescription) throws MalformedScriptException {
         super(title, identifier);
         if(dataDescription == null ){
-            throw new IllegalArgumentException("The argument \"dataDescription\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "dataDescription", "can not be null");
         }
         this.minOccurs = 1;
         this.maxOccurs = 1;
@@ -78,18 +78,18 @@ public class Input extends DescriptionType {
      * @param title      Not null title of a process, input, input.
      * @param identifier Not null unambiguous identifier of a process, input, and input.
      * @param inputList Not null DataDescription of this input.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null or empty or containing null.
+     * @throws MalformedScriptException Exception thrown if one of the parameters is null or empty or containing null.
      */
-    public Input(String title, URI identifier, List<Input> inputList) throws IllegalArgumentException {
+    public Input(String title, URI identifier, List<Input> inputList) throws MalformedScriptException {
         super(title, identifier);
         if(inputList == null){
-            throw new IllegalArgumentException("The argument \"inputList\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "inputList", "can not be null");
         }
         if(inputList.isEmpty()){
-            throw new IllegalArgumentException("The argument \"inputList\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "inputList", "can not be empty");
         }
         if(inputList.contains(null)){
-            throw new IllegalArgumentException("The argument \"inputList\" can not contain a null value");
+            throw new MalformedScriptException(this.getClass(), "inputList", "can not contain a null value");
         }
         this.minOccurs = 1;
         this.maxOccurs = 1;
@@ -101,9 +101,9 @@ public class Input extends DescriptionType {
      * Sets the DataDescription of this input (the argument should not be null) and set to null the input list.
      * @param dataDescription New DataDescription.
      */
-    public void setDataDescription(DataDescription dataDescription) throws IllegalArgumentException {
+    public void setDataDescription(DataDescription dataDescription) throws MalformedScriptException {
         if (dataDescription == null) {
-            throw new IllegalArgumentException("The argument \"dataDescription\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "dataDescription", "can not be null");
         }
         input = null;
         this.dataDescription = dataDescription;
@@ -122,17 +122,17 @@ public class Input extends DescriptionType {
      * Sets the input list with the not null/empty list and set the dataDescription to null.
      * The list should not contain null value.
      * @param inputList List of nested input.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null or empty or containing null.
+     * @throws MalformedScriptException Exception thrown if one of the parameters is null or empty or containing null.
      */
-    public void setInput(List<Input> inputList) throws IllegalArgumentException {
+    public void setInput(List<Input> inputList) throws MalformedScriptException {
         if (inputList == null) {
-            throw new IllegalArgumentException("The argument \"inputList\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "inputList", "can not be null");
         }
         if (inputList.isEmpty()) {
-            throw new IllegalArgumentException("The argument \"inputList\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "inputList", "can not be empty");
         }
         if (inputList.contains(null)) {
-            throw new IllegalArgumentException("The argument \"inputList\" can not contain a null value");
+            throw new MalformedScriptException(this.getClass(), "inputList", "can not contain a null value");
         }
         input = new ArrayList<>();
         for(Input i : inputList) {
