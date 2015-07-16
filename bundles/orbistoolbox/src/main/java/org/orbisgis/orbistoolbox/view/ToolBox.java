@@ -88,7 +88,7 @@ public class ToolBox implements DockingPanel {
                         ADD_SOURCE,
                         "Add source",
                         "Add a local source",
-                        ToolBoxIcon.getIcon("add_source"),
+                        ToolBoxIcon.getIcon("folder_add"),
                         EventHandler.create(ActionListener.class, toolBoxPanel, "addLocalSource"),
                         null
                 )
@@ -98,7 +98,7 @@ public class ToolBox implements DockingPanel {
                         RUN_SCRIPT,
                         "Run a script",
                         "Run a script",
-                        ToolBoxIcon.getIcon("run"),
+                        ToolBoxIcon.getIcon("execute"),
                         EventHandler.create(ActionListener.class, this, "runScript"),
                         null
                 )
