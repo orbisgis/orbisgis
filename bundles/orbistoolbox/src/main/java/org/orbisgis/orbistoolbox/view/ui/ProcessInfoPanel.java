@@ -20,8 +20,11 @@
 package org.orbisgis.orbistoolbox.view.ui;
 
 import net.miginfocom.swing.MigLayout;
+import org.orbisgis.orbistoolbox.model.DataType;
+import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,102 +36,146 @@ import java.util.List;
 
 public class ProcessInfoPanel extends JPanel {
 
-    private String title;
-    private String abstrac;
-    private List<String> inputList;
-    private List<String> outputList;
-
     private JLabel titleContentLabel;
     private JLabel abstracContentLabel;
-    private JLabel inputListContentLabel;
-    private JLabel outputListContentLabel;
+    private JPanel inputPanel;
+    private JPanel outputPanel;
 
     public ProcessInfoPanel(){
         super();
-        this.setLayout(new MigLayout("", "", "[] 3 [] 15 [] 3 [] 15 [] 3 [] 15 [] 3 [] 15"));
-        inputList = new ArrayList<>();
-        outputList = new ArrayList<>();
+        this.setLayout(new MigLayout());
 
-        JLabel titleLabel = new JLabel("Title :");
         titleContentLabel = new JLabel();
-        JLabel abstracLabel = new JLabel("Abstract :");
         abstracContentLabel = new JLabel();
-        JLabel inputListLabel = new JLabel("Inputs :");
-        inputListContentLabel = new JLabel();
-        JLabel outputListLabel = new JLabel("Outputs :");
-        outputListContentLabel = new JLabel();
 
-        setTitle(null);
-        setAbstrac(null);
-        setInputList(null);
-        setOutputList(null);
+        JPanel processPanel = new JPanel(new MigLayout());
+        processPanel.setBorder(BorderFactory.createTitledBorder("Title :"));
+        processPanel.add(titleContentLabel, "wrap, align left");
+        abstracContentLabel.setFont(abstracContentLabel.getFont().deriveFont(Font.ITALIC));
+        processPanel.add(abstracContentLabel, "wrap, align left");
 
-        updateComponent();
 
-        this.add(titleLabel, "wrap");
-        this.add(titleContentLabel, "wrap");
-        this.add(abstracLabel, "wrap");
-        this.add(abstracContentLabel, "wrap");
-        this.add(inputListLabel, "wrap");
-        this.add(inputListContentLabel, "wrap");
-        this.add(outputListLabel, "wrap");
-        this.add(outputListContentLabel, "wrap");
+        inputPanel = new JPanel(new MigLayout());
+        inputPanel.setBorder(BorderFactory.createTitledBorder("Inputs :"));
+        //inputPanel.add(inputListContentLabel, "align left");
+
+        outputPanel = new JPanel(new MigLayout());
+        outputPanel.setBorder(BorderFactory.createTitledBorder("Outputs :"));
+        //outputPanel.add(outputListContentLabel, "align left");
+
+        this.add(processPanel, "growx, wrap");
+        this.add(inputPanel, "growx, wrap");
+        this.add(outputPanel, "growx, wrap");
     }
 
     public void updateComponent(){
-        titleContentLabel.setText(title);
-        abstracContentLabel.setText(abstrac);
-        String input = "";
-        for(String s : inputList){
-            input += s+"\n";
-        }
-        inputListContentLabel.setText(input);
-        String output = "";
-        for(String s : outputList){
-            output += s+"\n";
-        }
-        outputListContentLabel.setText(output);
+        this.revalidate();
     }
 
     public void setTitle(String title) {
         if(title == null){
-            this.title = "-";
+            titleContentLabel.setText("\t-\t");
         }
         else{
-            this.title = title;
+            titleContentLabel.setText(title);
         }
     }
 
     public void setAbstrac(String abstrac) {
         if(abstrac == null){
-            this.abstrac = "-";
+            abstracContentLabel.setText("\t-\t");
         }
         else{
-            this.abstrac = abstrac;
+            abstracContentLabel.setText(abstrac);
         }
     }
 
-    public void setInputList(List<String> inputList) {
+    public void setInputList(List<String> inputList, List<DataType> dataTypeList, List<String> abstractList) {
+        inputPanel.removeAll();
         if(inputList == null){
-            this.inputList.add("-");
+            inputPanel.add(new JLabel("-"), "align center, wrap");
         }
         else{
-            while(!this.inputList.isEmpty()){
-                this.inputList.remove(0);
+            for(int i = 0; i< inputList.size(); i++){
+                if(dataTypeList.get(i) == null) {
+                    inputPanel.add(new JLabel(ToolBoxIcon.getIcon("undefined")));
+                }
+                else {
+                    switch (dataTypeList.get(i)) {
+                        case STRING:
+                            inputPanel.add(new JLabel(ToolBoxIcon.getIcon("string")));
+                            break;
+                        case UNSIGNED_BYTE:
+                        case SHORT:
+                        case LONG:
+                        case BYTE:
+                        case INTEGER:
+                        case DOUBLE:
+                        case FLOAT:
+                            inputPanel.add(new JLabel(ToolBoxIcon.getIcon("number")));
+                            break;
+                        case BOOLEAN:
+                            inputPanel.add(new JLabel(ToolBoxIcon.getIcon("boolean")));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                inputPanel.add(new JLabel(inputList.get(i)), "align left, wrap");
+                if(abstractList.get(i) != null) {
+                    JLabel abstrac = new JLabel(abstractList.get(i));
+                    abstrac.setFont(abstrac.getFont().deriveFont(Font.ITALIC));
+                    inputPanel.add(abstrac, "span 2, wrap");
+                }
+                else {
+                    inputPanel.add(new JLabel("-"), "align center, span 2, wrap");
+                }
             }
-            this.inputList = inputList;
         }
     }
 
-    public void setOutputList(List<String> outputList) {
+    public void setOutputList(List<String> outputList, List<DataType> dataTypeList, List<String> abstractList) {
+        outputPanel.removeAll();
         if(outputList == null){
-            this.outputList.add("-");
+            outputPanel.add(new JLabel("-"), "align center, wrap");
         }
         else{
-            while(!this.outputList.isEmpty()){
-                this.outputList.remove(0);
+            for(int i = 0; i< outputList.size(); i++){
+                if(dataTypeList.get(i) == null) {
+                    outputPanel.add(new JLabel(ToolBoxIcon.getIcon("undefined")));
+                }
+                else {
+                    switch (dataTypeList.get(i)) {
+                        case STRING:
+                            outputPanel.add(new JLabel(ToolBoxIcon.getIcon("string")));
+                            break;
+                        case UNSIGNED_BYTE:
+                        case SHORT:
+                        case LONG:
+                        case BYTE:
+                        case INTEGER:
+                        case DOUBLE:
+                        case FLOAT:
+                            outputPanel.add(new JLabel(ToolBoxIcon.getIcon("number")));
+                            break;
+                        case BOOLEAN:
+                            outputPanel.add(new JLabel(ToolBoxIcon.getIcon("boolean")));
+                            break;
+                        default:
+                            outputPanel.add(new JLabel(ToolBoxIcon.getIcon("undefined")));
+                            break;
+                    }
+                }
+                outputPanel.add(new JLabel(outputList.get(i)), "align left, wrap");
+                if(abstractList.get(i) != null) {
+                    JLabel abstrac = new JLabel(abstractList.get(i));
+                    abstrac.setFont(abstrac.getFont().deriveFont(Font.ITALIC));
+                    outputPanel.add(abstrac, "span 2, wrap");
+                }
+                else {
+                    outputPanel.add(new JLabel("-"), "align center, span 2, wrap");
+                }
             }
-            this.outputList = outputList;
         }
     }
 }

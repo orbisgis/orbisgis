@@ -41,7 +41,8 @@ public enum DataType {
     SHORT("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#short"),
     BYTE("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#byte"),
     UNSIGNED_BYTE("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#unsignedByte"),
-    LONG("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#long");
+    LONG("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#long"),
+    NONE("none");
 
     /** URI for the data type. */
     private URI uri;

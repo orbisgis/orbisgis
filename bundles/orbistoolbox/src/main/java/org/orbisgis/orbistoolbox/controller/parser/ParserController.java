@@ -76,12 +76,10 @@ public class ParserController {
             for(Annotation a : f.getDeclaredAnnotations()){
                 if(a instanceof InputAttribute){
                     boolean parsed = false;
-                    for(Annotation annotation : f.getDeclaredAnnotations()){
-                        for(Parser parser : parserList){
-                            if(parser.getAnnotationInput().isAssignableFrom(annotation.getClass())){
-                                inputList.add(parser.parseInput(f, process.getName()));
-                                parsed = true;
-                            }
+                    for(Parser parser : parserList){
+                        if(f.getAnnotation(parser.getAnnotation())!= null){
+                            inputList.add(parser.parseInput(f, process.getName()));
+                            parsed = true;
                         }
                     }
                     if(!parsed){
@@ -90,12 +88,10 @@ public class ParserController {
                 }
                 if(a instanceof OutputAttribute){
                     boolean parsed = false;
-                    for(Annotation annotation : f.getDeclaredAnnotations()){
-                        for(Parser parser : parserList){
-                            if(parser.getAnnotationInput().isAssignableFrom(annotation.getClass())){
-                                outputList.add(parser.parseOutput(f, process.getName()));
-                                parsed = true;
-                            }
+                    for(Parser parser : parserList){
+                        if(f.getAnnotation(parser.getAnnotation())!= null){
+                            outputList.add(parser.parseOutput(f, process.getName()));
+                            parsed = true;
                         }
                     }
                     if(!parsed){

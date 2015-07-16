@@ -23,6 +23,7 @@ import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolboxapi.annotations.model.*;
 
+import java.lang.annotation.IncompleteAnnotationException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -143,17 +144,33 @@ public class ObjectAnnotationConverter {
     public static LiteralData annotationToObject(LiteralDataAttribute literalDataAttribute) {
         try {
             List<Format> formatList = new ArrayList<>();
-            for (FormatAttribute formatAttribute : literalDataAttribute.formats()) {
-                formatList.add(ObjectAnnotationConverter.annotationToObject(formatAttribute));
+            if(literalDataAttribute.formats().length == 0){
+                formatList.add(new Format("undefined", URI.create("undefined")));
+                formatList.get(0).setDefaultFormat(true);
+            }
+            else {
+                for (FormatAttribute formatAttribute : literalDataAttribute.formats()) {
+                    formatList.add(ObjectAnnotationConverter.annotationToObject(formatAttribute));
+                }
             }
 
             List<LiteralDataDomain> lddList = new ArrayList<>();
-            for (LiteralDataDomainAttribute literalDataDomainAttribute : literalDataAttribute.validDomains()) {
-                lddList.add(ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute));
+            if(literalDataAttribute.validDomains().length == 0){
+                lddList.add(new LiteralDataDomain(new PossibleLiteralValuesChoice(), DataType.STRING, new Value<String>("")));
+            }
+            else {
+                for (LiteralDataDomainAttribute literalDataDomainAttribute : literalDataAttribute.validDomains()) {
+                    lddList.add(ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute));
+                }
             }
 
-
-            LiteralValue literalValue = ObjectAnnotationConverter.annotationToObject(literalDataAttribute.valueAttribute());
+            LiteralValue literalValue = null;
+            try {
+                literalValue = ObjectAnnotationConverter.annotationToObject(literalDataAttribute.valueAttribute());
+            }
+            catch(IncompleteAnnotationException e){
+                literalValue = new LiteralValue();
+            }
 
             return new LiteralData(formatList, lddList, literalValue);
         } catch (MalformedScriptException e) {
@@ -204,6 +221,9 @@ public class ObjectAnnotationConverter {
                     valuesList.add(ObjectAnnotationConverter.annotationToObject(va));
                 }
                 possibleLiteralValuesChoice = new PossibleLiteralValuesChoice(valuesList);
+            }
+            else{
+                possibleLiteralValuesChoice = new PossibleLiteralValuesChoice();
             }
             return possibleLiteralValuesChoice;
         } catch (MalformedScriptException e) {

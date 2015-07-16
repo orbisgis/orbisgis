@@ -81,12 +81,7 @@ public class RawDataParser implements Parser {
     }
 
     @Override
-    public Class getAnnotationInput() {
-        return RawDataInput.class;
-    }
-
-    @Override
-    public Class getAnnotationOutput() {
-        return RawDataOutput.class;
+    public Class getAnnotation() {
+        return RawDataAttribute.class;
     }
 }

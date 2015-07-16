@@ -219,12 +219,8 @@ public class DefaultParser implements Parser {
     }
 
     @Override
-    public Class getAnnotationInput() {
-        return org.orbisgis.orbistoolboxapi.annotations.input.Input.class;
+    public Class getAnnotation() {
+        return InputAttribute.class;
     }
 
-    @Override
-    public Class getAnnotationOutput() {
-        return org.orbisgis.orbistoolboxapi.annotations.output.Output.class;
-    }
 }

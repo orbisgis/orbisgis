@@ -158,35 +158,36 @@ public class ToolBox implements DockingPanel {
         }
 
         List<String> inputList = new ArrayList<>();
+        List<DataType> inputDataTypeList = new ArrayList<>();
+        List<String> inputAbstractList = new ArrayList<>();
         List<String> outputList = new ArrayList<>();
+        List<DataType> outputDataTypeList = new ArrayList<>();
+        List<String> outputAbstractList = new ArrayList<>();
         for(Input i : selectedProcess.getInput()){
-        String type = "";
-        if(i.getDataDescription() instanceof LiteralData){
-            for(LiteralDataDomain ldd : ((LiteralData) i.getDataDescription()).getLiteralDomainType()){
-                    type += ldd.getDataType().name().toLowerCase() + " ";
-                }
-            type += ": ";
+            if(i.getDataDescription() instanceof LiteralData){
+                inputDataTypeList.add(((LiteralData)i.getDataDescription()).getLiteralDomainType().get(0).getDataType());
             }
             else{
-                    type = i.getDataDescription().getClass().getSimpleName() + " : ";
-                }
-            inputList.add(type + i.getTitle());
-        }
-        for(Output o : selectedProcess.getOutput()){
-        String type = "";
-        if(o.getDataDescription() instanceof LiteralData){
-            for(LiteralDataDomain ldd : ((LiteralData) o.getDataDescription()).getLiteralDomainType()){
-                    type += ldd.getDataType().name().toLowerCase() + " ";
-                }
-            type += ": ";
-        }
-        else{
-                type = o.getDataDescription().getClass().getSimpleName() + " : ";
+                inputDataTypeList.add(null);
             }
-        outputList.add(type + o.getTitle());
+            inputList.add(i.getTitle());
+            inputAbstractList.add(i.getAbstrac());
         }
 
-        toolBoxPanel.setProcessInfo(selectedProcess.getTitle(), selectedProcess.getAbstrac(), inputList, outputList);
+        for(Output o : selectedProcess.getOutput()){
+            if(o.getDataDescription() instanceof LiteralData){
+                outputDataTypeList.add(((LiteralData)o.getDataDescription()).getLiteralDomainType().get(0).getDataType());
+            }
+            else{
+                outputDataTypeList.add(null);
+            }
+            outputList.add(o.getTitle());
+            outputAbstractList.add(o.getAbstrac());
+        }
+
+        toolBoxPanel.setProcessInfo(selectedProcess.getTitle(), selectedProcess.getAbstrac(),
+                inputList, inputDataTypeList, inputAbstractList,
+                outputList, outputDataTypeList, outputAbstractList);
         return true;
     }
 }

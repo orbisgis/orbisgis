@@ -73,12 +73,8 @@ public class LiteralDataParser implements Parser {
     }
 
     @Override
-    public Class getAnnotationInput() {
-        return LiteralDataInput.class;
+    public Class getAnnotation() {
+        return LiteralDataAttribute.class;
     }
 
-    @Override
-    public Class getAnnotationOutput() {
-        return LiteralDataOutput.class;
-    }
 }
