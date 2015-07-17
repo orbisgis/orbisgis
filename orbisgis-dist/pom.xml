@@ -348,6 +348,18 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>orbistoolbox-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>orbistoolbox</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.gogo.shell</artifactId>
             <version>0.10.0</version>
