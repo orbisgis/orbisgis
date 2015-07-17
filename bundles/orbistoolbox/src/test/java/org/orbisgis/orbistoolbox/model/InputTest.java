@@ -36,60 +36,60 @@ import java.util.List;
 public class InputTest {
 
     /**
-     * Tests if the constructor with a null title returns an IllegalArgumentException.
+     * Tests if the constructor with a null title returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullTitleConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void nullTitleConstructorTest() throws URISyntaxException, MalformedScriptException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
         new Input(null, new URI("test"), new RawData(f));
     }
 
     /**
-     * Tests if the constructor with a null identifier returns an IllegalArgumentException.
+     * Tests if the constructor with a null identifier returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullURIConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void nullURIConstructorTest() throws URISyntaxException, MalformedScriptException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
         new Input("test", null, new RawData(f));
     }
 
     /**
-     * Tests if the constructor with a null dataDescription returns an IllegalArgumentException.
+     * Tests if the constructor with a null dataDescription returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullDataDescriptionConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void nullDataDescriptionConstructorTest() throws URISyntaxException, MalformedScriptException {
         new Input("test", new URI("test"), (List<Input>)null);
     }
 
     /**
-     * Tests if the constructor with a null input list returns an IllegalArgumentException.
+     * Tests if the constructor with a null input list returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void nullInputConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void nullInputConstructorTest() throws URISyntaxException, MalformedScriptException {
         new Input("test", new URI("test"), (DataDescription)null);
     }
 
     /**
-     * Tests if the constructor with an empty input list returns an IllegalArgumentException.
+     * Tests if the constructor with an empty input list returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void emptyInputConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void emptyInputConstructorTest() throws URISyntaxException, MalformedScriptException {
         List<Input> emptyList = new ArrayList<>();
         new Input("test", new URI("test"), emptyList);
     }
 
     /**
-     * Tests if the constructor with a input list containing a null input returns an IllegalArgumentException.
+     * Tests if the constructor with a input list containing a null input returns an MalformedScriptException.
      */
-    @Test(expected = IllegalArgumentException.class)
-    public final void containingNullInputConstructorTest() throws URISyntaxException {
+    @Test(expected = MalformedScriptException.class)
+    public final void containingNullInputConstructorTest() throws URISyntaxException, MalformedScriptException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
-        Input input = new Input("test", new URI("test"), new RawData(f));
+        Input simpleInput = new Input("test", new URI("test"), new RawData(f));
         List<Input> nullList = new ArrayList<>();
-        nullList.add(input);
+        nullList.add(simpleInput);
         nullList.add(null);
         new Input("test", new URI("test"), nullList);
     }
@@ -98,58 +98,58 @@ public class InputTest {
      * Tests if setting the input list sets the data description to null.
      */
     @Test()
-    public final void setInputTest() throws URISyntaxException {
+    public final void setInputTest() throws URISyntaxException, MalformedScriptException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
-        Input input1 = new Input("test", new URI("test"), new RawData(f));
-        Input input2 = new Input("test", new URI("test"), new RawData(f));
+        Input simpleInput1 = new Input("test", new URI("test"), new RawData(f));
+        Input simpleInput2 = new Input("test", new URI("test"), new RawData(f));
 
         List<Input> list = new ArrayList<>();
-        list.add(input2);
+        list.add(simpleInput2);
 
-        input1.setInput(list);
+        simpleInput1.setInput(list);
 
-        Assert.assertEquals("The data description should be null.", null, input1.getDataDescription());
-        Assert.assertEquals("The input list is not the same as the one given.", list, input1.getInput());
+        Assert.assertEquals("The data description should be null.", null, simpleInput1.getDataDescription());
+        Assert.assertEquals("The input list is not the same as the one given.", list, simpleInput1.getInput());
     }
 
     /**
      * Tests if setting the data description sets the input list to null.
      */
     @Test()
-    public final void setDataDescriptionTest() throws URISyntaxException {
+    public final void setDataDescriptionTest() throws URISyntaxException, MalformedScriptException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
-        Input input = new Input("test", new URI("test"), new RawData(f));
+        Input simpleInput = new Input("test", new URI("test"), new RawData(f));
 
         DataDescription dataDescription = new RawData(f);
-        input.setDataDescription(dataDescription);
+        simpleInput.setDataDescription(dataDescription);
 
-        Assert.assertEquals("The data description should be null.", null, input.getInput());
-        Assert.assertEquals("The input list is not the same as the one given.", dataDescription, input.getDataDescription());
+        Assert.assertEquals("The data description should be null.", null, simpleInput.getInput());
+        Assert.assertEquals("The input list is not the same as the one given.", dataDescription, simpleInput.getDataDescription());
     }
 
     /**
      * Tests if setting false occurrence value do not break the Input.
      */
     @Test()
-    public final void setOccurrenceTest() throws URISyntaxException {
+    public final void setOccurrenceTest() throws URISyntaxException, MalformedScriptException {
         Format f = new Format("test", new URI("http://orbisgis.org"));
         f.setDefaultFormat(true);
-        Input input = new Input("test", new URI("test"), new RawData(f));
+        Input simpleInput = new Input("test", new URI("test"), new RawData(f));
 
-        input.setMaxOccurs(5);
-        input.setMinOccurs(0);
+        simpleInput.setMaxOccurs(5);
+        simpleInput.setMinOccurs(0);
 
-        input.setMinOccurs(6);
-        Assert.assertFalse("minOccurs can not be higher than maxOccurs", input.getMaxOccurs() < input.getMinOccurs());
+        simpleInput.setMinOccurs(6);
+        Assert.assertFalse("minOccurs can not be higher than maxOccurs", simpleInput.getMaxOccurs() < simpleInput.getMinOccurs());
 
-        input.setMinOccurs(3);
-        input.setMaxOccurs(1);
-        Assert.assertFalse("minOccurs can not be higher than maxOccurs", input.getMaxOccurs() < input.getMinOccurs());
+        simpleInput.setMinOccurs(3);
+        simpleInput.setMaxOccurs(1);
+        Assert.assertFalse("minOccurs can not be higher than maxOccurs", simpleInput.getMaxOccurs() < simpleInput.getMinOccurs());
 
-        input.setMinOccurs(-2);
-        Assert.assertFalse("minOccurs can not be negative", input.getMinOccurs() < 0);
+        simpleInput.setMinOccurs(-2);
+        Assert.assertFalse("minOccurs can not be negative", simpleInput.getMinOccurs() < 0);
 
     }
 }

@@ -20,6 +20,7 @@
 package org.orbisgis.orbistoolbox.controller.parser;
 
 import org.orbisgis.orbistoolbox.model.Input;
+import org.orbisgis.orbistoolbox.model.MalformedScriptException;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
@@ -36,14 +37,19 @@ import java.util.List;
 public class ProcessParser {
 
     public Process parseProcess(List<Input> inputList, List<Output> outputList, Method processingMethod, String processName){
-        Process process = new Process(processName,
-                URI.create("orbisgis:wps:"+processName+":process"),
-                outputList);
-        ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(DescriptionTypeAttribute.class),
-                process);
-        ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(ProcessAttribute.class),
-                process);
-        process.setInput(inputList);
-        return process;
+        try {
+            Process process = new Process(processName,
+                    URI.create("orbisgis:wps:" + processName + ":process"),
+                    outputList);
+            ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(DescriptionTypeAttribute.class),
+                    process);
+            ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(ProcessAttribute.class),
+                    process);
+            process.setInput(inputList);
+            return process;
+        } catch (MalformedScriptException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 }

@@ -43,7 +43,7 @@ public class LiteralData extends DataDescription {
      * @param formatList Not null default format..
      * @param literalDataDomainList Not null valid domain list for literal data.
      * @param value Not null value.
-     * @throws IllegalArgumentException Exception get on :
+     * @throws MalformedScriptException Exception get on :
      *  - giving a null, empty or containing null list of LiteralDataDomain
      *  - giving a list of Format with less or more than one default LiteralDataDomain.
      *  - giving a null, empty or containing null list of Format
@@ -51,30 +51,32 @@ public class LiteralData extends DataDescription {
      *  - giving a null value
      */
     public LiteralData(List<Format> formatList, List<LiteralDataDomain> literalDataDomainList, LiteralValue value)
-            throws IllegalArgumentException  {
+            throws MalformedScriptException  {
         super(formatList);
         if (literalDataDomainList == null) {
-            throw new IllegalArgumentException("The parameter \"literalDataDomainList\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "literalDataDomainList", "can not be null");
         }
         if (literalDataDomainList.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"literalDataDomainList\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "literalDataDomainList", "can not be empty");
         }
         if (literalDataDomainList.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"literalDataDomainList\" can not contain a null value");
+            throw new MalformedScriptException(this.getClass(), "literalDataDomainList", "can not contain a null value");
         }
         if (value == null) {
-            throw new IllegalArgumentException("The parameter \"value\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "value", "can not be null");
         }
 
         boolean hasDefault = false;
         for(LiteralDataDomain ldd : literalDataDomainList){
             if(ldd.isDefaultDomain() && hasDefault){
-                throw new IllegalArgumentException("Only one LiteralDataDomain can be the default one");
+                throw new MalformedScriptException(this.getClass(), "literalDataDomainList", "can contain only one " +
+                        "default LiteralDataDomain");
             }
             hasDefault = true;
         }
         if(!hasDefault){
-            throw new IllegalArgumentException("One LiteralDataDomain should be the default one");
+            throw new MalformedScriptException(this.getClass(), "literalDataDomainList", "should have a default " +
+                    "LiteralDataDomain");
         }
 
         this.setFormats(formatList);
@@ -100,11 +102,11 @@ public class LiteralData extends DataDescription {
     /**
      * Adds a valid domain for literal data.
      * @param literalDataDomain Not null valid domain.
-     * @throws IllegalArgumentException Exception get on giving a null argument.
+     * @throws MalformedScriptException Exception get on giving a null argument.
      */
-    public void addLiteralDomainType(LiteralDataDomain literalDataDomain) throws IllegalArgumentException {
+    public void addLiteralDomainType(LiteralDataDomain literalDataDomain) throws MalformedScriptException {
         if (literalDataDomain == null) {
-            throw new IllegalArgumentException("The parameter \"literalDataDomain\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "literalDataDomain", "can not be null");
         }
         this.literalDataDomains.add(literalDataDomain);
     }
@@ -112,12 +114,12 @@ public class LiteralData extends DataDescription {
     /**
      * Removes a valid domain for literal data.
      * @param literalDataDomain Valid domain.
-     * @throws IllegalArgumentException Exception thrown if the attribute literalDataDomains is empty after removing
+     * @throws MalformedScriptException Exception thrown if the attribute literalDataDomains is empty after removing
      * the literalDataDomain.
      */
-    public void removeLiteralDomainType(LiteralDataDomain literalDataDomain) throws IllegalArgumentException {
+    public void removeLiteralDomainType(LiteralDataDomain literalDataDomain) throws MalformedScriptException {
         if (this.literalDataDomains.size() == 1 && this.literalDataDomains.contains(literalDataDomain)) {
-            throw new IllegalArgumentException("The attribute \"literalDataDomains\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "literalDataDomains", "can not be empty");
         }
         this.literalDataDomains.remove(literalDataDomain);
     }
@@ -125,14 +127,14 @@ public class LiteralData extends DataDescription {
     /**
      * Sets the list of valid domain for literal data.
      * @param literalDataDomains Not null list of not null valid domain.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null or empty.
+     * @throws MalformedScriptException Exception thrown if one of the parameters is null or empty.
      */
-    public void setLiteralDomainType(List<LiteralDataDomain> literalDataDomains) throws IllegalArgumentException {
+    public void setLiteralDomainType(List<LiteralDataDomain> literalDataDomains) throws MalformedScriptException {
     if (literalDataDomains == null) {
-            throw new IllegalArgumentException("The parameter \"literalDataDomains\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "literalDataDomains", "can not be null");
         }
         if (literalDataDomains.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"literalDataDomains\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "literalDataDomains", "can not be empty");
         }
         this.literalDataDomains = literalDataDomains;
     }
@@ -141,16 +143,15 @@ public class LiteralData extends DataDescription {
     /**
      * Sets the given literalDataDomain as the default one.
      * @param literalDataDomain Not null new default literalDataDomain.
-     * @throws IllegalArgumentException Exception get on setting a null or a not contained literalDataDomain as
+     * @throws MalformedScriptException Exception get on setting a null or a not contained literalDataDomain as
      * the default one.
      */
-    protected void setDefaultLiteralDataDomain(LiteralDataDomain literalDataDomain) throws IllegalArgumentException {
+    protected void setDefaultLiteralDataDomain(LiteralDataDomain literalDataDomain) throws MalformedScriptException {
         if(literalDataDomain == null){
-            throw new IllegalArgumentException("The parameter \"literalDataDomain\" can not be null;");
+            throw new MalformedScriptException(this.getClass(), "literalDataDomain", "can not be null;");
         }
         if(!this.literalDataDomains.contains(literalDataDomain)) {
-            throw new IllegalArgumentException("The literalDataDomain list does not contain the given " +
-                    "literalDataDomain");
+            throw new MalformedScriptException(this.getClass(), "literalDataDomain", "is not contained by the list");
         }
         for(LiteralDataDomain ldd : literalDataDomains){
             ldd.setDefaultDomain(false);
@@ -161,11 +162,11 @@ public class LiteralData extends DataDescription {
     /**
      * Sets the value.
      * @param value Not null new value.
-     * @throws IllegalArgumentException Exception get on setting a null value.
+     * @throws MalformedScriptException Exception get on setting a null value.
      */
-    public void setValue(LiteralValue value) throws IllegalArgumentException {
+    public void setValue(LiteralValue value) throws MalformedScriptException {
         if(value == null){
-            throw new IllegalArgumentException("The parameter \"value\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "value", "can not be null");
         }
         this.value = value;
     }

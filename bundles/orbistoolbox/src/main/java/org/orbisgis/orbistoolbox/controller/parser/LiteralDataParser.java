@@ -37,38 +37,44 @@ public class LiteralDataParser implements Parser {
     public Input parseInput(Field f, String processName) {
         DataDescription data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
 
-        //Instantiate the returned input
-        Input input = new Input(f.getName(),
-                URI.create("orbisgis:wps:"+processName+":input:"+f.getName()),
-                data);
+        try {
+            //Instantiate the returned input
+            Input input = new Input(f.getName(),
+                    URI.create("orbisgis:wps:" + processName + ":input:" + f.getName()),
+                    data);
 
-        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
-        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
+            ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
+            ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
 
-        return input;
+            return input;
+        } catch (MalformedScriptException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public Output parseOutput(Field f, String processName) {
         DataDescription data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
 
-        //Instantiate the returned output
-        Output output = new Output(f.getName(),
-                URI.create("orbisgis:wps:"+processName+":output:"+f.getName()),
-                data);
+        try {
+            //Instantiate the returned output
+            Output output = new Output(f.getName(),
+                    URI.create("orbisgis:wps:" + processName + ":output:" + f.getName()),
+                    data);
 
-        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
+            ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
 
-        return output;
+            return output;
+        } catch (MalformedScriptException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
-    public Class getAnnotationInput() {
-        return LiteralDataInput.class;
+    public Class getAnnotation() {
+        return LiteralDataAttribute.class;
     }
 
-    @Override
-    public Class getAnnotationOutput() {
-        return LiteralDataOutput.class;
-    }
 }

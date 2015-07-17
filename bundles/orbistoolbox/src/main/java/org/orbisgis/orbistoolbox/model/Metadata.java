@@ -42,17 +42,17 @@ public class Metadata {
      * @param title Title of the documentation.
      * @param role Role identifier.
      * @param href Reference to the documentation.
-     * @throws IllegalArgumentException Exception get on giving a null values as argument
+     * @throws MalformedScriptException Exception get on giving a null values as argument
      */
-    public Metadata(String title, URI role, URI href) throws IllegalArgumentException {
+    public Metadata(String title, URI role, URI href) throws MalformedScriptException {
         if(title == null){
-            throw new IllegalArgumentException("The argument\"title\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "title", "can not be null");
         }
         if(role == null){
-            throw new IllegalArgumentException("The argument\"role\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "role", "can not be null");
         }
         if(href == null){
-            throw new IllegalArgumentException("The argument\"href\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "href", "can not be null");
         }
         this.title = title;
         this.role = role;
@@ -71,11 +71,11 @@ public class Metadata {
     /**
      * Sets the documentation title.
      * @param title Not null documentation title.
-     * @throws IllegalArgumentException Exception get on giving a null values as argument
+     * @throws MalformedScriptException Exception get on giving a null values as argument
      */
-    public void setTitle(String title) throws IllegalArgumentException {
+    public void setTitle(String title) throws MalformedScriptException {
         if(title == null){
-            throw new IllegalArgumentException("The argument\"title\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "title", "can not be null");
         }
         this.title = title;
     }
@@ -99,11 +99,11 @@ public class Metadata {
     /**
      * Sets the documentation role.
      * @param role Not null documentation role.
-     * @throws IllegalArgumentException Exception get on giving a null values as argument
+     * @throws MalformedScriptException Exception get on giving a null values as argument
      */
-    public void setRole(URI role) throws IllegalArgumentException {
+    public void setRole(URI role) throws MalformedScriptException {
         if(role == null){
-            throw new IllegalArgumentException("The argument\"role\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "role", "can not be null");
         }
         this.role = role;
     }
@@ -119,11 +119,11 @@ public class Metadata {
     /**
      * Sets the documentation reference.
      * @param href Not null documentation reference.
-     * @throws IllegalArgumentException Exception get on giving a null values as argument
+     * @throws MalformedScriptException Exception get on giving a null values as argument
      */
-    public void setHref(URI href) throws IllegalArgumentException {
+    public void setHref(URI href) throws MalformedScriptException {
         if(href == null){
-            throw new IllegalArgumentException("The argument\"href\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "href", "can not be null");
         }
         this.href = href;
     }

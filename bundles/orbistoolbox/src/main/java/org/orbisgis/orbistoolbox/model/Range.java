@@ -49,11 +49,11 @@ public class Range extends Values {
      *
      * @param minimumValue Maximum value of the range (can not be null).
      * @param maximumValue Minimum value of the range (can not be null).
-     * @throws IllegalArgumentException Exception get if maximum < minimum.
+     * @throws MalformedScriptException Exception get if maximum < minimum.
      */
-    public Range(double minimumValue, double maximumValue) throws IllegalArgumentException {
+    public Range(double minimumValue, double maximumValue) throws MalformedScriptException {
         if(maximumValue<minimumValue){
-            throw new IllegalArgumentException("The maximum can not be less than the minimum");
+            throw new MalformedScriptException(this.getClass(), "maximumValue", "can not be less than the minimum");
         }
         this.minimumValue = minimumValue;
         this.maximumValue = maximumValue;
@@ -66,14 +66,15 @@ public class Range extends Values {
      * @param minimumValue Maximum value of the range (can not be null).
      * @param maximumValue Minimum value of the range (can not be null).
      * @param spacing      Spacing between value. If set to null or 0, it means there is no spacing.
-     * @throws IllegalArgumentException Exception get if maximum < minimum or if spacing > maximum-minimum.
+     * @throws MalformedScriptException Exception get if maximum < minimum or if spacing > maximum-minimum.
      */
-    public Range(double minimumValue, double maximumValue, double spacing) throws IllegalArgumentException {
+    public Range(double minimumValue, double maximumValue, double spacing) throws MalformedScriptException {
         if(maximumValue<minimumValue){
-            throw new IllegalArgumentException("The maximum can not be less than the minimum");
+            throw new MalformedScriptException(this.getClass(), "maximumValue", "can not be less than the minimum");
         }
         if(spacing > maximumValue-minimumValue){
-            throw new IllegalArgumentException("The spacing can not be more than the diference between maximum and minumim");
+            throw new MalformedScriptException(this.getClass(), "spacing", "can not be more than the deference " +
+                    "between maximum and minimum");
         }
         this.minimumValue = minimumValue;
         this.maximumValue = maximumValue;
@@ -96,11 +97,11 @@ public class Range extends Values {
      * Sets the maximum value of the range. The maximumValue parameter can not be null.
      *
      * @param maximumValue Maximum value of the range (can not be null).
-     * @throws IllegalArgumentException Exception get on trying to set a maximumValue < minimumValue.
+     * @throws MalformedScriptException Exception get on trying to set a maximumValue < minimumValue.
      */
-    public void setMaximumValue(double maximumValue) throws IllegalArgumentException {
+    public void setMaximumValue(double maximumValue) throws MalformedScriptException {
         if (maximumValue < minimumValue) {
-            throw new IllegalArgumentException("The the maximum can not be less than the minimum");
+            throw new MalformedScriptException(this.getClass(), "maximumValue", "can not be less than the minimum");
         }
         this.maximumValue = maximumValue;
     }
@@ -120,11 +121,11 @@ public class Range extends Values {
      * Sets the minimum value of the range. The minimumValue parameter can not be null.
      *
      * @param minimumValue Minimum value of the range (can not be null).
-     * @throws IllegalArgumentException Exception get on trying to set minimumValue > maximumValue.
+     * @throws MalformedScriptException Exception get on trying to set minimumValue > maximumValue.
      */
-    public void setMinimumValue(double minimumValue) throws IllegalArgumentException {
+    public void setMinimumValue(double minimumValue) throws MalformedScriptException {
         if (minimumValue > maximumValue) {
-            throw new IllegalArgumentException("The minimum can not be more than the maximum");
+            throw new MalformedScriptException(this.getClass(), "minimumValue", "can not be more than the maximum");
         }
         this.minimumValue = minimumValue;
     }
@@ -133,11 +134,12 @@ public class Range extends Values {
      * Sets the spacing value. If it is set to null or 0, it means there is no spacing.
      *
      * @param spacing Spacing between value.
-     * @throws IllegalArgumentException Exception get on trying to set spacing > minimumValue - maximumValue.
+     * @throws MalformedScriptException Exception get on trying to set spacing > minimumValue - maximumValue.
      */
-    public void setSpacingValue(double spacing) throws IllegalArgumentException {
+    public void setSpacingValue(double spacing) throws MalformedScriptException {
         if (spacing > minimumValue - maximumValue) {
-            throw new IllegalArgumentException("The minimum can not be more than the maximum");
+            throw new MalformedScriptException(this.getClass(), "spacing", "can not be more than the difference " +
+                    "between maximum and minimum");
         }
         if(spacing <0){
             this.spacing = 0;

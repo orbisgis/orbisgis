@@ -23,6 +23,7 @@ import groovy.transform.AnnotationCollector;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolboxapi.annotations.input.BoundingBoxInput;
+import org.orbisgis.orbistoolboxapi.annotations.model.BoundingBoxAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.output.BoundingBoxOutput;
 
 import java.lang.annotation.Annotation;
@@ -46,12 +47,7 @@ public class BoundingBoxParser implements Parser {
     }
 
     @Override
-    public Class getAnnotationInput() {
-        return BoundingBoxInput.class;
-    }
-
-    @Override
-    public Class getAnnotationOutput() {
-        return BoundingBoxOutput.class;
+    public Class getAnnotation() {
+        return BoundingBoxAttribute.class;
     }
 }

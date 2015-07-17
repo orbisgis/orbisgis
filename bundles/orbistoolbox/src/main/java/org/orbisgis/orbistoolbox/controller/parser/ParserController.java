@@ -20,6 +20,8 @@
 package org.orbisgis.orbistoolbox.controller.parser;
 
 import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyRuntimeException;
+import groovy.lang.GroovyShell;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.model.Output;
@@ -55,7 +57,7 @@ public class ParserController {
         parserList.add(new BoundingBoxParser());
         defaultParser = new DefaultParser();
         processParser = new ProcessParser();
-        groovyClassLoader = new GroovyClassLoader();
+        groovyClassLoader = new GroovyShell().getClassLoader();
     }
 
     public AbstractMap.SimpleEntry<Process, Class> parseProcess(String processPath){
@@ -63,8 +65,7 @@ public class ParserController {
         File process = new File(processPath);
         try {
             clazz = groovyClassLoader.parseClass(process);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException|GroovyRuntimeException e) {
             return null;
         }
 
@@ -75,12 +76,10 @@ public class ParserController {
             for(Annotation a : f.getDeclaredAnnotations()){
                 if(a instanceof InputAttribute){
                     boolean parsed = false;
-                    for(Annotation annotation : f.getDeclaredAnnotations()){
-                        for(Parser parser : parserList){
-                            if(parser.getAnnotationInput().isAssignableFrom(annotation.getClass())){
-                                inputList.add(parser.parseInput(f, process.getName()));
-                                parsed = true;
-                            }
+                    for(Parser parser : parserList){
+                        if(f.getAnnotation(parser.getAnnotation())!= null){
+                            inputList.add(parser.parseInput(f, process.getName()));
+                            parsed = true;
                         }
                     }
                     if(!parsed){
@@ -89,12 +88,10 @@ public class ParserController {
                 }
                 if(a instanceof OutputAttribute){
                     boolean parsed = false;
-                    for(Annotation annotation : f.getDeclaredAnnotations()){
-                        for(Parser parser : parserList){
-                            if(parser.getAnnotationInput().isAssignableFrom(annotation.getClass())){
-                                outputList.add(parser.parseOutput(f, process.getName()));
-                                parsed = true;
-                            }
+                    for(Parser parser : parserList){
+                        if(f.getAnnotation(parser.getAnnotation())!= null){
+                            outputList.add(parser.parseOutput(f, process.getName()));
+                            parsed = true;
                         }
                     }
                     if(!parsed){
@@ -111,7 +108,6 @@ public class ParserController {
                     process.getName());
             return new AbstractMap.SimpleEntry<>(p, clazz);
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
             return null;
         }
     }

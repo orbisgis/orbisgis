@@ -41,10 +41,16 @@ public class RawDataParser implements Parser {
         RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class));
         rawData.setData(f, f.getType());
 
-        //Instantiate the returned input
-        Input input = new Input(f.getName(),
-                URI.create("orbisgis:wps:"+processName+":input:"+f.getName()),
-                rawData);
+        Input input;
+        try {
+            //Instantiate the returned input
+            input = new Input(f.getName(),
+                    URI.create("orbisgis:wps:"+processName+":input:"+f.getName()),
+                    rawData);
+        } catch (MalformedScriptException e) {
+            e.printStackTrace();
+            return null;
+        }
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
@@ -58,10 +64,16 @@ public class RawDataParser implements Parser {
         RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class));
         rawData.setData(f, f.getType());
 
-        //Instantiate the returned output
-        Output output = new Output(f.getName(),
-                URI.create("orbisgis:wps:"+processName+":output:"+f.getName()),
-                rawData);
+        Output output;
+        try {
+            //Instantiate the returned output
+            output = new Output(f.getName(),
+                    URI.create("orbisgis:wps:"+processName+":output:"+f.getName()),
+                    rawData);
+        } catch (MalformedScriptException e) {
+            e.printStackTrace();
+            return null;
+        }
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
 
@@ -69,12 +81,7 @@ public class RawDataParser implements Parser {
     }
 
     @Override
-    public Class getAnnotationInput() {
-        return RawDataInput.class;
-    }
-
-    @Override
-    public Class getAnnotationOutput() {
-        return RawDataOutput.class;
+    public Class getAnnotation() {
+        return RawDataAttribute.class;
     }
 }

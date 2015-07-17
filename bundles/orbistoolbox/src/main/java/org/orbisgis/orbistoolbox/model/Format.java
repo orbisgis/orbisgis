@@ -47,14 +47,14 @@ public class Format {
      *
      * @param mimeType Media type of the data.
      * @param schema   Identification of the data schema.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
+     * @throws MalformedScriptException Exception thrown if one of the parameters is null.
      */
-    public Format(String mimeType, URI schema) throws IllegalArgumentException {
+    public Format(String mimeType, URI schema) throws MalformedScriptException {
         if (mimeType == null) {
-            throw new IllegalArgumentException("The parameter \"mimeType\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "mimeType", "can not be null");
         }
         if (schema == null) {
-            throw new IllegalArgumentException("The parameter \"schema\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "schema", "can not be null");
         }
         this.mimeType = mimeType;
         this.encoding = "simple";
@@ -76,11 +76,11 @@ public class Format {
      * Sets the media type of the data. It should not be null.
      *
      * @param mimeType The media type of the data
-     * @throws IllegalArgumentException Exception thrown if the parameters is null.
+     * @throws MalformedScriptException Exception thrown if the parameters is null.
      */
-    public void setMimeType(String mimeType) throws IllegalArgumentException {
+    public void setMimeType(String mimeType) throws MalformedScriptException {
         if (mimeType == null) {
-            throw new IllegalArgumentException("The parameter \"mimeType\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "mimeType", "can not be null");
         }
         this.mimeType = mimeType;
     }
@@ -107,11 +107,11 @@ public class Format {
      * Sets the schema of the data. It should not be null.
      *
      * @param schema The data schema.
-     * @throws IllegalArgumentException Exception thrown if the parameters is null.
+     * @throws MalformedScriptException Exception thrown if the parameters is null.
      */
-    public void setSchema(URI schema) throws IllegalArgumentException {
+    public void setSchema(URI schema) throws MalformedScriptException {
         if (schema == null) {
-            throw new IllegalArgumentException("The parameter \"schema\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "schema", "can not be null");
         }
         this.schema = schema;
     }

@@ -47,12 +47,12 @@ public class Process extends DescriptionType {
      * @param title      Not null title of the process.
      * @param identifier Not null unambiguous identifier of the process.
      * @param output     Not null output.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null.
+     * @throws MalformedScriptException Exception thrown if one of the parameters is null.
      */
-    public Process(String title, URI identifier, Output output) throws IllegalArgumentException {
+    public Process(String title, URI identifier, Output output) throws MalformedScriptException {
         super(title, identifier);
         if(output == null) {
-            throw new IllegalArgumentException("The parameter \"output\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "output", "can not be null");
         }
         this.output = new ArrayList<>();
         this.output.add(output);
@@ -66,19 +66,19 @@ public class Process extends DescriptionType {
      * @param title      Not null title of a process, input, output.
      * @param identifier Not null unambiguous identifier of a process, input, and output.
      * @param outputList Not null list of not null output.
-     * @throws IllegalArgumentException Exception thrown if one of the parameters is null or an empty list or
+     * @throws MalformedScriptException Exception thrown if one of the parameters is null or an empty list or
      * containing value.
      */
-    public Process(String title, URI identifier, List<Output> outputList) throws IllegalArgumentException {
+    public Process(String title, URI identifier, List<Output> outputList) throws MalformedScriptException {
         super(title, identifier);
         if(outputList == null) {
-            throw new IllegalArgumentException("The parameter \"output\" can not contain a null value");
+            throw new MalformedScriptException(this.getClass(), "output", "can not contain a null value");
         }
         if(outputList.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"output\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "output", "can not be empty");
         }
         if(outputList.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"output\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "output", "can not be null");
         }
         this.output = new ArrayList<>();
         this.output.addAll(outputList);
@@ -104,17 +104,17 @@ public class Process extends DescriptionType {
     /**
      * Sets the list of inputs.
      * @param inputList List of input.
-     * @throws IllegalArgumentException Exception thrown if the parameters is null or empty or containing a null value.
+     * @throws MalformedScriptException Exception thrown if the parameters is null or empty or containing a null value.
      */
-    public void setInput(List<Input> inputList) throws IllegalArgumentException {
+    public void setInput(List<Input> inputList) throws MalformedScriptException {
         if(inputList == null){
-            throw new IllegalArgumentException("The parameter \"inputList\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "inputList", "can not be null");
         }
         if(inputList.isEmpty()){
-            throw new IllegalArgumentException("The parameter \"inputList\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "inputList", "can not be empty");
         }
         if(inputList.contains(null)){
-            throw new IllegalArgumentException("The parameter \"inputList\" can not contain a null value");
+            throw new MalformedScriptException(this.getClass(), "inputList", "can not contain a null value");
         }
         this.input = new ArrayList<>();
         for(Input i : inputList) {
@@ -125,11 +125,11 @@ public class Process extends DescriptionType {
     /**
      * Add a new input.
      * @param input The new Input.
-     * @throws IllegalArgumentException Exception thrown if the parameters is null.
+     * @throws MalformedScriptException Exception thrown if the parameters is null.
      */
-    public void addInput(Input input) throws IllegalArgumentException {
+    public void addInput(Input input) throws MalformedScriptException {
         if(input == null){
-            throw new IllegalArgumentException("The parameter \"input\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "input", "can not be null");
         }
         if(this.input == null) {
             this.input = new ArrayList<>();
@@ -140,13 +140,12 @@ public class Process extends DescriptionType {
     /**
      * Removes the given input.
      * @param input The input to remove.
-     * @throws IllegalArgumentException Exception get on removing the last input or a null one.
+     * @throws MalformedScriptException Exception get on removing the last input or a null one.
      */
     public void removeInput(Input input) {
         this.input.remove(input);
         if(this.input.isEmpty()) {
-            this.input =
-                    null;
+            this.input = null;
         }
     }
 
@@ -161,17 +160,17 @@ public class Process extends DescriptionType {
     /**
      * Sets the list of outputs.
      * @param outputList List of output.
-     * @throws IllegalArgumentException Exception thrown if the parameters is null or empty or containing a null value.
+     * @throws MalformedScriptException Exception thrown if the parameters is null or empty or containing a null value.
      */
-    public void setOutput(List<Output> outputList) throws IllegalArgumentException {
+    public void setOutput(List<Output> outputList) throws MalformedScriptException {
         if(outputList == null) {
-            throw new IllegalArgumentException("The parameter \"output\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "output", "can not be null");
         }
         if(outputList.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"output\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "output", "can not be empty");
         }
         if(outputList.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"output\" can not contain null value");
+            throw new MalformedScriptException(this.getClass(), "output", "can not contain null value");
         }
         this.output = new ArrayList<>();
         for(Output o : outputList) {
@@ -182,11 +181,11 @@ public class Process extends DescriptionType {
     /**
      * Add a new output.
      * @param output The new output.
-     * @throws IllegalArgumentException Exception thrown if the parameters is null.
+     * @throws MalformedScriptException Exception thrown if the parameters is null.
      */
-    public void addOutput(Output output) throws IllegalArgumentException {
+    public void addOutput(Output output) throws MalformedScriptException {
         if(output == null) {
-            throw new IllegalArgumentException("The parameter \"output\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "output", "can not be null");
         }
         if(this.output == null) {
             this.output = new ArrayList<>();
@@ -197,14 +196,14 @@ public class Process extends DescriptionType {
     /**
      * Removes the given output.
      * @param output The input to remove.
-     * @throws IllegalArgumentException Exception get on removing the last output or a null one.
+     * @throws MalformedScriptException Exception get on removing the last output or a null one.
      */
-    public void removeOutput(Output output) throws IllegalArgumentException{
+    public void removeOutput(Output output) throws MalformedScriptException{
         if(output == null) {
-            throw new IllegalArgumentException("The attribute \"output\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "output", "can not be null");
         }
         if(this.output.size() == 1 && this.output.contains(output)) {
-            throw new IllegalArgumentException("The attribute \"output\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "output", "can not be empty");
         }
         this.output.remove(output);
         if(this.output.isEmpty()) {

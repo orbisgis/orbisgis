@@ -37,9 +37,9 @@ public class RawData extends ComplexData {
      * Constructor giving the default format.
      * The Format can not be null and should be set as the default one.
      * @param format Not null default format.
-     * @throws IllegalArgumentException Exception get on setting a format which is null or is not the default one.
+     * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
      */
-    public RawData(Format format) {
+    public RawData(Format format) throws MalformedScriptException {
         super(format);
         data = null;
     }
@@ -48,9 +48,9 @@ public class RawData extends ComplexData {
      * Constructor giving a list of format.
      * The Format list can not be null and only one of the format should be set as the default one.
      * @param formatList Not null default format.
-     * @throws IllegalArgumentException Exception get on setting a format which is null or is not the default one.
+     * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
      */
-    public RawData(List<Format> formatList) {
+    public RawData(List<Format> formatList) throws MalformedScriptException {
         super(formatList);
         data = null;
     }

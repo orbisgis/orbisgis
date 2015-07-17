@@ -44,30 +44,30 @@ public class BoundingBoxData extends DataDescription {
      * @param formatList List of formats supported.
      * @param supportedCRSList List of CRS supported. It should contain only one default CRS.
      * @param boundingBox BoundingBox.
-     * @throws IllegalArgumentException Exception get if an argument is null or
+     * @throws MalformedScriptException Exception get if an argument is null or
      * if the list of supported CRS does not contain only one default CRS.
      */
     public BoundingBoxData(List<Format> formatList, List<SupportedCRS> supportedCRSList, BoundingBox boundingBox)
-            throws IllegalArgumentException {
+            throws MalformedScriptException {
         super(formatList);
         if (supportedCRSList == null) {
-            throw new IllegalArgumentException("The parameter \"supportedCRSList\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "supportedCRSList", "can not be null");
         }
         if (supportedCRSList.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"supportedCRSList\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "supportedCRSList", "can not be empty");
         }
         if (supportedCRSList.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"supportedCRSList\" can not contain a null value");
+            throw new MalformedScriptException(this.getClass(), "supportedCRSList", "can not contain a null value");
         }
         if (boundingBox == null) {
-            throw new IllegalArgumentException("The parameter \"boundingBox\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "boundingBox", "can not be null");
         }
 
         boolean hasDefault = false;
         //Verify that the Supported CRS list contains exactly one default CRS
         for(SupportedCRS crs : supportedCRSList) {
             if (hasDefault && crs.isDefaultCRS()) {
-                throw new IllegalArgumentException("The parameter \"supportedCRSList\" can only contain one" +
+                throw new MalformedScriptException(this.getClass(), "supportedCRSList" ,"can only contain one" +
                         " default CRS");
             }
             if(crs.isDefaultCRS()){
@@ -76,7 +76,7 @@ public class BoundingBoxData extends DataDescription {
         }
 
         if(!hasDefault){
-            throw new IllegalArgumentException("The parameter \"supportedCRSList\" should contain a default CRS");
+            throw new MalformedScriptException(this.getClass(), "supportedCRSList", "should contain a default CRS");
         }
 
         this.setFormats(formatList);
@@ -95,14 +95,14 @@ public class BoundingBoxData extends DataDescription {
     /**
      * Adds a supported CRS.
      * @param supportedCRS Not nul supported CRS.
-     * @throws IllegalArgumentException Exception get if the argument is null or if there is more than one default CRS.
+     * @throws MalformedScriptException Exception get if the argument is null or if there is more than one default CRS.
      */
-    public void addSupportedCRS(SupportedCRS supportedCRS) throws IllegalArgumentException{
+    public void addSupportedCRS(SupportedCRS supportedCRS) throws MalformedScriptException{
         if (supportedCRSs == null) {
-            throw new IllegalArgumentException("The parameter \"supportedCRS\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "supportedCRS", "can not be null");
         }
         if (supportedCRS.isDefaultCRS()) {
-            throw new IllegalArgumentException("Only one CRS can be the default one");
+            throw new MalformedScriptException(this.getClass(), "supportedCRS", "can only contain one default CRS");
         }
         this.supportedCRSs.add(supportedCRS);
     }
@@ -110,17 +110,17 @@ public class BoundingBoxData extends DataDescription {
     /**
      * Removes a supported CRS.
      * @param supportedCRS Not null CRS to remove. It can not be the last one or the default one.
-     * @throws IllegalArgumentException Exception get on trying to remove the default CRS or the last one.
+     * @throws MalformedScriptException Exception get on trying to remove the default CRS or the last one.
      */
-    public void removeSupportedCRS(SupportedCRS supportedCRS) throws IllegalArgumentException {
+    public void removeSupportedCRS(SupportedCRS supportedCRS) throws MalformedScriptException {
         if(supportedCRS == null) {
             return;
         }
         if(supportedCRS.isDefaultCRS()){
-            throw new IllegalArgumentException("Can not remove the default CRS");
+            throw new MalformedScriptException(this.getClass(), "supportedCRSs" ,"can not remove the default CRS");
         }
         if (this.supportedCRSs.size() == 1 && this.supportedCRSs.contains(supportedCRS)) {
-            throw new IllegalArgumentException("The attribute \"supportedCRSs\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "supportedCRSs" ,"can not be empty");
         }
         this.supportedCRSs.remove(supportedCRS);
     }
@@ -128,25 +128,25 @@ public class BoundingBoxData extends DataDescription {
     /**
      * Sets the list of supported CRS.
      * @param supportedCRSs List of supported CRS.
-     * @throws IllegalArgumentException Exception get if an argument is null or empty or
+     * @throws MalformedScriptException Exception get if an argument is null or empty or
      * if the list of supported CRS does not contain only one default CRS.
      */
-    public void setSupportedCRSs(List<SupportedCRS> supportedCRSs) throws IllegalArgumentException {
+    public void setSupportedCRSs(List<SupportedCRS> supportedCRSs) throws MalformedScriptException {
         if (supportedCRSs == null || supportedCRSs.isEmpty() || supportedCRSs.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"supportedCRSs\" can not be null");
+            throw new MalformedScriptException(this.getClass(), "supportedCRSs", "can not be null");
         }
         if (supportedCRSs.isEmpty()) {
-            throw new IllegalArgumentException("The parameter \"supportedCRSs\" can not be empty");
+            throw new MalformedScriptException(this.getClass(), "supportedCRSs", "can not be empty");
         }
         if (supportedCRSs.contains(null)) {
-            throw new IllegalArgumentException("The parameter \"supportedCRSs\" can not contain a null value");
+            throw new MalformedScriptException(this.getClass(), "supportedCRSs", "can not contain a null value");
         }
 
         //Verify that the Supported CRS list contain exactly one default CRS
         boolean hasDefault = false;
         for(SupportedCRS crs : supportedCRSs) {
             if (hasDefault && crs.isDefaultCRS()) {
-                throw new IllegalArgumentException("The parameter \"supportedCRSs\" can only contain one" +
+                throw new MalformedScriptException(this.getClass(), "supportedCRSs", "can only contain one" +
                         " default CRS");
             }
             if(crs.isDefaultCRS()){
@@ -155,7 +155,7 @@ public class BoundingBoxData extends DataDescription {
         }
 
         if(!hasDefault){
-            throw new IllegalArgumentException("The parameter \"supportedCRSs\" should contain a default CRS");
+            throw new MalformedScriptException(this.getClass(), "supportedCRSs", "should contain a default CRS");
         }
 
         this.supportedCRSs = supportedCRSs;
