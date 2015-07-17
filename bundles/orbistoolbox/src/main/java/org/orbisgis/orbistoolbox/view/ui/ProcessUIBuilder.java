@@ -53,27 +53,18 @@ public class ProcessUIBuilder {
     public JComponent buildUI(Process p, Map<URI, Object> dataMap){
         JPanel panel = new JPanel(new MigLayout());
 
-        panel.add(new JLabel("Title :"), "wrap");
-        JLabel title = new JLabel(p.getTitle());
-        panel.add(title, "wrap");
 
-        panel.add(new JLabel("Abstract :"), "wrap");
-        JLabel abstrac = new JLabel(p.getAbstrac());
-        panel.add(abstrac, "wrap");
-
-
-        JLabel inputs = new JLabel("Inputs : ");
-        panel.add(inputs, "wrap");
 
         for(Input i : p.getInput()){
-            JLabel inputTitle = new JLabel(i.getTitle());
-            panel.add(inputTitle, "wrap");
+            JPanel inputPanel = new JPanel(new MigLayout());
+            inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
             JLabel inputAbstrac = new JLabel(i.getAbstrac());
-            panel.add(inputAbstrac, "wrap");
+            inputPanel.add(inputAbstrac, "wrap");
             DataUI dataUI = dataUIMap.get(i.getDataDescription().getClass());
             if(dataUI!=null) {
-                panel.add(dataUI.createUI(i, dataMap), "wrap");
+                inputPanel.add(dataUI.createUI(i, dataMap), "wrap");
             }
+            panel.add(inputPanel, "wrap");
         }
 
         return panel;
