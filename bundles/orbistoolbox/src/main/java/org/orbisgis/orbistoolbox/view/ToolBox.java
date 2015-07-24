@@ -156,12 +156,17 @@ public class ToolBox implements DockingPanel {
         return toolBoxPanel;
     }
 
+    public void addProcess(File f){
+        toolBoxPanel.addProcess(processManager.getProcess(f), f);
+    }
+
     public boolean selectProcess(File f){
         if(f == null){
             selectedProcess = null;
             return false;
         }
         selectedProcess = processManager.getProcess(f);
+
         if(selectedProcess == null){
             return false;
         }
