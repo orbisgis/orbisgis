@@ -70,7 +70,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.TimeUnit;
@@ -128,7 +130,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private Point2D worldAdjustedPoint = null;
         private int lastMouseX;
         private int lastMouseY;
-        private ArrayList<Handler> currentHandlers = new ArrayList<Handler>();
+        private List<Handler> currentHandlers = Collections.synchronizedList(new ArrayList<Handler>());
         private JPopupMenu toolPopUp;
         private int mouseModifiers;
         private Automaton defaultTool;
@@ -678,7 +680,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 return uiTolerance;
         }
 
-        public ArrayList<Handler> getCurrentHandlers() {
+        public List<Handler> getCurrentHandlers() {
                 return currentHandlers;
         }
 

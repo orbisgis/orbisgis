@@ -30,10 +30,12 @@
 package org.orbisgis.mapeditor.map.toolbar;
 
 import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.mainframe.api.ToolBarAction;
 import org.orbisgis.mapeditor.map.tool.Automaton;
 import org.orbisgis.mapeditor.map.tools.AutoCompletePolygonTool;
+import org.orbisgis.mapeditor.map.tools.PolygonTool;
 import org.orbisgis.mapeditorapi.MapEditorExtension;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -85,7 +87,7 @@ public class DrawingToolBar implements ToolBarAction {
 //        add(actions,DRAW_MULTI_POLYGON, new MultipolygonTool());
 //        add(actions,DRAW_POINT, new PointTool());
 //        add(actions,DRAW_LINE, new LineTool());
-//        add(actions,DRAW_POLYGON, new PolygonTool());
+        add(actions,DRAW_POLYGON, new PolygonTool()).setTrackedMapContextProperties(MapContext.PROP_ACTIVELAYER);
 //        add(actions,DRAW_SPLIT_LINESTRING, new SplitLineByPointTool());
 //        add(actions,DRAW_SPLIT_LINE_BY_LINE, new SplitLineByLineTool());
 //        add(actions,DRAW_SPLIT_POLYGON,new SplitPolygonTool());

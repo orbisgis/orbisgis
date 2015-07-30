@@ -26,26 +26,25 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.map.tools;
+package org.orbisgis.mapeditor.map.tools;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Observable;
+import java.util.concurrent.locks.Lock;
 
- 
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
+import org.h2gis.utilities.GeometryTypeCodes;
+import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
 
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
+import org.orbisgis.mapeditor.map.tool.ToolManager;
+import org.orbisgis.mapeditor.map.tool.TransitionException;
+
 import javax.swing.ImageIcon;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  * Draw a polygon
@@ -54,33 +53,40 @@ public class PolygonTool extends AbstractPolygonTool {
 
 	@Override
 	public void update(Observable o, Object arg) {
-		//PlugInContext.checkTool(this);
+
 	}
 
 	@Override
 	protected void polygonDone(com.vividsolutions.jts.geom.Polygon pol,
 			MapContext mc, ToolManager tm) throws TransitionException {
+        ReversibleRowSet rowSet = tm.getActiveLayerRowSet();
 		Geometry g = pol;
-		if (ToolUtilities.geometryTypeIs(mc, TypeFactory.createType(Type.MULTIPOLYGON))) {
+		if (ToolUtilities.geometryTypeIs(mc, GeometryTypeCodes.MULTIPOLYGON)) {
 			g = ToolManager.toolsGeometryFactory
 					.createMultiPolygon(new Polygon[] { pol });
 		}
-		DataSource sds = mc.getActiveLayer().getDataSource();
-		try {
-			Value[] row = new Value[sds.getMetadata().getFieldCount()];
-			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
-			row = ToolUtilities.populateNotNullFields(sds, row);
-			sds.insertFilledRow(row);
-		} catch (DriverException e) {
-			throw new TransitionException("Cannot insert polygon :"+e.getMessage(), e);
-		}
+        Lock lock = rowSet.getReadLock();
+        if(lock.tryLock()) {
+            try {
+                rowSet.moveToInsertRow();
+                rowSet.updateGeometry(g);
+                ToolUtilities.populateNotNullFields(mc.getDataManager().getDataSource(), rowSet.getTable(), rowSet);
+                rowSet.insertRow();
+            } catch (SQLException e) {
+                throw new TransitionException(i18n.tr("Cannot Autocomplete the polygon"), e);
+            } finally {
+                lock.unlock();
+            }
+        }
 	}
 
 	@Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.POLYGON),
-                TypeFactory.createType(Type.MULTIPOLYGON))
-				&& ToolUtilities.isActiveLayerEditable(vc);
+        try {
+            return ToolUtilities.geometryTypeIs(vc, GeometryTypeCodes.POLYGON, GeometryTypeCodes.MULTIPOLYGON) && ToolUtilities.isActiveLayerEditable(vc);
+        } catch (SQLException ex) {
+            return false;
+        }
 	}
 
 	@Override
@@ -89,8 +95,12 @@ public class PolygonTool extends AbstractPolygonTool {
 	}
 
 	@Override
-	public double getInitialZ(MapContext mapContext) {
-		return ToolUtilities.getActiveLayerInitialZ(mapContext);
+	public double getInitialZ(MapContext mapContext) throws TransitionException {
+        try(Connection connection = mapContext.getDataManager().getDataSource().getConnection()) {
+            return ToolUtilities.getActiveLayerInitialZ(connection, mapContext);
+        } catch (SQLException ex) {
+            throw new TransitionException(ex);
+        }
 	}
 
     @Override
@@ -105,7 +115,7 @@ public class PolygonTool extends AbstractPolygonTool {
 
     @Override
     public ImageIcon getImageIcon() {
-        return OrbisGISIcon.getIcon("edition/drawpolygon");
+        return MapEditorIcons.getIcon("edition/drawpolygon");
     }
 
 }

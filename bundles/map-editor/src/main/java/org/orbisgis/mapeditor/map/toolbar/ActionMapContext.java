@@ -105,8 +105,8 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
      * @param trackedMapContextProperties One of MapContext#PROP_*
      * @return this
      */
-    public ActionMapContext setTrackedMapContextProperties(Collection<String> trackedMapContextProperties) {
-        this.trackedMapContextProperties = new HashSet<>(trackedMapContextProperties);
+    public ActionMapContext setTrackedMapContextProperties(String... trackedMapContextProperties) {
+        this.trackedMapContextProperties = new HashSet<>(Arrays.asList(trackedMapContextProperties));
         return this;
     }
 
@@ -133,7 +133,7 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
     }
 
 
-    private final void init() {
+    private void init() {
         if(!isInitialised.getAndSet(true)) {
                 doInit();
         }
@@ -178,12 +178,11 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
     }
 
     private void installLayerListener(ILayer layer) {
+        layer.addLayerListener(layerAddRemoveListener);
         if(layer.acceptsChilds()) {
             for(ILayer layerChild : layer.getChildren()) {
                 installLayerListener(layerChild);
             }
-        } else {
-            layer.addLayerListener(layerAddRemoveListener);
         }
     }
 
