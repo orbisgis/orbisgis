@@ -90,27 +90,31 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
                         } catch (IOException ex) {
                             throw new SQLException(ex.getLocalizedMessage(), ex);
                         }
-                        if (ToolUtilities.geometryTypeIs(mc, GeometryTypeCodes.POLYGON)) {
-                            rowSet.moveToInsertRow();
-                            for (int i = 0; i < geom.getNumGeometries(); i++) {
-                                rowSet.updateGeometry(geom.getGeometryN(i));
-                                rowSet.insertRow();
-                            }
-                        } else if (ToolUtilities.geometryTypeIs(mc, GeometryTypeCodes.MULTIPOLYGON, GeometryTypeCodes
-                                .GEOMETRY)) {
-                            if (geom instanceof Polygon) {
-                                Polygon polygon = (Polygon) geom;
-                                geom = geom.getFactory().createMultiPolygon(new Polygon[]{polygon});
-                                rowSet.updateGeometry(geom);
-                                rowSet.insertRow();
-                            } else if (geom instanceof MultiPolygon) {
+                        try {
+                            if (ToolUtilities.geometryTypeIs(mc, GeometryTypeCodes.POLYGON)) {
+                                rowSet.moveToInsertRow();
                                 for (int i = 0; i < geom.getNumGeometries(); i++) {
-                                    Polygon polygon = (Polygon) geom.getGeometryN(i);
+                                    rowSet.updateGeometry(geom.getGeometryN(i));
+                                    rowSet.insertRow();
+                                }
+                            } else if (ToolUtilities.geometryTypeIs(mc, GeometryTypeCodes.MULTIPOLYGON, GeometryTypeCodes.GEOMETRY)) {
+                                rowSet.moveToInsertRow();
+                                if (geom instanceof Polygon) {
+                                    Polygon polygon = (Polygon) geom;
                                     geom = geom.getFactory().createMultiPolygon(new Polygon[]{polygon});
                                     rowSet.updateGeometry(geom);
                                     rowSet.insertRow();
+                                } else if (geom instanceof MultiPolygon) {
+                                    for (int i = 0; i < geom.getNumGeometries(); i++) {
+                                        Polygon polygon = (Polygon) geom.getGeometryN(i);
+                                        geom = geom.getFactory().createMultiPolygon(new Polygon[]{polygon});
+                                        rowSet.updateGeometry(geom);
+                                        rowSet.insertRow();
+                                    }
                                 }
                             }
+                        } finally {
+                            rowSet.moveToCurrentRow();
                         }
                     } catch (SQLException e) {
                         throw new TransitionException(i18n.tr("Cannot Autocomplete the polygon"), e);

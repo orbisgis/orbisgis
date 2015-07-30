@@ -65,7 +65,7 @@ public class ActionRedo extends ActionActiveLayer {
         super.checkActionState();
         // Active only if the DataSource is modified
         if(ActionTools.isVisible(this)) {
-            setVisible(getExtension().getMapElement().getMapUndoManager().canRedo());
+            setEnabled(getExtension().getMapElement().getMapUndoManager().canRedo());
         }
     }
 

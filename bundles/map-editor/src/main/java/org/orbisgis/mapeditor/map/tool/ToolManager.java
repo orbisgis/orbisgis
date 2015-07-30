@@ -708,9 +708,10 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         }
                     }
                 } catch (SQLException | InterruptedException e) {
-                        readLock.unlock();
                         UILOGGER.warn(
                                 I18N.tr("Cannot recalculate the handlers"), e);
+                } finally {
+                    readLock.unlock();
                 }
         }
 

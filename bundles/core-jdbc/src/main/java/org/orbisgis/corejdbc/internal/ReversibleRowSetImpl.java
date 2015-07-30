@@ -384,6 +384,7 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
     @Override
     public void cancelRowUpdates() throws SQLException {
         updateRow = null;
+        insertRow = null;
     }
 
     @Override
@@ -393,6 +394,7 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
 
     @Override
     public void moveToCurrentRow() throws SQLException {
+        cancelRowUpdates();
         absolute((int)rowId);
     }
 

@@ -29,7 +29,13 @@
 
 package org.orbisgis.mapeditor.map.toolbar;
 
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.LayerCollectionEvent;
+import org.orbisgis.coremap.layerModel.LayerListener;
+import org.orbisgis.coremap.layerModel.LayerListenerAdapter;
+import org.orbisgis.coremap.layerModel.LayerListenerEvent;
 import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.coremap.layerModel.SelectionEvent;
 import org.orbisgis.mapeditor.map.MapEditor;
 import org.orbisgis.mapeditorapi.MapEditorExtension;
 import org.orbisgis.mapeditorapi.MapElement;
@@ -39,6 +45,7 @@ import javax.swing.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,8 +64,13 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
     private PropertyChangeListener mapEditorListener = EventHandler.create(PropertyChangeListener.class, this, "onMapEditorUpdate","");
     // To update this Action Enabled state
     private PropertyChangeListener mapContextListener = EventHandler.create(PropertyChangeListener.class, this, "onMapContextUpdate","");
+    // To update this Action Enabled state
+    private final PropertyChangeListener layerListener = EventHandler.create(PropertyChangeListener.class, this, "onLayerUpdate","");
+    private final LayerListenerAdd layerAddRemoveListener = new LayerListenerAdd(layerListener);
+
     private AtomicBoolean isInitialised = new AtomicBoolean(false);
     private Set<String> trackedMapContextProperties = new HashSet<String>();
+    private Set<String> trackedLayersProperties = new HashSet<>();
 
     /**
      * Constructor
@@ -94,20 +106,33 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
      * @return this
      */
     public ActionMapContext setTrackedMapContextProperties(Collection<String> trackedMapContextProperties) {
-        this.trackedMapContextProperties = new HashSet<String>(trackedMapContextProperties);
+        this.trackedMapContextProperties = new HashSet<>(trackedMapContextProperties);
+        return this;
+    }
+
+    /**
+     * The automaton activation state (enabled/disabled) will be checked
+     * when one of trackedLayersProperties is updated.
+     * @param trackedLayersProperties One of {@link org.orbisgis.coremap.layerModel.ILayer#PROP_SELECTION}
+     * @return this
+     */
+    public ActionMapContext setTrackedLayersProperties(String... trackedLayersProperties) {
+        this.trackedLayersProperties = new HashSet<>(Arrays.asList(trackedLayersProperties));
         return this;
     }
 
     /**
      * The automaton activation state (enabled/disabled) will be checked
      * when propertyName is updated.
-     * @param propertyName One of MapContext#PROP_*
+     * @param propertyName One of {@link org.orbisgis.coremap.layerModel.MapContext#PROP_ACTIVELAYER}
      * @return this
      */
     public ActionMapContext addTrackedMapContextProperty(String propertyName) {
         trackedMapContextProperties.add(propertyName);
         return this;
     }
+
+
     private final void init() {
         if(!isInitialised.getAndSet(true)) {
                 doInit();
@@ -133,6 +158,7 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
      */
     protected void removeMapContextListener(MapContext mapContext) {
         mapContext.removePropertyChangeListener(mapContextListener);
+        removeListener(mapContext.getLayerModel(), layerListener, layerAddRemoveListener);
     }
 
     /**
@@ -145,8 +171,23 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
         } else if(!trackedMapContextProperties.isEmpty()) {
             mapContext.addPropertyChangeListener(mapContextListener);
         }
+        if(!trackedLayersProperties.isEmpty()) {
+            installLayerListener(mapContext.getLayerModel());
+        }
         checkActionState();
     }
+
+    private void installLayerListener(ILayer layer) {
+        if(layer.acceptsChilds()) {
+            for(ILayer layerChild : layer.getChildren()) {
+                installLayerListener(layerChild);
+            }
+        } else {
+            layer.addLayerListener(layerAddRemoveListener);
+        }
+    }
+
+
     /**
      * Called on MapEditor property update
      * @param evt
@@ -176,6 +217,24 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
     }
 
     /**
+     * The Map active Layer (the edited one) has been updated
+     * @param evt
+     */
+    public void onLayerUpdate(PropertyChangeEvent evt) {
+        if(trackedLayersProperties.contains(evt.getPropertyName())) {
+            checkActionState();
+        }
+    }
+
+    private static void removeListener(ILayer layer, PropertyChangeListener layerListener, LayerListenerAdd layerAddRemoveListener) {
+        layer.removeLayerListener(layerAddRemoveListener);
+        layer.removePropertyChangeListener(layerListener);
+        for (int i = 0; i < layer.getLayerCount(); i++) {
+            removeListener(layer.getLayer(i), layerListener, layerAddRemoveListener);
+        }
+    }
+
+    /**
      * A watch property of the MapContext has been fired.
      */
     protected void checkActionState() {
@@ -191,5 +250,36 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
             }
         }
         extension = null;
+    }
+
+    private static class LayerListenerAdd extends LayerListenerAdapter {
+        PropertyChangeListener layerListener;
+
+
+        public LayerListenerAdd(PropertyChangeListener layerListener) {
+            this.layerListener = layerListener;
+        }
+
+        private void addListener(ILayer layer) {
+            layer.addLayerListener(this);
+            layer.addPropertyChangeListener(layerListener);
+            for (int i = 0; i < layer.getLayerCount(); i++) {
+                addListener(layer.getLayer(i));
+            }
+        }
+
+        @Override
+        public void layerAdded(LayerCollectionEvent e) {
+            for(ILayer layer : e.getAffected()) {
+                addListener(layer);
+            }
+        }
+
+        @Override
+        public void layerRemoved(LayerCollectionEvent e) {
+            for(ILayer layer : e.getAffected()) {
+                removeListener(layer, layerListener, this);
+            }
+        }
     }
 }

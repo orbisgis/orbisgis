@@ -29,21 +29,29 @@
 
 package org.orbisgis.mapeditor.map.toolbar;
 
+import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.editorjdbc.jobs.DeleteSelectedRows;
 import org.orbisgis.mainframe.api.ToolBarAction;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditorapi.MapEditorExtension;
+import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.UIFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
+import javax.swing.text.html.ObjectView;
+import javax.swing.undo.UndoManager;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
@@ -54,8 +62,6 @@ import java.util.concurrent.ExecutorService;
  */
 public class ActionDelete extends ActionActiveLayer {
     private static final I18n I18N = I18nFactory.getI18n(ActionDelete.class);
-    private PropertyChangeListener selectionChangeListener = EventHandler.create(PropertyChangeListener.class, this,
-            "onSelectionUpdate");
     private ExecutorService executorService;
 
     /**
@@ -67,6 +73,7 @@ public class ActionDelete extends ActionActiveLayer {
         this.executorService = executorService;
         setToolTipText(I18N.tr("Delete selected geometries"));
         setLogicalGroup(ToolBarAction.DRAWING_GROUP);
+        setTrackedLayersProperties(ILayer.PROP_SELECTION);
     }
 
     /**
@@ -75,49 +82,13 @@ public class ActionDelete extends ActionActiveLayer {
     public void onSelectionUpdate() {
         checkActionState();
     }
+
+
     @Override
     protected void checkActionState() {
         super.checkActionState();
         if(getActiveLayer()!=null) {
             setEnabled(!getActiveLayer().getSelection().isEmpty());
-        }
-    }
-
-    @Override
-    public void onMapContextUpdate(PropertyChangeEvent evt) {
-        super.onMapContextUpdate(evt);
-        if(MapContext.PROP_ACTIVELAYER.equals(evt.getPropertyName())) {
-            ILayer oldActive = (ILayer) evt.getOldValue();
-            ILayer newActive = (ILayer) evt.getNewValue();
-            if(oldActive!=null) {
-                removeLayerListeners(oldActive);
-            }
-            if(newActive!=null) {
-                addLayerListeners(newActive);
-            }
-        }
-    }
-
-    @Override
-    protected void installMapContextListener(MapContext mapContext) {
-        super.installMapContextListener(mapContext);
-        addLayerListeners(mapContext.getActiveLayer());
-    }
-
-    @Override
-    protected void removeMapContextListener(MapContext mapContext) {
-        super.removeMapContextListener(mapContext);
-        removeLayerListeners(mapContext.getActiveLayer());
-    }
-
-    private void addLayerListeners(ILayer activeLayer) {
-        if(activeLayer!=null) {
-            activeLayer.addPropertyChangeListener(ILayer.PROP_SELECTION, selectionChangeListener);
-        }
-    }
-    private void removeLayerListeners(ILayer activeLayer) {
-        if(activeLayer!=null) {
-            activeLayer.removePropertyChangeListener(selectionChangeListener);
         }
     }
 
@@ -132,8 +103,34 @@ public class ActionDelete extends ActionActiveLayer {
                     JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if(response==JOptionPane.YES_OPTION) {
                 // Launch process
-                executorService.execute(new DeleteSelectedRows(new TreeSet<>(selectedRows),
-                        activeLayer.getTableReference(), activeLayer.getDataManager().getDataSource()));
+                MapElement mapElement = getExtension().getMapElement();
+                UndoManager undoManager = mapElement.getMapUndoManager();
+                if(undoManager == null || selectedRows.size() > undoManager.getLimit()) {
+                    executorService.execute(new DeleteSelectedRows(new TreeSet<>(selectedRows),
+                            activeLayer.getTableReference(), activeLayer.getDataManager().getDataSource()));
+                } else {
+                    executorService.execute(new RowSetDelete(selectedRows, getExtension().getToolManager().getActiveLayerRowSet()));
+                }
+            }
+        }
+    }
+
+    private static class RowSetDelete implements Runnable {
+        private Set<Long> selectedRows;
+        private ReversibleRowSet activeLayerRowSet;
+        private static final Logger LOGGER = LoggerFactory.getLogger(RowSetDelete.class);
+
+        public RowSetDelete(Set<Long> selectedRows, ReversibleRowSet activeLayerRowSet) {
+            this.selectedRows = selectedRows;
+            this.activeLayerRowSet = activeLayerRowSet;
+        }
+
+        @Override
+        public void run() {
+            try {
+                DeleteSelectedRows.deleteUsingRowSet(activeLayerRowSet, new TreeSet<>(selectedRows));
+            } catch (SQLException | InterruptedException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
             }
         }
     }

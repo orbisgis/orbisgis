@@ -665,7 +665,7 @@ public class MapControl extends JComponent implements ContainerListener {
                                 TransitionException e) {
                         //The error has to be shown to the user,
                         //without the stack trace
-                        LOGGER.error(I18N.tr("Tool error {0}",e.getMessage())); //$NON-NLS-1$
+                        LOGGER.error(I18N.tr("Tool error {0}",e.getMessage()), e);
                         toolManager.checkToolStatus();
                 }
 

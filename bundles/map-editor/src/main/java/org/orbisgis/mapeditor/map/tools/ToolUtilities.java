@@ -36,7 +36,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
@@ -196,6 +200,10 @@ public class ToolUtilities {
          * @return 
          */
 	public static boolean geometryTypeIs(MapContext vc, int... geometryTypes) {
+        Set<Integer> acceptedTypes = new HashSet<>();
+        for(int geomType : geometryTypes) {
+            acceptedTypes.add(geomType);
+        }
 		ILayer activeLayer = vc.getActiveLayer();
 		if (activeLayer != null && geometryTypes.length > 0) {
 			try {
@@ -203,7 +211,7 @@ public class ToolUtilities {
                 if(!table.isEmpty()) {
                     TableLocation tableLocation = TableLocation.parse(activeLayer.getTableReference());
                     int tableGeoType = SFSUtilities.getGeometryType(vc.getDataManager().getDataSource().getConnection(), tableLocation,"");
-                    return tableGeoType == geometryTypes[0] ||  tableGeoType == GeometryTypeCodes.GEOMETRY;
+                    return acceptedTypes.contains(tableGeoType);
                 }
             } catch (SQLException ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);

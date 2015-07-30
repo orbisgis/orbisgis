@@ -72,7 +72,7 @@ public abstract class AbstractHandler implements Handler {
 	protected int vertexIndex;
 	protected Coordinate point;
 	protected Geometry geometry;
-    protected GeometryFactory gf = geometry.getFactory();
+    protected GeometryFactory gf;
 	protected long geomIndex;
 
 	/**
@@ -87,6 +87,7 @@ public abstract class AbstractHandler implements Handler {
 	 */
 	public AbstractHandler(Geometry g,
 			int vertexIndex, Coordinate p, long geomIndex) {
+        this.gf = g.getFactory();
 		this.vertexIndex = vertexIndex;
 		this.point = p;
 		this.geometry = g;

@@ -311,18 +311,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                     EventHandler.create(ActionListener.class,this, "onMenuUnsetActiveLayer"),null)
                         .setEnabledOnActiveLayer(true)
                         .setSingleSelection(true));
-            popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_SAVE_EDIT_GEOMETRY,
-                    I18N.tr("Save modifications"), I18N.tr("Apply the data source modifications"),
-                    TocIcon.getIcon("save"),
-                    EventHandler.create(ActionListener.class,this, "onMenuCommitDataSource"),null)
-                        .setEnabledOnModifiedLayer(true));
-            popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_CANCEL_EDIT_GEOMETRY,
-                    I18N.tr("Cancel modifications"), I18N.tr("Undo all data source modifications"),
-                    TocIcon.getIcon("remove"),
-                    EventHandler.create(ActionListener.class,this, "onMenuSyncDataSource"),null)
-                        .setEnabledOnModifiedLayer(true));
-
-
             popupActions.addAction(new LayerAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
                     I18N.tr("Add layer group"),I18N.tr("Add layer group to the map context"),
                     TocIcon.getIcon("folder_add"),

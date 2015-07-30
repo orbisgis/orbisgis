@@ -29,6 +29,7 @@
 
 package org.orbisgis.mapeditor.map.toolbar;
 
+import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.mainframe.api.ToolBarAction;
 import org.orbisgis.mapeditor.map.tool.Automaton;
@@ -76,7 +77,8 @@ public class DrawingToolBar implements ToolBarAction {
         actions.add(new ActionUndo(mapEditor));
         actions.add(new ActionRedo(mapEditor));
         actions.add(new ActionDelete(mapEditor, executorService));
-        add(actions,DRAW_AUTO_POLYGON, new AutoCompletePolygonTool());
+        // Autopolygon require selection of features to be available
+        add(actions,DRAW_AUTO_POLYGON, new AutoCompletePolygonTool()).setTrackedLayersProperties(ILayer.PROP_SELECTION);
 //        add(actions,DRAW_CUT_POLYGON, new CutPolygonTool());
 //        add(actions,DRAW_MULTI_POINT, new MultipointTool());
 //        add(actions,DRAW_MULTI_LINE, new MultilineTool());
