@@ -94,7 +94,7 @@ public class DrawingToolBar implements ToolBarAction {
 //        add(actions,DRAW_SPLIT_LINESTRING, new SplitLineByPointTool());
 //        add(actions,DRAW_SPLIT_LINE_BY_LINE, new SplitLineByLineTool());
 //        add(actions,DRAW_SPLIT_POLYGON,new SplitPolygonTool());
-        add(actions,DRAW_MOVE_VERTEX, new MoveVertexTool());
+        add(actions,DRAW_MOVE_VERTEX, new MoveVertexTool()).setTrackedLayersProperties(ILayer.PROP_SELECTION);
 //        add(actions,DRAW_VERTEX_ADDITION, new VertexAdditionTool());
 //        add(actions,DRAW_VERTEX_DELETION, new VertexDeletionTool());
         return actions;
