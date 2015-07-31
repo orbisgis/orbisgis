@@ -58,6 +58,7 @@ public class ActionUndo extends ActionActiveLayer {
         super(ToolBarAction.DRAW_UNDO, I18N.tr("Undo"), extension, MapEditorIcons.getIcon("edit-undo"));
         putValue(SHORT_DESCRIPTION,I18N.tr("Undo the last modification"));
         setLogicalGroup(ToolBarAction.DRAWING_GROUP);
+        setTrackDataManager(true);
     }
 
     @Override
