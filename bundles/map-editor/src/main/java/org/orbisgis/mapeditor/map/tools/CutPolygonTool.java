@@ -26,25 +26,31 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.map.tools;
+package org.orbisgis.mapeditor.map.tools;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Observable;
+import java.util.concurrent.locks.Lock;
 import javax.swing.ImageIcon;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.GeometryDimensionConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
-import org.gdms.geometryUtils.GeometryEdit;
+
+import org.h2gis.utilities.GeometryTypeCodes;
+import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.tool.*;
+import org.orbisgis.mapeditor.map.geometryUtils.GeometryEdit;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
+import org.orbisgis.mapeditor.map.tool.FinishedAutomatonException;
+import org.orbisgis.mapeditor.map.tool.Handler;
+import org.orbisgis.mapeditor.map.tool.MultiPolygonHandler;
+import org.orbisgis.mapeditor.map.tool.PolygonHandler;
+import org.orbisgis.mapeditor.map.tool.ToolManager;
+import org.orbisgis.mapeditor.map.tool.TransitionException;
 
 /**
  * This tool subtract polygons in Handler by the drawing one, using {@link GeometryEdit#cutMultiPolygon}.
@@ -57,49 +63,70 @@ public class CutPolygonTool extends AbstractPolygonTool {
         }
 
         @Override
-        protected void polygonDone(Polygon pol,
-                MapContext mc, ToolManager tm) throws TransitionException {
-                DataSource sds = mc.getActiveLayer().getDataSource();
-                try {
-                        ArrayList<Handler> handlers = new ArrayList<Handler>(tm.getCurrentHandlers());
-                        for (Handler handler : handlers) {
-                                if (handler instanceof MultiPolygonHandler) {
-                                        MultiPolygonHandler mp = (MultiPolygonHandler) handler;
-                                        MultiPolygon mpolygon = (MultiPolygon) sds.getGeometry(mp.getGeometryIndex());
-                                        MultiPolygon result = GeometryEdit.cutMultiPolygonWithPolygon(mpolygon, pol);
-                                        if (result != null) {
-                                                sds.setGeometry(mp.getGeometryIndex(), result);
-                                        }
-                                } else if (handler instanceof PolygonHandler) {
-                                        PolygonHandler ph = (PolygonHandler) handler;
-                                        Polygon polygon = (Polygon) sds.getGeometry(ph.getGeometryIndex());
-                                        Collection<Polygon> polygons = GeometryEdit.cutPolygonWithPolygon(polygon, pol);
-                                        if (polygons != null) {
-                                                sds.deleteRow(handler.getGeometryIndex());
-                                                Value[] row = sds.getRow(handler.getGeometryIndex());
-                                                for (Polygon result : polygons) {
-                                                        row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(result);
-                                                        sds.insertFilledRow(row);
-                                                }
-                                        }
-                                }
-                        }
+        protected void polygonDone(Polygon pol, MapContext mc, ToolManager tm) throws TransitionException {
+            try {
 
-                } catch (DriverException e) {
-                        throw new TransitionException(i18n.tr("Cannot cut the polygon"), e);
+                Map<Long, Integer> pkToRowIndex;
+                try {
+                    pkToRowIndex = tm.getHandlersRowId(tm.getCurrentHandlers());
+                } catch (SQLException ex) {
+                    throw new TransitionException(ex);
                 }
+                ReversibleRowSet rowSet = tm.getActiveLayerRowSet();
+
+                List<Handler> handlers = new ArrayList<>(tm.getCurrentHandlers());
+                for (Handler handler : handlers) {
+                    Lock lock = rowSet.getReadLock();
+                    if (lock.tryLock() && pkToRowIndex.containsKey(handler.getGeometryPK())) {
+                        try {
+                            if (handler instanceof MultiPolygonHandler) {
+                                rowSet.absolute(pkToRowIndex.get(handler.getGeometryPK()));
+                                MultiPolygon mpolygon = (MultiPolygon) rowSet.getGeometry();
+                                MultiPolygon result = GeometryEdit.cutMultiPolygonWithPolygon(mpolygon, pol);
+                                if (result != null) {
+                                    rowSet.updateGeometry(result);
+                                    rowSet.updateRow();
+                                }
+                            } else if (handler instanceof PolygonHandler) {
+                                rowSet.absolute(pkToRowIndex.get(handler.getGeometryPK()));
+                                Polygon polygon = (Polygon) rowSet.getGeometry();
+                                Collection<Polygon> polygons = GeometryEdit.cutPolygonWithPolygon(polygon, pol);
+                                if (polygons != null) {
+                                    Object[] oldRow = new Object[rowSet.getMetaData().getColumnCount()];
+                                    for(int idColumn = 0; idColumn < oldRow.length; idColumn ++) {
+                                        oldRow[idColumn] = rowSet.getObject(idColumn + 1);
+                                    }
+                                    rowSet.deleteRow();
+                                    rowSet.moveToInsertRow();
+                                    for (Polygon result : polygons) {
+                                        for(int idColumn = 0; idColumn < oldRow.length; idColumn ++) {
+                                            rowSet.updateObject(idColumn + 1, oldRow[idColumn]);
+                                        }
+                                        rowSet.updateGeometry(result);
+                                        rowSet.insertRow();
+                                    }
+                                    rowSet.moveToCurrentRow();
+                                }
+                            }
+                        } finally {
+                            lock.unlock();
+                        }
+                    }
+                }
+
+            } catch (SQLException e) {
+                throw new TransitionException(i18n.tr("Cannot cut the polygon"), e);
+            }
         }
 
         @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
-                return ToolUtilities.geometryTypeIs(vc, 
-                        TypeFactory.createType(Type.POLYGON), 
-                        TypeFactory.createType(Type.MULTIPOLYGON), 
-                        TypeFactory.createType(Type.GEOMETRY, 
-                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_SURFACE)), 
-                        TypeFactory.createType(Type.MULTIPOLYGON, 
-                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_SURFACE))) && 
+            try {
+                return ToolUtilities.geometryTypeIs(vc, GeometryTypeCodes.POLYGON, GeometryTypeCodes.MULTIPOLYGON) &&
                         ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionEqualsTo(vc, 1);
+            } catch (SQLException ex) {
+                return false;
+            }
         }
 
         @Override
@@ -124,6 +151,6 @@ public class CutPolygonTool extends AbstractPolygonTool {
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("edition/cutpolygon");
+            return MapEditorIcons.getIcon("edition/cutpolygon");
         }
 }

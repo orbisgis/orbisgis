@@ -93,52 +93,42 @@ public class MoveVertexTool extends AbstractSelectionTool {
                 
         }
 
-        @Override
-        public void transitionTo_MakeMove(MapContext mc, ToolManager tm)
-                throws TransitionException, FinishedAutomatonException {
+    @Override
+    public void transitionTo_MakeMove(MapContext mc, ToolManager tm) throws TransitionException,
+            FinishedAutomatonException {
 
-                // Compute ROW index of selected entities
-                SortedSet<Long> handleRowPK = new TreeSet<>();
-                for (Handler handler : selected) {
-                    handleRowPK.add(handler.getGeometryPK());
-                }
-                ReversibleRowSet rowSet = tm.getActiveLayerRowSet();
-                Map<Long, Integer> PkToRowIndex = new HashMap<>(handleRowPK.size());
-                try {
-                    SortedSet<Integer> rowIndex = rowSet.getRowNumberFromRowPk(handleRowPK);
-                    // Both PK and RowIndex are sorted ascending
-                    Iterator<Integer> itIndex =  rowIndex.iterator();
-                    Iterator<Long> itPk = handleRowPK.iterator();
-                    while(itIndex.hasNext() && itPk.hasNext()) {
-                        PkToRowIndex.put(itPk.next(), itIndex.next());
-                    }
-                } catch (SQLException ex) {
-                    throw new FinishedAutomatonException(ex);
-                }
-                // Record moving of points
-                for (Handler handler : selected) {
-                    Geometry g;
-                    try {
-                        g = handler.moveTo(tm.getValues()[0], tm.getValues()[1]);
-                    } catch (CannotChangeGeometryException e1) {
-                        throw new TransitionException(e1);
-                    }
-
-                    Lock lock = rowSet.getReadLock();
-                    if(lock.tryLock() && PkToRowIndex.containsKey(handler.getGeometryPK())) {
-                        try {
-                            rowSet.absolute(PkToRowIndex.get(handler.getGeometryPK()));
-                            rowSet.updateGeometry(g);
-                            rowSet.updateRow();
-                        } catch (SQLException e) {
-                            throw new TransitionException(i18n.tr("Cannot move point(s)"), e);
-                        } finally {
-                            lock.unlock();
-                        }
-                    }
-                }
-                transition(Code.EMPTY);
+        // Compute ROW index of selected entities
+        Map<Long, Integer> pkToRowIndex;
+        try {
+            pkToRowIndex = tm.getHandlersRowId(selected);
+        } catch (SQLException ex) {
+            throw new FinishedAutomatonException(ex);
         }
+        // Record moving of points
+        ReversibleRowSet rowSet = tm.getActiveLayerRowSet();
+        for (Handler handler : selected) {
+            Geometry g;
+            try {
+                g = handler.moveTo(tm.getValues()[0], tm.getValues()[1]);
+            } catch (CannotChangeGeometryException e1) {
+                throw new TransitionException(e1);
+            }
+
+            Lock lock = rowSet.getReadLock();
+            if (lock.tryLock() && pkToRowIndex.containsKey(handler.getGeometryPK())) {
+                try {
+                    rowSet.absolute(pkToRowIndex.get(handler.getGeometryPK()));
+                    rowSet.updateGeometry(g);
+                    rowSet.updateRow();
+                } catch (SQLException e) {
+                    throw new TransitionException(i18n.tr("Cannot move point(s)"), e);
+                } finally {
+                    lock.unlock();
+                }
+            }
+        }
+        transition(Code.EMPTY);
+    }
 
         @Override
         public void drawIn_Movement(Graphics g, MapContext vc, ToolManager tm)
