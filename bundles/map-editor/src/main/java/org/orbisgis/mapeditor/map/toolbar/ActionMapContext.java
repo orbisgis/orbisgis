@@ -29,6 +29,9 @@
 
 package org.orbisgis.mapeditor.map.toolbar;
 
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.LayerCollectionEvent;
 import org.orbisgis.coremap.layerModel.LayerListener;
@@ -54,7 +57,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * An action that depend on the MapContext of the MapEditor
  * This action is quite complex because some listeners have to be installed
- * in order to update the state of this action, it depends on the loaded MapElement
+ * in order to update the state of this action, it depends on the loaded MapElement,MapContext, Layers and table updates.
  * This action must be released by calling the {@link ActionDisposable#dispose()}
  * @author Nicolas Fortin
  */
@@ -66,11 +69,12 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
     private PropertyChangeListener mapContextListener = EventHandler.create(PropertyChangeListener.class, this, "onMapContextUpdate","");
     // To update this Action Enabled state
     private final PropertyChangeListener layerListener = EventHandler.create(PropertyChangeListener.class, this, "onLayerUpdate","");
-    private final LayerListenerAdd layerAddRemoveListener = new LayerListenerAdd(layerListener);
+    private final LayerListenerAdd layerAddRemoveListener = new LayerListenerAdd(layerListener, this);
 
     private AtomicBoolean isInitialised = new AtomicBoolean(false);
     private Set<String> trackedMapContextProperties = new HashSet<String>();
     private Set<String> trackedLayersProperties = new HashSet<>();
+    private boolean trackDataManager = false;
 
     /**
      * Constructor
@@ -84,6 +88,13 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
         putValue(Action.SMALL_ICON,icon);
         putValue(Action.LARGE_ICON_KEY,icon);
         this.extension = ((MapEditor)extension);
+    }
+
+    /**
+     * @param trackDataManager True to track updates on tables that are shown in loaded map context
+     */
+    public void setTrackDataManager(boolean trackDataManager) {
+        this.trackDataManager = trackDataManager;
     }
 
     @Override
@@ -171,7 +182,7 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
         } else if(!trackedMapContextProperties.isEmpty()) {
             mapContext.addPropertyChangeListener(mapContextListener);
         }
-        if(!trackedLayersProperties.isEmpty()) {
+        if(trackDataManager || !trackedLayersProperties.isEmpty()) {
             installLayerListener(mapContext.getLayerModel());
         }
         checkActionState();
@@ -179,6 +190,13 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
 
     private void installLayerListener(ILayer layer) {
         layer.addLayerListener(layerAddRemoveListener);
+        if(!trackedLayersProperties.isEmpty()) {
+            layer.addPropertyChangeListener(layerListener);
+        }
+        if(trackDataManager && !layer.getTableReference().isEmpty() && layer.getDataManager() != null) {
+            DataManager dataManager = layer.getDataManager();
+            dataManager.addTableEditListener(layer.getTableReference(), layerAddRemoveListener  , false);
+        }
         if(layer.acceptsChilds()) {
             for(ILayer layerChild : layer.getChildren()) {
                 installLayerListener(layerChild);
@@ -228,6 +246,9 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
     private static void removeListener(ILayer layer, PropertyChangeListener layerListener, LayerListenerAdd layerAddRemoveListener) {
         layer.removeLayerListener(layerAddRemoveListener);
         layer.removePropertyChangeListener(layerListener);
+        if(!layer.getTableReference().isEmpty() && layer.getDataManager() != null) {
+            layer.getDataManager().removeTableEditListener(layer.getTableReference(), layerAddRemoveListener);
+        }
         for (int i = 0; i < layer.getLayerCount(); i++) {
             removeListener(layer.getLayer(i), layerListener, layerAddRemoveListener);
         }
@@ -251,12 +272,13 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
         extension = null;
     }
 
-    private static class LayerListenerAdd extends LayerListenerAdapter {
-        PropertyChangeListener layerListener;
+    private static class LayerListenerAdd extends LayerListenerAdapter implements TableEditListener {
+        private PropertyChangeListener layerListener;
+        private Action action;
 
-
-        public LayerListenerAdd(PropertyChangeListener layerListener) {
+        public LayerListenerAdd(PropertyChangeListener layerListener, Action action) {
             this.layerListener = layerListener;
+            this.action = action;
         }
 
         private void addListener(ILayer layer) {
@@ -265,6 +287,12 @@ public abstract class ActionMapContext extends DefaultAction implements ActionDi
             for (int i = 0; i < layer.getLayerCount(); i++) {
                 addListener(layer.getLayer(i));
             }
+        }
+
+        @Override
+        public void tableChange(TableEditEvent event) {
+            // Update enabled state
+            action.isEnabled();
         }
 
         @Override

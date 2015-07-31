@@ -58,6 +58,7 @@ public class ActionRedo extends ActionActiveLayer {
         super(ToolBarAction.DRAW_REDO, I18N.tr("Redo"), extension, MapEditorIcons.getIcon("edit-redo"));
         putValue(SHORT_DESCRIPTION,I18N.tr("Redo the last modification"));
         setLogicalGroup(ToolBarAction.DRAWING_GROUP);
+
     }
 
     @Override
