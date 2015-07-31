@@ -68,7 +68,7 @@ public class PointTool extends AbstractPointTool {
 	protected void pointDone(Point point, MapContext mc, ToolManager tm)
 			throws TransitionException {
 		Geometry g = point;
-		if (ToolUtilities.geometryTypeIs(mc, GeometryTypeCodes.POINT)) {
+		if (ToolUtilities.geometryTypeIs(mc, GeometryTypeCodes.MULTIPOINT)) {
 			g = ToolManager.toolsGeometryFactory
 					.createMultiPoint(new Point[] { point });
 		}
