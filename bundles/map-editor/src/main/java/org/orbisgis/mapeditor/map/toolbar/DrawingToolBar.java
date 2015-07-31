@@ -35,6 +35,7 @@ import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.mainframe.api.ToolBarAction;
 import org.orbisgis.mapeditor.map.tool.Automaton;
 import org.orbisgis.mapeditor.map.tools.AutoCompletePolygonTool;
+import org.orbisgis.mapeditor.map.tools.CutPolygonTool;
 import org.orbisgis.mapeditor.map.tools.LineTool;
 import org.orbisgis.mapeditor.map.tools.MoveVertexTool;
 import org.orbisgis.mapeditor.map.tools.PointTool;
@@ -84,7 +85,7 @@ public class DrawingToolBar implements ToolBarAction {
         actions.add(new ActionDelete(mapEditor, executorService));
         // Autopolygon require selection of features to be available
         add(actions,DRAW_AUTO_POLYGON, new AutoCompletePolygonTool()).setTrackedLayersProperties(ILayer.PROP_SELECTION);
-//        add(actions,DRAW_CUT_POLYGON, new CutPolygonTool());
+        add(actions,DRAW_CUT_POLYGON, new CutPolygonTool());
 //        add(actions,DRAW_MULTI_POINT, new MultipointTool());
 //        add(actions,DRAW_MULTI_LINE, new MultilineTool());
 //        add(actions,DRAW_MULTI_POLYGON, new MultipolygonTool());

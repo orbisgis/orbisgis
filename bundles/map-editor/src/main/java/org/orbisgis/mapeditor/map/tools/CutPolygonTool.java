@@ -45,7 +45,6 @@ import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.geometryUtils.GeometryEdit;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
-import org.orbisgis.mapeditor.map.tool.FinishedAutomatonException;
 import org.orbisgis.mapeditor.map.tool.Handler;
 import org.orbisgis.mapeditor.map.tool.MultiPolygonHandler;
 import org.orbisgis.mapeditor.map.tool.PolygonHandler;
