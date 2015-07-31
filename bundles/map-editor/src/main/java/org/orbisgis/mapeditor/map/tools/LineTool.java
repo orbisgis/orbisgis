@@ -49,28 +49,23 @@
  *  OrbisCAD development team
  *   elgallego@users.sourceforge.net
  */
-package org.orbisgis.view.map.tools;
+package org.orbisgis.mapeditor.map.tools;
 
+import java.sql.SQLException;
 import java.util.Observable;
+import java.util.concurrent.locks.Lock;
 
- 
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
+
+import org.h2gis.utilities.GeometryTypeCodes;
+import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
 
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
-import org.gdms.data.types.GeometryDimensionConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
+import org.orbisgis.mapeditor.map.tool.ToolManager;
+import org.orbisgis.mapeditor.map.tool.TransitionException;
 
 import javax.swing.*;
 
@@ -78,13 +73,16 @@ public class LineTool extends AbstractLineTool {
 
         @Override
         public void update(Observable o, Object arg) {
-                //PlugInContext.checkTool(this);
         }
 
         @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
-                return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.LINESTRING), TypeFactory.createType(Type.MULTILINESTRING))
+            try {
+                return ToolUtilities.geometryTypeIs(vc, GeometryTypeCodes.LINESTRING, GeometryTypeCodes.MULTILINESTRING)
                         && ToolUtilities.isActiveLayerEditable(vc);
+            } catch (SQLException ex) {
+                return false;
+            }
         }
 
         @Override
@@ -95,31 +93,29 @@ public class LineTool extends AbstractLineTool {
         @Override
         protected void lineDone(LineString ls, MapContext mc, ToolManager tm)
                 throws TransitionException {
-                Geometry g = ls;
-                if (ToolUtilities.geometryTypeIs(mc,
-                        TypeFactory.createType(Type.MULTILINESTRING),
-                        TypeFactory.createType(Type.GEOMETRYCOLLECTION, 
-                                ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY, 
-                                        GeometryDimensionConstraint.DIMENSION_CURVE))
-                        )
-                ) {
-                        g = ToolManager.toolsGeometryFactory.createMultiLineString(new LineString[]{ls});
-                }
-
-                DataSource sds = mc.getActiveLayer().getDataSource();
+            Geometry g = ls;
+            if (ToolUtilities.geometryTypeIs(mc, GeometryTypeCodes.LINESTRING, GeometryTypeCodes.MULTILINESTRING)) {
+                    g = ToolManager.toolsGeometryFactory.createMultiLineString(new LineString[]{ls});
+            }
+            ReversibleRowSet rowSet = tm.getActiveLayerRowSet();
+            Lock lock = rowSet.getReadLock();
+            if(lock.tryLock()) {
                 try {
-                        Value[] row = new Value[sds.getMetadata().getFieldCount()];
-                        row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
-                        row = ToolUtilities.populateNotNullFields(sds, row);
-                        sds.insertFilledRow(row);
-                } catch (DriverException e) {
-                        throw new TransitionException(i18n.tr("Cannot insert linestring"), e);
+                    rowSet.moveToInsertRow();
+                    rowSet.updateGeometry(g);
+                    ToolUtilities.populateNotNullFields(mc.getDataManager().getDataSource(), rowSet.getTable(), rowSet);
+                    rowSet.insertRow();
+                } catch (SQLException e) {
+                    throw new TransitionException(i18n.tr("Cannot insert line string"), e);
+                } finally {
+                    lock.unlock();
                 }
+            }
         }
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("edition/drawline");
+            return MapEditorIcons.getIcon("edition/drawline");
         }
 
         @Override
