@@ -26,19 +26,33 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.map.tools;
+package org.orbisgis.mapeditor.map.tools;
 
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Observable;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.locks.Lock;
 import javax.swing.ImageIcon;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
+
+import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.tool.*;
+import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
+import org.orbisgis.mapeditor.map.tool.CannotChangeGeometryException;
+import org.orbisgis.mapeditor.map.tool.DrawingException;
+import org.orbisgis.mapeditor.map.tool.FinishedAutomatonException;
+import org.orbisgis.mapeditor.map.tool.Handler;
+import org.orbisgis.mapeditor.map.tool.ToolManager;
+import org.orbisgis.mapeditor.map.tool.TransitionException;
 
 /**
  * A tool to move vertex of the edited layer.
@@ -52,8 +66,12 @@ public class MoveVertexTool extends AbstractSelectionTool {
 
         @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
+            try {
                 return ToolUtilities.isActiveLayerEditable(vc)
                         && ToolUtilities.isActiveLayerVisible(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc,1);
+            } catch (SQLException ex) {
+                return false;
+            }
         }
 
         @Override
@@ -78,7 +96,26 @@ public class MoveVertexTool extends AbstractSelectionTool {
         @Override
         public void transitionTo_MakeMove(MapContext mc, ToolManager tm)
                 throws TransitionException, FinishedAutomatonException {
-                DataSource ds = getLayer(mc).getDataSource();
+
+                // Compute ROW index of selected entities
+                SortedSet<Long> handleRowPK = new TreeSet<>();
+                for (Handler handler : selected) {
+                    handleRowPK.add(handler.getGeometryPK());
+                }
+                ReversibleRowSet rowSet = tm.getActiveLayerRowSet();
+                Map<Long, Integer> PkToRowIndex = new HashMap<>(handleRowPK.size());
+                try {
+                    SortedSet<Integer> rowIndex = rowSet.getRowNumberFromRowPk(handleRowPK);
+                    // Both PK and RowIndex are sorted ascending
+                    Iterator<Integer> itIndex =  rowIndex.iterator();
+                    Iterator<Long> itPk = handleRowPK.iterator();
+                    while(itIndex.hasNext() && itPk.hasNext()) {
+                        PkToRowIndex.put(itPk.next(), itIndex.next());
+                    }
+                } catch (SQLException ex) {
+                    throw new FinishedAutomatonException(ex);
+                }
+                // Record moving of points
                 for (Handler handler : selected) {
                     Geometry g;
                     try {
@@ -86,14 +123,20 @@ public class MoveVertexTool extends AbstractSelectionTool {
                     } catch (CannotChangeGeometryException e1) {
                         throw new TransitionException(e1);
                     }
-    
-                    try {
-                        ds.setGeometry(handler.getGeometryIndex(), g);
-                    } catch (DriverException e) {
-                        throw new TransitionException(e);
+
+                    Lock lock = rowSet.getReadLock();
+                    if(lock.tryLock() && PkToRowIndex.containsKey(handler.getGeometryPK())) {
+                        try {
+                            rowSet.absolute(PkToRowIndex.get(handler.getGeometryPK()));
+                            rowSet.updateGeometry(g);
+                            rowSet.updateRow();
+                        } catch (SQLException e) {
+                            throw new TransitionException(i18n.tr("Cannot move point(s)"), e);
+                        } finally {
+                            lock.unlock();
+                        }
                     }
                 }
-
                 transition(Code.EMPTY);
         }
 
@@ -124,6 +167,6 @@ public class MoveVertexTool extends AbstractSelectionTool {
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("edition/movevertex");
+            return MapEditorIcons.getIcon("edition/movevertex");
         }
 }

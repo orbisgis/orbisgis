@@ -36,6 +36,7 @@ import org.orbisgis.mainframe.api.ToolBarAction;
 import org.orbisgis.mapeditor.map.tool.Automaton;
 import org.orbisgis.mapeditor.map.tools.AutoCompletePolygonTool;
 import org.orbisgis.mapeditor.map.tools.LineTool;
+import org.orbisgis.mapeditor.map.tools.MoveVertexTool;
 import org.orbisgis.mapeditor.map.tools.PointTool;
 import org.orbisgis.mapeditor.map.tools.PolygonTool;
 import org.orbisgis.mapeditorapi.MapEditorExtension;
@@ -93,7 +94,7 @@ public class DrawingToolBar implements ToolBarAction {
 //        add(actions,DRAW_SPLIT_LINESTRING, new SplitLineByPointTool());
 //        add(actions,DRAW_SPLIT_LINE_BY_LINE, new SplitLineByLineTool());
 //        add(actions,DRAW_SPLIT_POLYGON,new SplitPolygonTool());
-//        add(actions,DRAW_MOVE_VERTEX, new MoveVertexTool());
+        add(actions,DRAW_MOVE_VERTEX, new MoveVertexTool());
 //        add(actions,DRAW_VERTEX_ADDITION, new VertexAdditionTool());
 //        add(actions,DRAW_VERTEX_DELETION, new VertexDeletionTool());
         return actions;
