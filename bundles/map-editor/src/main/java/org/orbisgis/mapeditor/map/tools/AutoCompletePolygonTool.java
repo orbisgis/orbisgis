@@ -103,12 +103,14 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
                                     Polygon polygon = (Polygon) geom;
                                     geom = geom.getFactory().createMultiPolygon(new Polygon[]{polygon});
                                     rowSet.updateGeometry(geom);
+                                    ToolUtilities.populateNotNullFields(mc.getDataManager().getDataSource(), rowSet.getTable(), rowSet);
                                     rowSet.insertRow();
                                 } else if (geom instanceof MultiPolygon) {
                                     for (int i = 0; i < geom.getNumGeometries(); i++) {
                                         Polygon polygon = (Polygon) geom.getGeometryN(i);
                                         geom = geom.getFactory().createMultiPolygon(new Polygon[]{polygon});
                                         rowSet.updateGeometry(geom);
+                                        ToolUtilities.populateNotNullFields(mc.getDataManager().getDataSource(), rowSet.getTable(), rowSet);
                                         rowSet.insertRow();
                                     }
                                 }

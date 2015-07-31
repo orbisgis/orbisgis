@@ -35,6 +35,7 @@ import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.mainframe.api.ToolBarAction;
 import org.orbisgis.mapeditor.map.tool.Automaton;
 import org.orbisgis.mapeditor.map.tools.AutoCompletePolygonTool;
+import org.orbisgis.mapeditor.map.tools.PointTool;
 import org.orbisgis.mapeditor.map.tools.PolygonTool;
 import org.orbisgis.mapeditorapi.MapEditorExtension;
 import org.osgi.service.component.annotations.Component;
@@ -85,7 +86,7 @@ public class DrawingToolBar implements ToolBarAction {
 //        add(actions,DRAW_MULTI_POINT, new MultipointTool());
 //        add(actions,DRAW_MULTI_LINE, new MultilineTool());
 //        add(actions,DRAW_MULTI_POLYGON, new MultipolygonTool());
-//        add(actions,DRAW_POINT, new PointTool());
+        add(actions,DRAW_POINT, new PointTool());
 //        add(actions,DRAW_LINE, new LineTool());
         add(actions,DRAW_POLYGON, new PolygonTool()).setTrackedMapContextProperties(MapContext.PROP_ACTIVELAYER);
 //        add(actions,DRAW_SPLIT_LINESTRING, new SplitLineByPointTool());

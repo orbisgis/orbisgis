@@ -70,6 +70,14 @@ public class ToolUtilities {
     private static final I18n I18N = I18nFactory.getI18n(ToolUtilities.class);
 
 
+    public static double getActiveLayerInitialZ(MapContext mapContext) {
+        try(Connection connection = mapContext.getDataManager().getDataSource().getConnection()) {
+            return getActiveLayerInitialZ(connection, mapContext);
+        } catch (SQLException ex) {
+            LOGGER.debug(ex.getLocalizedMessage(), ex);
+            return Double.NaN;
+        }
+    }
     public static double getActiveLayerInitialZ(Connection connection ,MapContext mapContext) {
 		String table = mapContext.getActiveLayer().getTableReference();
         if(!table.isEmpty()) {
@@ -119,12 +127,6 @@ public class ToolUtilities {
 
 	/**
 	 * Ask the user to input initial values for the non null fields
-	 * 
-	 * @param sds
-	 * @param row
-	 * @return
-	 * @throws java.sql.SQLException
-	 * @throws TransitionException
 	 */
 	public static void populateNotNullFields(DataSource dataSource,String tableReference, RowSet rowSet) throws SQLException, TransitionException {
         // Check if the table does not accept null fields without default values
