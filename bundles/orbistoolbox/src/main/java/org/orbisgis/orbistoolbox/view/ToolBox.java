@@ -24,6 +24,7 @@ import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ProcessInputConfiguration;
+import org.orbisgis.orbistoolbox.view.ui.ProcessPanel;
 import org.orbisgis.orbistoolbox.view.ui.ProcessUIBuilder;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
@@ -146,6 +147,20 @@ public class ToolBox implements DockingPanel {
         }
     }
 
+    public void runScript(Process process, Map<URI, Object> inputDataMap){
+        if(process != null) {
+            for(Map.Entry<URI, Object> entry : inputDataMap.entrySet()){
+                System.out.println(entry.getValue());
+            }
+            GroovyObject groovyObject = processManager.executeProcess(selectedProcess, inputDataMap);
+            for(Field f : groovyObject.getClass().getDeclaredFields()) {
+                if(f.getAnnotation(OutputAttribute.class) != null) {
+                    System.out.println(groovyObject.getProperty(f.getName()));
+                }
+            }
+        }
+    }
+
     @Override
     public DockingPanelParameters getDockingParameters() {
         return parameters;
@@ -199,9 +214,13 @@ public class ToolBox implements DockingPanel {
             outputAbstractList.add(o.getAbstrac());
         }
 
-        toolBoxPanel.setProcessInfo(selectedProcess.getTitle(), selectedProcess.getAbstrac(),
+        ProcessPanel panel = new ProcessPanel(selectedProcess, this);
+        panel.setVisible(true);
+        panel.pack();
+
+        /*toolBoxPanel.setProcessInfo(selectedProcess.getTitle(), selectedProcess.getAbstrac(),
                 inputList, inputDataTypeList, inputAbstractList,
-                outputList, outputDataTypeList, outputAbstractList);
+                outputList, outputDataTypeList, outputAbstractList);*/
         return true;
     }
 

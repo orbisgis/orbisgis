@@ -147,6 +147,7 @@ public class ToolBoxPanel extends JPanel {
                 categoryNode = new TreeNodeWps();
                 categoryNode.setUserObject(category);
                 root.add(categoryNode);
+                categoryNode.setcanBeLeaf(true);
             }
 
             if(subCategory != null){
@@ -160,6 +161,7 @@ public class ToolBoxPanel extends JPanel {
                     subCategoryNode = new TreeNodeWps();
                     subCategoryNode.setUserObject(subCategory);
                     categoryNode.add(subCategoryNode);
+                    subCategoryNode.setcanBeLeaf(true);
                 }
 
                 if(subSubCategory != null){
@@ -173,6 +175,7 @@ public class ToolBoxPanel extends JPanel {
                         subSubCategoryNode = new TreeNodeWps();
                         subSubCategoryNode.setUserObject(subSubCategory);
                         subCategoryNode.add(subSubCategoryNode);
+                        subSubCategoryNode.setcanBeLeaf(true);
                     }
                     subSubCategoryNode.add(script);
                 }
@@ -198,7 +201,7 @@ public class ToolBoxPanel extends JPanel {
     public void onNodeSelected(TreeSelectionEvent event){
         TreeNodeWps selectedNode = (TreeNodeWps) ((FileTree)event.getSource()).getLastSelectedPathComponent();
         if(selectedNode != null) {
-            if (selectedNode.isLeaf()) {
+            if (selectedNode.isLeaf() && selectedNode.canBeLeaf()) {
                 boolean isValidProcess = toolBox.selectProcess(selectedNode.getFilePath());
                 selectedNode.setValid(isValidProcess);
             }
@@ -254,7 +257,9 @@ public class ToolBoxPanel extends JPanel {
             }
         }
         TreeNodeWps source = new TreeNodeWps();
+        source.setcanBeLeaf(true);
         if(!exists){
+            boolean isScript = false;
             source.setUserObject(file.getName());
             source.setFilePath(file);
             root.add(source);
@@ -264,7 +269,9 @@ public class ToolBoxPanel extends JPanel {
                 script.setFilePath(f);
                 source.add(script);
                 toolBox.addProcess(f);
+                isScript = true;
             }
+            source.setValid(isScript);
         }
         model.reload();
         return source;

@@ -21,9 +21,13 @@ package org.orbisgis.orbistoolbox.view.ui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.*;
+import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
+import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
+import org.orbisgis.orbistoolboxapi.annotations.output.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;

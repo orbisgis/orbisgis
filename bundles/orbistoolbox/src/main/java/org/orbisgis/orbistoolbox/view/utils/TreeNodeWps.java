@@ -35,17 +35,26 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
     private File file;
     private boolean isValid = true;
     private boolean isRoot = false;
+    private boolean canBeLeaf = true;
 
     @Override
     public ImageIcon getLeafIcon() {
-        if(isRoot){
-            return ToolBoxIcon.getIcon("folder");
-        }
-        else if(isValid) {
-            return ToolBoxIcon.getIcon("script");
+        if(!canBeLeaf){
+            if (isValid) {
+                return ToolBoxIcon.getIcon("folder");
+            }
+            else {
+                return ToolBoxIcon.getIcon("remove");
+            }
         }
         else {
-            return ToolBoxIcon.getIcon("remove");
+            if (isRoot) {
+                return ToolBoxIcon.getIcon("folder");
+            } else if (isValid) {
+                return ToolBoxIcon.getIcon("script");
+            } else {
+                return ToolBoxIcon.getIcon("remove");
+            }
         }
     }
 
@@ -83,5 +92,13 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
 
     public void setValid(boolean isValid) {
         this.isValid = isValid;
+    }
+
+    public void setcanBeLeaf(boolean canBeLeaf){
+        this.canBeLeaf = canBeLeaf;
+    }
+
+    public boolean canBeLeaf(){
+        return canBeLeaf;
     }
 }
