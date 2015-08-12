@@ -92,13 +92,13 @@ public abstract class AbstractPolygonTool extends Polygon implements
     }
 
 
-    private Coordinate newCoordinate(double x, double y, MapContext mapContext) {
+    private Coordinate newCoordinate(double x, double y, MapContext mapContext) throws TransitionException {
         return new Coordinate(x, y, getInitialZ(mapContext));
     }
 
 
     @Override
-    public double getInitialZ(MapContext mapContext) {
+    public double getInitialZ(MapContext mapContext) throws TransitionException {
         return 0;
     }
 
@@ -122,19 +122,22 @@ public abstract class AbstractPolygonTool extends Polygon implements
     @Override
     public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
             throws DrawingException {
-        Geometry geom = getCurrentPolygon(vc, tm);
+        try {
+            Geometry geom = getCurrentPolygon(vc, tm);
 
-        if (geom != null) {
-            tm.addGeomToDraw(geom);
+            if (geom != null) {
+                tm.addGeomToDraw(geom);
 
-            if (!geom.isValid()) {
-                throw new DrawingException(
-                        i18n.tr("Invalid polygon"));
+                if (!geom.isValid()) {
+                    throw new DrawingException(i18n.tr("Invalid polygon"));
+                }
             }
+        } catch (TransitionException ex) {
+            throw new DrawingException(ex.getLocalizedMessage(), ex);
         }
     }
 
-    protected Geometry getCurrentPolygon(MapContext vc, ToolManager tm) {
+    protected Geometry getCurrentPolygon(MapContext vc, ToolManager tm) throws TransitionException {
         Geometry geom;
         if (points.size() >= 2) {
             List<Coordinate> tempPoints = new ArrayList<Coordinate>(points);

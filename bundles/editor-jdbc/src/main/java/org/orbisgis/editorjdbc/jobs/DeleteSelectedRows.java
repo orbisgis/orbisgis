@@ -97,15 +97,16 @@ public class DeleteSelectedRows extends SwingWorkerPM {
     public static void deleteUsingRowSet(ReversibleRowSet reversibleRowSet, SortedSet<Long> rowPkToDelete) throws SQLException, InterruptedException {
         TreeSet<Integer> rowNumberToDelete = new TreeSet<>(reversibleRowSet.getRowNumberFromRowPk(rowPkToDelete));
         Lock lock = reversibleRowSet.getReadLock();
-        lock.tryLock(TRY_LOCK_TIME, TimeUnit.SECONDS);
-        try {
-            // Rows must be deleted in descending order in order to not introduce shift
-            for(int rowNumber : rowNumberToDelete.descendingSet()) {
-                reversibleRowSet.absolute(rowNumber);
-                reversibleRowSet.deleteRow();
+        if(lock.tryLock(TRY_LOCK_TIME, TimeUnit.SECONDS)) {
+            try {
+                // Rows must be deleted in descending order in order to not introduce shift
+                for (int rowNumber : rowNumberToDelete.descendingSet()) {
+                    reversibleRowSet.absolute(rowNumber);
+                    reversibleRowSet.deleteRow();
+                }
+            } finally {
+                lock.unlock();
             }
-        } finally {
-            lock.unlock();
         }
     }
 }

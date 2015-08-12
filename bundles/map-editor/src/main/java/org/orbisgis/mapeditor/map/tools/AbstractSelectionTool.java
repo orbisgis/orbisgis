@@ -53,7 +53,12 @@ package org.orbisgis.mapeditor.map.tools;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import java.awt.*;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.sql.Connection;
@@ -61,6 +66,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.h2gis.utilities.SFSUtilities;
@@ -148,7 +154,7 @@ public abstract class AbstractSelectionTool extends Selection {
                 throws TransitionException, FinishedAutomatonException {
                 Point2D p = new Point2D.Double(tm.getValues()[0], tm.getValues()[1]);
                 HashSet<Long> geom = new HashSet<>();
-                ArrayList<Handler> handlers = tm.getCurrentHandlers();
+                List<Handler> handlers = tm.getCurrentHandlers();
                 selected.clear();
                 for (Handler handler : handlers) {
                             /*

@@ -43,7 +43,6 @@ public class EditLayerSourceAction extends LayerAction {
     private Toc toc;
     private boolean enabledOnActiveLayer = false;
     private boolean enabledOnNotActiveLayer = false;
-    private boolean enabledOnModifiedLayer = false;
 
     /**
      * Constructor
@@ -73,13 +72,6 @@ public class EditLayerSourceAction extends LayerAction {
     }
 
     /**
-     * @param enabledOnModifiedLayer If true this action is only visible on layer with modified data source
-     */
-    public EditLayerSourceAction setEnabledOnModifiedLayer(boolean enabledOnModifiedLayer) {
-        this.enabledOnModifiedLayer = enabledOnModifiedLayer;
-        return this;
-    }
-    /**
     * @param enabledOnNotActiveLayer If true this action will be seen only if this layer is not the map active layer.
     * {@link org.orbisgis.coremap.layerModel.MapContext#setActiveLayer(org.orbisgis.coremap.layerModel.ILayer)}
      */
@@ -95,7 +87,7 @@ public class EditLayerSourceAction extends LayerAction {
     private boolean checkDataSource() {
         ILayer activeLayer = toc.getMapContext().getActiveLayer();
         for(ILayer layer : toc.getSelectedLayers()) {
-                    if(layer.getTableReference()==null || !layer.getTableReference().isEmpty() ||
+                    if(layer.getTableReference()==null || layer.getTableReference().isEmpty() ||
                             ((enabledOnActiveLayer && !layer.equals(activeLayer))
                             || (enabledOnNotActiveLayer && layer.equals(activeLayer))
                             )) {

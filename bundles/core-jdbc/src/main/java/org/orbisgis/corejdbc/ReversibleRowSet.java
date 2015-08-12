@@ -28,6 +28,10 @@
  */
 package org.orbisgis.corejdbc;
 
+import com.vividsolutions.jts.geom.Geometry;
+
+import java.sql.SQLException;
+
 /**
  * This kind of RowSet hold an history of update commands. Undo and redo methods are available.
  * @author Nicolas Fortin
@@ -45,4 +49,10 @@ public interface ReversibleRowSet extends ReadRowSet {
      * @param listener Listener instance to remove
      */
     void removeTableEditListener(String table, TableEditListener listener);
+
+    /**
+     * @param geometry New geometry
+     * @throws SQLException
+     */
+    void updateGeometry(Geometry geometry) throws SQLException;
 }

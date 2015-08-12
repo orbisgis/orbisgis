@@ -34,10 +34,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +43,8 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.io.Closeable;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -55,7 +54,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
@@ -375,40 +373,21 @@ public class ReadTable {
      * @throws SQLException
      */
     public static Envelope getTableSelectionEnvelope(DataManager manager, String tableName, SortedSet<Long> rowsId, ProgressMonitor pm) throws SQLException {
-        try( Connection connection = manager.getDataSource().getConnection();
-                Statement st = connection.createStatement()) {
-            PropertyChangeListener cancelListener =  EventHandler.create(PropertyChangeListener.class, st, "cancel");
-            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,cancelListener);
-            try {
+        try( Connection connection = manager.getDataSource().getConnection()) {
                 Envelope selectionEnvelope = null;
                 List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName));
                 if(geomFields.isEmpty()) {
                     throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
                 }
-                String geomField = geomFields.get(0);
-                // Create a temporary table that contain selected pk
-                String selectionTable = CreateTable.createIndexTempTable(connection, pm,rowsId,"pk", INSERT_BATCH_SIZE);
-                try {
-                    String pkName = MetaData.getPkName(connection, tableName, true);
-                    StringBuilder pkEquality = new StringBuilder("t1." + pkName + " = ");
-                    if (!pkName.equals(MetaData.POSTGRE_ROW_IDENTIFIER)) {
-                        pkEquality.append("t2.pk");
-                    } else {
-                        pkEquality.append(MetaData.castLongToTid("t2.pk"));
-                    }
-                    // Join with temp table and compute the envelope on the server side
-                    try (SpatialResultSet rs = st.executeQuery("SELECT ST_EXTENT(" + TableLocation.quoteIdentifier(geomField) +
-                            ") ext FROM " + tableName + " t1, " + selectionTable + " t2 where " + pkEquality).unwrap(SpatialResultSet.class)) {
-                        if (rs.next() && rs.getGeometry() != null) {
-                            selectionEnvelope = rs.getGeometry().getEnvelopeInternal();
-                        }
-                    }
-                    return selectionEnvelope;
-                } finally {
-                    st.execute("DROP TABLE IF EXISTS "+selectionTable);
+            String fieldQuery = "ST_EXTENT(" + TableLocation.quoteIdentifier(geomFields.get(0)) + ")";
+            try(FilteredResultSet fRs = new FilteredResultSet(connection, tableName, rowsId, pm, false, fieldQuery)) {
+                SpatialResultSet rs = fRs.getResultSet();
+                if (rs.next() && rs.getGeometry() != null) {
+                    selectionEnvelope = rs.getGeometry().getEnvelopeInternal();
                 }
-            } finally {
-                pm.removePropertyChangeListener(cancelListener);
+                return selectionEnvelope;
+            } catch (IOException ex) {
+                throw new SQLException(ex.getLocalizedMessage(), ex);
             }
         }
     }
@@ -450,5 +429,68 @@ public class ReadTable {
             }
         }
         return newSelection;
+    }
+
+    public static class FilteredResultSet implements Closeable {
+        private SpatialResultSet resultSet;
+        private String selectionTable;
+        private Statement st;
+        private Connection connection;
+
+        /**
+         * @param connection Active connection
+         * @param tableName Table to query
+         * @param rowsId Primary keys to filter
+         * @param pm Progress information and cancel
+         * @param geometryOnly Retrieve only the first geometry field
+         * @param customFields Query the table with custom field selection
+         * @throws SQLException If an error occurred
+         */
+        public FilteredResultSet(Connection connection, String tableName, SortedSet<Long> rowsId, ProgressMonitor pm,boolean geometryOnly ,String customFields) throws SQLException {
+            this.connection = connection;
+            st = connection.createStatement();
+            PropertyChangeListener cancelListener =  EventHandler.create(PropertyChangeListener.class, st, "cancel");
+            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,cancelListener);
+            try {
+                String fields = "t1.*";
+                if(geometryOnly) {
+                    List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName));
+                    if (geomFields.isEmpty()) {
+                        throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
+                    }
+                    fields = TableLocation.quoteIdentifier(geomFields.get(0));
+                } else if(customFields != null && !customFields.isEmpty()) {
+                    fields = customFields;
+                }
+                // Create a temporary table that contain selected pk
+                selectionTable = CreateTable.createIndexTempTable(connection, pm,rowsId,"pk", INSERT_BATCH_SIZE);
+                String pkName = MetaData.getPkName(connection, tableName, true);
+                StringBuilder pkEquality = new StringBuilder("t1." + pkName + " = ");
+                if (!pkName.equals(MetaData.POSTGRE_ROW_IDENTIFIER)) {
+                    pkEquality.append("t2.pk");
+                } else {
+                    pkEquality.append(MetaData.castLongToTid("t2.pk"));
+                }
+                // Join with temp table and compute the envelope on the server side
+                resultSet = st.executeQuery("SELECT " + fields + " FROM " + tableName + " t1, " + selectionTable + " t2 where " + pkEquality).unwrap(SpatialResultSet.class);
+            } finally {
+                pm.removePropertyChangeListener(cancelListener);
+            }
+        }
+
+        public SpatialResultSet getResultSet() {
+            return resultSet;
+        }
+
+        @Override
+        public void close() throws IOException {
+            try {
+                resultSet.close();
+                st.execute("DROP TABLE IF EXISTS "+selectionTable);
+                st.close();
+            } catch (SQLException ex) {
+                throw new IOException(ex.getLocalizedMessage(), ex);
+            }
+        }
     }
 }

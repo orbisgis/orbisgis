@@ -58,7 +58,6 @@ public class AskValidRow extends MultiInputPanel {
     private TableLocation location;
     private List<Integer> types;
     private List<String> fieldsNameList;
-    private List<Boolean> generated;
 
     public AskValidRow(String title, DataSource ds,String tableReference) throws SQLException {
 		super(title);
@@ -66,7 +65,7 @@ public class AskValidRow extends MultiInputPanel {
         location = TableLocation.parse(tableReference);
         types = new ArrayList<>(10);
         fieldsNameList = new ArrayList<>(10);
-        generated = new ArrayList<>();
+        List<Boolean> generated = new ArrayList<>();
         List<String> defaultValues = new ArrayList<>();
         try(Connection connection = ds.getConnection();
             ResultSet rs = connection.getMetaData().getColumns(location.getCatalog(), location.getSchema(), location.getTable(), null)) {

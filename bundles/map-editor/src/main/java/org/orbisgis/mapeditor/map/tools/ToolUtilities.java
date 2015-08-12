@@ -33,32 +33,51 @@ import com.vividsolutions.jts.geom.Coordinate;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
+import org.orbisgis.editorjdbc.AskValidRow;
 import org.orbisgis.editorjdbc.AskValidValue;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.mapeditor.map.tool.Automaton;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
+import javax.sql.RowSet;
 
 /**
  * Common utility for automatons.
  */
 public class ToolUtilities {
     private static final Logger LOGGER = LoggerFactory.getLogger(ToolUtilities.class);
+    private static final I18n I18N = I18nFactory.getI18n(ToolUtilities.class);
 
 
+    public static double getActiveLayerInitialZ(MapContext mapContext) {
+        try(Connection connection = mapContext.getDataManager().getDataSource().getConnection()) {
+            return getActiveLayerInitialZ(connection, mapContext);
+        } catch (SQLException ex) {
+            LOGGER.debug(ex.getLocalizedMessage(), ex);
+            return Double.NaN;
+        }
+    }
     public static double getActiveLayerInitialZ(Connection connection ,MapContext mapContext) {
 		String table = mapContext.getActiveLayer().getTableReference();
         if(!table.isEmpty()) {
@@ -83,42 +102,60 @@ public class ToolUtilities {
 		return Double.NaN;
 	}
 
-	/**
-	 * Ask the user to input initial values for the non null fields
-	 * 
-	 * @param sds
-	 * @param row
-	 * @return
-	 * @throws java.sql.SQLException
-	 * @throws TransitionException
-	 */
-	public static Object[] populateNotNullFields(DataSource sds,String tableReference,
-			Object[] row) throws SQLException, TransitionException {
-        Object[] ret = new Object[row.length];
+    /**
+     * @return False if at least one column does not have default value.
+     */
+    public static boolean isColumnsHasDefaultValue(Connection connection, String tableReference,String columnName) throws SQLException {
         TableLocation table = TableLocation.parse(tableReference);
-        try(Connection connection = sds.getConnection();
-            ResultSet rs = connection.getMetaData().getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
-            while(rs.next()) {
+        try(ResultSet rs = connection.getMetaData().getColumns(table.getCatalog(), table.getSchema(), table.getTable(), columnName)) {
+            if (rs.next()) {
                 boolean refuseNull = "NO".equals(rs.getString("IS_NULLABLE"));
                 boolean isAutoIncrement = "YES".equals(rs.getString("IS_AUTOINCREMENT"));
-                int columnId = rs.getInt("ORDINAL_POSITION")-1;
-                if(refuseNull && !isAutoIncrement) {
-                    AskValidValue av = new AskValidValue(sds, tableReference, rs.getString("COLUMN_NAME"));
-                    if (UIFactory.showDialog(av)) {
-                        try {
-                            ret[columnId] = av.getUserValue();
-                        } catch (ParseException e) {
-                            throw new TransitionException("Cannot parse user value");
-                        }
-                    } else {
-                        throw new TransitionException("Insertion cancelled");
-                    }
-                } else {
-                    ret[columnId] = row[columnId];
+                boolean columnDefault = false;
+                try {
+                    columnDefault = null != rs.getString("COLUMN_DEF");
+                } catch (SQLException ex) {
+                    // Ignore
+                }
+                if (refuseNull && !isAutoIncrement && !columnDefault) {
+                    return false;
                 }
             }
         }
-		return ret;
+        return true;
+    }
+
+	/**
+	 * Ask the user to input initial values for the non null fields
+	 */
+	public static void populateNotNullFields(DataSource dataSource,String tableReference, RowSet rowSet) throws SQLException, TransitionException {
+        // Check if the table does not accept null fields without default values
+        ResultSetMetaData meta = rowSet.getMetaData();
+        boolean allowNullInsert = true;
+        try(Connection connection = dataSource.getConnection()) {
+            for (int idColumn = 1; idColumn <= meta.getColumnCount(); idColumn++) {
+                if (ResultSetMetaData.columnNullable != meta.isNullable(idColumn) && !isColumnsHasDefaultValue(connection, tableReference, meta.getColumnName(idColumn))) {
+                    allowNullInsert = false;
+                    break;
+                }
+            }
+        }
+        if(!allowNullInsert) {
+            // If at least one column require user input then show the add row gui
+            AskValidRow rowInput = new AskValidRow(I18N.tr("New feature"), dataSource, tableReference);
+            if(UIFactory.showDialog(rowInput)) {
+                try {
+                    Object[] newRow = rowInput.getRow();
+                    for(int idColumn = 0; idColumn < newRow.length; idColumn++) {
+                        if(newRow[idColumn] != null) {
+                            rowSet.updateObject(idColumn + 1, newRow[idColumn]);
+                        }
+                    }
+                } catch (ParseException ex) {
+                    throw new TransitionException(ex);
+                }
+            }
+        }
 	}
 
 	public static List<Coordinate> removeDuplicated(
@@ -195,15 +232,19 @@ public class ToolUtilities {
          *      The OGC geometry type codes we are testing. They are listed in {@link org.h2gis.utilities.GeometryTypeCodes}.
          * @return 
          */
-	public static boolean geometryTypeIs(Connection connection, MapContext vc, int... geometryTypes) {
+	public static boolean geometryTypeIs(MapContext vc, int... geometryTypes) {
+        Set<Integer> acceptedTypes = new HashSet<>();
+        for(int geomType : geometryTypes) {
+            acceptedTypes.add(geomType);
+        }
 		ILayer activeLayer = vc.getActiveLayer();
 		if (activeLayer != null && geometryTypes.length > 0) {
 			try {
 				String table = activeLayer.getTableReference();
                 if(!table.isEmpty()) {
                     TableLocation tableLocation = TableLocation.parse(activeLayer.getTableReference());
-                    int tableGeoType = SFSUtilities.getGeometryType(connection, tableLocation,"");
-                    return tableGeoType == geometryTypes[0] ||  tableGeoType == GeometryTypeCodes.GEOMETRY;
+                    int tableGeoType = SFSUtilities.getGeometryType(vc.getDataManager().getDataSource().getConnection(), tableLocation,"");
+                    return acceptedTypes.contains(tableGeoType);
                 }
             } catch (SQLException ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);

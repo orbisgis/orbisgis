@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.tablegui.impl;
+package org.orbisgis.editorjdbc;
 
 import org.orbisgis.corejdbc.TableUndoableEdit;
 import org.slf4j.Logger;
@@ -38,6 +38,7 @@ import javax.swing.undo.UndoableEdit;
 import java.sql.SQLException;
 
 /**
+ * Decorator between Swing Undable and TableEdition
  * @author Nicolas Fortin
  */
 public class EditorUndoableEdit implements UndoableEdit {

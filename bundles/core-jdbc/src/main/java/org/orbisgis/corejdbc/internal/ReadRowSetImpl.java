@@ -85,6 +85,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
@@ -436,7 +437,10 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         currentBatchId = targetBatch;
                     }
                     // Ok, still in current batch
-                    cache.put(rowId, currentBatch.get((int) (rowId - 1) % fetchSize));
+                    int targetRowInBatch = (int) (rowId - 1) % fetchSize;
+                    if(targetRowInBatch < currentBatch.size()) {
+                        cache.put(rowId, currentBatch.get(targetRowInBatch));
+                    }
                 }
             }
         }
@@ -765,7 +769,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         if(rowId != oldRowId) {
             notifyCursorMoved();
         }
-        return validRow;
+        return validRow && currentRow != null;
     }
 
     @Override

@@ -70,9 +70,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import javax.sql.RowSet;
@@ -128,7 +134,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private Point2D worldAdjustedPoint = null;
         private int lastMouseX;
         private int lastMouseY;
-        private ArrayList<Handler> currentHandlers = new ArrayList<Handler>();
+        private List<Handler> currentHandlers = Collections.synchronizedList(new ArrayList<Handler>());
         private JPopupMenu toolPopUp;
         private int mouseModifiers;
         private Automaton defaultTool;
@@ -184,6 +190,24 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 });
                 buildSymbolizers();
         }
+
+
+    public Map<Long, Integer> getHandlersRowId(List<Handler> handlers) throws SQLException {
+        SortedSet<Long> handleRowPK = new TreeSet<>();
+        for (Handler handler : handlers) {
+            handleRowPK.add(handler.getGeometryPK());
+        }
+        ReversibleRowSet rowSet = getActiveLayerRowSet();
+        Map<Long, Integer> PkToRowIndex = new HashMap<>(handleRowPK.size());
+        SortedSet<Integer> rowIndex = rowSet.getRowNumberFromRowPk(handleRowPK);
+        // Both PK and RowIndex are sorted ascending
+        Iterator<Integer> itIndex =  rowIndex.iterator();
+        Iterator<Long> itPk = handleRowPK.iterator();
+        while(itIndex.hasNext() && itPk.hasNext()) {
+            PkToRowIndex.put(itPk.next(), itIndex.next());
+        }
+        return PkToRowIndex;
+    }
 
     /**
          * When the Edited Layer in the MapContext has been set/unset
@@ -678,7 +702,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 return uiTolerance;
         }
 
-        public ArrayList<Handler> getCurrentHandlers() {
+        public List<Handler> getCurrentHandlers() {
                 return currentHandlers;
         }
 
@@ -708,9 +732,10 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         }
                     }
                 } catch (SQLException | InterruptedException e) {
-                        readLock.unlock();
                         UILOGGER.warn(
                                 I18N.tr("Cannot recalculate the handlers"), e);
+                } finally {
+                    readLock.unlock();
                 }
         }
 

@@ -63,15 +63,15 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 
 	private int holeIndex;
 
-	public PolygonHandler(com.vividsolutions.jts.geom.Geometry geom,
+	public PolygonHandler(Geometry geom,
 			int holeIndex, int vertexIndex, Coordinate p, long geomPk) {
 		super(geom, vertexIndex, p, geomPk);
 		this.holeIndex = holeIndex;
 	}
 
-	public com.vividsolutions.jts.geom.Geometry removeVertex()
+	public Geometry removeVertex()
 			throws TopologyException {
-		com.vividsolutions.jts.geom.Geometry ret = null;
+		Geometry ret;
 		Polygon p = (Polygon) geometry;
 		if (holeIndex == -1) {
 			LinearRing ring = removePolygonVertex(vertexIndex, p);
@@ -138,7 +138,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
     @Override
 	public Geometry moveTo(double x, double y)
 			throws CannotChangeGeometryException {
-		com.vividsolutions.jts.geom.Geometry g = moveJTSTo(x, y);
+		Geometry g = moveJTSTo(x, y);
 		if (!g.isValid()) {
 			throw new CannotChangeGeometryException(I18N.tr("The geometry is not valid"));
 		}
@@ -146,7 +146,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 	}
 
 	private LinearRing removePolygonVertex(int vertexIndex,
-			com.vividsolutions.jts.geom.Geometry p)
+			Geometry p)
 			throws TopologyException {
 		Coordinate[] coords = GeometryEdit.removeVertex(vertexIndex, p, 4);
 		if (vertexIndex == 0) {
