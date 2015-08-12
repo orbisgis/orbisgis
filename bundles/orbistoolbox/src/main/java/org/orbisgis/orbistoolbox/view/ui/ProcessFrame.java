@@ -19,40 +19,59 @@
 
 package org.orbisgis.orbistoolbox.view.ui;
 
+import groovy.lang.GroovyObject;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.*;
+import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
+import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.beans.EventHandler;
+import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
+ * Frame used to configure and run a process.
+ *
  * @author Sylvain PALOMINOS
  **/
 
-public class ProcessPanel extends JFrame {
+public class ProcessFrame extends JFrame {
 
+    /** Map of input data (URI of the corresponding input)*/
     private Map<URI, Object> inputDataMap = new HashMap<>();
+    /** Map of output data (URI of the corresponding output)*/
     private Map<URI, Object> outputDataMap = new HashMap<>();
 
+    //TODO move this map outside
     private Map<Class<? extends DataDescription>, DataUI> dataUIMap;
 
-    private JButton runButton;
-    private JButton cancelButton;
-
+    /** Toolbox */
     private ToolBox toolBox;
+    /** Process represented */
     private Process process;
 
-    public ProcessPanel(Process process, ToolBox toolBox) {
+    private JTabbedPane tabbedPane;
+    private List<JLabel> labelList;
+
+    /**
+     * Main constructor.
+     * @param process Process represented.
+     * @param toolBox Toolbox
+     */
+    public ProcessFrame(Process process, ToolBox toolBox) {
         this.setLayout(new MigLayout());
+
+        labelList = new ArrayList<>();
 
         dataUIMap = new HashMap<>();
         dataUIMap.put(LiteralData.class, new LiteralDataUI());
@@ -60,26 +79,59 @@ public class ProcessPanel extends JFrame {
         this.toolBox = toolBox;
         this.process = process;
 
-        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Configuration", buildUIConf(process, inputDataMap));
         tabbedPane.addTab("Information", buildUIInfo(process));
-        tabbedPane.addTab("Execution", buildUIExec(process, outputDataMap));
+        tabbedPane.addTab("Execution", buildUIExec(process));
         this.add(tabbedPane, "wrap");
 
         JPanel buttons = new JPanel(new MigLayout());
-        runButton = new JButton("run");
+        JButton runButton = new JButton("run");
         runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
         buttons.add(runButton);
-        cancelButton = new JButton("cancel");
+        JButton cancelButton = new JButton("cancel");
         cancelButton.addActionListener(EventHandler.create(ActionListener.class, this, "close"));
         buttons.add(cancelButton);
         this.add(buttons);
     }
 
-    public void runProcess(){
-        toolBox.runScript(process, inputDataMap);
+    /**
+     * Returns the output data.
+     * @return The output data.
+     */
+    public Map<URI, Object> getOutputData(){
+        return outputDataMap;
     }
 
+    /**
+     * Run the process.
+     */
+    public void runProcess(){
+        if(!inputDataMap.isEmpty()) {
+            tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+            if(process != null) {
+                GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(process, inputDataMap);
+                int i = 0;
+                for (Field field : groovyObject.getClass().getDeclaredFields()) {
+                    if (field.getAnnotation(OutputAttribute.class) != null) {
+                        field.setAccessible(true);
+                        try {
+                            labelList.get(i).setText(field.get(groovyObject).toString());
+                            outputDataMap.put((URI)labelList.get(i).getClientProperty("URI"), field.get(groovyObject).toString());
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                        i++;
+                    }
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Close this windows.
+     */
     public void close(){
         this.dispose();
     }
@@ -97,6 +149,7 @@ public class ProcessPanel extends JFrame {
             JPanel inputPanel = new JPanel(new MigLayout());
             inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
             JLabel inputAbstrac = new JLabel(i.getAbstrac());
+            inputAbstrac.setFont(inputAbstrac.getFont().deriveFont(Font.ITALIC));
             inputPanel.add(inputAbstrac, "wrap");
             DataUI dataUI = dataUIMap.get(i.getDataDescription().getClass());
             if(dataUI!=null) {
@@ -145,7 +198,7 @@ public class ProcessPanel extends JFrame {
                 inputPanel.add(abstrac, "span 2, wrap");
             }
             else {
-                inputPanel.add(new JLabel("-"), "align center, span 2, wrap");
+                inputPanel.add(new JLabel("-"), "span 2, wrap");
             }
         }
 
@@ -203,10 +256,9 @@ public class ProcessPanel extends JFrame {
     /**
      * Build the UI of the given process according to the given data.
      * @param p Process to use.
-     * @param dataMap Data to use.
      * @return The UI for the configuration of the process.
      */
-    public JComponent buildUIExec(Process p, Map<URI, Object> dataMap){
+    public JComponent buildUIExec(Process p){
         JPanel panel = new JPanel(new MigLayout());
 
         JPanel executorPanel = new JPanel(new MigLayout());
@@ -214,12 +266,23 @@ public class ProcessPanel extends JFrame {
         executorPanel.add(new JLabel("localhost"));
 
         JPanel statusPanel = new JPanel(new MigLayout());
-        executorPanel.setBorder(BorderFactory.createTitledBorder("Status :"));
-        executorPanel.add(new JLabel("status"));
+        statusPanel.setBorder(BorderFactory.createTitledBorder("Status :"));
+        statusPanel.add(new JLabel("status"));
 
         JPanel resultPanel = new JPanel(new MigLayout());
-        executorPanel.setBorder(BorderFactory.createTitledBorder("Result :"));
-        executorPanel.add(new JLabel("result"));
+        resultPanel.setBorder(BorderFactory.createTitledBorder("Result :"));
+        for(Output o : p.getOutput()) {
+            JLabel title = new JLabel(o.getTitle()+" : ");
+            JLabel result = new JLabel();
+            result.putClientProperty("URI", o.getIdentifier());
+            labelList.add(result);
+            resultPanel.add(title);
+            resultPanel.add(result, "wrap");
+        }
+
+        panel.add(executorPanel, "growx, wrap");
+        panel.add(statusPanel, "growx, wrap");
+        panel.add(resultPanel, "growx, wrap");
 
         return panel;
     }

@@ -126,10 +126,7 @@ public class ProcessManager {
         }
         try {
             for(Input i : process.getInput()) {
-                System.out.println(i);
                 Field f = getField(pi.getClazz(), i.getIdentifier());
-                System.out.println(f);
-                System.out.println(dataMap.get(i.getIdentifier()));
                 f.setAccessible(true);
                 f.set(groovyObject, dataMap.get(i.getIdentifier()));
             }

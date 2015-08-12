@@ -20,22 +20,18 @@
 package org.orbisgis.orbistoolbox.view;
 
 import groovy.lang.GroovyObject;
+
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
-import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.view.ui.ProcessInputConfiguration;
-import org.orbisgis.orbistoolbox.view.ui.ProcessPanel;
-import org.orbisgis.orbistoolbox.view.ui.ProcessUIBuilder;
+import org.orbisgis.orbistoolbox.view.ui.ProcessFrame;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
-import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
-import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
@@ -45,9 +41,6 @@ import java.beans.EventHandler;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -67,14 +60,12 @@ public class ToolBox implements DockingPanel {
 
     private ToolBoxPanel toolBoxPanel;
 
-    private ProcessUIBuilder processUIBuilder;
     private Process selectedProcess;
 
     @Activate
     public void init(){
         toolBoxPanel = new ToolBoxPanel(this);
         processManager = new ProcessManager();
-        processUIBuilder = new ProcessUIBuilder();
 
         ActionCommands dockingActions = new ActionCommands();
 
@@ -129,36 +120,8 @@ public class ToolBox implements DockingPanel {
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
     }
 
-    public void runScript(){
-        if(selectedProcess != null) {
-            ProcessInputConfiguration pic = new ProcessInputConfiguration();
-            pic.buildUI(selectedProcess, processUIBuilder);
-            if (UIFactory.showDialog(pic, true, true)) {
-                GroovyObject groovyObject = processManager.executeProcess(selectedProcess, pic.getData());
-
-                MultiInputPanel multiInputPanel = new MultiInputPanel("Results");
-                for(Field f : groovyObject.getClass().getDeclaredFields()) {
-                    if(f.getAnnotation(OutputAttribute.class) != null) {
-                        System.out.println(groovyObject.getProperty(f.getName()));
-                    }
-                }
-            }
-
-        }
-    }
-
-    public void runScript(Process process, Map<URI, Object> inputDataMap){
-        if(process != null) {
-            for(Map.Entry<URI, Object> entry : inputDataMap.entrySet()){
-                System.out.println(entry.getValue());
-            }
-            GroovyObject groovyObject = processManager.executeProcess(selectedProcess, inputDataMap);
-            for(Field f : groovyObject.getClass().getDeclaredFields()) {
-                if(f.getAnnotation(OutputAttribute.class) != null) {
-                    System.out.println(groovyObject.getProperty(f.getName()));
-                }
-            }
-        }
+    public ProcessManager getProcessManager(){
+        return processManager;
     }
 
     @Override
@@ -186,41 +149,9 @@ public class ToolBox implements DockingPanel {
             return false;
         }
 
-        List<String> inputList = new ArrayList<>();
-        List<DataType> inputDataTypeList = new ArrayList<>();
-        List<String> inputAbstractList = new ArrayList<>();
-        List<String> outputList = new ArrayList<>();
-        List<DataType> outputDataTypeList = new ArrayList<>();
-        List<String> outputAbstractList = new ArrayList<>();
-        for(Input i : selectedProcess.getInput()){
-            if(i.getDataDescription() instanceof LiteralData){
-                inputDataTypeList.add(((LiteralData)i.getDataDescription()).getLiteralDomainType().get(0).getDataType());
-            }
-            else{
-                inputDataTypeList.add(null);
-            }
-            inputList.add(i.getTitle());
-            inputAbstractList.add(i.getAbstrac());
-        }
-
-        for(Output o : selectedProcess.getOutput()){
-            if(o.getDataDescription() instanceof LiteralData){
-                outputDataTypeList.add(((LiteralData)o.getDataDescription()).getLiteralDomainType().get(0).getDataType());
-            }
-            else{
-                outputDataTypeList.add(null);
-            }
-            outputList.add(o.getTitle());
-            outputAbstractList.add(o.getAbstrac());
-        }
-
-        ProcessPanel panel = new ProcessPanel(selectedProcess, this);
+        ProcessFrame panel = new ProcessFrame(selectedProcess, this);
         panel.setVisible(true);
         panel.pack();
-
-        /*toolBoxPanel.setProcessInfo(selectedProcess.getTitle(), selectedProcess.getAbstrac(),
-                inputList, inputDataTypeList, inputAbstractList,
-                outputList, outputDataTypeList, outputAbstractList);*/
         return true;
     }
 
