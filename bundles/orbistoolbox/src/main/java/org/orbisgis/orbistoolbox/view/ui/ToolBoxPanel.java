@@ -34,6 +34,9 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
@@ -93,13 +96,25 @@ public class ToolBoxPanel extends JPanel {
 
         tree = new FileTree();
         tree.setCellRenderer(new CustomTreeCellRenderer(tree));
-        tree.addTreeSelectionListener(EventHandler.create(TreeSelectionListener.class, this, "onNodeSelected", ""));
+        tree.addMouseListener(EventHandler.create(MouseListener.class, this, "onMouseClicked", "", "mouseClicked"));
 
         JScrollPane treeScrollPane = new JScrollPane(tree);
         this.add(treeScrollPane, "wrap");
         this.add(treeNodeBox, "wrap");
 
         onModelSelected();
+    }
+
+    public void onMouseClicked(MouseEvent event){
+        if(event.getClickCount() >= 2){
+            TreeNodeWps selectedNode = (TreeNodeWps) ((FileTree)event.getSource()).getLastSelectedPathComponent();
+            if(selectedNode != null) {
+                if (selectedNode.isLeaf() && selectedNode.canBeLeaf()) {
+                    boolean isValidProcess = toolBox.selectProcess(selectedNode.getFilePath());
+                    selectedNode.setValid(isValidProcess);
+                }
+            }
+        }
     }
 
     public void onModelSelected(){
@@ -190,21 +205,6 @@ public class ToolBoxPanel extends JPanel {
             undef.add(script);
         }
         categoryModel.reload();
-    }
-
-    /**
-     * Action done on selecting a node of the tree.
-     * If the process isn't a valid WPS process, change its icon.
-     * @param event
-     */
-    public void onNodeSelected(TreeSelectionEvent event){
-        TreeNodeWps selectedNode = (TreeNodeWps) ((FileTree)event.getSource()).getLastSelectedPathComponent();
-        if(selectedNode != null) {
-            if (selectedNode.isLeaf() && selectedNode.canBeLeaf()) {
-                boolean isValidProcess = toolBox.selectProcess(selectedNode.getFilePath());
-                selectedNode.setValid(isValidProcess);
-            }
-        }
     }
 
     /**

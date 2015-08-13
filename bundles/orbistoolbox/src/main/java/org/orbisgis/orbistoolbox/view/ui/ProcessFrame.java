@@ -117,7 +117,6 @@ public class ProcessFrame extends JFrame {
                 statusLabel.setText(RUNNING);
                 executionThread.start();
             }
-
         }
     }
 
