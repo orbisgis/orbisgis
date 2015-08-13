@@ -102,10 +102,10 @@ public class ProcessManager {
     }
 
     /**
-     * Create a groovy object corresponding to the process with the given datas.
+     * Create a groovy object corresponding to the process with the given data.
      * @param process Process that will generate the groovy object.
      * @param dataMap Map of the data for the process.
-     * @return A groovy object representing the process with the given datas.
+     * @return A groovy object representing the process with the given data.
      */
     private GroovyObject createProcess(Process process, Map<URI, Object> dataMap){
         ProcessIdentifier pi = null;

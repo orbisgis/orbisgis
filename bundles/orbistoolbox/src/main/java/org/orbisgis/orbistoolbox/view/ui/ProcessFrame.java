@@ -19,8 +19,8 @@
 
 package org.orbisgis.orbistoolbox.view.ui;
 
-import groovy.lang.GroovyObject;
 import net.miginfocom.swing.MigLayout;
+import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionThread;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
@@ -28,13 +28,11 @@ import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
-import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,6 +60,13 @@ public class ProcessFrame extends JFrame {
     private JTabbedPane tabbedPane;
     private List<JLabel> labelList;
     private DataUIManager dataUIManager;
+
+    private JLabel statusLabel;
+
+
+    private static final String RUNNING = "Running";
+    private static final String COMPLETED = "Completed";
+    private static final String IDDLE = "Iddle";
 
     /**
      * Main constructor.
@@ -108,20 +113,9 @@ public class ProcessFrame extends JFrame {
         if(!inputDataMap.isEmpty()) {
             tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
             if(process != null) {
-                GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(process, inputDataMap);
-                int i = 0;
-                for (Field field : groovyObject.getClass().getDeclaredFields()) {
-                    if (field.getAnnotation(OutputAttribute.class) != null) {
-                        field.setAccessible(true);
-                        try {
-                            labelList.get(i).setText(field.get(groovyObject).toString());
-                            outputDataMap.put((URI)labelList.get(i).getClientProperty("URI"), field.get(groovyObject).toString());
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                        i++;
-                    }
-                }
+                ExecutionThread executionThread = new ExecutionThread(process, inputDataMap, toolBox, this);
+                statusLabel.setText(RUNNING);
+                executionThread.start();
             }
 
         }
@@ -265,7 +259,8 @@ public class ProcessFrame extends JFrame {
 
         JPanel statusPanel = new JPanel(new MigLayout());
         statusPanel.setBorder(BorderFactory.createTitledBorder("Status :"));
-        statusPanel.add(new JLabel("iddle"));
+        statusLabel = new JLabel(IDDLE);
+        statusPanel.add(statusLabel);
 
         JPanel resultPanel = new JPanel(new MigLayout());
         resultPanel.setBorder(BorderFactory.createTitledBorder("Result :"));
@@ -283,5 +278,13 @@ public class ProcessFrame extends JFrame {
         panel.add(resultPanel, "growx, wrap");
 
         return panel;
+    }
+
+    public void setOutputs(List<String> outputs) {
+        for (int i=0; i<outputs.size(); i++) {
+            labelList.get(i).setText(outputs.get(i));
+            outputDataMap.put((URI)labelList.get(i).getClientProperty("URI"), outputs.get(i));
+        }
+        statusLabel.setText(COMPLETED);
     }
 }
