@@ -17,20 +17,21 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view.ui;
+package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.DataType;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.LiteralData;
 import org.orbisgis.orbistoolbox.model.LiteralDataDomain;
-import org.orbisgis.orbistoolbox.view.ui.DataUI;
+import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URI;
@@ -51,7 +52,7 @@ public class LiteralDataUI implements DataUI {
         for(LiteralDataDomain ldd : literalData.getLiteralDomainType()){
             comboBox.addItem(ldd.getDataType().name().toLowerCase());
         }
-        JPanel panel = new JPanel(new MigLayout());
+        JPanel panel = new JPanel(new MigLayout("fill"));
         panel.add(comboBox, "wrap");
 
         JComponent dataField = new JPanel();
@@ -168,6 +169,7 @@ public class LiteralDataUI implements DataUI {
             case STRING:
             default:
                 dataComponent = new JTextArea(6, 20);
+                dataComponent.setBorder(BorderFactory.createLineBorder(Color.lightGray));
                 ((JTextArea)dataComponent).getDocument().putProperty("dataMap", ((JComboBox) source).getClientProperty("dataMap"));
                 ((JTextArea)dataComponent).getDocument().putProperty("uri", ((JComboBox) source).getClientProperty("uri"));
                 ((JTextArea)dataComponent).getDocument().addDocumentListener(EventHandler.create(

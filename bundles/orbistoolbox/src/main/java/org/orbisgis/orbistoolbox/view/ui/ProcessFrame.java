@@ -25,6 +25,8 @@ import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
+import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 
@@ -52,9 +54,6 @@ public class ProcessFrame extends JFrame {
     /** Map of output data (URI of the corresponding output)*/
     private Map<URI, Object> outputDataMap = new HashMap<>();
 
-    //TODO move this map outside
-    private Map<Class<? extends DataDescription>, DataUI> dataUIMap;
-
     /** Toolbox */
     private ToolBox toolBox;
     /** Process represented */
@@ -62,6 +61,7 @@ public class ProcessFrame extends JFrame {
 
     private JTabbedPane tabbedPane;
     private List<JLabel> labelList;
+    private DataUIManager dataUIManager;
 
     /**
      * Main constructor.
@@ -69,12 +69,10 @@ public class ProcessFrame extends JFrame {
      * @param toolBox Toolbox
      */
     public ProcessFrame(Process process, ToolBox toolBox) {
-        this.setLayout(new MigLayout());
+        this.setLayout(new BorderLayout());
 
         labelList = new ArrayList<>();
-
-        dataUIMap = new HashMap<>();
-        dataUIMap.put(LiteralData.class, new LiteralDataUI());
+        dataUIManager = toolBox.getDataUIManager();
 
         this.toolBox = toolBox;
         this.process = process;
@@ -83,7 +81,7 @@ public class ProcessFrame extends JFrame {
         tabbedPane.addTab("Configuration", buildUIConf(process, inputDataMap));
         tabbedPane.addTab("Information", buildUIInfo(process));
         tabbedPane.addTab("Execution", buildUIExec(process));
-        this.add(tabbedPane, "wrap");
+        this.add(tabbedPane, BorderLayout.CENTER);
 
         JPanel buttons = new JPanel(new MigLayout());
         JButton runButton = new JButton("run");
@@ -92,7 +90,7 @@ public class ProcessFrame extends JFrame {
         JButton cancelButton = new JButton("cancel");
         cancelButton.addActionListener(EventHandler.create(ActionListener.class, this, "close"));
         buttons.add(cancelButton);
-        this.add(buttons);
+        this.add(buttons, BorderLayout.PAGE_END);
     }
 
     /**
@@ -143,19 +141,19 @@ public class ProcessFrame extends JFrame {
      * @return The UI for the configuration of the process.
      */
     public JComponent buildUIConf(Process p, Map<URI, Object> dataMap){
-        JPanel panel = new JPanel(new MigLayout());
+        JPanel panel = new JPanel(new MigLayout("fill"));
 
         for(Input i : p.getInput()){
-            JPanel inputPanel = new JPanel(new MigLayout());
+            JPanel inputPanel = new JPanel(new MigLayout("fill"));
             inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
             JLabel inputAbstrac = new JLabel(i.getAbstrac());
             inputAbstrac.setFont(inputAbstrac.getFont().deriveFont(Font.ITALIC));
             inputPanel.add(inputAbstrac, "wrap");
-            DataUI dataUI = dataUIMap.get(i.getDataDescription().getClass());
+            DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getClass());
             if(dataUI!=null) {
                 inputPanel.add(dataUI.createUI(i, dataMap), "wrap");
             }
-            panel.add(inputPanel, "wrap");
+            panel.add(inputPanel, "growx, wrap");
         }
 
         return panel;
@@ -167,7 +165,7 @@ public class ProcessFrame extends JFrame {
      * @return The UI for the configuration of the process.
      */
     public JComponent buildUIInfo(Process p){
-        JPanel panel = new JPanel(new MigLayout());
+        JPanel panel = new JPanel(new MigLayout("fill"));
 
         //Process info
         JLabel titleContentLabel = new JLabel(p.getTitle());
@@ -259,7 +257,7 @@ public class ProcessFrame extends JFrame {
      * @return The UI for the configuration of the process.
      */
     public JComponent buildUIExec(Process p){
-        JPanel panel = new JPanel(new MigLayout());
+        JPanel panel = new JPanel(new MigLayout("fill"));
 
         JPanel executorPanel = new JPanel(new MigLayout());
         executorPanel.setBorder(BorderFactory.createTitledBorder("Executor :"));
@@ -267,7 +265,7 @@ public class ProcessFrame extends JFrame {
 
         JPanel statusPanel = new JPanel(new MigLayout());
         statusPanel.setBorder(BorderFactory.createTitledBorder("Status :"));
-        statusPanel.add(new JLabel("status"));
+        statusPanel.add(new JLabel("iddle"));
 
         JPanel resultPanel = new JPanel(new MigLayout());
         resultPanel.setBorder(BorderFactory.createTitledBorder("Result :"));

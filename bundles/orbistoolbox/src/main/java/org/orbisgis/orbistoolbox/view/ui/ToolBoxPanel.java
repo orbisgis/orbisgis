@@ -20,7 +20,6 @@
 package org.orbisgis.orbistoolbox.view.ui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.orbistoolbox.model.DataType;
 import org.orbisgis.orbistoolbox.model.Metadata;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
@@ -206,25 +205,6 @@ public class ToolBoxPanel extends JPanel {
                 selectedNode.setValid(isValidProcess);
             }
         }
-    }
-
-    /**
-     * Sets the information for the information panel.
-     * @param title
-     * @param abstrac
-     * @param inputList
-     * @param outputList
-     */
-    public void setProcessInfo(String title, String abstrac,
-                               List<String> inputList, List<DataType> inputDataTypes, List<String> inputAbstract,
-                               List<String> outputList, List<DataType> outputDataTypes, List<String> outputAbstract){
-        /*processInfoPanel.setTitle(title);
-        processInfoPanel.setAbstrac(abstrac);
-        processInfoPanel.setInputList(inputList, inputDataTypes, inputAbstract);
-        processInfoPanel.setOutputList(outputList, outputDataTypes, outputAbstract);
-        processInfoPanel.updateComponent();
-        this.revalidate();
-        processInfoPanel.revalidate();*/
     }
 
     /**

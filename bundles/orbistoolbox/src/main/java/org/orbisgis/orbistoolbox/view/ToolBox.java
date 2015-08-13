@@ -19,14 +19,12 @@
 
 package org.orbisgis.orbistoolbox.view;
 
-import groovy.lang.GroovyObject;
-
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ProcessFrame;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
+import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
-import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.components.actions.DefaultAction;
@@ -39,9 +37,6 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
-import java.lang.reflect.Field;
-import java.net.URI;
-import java.util.Map;
 
 /**
  * @author Sylvain PALOMINOS
@@ -62,10 +57,13 @@ public class ToolBox implements DockingPanel {
 
     private Process selectedProcess;
 
+    private DataUIManager dataUIManager;
+
     @Activate
     public void init(){
         toolBoxPanel = new ToolBoxPanel(this);
         processManager = new ProcessManager();
+        dataUIManager = new DataUIManager();
 
         ActionCommands dockingActions = new ActionCommands();
 
@@ -158,5 +156,9 @@ public class ToolBox implements DockingPanel {
     public void removeSelected(){
         processManager.removeProcess(selectedProcess);
         selectedProcess = null;
+    }
+
+    public DataUIManager getDataUIManager(){
+        return dataUIManager;
     }
 }

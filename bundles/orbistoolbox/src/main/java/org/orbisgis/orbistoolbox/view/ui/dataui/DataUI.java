@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view.ui;
+package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import org.orbisgis.orbistoolbox.model.Input;
 
