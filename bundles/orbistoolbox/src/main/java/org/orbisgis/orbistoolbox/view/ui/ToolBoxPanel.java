@@ -23,20 +23,20 @@ import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.Metadata;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.orbistoolbox.view.utils.TreeNodeWps;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
+import org.orbisgis.sif.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
+import java.awt.event.*;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
@@ -50,6 +50,11 @@ import java.util.List;
  **/
 
 public class ToolBoxPanel extends JPanel {
+
+    private static final String ADD_SOURCE = "ADD_SOURCE";
+    private static final String RUN_SCRIPT = "RUN_SCRIPT";
+    private static final String REFRESH_SOURCE = "REFRESH_SOURCE";
+    private static final String REMOVE = "REMOVE";
 
     private final static String CATEGORY_MODEL = "Category";
     private final static String FILE_MODEL = "File";
@@ -65,15 +70,26 @@ public class ToolBoxPanel extends JPanel {
     private FileTreeModel fileModel;
     /** Model of the Jtree */
     private FileTreeModel categoryModel;
-    private TreeNodeWps undef;
 
     /** JTree */
     private FileTree tree;
+
+    private TreeNodeWps addWps;
+
+    private ActionCommands popupGlobalActions;
+    private ActionCommands popupNodeActions;
+    private ActionCommands popupLeafActions;
 
     public ToolBoxPanel(ToolBox toolBox){
         super(new MigLayout());
 
         this.toolBox = toolBox;
+
+        this.addWps = new TreeNodeWps();
+        addWps.setIsCustomIcon(true);
+        addWps.setCustomIcon("folder_add");
+        addWps.setUserObject("Add folder");
+        addWps.setcanBeLeaf(false);
 
         TreeNodeWps fileRoot = new TreeNodeWps();
         fileRoot.setUserObject(FILE_MODEL);
@@ -84,9 +100,6 @@ public class ToolBoxPanel extends JPanel {
         categoryRoot.setUserObject(CATEGORY_MODEL);
         categoryRoot.setIsRoot(true);
         categoryModel = new FileTreeModel(categoryRoot);
-        undef = new TreeNodeWps();
-        undef.setUserObject("Undefined");
-        categoryRoot.add(undef);
 
         treeNodeBox = new JComboBox<>();
         treeNodeBox.addItem(FILE_MODEL);
@@ -96,33 +109,69 @@ public class ToolBoxPanel extends JPanel {
 
         tree = new FileTree();
         tree.setCellRenderer(new CustomTreeCellRenderer(tree));
-        tree.addMouseListener(EventHandler.create(MouseListener.class, this, "onMouseClicked", "", "mouseClicked"));
+        tree.addMouseListener(EventHandler.create(MouseListener.class, this, "onMouseClicked", ""));
 
         JScrollPane treeScrollPane = new JScrollPane(tree);
         this.add(treeScrollPane, "wrap");
         this.add(treeNodeBox, "wrap");
 
         onModelSelected();
+
+        createPopupActions();
     }
 
     public void onMouseClicked(MouseEvent event){
-        if(event.getClickCount() >= 2){
+        if(event.getButton() == MouseEvent.BUTTON3) {
+            JPopupMenu popupMenu = new JPopupMenu();
+            if(event.getSource().equals(tree)){
+                if(tree.getLastSelectedPathComponent() == null){
+                    popupGlobalActions.copyEnabledActions(popupMenu);
+                }
+                else {
+                    if (((TreeNodeWps) tree.getLastSelectedPathComponent()).isLeaf() &&
+                            ((TreeNodeWps) tree.getLastSelectedPathComponent()).canBeLeaf()) {
+                        popupLeafActions.copyEnabledActions(popupMenu);
+                    } else {
+                        popupNodeActions.copyEnabledActions(popupMenu);
+                    }
+                }
+            }
+            if (popupMenu.getComponentCount()>0) {
+                popupMenu.show(event.getComponent(), event.getX(), event.getY());
+            }
+        }
+        else if(event.getClickCount() >= 2){
             TreeNodeWps selectedNode = (TreeNodeWps) ((FileTree)event.getSource()).getLastSelectedPathComponent();
             if(selectedNode != null) {
+                if(selectedNode.equals(addWps)){
+                    addLocalSource();
+                }
                 if (selectedNode.isLeaf() && selectedNode.canBeLeaf()) {
-                    boolean isValidProcess = toolBox.selectProcess(selectedNode.getFilePath());
-                    selectedNode.setValid(isValidProcess);
+                    selectProcess(selectedNode);
                 }
             }
         }
     }
 
+    public void selectProcess(TreeNodeWps selectedNode){
+        boolean isValidProcess = toolBox.selectProcess(selectedNode.getFilePath());
+        selectedNode.setValid(isValidProcess);
+    }
+
     public void onModelSelected(){
         if(treeNodeBox.getSelectedItem().equals(FILE_MODEL)){
+            if(((TreeNodeWps) categoryModel.getRoot()).isNodeChild(addWps)) {
+                ((TreeNodeWps) categoryModel.getRoot()).add(addWps);
+            }
+            ((TreeNodeWps) fileModel.getRoot()).add(addWps);
             root = (TreeNodeWps) fileModel.getRoot();
             tree.setModel(fileModel);
         }
         else if(treeNodeBox.getSelectedItem().equals(CATEGORY_MODEL)){
+            if(((TreeNodeWps) fileModel.getRoot()).isNodeChild(addWps)) {
+                ((TreeNodeWps) fileModel.getRoot()).add(addWps);
+            }
+            ((TreeNodeWps) categoryModel.getRoot()).add(addWps);
             root = (TreeNodeWps) categoryModel.getRoot();
             tree.setModel(categoryModel);
         }
@@ -161,7 +210,6 @@ public class ToolBoxPanel extends JPanel {
                 categoryNode = new TreeNodeWps();
                 categoryNode.setUserObject(category);
                 root.add(categoryNode);
-                categoryNode.setcanBeLeaf(true);
             }
 
             if(subCategory != null){
@@ -175,7 +223,6 @@ public class ToolBoxPanel extends JPanel {
                     subCategoryNode = new TreeNodeWps();
                     subCategoryNode.setUserObject(subCategory);
                     categoryNode.add(subCategoryNode);
-                    subCategoryNode.setcanBeLeaf(true);
                 }
 
                 if(subSubCategory != null){
@@ -189,7 +236,6 @@ public class ToolBoxPanel extends JPanel {
                         subSubCategoryNode = new TreeNodeWps();
                         subSubCategoryNode.setUserObject(subSubCategory);
                         subCategoryNode.add(subSubCategoryNode);
-                        subSubCategoryNode.setcanBeLeaf(true);
                     }
                     subSubCategoryNode.add(script);
                 }
@@ -202,15 +248,35 @@ public class ToolBoxPanel extends JPanel {
             }
         }
         else{
-            undef.add(script);
+            TreeNodeWps undefined = null;
+            for(int i = 0; i < categoryModel.getChildCount(root); i++){
+                if(((TreeNodeWps)root.getChildAt(i)).getUserObject().equals("Undefined")){
+                    undefined = (TreeNodeWps)root.getChildAt(i);
+                }
+            }
+            if(undefined == null){
+                undefined = new TreeNodeWps();
+                undefined.setUserObject("Undefined");
+                root.add(undefined);
+            }
+            undefined.add(script);
         }
+        this.refresh();
+    }
+
+    public void refresh(){
+        if(root.isNodeChild(addWps))
+        root.remove(addWps);
+        root.add(addWps);
         categoryModel.reload();
+        fileModel.reload();
+        this.revalidate();
     }
 
     /**
      * Adds a new local source for the toolBox.
      */
-    public void addLocalSource(){
+    public void addLocalSource() {
         File file = null;
         OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBoxPanel.AddSource", "Add a source");
 
@@ -227,7 +293,6 @@ public class ToolBoxPanel extends JPanel {
             return null;
         }
 
-        FileTreeModel model = fileModel;
         TreeNodeWps root = (TreeNodeWps) fileModel.getRoot();
 
         boolean exists = false;
@@ -253,7 +318,7 @@ public class ToolBoxPanel extends JPanel {
             }
             source.setValid(isScript);
         }
-        model.reload();
+        this.refresh();
         return source;
     }
 
@@ -285,9 +350,72 @@ public class ToolBoxPanel extends JPanel {
     public void removeSelected(){
         TreeNodeWps selected = (TreeNodeWps)tree.getLastSelectedPathComponent();
         if(!selected.equals(root)){
+            TreeNodeWps parent = (TreeNodeWps)selected.getParent();
             fileModel.removeNodeFromParent(selected);
-            fileModel.reload();
+            cleanParentNode(parent, fileModel);
+            /*categoryModel.removeNodeFromParent(selected);
+            cleanParentNode(parent, categoryModel);*/
             toolBox.removeSelected();
+            this.refresh();
         }
+    }
+
+    private void cleanParentNode(TreeNodeWps node, FileTreeModel model){
+        TreeNode[] treeNodeTab = model.getPathToRoot(node);
+        TreeNodeWps parent = (TreeNodeWps)treeNodeTab[treeNodeTab.length-1];
+        if(parent != root && parent.isLeaf() && parent.getParent() != null){
+            model.removeNodeFromParent(parent);
+            cleanParentNode(parent, model);
+        }
+    }
+
+
+    private void createPopupActions() {
+        DefaultAction addSource = new DefaultAction(
+                ADD_SOURCE,
+                "Add",
+                "Add a local source",
+                ToolBoxIcon.getIcon("folder_add"),
+                EventHandler.create(ActionListener.class, this, "addLocalSource"),
+                null
+        );
+        DefaultAction runScript = new DefaultAction(
+                RUN_SCRIPT,
+                "Run",
+                "Run a script",
+                ToolBoxIcon.getIcon("execute"),
+                EventHandler.create(ActionListener.class, this, "selectProcess"),
+                null
+        );
+        DefaultAction refresh_source = new DefaultAction(
+                REFRESH_SOURCE,
+                "Refresh",
+                "Refresh a source",
+                ToolBoxIcon.getIcon("refresh"),
+                EventHandler.create(ActionListener.class, this, "refreshSource"),
+                null
+        );
+        DefaultAction remove = new DefaultAction(
+                REMOVE,
+                "Remove",
+                "Remove a source or a script",
+                ToolBoxIcon.getIcon("remove"),
+                EventHandler.create(ActionListener.class, this, "removeSelected"),
+                null
+        );
+
+        popupGlobalActions = new ActionCommands();
+        popupGlobalActions.addAction(addSource);
+
+        popupLeafActions = new ActionCommands();
+        popupLeafActions.addAction(addSource);
+        popupLeafActions.addAction(runScript);
+        popupLeafActions.addAction(refresh_source);
+        popupLeafActions.addAction(remove);
+
+        popupNodeActions = new ActionCommands();
+        popupNodeActions.addAction(addSource);
+        popupNodeActions.addAction(refresh_source);
+        popupNodeActions.addAction(remove);
     }
 }

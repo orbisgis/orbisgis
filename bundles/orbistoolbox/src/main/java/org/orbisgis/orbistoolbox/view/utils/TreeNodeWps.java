@@ -36,9 +36,16 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
     private boolean isValid = true;
     private boolean isRoot = false;
     private boolean canBeLeaf = true;
+    private boolean isCustomIcon = false;
+
+    private String customIconName;
 
     @Override
     public ImageIcon getLeafIcon() {
+        if(isCustomIcon){
+            return ToolBoxIcon.getIcon(customIconName);
+        }
+
         if(!canBeLeaf){
             if (isValid) {
                 return ToolBoxIcon.getIcon("folder");
@@ -60,6 +67,10 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
 
     @Override
     public ImageIcon getClosedIcon() {
+        if(isCustomIcon){
+            return ToolBoxIcon.getIcon(customIconName);
+        }
+
         if (isRoot) {
             return ToolBoxIcon.getIcon("folder");
         } else {
@@ -69,6 +80,10 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
 
     @Override
     public ImageIcon getOpenIcon() {
+        if(isCustomIcon){
+            return ToolBoxIcon.getIcon(customIconName);
+        }
+
         if (isRoot) {
             return ToolBoxIcon.getIcon("folder");
         } else {
@@ -100,5 +115,13 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
 
     public boolean canBeLeaf(){
         return canBeLeaf;
+    }
+
+    public void setIsCustomIcon(boolean isCustomIcon){
+        this.isCustomIcon = isCustomIcon;
+    }
+
+    public void setCustomIcon(String customIconName){
+        this.customIconName = customIconName;
     }
 }

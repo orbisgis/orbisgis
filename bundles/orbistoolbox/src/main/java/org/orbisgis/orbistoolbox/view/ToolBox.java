@@ -35,6 +35,8 @@ import org.osgi.service.component.annotations.Component;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.EventHandler;
 import java.io.File;
 
@@ -44,11 +46,6 @@ import java.io.File;
 
 @Component(service = DockingPanel.class)
 public class ToolBox implements DockingPanel {
-
-    private static final String ADD_SOURCE = "ADD_SOURCE";
-    private static final String RUN_SCRIPT = "RUN_SCRIPT";
-    private static final String REFRESH_SOURCE = "REFRESH_SOURCE";
-    private static final String REMOVE = "REMOVE";
 
     private DockingPanelParameters parameters;
     private ProcessManager processManager;
@@ -72,47 +69,6 @@ public class ToolBox implements DockingPanel {
         parameters.setTitle("OrbisToolBox");
         parameters.setTitleIcon(ToolBoxIcon.getIcon("orbistoolbox"));
         parameters.setCloseable(true);
-
-        dockingActions.addAction(
-                new DefaultAction(
-                        ADD_SOURCE,
-                        "Add source",
-                        "Add a local source",
-                        ToolBoxIcon.getIcon("folder_add"),
-                        EventHandler.create(ActionListener.class, toolBoxPanel, "addLocalSource"),
-                        null
-                )
-        );
-        dockingActions.addAction(
-                new DefaultAction(
-                        RUN_SCRIPT,
-                        "Run a script",
-                        "Run a script",
-                        ToolBoxIcon.getIcon("execute"),
-                        EventHandler.create(ActionListener.class, this, "runScript"),
-                        null
-                )
-        );
-        dockingActions.addAction(
-                new DefaultAction(
-                        REFRESH_SOURCE,
-                        "Refresh a source",
-                        "Refresh a source",
-                        ToolBoxIcon.getIcon("refresh"),
-                        EventHandler.create(ActionListener.class, toolBoxPanel, "refreshSource"),
-                        null
-                )
-        );
-        dockingActions.addAction(
-                new DefaultAction(
-                        REMOVE,
-                        "Remove a source or a script",
-                        "Remove a source or a script",
-                        ToolBoxIcon.getIcon("remove"),
-                        EventHandler.create(ActionListener.class, toolBoxPanel, "removeSelected"),
-                        null
-                )
-        );
 
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
