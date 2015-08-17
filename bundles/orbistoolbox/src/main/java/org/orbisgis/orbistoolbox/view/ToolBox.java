@@ -25,19 +25,16 @@ import org.orbisgis.orbistoolbox.view.ui.ProcessFrame;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
-import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.beans.EventHandler;
 import java.io.File;
 
 /**
@@ -88,8 +85,20 @@ public class ToolBox implements DockingPanel {
         return toolBoxPanel;
     }
 
-    public void addProcess(File f){
-        toolBoxPanel.addProcess(processManager.getProcess(f), f);
+    public void addLocalSource(){
+        File file = null;
+        OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBoxPanel.AddSource", "Add a source");
+
+        //Wait the window answer and if the user validate set and run the export thread.
+        if(UIFactory.showDialog(openFolderPanel)){
+            file = openFolderPanel.getSelectedFile();
+            processManager.addLocalSource(file.getAbsolutePath());
+            toolBoxPanel.addLocalSource(file, processManager);
+        }
+    }
+
+    public void refreshSource(File file){
+        toolBoxPanel.addLocalSource(file, processManager);
     }
 
     public boolean selectProcess(File f){
@@ -112,6 +121,7 @@ public class ToolBox implements DockingPanel {
     public void removeSelected(){
         processManager.removeProcess(selectedProcess);
         selectedProcess = null;
+        toolBoxPanel.removeSelected();
     }
 
     public DataUIManager getDataUIManager(){

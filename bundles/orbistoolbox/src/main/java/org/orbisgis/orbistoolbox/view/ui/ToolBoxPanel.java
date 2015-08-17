@@ -20,13 +20,12 @@
 package org.orbisgis.orbistoolbox.view.ui;
 
 import net.miginfocom.swing.MigLayout;
+import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.model.Metadata;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.orbistoolbox.view.utils.TreeNodeWps;
-import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
@@ -34,7 +33,6 @@ import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
 
 import javax.swing.*;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import java.awt.event.*;
 import java.beans.EventHandler;
@@ -124,7 +122,10 @@ public class ToolBoxPanel extends JPanel {
         if(event.getButton() == MouseEvent.BUTTON3) {
             JPopupMenu popupMenu = new JPopupMenu();
             if(event.getSource().equals(tree)){
-                if(tree.getLastSelectedPathComponent() == null){
+                if(tree.getLastSelectedPathComponent() == null ||
+                        tree.getLastSelectedPathComponent().equals(addWps) ||
+                        tree.getLastSelectedPathComponent().equals(fileModel.getRoot()) ||
+                        tree.getLastSelectedPathComponent().equals(categoryModel.getRoot())){
                     popupGlobalActions.copyEnabledActions(popupMenu);
                 }
                 else {
@@ -144,7 +145,7 @@ public class ToolBoxPanel extends JPanel {
             TreeNodeWps selectedNode = (TreeNodeWps) ((FileTree)event.getSource()).getLastSelectedPathComponent();
             if(selectedNode != null) {
                 if(selectedNode.equals(addWps)){
-                    addLocalSource();
+                    toolBox.addLocalSource();
                 }
                 if (selectedNode.isLeaf() && selectedNode.canBeLeaf()) {
                     selectProcess(selectedNode);
@@ -177,7 +178,7 @@ public class ToolBoxPanel extends JPanel {
         }
     }
 
-    public void addProcess(Process p, File f){
+    public void addScriptInCategoryModel(Process p, File f){
         String category = null;
         String subCategory = null;
         String subSubCategory = null;
@@ -237,14 +238,38 @@ public class ToolBoxPanel extends JPanel {
                         subSubCategoryNode.setUserObject(subSubCategory);
                         subCategoryNode.add(subSubCategoryNode);
                     }
-                    subSubCategoryNode.add(script);
+                    boolean exist = false;
+                    for(int l=0; l<subSubCategoryNode.getChildCount(); l++){
+                        if(((TreeNodeWps)subSubCategoryNode.getChildAt(l)).getFilePath().equals(script.getFilePath())){
+                            exist = true;
+                        }
+                    }
+                    if(!exist) {
+                        subSubCategoryNode.add(script);
+                    }
                 }
                 else {
-                    subCategoryNode.add(script);
+                    boolean exist = false;
+                    for(int l=0; l<subCategoryNode.getChildCount(); l++){
+                        if(((TreeNodeWps)subCategoryNode.getChildAt(l)).getFilePath().equals(script.getFilePath())){
+                            exist = true;
+                        }
+                    }
+                    if(!exist) {
+                        subCategoryNode.add(script);
+                    }
                 }
             }
             else {
-                categoryNode.add(script);
+                boolean exist = false;
+                for(int l=0; l<categoryNode.getChildCount(); l++){
+                    if(((TreeNodeWps)categoryNode.getChildAt(l)).getFilePath().equals(script.getFilePath())){
+                        exist = true;
+                    }
+                }
+                if(!exist) {
+                    categoryNode.add(script);
+                }
             }
         }
         else{
@@ -259,7 +284,15 @@ public class ToolBoxPanel extends JPanel {
                 undefined.setUserObject("Undefined");
                 root.add(undefined);
             }
-            undefined.add(script);
+            boolean exist = false;
+            for(int l=0; l<undefined.getChildCount(); l++){
+                if(((TreeNodeWps)undefined.getChildAt(l)).getFilePath().equals(script.getFilePath())){
+                    exist = true;
+                }
+            }
+            if(!exist) {
+                undefined.add(script);
+            }
         }
         this.refresh();
     }
@@ -273,26 +306,16 @@ public class ToolBoxPanel extends JPanel {
         this.revalidate();
     }
 
-    /**
-     * Adds a new local source for the toolBox.
-     */
-    public void addLocalSource() {
-        File file = null;
-        OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBoxPanel.AddSource", "Add a source");
-
-        //Wait the window answer and if the user validate set and run the export thread.
-        if(UIFactory.showDialog(openFolderPanel)){
-            file = openFolderPanel.getSelectedFile();
+    public void addLocalSource(File file, ProcessManager processManager) {
+        addScriptInFileModel(file);
+        for(File f : file.listFiles()) {
+            if(f.getName().endsWith(".groovy")) {
+                addScriptInCategoryModel(processManager.getProcess(f), f);
+            }
         }
-
-        addLocalSource(file);
     }
 
-    private TreeNodeWps addLocalSource(File file){
-        if(file == null) {
-            return null;
-        }
-
+    private void addScriptInFileModel(File file){
         TreeNodeWps root = (TreeNodeWps) fileModel.getRoot();
 
         boolean exists = false;
@@ -313,13 +336,11 @@ public class ToolBoxPanel extends JPanel {
                 script.setUserObject(f.getName().replace(".groovy", ""));
                 script.setFilePath(f);
                 source.add(script);
-                toolBox.addProcess(f);
                 isScript = true;
             }
             source.setValid(isScript);
         }
         this.refresh();
-        return source;
     }
 
     /**
@@ -329,7 +350,7 @@ public class ToolBoxPanel extends JPanel {
         TreeNodeWps node = ((TreeNodeWps)tree.getLastSelectedPathComponent());
         if(!node.isRoot() && !node.isLeaf()) {
             root.remove(node);
-            addLocalSource(node.getFilePath());
+            toolBox.refreshSource(node.getFilePath());
         }
     }
 
@@ -349,14 +370,86 @@ public class ToolBoxPanel extends JPanel {
 
     public void removeSelected(){
         TreeNodeWps selected = (TreeNodeWps)tree.getLastSelectedPathComponent();
-        if(!selected.equals(root)){
-            TreeNodeWps parent = (TreeNodeWps)selected.getParent();
-            fileModel.removeNodeFromParent(selected);
-            cleanParentNode(parent, fileModel);
-            /*categoryModel.removeNodeFromParent(selected);
-            cleanParentNode(parent, categoryModel);*/
-            toolBox.removeSelected();
+        if(!selected.equals(fileModel.getRoot()) && !selected.equals(categoryModel.getRoot())){
+            removeNodeFromCategoryModel(selected);
+            removeNodeFromFileModel(selected);
             this.refresh();
+        }
+    }
+
+    private void removeNodeFromFileModel(TreeNodeWps node){
+        File f = node.getFilePath();
+        TreeNodeWps root = (TreeNodeWps)fileModel.getRoot();
+        for(int i = 0; i < root.getChildCount(); i++){
+            for(int j = 0; j < root.getChildAt(i).getChildCount(); j++){
+                TreeNodeWps selected = ((TreeNodeWps)root.getChildAt(i).getChildAt(j));
+                if(selected.getFilePath().equals(f)){
+                    TreeNodeWps parent = (TreeNodeWps)selected.getParent();
+                    fileModel.removeNodeFromParent(selected);
+                    cleanParentNode(parent, fileModel);
+                }
+            }
+        }
+    }
+
+    private void removeNodeFromCategoryModel(TreeNodeWps node){
+        File f = node.getFilePath();
+        Process process = toolBox.getProcessManager().getProcess(f);
+        String category = "Undefined";
+        String subCategory = null;
+        String subSubCategory = null;
+        if(process != null && process.getMetadata() != null) {
+            for (Metadata m : process.getMetadata()) {
+                if (m.getRole().equals(URI.create("orbisgis:wps:utils:category"))) {
+                    category = m.getTitle();
+                }
+                if (m.getRole().equals(URI.create("orbisgis:wps:utils:subCategory"))) {
+                    subCategory = m.getTitle();
+                }
+                if (m.getRole().equals(URI.create("orbisgis:wps:utils:subSubCategory"))) {
+                    subSubCategory = m.getTitle();
+                }
+            }
+        }
+        TreeNodeWps root = (TreeNodeWps)categoryModel.getRoot();
+        for(int i = 0; i < categoryModel.getChildCount(root); i++){
+            TreeNodeWps subRoot = (TreeNodeWps)root.getChildAt(i);
+            if(subRoot.getUserObject().equals(category)){
+                if(subCategory != null){
+                    for(int j = 0; j < categoryModel.getChildCount(subRoot); j++){
+                        TreeNodeWps subSubRoot = (TreeNodeWps)subRoot.getChildAt(j);
+                        if(((TreeNodeWps)subRoot.getChildAt(j)).getUserObject().equals(subCategory)){
+                            if(subSubCategory != null){
+                                for(int k = 0; k < categoryModel.getChildCount(subRoot); k++){
+                                    if(((TreeNodeWps)subRoot.getChildAt(k)).getUserObject().equals(subCategory)){
+                                        subSubRoot.remove(k);
+                                    }
+                                }
+                            }
+                            else{
+                                for(int l = 0; l < subSubRoot.getChildCount(); l++){
+                                    if(((TreeNodeWps)subSubRoot.getChildAt(l)).getFilePath().equals(f)){
+                                        subSubRoot.remove(l);
+                                    }
+                                }
+                            }
+                            if(subRoot.getChildAt(j).isLeaf() || subRoot.getChildAt(j).getChildCount() == 0) {
+                                subRoot.remove(j);
+                            }
+                        }
+                    }
+                }
+                else{
+                    for(int l = 0; l < subRoot.getChildCount(); l++){
+                        if(((TreeNodeWps)subRoot.getChildAt(l)).getFilePath().equals(f)){
+                            subRoot.remove(l);
+                        }
+                    }
+                }
+                if(subRoot.isLeaf() || subRoot.getChildCount() == 0) {
+                    root.remove(i);
+                }
+            }
         }
     }
 
@@ -376,7 +469,7 @@ public class ToolBoxPanel extends JPanel {
                 "Add",
                 "Add a local source",
                 ToolBoxIcon.getIcon("folder_add"),
-                EventHandler.create(ActionListener.class, this, "addLocalSource"),
+                EventHandler.create(ActionListener.class, toolBox, "addLocalSource"),
                 null
         );
         DefaultAction runScript = new DefaultAction(
@@ -400,7 +493,7 @@ public class ToolBoxPanel extends JPanel {
                 "Remove",
                 "Remove a source or a script",
                 ToolBoxIcon.getIcon("remove"),
-                EventHandler.create(ActionListener.class, this, "removeSelected"),
+                EventHandler.create(ActionListener.class, toolBox, "removeSelected"),
                 null
         );
 
