@@ -86,12 +86,11 @@ public class ToolBox implements DockingPanel {
     }
 
     public void addLocalSource(){
-        File file = null;
         OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBoxPanel.AddSource", "Add a source");
 
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFolderPanel)){
-            file = openFolderPanel.getSelectedFile();
+            File file = openFolderPanel.getSelectedFile();
             processManager.addLocalSource(file.getAbsolutePath());
             toolBoxPanel.addLocalSource(file, processManager);
         }

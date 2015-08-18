@@ -19,7 +19,6 @@
 
 package org.orbisgis.orbistoolbox.view.ui;
 
-import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.model.Metadata;
 import org.orbisgis.orbistoolbox.model.Process;
@@ -34,6 +33,7 @@ import org.orbisgis.sif.components.fstree.FileTreeModel;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
+import java.awt.*;
 import java.awt.event.*;
 import java.beans.EventHandler;
 import java.io.File;
@@ -57,6 +57,8 @@ public class ToolBoxPanel extends JPanel {
     private final static String CATEGORY_MODEL = "Category";
     private final static String FILE_MODEL = "File";
 
+    private final static String UNDEFINED = "Undefined";
+
     private JComboBox<String> treeNodeBox;
 
     /** Reference to the toolbox.*/
@@ -79,7 +81,7 @@ public class ToolBoxPanel extends JPanel {
     private ActionCommands popupLeafActions;
 
     public ToolBoxPanel(ToolBox toolBox){
-        super(new MigLayout());
+        super(new BorderLayout());
 
         this.toolBox = toolBox;
 
@@ -106,14 +108,19 @@ public class ToolBoxPanel extends JPanel {
         treeNodeBox.addActionListener(EventHandler.create(ActionListener.class, this, "onModelSelected"));
 
         tree = new FileTree();
+        tree.setRootVisible(false);
+        tree.setScrollsOnExpand(true);
         tree.setCellRenderer(new CustomTreeCellRenderer(tree));
         tree.addMouseListener(EventHandler.create(MouseListener.class, this, "onMouseClicked", ""));
 
         JScrollPane treeScrollPane = new JScrollPane(tree);
-        this.add(treeScrollPane, "wrap");
-        this.add(treeNodeBox, "wrap");
+        this.add(treeScrollPane, BorderLayout.CENTER);
+        this.add(treeNodeBox, BorderLayout.PAGE_END);
 
         onModelSelected();
+
+        popupGlobalActions = new ActionCommands();
+        popupGlobalActions.setAccelerators(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         createPopupActions();
     }
@@ -179,122 +186,90 @@ public class ToolBoxPanel extends JPanel {
     }
 
     public void addScriptInCategoryModel(Process p, File f){
-        String category = null;
-        String subCategory = null;
-        String subSubCategory = null;
-        if(p != null && p.getMetadata() != null) {
-            for (Metadata m : p.getMetadata()) {
-                if (m.getRole().equals(URI.create("orbisgis:wps:utils:category"))) {
-                    category = m.getTitle();
-                }
-                if (m.getRole().equals(URI.create("orbisgis:wps:utils:subCategory"))) {
-                    subCategory = m.getTitle();
-                }
-                if (m.getRole().equals(URI.create("orbisgis:wps:utils:subSubCategory"))) {
-                    subSubCategory = m.getTitle();
-                }
-            }
-        }
+        String[] categories = decodeCategories(p);
 
         TreeNodeWps root = (TreeNodeWps) categoryModel.getRoot();
         TreeNodeWps script = new TreeNodeWps();
         script.setFilePath(f);
+        TreeNodeWps categoryNode = getSubNode(categories[0], root);
+        if(categoryNode == null){
+            categoryNode = new TreeNodeWps();
+            categoryNode.setUserObject(categories[0]);
+            root.add(categoryNode);
+        }
 
-        if(category != null){
-            TreeNodeWps categoryNode = null;
-            for(int i = 0; i < categoryModel.getChildCount(root); i++){
-                if(((TreeNodeWps)root.getChildAt(i)).getUserObject().equals(category)){
-                    categoryNode = (TreeNodeWps)root.getChildAt(i);
-                }
+        if(categories[1] != null){
+            TreeNodeWps subCategoryNode = getSubNode(categories[1], categoryNode);
+            if(subCategoryNode == null){
+                subCategoryNode = new TreeNodeWps();
+                subCategoryNode.setUserObject(categories[1]);
+                categoryNode.add(subCategoryNode);
             }
-            if(categoryNode == null){
-                categoryNode = new TreeNodeWps();
-                categoryNode.setUserObject(category);
-                root.add(categoryNode);
-            }
 
-            if(subCategory != null){
-                TreeNodeWps subCategoryNode = null;
-                for(int i = 0; i < categoryNode.getChildCount(); i++){
-                    if(((TreeNodeWps)categoryNode.getChildAt(i)).getUserObject().equals(subCategory)){
-                        subCategoryNode = (TreeNodeWps)categoryNode.getChildAt(i);
-                    }
+            if(categories[2] != null){
+                TreeNodeWps subSubCategoryNode = getSubNode(categories[2], subCategoryNode);
+                if(subSubCategoryNode == null){
+                    subSubCategoryNode = new TreeNodeWps();
+                    subSubCategoryNode.setUserObject(categories[2]);
+                    subCategoryNode.add(subSubCategoryNode);
                 }
-                if(subCategoryNode == null){
-                    subCategoryNode = new TreeNodeWps();
-                    subCategoryNode.setUserObject(subCategory);
-                    categoryNode.add(subCategoryNode);
-                }
-
-                if(subSubCategory != null){
-                    TreeNodeWps subSubCategoryNode = null;
-                    for(int i = 0; i < subCategoryNode.getChildCount(); i++){
-                        if(((TreeNodeWps)subCategoryNode.getChildAt(i)).getUserObject().equals(subSubCategory)){
-                            subSubCategoryNode = (TreeNodeWps)subCategoryNode.getChildAt(i);
-                        }
-                    }
-                    if(subSubCategoryNode == null){
-                        subSubCategoryNode = new TreeNodeWps();
-                        subSubCategoryNode.setUserObject(subSubCategory);
-                        subCategoryNode.add(subSubCategoryNode);
-                    }
-                    boolean exist = false;
-                    for(int l=0; l<subSubCategoryNode.getChildCount(); l++){
-                        if(((TreeNodeWps)subSubCategoryNode.getChildAt(l)).getFilePath().equals(script.getFilePath())){
-                            exist = true;
-                        }
-                    }
-                    if(!exist) {
-                        subSubCategoryNode.add(script);
-                    }
-                }
-                else {
-                    boolean exist = false;
-                    for(int l=0; l<subCategoryNode.getChildCount(); l++){
-                        if(((TreeNodeWps)subCategoryNode.getChildAt(l)).getFilePath().equals(script.getFilePath())){
-                            exist = true;
-                        }
-                    }
-                    if(!exist) {
-                        subCategoryNode.add(script);
-                    }
+                if(!isNodeExisting(script, subSubCategoryNode)) {
+                    subSubCategoryNode.add(script);
                 }
             }
             else {
-                boolean exist = false;
-                for(int l=0; l<categoryNode.getChildCount(); l++){
-                    if(((TreeNodeWps)categoryNode.getChildAt(l)).getFilePath().equals(script.getFilePath())){
-                        exist = true;
-                    }
-                }
-                if(!exist) {
-                    categoryNode.add(script);
+                if(!isNodeExisting(script, subCategoryNode)) {
+                    subCategoryNode.add(script);
                 }
             }
         }
-        else{
-            TreeNodeWps undefined = null;
-            for(int i = 0; i < categoryModel.getChildCount(root); i++){
-                if(((TreeNodeWps)root.getChildAt(i)).getUserObject().equals("Undefined")){
-                    undefined = (TreeNodeWps)root.getChildAt(i);
-                }
-            }
-            if(undefined == null){
-                undefined = new TreeNodeWps();
-                undefined.setUserObject("Undefined");
-                root.add(undefined);
-            }
-            boolean exist = false;
-            for(int l=0; l<undefined.getChildCount(); l++){
-                if(((TreeNodeWps)undefined.getChildAt(l)).getFilePath().equals(script.getFilePath())){
-                    exist = true;
-                }
-            }
-            if(!exist) {
-                undefined.add(script);
+        else {
+            if(!isNodeExisting(script, categoryNode)) {
+                categoryNode.add(script);
             }
         }
         this.refresh();
+    }
+
+    private boolean isNodeExisting(TreeNodeWps node, TreeNodeWps parent){
+        boolean exist = false;
+        for(int l=0; l<parent.getChildCount(); l++){
+            if(((TreeNodeWps)parent.getChildAt(l)).getFilePath().equals(node.getFilePath())){
+                exist = true;
+            }
+        }
+        return exist;
+    }
+
+    private TreeNodeWps getSubNode(String nodeUserObject, TreeNodeWps parent){
+        TreeNodeWps child = null;
+        for(int i = 0; i < parent.getChildCount(); i++){
+            if(((TreeNodeWps)parent.getChildAt(i)).getUserObject().equals(nodeUserObject)){
+                child = (TreeNodeWps)parent.getChildAt(i);
+            }
+        }
+        return child;
+    }
+
+    private String[] decodeCategories(Process p){
+        String[] categories = new String[3];
+        categories[0] = UNDEFINED;
+        categories[1] = null;
+        categories[2] = null;
+        if(p != null && p.getMetadata() != null) {
+            for (Metadata m : p.getMetadata()) {
+                if (m.getRole().equals(URI.create("orbisgis:wps:utils:category"))) {
+                    categories[0] = m.getTitle();
+                }
+                if (m.getRole().equals(URI.create("orbisgis:wps:utils:subCategory"))) {
+                    categories[1] = m.getTitle();
+                }
+                if (m.getRole().equals(URI.create("orbisgis:wps:utils:subSubCategory"))) {
+                    categories[2] = m.getTitle();
+                }
+            }
+        }
+        return categories;
     }
 
     public void refresh(){
@@ -381,12 +356,11 @@ public class ToolBoxPanel extends JPanel {
         File f = node.getFilePath();
         TreeNodeWps root = (TreeNodeWps)fileModel.getRoot();
         for(int i = 0; i < root.getChildCount(); i++){
-            for(int j = 0; j < root.getChildAt(i).getChildCount(); j++){
+            int count = root.getChildAt(i).getChildCount();
+            for(int j = 0; j < count; j++){
                 TreeNodeWps selected = ((TreeNodeWps)root.getChildAt(i).getChildAt(j));
                 if(selected.getFilePath().equals(f)){
-                    TreeNodeWps parent = (TreeNodeWps)selected.getParent();
-                    fileModel.removeNodeFromParent(selected);
-                    cleanParentNode(parent, fileModel);
+                    cleanParentNode(selected, fileModel);
                 }
             }
         }
@@ -394,71 +368,32 @@ public class ToolBoxPanel extends JPanel {
 
     private void removeNodeFromCategoryModel(TreeNodeWps node){
         File f = node.getFilePath();
-        Process process = toolBox.getProcessManager().getProcess(f);
-        String category = "Undefined";
-        String subCategory = null;
-        String subSubCategory = null;
-        if(process != null && process.getMetadata() != null) {
-            for (Metadata m : process.getMetadata()) {
-                if (m.getRole().equals(URI.create("orbisgis:wps:utils:category"))) {
-                    category = m.getTitle();
-                }
-                if (m.getRole().equals(URI.create("orbisgis:wps:utils:subCategory"))) {
-                    subCategory = m.getTitle();
-                }
-                if (m.getRole().equals(URI.create("orbisgis:wps:utils:subSubCategory"))) {
-                    subSubCategory = m.getTitle();
-                }
+        String[] categories = decodeCategories(toolBox.getProcessManager().getProcess(f));
+        TreeNodeWps root = (TreeNodeWps)categoryModel.getRoot();
+        TreeNodeWps parent = getSubNode(categories[0], root);
+        if(categories[1] != null){
+            parent = getSubNode(categories[1], parent);
+            if(categories[2] != null){
+                parent = getSubNode(categories[2], parent);
             }
         }
-        TreeNodeWps root = (TreeNodeWps)categoryModel.getRoot();
-        for(int i = 0; i < categoryModel.getChildCount(root); i++){
-            TreeNodeWps subRoot = (TreeNodeWps)root.getChildAt(i);
-            if(subRoot.getUserObject().equals(category)){
-                if(subCategory != null){
-                    for(int j = 0; j < categoryModel.getChildCount(subRoot); j++){
-                        TreeNodeWps subSubRoot = (TreeNodeWps)subRoot.getChildAt(j);
-                        if(((TreeNodeWps)subRoot.getChildAt(j)).getUserObject().equals(subCategory)){
-                            if(subSubCategory != null){
-                                for(int k = 0; k < categoryModel.getChildCount(subRoot); k++){
-                                    if(((TreeNodeWps)subRoot.getChildAt(k)).getUserObject().equals(subCategory)){
-                                        subSubRoot.remove(k);
-                                    }
-                                }
-                            }
-                            else{
-                                for(int l = 0; l < subSubRoot.getChildCount(); l++){
-                                    if(((TreeNodeWps)subSubRoot.getChildAt(l)).getFilePath().equals(f)){
-                                        subSubRoot.remove(l);
-                                    }
-                                }
-                            }
-                            if(subRoot.getChildAt(j).isLeaf() || subRoot.getChildAt(j).getChildCount() == 0) {
-                                subRoot.remove(j);
-                            }
-                        }
-                    }
-                }
-                else{
-                    for(int l = 0; l < subRoot.getChildCount(); l++){
-                        if(((TreeNodeWps)subRoot.getChildAt(l)).getFilePath().equals(f)){
-                            subRoot.remove(l);
-                        }
-                    }
-                }
-                if(subRoot.isLeaf() || subRoot.getChildCount() == 0) {
-                    root.remove(i);
-                }
+
+        for(int l = 0; l < parent.getChildCount(); l++){
+            if(((TreeNodeWps)parent.getChildAt(l)).getFilePath().equals(f)){
+                TreeNodeWps child = (TreeNodeWps)parent.getChildAt(l);
+                cleanParentNode(child, categoryModel);
             }
         }
     }
 
     private void cleanParentNode(TreeNodeWps node, FileTreeModel model){
         TreeNode[] treeNodeTab = model.getPathToRoot(node);
-        TreeNodeWps parent = (TreeNodeWps)treeNodeTab[treeNodeTab.length-1];
-        if(parent != root && parent.isLeaf() && parent.getParent() != null){
-            model.removeNodeFromParent(parent);
-            cleanParentNode(parent, model);
+        model.removeNodeFromParent(node);
+        if(treeNodeTab.length>1) {
+            TreeNodeWps parent = (TreeNodeWps) treeNodeTab[treeNodeTab.length - 2];
+            if (parent != model.getRoot() && parent.isLeaf() && parent.getParent() != null) {
+                cleanParentNode(parent, model);
+            }
         }
     }
 
