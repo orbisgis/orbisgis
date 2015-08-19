@@ -59,6 +59,7 @@ public class ToolBoxPanel extends JPanel {
 
     private final static String UNDEFINED = "Undefined";
 
+    /** ComboBox with the different model of the tree */
     private JComboBox<String> treeNodeBox;
 
     /** Reference to the toolbox.*/
@@ -73,11 +74,14 @@ public class ToolBoxPanel extends JPanel {
 
     /** JTree */
     private FileTree tree;
-
+    /** Node that permit to add a process on double click */
     private TreeNodeWps addWps;
 
+    /** Action available in the right click popup on selecting the panel */
     private ActionCommands popupGlobalActions;
+    /** Action available in the right click popup on selecting a node */
     private ActionCommands popupNodeActions;
+    /** Action available in the right click popup on selecting a process (leaf) */
     private ActionCommands popupLeafActions;
 
     public ToolBoxPanel(ToolBox toolBox){
@@ -90,6 +94,7 @@ public class ToolBoxPanel extends JPanel {
         addWps.setCustomIcon("folder_add");
         addWps.setUserObject("Add folder");
         addWps.setcanBeLeaf(false);
+        addWps.setValid(false);
 
         TreeNodeWps fileRoot = new TreeNodeWps();
         fileRoot.setUserObject(FILE_MODEL);
@@ -111,7 +116,7 @@ public class ToolBoxPanel extends JPanel {
         tree.setRootVisible(false);
         tree.setScrollsOnExpand(true);
         tree.setCellRenderer(new CustomTreeCellRenderer(tree));
-        tree.addMouseListener(EventHandler.create(MouseListener.class, this, "onMouseClicked", ""));
+        tree.addMouseListener(EventHandler.create(MouseListener.class, this, "onMouseClicked", "", "mouseClicked"));
 
         JScrollPane treeScrollPane = new JScrollPane(tree);
         this.add(treeScrollPane, BorderLayout.CENTER);
@@ -122,12 +127,26 @@ public class ToolBoxPanel extends JPanel {
         popupGlobalActions = new ActionCommands();
         popupGlobalActions.setAccelerators(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        createPopupActions();
+        createPopupActions(toolBox);
     }
 
+    /**
+     * Returns the selected node.
+     * @return The selected node.
+     */
+    public TreeNodeWps getSelectedNode(){
+        return (TreeNodeWps)tree.getLastSelectedPathComponent();
+    }
+
+    /**
+     * Action done when the mouse is clicked.
+     * @param event Mouse event.
+     */
     public void onMouseClicked(MouseEvent event){
+        //Test if it is a right click
         if(event.getButton() == MouseEvent.BUTTON3) {
             JPopupMenu popupMenu = new JPopupMenu();
+            //find what was clicked to give to the popup the good action
             if(event.getSource().equals(tree)){
                 if(tree.getLastSelectedPathComponent() == null ||
                         tree.getLastSelectedPathComponent().equals(addWps) ||
@@ -148,24 +167,29 @@ public class ToolBoxPanel extends JPanel {
                 popupMenu.show(event.getComponent(), event.getX(), event.getY());
             }
         }
-        else if(event.getClickCount() >= 2){
+        else {
             TreeNodeWps selectedNode = (TreeNodeWps) ((FileTree)event.getSource()).getLastSelectedPathComponent();
-            if(selectedNode != null) {
-                if(selectedNode.equals(addWps)){
-                    toolBox.addLocalSource();
-                }
-                if (selectedNode.isLeaf() && selectedNode.canBeLeaf()) {
-                    selectProcess(selectedNode);
+            //if a simple click is done
+            if(event.getClickCount() == 1 && selectedNode.isLeaf() && selectedNode.canBeLeaf()) {
+                selectedNode.setValid(toolBox.checkProcess(selectedNode.getFilePath()));
+            }
+            //If a double click is done
+            if (event.getClickCount() == 2) {
+                if (selectedNode != null) {
+                    if (selectedNode.equals(addWps)) {
+                        toolBox.addLocalSource();
+                    }
+                    if (selectedNode.isValid()) {
+                        toolBox.openProcess();
+                    }
                 }
             }
         }
     }
 
-    public void selectProcess(TreeNodeWps selectedNode){
-        boolean isValidProcess = toolBox.selectProcess(selectedNode.getFilePath());
-        selectedNode.setValid(isValidProcess);
-    }
-
+    /**
+     * Action done when a model is selected in the comboBox.
+     */
     public void onModelSelected(){
         if(treeNodeBox.getSelectedItem().equals(FILE_MODEL)){
             if(((TreeNodeWps) categoryModel.getRoot()).isNodeChild(addWps)) {
@@ -185,6 +209,11 @@ public class ToolBoxPanel extends JPanel {
         }
     }
 
+    /**
+     * Adds a process in the category model.
+     * @param p Process to add.
+     * @param f Process file.
+     */
     public void addScriptInCategoryModel(Process p, File f){
         String[] categories = decodeCategories(p);
 
@@ -195,6 +224,7 @@ public class ToolBoxPanel extends JPanel {
         if(categoryNode == null){
             categoryNode = new TreeNodeWps();
             categoryNode.setUserObject(categories[0]);
+            categoryNode.setValid(false);
             root.add(categoryNode);
         }
 
@@ -203,6 +233,7 @@ public class ToolBoxPanel extends JPanel {
             if(subCategoryNode == null){
                 subCategoryNode = new TreeNodeWps();
                 subCategoryNode.setUserObject(categories[1]);
+                subCategoryNode.setValid(false);
                 categoryNode.add(subCategoryNode);
             }
 
@@ -212,35 +243,48 @@ public class ToolBoxPanel extends JPanel {
                     subSubCategoryNode = new TreeNodeWps();
                     subSubCategoryNode.setUserObject(categories[2]);
                     subCategoryNode.add(subSubCategoryNode);
+                    subSubCategoryNode.setValid(false);
                 }
-                if(!isNodeExisting(script, subSubCategoryNode)) {
+                if(!isNodeExisting(script.getFilePath(), subSubCategoryNode)) {
                     subSubCategoryNode.add(script);
                 }
             }
             else {
-                if(!isNodeExisting(script, subCategoryNode)) {
+                if(!isNodeExisting(script.getFilePath(), subCategoryNode)) {
                     subCategoryNode.add(script);
                 }
             }
         }
         else {
-            if(!isNodeExisting(script, categoryNode)) {
+            if(!isNodeExisting(script.getFilePath(), categoryNode)) {
                 categoryNode.add(script);
             }
         }
         this.refresh();
     }
 
-    private boolean isNodeExisting(TreeNodeWps node, TreeNodeWps parent){
+    /**
+     * Tests if the parent node contain a child representing the given file.
+     * @param file File to test.
+     * @param parent Parent to test.
+     * @return True if the parent contain the file.
+     */
+    private boolean isNodeExisting(File file, TreeNodeWps parent){
         boolean exist = false;
         for(int l=0; l<parent.getChildCount(); l++){
-            if(((TreeNodeWps)parent.getChildAt(l)).getFilePath().equals(node.getFilePath())){
+            if(((TreeNodeWps)parent.getChildAt(l)).getFilePath().equals(file)){
                 exist = true;
             }
         }
         return exist;
     }
 
+    /**
+     * Gets the the child node of the parent node which has the given userObject.
+     * @param nodeUserObject UserObject to test.
+     * @param parent Parent to analyse.
+     * @return The child which has the given userObject. Null if not found.
+     */
     private TreeNodeWps getSubNode(String nodeUserObject, TreeNodeWps parent){
         TreeNodeWps child = null;
         for(int i = 0; i < parent.getChildCount(); i++){
@@ -251,6 +295,11 @@ public class ToolBoxPanel extends JPanel {
         return child;
     }
 
+    /**
+     * Returns the categories of a process.
+     * @param p Process to decode.
+     * @return List of categories.
+     */
     private String[] decodeCategories(Process p){
         String[] categories = new String[3];
         categories[0] = UNDEFINED;
@@ -272,24 +321,37 @@ public class ToolBoxPanel extends JPanel {
         return categories;
     }
 
+    /**
+     * Refresh the JTree.
+     */
     public void refresh(){
-        if(root.isNodeChild(addWps))
-        root.remove(addWps);
+        if(root.isNodeChild(addWps)) {
+            root.remove(addWps);
+        }
         root.add(addWps);
         categoryModel.reload();
         fileModel.reload();
         this.revalidate();
     }
 
-    public void addLocalSource(File file, ProcessManager processManager) {
-        addScriptInFileModel(file);
-        for(File f : file.listFiles()) {
+    /**
+     * Adds a local source. Open the given directory and find all the groovy script contained.
+     * @param directory Directory to analyse.
+     * @param processManager ProcessManager.
+     */
+    public void addLocalSource(File directory, ProcessManager processManager) {
+        addScriptInFileModel(directory);
+        for(File f : directory.listFiles()) {
             if(f.getName().endsWith(".groovy")) {
                 addScriptInCategoryModel(processManager.getProcess(f), f);
             }
         }
     }
 
+    /**
+     * Adds a script in the file model.
+     * @param file Script file to add.
+     */
     private void addScriptInFileModel(File file){
         TreeNodeWps root = (TreeNodeWps) fileModel.getRoot();
 
@@ -300,7 +362,8 @@ public class ToolBoxPanel extends JPanel {
             }
         }
         TreeNodeWps source = new TreeNodeWps();
-        source.setcanBeLeaf(true);
+        source.setcanBeLeaf(false);
+        source.setValid(false);
         if(!exists){
             boolean isScript = false;
             source.setUserObject(file.getName());
@@ -319,20 +382,14 @@ public class ToolBoxPanel extends JPanel {
     }
 
     /**
-     * Refreshes the selected source.
+     * Returns all the WPS script file contained by the directory.
+     * @param directory Directory to analyse.
+     * @return The list of files.
      */
-    public void refreshSource(){
-        TreeNodeWps node = ((TreeNodeWps)tree.getLastSelectedPathComponent());
-        if(!node.isRoot() && !node.isLeaf()) {
-            root.remove(node);
-            toolBox.refreshSource(node.getFilePath());
-        }
-    }
-
-    private List<File> getAllWpsScript(File file) {
+    private List<File> getAllWpsScript(File directory) {
         List<File> scriptList = new ArrayList<>();
-        if (file.exists() && file.isDirectory()) {
-            for (File f : file.listFiles()) {
+        if (directory.exists() && directory.isDirectory()) {
+            for (File f : directory.listFiles()) {
                 if (f != null) {
                     if (f.isFile() && f.getName().endsWith(".groovy")) {
                         scriptList.add(f);
@@ -343,6 +400,9 @@ public class ToolBoxPanel extends JPanel {
         return scriptList;
     }
 
+    /**
+     * Remove the selected node.
+     */
     public void removeSelected(){
         TreeNodeWps selected = (TreeNodeWps)tree.getLastSelectedPathComponent();
         if(!selected.equals(fileModel.getRoot()) && !selected.equals(categoryModel.getRoot())){
@@ -352,6 +412,10 @@ public class ToolBoxPanel extends JPanel {
         }
     }
 
+    /**
+     * Remove the process represented by the given node from the file model.
+     * @param node Node representing the process to remove.
+     */
     private void removeNodeFromFileModel(TreeNodeWps node){
         File f = node.getFilePath();
         TreeNodeWps root = (TreeNodeWps)fileModel.getRoot();
@@ -366,6 +430,10 @@ public class ToolBoxPanel extends JPanel {
         }
     }
 
+    /**
+     * Remove the process represented by the given node from the category model.
+     * @param node Node representing the process to remove.
+     */
     private void removeNodeFromCategoryModel(TreeNodeWps node){
         File f = node.getFilePath();
         String[] categories = decodeCategories(toolBox.getProcessManager().getProcess(f));
@@ -386,6 +454,12 @@ public class ToolBoxPanel extends JPanel {
         }
     }
 
+    /**
+     * If the given parent node is empty, remove it except if it is the root of the model.
+     * Then do the same for its parent.
+     * @param node Node to check.
+     * @param model Model containing the node.
+     */
     private void cleanParentNode(TreeNodeWps node, FileTreeModel model){
         TreeNode[] treeNodeTab = model.getPathToRoot(node);
         model.removeNodeFromParent(node);
@@ -397,8 +471,11 @@ public class ToolBoxPanel extends JPanel {
         }
     }
 
-
-    private void createPopupActions() {
+    /**
+     * Creates the action for the popup.
+     * @param toolBox ToolBox.
+     */
+    private void createPopupActions(ToolBox toolBox) {
         DefaultAction addSource = new DefaultAction(
                 ADD_SOURCE,
                 "Add",
@@ -412,17 +489,17 @@ public class ToolBoxPanel extends JPanel {
                 "Run",
                 "Run a script",
                 ToolBoxIcon.getIcon("execute"),
-                EventHandler.create(ActionListener.class, this, "selectProcess"),
+                EventHandler.create(ActionListener.class, toolBox, "openProcess"),
                 null
         );
-        DefaultAction refresh_source = new DefaultAction(
+        /*DefaultAction refresh_source = new DefaultAction(
                 REFRESH_SOURCE,
                 "Refresh",
                 "Refresh a source",
                 ToolBoxIcon.getIcon("refresh"),
-                EventHandler.create(ActionListener.class, this, "refreshSource"),
+                EventHandler.create(ActionListener.class, toolBox, "refreshSource"),
                 null
-        );
+        );*/
         DefaultAction remove = new DefaultAction(
                 REMOVE,
                 "Remove",
@@ -438,12 +515,12 @@ public class ToolBoxPanel extends JPanel {
         popupLeafActions = new ActionCommands();
         popupLeafActions.addAction(addSource);
         popupLeafActions.addAction(runScript);
-        popupLeafActions.addAction(refresh_source);
+        //popupLeafActions.addAction(refresh_source);
         popupLeafActions.addAction(remove);
 
         popupNodeActions = new ActionCommands();
         popupNodeActions.addAction(addSource);
-        popupNodeActions.addAction(refresh_source);
+        //popupNodeActions.addAction(refresh_source);
         popupNodeActions.addAction(remove);
     }
 }

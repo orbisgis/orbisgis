@@ -44,13 +44,13 @@ import java.io.File;
 @Component(service = DockingPanel.class)
 public class ToolBox implements DockingPanel {
 
+    /** Docking parameters used by DockingFrames */
     private DockingPanelParameters parameters;
+    /** Process manager */
     private ProcessManager processManager;
-
+    /** Displayed JPanel */
     private ToolBoxPanel toolBoxPanel;
-
-    private Process selectedProcess;
-
+    /** Object creating the UI corresponding to the data */
     private DataUIManager dataUIManager;
 
     @Activate
@@ -71,6 +71,10 @@ public class ToolBox implements DockingPanel {
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
     }
 
+    /**
+     * Returns the process manager.
+     * @return The process manager.
+     */
     public ProcessManager getProcessManager(){
         return processManager;
     }
@@ -85,6 +89,9 @@ public class ToolBox implements DockingPanel {
         return toolBoxPanel;
     }
 
+    /**
+     * Adds a local folder as a script source.
+     */
     public void addLocalSource(){
         OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBoxPanel.AddSource", "Add a source");
 
@@ -96,33 +103,38 @@ public class ToolBox implements DockingPanel {
         }
     }
 
-    public void refreshSource(File file){
-        toolBoxPanel.addLocalSource(file, processManager);
-    }
-
-    public boolean selectProcess(File f){
-        if(f == null){
-            selectedProcess = null;
-            return false;
-        }
-        selectedProcess = processManager.getProcess(f);
-
-        if(selectedProcess == null){
-            return false;
-        }
-
-        ProcessFrame panel = new ProcessFrame(selectedProcess, this);
+    /**
+     * Open the process window for the selected process
+     */
+    public void openProcess(){
+        File file = toolBoxPanel.getSelectedNode().getFilePath();
+        ProcessFrame panel = new ProcessFrame(processManager.getProcess(file), this);
         panel.setVisible(true);
         panel.pack();
-        return true;
     }
 
+    /**
+     * Verify if the given file is a well formed script.
+     * @param f File to check.
+     * @return True if the file is well formed, false otherwise.
+     */
+    public boolean checkProcess(File f){
+        return (processManager.getProcess(f) != null);
+    }
+
+    /**
+     * Remove the selected process in the tree.
+     */
     public void removeSelected(){
-        processManager.removeProcess(selectedProcess);
-        selectedProcess = null;
+        File file = toolBoxPanel.getSelectedNode().getFilePath();
+        processManager.removeProcess(processManager.getProcess(file));
         toolBoxPanel.removeSelected();
     }
 
+    /**
+     * Returns the DataUIManager.
+     * @return The DataUIManager.
+     */
     public DataUIManager getDataUIManager(){
         return dataUIManager;
     }

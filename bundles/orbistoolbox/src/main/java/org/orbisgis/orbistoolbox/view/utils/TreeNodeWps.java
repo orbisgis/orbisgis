@@ -47,12 +47,7 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         }
 
         if(!canBeLeaf){
-            if (isValid) {
-                return ToolBoxIcon.getIcon("folder");
-            }
-            else {
                 return ToolBoxIcon.getIcon("remove");
-            }
         }
         else {
             if (isRoot) {
@@ -123,5 +118,9 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
 
     public void setCustomIcon(String customIconName){
         this.customIconName = customIconName;
+    }
+
+    public boolean isValid(){
+        return isValid;
     }
 }

@@ -47,9 +47,9 @@ import java.util.Map;
 
 public class ProcessFrame extends JFrame {
 
-    /** Map of input data (URI of the corresponding input)*/
+    /** Map of input data (URI of the corresponding input) */
     private Map<URI, Object> inputDataMap = new HashMap<>();
-    /** Map of output data (URI of the corresponding output)*/
+    /** Map of output data (URI of the corresponding output) */
     private Map<URI, Object> outputDataMap = new HashMap<>();
 
     /** Toolbox */
@@ -57,16 +57,21 @@ public class ProcessFrame extends JFrame {
     /** Process represented */
     private Process process;
 
+    /** TabbedPane containing the configuration panel, the info panel and the execution panel */
     private JTabbedPane tabbedPane;
-    private List<JLabel> labelList;
+    /** List of the label containing the outputs */
+    private List<JLabel> outputLabelList;
+    /** DataUIManager used to create the UI corresponding the the data */
     private DataUIManager dataUIManager;
+    /** Label containing the state of the process (running, completed or idle) */
+    private JLabel stateLabel;
 
-    private JLabel statusLabel;
-
-
+    /** String state for the process */
     private static final String RUNNING = "Running";
+    /** String state for the process */
     private static final String COMPLETED = "Completed";
-    private static final String IDDLE = "Iddle";
+    /** String state for the process */
+    private static final String IDLE = "Idle";
 
     /**
      * Main constructor.
@@ -76,18 +81,20 @@ public class ProcessFrame extends JFrame {
     public ProcessFrame(Process process, ToolBox toolBox) {
         this.setLayout(new BorderLayout());
 
-        labelList = new ArrayList<>();
+        outputLabelList = new ArrayList<>();
         dataUIManager = toolBox.getDataUIManager();
 
         this.toolBox = toolBox;
         this.process = process;
 
+        //Adds to the tabbedPane the 3 panels
         tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Configuration", buildUIConf(process, inputDataMap));
         tabbedPane.addTab("Information", buildUIInfo(process));
         tabbedPane.addTab("Execution", buildUIExec(process));
         this.add(tabbedPane, BorderLayout.CENTER);
 
+        //Create and add the run button and the cancel button
         JPanel buttons = new JPanel(new MigLayout());
         JButton runButton = new JButton("run");
         runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
@@ -110,13 +117,14 @@ public class ProcessFrame extends JFrame {
      * Run the process.
      */
     public void runProcess(){
-        if(!inputDataMap.isEmpty()) {
+        //Check that all the data field were filled.
+        if(inputDataMap.size() == process.getInput().size()) {
+            //Select the execution tab
             tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
-            if(process != null) {
-                ExecutionThread executionThread = new ExecutionThread(process, inputDataMap, toolBox, this);
-                statusLabel.setText(RUNNING);
-                executionThread.start();
-            }
+            //Run the process in a separated thread
+            ExecutionThread executionThread = new ExecutionThread(process, inputDataMap, toolBox, this);
+            stateLabel.setText(RUNNING);
+            executionThread.start();
         }
     }
 
@@ -135,7 +143,7 @@ public class ProcessFrame extends JFrame {
      */
     public JComponent buildUIConf(Process p, Map<URI, Object> dataMap){
         JPanel panel = new JPanel(new MigLayout("fill"));
-
+        //For each input, display its title, its abstract and gets its UI from the dataUIManager
         for(Input i : p.getInput()){
             JPanel inputPanel = new JPanel(new MigLayout("fill"));
             inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
@@ -217,6 +225,11 @@ public class ProcessFrame extends JFrame {
         return panel;
     }
 
+    /**
+     * Read the given DataDescription and try to find an icon corresponding to the type represented.
+     * @param dataDescription DataDescription containing the data type.
+     * @return An ImageIcon corresponding to the type.
+     */
     private ImageIcon getIconFromData(DataDescription dataDescription) {
         if(dataDescription instanceof LiteralData) {
             LiteralData ld = (LiteralData)dataDescription;
@@ -258,8 +271,8 @@ public class ProcessFrame extends JFrame {
 
         JPanel statusPanel = new JPanel(new MigLayout());
         statusPanel.setBorder(BorderFactory.createTitledBorder("Status :"));
-        statusLabel = new JLabel(IDDLE);
-        statusPanel.add(statusLabel);
+        stateLabel = new JLabel(IDLE);
+        statusPanel.add(stateLabel);
 
         JPanel resultPanel = new JPanel(new MigLayout());
         resultPanel.setBorder(BorderFactory.createTitledBorder("Result :"));
@@ -267,7 +280,7 @@ public class ProcessFrame extends JFrame {
             JLabel title = new JLabel(o.getTitle()+" : ");
             JLabel result = new JLabel();
             result.putClientProperty("URI", o.getIdentifier());
-            labelList.add(result);
+            outputLabelList.add(result);
             resultPanel.add(title);
             resultPanel.add(result, "wrap");
         }
@@ -279,11 +292,15 @@ public class ProcessFrame extends JFrame {
         return panel;
     }
 
+    /**
+     * Sets the outputs label with the outputs results.
+     * @param outputs Outputs results.
+     */
     public void setOutputs(List<String> outputs) {
         for (int i=0; i<outputs.size(); i++) {
-            labelList.get(i).setText(outputs.get(i));
-            outputDataMap.put((URI)labelList.get(i).getClientProperty("URI"), outputs.get(i));
+            outputLabelList.get(i).setText(outputs.get(i));
+            outputDataMap.put((URI) outputLabelList.get(i).getClientProperty("URI"), outputs.get(i));
         }
-        statusLabel.setText(COMPLETED);
+        stateLabel.setText(COMPLETED);
     }
 }
