@@ -24,6 +24,7 @@ import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ProcessFrame;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
+import org.orbisgis.orbistoolbox.view.utils.ProcessUIData;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
@@ -36,6 +37,8 @@ import org.osgi.service.component.annotations.Component;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Sylvain PALOMINOS
@@ -53,11 +56,14 @@ public class ToolBox implements DockingPanel {
     /** Object creating the UI corresponding to the data */
     private DataUIManager dataUIManager;
 
+    private List<ProcessUIData> processUIDataList;
+
     @Activate
     public void init(){
         toolBoxPanel = new ToolBoxPanel(this);
         processManager = new ProcessManager();
         dataUIManager = new DataUIManager();
+        processUIDataList = new ArrayList<>();
 
         ActionCommands dockingActions = new ActionCommands();
 
@@ -92,25 +98,41 @@ public class ToolBox implements DockingPanel {
     /**
      * Adds a local folder as a script source.
      */
-    public void addLocalSource(){
+    public void addNewLocalSource(){
         OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBoxPanel.AddSource", "Add a source");
 
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFolderPanel)){
-            File file = openFolderPanel.getSelectedFile();
-            processManager.addLocalSource(file.getAbsolutePath());
-            toolBoxPanel.addLocalSource(file, processManager);
+            addLocalSource(openFolderPanel.getSelectedFile());
         }
+    }
+
+    public void addLocalSource(File file){
+        processManager.addLocalSource(file.getAbsolutePath());
+        toolBoxPanel.addLocalSource(file, processManager);
     }
 
     /**
      * Open the process window for the selected process
      */
     public void openProcess(){
-        File file = toolBoxPanel.getSelectedNode().getFilePath();
-        ProcessFrame panel = new ProcessFrame(processManager.getProcess(file), this);
+        Process process = processManager.getProcess(toolBoxPanel.getSelectedNode().getFilePath());
+        ProcessUIData processUIData = null;
+        for(ProcessUIData puid : processUIDataList){
+            if(puid.getProcess().equals(process)){
+                processUIData = puid;
+            }
+        }
+        ProcessFrame panel;
+        if(processUIData != null){
+            panel = new ProcessFrame(processUIData, null);
+        }
+        else{
+            panel = new ProcessFrame(process, this);
+        }
         panel.setVisible(true);
         panel.pack();
+        processUIDataList.add(panel.getProcessUIData());
     }
 
     /**
@@ -125,10 +147,8 @@ public class ToolBox implements DockingPanel {
     /**
      * Remove the selected process in the tree.
      */
-    public void removeSelected(){
-        File file = toolBoxPanel.getSelectedNode().getFilePath();
+    public void removeProcess(File file){
         processManager.removeProcess(processManager.getProcess(file));
-        toolBoxPanel.removeSelected();
     }
 
     /**
@@ -137,5 +157,9 @@ public class ToolBox implements DockingPanel {
      */
     public DataUIManager getDataUIManager(){
         return dataUIManager;
+    }
+
+    public void validateProcessExecution(ProcessUIData processUIData){
+        processUIDataList.remove(processUIData);
     }
 }

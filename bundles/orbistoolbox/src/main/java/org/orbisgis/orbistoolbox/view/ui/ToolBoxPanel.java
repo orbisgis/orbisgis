@@ -177,9 +177,9 @@ public class ToolBoxPanel extends JPanel {
             if (event.getClickCount() == 2) {
                 if (selectedNode != null) {
                     if (selectedNode.equals(addWps)) {
-                        toolBox.addLocalSource();
+                        toolBox.addNewLocalSource();
                     }
-                    if (selectedNode.isValid()) {
+                    if (selectedNode.isValid() && selectedNode.isLeaf()) {
                         toolBox.openProcess();
                     }
                 }
@@ -260,7 +260,7 @@ public class ToolBoxPanel extends JPanel {
                 categoryNode.add(script);
             }
         }
-        this.refresh();
+        this.reload();
     }
 
     /**
@@ -322,9 +322,9 @@ public class ToolBoxPanel extends JPanel {
     }
 
     /**
-     * Refresh the JTree.
+     * Reload the JTree.
      */
-    public void refresh(){
+    public void reload(){
         if(root.isNodeChild(addWps)) {
             root.remove(addWps);
         }
@@ -378,7 +378,7 @@ public class ToolBoxPanel extends JPanel {
             }
             source.setValid(isScript);
         }
-        this.refresh();
+        this.reload();
     }
 
     /**
@@ -405,11 +405,15 @@ public class ToolBoxPanel extends JPanel {
      */
     public void removeSelected(){
         TreeNodeWps selected = (TreeNodeWps)tree.getLastSelectedPathComponent();
-        if(!selected.equals(fileModel.getRoot()) && !selected.equals(categoryModel.getRoot())){
-            removeNodeFromCategoryModel(selected);
-            removeNodeFromFileModel(selected);
-            this.refresh();
+    }
+
+    public void remove(TreeNodeWps node){
+        if(!node.equals(fileModel.getRoot()) && !node.equals(categoryModel.getRoot())){
+            removeNodeFromCategoryModel(node);
+            removeNodeFromFileModel(node);
+            this.reload();
         }
+        toolBox.removeProcess(node.getFilePath());
     }
 
     /**
@@ -471,6 +475,36 @@ public class ToolBoxPanel extends JPanel {
         }
     }
 
+    public void refresh(){
+        TreeNodeWps node = (TreeNodeWps) tree.getLastSelectedPathComponent();
+        if(node.isLeaf()){
+            node.setValid(toolBox.checkProcess(node.getFilePath()));
+        }
+        if(tree.getModel().equals(categoryModel)){
+            for(TreeNodeWps child : getAllLeaf(node)){
+                child.setValid(toolBox.checkProcess(child.getFilePath()));
+            }
+        }
+        if(tree.getModel().equals(fileModel)){
+            this.remove(node);
+            toolBox.addLocalSource(node.getFilePath());
+        }
+    }
+
+    private List<TreeNodeWps> getAllLeaf(TreeNodeWps node){
+        List<TreeNodeWps> nodeList = new ArrayList<>();
+        for(int i=0; i<node.getChildCount(); i++){
+            TreeNodeWps child = (TreeNodeWps) node.getChildAt(i);
+            if(child.isLeaf()){
+                nodeList.add(child);
+            }
+            else{
+                nodeList.addAll(getAllLeaf(child));
+            }
+        }
+        return nodeList;
+    }
+
     /**
      * Creates the action for the popup.
      * @param toolBox ToolBox.
@@ -481,7 +515,7 @@ public class ToolBoxPanel extends JPanel {
                 "Add",
                 "Add a local source",
                 ToolBoxIcon.getIcon("folder_add"),
-                EventHandler.create(ActionListener.class, toolBox, "addLocalSource"),
+                EventHandler.create(ActionListener.class, toolBox, "addNewLocalSource"),
                 null
         );
         DefaultAction runScript = new DefaultAction(
@@ -492,20 +526,20 @@ public class ToolBoxPanel extends JPanel {
                 EventHandler.create(ActionListener.class, toolBox, "openProcess"),
                 null
         );
-        /*DefaultAction refresh_source = new DefaultAction(
+        DefaultAction refresh_source = new DefaultAction(
                 REFRESH_SOURCE,
                 "Refresh",
                 "Refresh a source",
                 ToolBoxIcon.getIcon("refresh"),
-                EventHandler.create(ActionListener.class, toolBox, "refreshSource"),
+                EventHandler.create(ActionListener.class, this, "refresh"),
                 null
-        );*/
+        );
         DefaultAction remove = new DefaultAction(
                 REMOVE,
                 "Remove",
                 "Remove a source or a script",
                 ToolBoxIcon.getIcon("remove"),
-                EventHandler.create(ActionListener.class, toolBox, "removeSelected"),
+                EventHandler.create(ActionListener.class, this, "removeSelected"),
                 null
         );
 
@@ -515,12 +549,12 @@ public class ToolBoxPanel extends JPanel {
         popupLeafActions = new ActionCommands();
         popupLeafActions.addAction(addSource);
         popupLeafActions.addAction(runScript);
-        //popupLeafActions.addAction(refresh_source);
+        popupLeafActions.addAction(refresh_source);
         popupLeafActions.addAction(remove);
 
         popupNodeActions = new ActionCommands();
         popupNodeActions.addAction(addSource);
-        //popupNodeActions.addAction(refresh_source);
+        popupNodeActions.addAction(refresh_source);
         popupNodeActions.addAction(remove);
     }
 }
