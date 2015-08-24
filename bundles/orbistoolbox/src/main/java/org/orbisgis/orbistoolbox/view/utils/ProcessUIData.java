@@ -23,7 +23,6 @@ import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionThread;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.ProcessFrame;
-import org.orbisgis.orbistoolbox.model.Output;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -51,8 +50,9 @@ public class ProcessUIData {
     public ProcessUIData(ToolBox toolBox, Process process){
         this.toolBox = toolBox;
         this.process = process;
+        this.outputDataMap = new HashMap<>();
+        this.inputDataMap = new HashMap<>();
     }
-
 
     public Map<URI, Object> getInputDataMap() {
         return inputDataMap;
@@ -123,7 +123,6 @@ public class ProcessUIData {
     }
 
     public void setOutputs(List<String> outputList){
-        System.out.println(outputList);
         for(int i = 0; i<process.getOutput().size(); i++){
             outputDataMap.put(process.getOutput().get(i).getIdentifier(), outputList.get(i));
         }

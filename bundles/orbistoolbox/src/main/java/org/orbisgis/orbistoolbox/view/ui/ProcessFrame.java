@@ -71,22 +71,23 @@ public class ProcessFrame extends JFrame {
         this.setLayout(new BorderLayout());
 
         processUIData = new ProcessUIData(toolBox, process);
-        processUIData.setInputDataMap(new HashMap<URI, Object>());
-        processUIData.setOutputDataMap(new HashMap<URI, Object>());
         processUIData.setState(ProcessUIData.ProcessState.IDLE);
         processUIData.setProcessFrame(this);
 
         outputLabelList = new ArrayList<>();
         dataUIManager = toolBox.getDataUIManager();
 
-        this.toolBox = toolBox;
-
         buildUI(processUIData);
     }
 
     public ProcessFrame(ProcessUIData processUIData, ToolBox toolBox){
+        this.setLayout(new BorderLayout());
         this.processUIData = processUIData;
-        this.toolBox = toolBox;
+
+        outputLabelList = new ArrayList<>();
+        dataUIManager = toolBox.getDataUIManager();
+
+        buildUI(processUIData);
     }
 
     private void buildUI(ProcessUIData processUIData){
@@ -102,7 +103,7 @@ public class ProcessFrame extends JFrame {
         JButton runButton = new JButton("run");
         runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
         buttons.add(runButton);
-        JButton cancelButton = new JButton("cancel");
+        JButton cancelButton = new JButton("close");
         cancelButton.addActionListener(EventHandler.create(ActionListener.class, this, "close"));
         buttons.add(cancelButton);
         this.add(buttons, BorderLayout.PAGE_END);

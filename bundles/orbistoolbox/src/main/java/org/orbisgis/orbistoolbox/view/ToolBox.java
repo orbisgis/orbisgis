@@ -125,7 +125,7 @@ public class ToolBox implements DockingPanel {
         }
         ProcessFrame panel;
         if(processUIData != null){
-            panel = new ProcessFrame(processUIData, null);
+            panel = new ProcessFrame(processUIData, this);
         }
         else{
             panel = new ProcessFrame(process, this);

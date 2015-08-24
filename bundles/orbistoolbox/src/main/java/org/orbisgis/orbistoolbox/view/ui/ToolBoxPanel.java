@@ -169,18 +169,20 @@ public class ToolBoxPanel extends JPanel {
         }
         else {
             TreeNodeWps selectedNode = (TreeNodeWps) ((FileTree)event.getSource()).getLastSelectedPathComponent();
-            //if a simple click is done
-            if(event.getClickCount() == 1 && selectedNode.isLeaf() && selectedNode.canBeLeaf()) {
-                selectedNode.setValid(toolBox.checkProcess(selectedNode.getFilePath()));
-            }
-            //If a double click is done
-            if (event.getClickCount() == 2) {
-                if (selectedNode != null) {
-                    if (selectedNode.equals(addWps)) {
-                        toolBox.addNewLocalSource();
-                    }
-                    if (selectedNode.isValid() && selectedNode.isLeaf()) {
-                        toolBox.openProcess();
+            if(selectedNode != null) {
+                //if a simple click is done
+                if (event.getClickCount() == 1 && selectedNode.isLeaf() && selectedNode.canBeLeaf()) {
+                    selectedNode.setValid(toolBox.checkProcess(selectedNode.getFilePath()));
+                }
+                //If a double click is done
+                if (event.getClickCount() == 2) {
+                    if (selectedNode != null) {
+                        if (selectedNode.equals(addWps)) {
+                            toolBox.addNewLocalSource();
+                        }
+                        if (selectedNode.isValid() && selectedNode.isLeaf()) {
+                            toolBox.openProcess();
+                        }
                     }
                 }
             }
