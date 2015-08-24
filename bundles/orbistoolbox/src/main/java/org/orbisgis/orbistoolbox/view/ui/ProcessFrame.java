@@ -70,12 +70,13 @@ public class ProcessFrame extends JFrame {
     public ProcessFrame(Process process, ToolBox toolBox) {
         this.setLayout(new BorderLayout());
 
+        outputLabelList = new ArrayList<>();
+        dataUIManager = toolBox.getDataUIManager();
+
         processUIData = new ProcessUIData(toolBox, process);
         processUIData.setState(ProcessUIData.ProcessState.IDLE);
         processUIData.setProcessFrame(this);
-
-        outputLabelList = new ArrayList<>();
-        dataUIManager = toolBox.getDataUIManager();
+        processUIData.setInputDataMap(dataUIManager.getInputDefaultValues(process));
 
         buildUI(processUIData);
     }

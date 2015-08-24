@@ -20,11 +20,9 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.orbistoolbox.model.DataType;
-import org.orbisgis.orbistoolbox.model.Input;
-import org.orbisgis.orbistoolbox.model.LiteralData;
+import org.orbisgis.orbistoolbox.model.*;
+import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.model.LiteralDataDomain;
-import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -35,6 +33,9 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -44,6 +45,32 @@ import java.util.Map;
  **/
 
 public class LiteralDataUI implements DataUI {
+
+    @Override
+    public Map<URI, Object> getDefaultValue(Input input) {
+        Map<URI, Object> map = new HashMap<>();
+        List<Input> inputList = new ArrayList<>();
+
+        if(input.getInput() != null){
+            inputList = input.getInput();
+        }
+        inputList.add(input);
+
+        for(Input i : inputList) {
+            if (i.getDataDescription() instanceof LiteralData) {
+                for (LiteralDataDomain ldda : ((LiteralData) i.getDataDescription()).getLiteralDomainType()) {
+                    if (ldda.isDefaultDomain()) {
+                        if (ldda.getDefaultValue() instanceof Range) {
+                            map.put(i.getIdentifier(), ((Range) ldda.getDefaultValue()).getMinimumValue());
+                        } else if (ldda.getDefaultValue() instanceof Value) {
+                            map.put(i.getIdentifier(), ((Value) ldda.getDefaultValue()).getValue());
+                        }
+                    }
+                }
+            }
+        }
+        return map;
+    }
 
     @Override
     public JComponent createUI(Input input, Map<URI, Object> dataMap) {

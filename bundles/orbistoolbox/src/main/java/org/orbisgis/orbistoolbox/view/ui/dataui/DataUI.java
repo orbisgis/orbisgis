@@ -20,6 +20,7 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import org.orbisgis.orbistoolbox.model.Input;
+import org.orbisgis.orbistoolbox.model.Process;
 
 import javax.swing.*;
 import java.net.URI;
@@ -40,4 +41,11 @@ public interface DataUI {
      * @return JComponent containing the ui.
      */
     public JComponent createUI(Input input, Map<URI, Object> dataMap);
+
+    /**
+     * Returns the map of default input value if it exists.
+     * @param input Input to analyse.
+     * @return The default input map.
+     */
+    public Map<URI, Object> getDefaultValue(Input input);
 }

@@ -19,9 +19,10 @@
 
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
-import org.orbisgis.orbistoolbox.model.DataDescription;
-import org.orbisgis.orbistoolbox.model.LiteralData;
+import org.orbisgis.orbistoolbox.model.*;
+import org.orbisgis.orbistoolbox.model.Process;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,5 +61,13 @@ public class DataUIManager {
      */
     public DataUI getDataUI(Class<? extends DataDescription> clazz) {
         return dataUIMap.get(clazz);
+    }
+
+    public Map<URI, Object> getInputDefaultValues(Process process){
+        Map<URI, Object> map = new HashMap<>();
+        for(Input input : process.getInput()) {
+            map.putAll(getDataUI(input.getDataDescription().getClass()).getDefaultValue(input));
+        }
+        return map;
     }
 }

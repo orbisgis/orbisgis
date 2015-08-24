@@ -134,6 +134,8 @@ public class ObjectAnnotationConverter {
                     defaultValue
             );
 
+            literalDataDomain.setDefaultDomain(literalDataDomainAttribute.isDefaultDomain());
+
             return literalDataDomain;
         } catch (MalformedScriptException e) {
             e.printStackTrace();
