@@ -20,14 +20,13 @@
 package org.orbisgis.orbistoolbox.view.ui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionThread;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
-import org.orbisgis.orbistoolbox.view.utils.ProcessUIData;
+import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
 import javax.swing.*;
@@ -35,9 +34,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,55 +45,65 @@ import java.util.Map;
 
 public class ProcessFrame extends JFrame {
 
-    /** Toolbox */
-    private ToolBox toolBox;
-
     /** TabbedPane containing the configuration panel, the info panel and the execution panel */
     private JTabbedPane tabbedPane;
-    /** List of the label containing the outputs */
-    private List<JLabel> outputLabelList;
+    /** Map of the label containing the outputs values and their identifier*/
+    private Map<URI, JLabel> outputURILabelMap;
     /** DataUIManager used to create the UI corresponding the the data */
     private DataUIManager dataUIManager;
     /** Label containing the state of the process (running, completed or idle) */
     private JLabel stateLabel;
 
-    private ProcessUIData processUIData;
+    private ProcessExecutionData processExecutionData;
 
     /**
-     * Main constructor.
+     * Main constructor with no ProcessExecutionData.
      * @param process Process represented.
      * @param toolBox Toolbox
      */
     public ProcessFrame(Process process, ToolBox toolBox) {
         this.setLayout(new BorderLayout());
 
-        outputLabelList = new ArrayList<>();
+        outputURILabelMap = new HashMap<>();
         dataUIManager = toolBox.getDataUIManager();
 
-        processUIData = new ProcessUIData(toolBox, process);
-        processUIData.setState(ProcessUIData.ProcessState.IDLE);
-        processUIData.setProcessFrame(this);
-        processUIData.setInputDataMap(dataUIManager.getInputDefaultValues(process));
+        processExecutionData = new ProcessExecutionData(toolBox, process);
+        processExecutionData.setState(ProcessExecutionData.ProcessState.IDLE);
+        processExecutionData.setProcessFrame(this);
+        processExecutionData.setInputDataMap(dataUIManager.getInputDefaultValues(process));
 
-        buildUI(processUIData);
+        buildUI();
     }
 
-    public ProcessFrame(ProcessUIData processUIData, ToolBox toolBox){
+    /**
+     * Constructor with an existing processUIData.
+     * @param processExecutionData Data for the UI
+     * @param toolBox ToolBox
+     */
+    public ProcessFrame(ProcessExecutionData processExecutionData, ToolBox toolBox){
         this.setLayout(new BorderLayout());
-        this.processUIData = processUIData;
+        this.processExecutionData = processExecutionData;
 
-        outputLabelList = new ArrayList<>();
+        outputURILabelMap = new HashMap<>();
         dataUIManager = toolBox.getDataUIManager();
 
-        buildUI(processUIData);
+        buildUI();
+
+        processExecutionData.setProcessFrame(this);
+        if(processExecutionData.getState().equals(ProcessExecutionData.ProcessState.COMPLETED)){
+            processExecutionData.validateProcessExecution();
+        }
     }
 
-    private void buildUI(ProcessUIData processUIData){
+    /**
+     * Build the UI of the ProcessFrame with the data of the processUIData.
+     */
+    private void buildUI(){
         //Adds to the tabbedPane the 3 panels
         tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Configuration", buildUIConf(processUIData));
-        tabbedPane.addTab("Information", buildUIInfo(processUIData));
-        tabbedPane.addTab("Execution", buildUIExec(processUIData));
+        tabbedPane.addTab("Configuration", buildUIConf(processExecutionData));
+        tabbedPane.addTab("Information", buildUIInfo(processExecutionData));
+        tabbedPane.addTab("Execution", buildUIExec(processExecutionData));
         this.add(tabbedPane, BorderLayout.CENTER);
 
         //Create and add the run button and the cancel button
@@ -114,8 +121,8 @@ public class ProcessFrame extends JFrame {
      * Returns the output data.
      * @return The output data.
      */
-    public ProcessUIData getProcessUIData(){
-        return processUIData;
+    public ProcessExecutionData getProcessExecutionData(){
+        return processExecutionData;
     }
 
     /**
@@ -124,26 +131,26 @@ public class ProcessFrame extends JFrame {
     public void runProcess(){
         //Select the execution tab
         tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
-        processUIData.runProcess();
+        processExecutionData.runProcess();
     }
 
     /**
      * Close this windows.
      */
     public void close(){
-        processUIData.setProcessFrame(null);
+        processExecutionData.setProcessFrame(null);
         this.dispose();
     }
 
     /**
      * Build the UI of the given process according to the given data.
-     * @param processUIData Process data.
+     * @param processExecutionData Process data.
      * @return The UI for the configuration of the process.
      */
-    public JComponent buildUIConf(ProcessUIData processUIData){
+    public JComponent buildUIConf(ProcessExecutionData processExecutionData){
         JPanel panel = new JPanel(new MigLayout("fill"));
         //For each input, display its title, its abstract and gets its UI from the dataUIManager
-        for(Input i : processUIData.getProcess().getInput()){
+        for(Input i : processExecutionData.getProcess().getInput()){
             JPanel inputPanel = new JPanel(new MigLayout("fill"));
             inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
             JLabel inputAbstrac = new JLabel(i.getAbstrac());
@@ -151,7 +158,7 @@ public class ProcessFrame extends JFrame {
             inputPanel.add(inputAbstrac, "wrap");
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getClass());
             if(dataUI!=null) {
-                inputPanel.add(dataUI.createUI(i, processUIData.getInputDataMap()), "wrap");
+                inputPanel.add(dataUI.createUI(i, processExecutionData.getInputDataMap()), "wrap");
             }
             panel.add(inputPanel, "growx, wrap");
         }
@@ -161,12 +168,12 @@ public class ProcessFrame extends JFrame {
 
     /**
      * Build the UI of the given process according to the given data.
-     * @param processUIData Process data.
+     * @param processExecutionData Process data.
      * @return The UI for the configuration of the process.
      */
-    public JComponent buildUIInfo(ProcessUIData processUIData){
+    public JComponent buildUIInfo(ProcessExecutionData processExecutionData){
         JPanel panel = new JPanel(new MigLayout("fill"));
-        Process p  =processUIData.getProcess();
+        Process p  = processExecutionData.getProcess();
         //Process info
         JLabel titleContentLabel = new JLabel(p.getTitle());
         JLabel abstracContentLabel = new JLabel();
@@ -258,10 +265,10 @@ public class ProcessFrame extends JFrame {
 
     /**
      * Build the UI of the given process according to the given data.
-     * @param processUIData Process data.
+     * @param processExecutionData Process data.
      * @return The UI for the configuration of the process.
      */
-    public JComponent buildUIExec(ProcessUIData processUIData){
+    public JComponent buildUIExec(ProcessExecutionData processExecutionData){
         JPanel panel = new JPanel(new MigLayout("fill"));
 
         JPanel executorPanel = new JPanel(new MigLayout());
@@ -270,16 +277,16 @@ public class ProcessFrame extends JFrame {
 
         JPanel statusPanel = new JPanel(new MigLayout());
         statusPanel.setBorder(BorderFactory.createTitledBorder("Status :"));
-        stateLabel = new JLabel(ProcessUIData.ProcessState.IDLE.getValue());
+        stateLabel = new JLabel(processExecutionData.getState().getValue());
         statusPanel.add(stateLabel);
 
         JPanel resultPanel = new JPanel(new MigLayout());
         resultPanel.setBorder(BorderFactory.createTitledBorder("Result :"));
-        for(Output o : processUIData.getProcess().getOutput()) {
+        for(Output o : processExecutionData.getProcess().getOutput()) {
             JLabel title = new JLabel(o.getTitle()+" : ");
             JLabel result = new JLabel();
             result.putClientProperty("URI", o.getIdentifier());
-            outputLabelList.add(result);
+            outputURILabelMap.put(o.getIdentifier(), result);
             resultPanel.add(title);
             resultPanel.add(result, "wrap");
         }
@@ -295,9 +302,9 @@ public class ProcessFrame extends JFrame {
      * Sets the outputs label with the outputs results.
      * @param outputs Outputs results.
      */
-    public void setOutputs(List<String> outputs, String state) {
-        for (int i=0; i<outputs.size(); i++) {
-            outputLabelList.get(i).setText(outputs.get(i));
+    public void setOutputs(Map<URI, Object> outputs, String state) {
+        for (Map.Entry<URI, Object> entry : outputs.entrySet()) {
+            outputURILabelMap.get(entry.getKey()).setText(entry.getValue().toString());
         }
         stateLabel.setText(state);
     }

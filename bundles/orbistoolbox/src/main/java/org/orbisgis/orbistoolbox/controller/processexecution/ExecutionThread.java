@@ -22,14 +22,13 @@ package org.orbisgis.orbistoolbox.controller.processexecution;
 import groovy.lang.GroovyObject;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.view.ui.ProcessFrame;
-import org.orbisgis.orbistoolbox.view.utils.ProcessUIData;
+import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
+import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -41,17 +40,17 @@ public class ExecutionThread extends Thread{
     private Process process;
     private Map<URI, Object> dataMap;
     private ToolBox toolBox;
-    private ProcessUIData processUIData;
+    private ProcessExecutionData processExecutionData;
 
-    private List<String> listOutput;
+    private Map<URI, Object> listOutput;
 
-    public ExecutionThread(Process process, Map<URI, Object> dataMap, ToolBox toolBox, ProcessUIData processUIData){
+    public ExecutionThread(Process process, Map<URI, Object> dataMap, ToolBox toolBox, ProcessExecutionData processExecutionData){
         this.process = process;
         this.dataMap = dataMap;
         this.toolBox = toolBox;
-        this.processUIData = processUIData;
+        this.processExecutionData = processExecutionData;
 
-        listOutput = new ArrayList<>();
+        listOutput = new HashMap<>();
     }
 
     @Override
@@ -61,12 +60,13 @@ public class ExecutionThread extends Thread{
             if(field.getAnnotation(OutputAttribute.class) != null) {
                 try {
                     field.setAccessible(true);
-                    listOutput.add(field.get(groovyObject).toString());
+                    URI uri = URI.create(field.getAnnotation(DescriptionTypeAttribute.class).identifier());
+                    listOutput.put(uri, field.get(groovyObject));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
             }
         }
-        processUIData.setOutputs(listOutput);
+        processExecutionData.endProcess(listOutput);
     }
 }

@@ -24,7 +24,7 @@ import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ProcessFrame;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
-import org.orbisgis.orbistoolbox.view.utils.ProcessUIData;
+import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
@@ -56,14 +56,14 @@ public class ToolBox implements DockingPanel {
     /** Object creating the UI corresponding to the data */
     private DataUIManager dataUIManager;
 
-    private List<ProcessUIData> processUIDataList;
+    private List<ProcessExecutionData> processExecutionDataList;
 
     @Activate
     public void init(){
         toolBoxPanel = new ToolBoxPanel(this);
         processManager = new ProcessManager();
         dataUIManager = new DataUIManager();
-        processUIDataList = new ArrayList<>();
+        processExecutionDataList = new ArrayList<>();
 
         ActionCommands dockingActions = new ActionCommands();
 
@@ -117,22 +117,22 @@ public class ToolBox implements DockingPanel {
      */
     public void openProcess(){
         Process process = processManager.getProcess(toolBoxPanel.getSelectedNode().getFilePath());
-        ProcessUIData processUIData = null;
-        for(ProcessUIData puid : processUIDataList){
+        ProcessExecutionData processExecutionData = null;
+        for(ProcessExecutionData puid : processExecutionDataList){
             if(puid.getProcess().equals(process)){
-                processUIData = puid;
+                processExecutionData = puid;
             }
         }
         ProcessFrame panel;
-        if(processUIData != null){
-            panel = new ProcessFrame(processUIData, this);
+        if(processExecutionData != null){
+            panel = new ProcessFrame(processExecutionData, this);
         }
         else{
             panel = new ProcessFrame(process, this);
         }
         panel.setVisible(true);
         panel.pack();
-        processUIDataList.add(panel.getProcessUIData());
+        processExecutionDataList.add(panel.getProcessExecutionData());
     }
 
     /**
@@ -159,7 +159,7 @@ public class ToolBox implements DockingPanel {
         return dataUIManager;
     }
 
-    public void validateProcessExecution(ProcessUIData processUIData){
-        processUIDataList.remove(processUIData);
+    public void validateProcessExecution(ProcessExecutionData processExecutionData){
+        processExecutionDataList.remove(processExecutionData);
     }
 }

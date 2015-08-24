@@ -33,7 +33,7 @@ import java.io.File;
 public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCustomIcon, TreeNodePath {
 
     private File file;
-    private boolean isValid = true;
+    private boolean isValidProcess = true;
     private boolean isRoot = false;
     private boolean canBeLeaf = true;
     private boolean isCustomIcon = false;
@@ -52,7 +52,7 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         else {
             if (isRoot) {
                 return ToolBoxIcon.getIcon("folder");
-            } else if (isValid) {
+            } else if (isValidProcess) {
                 return ToolBoxIcon.getIcon("script");
             } else {
                 return ToolBoxIcon.getIcon("remove");
@@ -100,8 +100,8 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         this.isRoot = isRoot;
     }
 
-    public void setValid(boolean isValid) {
-        this.isValid = isValid;
+    public void setValidProcess(boolean isValid) {
+        this.isValidProcess = isValid;
     }
 
     public void setcanBeLeaf(boolean canBeLeaf){
@@ -120,7 +120,7 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         this.customIconName = customIconName;
     }
 
-    public boolean isValid(){
-        return isValid;
+    public boolean isValidProcess(){
+        return isValidProcess;
     }
 }
