@@ -17,13 +17,31 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.model.ComplexeData;/**
- * Created by sylvain on 25/08/15.
- */
+package org.orbisgis.orbistoolbox.model.ComplexeData;
+
+import org.orbisgis.orbistoolbox.model.Format;
+import org.orbisgis.orbistoolbox.model.MalformedScriptException;
+
+import java.io.File;
+import java.net.URI;
 
 /**
  * @author Sylvain PALOMINOS
  **/
 
-public class ShapeFileData {
+public class ShapeFileData extends ComplexData {
+
+    private File shapeFile;
+
+    public ShapeFileData() throws MalformedScriptException {
+        super(new Format("application/octet-stream", URI.create("https://tools.ietf.org/html/rfc2046")));
+    }
+
+    public void setShapeFile(File file){
+        shapeFile = file;
+    }
+
+    public File getShapeFile(){
+        return shapeFile;
+    }
 }
