@@ -49,9 +49,7 @@ public abstract class DataDescription {
         if(format == null){
             throw new MalformedScriptException(this.getClass(), "format", "can not be null");
         }
-        if(!format.isDefaultFormat()){
-            throw new MalformedScriptException(this.getClass(), "format", "should be the default format");
-        }
+        format.setDefaultFormat(true);
         this.formats = new ArrayList<>();
         this.formats.add(format);
     }

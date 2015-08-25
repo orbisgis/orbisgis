@@ -20,6 +20,7 @@
 package org.orbisgis.orbistoolbox.controller.parser;
 
 import org.orbisgis.orbistoolbox.model.*;
+import org.orbisgis.orbistoolbox.model.ComplexeData.RawData;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolboxapi.annotations.model.*;
 
