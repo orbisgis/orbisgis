@@ -17,56 +17,60 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view.ui;
+package org.orbisgis.orbistoolbox.view.ui.dataui;
 
-import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
 
-import javax.swing.*;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class Building the UI to configure a process before executing it.
- * The UI is build according the the map containing the DataDescription linked to its DataUI.
+ * Class managing the link between data class (LiteralData, ComplexData ...) and the UI used to configure the inputs and the outputs.
  *
  * @author Sylvain PALOMINOS
  **/
 
-public class ProcessUIBuilder {
+public class DataUIManager {
 
+    /** Map linking the data class and its UI*/
     private Map<Class<? extends DataDescription>, DataUI> dataUIMap;
 
-    public ProcessUIBuilder(){
+    /**
+     * Main constructor.
+     */
+    public DataUIManager(){
         dataUIMap = new HashMap<>();
-        dataUIMap.put(LiteralData.class, new LiteralDataUI());
+        linkClassUI(LiteralData.class, new LiteralDataUI());
     }
 
     /**
-     * Build the UI of the given process according to the given data.
-     * @param p Process to use.
-     * @param dataMap Data to use.
-     * @return The UI for the configuration of the process.
+     * Link a class and its UI.
+     * @param clazz Class to link.
+     * @param dataUI UI corresponding to the class.
      */
-    public JComponent buildUI(Process p, Map<URI, Object> dataMap){
-        JPanel panel = new JPanel(new MigLayout());
+    public void linkClassUI(Class<? extends DataDescription> clazz, DataUI dataUI){
+        dataUIMap.put(clazz, dataUI);
+    }
 
+    /**
+     * Returns the dataUI corresponding to the given class.
+     * @param clazz data class.
+     * @return DataUI of the given data class.
+     */
+    public DataUI getDataUI(Class<? extends DataDescription> clazz) {
+        return dataUIMap.get(clazz);
+    }
 
-
-        for(Input i : p.getInput()){
-            JPanel inputPanel = new JPanel(new MigLayout());
-            inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
-            JLabel inputAbstrac = new JLabel(i.getAbstrac());
-            inputPanel.add(inputAbstrac, "wrap");
-            DataUI dataUI = dataUIMap.get(i.getDataDescription().getClass());
-            if(dataUI!=null) {
-                inputPanel.add(dataUI.createUI(i, dataMap), "wrap");
+    public Map<URI, Object> getInputDefaultValues(Process process){
+        Map<URI, Object> map = new HashMap<>();
+        for(Input input : process.getInput()) {
+            //If there is a DataUI corresponding to the input, get the defaults values.
+            if(getDataUI(input.getDataDescription().getClass()) != null) {
+                map.putAll(getDataUI(input.getDataDescription().getClass()).getDefaultValue(input));
             }
-            panel.add(inputPanel, "wrap");
         }
-
-        return panel;
+        return map;
     }
 }

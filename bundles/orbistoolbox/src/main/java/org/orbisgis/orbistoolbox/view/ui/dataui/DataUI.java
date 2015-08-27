@@ -17,55 +17,34 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view.ui;
+package org.orbisgis.orbistoolbox.view.ui.dataui;
 
-import org.orbisgis.orbistoolbox.view.ui.ProcessUIBuilder;
-import org.orbisgis.sif.UIPanel;
-import org.orbisgis.orbistoolbox.model.Process;
+import org.orbisgis.orbistoolbox.model.Input;
 
-import java.awt.*;
+import javax.swing.*;
 import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SIF UIPanel for the configuration of a process before executing it.
+ * Interface for the definition of the ui to give the input value for a data type (LiteralData, RawData ...).
  *
  * @author Sylvain PALOMINOS
  **/
 
-public class ProcessInputConfiguration implements UIPanel {
+public interface DataUI {
 
-    private Map<URI, Object> uriObjectMap;
-    private Component component;
+    /**
+     * Return the ui for the definition of the input data.
+     * @param input Input to render.
+     * @param dataMap Map that will contain the data.
+     * @return JComponent containing the ui.
+     */
+    public JComponent createUI(Input input, Map<URI, Object> dataMap);
 
-    @Override
-    public URL getIconURL() {
-        return null;
-    }
-
-    @Override
-    public String getTitle() {
-        return "Process inputs configuration.";
-    }
-
-    @Override
-    public String validateInput() {
-        return null;
-    }
-
-    @Override
-    public Component getComponent() {
-        return component;
-    }
-
-    public void buildUI(Process process, ProcessUIBuilder processUIBuilder){
-        uriObjectMap = new HashMap<>();
-        this.component = processUIBuilder.buildUI(process, uriObjectMap);
-    }
-
-    public Map<URI, Object> getData(){
-        return uriObjectMap;
-    }
+    /**
+     * Returns the map of default input value if it exists.
+     * @param input Input to analyse.
+     * @return The default input map.
+     */
+    public Map<URI, Object> getDefaultValue(Input input);
 }

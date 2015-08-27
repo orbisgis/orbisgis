@@ -31,7 +31,7 @@ import org.orbisgis.orbistoolboxapi.annotations.model.Process
  */
 
 @Input
-input = "A very simple string."
+String input = "A very simple string."
 
 @Output
 int output

@@ -22,7 +22,6 @@ package org.orbisgis.orbistoolbox.controller.parser;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 /**

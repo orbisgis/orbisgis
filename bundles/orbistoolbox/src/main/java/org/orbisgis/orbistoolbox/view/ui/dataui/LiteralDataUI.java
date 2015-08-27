@@ -17,23 +17,25 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view.ui;
+package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.orbistoolbox.model.DataType;
-import org.orbisgis.orbistoolbox.model.Input;
-import org.orbisgis.orbistoolbox.model.LiteralData;
+import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.LiteralDataDomain;
-import org.orbisgis.orbistoolbox.view.ui.DataUI;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -45,13 +47,39 @@ import java.util.Map;
 public class LiteralDataUI implements DataUI {
 
     @Override
+    public Map<URI, Object> getDefaultValue(Input input) {
+        Map<URI, Object> map = new HashMap<>();
+        List<Input> inputList = new ArrayList<>();
+
+        if(input.getInput() != null){
+            inputList = input.getInput();
+        }
+        inputList.add(input);
+
+        for(Input i : inputList) {
+            if (i.getDataDescription() instanceof LiteralData) {
+                for (LiteralDataDomain ldda : ((LiteralData) i.getDataDescription()).getLiteralDomainType()) {
+                    if (ldda.isDefaultDomain()) {
+                        if (ldda.getDefaultValue() instanceof Range) {
+                            map.put(i.getIdentifier(), ((Range) ldda.getDefaultValue()).getMinimumValue());
+                        } else if (ldda.getDefaultValue() instanceof Value) {
+                            map.put(i.getIdentifier(), ((Value) ldda.getDefaultValue()).getValue());
+                        }
+                    }
+                }
+            }
+        }
+        return map;
+    }
+
+    @Override
     public JComponent createUI(Input input, Map<URI, Object> dataMap) {
         LiteralData literalData = (LiteralData)input.getDataDescription();
         JComboBox<String> comboBox = new JComboBox<>();
         for(LiteralDataDomain ldd : literalData.getLiteralDomainType()){
             comboBox.addItem(ldd.getDataType().name().toLowerCase());
         }
-        JPanel panel = new JPanel(new MigLayout());
+        JPanel panel = new JPanel(new MigLayout("fill"));
         panel.add(comboBox, "wrap");
 
         JComponent dataField = new JPanel();
@@ -72,6 +100,8 @@ public class LiteralDataUI implements DataUI {
      * @param source The comboBox containing the data type to use.
      */
     public void onBoxChange(Object source){
+        Map<URI, Object> dataMap = (Map<URI, Object>) ((JComponent) source).getClientProperty("dataMap");;
+        URI uri = (URI) ((JComponent) source).getClientProperty("uri");
         String s = (String) ((JComboBox)source).getSelectedItem();
         JComponent dataComponent;
         switch(DataType.valueOf(s.toUpperCase())){
@@ -80,19 +110,26 @@ public class LiteralDataUI implements DataUI {
                 ((JComboBox<Boolean>)dataComponent).addItem(Boolean.TRUE);
                 ((JComboBox<Boolean>)dataComponent).addItem(Boolean.FALSE);
                 dataComponent.putClientProperty("type", DataType.BOOLEAN);
-                dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                dataComponent.putClientProperty("dataMap",dataMap);
+                dataComponent.putClientProperty("uri", uri);
+
+                if(dataMap.get(uri).equals(Boolean.TRUE) || dataMap.get(uri).equals(Boolean.FALSE)){
+                    ((JComboBox<Boolean>)dataComponent).setSelectedItem(dataMap.get(uri));
+                }
+
                 ((JComboBox<Boolean>)dataComponent).addActionListener(EventHandler.create(
                         ActionListener.class,
                         this,
                         "onDataChanged",
                         "source"));
+
                 break;
             case BYTE:
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, Byte.MIN_VALUE, Byte.MAX_VALUE, 1));
                 dataComponent.putClientProperty("type", DataType.BYTE);
                 dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
                 dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
@@ -104,6 +141,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty("type", DataType.INTEGER);
                 dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
                 dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
@@ -115,6 +153,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty("type", DataType.LONG);
                 dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
                 dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
@@ -126,6 +165,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty("type", DataType.SHORT);
                 dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
                 dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
@@ -137,6 +177,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty("type", DataType.UNSIGNED_BYTE);
                 dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
                 dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
@@ -148,6 +189,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty("type", DataType.DOUBLE);
                 dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
                 dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
@@ -159,6 +201,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty("type", DataType.FLOAT);
                 dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
                 dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
@@ -168,8 +211,10 @@ public class LiteralDataUI implements DataUI {
             case STRING:
             default:
                 dataComponent = new JTextArea(6, 20);
+                dataComponent.setBorder(BorderFactory.createLineBorder(Color.lightGray));
                 ((JTextArea)dataComponent).getDocument().putProperty("dataMap", ((JComboBox) source).getClientProperty("dataMap"));
                 ((JTextArea)dataComponent).getDocument().putProperty("uri", ((JComboBox) source).getClientProperty("uri"));
+                ((JTextArea)dataComponent).setText((String)dataMap.get(uri));
                 ((JTextArea)dataComponent).getDocument().addDocumentListener(EventHandler.create(
                         DocumentListener.class,
                         this,
@@ -201,7 +246,7 @@ public class LiteralDataUI implements DataUI {
         try {
             dataMap.put(uri, document.getText(0, document.getLength()));
         } catch (BadLocationException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(LiteralDataUI.class).error(e.getMessage());
             dataMap.put(uri, "");
         }
     }

@@ -24,6 +24,7 @@ import org.orbisgis.orbistoolbox.controller.parser.ParserController;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -102,10 +103,10 @@ public class ProcessManager {
     }
 
     /**
-     * Create a groovy object corresponding to the process with the given datas.
+     * Create a groovy object corresponding to the process with the given data.
      * @param process Process that will generate the groovy object.
      * @param dataMap Map of the data for the process.
-     * @return A groovy object representing the process with the given datas.
+     * @return A groovy object representing the process with the given data.
      */
     private GroovyObject createProcess(Process process, Map<URI, Object> dataMap){
         ProcessIdentifier pi = null;
@@ -121,7 +122,7 @@ public class ProcessManager {
         try {
             groovyObject = (GroovyObject) pi.getClazz().newInstance();
         } catch (InstantiationException|IllegalAccessException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(ProcessManager.class).error(e.getMessage());
             return null;
         }
         try {
@@ -131,7 +132,7 @@ public class ProcessManager {
                 f.set(groovyObject, dataMap.get(i.getIdentifier()));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(ProcessManager.class).error(e.getMessage());
             return null;
         }
         return groovyObject;

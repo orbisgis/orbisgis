@@ -33,24 +33,39 @@ import java.io.File;
 public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCustomIcon, TreeNodePath {
 
     private File file;
-    private boolean isValid = true;
+    private boolean isValidProcess = true;
     private boolean isRoot = false;
+    private boolean canBeLeaf = true;
+    private boolean isCustomIcon = false;
+
+    private String customIconName;
 
     @Override
     public ImageIcon getLeafIcon() {
-        if(isRoot){
-            return ToolBoxIcon.getIcon("folder");
+        if(isCustomIcon){
+            return ToolBoxIcon.getIcon(customIconName);
         }
-        else if(isValid) {
-            return ToolBoxIcon.getIcon("script");
+
+        if(!canBeLeaf){
+                return ToolBoxIcon.getIcon("remove");
         }
         else {
-            return ToolBoxIcon.getIcon("remove");
+            if (isRoot) {
+                return ToolBoxIcon.getIcon("folder");
+            } else if (isValidProcess) {
+                return ToolBoxIcon.getIcon("script");
+            } else {
+                return ToolBoxIcon.getIcon("remove");
+            }
         }
     }
 
     @Override
     public ImageIcon getClosedIcon() {
+        if(isCustomIcon){
+            return ToolBoxIcon.getIcon(customIconName);
+        }
+
         if (isRoot) {
             return ToolBoxIcon.getIcon("folder");
         } else {
@@ -60,6 +75,10 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
 
     @Override
     public ImageIcon getOpenIcon() {
+        if(isCustomIcon){
+            return ToolBoxIcon.getIcon(customIconName);
+        }
+
         if (isRoot) {
             return ToolBoxIcon.getIcon("folder");
         } else {
@@ -81,7 +100,27 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         this.isRoot = isRoot;
     }
 
-    public void setValid(boolean isValid) {
-        this.isValid = isValid;
+    public void setValidProcess(boolean isValid) {
+        this.isValidProcess = isValid;
+    }
+
+    public void setcanBeLeaf(boolean canBeLeaf){
+        this.canBeLeaf = canBeLeaf;
+    }
+
+    public boolean canBeLeaf(){
+        return canBeLeaf;
+    }
+
+    public void setIsCustomIcon(boolean isCustomIcon){
+        this.isCustomIcon = isCustomIcon;
+    }
+
+    public void setCustomIcon(String customIconName){
+        this.customIconName = customIconName;
+    }
+
+    public boolean isValidProcess(){
+        return isValidProcess;
     }
 }
