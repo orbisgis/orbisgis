@@ -163,6 +163,23 @@ public class ProcessFrame extends JFrame {
             panel.add(inputPanel, "growx, wrap");
         }
 
+        //For each output, display its title, its abstract and gets its UI from the dataUIManager
+        for(Output o : processExecutionData.getProcess().getOutput()){
+            DataUI dataUI = dataUIManager.getDataUI(o.getDataDescription().getClass());
+            if(dataUI!=null) {
+                JComponent component = dataUI.createUI(o, processExecutionData.getOutputDataMap());
+                if(component != null) {
+                    JPanel outputPanel = new JPanel(new MigLayout("fill"));
+                    outputPanel.setBorder(BorderFactory.createTitledBorder(o.getTitle()));
+                    JLabel outputAbstrac = new JLabel(o.getAbstrac());
+                    outputAbstrac.setFont(outputAbstrac.getFont().deriveFont(Font.ITALIC));
+                    outputPanel.add(outputAbstrac, "wrap");
+                    outputPanel.add(component, "wrap");
+                    panel.add(outputPanel, "growx, wrap");
+                }
+            }
+        }
+
         return panel;
     }
 

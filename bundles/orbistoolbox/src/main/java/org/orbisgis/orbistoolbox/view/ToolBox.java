@@ -32,20 +32,30 @@ import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditorDockable;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.activation.DataSource;
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Sylvain PALOMINOS
  **/
 
 @Component(service = DockingPanel.class)
-public class ToolBox implements DockingPanel {
+public class ToolBox extends JPanel implements DockingPanel {
 
     /** Docking parameters used by DockingFrames */
     private DockingPanelParameters parameters;
@@ -55,6 +65,8 @@ public class ToolBox implements DockingPanel {
     private ToolBoxPanel toolBoxPanel;
     /** Object creating the UI corresponding to the data */
     private DataUIManager dataUIManager;
+
+    private Map<String, Object> properties;
 
     private List<ProcessExecutionData> processExecutionDataList;
 
@@ -161,5 +173,23 @@ public class ToolBox implements DockingPanel {
 
     public void validateProcessExecution(ProcessExecutionData processExecutionData){
         processExecutionDataList.remove(processExecutionData);
+    }
+
+    public Map<String, Object> getProperties(){
+        return properties;
+    }
+
+    public ToolBox(){
+        properties = new HashMap<>();
+    }
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    public void setDataSource(javax.sql.DataSource ds) {
+        System.out.println("ds");
+        properties.put("ds", ds);
+    }
+
+    public void unsetDataSource(javax.sql.DataSource ds) {
+        properties.remove("ds");
     }
 }

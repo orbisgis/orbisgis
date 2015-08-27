@@ -55,7 +55,7 @@ public class ExecutionThread extends Thread{
 
     @Override
     public void run(){
-        GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(process, dataMap);
+        GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(process, dataMap, toolBox.getProperties());
         for (Field field : groovyObject.getClass().getDeclaredFields()) {
             if(field.getAnnotation(OutputAttribute.class) != null) {
                 try {

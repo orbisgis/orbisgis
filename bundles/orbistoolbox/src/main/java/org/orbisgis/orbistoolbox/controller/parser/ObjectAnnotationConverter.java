@@ -21,8 +21,11 @@ package org.orbisgis.orbistoolbox.controller.parser;
 
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.ComplexeData.RawData;
+import org.orbisgis.orbistoolbox.model.ComplexeData.ShapeFileData;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolboxapi.annotations.model.*;
+import org.orbisgis.orbistoolboxapi.annotations.model.complexdata.RawDataAttribute;
+import org.orbisgis.orbistoolboxapi.annotations.model.complexdata.ShapeFileAttribute;
 
 import java.lang.annotation.IncompleteAnnotationException;
 import java.net.URI;
@@ -191,6 +194,15 @@ public class ObjectAnnotationConverter {
 
             //Instantiate the RawData
             return new RawData(formatList);
+        } catch (MalformedScriptException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ShapeFileData annotationToObject(ShapeFileAttribute shapeFileAttribute) {
+        try {
+            return new ShapeFileData();
         } catch (MalformedScriptException e) {
             e.printStackTrace();
             return null;

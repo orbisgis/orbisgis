@@ -95,8 +95,12 @@ public class ProcessManager {
      * @param dataMap Map containing the data for the process.
      * @return The groovy object on which the 'processing' method will be called.
      */
-    public GroovyObject executeProcess(Process process, Map<URI, Object> dataMap){
+    public GroovyObject executeProcess(Process process, Map<URI, Object> dataMap, Map<String, Object> properties){
         GroovyObject groovyObject = createProcess(process, dataMap);
+        for(Map.Entry<String, Object> variable : properties.entrySet()) {
+            System.out.println("grv_"+variable.getKey());
+            groovyObject.setProperty("grv_" + variable.getKey(), variable.getValue());
+        }
         groovyObject.invokeMethod("processing", null);
         return groovyObject;
     }

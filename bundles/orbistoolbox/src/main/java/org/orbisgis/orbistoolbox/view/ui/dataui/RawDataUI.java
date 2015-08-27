@@ -82,6 +82,45 @@ public class RawDataUI implements DataUI {
         component.add(button);
         return component;
     }
+    @Override
+    public JComponent createUI(Output output, Map<URI, Object> dataMap) {
+        //Create the component
+        JComponent component = new JPanel();
+        component.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        //component.add(new JLabel(sourceCA.getName()));
+        //Display the SourceCA into a JTextField
+        JTextField jtf = new JTextField();
+        jtf.setColumns(25);
+        //"Save" the CA inside the JTextField
+        jtf.getDocument().putProperty("dataMap", dataMap);
+        jtf.getDocument().putProperty("uri", output.getIdentifier());
+        //add the listener for the text changes in the JTextField
+        jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this, "saveDocumentText", "document"));
+
+        if(dataMap.get(output.getIdentifier()) != null)
+            jtf.setText(dataMap.get(output.getIdentifier()).toString());
+        else {
+            //Load the last path use in a sourceCA
+            OpenFilePanel openFilePanel = new OpenFilePanel("RawDataUI.File", "Select File");
+            openFilePanel.addFilter(new String[]{"*"}, "All files");
+            openFilePanel.loadState();
+            jtf.setText(openFilePanel.getCurrentDirectory().getAbsolutePath());
+        }
+
+        component.add(jtf);
+        //Create the button Browse
+        JButton button = new JButton("Browse");
+        //"Save" the sourceCA and the JTextField in the button
+        button.putClientProperty("dataMap", dataMap);
+        button.putClientProperty("uri", output.getIdentifier());
+        button.putClientProperty("JTextField", jtf);
+        //Add the listener for the click on the button
+        button.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
+
+        component.add(button);
+        return component;
+    }
 
     @Override
     public Map<URI, Object> getDefaultValue(Input input) {

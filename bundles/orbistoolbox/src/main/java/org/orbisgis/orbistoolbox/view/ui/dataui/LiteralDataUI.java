@@ -73,6 +73,11 @@ public class LiteralDataUI implements DataUI {
     }
 
     @Override
+    public JComponent createUI(Output output, Map<URI, Object> dataMap) {
+        return null;
+    }
+
+    @Override
     public JComponent createUI(Input input, Map<URI, Object> dataMap) {
         LiteralData literalData = (LiteralData)input.getDataDescription();
         JComboBox<String> comboBox = new JComboBox<>();

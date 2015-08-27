@@ -34,7 +34,7 @@ public class ShapeFileData extends ComplexData {
     private File shapeFile;
 
     public ShapeFileData() throws MalformedScriptException {
-        super(new Format("application/octet-stream", URI.create("https://tools.ietf.org/html/rfc2046")));
+        super(getFormat());
     }
 
     public void setShapeFile(File file){
@@ -43,5 +43,11 @@ public class ShapeFileData extends ComplexData {
 
     public File getShapeFile(){
         return shapeFile;
+    }
+
+    private static Format getFormat() throws MalformedScriptException {
+        Format format = new Format("application/octet-stream", URI.create("https://tools.ietf.org/html/rfc2046"));
+        format.setDefaultFormat(true);
+        return format;
     }
 }
