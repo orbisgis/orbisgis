@@ -32,7 +32,6 @@ import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
 
 import javax.swing.*;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.*;
@@ -422,11 +421,8 @@ public class ToolBoxPanel extends JPanel {
                 leafList.addAll(getAllLeaf(node));
             }
             for(TreeNodeWps leaf : leafList){
-                System.out.println(leaf);
                 File file = leaf.getFilePath();
-                System.out.println(getNodeFromFile(file, (TreeNodeWps) fileModel.getRoot()));
                 cleanParentNode(getNodeFromFile(file, (TreeNodeWps) fileModel.getRoot()), fileModel);
-                System.out.println(getNodeFromFile(file, (TreeNodeWps) categoryModel.getRoot()));
                 cleanParentNode(getNodeFromFile(file, (TreeNodeWps) categoryModel.getRoot()), categoryModel);
                 toolBox.removeProcess(leaf.getFilePath());
             }
@@ -441,10 +437,8 @@ public class ToolBoxPanel extends JPanel {
      * @return The child node.
      */
     private TreeNodeWps getNodeFromFile(File file, TreeNodeWps parent){
-        System.out.println("parent : "+parent);
         for(int i=0; i<parent.getChildCount(); i++){
             TreeNodeWps child = (TreeNodeWps)parent.getChildAt(i);
-            System.out.println("child : "+child);
             if(child.getFilePath() != null && child.getFilePath().equals(file)){
                 return child;
             }

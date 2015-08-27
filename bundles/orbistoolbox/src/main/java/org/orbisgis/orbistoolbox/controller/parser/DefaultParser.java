@@ -21,8 +21,8 @@ package org.orbisgis.orbistoolbox.controller.parser;
 
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute;
+import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
@@ -124,7 +124,7 @@ public class DefaultParser implements Parser {
 
             return input;
         } catch (MalformedScriptException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(DefaultParser.class).error(e.getMessage());
             return null;
         }
     }
@@ -213,7 +213,7 @@ public class DefaultParser implements Parser {
 
             return output;
         } catch(MalformedScriptException e){
-            e.printStackTrace();
+            LoggerFactory.getLogger(DefaultParser.class).error(e.getMessage());
             return null;
         }
     }

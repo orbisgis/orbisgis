@@ -20,7 +20,6 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import org.orbisgis.orbistoolbox.model.Input;
-import org.orbisgis.orbistoolbox.model.Process;
 
 import javax.swing.*;
 import java.net.URI;

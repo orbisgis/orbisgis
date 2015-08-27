@@ -19,6 +19,8 @@
 
 package org.orbisgis.orbistoolbox.model;
 
+import org.slf4j.LoggerFactory;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -55,7 +57,7 @@ public enum DataType {
         try {
             this.uri = new URI(uriString);
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(DataType.class).error(e.getMessage());
         }
     }
 

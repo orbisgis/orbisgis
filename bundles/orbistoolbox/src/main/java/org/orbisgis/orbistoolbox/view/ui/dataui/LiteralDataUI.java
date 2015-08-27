@@ -21,8 +21,8 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.model.LiteralDataDomain;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -246,7 +246,7 @@ public class LiteralDataUI implements DataUI {
         try {
             dataMap.put(uri, document.getText(0, document.getLength()));
         } catch (BadLocationException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(LiteralDataUI.class).error(e.getMessage());
             dataMap.put(uri, "");
         }
     }

@@ -24,6 +24,7 @@ import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -62,7 +63,7 @@ public class ExecutionThread extends Thread{
                     field.setAccessible(true);
                     listOutput.add(field.get(groovyObject).toString());
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    LoggerFactory.getLogger(ExecutionThread.class).error(e.getMessage());
                 }
             }
         }
