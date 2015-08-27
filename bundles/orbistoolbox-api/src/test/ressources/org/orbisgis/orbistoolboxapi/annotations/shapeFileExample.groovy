@@ -17,24 +17,35 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-import org.orbisgis.orbistoolboxapi.annotations.input.Input
-import org.orbisgis.orbistoolboxapi.annotations.output.Output
+import org.orbisgis.orbistoolboxapi.annotations.input.ShapeFileInput
+import org.orbisgis.orbistoolboxapi.annotations.output.ShapeFileOutput
 import org.orbisgis.orbistoolboxapi.annotations.model.Process
 
+import groovy.sql.Sql
 /**
- * This example script is the most simple.
- * It reads the number of characters in a string.
+ * This example script show how to use the ShapeFile input and output.
  *
  * @author Sylvain PALOMINOS
  */
 
-@Input
-input
+@ShapeFileInput(
+        title = "input shapeFile",
+        abstrac = "Input ShapeFile "
+)
+String inputShapeFile
 
-@Output
-int output
+@ShapeFileOutput(
+        title = "output shapeFile",
+        abstrac = "Output ShapeFile"
+)
+String outputShapeFile
 
-@Process(title = "size")
+
+@Process(title = "occurrence")
 def processing() {
-    output = input.size()
+    sql = Sql.newInstance(grv_ds)
+
+    /*sql.execute("CALL SHPRead('" + inputShapeFile + "','shapeTable');")
+    sql.execute("CREATE TABLE tableName as SELECT THE_GEOM  FROM  shapeTable LIMIT 1;")
+    sql.execute("CALL SHPWrite('" + outputShapeFile + "', 'shapeTable');")*/
 }

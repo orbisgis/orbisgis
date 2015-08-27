@@ -17,9 +17,8 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
-
 import org.orbisgis.orbistoolboxapi.annotations.input.LiteralDataInput
+import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataDomainAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralValueAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.PossibleLiteralValuesChoiceAttribute
@@ -44,29 +43,38 @@ import org.orbisgis.orbistoolboxapi.annotations.output.LiteralDataOutput
                 @LiteralDataDomainAttribute(
                         plvc = @PossibleLiteralValuesChoiceAttribute(),
                         dataType = "STRING",
-                        defaultValue = @ValuesAttribute(value = ""),
+                        defaultValue = @ValuesAttribute(value = "Ring"),
                         isDefaultDomain = true)
         ],
         valueAttribute = @LiteralValueAttribute(dataType = "STRING"),
         minOccurs = 1,
         maxOccurs = 1
 )
-word = "Ring"
+word
 
 @LiteralDataInput(
-        title = "sentence"
+        title = "sentence",
+        validDomains = [
+                @LiteralDataDomainAttribute(
+                        plvc = @PossibleLiteralValuesChoiceAttribute(),
+                        dataType = "STRING",
+                        defaultValue = @ValuesAttribute(value =
+        "One Ring to rule them all, one Ring to find them,\nOne Ring to bring them all and in the darkness bind them"),
+                        isDefaultDomain = true)
+        ],
+        valueAttribute = @LiteralValueAttribute(dataType = "STRING")
 )
-sentence = "One Ring to rule them all, one Ring to find them,\n" +
-        "One Ring to bring them all and in the darkness bind them"
+sentence
 
 @LiteralDataOutput(
         title = "occurrence",
-        abstrac = "Occurrence of a word in a sentence"
+        abstrac = "Occurrence of a word in a sentence",
+        valueAttribute = @LiteralValueAttribute(dataType = "INTEGER")
 )
 int occur
 
 
 @Process(title = "occurrence")
 def processing() {
-        occur = sentence.split(word).length - 1
+        occur = sentence.split(word).length
 }
