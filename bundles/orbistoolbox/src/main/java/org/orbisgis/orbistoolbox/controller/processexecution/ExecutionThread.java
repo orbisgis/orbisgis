@@ -22,8 +22,7 @@ package org.orbisgis.orbistoolbox.controller.processexecution;
 import groovy.lang.GroovyObject;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.view.ui.ProcessFrame;
-import org.orbisgis.orbistoolbox.view.utils.ProcessUIData;
+import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 
 import java.lang.reflect.Field;
@@ -41,15 +40,15 @@ public class ExecutionThread extends Thread{
     private Process process;
     private Map<URI, Object> dataMap;
     private ToolBox toolBox;
-    private ProcessUIData processUIData;
+    private ProcessExecutionData processExecutionData;
 
     private List<String> listOutput;
 
-    public ExecutionThread(Process process, Map<URI, Object> dataMap, ToolBox toolBox, ProcessUIData processUIData){
+    public ExecutionThread(Process process, Map<URI, Object> dataMap, ToolBox toolBox, ProcessExecutionData processExecutionData){
         this.process = process;
         this.dataMap = dataMap;
         this.toolBox = toolBox;
-        this.processUIData = processUIData;
+        this.processExecutionData = processExecutionData;
 
         listOutput = new ArrayList<>();
     }
@@ -67,6 +66,6 @@ public class ExecutionThread extends Thread{
                 }
             }
         }
-        processUIData.setOutputs(listOutput);
+        processExecutionData.endProcess(listOutput);
     }
 }

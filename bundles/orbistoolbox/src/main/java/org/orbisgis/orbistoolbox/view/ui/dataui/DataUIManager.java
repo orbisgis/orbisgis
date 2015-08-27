@@ -66,7 +66,10 @@ public class DataUIManager {
     public Map<URI, Object> getInputDefaultValues(Process process){
         Map<URI, Object> map = new HashMap<>();
         for(Input input : process.getInput()) {
-            map.putAll(getDataUI(input.getDataDescription().getClass()).getDefaultValue(input));
+            //If there is a DataUI corresponding to the input, get the defaults values.
+            if(getDataUI(input.getDataDescription().getClass()) != null) {
+                map.putAll(getDataUI(input.getDataDescription().getClass()).getDefaultValue(input));
+            }
         }
         return map;
     }
