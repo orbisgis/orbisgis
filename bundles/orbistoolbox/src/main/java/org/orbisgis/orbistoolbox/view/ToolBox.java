@@ -32,18 +32,12 @@ import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
-import org.orbisgis.sif.edition.EditableElement;
-import org.orbisgis.sif.edition.EditorDockable;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.activation.DataSource;
 import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -111,7 +105,8 @@ public class ToolBox extends JPanel implements DockingPanel {
      * Adds a local folder as a script source.
      */
     public void addNewLocalSource(){
-        OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBoxPanel.AddSource", "Add a source");
+        OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBox.AddSource", "Add a source");
+        openFolderPanel.loadState();
 
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFolderPanel)){
@@ -185,7 +180,6 @@ public class ToolBox extends JPanel implements DockingPanel {
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL)
     public void setDataSource(javax.sql.DataSource ds) {
-        System.out.println("ds");
         properties.put("ds", ds);
     }
 

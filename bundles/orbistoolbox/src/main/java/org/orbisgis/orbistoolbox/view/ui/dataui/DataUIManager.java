@@ -46,7 +46,7 @@ public class DataUIManager {
         dataUIMap = new HashMap<>();
         linkClassUI(LiteralData.class, new LiteralDataUI());
         linkClassUI(RawData.class, new RawDataUI());
-        linkClassUI(ShapeFileData.class, new RawDataUI());
+        linkClassUI(ShapeFileData.class, new ShapeFileUI());
     }
 
     /**
@@ -71,6 +71,14 @@ public class DataUIManager {
         Map<URI, Object> map = new HashMap<>();
         for(Input input : process.getInput()) {
             map.putAll(getDataUI(input.getDataDescription().getClass()).getDefaultValue(input));
+        }
+        return map;
+    }
+
+    public Map<URI, Object> getOutputDefaultValues(Process process){
+        Map<URI, Object> map = new HashMap<>();
+        for(Output output : process.getOutput()) {
+            map.putAll(getDataUI(output.getDataDescription().getClass()).getDefaultValue(output));
         }
         return map;
     }

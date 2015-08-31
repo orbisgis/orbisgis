@@ -19,6 +19,7 @@
 
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
+import org.orbisgis.orbistoolbox.model.DescriptionType;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
@@ -53,8 +54,8 @@ public interface DataUI {
 
     /**
      * Returns the map of default input value if it exists.
-     * @param input Input to analyse.
+     * @param descriptionType Input or Output to analyse.
      * @return The default input map.
      */
-    public Map<URI, Object> getDefaultValue(Input input);
+    public Map<URI, Object> getDefaultValue(DescriptionType descriptionType);
 }

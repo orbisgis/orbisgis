@@ -18,7 +18,6 @@
  */
 
 import org.orbisgis.orbistoolboxapi.annotations.input.LiteralDataInput
-import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataDomainAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralValueAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.PossibleLiteralValuesChoiceAttribute

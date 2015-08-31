@@ -17,9 +17,9 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
+import org.orbisgis.orbistoolboxapi.annotations.model.Process
 import org.orbisgis.orbistoolboxapi.annotations.input.ShapeFileInput
 import org.orbisgis.orbistoolboxapi.annotations.output.ShapeFileOutput
-import org.orbisgis.orbistoolboxapi.annotations.model.Process
 
 import groovy.sql.Sql
 /**
@@ -45,7 +45,7 @@ String outputShapeFile
 def processing() {
     sql = Sql.newInstance(grv_ds)
 
-    /*sql.execute("CALL SHPRead('" + inputShapeFile + "','shapeTable');")
-    sql.execute("CREATE TABLE tableName as SELECT THE_GEOM  FROM  shapeTable LIMIT 1;")
-    sql.execute("CALL SHPWrite('" + outputShapeFile + "', 'shapeTable');")*/
+    sql.execute("CALL SHPRead('" + inputShapeFile + "','SHAPETABLE');")
+    sql.execute("CREATE TABLE TABLENAME as SELECT THE_GEOM  FROM  SHAPETABLE LIMIT 1;")
+    sql.execute("CALL SHPWrite('" + outputShapeFile + "', 'SHAPETABLE');")
 }

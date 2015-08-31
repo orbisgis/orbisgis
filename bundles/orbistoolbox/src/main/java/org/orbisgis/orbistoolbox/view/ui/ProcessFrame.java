@@ -34,7 +34,8 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URI;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,7 +49,7 @@ public class ProcessFrame extends JFrame {
     /** TabbedPane containing the configuration panel, the info panel and the execution panel */
     private JTabbedPane tabbedPane;
     /** Map of the label containing the outputs values and their identifier*/
-    private Map<URI, JLabel> outputURILabelMap;
+    private List<JLabel> outputList;
     /** DataUIManager used to create the UI corresponding the the data */
     private DataUIManager dataUIManager;
     /** Label containing the state of the process (running, completed or idle) */
@@ -64,13 +65,14 @@ public class ProcessFrame extends JFrame {
     public ProcessFrame(Process process, ToolBox toolBox) {
         this.setLayout(new BorderLayout());
 
-        outputURILabelMap = new HashMap<>();
+        outputList = new ArrayList<>();
         dataUIManager = toolBox.getDataUIManager();
 
         processExecutionData = new ProcessExecutionData(toolBox, process);
         processExecutionData.setState(ProcessExecutionData.ProcessState.IDLE);
         processExecutionData.setProcessFrame(this);
         processExecutionData.setInputDataMap(dataUIManager.getInputDefaultValues(process));
+        processExecutionData.setOutputDataMap(dataUIManager.getOutputDefaultValues(process));
 
         buildUI();
     }
@@ -84,14 +86,18 @@ public class ProcessFrame extends JFrame {
         this.setLayout(new BorderLayout());
         this.processExecutionData = processExecutionData;
 
-        outputURILabelMap = new HashMap<>();
+        outputList = new ArrayList<>();
         dataUIManager = toolBox.getDataUIManager();
 
         buildUI();
 
         processExecutionData.setProcessFrame(this);
         if(processExecutionData.getState().equals(ProcessExecutionData.ProcessState.COMPLETED)){
-            processExecutionData.validateProcessExecution();
+            List<String> results = new ArrayList<>();
+            for(Map.Entry<URI, Object> entry : processExecutionData.getOutputDataMap().entrySet()){
+                results.add(entry.getValue().toString());
+            }
+            processExecutionData.validateProcessExecution(results);
         }
     }
 
@@ -303,7 +309,7 @@ public class ProcessFrame extends JFrame {
             JLabel title = new JLabel(o.getTitle()+" : ");
             JLabel result = new JLabel();
             result.putClientProperty("URI", o.getIdentifier());
-            outputURILabelMap.put(o.getIdentifier(), result);
+            outputList.add(result);
             resultPanel.add(title);
             resultPanel.add(result, "wrap");
         }
@@ -319,9 +325,9 @@ public class ProcessFrame extends JFrame {
      * Sets the outputs label with the outputs results.
      * @param outputs Outputs results.
      */
-    public void setOutputs(Map<URI, Object> outputs, String state) {
-        for (Map.Entry<URI, Object> entry : outputs.entrySet()) {
-            outputURILabelMap.get(entry.getKey()).setText(entry.getValue().toString());
+    public void setOutputs(List<String> outputs, String state) {
+        for (int i=0; i<outputs.size(); i++) {
+            outputList.get(i).setText(outputs.get(i));
         }
         stateLabel.setText(state);
     }

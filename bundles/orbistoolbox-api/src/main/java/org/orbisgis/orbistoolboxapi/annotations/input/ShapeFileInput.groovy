@@ -30,5 +30,5 @@ import org.orbisgis.orbistoolboxapi.annotations.model.complexdata.ShapeFileAttri
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, ShapeFileAttribute, InputAttribute, DescriptionTypeAttribute])
-interface ShapeFileInput {}
+@AnnotationCollector([Field, ShapeFileAttribute, DescriptionTypeAttribute, InputAttribute])
+@interface ShapeFileInput {}

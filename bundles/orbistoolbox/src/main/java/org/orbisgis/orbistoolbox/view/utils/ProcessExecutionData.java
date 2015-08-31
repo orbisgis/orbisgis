@@ -99,7 +99,7 @@ public class ProcessExecutionData {
         //Check that all the data field were filled.
         if(inputDataMap.size() == process.getInput().size()) {
             //Run the process in a separated thread
-            ExecutionThread thread = new ExecutionThread(process, inputDataMap, toolBox, this);
+            ExecutionThread thread = new ExecutionThread(process, outputDataMap, inputDataMap, toolBox, this);
             thread.start();
         }
     }
@@ -108,11 +108,9 @@ public class ProcessExecutionData {
      * Indicated that the process has ended and register the outputs results.
      * @param outputList Map of the outputs results.
      */
-    public void endProcess(Map<URI, Object> outputList){
-        outputDataMap.clear();
-        outputDataMap.putAll(outputList);
+    public void endProcess(List<String> outputList){
         state = ProcessState.COMPLETED;
-        validateProcessExecution();
+        validateProcessExecution(outputList);
     }
 
     /**
@@ -120,11 +118,11 @@ public class ProcessExecutionData {
      * Tells the toolbox that the process execution has been validated.
      * @return True if the process execution has been validated, false otherwise.
      */
-    public boolean validateProcessExecution(){
+    public boolean validateProcessExecution(List<String> outputList){
         if(processFrame == null) {
             return false;
         }
-        processFrame.setOutputs(outputDataMap, ProcessState.COMPLETED.getValue());
+        processFrame.setOutputs(outputList, ProcessState.COMPLETED.getValue());
         toolBox.validateProcessExecution(this);
         return true;
     }

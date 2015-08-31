@@ -19,7 +19,7 @@
 
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
-import org.orbisgis.orbistoolbox.model.ComplexeData.RawData;
+import org.orbisgis.orbistoolbox.model.DescriptionType;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.sif.UIFactory;
@@ -58,7 +58,10 @@ public class ShapeFileUI implements DataUI{
         jtf.getDocument().putProperty("dataMap", dataMap);
         jtf.getDocument().putProperty("uri", input.getIdentifier());
         //add the listener for the text changes in the JTextField
-        jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this, "saveDocumentText", "document"));
+        jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
+                this,
+                "saveDocumentText",
+                "document"));
 
         if(dataMap.get(input.getIdentifier()) != null)
             jtf.setText(dataMap.get(input.getIdentifier()).toString());
@@ -164,7 +167,7 @@ public class ShapeFileUI implements DataUI{
     }
 
     @Override
-    public Map<URI, Object> getDefaultValue(Input input) {
+    public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         return new HashMap<>();
     }
 }

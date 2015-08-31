@@ -64,6 +64,7 @@ public class RawDataUI implements DataUI {
         else {
             //Load the last path use in a sourceCA
             OpenFilePanel openFilePanel = new OpenFilePanel("RawDataUI.File", "Select File");
+            openFilePanel.addFilter(new String[]{".shp"}, "Shape file");
             openFilePanel.addFilter(new String[]{"*"}, "All files");
             openFilePanel.loadState();
             jtf.setText(openFilePanel.getCurrentDirectory().getAbsolutePath());
@@ -103,6 +104,7 @@ public class RawDataUI implements DataUI {
         else {
             //Load the last path use in a sourceCA
             OpenFilePanel openFilePanel = new OpenFilePanel("RawDataUI.File", "Select File");
+            openFilePanel.addFilter(new String[]{".shp"}, "Shape file");
             openFilePanel.addFilter(new String[]{"*"}, "All files");
             openFilePanel.loadState();
             jtf.setText(openFilePanel.getCurrentDirectory().getAbsolutePath());
@@ -123,7 +125,7 @@ public class RawDataUI implements DataUI {
     }
 
     @Override
-    public Map<URI, Object> getDefaultValue(Input input) {
+    public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         return new HashMap<>();
     }
 
@@ -133,6 +135,7 @@ public class RawDataUI implements DataUI {
      */
     public void openLoadPanel(ActionEvent event){
         OpenFilePanel openFilePanel = new OpenFilePanel("ConfigurationAttribute.SourceCA", "Select source");
+        openFilePanel.addFilter(new String[]{".shp"}, "Shape file");
         openFilePanel.addFilter(new String[]{"*"}, "All files");
         openFilePanel.loadState();
         if (UIFactory.showDialog(openFilePanel, true, true)) {

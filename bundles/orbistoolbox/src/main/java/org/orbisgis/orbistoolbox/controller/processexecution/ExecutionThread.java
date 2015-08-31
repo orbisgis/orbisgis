@@ -28,7 +28,8 @@ import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,30 +39,36 @@ import java.util.Map;
 public class ExecutionThread extends Thread{
 
     private Process process;
-    private Map<URI, Object> dataMap;
+    private Map<URI, Object> inputDataMap;
+    private Map<URI, Object> outputDataMap;
     private ToolBox toolBox;
     private ProcessExecutionData processExecutionData;
 
-    private Map<URI, Object> listOutput;
-
-    public ExecutionThread(Process process, Map<URI, Object> dataMap, ToolBox toolBox, ProcessExecutionData processExecutionData){
+    public ExecutionThread(Process process,
+                           Map<URI, Object> outputDataMap,
+                           Map<URI, Object> inputDataMap,
+                           ToolBox toolBox,
+                           ProcessExecutionData processExecutionData){
         this.process = process;
-        this.dataMap = dataMap;
+        this.inputDataMap = inputDataMap;
+        this.outputDataMap = outputDataMap;
         this.toolBox = toolBox;
         this.processExecutionData = processExecutionData;
-
-        listOutput = new HashMap<>();
     }
 
     @Override
     public void run(){
-        GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(process, dataMap, toolBox.getProperties());
+        GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(
+                process, inputDataMap, outputDataMap, toolBox.getProperties());
+        List<String> listOutput = new ArrayList<>();
         for (Field field : groovyObject.getClass().getDeclaredFields()) {
             if(field.getAnnotation(OutputAttribute.class) != null) {
                 try {
                     field.setAccessible(true);
                     URI uri = URI.create(field.getAnnotation(DescriptionTypeAttribute.class).identifier());
-                    listOutput.put(uri, field.get(groovyObject));
+                    outputDataMap.remove(uri);
+                    outputDataMap.put(uri, field.get(groovyObject));
+                    listOutput.add(field.get(groovyObject).toString());
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }

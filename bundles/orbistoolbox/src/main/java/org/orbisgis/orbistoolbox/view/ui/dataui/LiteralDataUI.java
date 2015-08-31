@@ -21,7 +21,6 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.model.LiteralDataDomain;
 
 import javax.swing.*;
@@ -47,23 +46,49 @@ import java.util.Map;
 public class LiteralDataUI implements DataUI {
 
     @Override
-    public Map<URI, Object> getDefaultValue(Input input) {
+    public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         Map<URI, Object> map = new HashMap<>();
-        List<Input> inputList = new ArrayList<>();
 
-        if(input.getInput() != null){
-            inputList = input.getInput();
+        if(inputOrOutput instanceof Input) {
+            List<Input> inputList = new ArrayList<>();
+
+            if (((Input)inputOrOutput).getInput() != null) {
+                inputList = ((Input)inputOrOutput).getInput();
+            }
+            inputList.add((Input)inputOrOutput);
+
+            for (Input i : inputList) {
+                if (i.getDataDescription() instanceof LiteralData) {
+                    for (LiteralDataDomain ldda : ((LiteralData) i.getDataDescription()).getLiteralDomainType()) {
+                        if (ldda.isDefaultDomain()) {
+                            if (ldda.getDefaultValue() instanceof Range) {
+                                map.put(i.getIdentifier(), ((Range) ldda.getDefaultValue()).getMinimumValue());
+                            } else if (ldda.getDefaultValue() instanceof Value) {
+                                map.put(i.getIdentifier(), ((Value) ldda.getDefaultValue()).getValue());
+                            }
+                        }
+                    }
+                }
+            }
         }
-        inputList.add(input);
 
-        for(Input i : inputList) {
-            if (i.getDataDescription() instanceof LiteralData) {
-                for (LiteralDataDomain ldda : ((LiteralData) i.getDataDescription()).getLiteralDomainType()) {
-                    if (ldda.isDefaultDomain()) {
-                        if (ldda.getDefaultValue() instanceof Range) {
-                            map.put(i.getIdentifier(), ((Range) ldda.getDefaultValue()).getMinimumValue());
-                        } else if (ldda.getDefaultValue() instanceof Value) {
-                            map.put(i.getIdentifier(), ((Value) ldda.getDefaultValue()).getValue());
+        else if(inputOrOutput instanceof Output) {
+            List<Output> outputList = new ArrayList<>();
+
+            if (((Output)inputOrOutput).getOutput() != null) {
+                outputList = ((Output)inputOrOutput).getOutput();
+            }
+            outputList.add((Output) inputOrOutput);
+
+            for (Output o : outputList) {
+                if (o.getDataDescription() instanceof LiteralData) {
+                    for (LiteralDataDomain ldda : ((LiteralData) o.getDataDescription()).getLiteralDomainType()) {
+                        if (ldda.isDefaultDomain()) {
+                            if (ldda.getDefaultValue() instanceof Range) {
+                                map.put(o.getIdentifier(), ((Range) ldda.getDefaultValue()).getMinimumValue());
+                            } else if (ldda.getDefaultValue() instanceof Value) {
+                                map.put(o.getIdentifier(), ((Value) ldda.getDefaultValue()).getValue());
+                            }
                         }
                     }
                 }
