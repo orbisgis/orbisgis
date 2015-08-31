@@ -106,8 +106,6 @@ public class ToolBox extends JPanel implements DockingPanel {
      */
     public void addNewLocalSource(){
         OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBox.AddSource", "Add a source");
-        openFolderPanel.loadState();
-
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFolderPanel)){
             addLocalSource(openFolderPanel.getSelectedFile());

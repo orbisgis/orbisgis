@@ -49,12 +49,8 @@ public class ShapeFileUI implements DataUI{
         //Create the component
         JComponent component = new JPanel();
         component.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-        //component.add(new JLabel(sourceCA.getName()));
-        //Display the SourceCA into a JTextField
         JTextField jtf = new JTextField();
         jtf.setColumns(25);
-        //"Save" the CA inside the JTextField
         jtf.getDocument().putProperty("dataMap", dataMap);
         jtf.getDocument().putProperty("uri", input.getIdentifier());
         //add the listener for the text changes in the JTextField
@@ -66,7 +62,6 @@ public class ShapeFileUI implements DataUI{
         if(dataMap.get(input.getIdentifier()) != null)
             jtf.setText(dataMap.get(input.getIdentifier()).toString());
         else {
-            //Load the last path use in a sourceCA
             OpenFilePanel openFilePanel = new OpenFilePanel("RawDataUI.File", "Select File");
             openFilePanel.addFilter(new String[]{".shp"}, "Shape File");
             openFilePanel.addFilter(new String[]{"*"}, "All files");
@@ -77,7 +72,6 @@ public class ShapeFileUI implements DataUI{
         component.add(jtf);
         //Create the button Browse
         JButton button = new JButton("Browse");
-        //"Save" the sourceCA and the JTextField in the button
         button.putClientProperty("dataMap", dataMap);
         button.putClientProperty("uri", input.getIdentifier());
         button.putClientProperty("JTextField", jtf);
@@ -94,11 +88,8 @@ public class ShapeFileUI implements DataUI{
         JComponent component = new JPanel();
         component.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        //component.add(new JLabel(sourceCA.getName()));
-        //Display the SourceCA into a JTextField
         JTextField jtf = new JTextField();
         jtf.setColumns(25);
-        //"Save" the CA inside the JTextField
         jtf.getDocument().putProperty("dataMap", dataMap);
         jtf.getDocument().putProperty("uri", output.getIdentifier());
         //add the listener for the text changes in the JTextField
@@ -107,7 +98,6 @@ public class ShapeFileUI implements DataUI{
         if(dataMap.get(output.getIdentifier()) != null)
             jtf.setText(dataMap.get(output.getIdentifier()).toString());
         else {
-            //Load the last path use in a sourceCA
             OpenFilePanel openFilePanel = new OpenFilePanel("RawDataUI.File", "Select File");
             openFilePanel.addFilter(new String[]{".shp"}, "Shape File");
             openFilePanel.addFilter(new String[]{"*"}, "All files");
@@ -118,7 +108,6 @@ public class ShapeFileUI implements DataUI{
         component.add(jtf);
         //Create the button Browse
         JButton button = new JButton("Browse");
-        //"Save" the sourceCA and the JTextField in the button
         button.putClientProperty("dataMap", dataMap);
         button.putClientProperty("uri", output.getIdentifier());
         button.putClientProperty("JTextField", jtf);
@@ -135,6 +124,7 @@ public class ShapeFileUI implements DataUI{
      */
     public void openLoadPanel(ActionEvent event){
         OpenFilePanel openFilePanel = new OpenFilePanel("ConfigurationAttribute.SourceCA", "Select source");
+        openFilePanel.addFilter(new String[]{".shp"}, "Shape File");
         openFilePanel.addFilter(new String[]{"*"}, "All files");
         openFilePanel.loadState();
         if (UIFactory.showDialog(openFilePanel, true, true)) {

@@ -55,6 +55,8 @@ public class ProcessFrame extends JFrame {
     /** Label containing the state of the process (running, completed or idle) */
     private JLabel stateLabel;
 
+    private JButton runButton;
+
     private ProcessExecutionData processExecutionData;
 
     /**
@@ -114,9 +116,10 @@ public class ProcessFrame extends JFrame {
 
         //Create and add the run button and the cancel button
         JPanel buttons = new JPanel(new MigLayout());
-        JButton runButton = new JButton("run");
+        runButton = new JButton("run");
         runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
         buttons.add(runButton);
+        runButton.setEnabled(!processExecutionData.getState().equals(ProcessExecutionData.ProcessState.RUNNING));
         JButton cancelButton = new JButton("close");
         cancelButton.addActionListener(EventHandler.create(ActionListener.class, this, "close"));
         buttons.add(cancelButton);
@@ -136,6 +139,7 @@ public class ProcessFrame extends JFrame {
      */
     public void runProcess(){
         //Select the execution tab
+        runButton.setEnabled(false);
         tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
         processExecutionData.runProcess();
     }
@@ -330,5 +334,6 @@ public class ProcessFrame extends JFrame {
             outputList.get(i).setText(outputs.get(i));
         }
         stateLabel.setText(state);
+        runButton.setEnabled(true);
     }
 }
