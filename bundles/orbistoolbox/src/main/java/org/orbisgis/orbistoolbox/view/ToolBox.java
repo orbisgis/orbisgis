@@ -21,12 +21,14 @@ package org.orbisgis.orbistoolbox.view;
 
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.view.ui.ProcessFrame;
+import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
+import org.orbisgis.sif.SIFDialog;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
@@ -128,16 +130,17 @@ public class ToolBox extends JPanel implements DockingPanel {
                 processExecutionData = puid;
             }
         }
-        ProcessFrame panel;
+        ProcessUIPanel uiPanel;
         if(processExecutionData != null){
-            panel = new ProcessFrame(processExecutionData, this);
+            uiPanel = new ProcessUIPanel(processExecutionData, this);
         }
         else{
-            panel = new ProcessFrame(process, this);
+            uiPanel = new ProcessUIPanel(process, this);
         }
-        panel.setVisible(true);
-        panel.pack();
-        processExecutionDataList.add(panel.getProcessExecutionData());
+        SIFDialog dialog = UIFactory.getSimpleDialog(uiPanel, SwingUtilities.getWindowAncestor(this), true);
+        dialog.pack();
+        dialog.setAlwaysOnTop(true);
+        dialog.setVisible(true);
     }
 
     /**
@@ -164,8 +167,12 @@ public class ToolBox extends JPanel implements DockingPanel {
         return dataUIManager;
     }
 
-    public void validateProcessExecution(ProcessExecutionData processExecutionData){
+    public void removeProcessExecutionData(ProcessExecutionData processExecutionData){
         processExecutionDataList.remove(processExecutionData);
+    }
+
+    public void addProcessExecutionData(ProcessExecutionData processExecutionData){
+        processExecutionDataList.add(processExecutionData);
     }
 
     public Map<String, Object> getProperties(){

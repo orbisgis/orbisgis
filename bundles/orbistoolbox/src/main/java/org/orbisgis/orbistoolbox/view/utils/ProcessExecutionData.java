@@ -22,7 +22,7 @@ package org.orbisgis.orbistoolbox.view.utils;
 import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionThread;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
-import org.orbisgis.orbistoolbox.view.ui.ProcessFrame;
+import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -43,7 +43,7 @@ public class ProcessExecutionData {
     /**State of the process */
     private ProcessState state;
     private ToolBox toolBox;
-    private ProcessFrame processFrame;
+    private ProcessUIPanel processUIPanel;
 
     public ProcessExecutionData(ToolBox toolBox, Process process){
         this.toolBox = toolBox;
@@ -84,12 +84,8 @@ public class ProcessExecutionData {
         this.state = state;
     }
 
-    public ProcessFrame getProcessFrame() {
-        return processFrame;
-    }
-
-    public void setProcessFrame(ProcessFrame processFrame) {
-        this.processFrame = processFrame;
+    public void setProcessUIPanel(ProcessUIPanel processUIPanel) {
+        this.processUIPanel = processUIPanel;
     }
 
     /**
@@ -110,21 +106,7 @@ public class ProcessExecutionData {
      */
     public void endProcess(List<String> outputList){
         state = ProcessState.COMPLETED;
-        validateProcessExecution(outputList);
-    }
-
-    /**
-     * Validate the process by writing the results in the processFrame.
-     * Tells the toolbox that the process execution has been validated.
-     * @return True if the process execution has been validated, false otherwise.
-     */
-    public boolean validateProcessExecution(List<String> outputList){
-        if(processFrame == null) {
-            return false;
-        }
-        processFrame.setOutputs(outputList, ProcessState.COMPLETED.getValue());
-        toolBox.validateProcessExecution(this);
-        return true;
+        processUIPanel.setOutputs(outputList, ProcessState.COMPLETED.getValue());
     }
 
 

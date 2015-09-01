@@ -27,12 +27,14 @@ import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
+import org.orbisgis.sif.UIPanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +45,7 @@ import java.util.Map;
  * @author Sylvain PALOMINOS
  **/
 
-public class ProcessFrame extends JFrame {
+public class ProcessUIPanel extends JPanel implements UIPanel {
 
     /** TabbedPane containing the configuration panel, the info panel and the execution panel */
     private JTabbedPane tabbedPane;
@@ -58,22 +60,27 @@ public class ProcessFrame extends JFrame {
 
     private ProcessExecutionData processExecutionData;
 
+    private ToolBox toolBox;
+
     /**
      * Main constructor with no ProcessExecutionData.
      * @param process Process represented.
      * @param toolBox Toolbox
      */
-    public ProcessFrame(Process process, ToolBox toolBox) {
+    public ProcessUIPanel(Process process, ToolBox toolBox) {
         this.setLayout(new BorderLayout());
 
         outputList = new ArrayList<>();
         dataUIManager = toolBox.getDataUIManager();
+        this.toolBox = toolBox;
 
         processExecutionData = new ProcessExecutionData(toolBox, process);
         processExecutionData.setState(ProcessExecutionData.ProcessState.IDLE);
-        processExecutionData.setProcessFrame(this);
+        processExecutionData.setProcessUIPanel(this);
         processExecutionData.setInputDataMap(dataUIManager.getInputDefaultValues(process));
         processExecutionData.setOutputDataMap(dataUIManager.getOutputDefaultValues(process));
+
+        toolBox.addProcessExecutionData(processExecutionData);
 
         buildUI();
     }
@@ -83,23 +90,24 @@ public class ProcessFrame extends JFrame {
      * @param processExecutionData Data for the UI
      * @param toolBox ToolBox
      */
-    public ProcessFrame(ProcessExecutionData processExecutionData, ToolBox toolBox){
+    public ProcessUIPanel(ProcessExecutionData processExecutionData, ToolBox toolBox){
         this.setLayout(new BorderLayout());
         this.processExecutionData = processExecutionData;
+        this.toolBox = toolBox;
 
         outputList = new ArrayList<>();
         dataUIManager = toolBox.getDataUIManager();
 
         buildUI();
 
-        processExecutionData.setProcessFrame(this);
+        processExecutionData.setProcessUIPanel(this);
+        List<String> results = new ArrayList<>();
         if(processExecutionData.getState().equals(ProcessExecutionData.ProcessState.COMPLETED)){
-            List<String> results = new ArrayList<>();
             for(Map.Entry<URI, Object> entry : processExecutionData.getOutputDataMap().entrySet()){
                 results.add(entry.getValue().toString());
             }
-            processExecutionData.validateProcessExecution(results);
         }
+        setOutputs(results, processExecutionData.getState().toString());
     }
 
     /**
@@ -112,17 +120,6 @@ public class ProcessFrame extends JFrame {
         tabbedPane.addTab("Information", buildUIInfo(processExecutionData));
         tabbedPane.addTab("Execution", buildUIExec(processExecutionData));
         this.add(tabbedPane, BorderLayout.CENTER);
-
-        //Create and add the run button and the cancel button
-        JPanel buttons = new JPanel(new MigLayout());
-        runButton = new JButton("run");
-        runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
-        buttons.add(runButton);
-        runButton.setEnabled(!processExecutionData.getState().equals(ProcessExecutionData.ProcessState.RUNNING));
-        JButton cancelButton = new JButton("close");
-        cancelButton.addActionListener(EventHandler.create(ActionListener.class, this, "close"));
-        buttons.add(cancelButton);
-        this.add(buttons, BorderLayout.PAGE_END);
     }
 
     /**
@@ -141,14 +138,6 @@ public class ProcessFrame extends JFrame {
         runButton.setEnabled(false);
         tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
         processExecutionData.runProcess();
-    }
-
-    /**
-     * Close this windows.
-     */
-    public void close(){
-        processExecutionData.setProcessFrame(null);
-        this.dispose();
     }
 
     /**
@@ -189,6 +178,10 @@ public class ProcessFrame extends JFrame {
             }
         }
 
+        runButton = new JButton("run");
+        runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
+        runButton.setEnabled(!processExecutionData.getState().equals(ProcessExecutionData.ProcessState.RUNNING));
+        panel.add(runButton, "growx, wrap");
         return panel;
     }
 
@@ -302,5 +295,30 @@ public class ProcessFrame extends JFrame {
         }
         stateLabel.setText(state);
         runButton.setEnabled(true);
+    }
+
+    @Override
+    public URL getIconURL() {
+        return null;
+    }
+
+    @Override
+    public String getTitle() {
+        return processExecutionData.getProcess().getTitle();
+    }
+
+    @Override
+    public String validateInput() {
+        processExecutionData.setProcessUIPanel(null);
+        if(processExecutionData.getState() == ProcessExecutionData.ProcessState.COMPLETED){
+            toolBox.removeProcessExecutionData(processExecutionData);
+        }
+
+        return null;
+    }
+
+    @Override
+    public Component getComponent() {
+        return this;
     }
 }
