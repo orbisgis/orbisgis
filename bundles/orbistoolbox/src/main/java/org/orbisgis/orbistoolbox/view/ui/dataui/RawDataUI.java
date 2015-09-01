@@ -21,6 +21,7 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.ComplexeData.RawData;
+import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.slf4j.LoggerFactory;
@@ -39,12 +40,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * DataUI associated to the RawData type.
+ *
  * @author Sylvain PALOMINOS
  **/
 
 public class RawDataUI implements DataUI {
     @Override
-    public JComponent createUI(Input input, Map<URI, Object> dataMap) {
+    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         //Create the component
         JComponent component = new JPanel();
         component.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -55,16 +58,15 @@ public class RawDataUI implements DataUI {
         jtf.setColumns(25);
         //"Save" the CA inside the JTextField
         jtf.getDocument().putProperty("dataMap", dataMap);
-        jtf.getDocument().putProperty("uri", input.getIdentifier());
+        jtf.getDocument().putProperty("uri", inputOrOutput.getIdentifier());
         //add the listener for the text changes in the JTextField
         jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this, "saveDocumentText", "document"));
 
-        if(dataMap.get(input.getIdentifier()) != null)
-            jtf.setText(dataMap.get(input.getIdentifier()).toString());
+        if(dataMap.get(inputOrOutput.getIdentifier()) != null)
+            jtf.setText(dataMap.get(inputOrOutput.getIdentifier()).toString());
         else {
             //Load the last path use in a sourceCA
             OpenFilePanel openFilePanel = new OpenFilePanel("RawDataUI.File", "Select File");
-            openFilePanel.addFilter(new String[]{".shp"}, "Shape file");
             openFilePanel.addFilter(new String[]{"*"}, "All files");
             openFilePanel.loadState();
             jtf.setText(openFilePanel.getCurrentDirectory().getAbsolutePath());
@@ -75,47 +77,7 @@ public class RawDataUI implements DataUI {
         JButton button = new JButton("Browse");
         //"Save" the sourceCA and the JTextField in the button
         button.putClientProperty("dataMap", dataMap);
-        button.putClientProperty("uri", input.getIdentifier());
-        button.putClientProperty("JTextField", jtf);
-        //Add the listener for the click on the button
-        button.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
-
-        component.add(button);
-        return component;
-    }
-    @Override
-    public JComponent createUI(Output output, Map<URI, Object> dataMap) {
-        //Create the component
-        JComponent component = new JPanel();
-        component.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-        //component.add(new JLabel(sourceCA.getName()));
-        //Display the SourceCA into a JTextField
-        JTextField jtf = new JTextField();
-        jtf.setColumns(25);
-        //"Save" the CA inside the JTextField
-        jtf.getDocument().putProperty("dataMap", dataMap);
-        jtf.getDocument().putProperty("uri", output.getIdentifier());
-        //add the listener for the text changes in the JTextField
-        jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this, "saveDocumentText", "document"));
-
-        if(dataMap.get(output.getIdentifier()) != null)
-            jtf.setText(dataMap.get(output.getIdentifier()).toString());
-        else {
-            //Load the last path use in a sourceCA
-            OpenFilePanel openFilePanel = new OpenFilePanel("RawDataUI.File", "Select File");
-            openFilePanel.addFilter(new String[]{".shp"}, "Shape file");
-            openFilePanel.addFilter(new String[]{"*"}, "All files");
-            openFilePanel.loadState();
-            jtf.setText(openFilePanel.getCurrentDirectory().getAbsolutePath());
-        }
-
-        component.add(jtf);
-        //Create the button Browse
-        JButton button = new JButton("Browse");
-        //"Save" the sourceCA and the JTextField in the button
-        button.putClientProperty("dataMap", dataMap);
-        button.putClientProperty("uri", output.getIdentifier());
+        button.putClientProperty("uri", inputOrOutput.getIdentifier());
         button.putClientProperty("JTextField", jtf);
         //Add the listener for the click on the button
         button.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
@@ -129,13 +91,17 @@ public class RawDataUI implements DataUI {
         return new HashMap<>();
     }
 
+    @Override
+    public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
+        return ToolBoxIcon.getIcon("undefined");
+    }
+
     /**
      * Opens an LoadPanel to permit to the user to select the file to load.
      * @param event
      */
     public void openLoadPanel(ActionEvent event){
         OpenFilePanel openFilePanel = new OpenFilePanel("ConfigurationAttribute.SourceCA", "Select source");
-        openFilePanel.addFilter(new String[]{".shp"}, "Shape file");
         openFilePanel.addFilter(new String[]{"*"}, "All files");
         openFilePanel.loadState();
         if (UIFactory.showDialog(openFilePanel, true, true)) {

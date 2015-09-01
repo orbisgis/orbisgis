@@ -27,7 +27,6 @@ import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
-import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
 import javax.swing.*;
 import java.awt.*;
@@ -127,8 +126,8 @@ public class ProcessFrame extends JFrame {
     }
 
     /**
-     * Returns the output data.
-     * @return The output data.
+     * Returns the processExecutionData.
+     * @return The processExecutionData.
      */
     public ProcessExecutionData getProcessExecutionData(){
         return processExecutionData;
@@ -222,7 +221,7 @@ public class ProcessFrame extends JFrame {
         inputPanel.setBorder(BorderFactory.createTitledBorder("Inputs :"));
 
         for(Input i : p.getInput()){
-            inputPanel.add(new JLabel(getIconFromData(i.getDataDescription())));
+            inputPanel.add(new JLabel(dataUIManager.getIconFromData(i)));
             inputPanel.add(new JLabel(i.getTitle()), "align left, wrap");
             if(i.getAbstrac() != null) {
                 JLabel abstrac = new JLabel(i.getAbstrac());
@@ -239,7 +238,7 @@ public class ProcessFrame extends JFrame {
         outputPanel.setBorder(BorderFactory.createTitledBorder("Outputs :"));
 
         for(Output o : p.getOutput()){
-            outputPanel.add(new JLabel(getIconFromData(o.getDataDescription())));
+            outputPanel.add(new JLabel(dataUIManager.getIconFromData(o)));
             outputPanel.add(new JLabel(o.getTitle()), "align left, wrap");
             if(o.getAbstrac() != null) {
                 JLabel abstrac = new JLabel(o.getAbstrac());
@@ -256,38 +255,6 @@ public class ProcessFrame extends JFrame {
         panel.add(outputPanel, "growx, wrap");
 
         return panel;
-    }
-
-    /**
-     * Read the given DataDescription and try to find an icon corresponding to the type represented.
-     * @param dataDescription DataDescription containing the data type.
-     * @return An ImageIcon corresponding to the type.
-     */
-    private ImageIcon getIconFromData(DataDescription dataDescription) {
-        if(dataDescription instanceof LiteralData) {
-            LiteralData ld = (LiteralData)dataDescription;
-            DataType dataType = DataType.STRING;
-            if(ld.getValue() != null && ld.getValue().getDataType()!= null) {
-                dataType = ld.getValue().getDataType();
-            }
-            switch (dataType) {
-                case STRING:
-                    return ToolBoxIcon.getIcon("string");
-                case UNSIGNED_BYTE:
-                case SHORT:
-                case LONG:
-                case BYTE:
-                case INTEGER:
-                case DOUBLE:
-                case FLOAT:
-                    return ToolBoxIcon.getIcon("number");
-                case BOOLEAN:
-                    return ToolBoxIcon.getIcon("boolean");
-                default:
-                    return ToolBoxIcon.getIcon("undefined");
-            }
-        }
-        return ToolBoxIcon.getIcon("undefined");
     }
 
     /**

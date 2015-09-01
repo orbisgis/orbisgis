@@ -19,11 +19,14 @@
 
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
+import org.omg.PortableInterceptor.INACTIVE;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.ComplexeData.RawData;
 import org.orbisgis.orbistoolbox.model.ComplexeData.ShapeFileData;
 import org.orbisgis.orbistoolbox.model.Process;
+import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
+import javax.swing.*;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +70,11 @@ public class DataUIManager {
         return dataUIMap.get(clazz);
     }
 
+    /**
+     * Returns a Map of the defaults input values of a process and their identifier URI.
+     * @param process Process to analyse
+     * @return Map of the default input values and their URI.
+     */
     public Map<URI, Object> getInputDefaultValues(Process process){
         Map<URI, Object> map = new HashMap<>();
         for(Input input : process.getInput()) {
@@ -75,11 +83,38 @@ public class DataUIManager {
         return map;
     }
 
+    /**
+     * Returns a Map of the defaults input values of a process and their identifier URI.
+     * @param process Process to analyse
+     * @return Map of the default input values and their URI.
+     */
     public Map<URI, Object> getOutputDefaultValues(Process process){
         Map<URI, Object> map = new HashMap<>();
         for(Output output : process.getOutput()) {
             map.putAll(getDataUI(output.getDataDescription().getClass()).getDefaultValue(output));
         }
         return map;
+    }
+
+
+
+    /**
+     * Return the Icon associated to the data represented by the given input or output.
+     * @param inputOrOutput Input or Output to analyse.
+     * @return An ImageIcon corresponding to the data type.
+     */
+    public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
+        DataDescription dataDescription = null;
+        if(inputOrOutput instanceof Input){
+            dataDescription = ((Input) inputOrOutput).getDataDescription();
+        }
+        if(inputOrOutput instanceof Output){
+            dataDescription = ((Output) inputOrOutput).getDataDescription();
+        }
+        ImageIcon icon = dataUIMap.get(dataDescription.getClass()).getIconFromData(inputOrOutput);
+        if(icon != null) {
+            return icon;
+        }
+        return ToolBoxIcon.getIcon("undefined");
     }
 }

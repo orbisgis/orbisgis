@@ -35,9 +35,9 @@ import java.util.Map;
 
 public class ProcessExecutionData {
     /** Map of input data (URI of the corresponding input) */
-    private Map<URI, Object> inputDataMap = new HashMap<>();
+    private Map<URI, Object> inputDataMap;
     /** Map of output data (URI of the corresponding output) */
-    private Map<URI, Object> outputDataMap = new HashMap<>();
+    private Map<URI, Object> outputDataMap;
     /** Process represented */
     private Process process;
     /**State of the process */
