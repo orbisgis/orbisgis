@@ -17,28 +17,18 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-import org.orbisgis.orbistoolboxapi.annotations.input.Input
-import org.orbisgis.orbistoolboxapi.annotations.output.Output
-import org.orbisgis.orbistoolboxapi.annotations.model.Process
+package org.orbisgis.orbistoolboxapi.annotations.output
+
+import groovy.transform.AnnotationCollector
+import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.complexdata.ShapeFileAttribute
 
 /**
- * This example script is the most simple.
- * It reads the number of characters in a string.
+ * Groovy annotation that can be used in a groovy script to declare a ShapeFile output field.
  *
  * @author Sylvain PALOMINOS
  */
-
-@Input
-<<<<<<< HEAD
-String input = "A very simple string."
-=======
-input
->>>>>>> ComplexDataType
-
-@Output
-int output
-
-@Process(title = "size")
-def processing() {
-    output = input.size()
-}
+@AnnotationCollector([Field, ShapeFileAttribute, DescriptionTypeAttribute, OutputAttribute])
+@interface ShapeFileOutput {}

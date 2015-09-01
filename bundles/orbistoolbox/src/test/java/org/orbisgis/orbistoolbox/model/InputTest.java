@@ -21,6 +21,7 @@ package org.orbisgis.orbistoolbox.model;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.orbisgis.orbistoolbox.model.ComplexeData.RawData;
 
 import java.net.URI;
 import java.net.URISyntaxException;

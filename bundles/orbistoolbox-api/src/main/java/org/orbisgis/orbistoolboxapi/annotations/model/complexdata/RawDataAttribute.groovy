@@ -17,28 +17,25 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-import org.orbisgis.orbistoolboxapi.annotations.input.Input
-import org.orbisgis.orbistoolboxapi.annotations.output.Output
-import org.orbisgis.orbistoolboxapi.annotations.model.Process
+package org.orbisgis.orbistoolboxapi.annotations.model.complexdata
+
+import org.orbisgis.orbistoolboxapi.annotations.model.FormatAttribute
+
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
 
 /**
- * This example script is the most simple.
- * It reads the number of characters in a string.
+ * Groovy annotation that can be used in a groovy script to declare a raw data.
  *
  * @author Sylvain PALOMINOS
  */
+@Retention(RetentionPolicy.RUNTIME)
+@interface RawDataAttribute {
 
-@Input
-<<<<<<< HEAD
-String input = "A very simple string."
-=======
-input
->>>>>>> ComplexDataType
+    /** Default value for the formats attribute */
+    FormatAttribute[] defaultFormats = []
 
-@Output
-int output
 
-@Process(title = "size")
-def processing() {
-    output = input.size()
+    /** List of supported formats */
+    FormatAttribute[] formats() default []
 }

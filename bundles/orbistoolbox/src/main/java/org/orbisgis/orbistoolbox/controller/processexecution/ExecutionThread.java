@@ -23,6 +23,7 @@ import groovy.lang.GroovyObject;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
+import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 import org.slf4j.LoggerFactory;
 
@@ -39,28 +40,35 @@ import java.util.Map;
 public class ExecutionThread extends Thread{
 
     private Process process;
-    private Map<URI, Object> dataMap;
+    private Map<URI, Object> inputDataMap;
+    private Map<URI, Object> outputDataMap;
     private ToolBox toolBox;
     private ProcessExecutionData processExecutionData;
 
-    private List<String> listOutput;
-
-    public ExecutionThread(Process process, Map<URI, Object> dataMap, ToolBox toolBox, ProcessExecutionData processExecutionData){
+    public ExecutionThread(Process process,
+                           Map<URI, Object> outputDataMap,
+                           Map<URI, Object> inputDataMap,
+                           ToolBox toolBox,
+                           ProcessExecutionData processExecutionData){
         this.process = process;
-        this.dataMap = dataMap;
+        this.inputDataMap = inputDataMap;
+        this.outputDataMap = outputDataMap;
         this.toolBox = toolBox;
         this.processExecutionData = processExecutionData;
-
-        listOutput = new ArrayList<>();
     }
 
     @Override
     public void run(){
-        GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(process, dataMap);
+        GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(
+                process, inputDataMap, outputDataMap, toolBox.getProperties());
+        List<String> listOutput = new ArrayList<>();
         for (Field field : groovyObject.getClass().getDeclaredFields()) {
             if(field.getAnnotation(OutputAttribute.class) != null) {
                 try {
                     field.setAccessible(true);
+                    URI uri = URI.create(field.getAnnotation(DescriptionTypeAttribute.class).identifier());
+                    outputDataMap.remove(uri);
+                    outputDataMap.put(uri, field.get(groovyObject));
                     listOutput.add(field.get(groovyObject).toString());
                 } catch (IllegalAccessException e) {
                     LoggerFactory.getLogger(ExecutionThread.class).error(e.getMessage());

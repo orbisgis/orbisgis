@@ -33,8 +33,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Frame used to configure and run a process.
@@ -70,6 +72,7 @@ public class ProcessFrame extends JFrame {
         processExecutionData.setState(ProcessExecutionData.ProcessState.IDLE);
         processExecutionData.setProcessFrame(this);
         processExecutionData.setInputDataMap(dataUIManager.getInputDefaultValues(process));
+        processExecutionData.setOutputDataMap(dataUIManager.getOutputDefaultValues(process));
 
         buildUI();
     }
@@ -90,7 +93,11 @@ public class ProcessFrame extends JFrame {
 
         processExecutionData.setProcessFrame(this);
         if(processExecutionData.getState().equals(ProcessExecutionData.ProcessState.COMPLETED)){
-            processExecutionData.validateProcessExecution();
+            List<String> results = new ArrayList<>();
+            for(Map.Entry<URI, Object> entry : processExecutionData.getOutputDataMap().entrySet()){
+                results.add(entry.getValue().toString());
+            }
+            processExecutionData.validateProcessExecution(results);
         }
     }
 
@@ -160,6 +167,23 @@ public class ProcessFrame extends JFrame {
                 inputPanel.add(dataUI.createUI(i, processExecutionData.getInputDataMap()), "wrap");
             }
             panel.add(inputPanel, "growx, wrap");
+        }
+
+        //For each output, display its title, its abstract and gets its UI from the dataUIManager
+        for(Output o : processExecutionData.getProcess().getOutput()){
+            DataUI dataUI = dataUIManager.getDataUI(o.getDataDescription().getClass());
+            if(dataUI!=null) {
+                JComponent component = dataUI.createUI(o, processExecutionData.getOutputDataMap());
+                if(component != null) {
+                    JPanel outputPanel = new JPanel(new MigLayout("fill"));
+                    outputPanel.setBorder(BorderFactory.createTitledBorder(o.getTitle()));
+                    JLabel outputAbstrac = new JLabel(o.getAbstrac());
+                    outputAbstrac.setFont(outputAbstrac.getFont().deriveFont(Font.ITALIC));
+                    outputPanel.add(outputAbstrac, "wrap");
+                    outputPanel.add(component, "wrap");
+                    panel.add(outputPanel, "growx, wrap");
+                }
+            }
         }
 
         return panel;

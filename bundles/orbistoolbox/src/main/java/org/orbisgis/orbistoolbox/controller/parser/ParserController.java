@@ -55,17 +55,19 @@ public class ParserController {
         parserList.add(new RawDataParser());
         parserList.add(new LiteralDataParser());
         parserList.add(new BoundingBoxParser());
+        parserList.add(new ShapeFileParser());
         defaultParser = new DefaultParser();
         processParser = new ProcessParser();
         groovyClassLoader = new GroovyShell().getClassLoader();
     }
 
     public AbstractMap.SimpleEntry<Process, Class> parseProcess(String processPath){
-        Class clazz = null;
+        Class clazz;
         File process = new File(processPath);
         try {
             clazz = groovyClassLoader.parseClass(process);
         } catch (IOException|GroovyRuntimeException e) {
+            e.printStackTrace();
             return null;
         }
 
