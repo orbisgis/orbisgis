@@ -41,11 +41,12 @@ String inputShapeFile
 String outputShapeFile
 
 
-@Process(title = "occurrence")
+@Process(title = "Extract first geom")
 def processing() {
     sql = Sql.newInstance(grv_ds)
 
+    sql.execute("DROP TABLE IF EXISTS SHAPETABLE, TABLENAME;")
     sql.execute("CALL SHPRead('" + inputShapeFile + "','SHAPETABLE');")
     sql.execute("CREATE TABLE TABLENAME as SELECT THE_GEOM  FROM  SHAPETABLE LIMIT 1;")
-    sql.execute("CALL SHPWrite('" + outputShapeFile + "', 'SHAPETABLE');")
+    sql.execute("CALL SHPWrite('" + outputShapeFile + "', 'TABLENAME');")
 }
