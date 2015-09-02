@@ -25,6 +25,7 @@ import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.ProcessAttribute;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -48,7 +49,7 @@ public class ProcessParser {
             process.setInput(inputList);
             return process;
         } catch (MalformedScriptException e){
-            e.printStackTrace();
+            LoggerFactory.getLogger(ProcessParser.class).error(e.getMessage());
             return null;
         }
     }

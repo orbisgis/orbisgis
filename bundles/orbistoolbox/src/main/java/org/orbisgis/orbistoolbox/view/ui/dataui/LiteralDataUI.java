@@ -351,7 +351,7 @@ public class LiteralDataUI implements DataUI {
         try {
             dataMap.put(uri, document.getText(0, document.getLength()));
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(LiteralDataUI.class);
+            LoggerFactory.getLogger(LiteralDataUI.class).error(e.getMessage());
             dataMap.put(uri, "");
         }
     }

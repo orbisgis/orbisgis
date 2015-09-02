@@ -25,6 +25,7 @@ import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -128,7 +129,7 @@ public class ProcessManager {
         try {
             groovyObject = (GroovyObject) pi.getClazz().newInstance();
         } catch (InstantiationException|IllegalAccessException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(ProcessManager.class).error(e.getMessage());
             return null;
         }
         try {
@@ -143,7 +144,7 @@ public class ProcessManager {
                 f.set(groovyObject, outputDataMap.get(o.getIdentifier()));
             }
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(ProcessManager.class).error(e.getMessage());
             return null;
         }
         return groovyObject;

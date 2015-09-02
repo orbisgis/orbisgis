@@ -63,7 +63,6 @@ public class ToolBox extends JPanel implements DockingPanel {
     private DataUIManager dataUIManager;
 
     private Map<String, Object> properties;
-
     private List<ProcessExecutionData> processExecutionDataList;
 
     @Activate

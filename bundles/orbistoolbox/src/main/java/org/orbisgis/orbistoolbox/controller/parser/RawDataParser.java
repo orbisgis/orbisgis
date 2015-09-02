@@ -20,9 +20,8 @@
 package org.orbisgis.orbistoolbox.controller.parser;
 
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.model.ComplexeData.RawData;
 import org.orbisgis.orbistoolboxapi.annotations.model.*;
-import org.orbisgis.orbistoolboxapi.annotations.model.complexdata.RawDataAttribute;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -44,10 +43,10 @@ public class RawDataParser implements Parser {
         try {
             //Instantiate the returned input
             input = new Input(f.getName(),
-                    URI.create("orbisgis:wps:"+processName+":input:"+f.getName()),
+                    URI.create("orbisgis:wps:" + processName + ":input:" + f.getName()),
                     rawData);
         } catch (MalformedScriptException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(RawDataParser.class).error(e.getMessage());
             return null;
         }
 
@@ -66,10 +65,10 @@ public class RawDataParser implements Parser {
         try {
             //Instantiate the returned output
             output = new Output(f.getName(),
-                    URI.create("orbisgis:wps:"+processName+":output:"+f.getName()),
+                    URI.create("orbisgis:wps:" + processName + ":output:" + f.getName()),
                     rawData);
         } catch (MalformedScriptException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(RawDataParser.class).error(e.getMessage());
             return null;
         }
 

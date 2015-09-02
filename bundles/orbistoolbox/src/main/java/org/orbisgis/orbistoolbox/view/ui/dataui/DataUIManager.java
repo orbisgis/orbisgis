@@ -21,8 +21,8 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import org.omg.PortableInterceptor.INACTIVE;
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.model.ComplexeData.RawData;
-import org.orbisgis.orbistoolbox.model.ComplexeData.ShapeFileData;
+import org.orbisgis.orbistoolbox.model.RawData;
+import org.orbisgis.orbistoolbox.model.ShapeFileData;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
@@ -78,7 +78,10 @@ public class DataUIManager {
     public Map<URI, Object> getInputDefaultValues(Process process){
         Map<URI, Object> map = new HashMap<>();
         for(Input input : process.getInput()) {
-            map.putAll(getDataUI(input.getDataDescription().getClass()).getDefaultValue(input));
+            //If there is a DataUI corresponding to the input, get the defaults values.
+            if(getDataUI(input.getDataDescription().getClass()) != null) {
+                map.putAll(getDataUI(input.getDataDescription().getClass()).getDefaultValue(input));
+            }
         }
         return map;
     }

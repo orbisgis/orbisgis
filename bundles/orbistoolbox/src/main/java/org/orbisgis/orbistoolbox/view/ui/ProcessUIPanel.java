@@ -50,7 +50,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
     /** TabbedPane containing the configuration panel, the info panel and the execution panel */
     private JTabbedPane tabbedPane;
     /** Map of the label containing the outputs values and their identifier*/
-    private List<JLabel> outputList;
+    private List<JLabel> outputJLabelList;
     /** DataUIManager used to create the UI corresponding the the data */
     private DataUIManager dataUIManager;
     /** Label containing the state of the process (running, completed or idle) */
@@ -70,7 +70,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
     public ProcessUIPanel(Process process, ToolBox toolBox) {
         this.setLayout(new BorderLayout());
 
-        outputList = new ArrayList<>();
+        outputJLabelList = new ArrayList<>();
         dataUIManager = toolBox.getDataUIManager();
         this.toolBox = toolBox;
 
@@ -95,7 +95,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         this.processExecutionData = processExecutionData;
         this.toolBox = toolBox;
 
-        outputList = new ArrayList<>();
+        outputJLabelList = new ArrayList<>();
         dataUIManager = toolBox.getDataUIManager();
 
         buildUI();
@@ -273,7 +273,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
             JLabel title = new JLabel(o.getTitle()+" : ");
             JLabel result = new JLabel();
             result.putClientProperty("URI", o.getIdentifier());
-            outputList.add(result);
+            outputJLabelList.add(result);
             resultPanel.add(title);
             resultPanel.add(result, "wrap");
         }
@@ -290,8 +290,8 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
      * @param outputs Outputs results.
      */
     public void setOutputs(List<String> outputs, String state) {
-        for (int i=0; i<outputs.size(); i++) {
-            outputList.get(i).setText(outputs.get(i));
+        for(int i=0; i<outputs.size(); i++) {
+            outputJLabelList.get(i).setText(outputs.get(i));
         }
         stateLabel.setText(state);
         runButton.setEnabled(true);

@@ -17,6 +17,8 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
+package org.orbisgis.orbistoolboxapi.annotations
+
 import org.orbisgis.orbistoolboxapi.annotations.input.Input
 import org.orbisgis.orbistoolboxapi.annotations.output.Output
 import org.orbisgis.orbistoolboxapi.annotations.model.Process
@@ -29,7 +31,7 @@ import org.orbisgis.orbistoolboxapi.annotations.model.Process
  */
 
 @Input
-input
+String input = "A very simple string."
 
 @Output
 int output

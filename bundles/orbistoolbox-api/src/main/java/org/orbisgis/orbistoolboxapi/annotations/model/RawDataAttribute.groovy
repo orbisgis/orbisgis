@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations.model.complexdata
+package org.orbisgis.orbistoolboxapi.annotations.model
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
@@ -28,8 +28,12 @@ import java.lang.annotation.RetentionPolicy
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface ShapeFileAttribute {
+@interface RawDataAttribute {
+
+    /** Default value for the formats attribute */
+    FormatAttribute[] defaultFormats = []
+
 
     /** List of supported formats */
-    String path() default ""
+    FormatAttribute[] formats() default []
 }

@@ -20,11 +20,9 @@
 package org.orbisgis.orbistoolbox.controller.parser;
 
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolboxapi.annotations.input.LiteralDataInput;
 import org.orbisgis.orbistoolboxapi.annotations.model.*;
-import org.orbisgis.orbistoolboxapi.annotations.output.LiteralDataOutput;
+import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URI;
 
@@ -48,7 +46,7 @@ public class LiteralDataParser implements Parser {
 
             return input;
         } catch (MalformedScriptException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(LiteralDataParser.class).error(e.getMessage());
             return null;
         }
     }
@@ -67,7 +65,7 @@ public class LiteralDataParser implements Parser {
 
             return output;
         } catch (MalformedScriptException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(LiteralDataParser.class).error(e.getMessage());
             return null;
         }
     }
