@@ -22,6 +22,7 @@ package org.orbisgis.orbistoolbox.controller;
 import groovy.lang.GroovyObject;
 import org.orbisgis.orbistoolbox.controller.parser.ParserController;
 import org.orbisgis.orbistoolbox.model.Input;
+import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
 import org.slf4j.LoggerFactory;
@@ -93,11 +94,17 @@ public class ProcessManager {
     /**
      * Execute the given process with the given data.
      * @param process Process to execute.
-     * @param dataMap Map containing the data for the process.
+     * @param inputDataMap Map containing the data for the process.
      * @return The groovy object on which the 'processing' method will be called.
      */
-    public GroovyObject executeProcess(Process process, Map<URI, Object> dataMap){
-        GroovyObject groovyObject = createProcess(process, dataMap);
+    public GroovyObject executeProcess(Process process,
+                                       Map<URI, Object> inputDataMap,
+                                       Map<URI, Object> outputDataMap,
+                                       Map<String, Object> properties){
+        GroovyObject groovyObject = createProcess(process, inputDataMap, outputDataMap);
+        for(Map.Entry<String, Object> variable : properties.entrySet()) {
+            groovyObject.setProperty("grv_" + variable.getKey(), variable.getValue());
+        }
         groovyObject.invokeMethod("processing", null);
         return groovyObject;
     }
@@ -105,10 +112,10 @@ public class ProcessManager {
     /**
      * Create a groovy object corresponding to the process with the given data.
      * @param process Process that will generate the groovy object.
-     * @param dataMap Map of the data for the process.
+     * @param inputDataMap Map of the data for the process.
      * @return A groovy object representing the process with the given data.
      */
-    private GroovyObject createProcess(Process process, Map<URI, Object> dataMap){
+    private GroovyObject createProcess(Process process, Map<URI, Object> inputDataMap, Map<URI, Object> outputDataMap){
         ProcessIdentifier pi = null;
         for(ProcessIdentifier proId : processIdList){
             if(proId.getProcess().getIdentifier().equals(process.getIdentifier())){
@@ -129,7 +136,12 @@ public class ProcessManager {
             for(Input i : process.getInput()) {
                 Field f = getField(pi.getClazz(), i.getIdentifier());
                 f.setAccessible(true);
-                f.set(groovyObject, dataMap.get(i.getIdentifier()));
+                f.set(groovyObject, inputDataMap.get(i.getIdentifier()));
+            }
+            for(Output o : process.getOutput()) {
+                Field f = getField(pi.getClazz(), o.getIdentifier());
+                f.setAccessible(true);
+                f.set(groovyObject, outputDataMap.get(o.getIdentifier()));
             }
         } catch (IllegalAccessException e) {
             LoggerFactory.getLogger(ProcessManager.class).error(e.getMessage());

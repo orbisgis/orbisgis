@@ -19,9 +19,13 @@
 
 package org.orbisgis.orbistoolbox.controller.parser;
 
-import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolboxapi.annotations.model.*;
-import org.slf4j.LoggerFactory;
+import org.orbisgis.orbistoolbox.model.ShapeFileData;
+import org.orbisgis.orbistoolbox.model.Input;
+import org.orbisgis.orbistoolbox.model.MalformedScriptException;
+import org.orbisgis.orbistoolbox.model.Output;
+import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
+import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute;
+import org.orbisgis.orbistoolboxapi.annotations.model.ShapeFileAttribute;
 
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -32,21 +36,21 @@ import java.net.URI;
  * @author Sylvain PALOMINOS
  **/
 
-public class RawDataParser implements Parser {
+public class ShapeFileParser implements Parser {
 
     @Override
     public Input parseInput(Field f, String processName) {
         //Instantiate the RawData
-        RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class));
+        ShapeFileData shapeFile = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(ShapeFileAttribute.class));
 
         Input input;
         try {
             //Instantiate the returned input
             input = new Input(f.getName(),
-                    URI.create("orbisgis:wps:" + processName + ":input:" + f.getName()),
-                    rawData);
+                    URI.create("orbisgis:wps:"+processName+":input:"+f.getName()),
+                    shapeFile);
         } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(RawDataParser.class).error(e.getMessage());
+            e.printStackTrace();
             return null;
         }
 
@@ -59,16 +63,16 @@ public class RawDataParser implements Parser {
     @Override
     public Output parseOutput(Field f, String processName) {
         //Instantiate the RawData
-        RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class));
+        ShapeFileData shapeFile = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(ShapeFileAttribute.class));
 
         Output output;
         try {
             //Instantiate the returned output
             output = new Output(f.getName(),
-                    URI.create("orbisgis:wps:" + processName + ":output:" + f.getName()),
-                    rawData);
+                    URI.create("orbisgis:wps:"+processName+":output:"+f.getName()),
+                    shapeFile);
         } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(RawDataParser.class).error(e.getMessage());
+            e.printStackTrace();
             return null;
         }
 
@@ -79,6 +83,6 @@ public class RawDataParser implements Parser {
 
     @Override
     public Class getAnnotation() {
-        return RawDataAttribute.class;
+        return ShapeFileAttribute.class;
     }
 }

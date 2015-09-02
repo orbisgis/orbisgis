@@ -197,6 +197,15 @@ public class ObjectAnnotationConverter {
         }
     }
 
+    public static ShapeFileData annotationToObject(ShapeFileAttribute shapeFileAttribute) {
+        try {
+            return new ShapeFileData();
+        } catch (MalformedScriptException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static LiteralValue annotationToObject(LiteralValueAttribute literalValueAttribute){
         LiteralValue literalValue = new LiteralValue();
         if(!literalValueAttribute.uom().equals(LiteralValueAttribute.defaultUom)) {

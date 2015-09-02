@@ -20,6 +20,8 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import org.orbisgis.orbistoolbox.model.*;
+import org.orbisgis.orbistoolbox.model.RawData;
+import org.orbisgis.orbistoolbox.model.ShapeFileData;
 import org.orbisgis.orbistoolbox.model.Process;
 
 import java.net.URI;
@@ -43,6 +45,8 @@ public class DataUIManager {
     public DataUIManager(){
         dataUIMap = new HashMap<>();
         linkClassUI(LiteralData.class, new LiteralDataUI());
+        linkClassUI(RawData.class, new RawDataUI());
+        linkClassUI(ShapeFileData.class, new ShapeFileUI());
     }
 
     /**
@@ -70,6 +74,14 @@ public class DataUIManager {
             if(getDataUI(input.getDataDescription().getClass()) != null) {
                 map.putAll(getDataUI(input.getDataDescription().getClass()).getDefaultValue(input));
             }
+        }
+        return map;
+    }
+
+    public Map<URI, Object> getOutputDefaultValues(Process process){
+        Map<URI, Object> map = new HashMap<>();
+        for(Output output : process.getOutput()) {
+            map.putAll(getDataUI(output.getDataDescription().getClass()).getDefaultValue(output));
         }
         return map;
     }

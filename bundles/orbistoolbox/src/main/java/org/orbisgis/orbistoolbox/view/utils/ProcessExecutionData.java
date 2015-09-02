@@ -25,7 +25,6 @@ import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.ProcessFrame;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +37,7 @@ public class ProcessExecutionData {
     /** Map of input data (URI of the corresponding input) */
     private Map<URI, Object> inputDataMap;
     /** Map of output data (URI of the corresponding output) */
-    private List<String> outputDataList;
+    private Map<URI, Object> outputDataMap;
     /** Process represented */
     private Process process;
     /**State of the process */
@@ -49,7 +48,7 @@ public class ProcessExecutionData {
     public ProcessExecutionData(ToolBox toolBox, Process process){
         this.toolBox = toolBox;
         this.process = process;
-        this.outputDataList = new ArrayList<>();
+        this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
     }
 
@@ -61,12 +60,12 @@ public class ProcessExecutionData {
         this.inputDataMap = inputDataMap;
     }
 
-    public List<String> getOutputDataList() {
-        return outputDataList;
+    public Map<URI, Object> getOutputDataMap() {
+        return outputDataMap;
     }
 
-    public void setOutputDataList(List<String> outputDataList) {
-        this.outputDataList = outputDataList;
+    public void setOutputDataMap(Map<URI, Object> outputDataMap) {
+        this.outputDataMap = outputDataMap;
     }
 
     public Process getProcess() {
@@ -100,20 +99,18 @@ public class ProcessExecutionData {
         //Check that all the data field were filled.
         if(inputDataMap.size() == process.getInput().size()) {
             //Run the process in a separated thread
-            ExecutionThread thread = new ExecutionThread(process, inputDataMap, toolBox, this);
+            ExecutionThread thread = new ExecutionThread(process, outputDataMap, inputDataMap, toolBox, this);
             thread.start();
         }
     }
 
     /**
      * Indicated that the process has ended and register the outputs results.
-     * @param outputList List of the outputs results.
+     * @param outputList Map of the outputs results.
      */
     public void endProcess(List<String> outputList){
-        outputDataList.clear();
-        outputDataList.addAll(outputList);
         state = ProcessState.COMPLETED;
-        validateProcessExecution();
+        validateProcessExecution(outputList);
     }
 
     /**
@@ -121,11 +118,11 @@ public class ProcessExecutionData {
      * Tells the toolbox that the process execution has been validated.
      * @return True if the process execution has been validated, false otherwise.
      */
-    public boolean validateProcessExecution(){
+    public boolean validateProcessExecution(List<String> outputList){
         if(processFrame == null) {
             return false;
         }
-        processFrame.setOutputs(outputDataList, ProcessState.COMPLETED.getValue());
+        processFrame.setOutputs(outputList, ProcessState.COMPLETED.getValue());
         toolBox.validateProcessExecution(this);
         return true;
     }

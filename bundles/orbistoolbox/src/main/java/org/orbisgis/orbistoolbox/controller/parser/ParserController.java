@@ -55,6 +55,7 @@ public class ParserController {
         parserList.add(new RawDataParser());
         parserList.add(new LiteralDataParser());
         parserList.add(new BoundingBoxParser());
+        parserList.add(new ShapeFileParser());
         defaultParser = new DefaultParser();
         processParser = new ProcessParser();
         groovyClassLoader = new GroovyShell().getClassLoader();
