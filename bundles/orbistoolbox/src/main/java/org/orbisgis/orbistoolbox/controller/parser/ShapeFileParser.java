@@ -19,8 +19,7 @@
 
 package org.orbisgis.orbistoolbox.controller.parser;
 
-import org.orbisgis.orbistoolbox.model.ComplexeData.RawData;
-import org.orbisgis.orbistoolbox.model.ComplexeData.ShapeFileData;
+import org.orbisgis.orbistoolbox.model.ShapeFileData;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.MalformedScriptException;
 import org.orbisgis.orbistoolbox.model.Output;

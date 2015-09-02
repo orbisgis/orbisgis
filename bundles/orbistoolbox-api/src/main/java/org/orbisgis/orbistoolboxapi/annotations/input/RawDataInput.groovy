@@ -23,7 +23,7 @@ import groovy.transform.AnnotationCollector
 import groovy.transform.Field
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.complexdata.RawDataAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.RawDataAttribute
 
 /**
  * Groovy annotation that can be used in a groovy script to declare a raw input field.

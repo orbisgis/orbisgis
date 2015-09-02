@@ -20,7 +20,6 @@
 package org.orbisgis.orbistoolbox.model;
 
 import org.junit.Test;
-import org.orbisgis.orbistoolbox.model.ComplexeData.RawData;
 
 import java.net.URISyntaxException;
 import java.net.URI;

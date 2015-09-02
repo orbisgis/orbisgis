@@ -20,8 +20,8 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.model.ComplexeData.RawData;
-import org.orbisgis.orbistoolbox.model.ComplexeData.ShapeFileData;
+import org.orbisgis.orbistoolbox.model.RawData;
+import org.orbisgis.orbistoolbox.model.ShapeFileData;
 import org.orbisgis.orbistoolbox.model.Process;
 
 import java.net.URI;

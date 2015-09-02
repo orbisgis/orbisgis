@@ -22,8 +22,6 @@ package org.orbisgis.orbistoolbox.controller.parser;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolboxapi.annotations.model.*;
 import org.slf4j.LoggerFactory;
-import org.orbisgis.orbistoolbox.model.ComplexeData.RawData;
-import org.orbisgis.orbistoolboxapi.annotations.model.complexdata.RawDataAttribute;
 
 import java.lang.reflect.Field;
 import java.net.URI;

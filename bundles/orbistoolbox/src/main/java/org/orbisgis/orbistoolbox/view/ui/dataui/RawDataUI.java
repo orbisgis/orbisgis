@@ -20,7 +20,7 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.model.ComplexeData.RawData;
+import org.orbisgis.orbistoolbox.model.RawData;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.slf4j.LoggerFactory;

@@ -23,7 +23,7 @@ import groovy.transform.AnnotationCollector
 import groovy.transform.Field
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.complexdata.ShapeFileAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.ShapeFileAttribute
 
 /**
  * Groovy annotation that can be used in a groovy script to declare a ShapeFile output field.

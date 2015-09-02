@@ -23,12 +23,13 @@ import groovy.transform.AnnotationCollector
 import groovy.transform.Field
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.complexdata.RawDataAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.RawDataAttribute
+import org.orbisgis.orbistoolboxapi.annotations.input.Input
 
 /**
  * Groovy annotation that can be used in a groovy script to declare a raw output field.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, RawDataAttribute, OutputAttribute, DescriptionTypeAttribute])
+@AnnotationCollector([Field, RawDataAttribute, OutputAttribute, OutputAttribute, DescriptionTypeAttribute])
 @interface RawDataOutput {}
