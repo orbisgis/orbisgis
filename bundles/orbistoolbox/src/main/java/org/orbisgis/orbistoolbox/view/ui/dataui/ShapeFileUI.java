@@ -22,8 +22,11 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 import org.orbisgis.orbistoolbox.model.DescriptionType;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
+import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
+import org.orbisgis.sif.components.OpenFolderPanel;
+import org.orbisgis.sif.components.SaveFilePanel;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
@@ -33,6 +36,8 @@ import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
@@ -40,88 +45,51 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * DataUI associated to the ShapeFile data.
+ *
  * @author Sylvain PALOMINOS
  **/
 
 public class ShapeFileUI implements DataUI{
     @Override
-    public JComponent createUI(Input input, Map<URI, Object> dataMap) {
+    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         //Create the component
         JComponent component = new JPanel();
         component.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-        //component.add(new JLabel(sourceCA.getName()));
-        //Display the SourceCA into a JTextField
         JTextField jtf = new JTextField();
         jtf.setColumns(25);
-        //"Save" the CA inside the JTextField
         jtf.getDocument().putProperty("dataMap", dataMap);
-        jtf.getDocument().putProperty("uri", input.getIdentifier());
+        jtf.getDocument().putProperty("uri", inputOrOutput.getIdentifier());
+        //add the listener to display the full file path when the text box is selected.
+        jtf.addMouseListener(EventHandler.create(MouseListener.class, this, "onSelected", "", "mouseClicked"));
         //add the listener for the text changes in the JTextField
         jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
                 this,
                 "saveDocumentText",
                 "document"));
 
-        if(dataMap.get(input.getIdentifier()) != null)
-            jtf.setText(dataMap.get(input.getIdentifier()).toString());
+        OpenFilePanel filePanel = null;
+        if(inputOrOutput instanceof Input){
+            filePanel = new OpenFilePanel("RawDataUI.File", "Select File");
+        }
+        else if(inputOrOutput instanceof Output){
+            filePanel = new SaveFilePanel("RawDataUI.File", "Select File");
+        }
+        filePanel.addFilter(new String[]{"shp"}, "Shape File");
+        filePanel.loadState();
+        if(dataMap.get(inputOrOutput.getIdentifier()) != null)
+            jtf.setText(dataMap.get(inputOrOutput.getIdentifier()).toString());
         else {
-            //Load the last path use in a sourceCA
-            OpenFilePanel openFilePanel = new OpenFilePanel("RawDataUI.File", "Select File");
-            openFilePanel.addFilter(new String[]{".shp"}, "Shape File");
-            openFilePanel.addFilter(new String[]{"*"}, "All files");
-            openFilePanel.loadState();
-            jtf.setText(openFilePanel.getCurrentDirectory().getAbsolutePath());
+            jtf.setText(filePanel.getCurrentDirectory().getAbsolutePath());
         }
 
         component.add(jtf);
         //Create the button Browse
         JButton button = new JButton("Browse");
-        //"Save" the sourceCA and the JTextField in the button
         button.putClientProperty("dataMap", dataMap);
-        button.putClientProperty("uri", input.getIdentifier());
+        button.putClientProperty("uri", inputOrOutput.getIdentifier());
         button.putClientProperty("JTextField", jtf);
-        //Add the listener for the click on the button
-        button.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
-
-        component.add(button);
-        return component;
-    }
-
-    @Override
-    public JComponent createUI(Output output, Map<URI, Object> dataMap) {
-        //Create the component
-        JComponent component = new JPanel();
-        component.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-        //component.add(new JLabel(sourceCA.getName()));
-        //Display the SourceCA into a JTextField
-        JTextField jtf = new JTextField();
-        jtf.setColumns(25);
-        //"Save" the CA inside the JTextField
-        jtf.getDocument().putProperty("dataMap", dataMap);
-        jtf.getDocument().putProperty("uri", output.getIdentifier());
-        //add the listener for the text changes in the JTextField
-        jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this, "saveDocumentText", "document"));
-
-        if(dataMap.get(output.getIdentifier()) != null)
-            jtf.setText(dataMap.get(output.getIdentifier()).toString());
-        else {
-            //Load the last path use in a sourceCA
-            OpenFilePanel openFilePanel = new OpenFilePanel("RawDataUI.File", "Select File");
-            openFilePanel.addFilter(new String[]{".shp"}, "Shape File");
-            openFilePanel.addFilter(new String[]{"*"}, "All files");
-            openFilePanel.loadState();
-            jtf.setText(openFilePanel.getCurrentDirectory().getAbsolutePath());
-        }
-
-        component.add(jtf);
-        //Create the button Browse
-        JButton button = new JButton("Browse");
-        //"Save" the sourceCA and the JTextField in the button
-        button.putClientProperty("dataMap", dataMap);
-        button.putClientProperty("uri", output.getIdentifier());
-        button.putClientProperty("JTextField", jtf);
+        button.putClientProperty("filePanel", filePanel);
         //Add the listener for the click on the button
         button.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
 
@@ -134,17 +102,15 @@ public class ShapeFileUI implements DataUI{
      * @param event
      */
     public void openLoadPanel(ActionEvent event){
-        OpenFilePanel openFilePanel = new OpenFilePanel("ConfigurationAttribute.SourceCA", "Select source");
-        openFilePanel.addFilter(new String[]{"*"}, "All files");
-        openFilePanel.loadState();
+        JButton source = (JButton)event.getSource();
+        OpenFilePanel openFilePanel = (OpenFilePanel)source.getClientProperty("filePanel");
         if (UIFactory.showDialog(openFilePanel, true, true)) {
-            JButton source = (JButton)event.getSource();
+            JTextField textField = (JTextField)source.getClientProperty("JTextField");
+            textField.setText(openFilePanel.getSelectedFile().getName());
             Map<URI, Object> dataMap = (Map<URI, Object>)source.getClientProperty("dataMap");
             URI uri = (URI)source.getClientProperty("uri");
             dataMap.remove(uri);
             dataMap.put(uri, openFilePanel.getSelectedFile().getAbsolutePath());
-            JTextField textField = (JTextField)source.getClientProperty("JTextField");
-            textField.setText(openFilePanel.getSelectedFile().getName());
         }
     }
 
@@ -157,17 +123,31 @@ public class ShapeFileUI implements DataUI{
             Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
             URI uri = (URI)document.getProperty("uri");
             String name = document.getText(0, document.getLength());
-            if(new File(name).exists()) {
-                dataMap.remove(uri);
-                dataMap.put(uri, name);
-            }
+            dataMap.remove(uri);
+            dataMap.put(uri, name);
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(ShapeFileUI.class).error(e.getMessage());
         }
     }
 
+    /**
+     * When the textField is selected, display the full file path instead of the file name to allow the user to edit it.
+     * @param me
+     */
+    public void onSelected(MouseEvent me){
+        JTextField textField = (JTextField)me.getSource();
+        Map<URI, Object> dataMap = (Map<URI, Object>)textField.getDocument().getProperty("dataMap");
+        String path = dataMap.get(textField.getDocument().getProperty("uri")).toString();
+        textField.setText(path);
+    }
+
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         return new HashMap<>();
+    }
+
+    @Override
+    public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
+        return ToolBoxIcon.getIcon("undefined");
     }
 }

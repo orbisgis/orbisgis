@@ -20,15 +20,14 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import org.orbisgis.orbistoolbox.model.DescriptionType;
-import org.orbisgis.orbistoolbox.model.Input;
-import org.orbisgis.orbistoolbox.model.Output;
 
 import javax.swing.*;
 import java.net.URI;
 import java.util.Map;
 
 /**
- * Interface for the definition of the ui to give the input value for a data type (LiteralData, RawData ...).
+ * Interface for the class that will create the UI for a specific data type (LiteralData, RawData, ShapeFileData ...) .
+ * The UI should allow the user to configure the Inputs and Outputs during the process configuration.
  *
  * @author Sylvain PALOMINOS
  **/
@@ -36,25 +35,24 @@ import java.util.Map;
 public interface DataUI {
 
     /**
-     * Return the ui for the definition of the input data.
-     * @param input Input to render.
-     * @param dataMap Map that will contain the data.
-     * @return JComponent containing the ui.
+     * Return the UI (a JComponent) which contain all the element to configure the input or output in argument.
+     * @param inputOrOutput Input or output to render.
+     * @param dataMap Map that will contain the data once the input or output configured.
+     * @return JComponent containing the UI.
      */
-    public JComponent createUI(Input input, Map<URI, Object> dataMap);
-
-    /**
-     * Return the ui for the definition of the output data.
-     * @param output Output to render.
-     * @param dataMap Map that will contain the data.
-     * @return JComponent containing the ui.
-     */
-    public JComponent createUI(Output output, Map<URI, Object> dataMap);
+    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap);
 
     /**
      * Returns the map of default input value if it exists.
-     * @param descriptionType Input or Output to analyse.
-     * @return The default input map.
+     * @param inputOrOutput Input or Output to analyse.
+     * @return The default input or output value map.
      */
-    public Map<URI, Object> getDefaultValue(DescriptionType descriptionType);
+    public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput);
+
+    /**
+     * Return an image icon representing the data or null if there is no image associated.
+     * @param inputOrOutput Input or output to analyse.
+     * @return The icon associated to the given data.
+     */
+    public ImageIcon getIconFromData(DescriptionType inputOrOutput);
 }

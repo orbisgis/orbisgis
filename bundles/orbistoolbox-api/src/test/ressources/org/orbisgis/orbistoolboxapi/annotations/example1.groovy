@@ -17,8 +17,6 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
-
 import org.orbisgis.orbistoolboxapi.annotations.input.LiteralDataInput
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralDataDomainAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.LiteralValueAttribute

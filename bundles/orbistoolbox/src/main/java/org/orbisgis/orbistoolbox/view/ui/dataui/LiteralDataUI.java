@@ -22,6 +22,7 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.LiteralDataDomain;
+import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
@@ -48,107 +49,154 @@ public class LiteralDataUI implements DataUI {
 
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
-        Map<URI, Object> map = new HashMap<>();
+        Map<URI, Object> uriDefaultValueMap = new HashMap<>();
+        List<DescriptionType> descriptionTypeList = new ArrayList<>();
+        DataDescription dataDescription = null;
+        URI identifier;
 
-        if(inputOrOutput instanceof Input) {
-            List<Input> inputList = new ArrayList<>();
-
-            if (((Input)inputOrOutput).getInput() != null) {
-                inputList = ((Input)inputOrOutput).getInput();
+        //Gets the descriptionType list if the argument is an input
+        if(inputOrOutput instanceof Input){
+            Input input = (Input) inputOrOutput;
+            if(input.getInput() != null){
+                descriptionTypeList.addAll(input.getInput());
             }
-            inputList.add((Input)inputOrOutput);
+            else{
+                descriptionTypeList.add(input);
+            }
+        }
 
-            for (Input i : inputList) {
-                if (i.getDataDescription() instanceof LiteralData) {
-                    for (LiteralDataDomain ldda : ((LiteralData) i.getDataDescription()).getLiteralDomainType()) {
-                        if (ldda.isDefaultDomain()) {
-                            if (ldda.getDefaultValue() instanceof Range) {
-                                map.put(i.getIdentifier(), ((Range) ldda.getDefaultValue()).getMinimumValue());
-                            } else if (ldda.getDefaultValue() instanceof Value) {
-                                map.put(i.getIdentifier(), ((Value) ldda.getDefaultValue()).getValue());
-                            }
+        //Gets the descriptionType list if the argument is an output
+        if(inputOrOutput instanceof Output){
+            Output output = (Output) inputOrOutput;
+            if(output.getOutput() != null){
+                descriptionTypeList.addAll(output.getOutput());
+            }
+            else{
+                descriptionTypeList.add(output);
+            }
+        }
+
+        //Fill the map
+        for(DescriptionType dt : descriptionTypeList){
+            identifier = dt.getIdentifier();
+            if(dt instanceof Input){
+                dataDescription = ((Input) dt).getDataDescription();
+            }
+            else if(dt instanceof  Output){
+                dataDescription = ((Output) dt).getDataDescription();
+            }
+            //Find in the dataDescription the default LiteralDataDomain an retrieve its default value
+            if (dataDescription instanceof LiteralData) {
+                for (LiteralDataDomain ldda : ((LiteralData) dataDescription).getLiteralDomainType()) {
+                    if (ldda.isDefaultDomain()) {
+                        //If the default value is a Range, get the minimum as default value
+                        if (ldda.getDefaultValue() instanceof Range) {
+                            uriDefaultValueMap.put(identifier, ((Range) ldda.getDefaultValue()).getMinimumValue());
+                        } else if (ldda.getDefaultValue() instanceof Value) {
+                            uriDefaultValueMap.put(identifier, ((Value) ldda.getDefaultValue()).getValue());
                         }
                     }
                 }
             }
         }
-
-        else if(inputOrOutput instanceof Output) {
-            List<Output> outputList = new ArrayList<>();
-
-            if (((Output)inputOrOutput).getOutput() != null) {
-                outputList = ((Output)inputOrOutput).getOutput();
-            }
-            outputList.add((Output) inputOrOutput);
-
-            for (Output o : outputList) {
-                if (o.getDataDescription() instanceof LiteralData) {
-                    for (LiteralDataDomain ldda : ((LiteralData) o.getDataDescription()).getLiteralDomainType()) {
-                        if (ldda.isDefaultDomain()) {
-                            if (ldda.getDefaultValue() instanceof Range) {
-                                map.put(o.getIdentifier(), ((Range) ldda.getDefaultValue()).getMinimumValue());
-                            } else if (ldda.getDefaultValue() instanceof Value) {
-                                map.put(o.getIdentifier(), ((Value) ldda.getDefaultValue()).getValue());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return map;
+        return uriDefaultValueMap;
     }
 
     @Override
-    public JComponent createUI(Output output, Map<URI, Object> dataMap) {
-        return null;
+    public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
+        DataDescription dataDescription = null;
+        if(inputOrOutput instanceof Input){
+            dataDescription = ((Input) inputOrOutput).getDataDescription();
+        }
+        if(inputOrOutput instanceof Output){
+            dataDescription = ((Output) inputOrOutput).getDataDescription();
+        }
+        if(dataDescription instanceof LiteralData) {
+            LiteralData ld = (LiteralData)dataDescription;
+            DataType dataType = DataType.STRING;
+            if(ld.getValue() != null && ld.getValue().getDataType()!= null) {
+                dataType = ld.getValue().getDataType();
+            }
+            switch (dataType) {
+                case STRING:
+                    return ToolBoxIcon.getIcon("string");
+                case UNSIGNED_BYTE:
+                case SHORT:
+                case LONG:
+                case BYTE:
+                case INTEGER:
+                case DOUBLE:
+                case FLOAT:
+                    return ToolBoxIcon.getIcon("number");
+                case BOOLEAN:
+                    return ToolBoxIcon.getIcon("boolean");
+                default:
+                    return ToolBoxIcon.getIcon("undefined");
+            }
+        }
+        return ToolBoxIcon.getIcon("undefined");
     }
 
     @Override
-    public JComponent createUI(Input input, Map<URI, Object> dataMap) {
-        LiteralData literalData = (LiteralData)input.getDataDescription();
-        JComboBox<String> comboBox = new JComboBox<>();
-        for(LiteralDataDomain ldd : literalData.getLiteralDomainType()){
-            comboBox.addItem(ldd.getDataType().name().toLowerCase());
-        }
+    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         JPanel panel = new JPanel(new MigLayout("fill"));
-        panel.add(comboBox, "wrap");
 
-        JComponent dataField = new JPanel();
-        panel.add(dataField);
+        //If the descriptionType is an input, add a comboBox to select the input type and according to the type,
+        // add a second JComponent to write the input value
+        if(inputOrOutput instanceof Input){
+            Input input = (Input)inputOrOutput;
+            LiteralData literalData = (LiteralData)input.getDataDescription();
+            //JComboBox with the input type
+            JComboBox<String> comboBox = new JComboBox<>();
+            for(LiteralDataDomain ldd : literalData.getLiteralDomainType()){
+                comboBox.addItem(ldd.getDataType().name().toLowerCase());
+            }
+            panel.add(comboBox, "wrap");
 
-        comboBox.putClientProperty("dataField", dataField);
-        comboBox.putClientProperty("uri", input.getIdentifier());
-        comboBox.putClientProperty("dataMap", dataMap);
-        comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onBoxChange", "source"));
+            //JPanel containing the component to set the input value
+            JComponent dataField = new JPanel();
+            panel.add(dataField);
 
-        onBoxChange(comboBox);
+            comboBox.putClientProperty("dataField", dataField);
+            comboBox.putClientProperty("uri", input.getIdentifier());
+            comboBox.putClientProperty("dataMap", dataMap);
+            comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onBoxChange", "source"));
 
+            onBoxChange(comboBox);
+        }
+        else{
+
+        }
         return panel;
     }
 
     /**
      * Call on selecting the type of data to use.
+     * For each type registered in the JComboBox adapts the dataField panel.
+     * Also add a listener to save the data value set by the user
      * @param source The comboBox containing the data type to use.
      */
     public void onBoxChange(Object source){
-        Map<URI, Object> dataMap = (Map<URI, Object>) ((JComponent) source).getClientProperty("dataMap");;
-        URI uri = (URI) ((JComponent) source).getClientProperty("uri");
-        String s = (String) ((JComboBox)source).getSelectedItem();
+        JComboBox comboBox = (JComboBox) source;
+        Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty("dataMap");
+        URI uri = (URI) comboBox.getClientProperty("uri");
+        String s = (String) comboBox.getSelectedItem();
         JComponent dataComponent;
         switch(DataType.valueOf(s.toUpperCase())){
             case BOOLEAN:
+                //Instantiate the component
                 dataComponent = new JComboBox<Boolean>();
-                ((JComboBox<Boolean>)dataComponent).addItem(Boolean.TRUE);
-                ((JComboBox<Boolean>)dataComponent).addItem(Boolean.FALSE);
+                ((JComboBox)dataComponent).addItem(Boolean.TRUE);
+                ((JComboBox)dataComponent).addItem(Boolean.FALSE);
+                //Put the data type, the dataMap and the uri as properties
                 dataComponent.putClientProperty("type", DataType.BOOLEAN);
                 dataComponent.putClientProperty("dataMap",dataMap);
                 dataComponent.putClientProperty("uri", uri);
-
+                //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri).equals(Boolean.TRUE) || dataMap.get(uri).equals(Boolean.FALSE)){
-                    ((JComboBox<Boolean>)dataComponent).setSelectedItem(dataMap.get(uri));
+                    ((JComboBox)dataComponent).setSelectedItem(dataMap.get(uri));
                 }
-
-                ((JComboBox<Boolean>)dataComponent).addActionListener(EventHandler.create(
+                ((JComboBox)dataComponent).addActionListener(EventHandler.create(
                         ActionListener.class,
                         this,
                         "onDataChanged",
@@ -156,10 +204,13 @@ public class LiteralDataUI implements DataUI {
 
                 break;
             case BYTE:
+                //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, Byte.MIN_VALUE, Byte.MAX_VALUE, 1));
+                //Put the data type, the dataMap and the uri as properties
                 dataComponent.putClientProperty("type", DataType.BYTE);
-                dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
+                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                //Set the default value and adds the listener for saving the value set by the user
                 ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
@@ -168,10 +219,13 @@ public class LiteralDataUI implements DataUI {
                         "source"));
                 break;
             case INTEGER:
+                //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
+                //Put the data type, the dataMap and the uri as properties
                 dataComponent.putClientProperty("type", DataType.INTEGER);
-                dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
+                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                //Set the default value and adds the listener for saving the value set by the user
                 ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
@@ -180,10 +234,13 @@ public class LiteralDataUI implements DataUI {
                         "source"));
                 break;
             case LONG:
+                //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, Long.MIN_VALUE, Long.MAX_VALUE, 1));
+                //Put the data type, the dataMap and the uri as properties
                 dataComponent.putClientProperty("type", DataType.LONG);
-                dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
+                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                //Set the default value and adds the listener for saving the value set by the user
                 ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
@@ -192,10 +249,13 @@ public class LiteralDataUI implements DataUI {
                         "source"));
                 break;
             case SHORT:
+                //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, Short.MIN_VALUE, Short.MAX_VALUE, 1));
+                //Put the data type, the dataMap and the uri as properties
                 dataComponent.putClientProperty("type", DataType.SHORT);
-                dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
+                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                //Set the default value and adds the listener for saving the value set by the user
                 ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
@@ -204,10 +264,13 @@ public class LiteralDataUI implements DataUI {
                         "source"));
                 break;
             case UNSIGNED_BYTE:
+                //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, 0, Character.MAX_VALUE, 1));
+                //Put the data type, the dataMap and the uri as properties
                 dataComponent.putClientProperty("type", DataType.UNSIGNED_BYTE);
-                dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
+                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                //Set the default value and adds the listener for saving the value set by the user
                 ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
@@ -216,10 +279,13 @@ public class LiteralDataUI implements DataUI {
                         "source"));
                 break;
             case DOUBLE:
+                //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, Double.MIN_VALUE, Double.MAX_VALUE, 1));
+                //Put the data type, the dataMap and the uri as properties
                 dataComponent.putClientProperty("type", DataType.DOUBLE);
-                dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
+                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                //Set the default value and adds the listener for saving the value set by the user
                 ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
@@ -228,10 +294,13 @@ public class LiteralDataUI implements DataUI {
                         "source"));
                 break;
             case FLOAT:
+                //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, Float.MIN_VALUE, Float.MAX_VALUE, 1));
+                //Put the data type, the dataMap and the uri as properties
                 dataComponent.putClientProperty("type", DataType.FLOAT);
-                dataComponent.putClientProperty("dataMap",((JComboBox) source).getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",((JComboBox) source).getClientProperty("uri"));
+                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
+                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                //Set the default value and adds the listener for saving the value set by the user
                 ((JSpinner)dataComponent).setValue(dataMap.get(uri));
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
@@ -241,18 +310,22 @@ public class LiteralDataUI implements DataUI {
                 break;
             case STRING:
             default:
+                //Instantiate the component
                 dataComponent = new JTextArea(6, 20);
                 dataComponent.setBorder(BorderFactory.createLineBorder(Color.lightGray));
-                ((JTextArea)dataComponent).getDocument().putProperty("dataMap", ((JComboBox) source).getClientProperty("dataMap"));
-                ((JTextArea)dataComponent).getDocument().putProperty("uri", ((JComboBox) source).getClientProperty("uri"));
+                //Put the data type, the dataMap and the uri as properties
+                Document doc = ((JTextArea) dataComponent).getDocument();
+                doc.putProperty("dataMap", comboBox.getClientProperty("dataMap"));
+                doc.putProperty("uri", comboBox.getClientProperty("uri"));
+                //Set the default value and adds the listener for saving the value set by the user
                 ((JTextArea)dataComponent).setText((String)dataMap.get(uri));
-                ((JTextArea)dataComponent).getDocument().addDocumentListener(EventHandler.create(
+                doc.addDocumentListener(EventHandler.create(
                         DocumentListener.class,
                         this,
                         "onDocumentChanged",
                         "document",
                         "insertUpdate"));
-                ((JTextArea)dataComponent).getDocument().addDocumentListener(EventHandler.create(
+                doc.addDocumentListener(EventHandler.create(
                         DocumentListener.class,
                         this,
                         "onDocumentChanged",
@@ -260,13 +333,14 @@ public class LiteralDataUI implements DataUI {
                         "removeUpdate"));
                 break;
         }
-        JPanel panel = (JPanel) ((JComboBox) source).getClientProperty("dataField");
+        //Adds to the dataField the dataComponent
+        JPanel panel = (JPanel) comboBox.getClientProperty("dataField");
         panel.removeAll();
         panel.add(dataComponent);
     }
 
     /**
-     * Call if the TextArea for the String type is changed.
+     * Call if the TextArea for the String type is changed and save the new text in the dataMap.
      * @param document
      */
     public void onDocumentChanged(Document document){
@@ -283,7 +357,7 @@ public class LiteralDataUI implements DataUI {
     }
 
     /**
-     * Call if the JComponent where the value is defined is changed.
+     * Call if the JComponent where the value is defined is changed and save the new value in the dataMap
      * @param source
      */
     public void onDataChanged(Object source){

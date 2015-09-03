@@ -17,8 +17,6 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations
-
 import org.orbisgis.orbistoolboxapi.annotations.input.LiteralDataInput
 import org.orbisgis.orbistoolboxapi.annotations.input.RawDataInput
 import org.orbisgis.orbistoolboxapi.annotations.model.FormatAttribute
@@ -49,12 +47,12 @@ import java.nio.file.StandardCopyOption
                 )
         ]
 )
-File f = new File("file1.tar.gz");
+File f
 
 @LiteralDataInput(
         title = "Copy name"
 )
-String name = "compressedFile"
+String name
 
 @LiteralDataOutput(
         title = "Result"
