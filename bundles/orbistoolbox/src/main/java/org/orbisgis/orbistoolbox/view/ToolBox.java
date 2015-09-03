@@ -148,7 +148,11 @@ public class ToolBox extends JPanel implements DockingPanel {
      * @return True if the file is well formed, false otherwise.
      */
     public boolean checkProcess(File f){
-        return (processManager.getProcess(f) != null);
+        Process process = processManager.getProcess(f);
+        if(process != null){
+            processManager.removeProcess(process);
+        }
+        return (processManager.addLocalScript(f) != null);
     }
 
     /**

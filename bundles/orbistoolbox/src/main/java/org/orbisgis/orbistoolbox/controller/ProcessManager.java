@@ -64,10 +64,7 @@ public class ProcessManager {
             return;
         }
         for(File f : folder.listFiles()){
-            if(f.getName().endsWith(".groovy")){
-                AbstractMap.SimpleEntry entry = parserController.parseProcess(f.getAbsolutePath());
-                processIdList.add(new ProcessIdentifier((Class) entry.getValue(), (Process) entry.getKey(), f.getAbsolutePath()));
-            }
+            addLocalScript(f);
         }
     }
 
@@ -77,7 +74,7 @@ public class ProcessManager {
      * @return The process corresponding to the script.
      */
     public Process addLocalScript(File f){
-        if (f.getName().endsWith(".groovy")) {
+        if (f.getName().endsWith(".groovy") && f.getName().length()>7) {
             AbstractMap.SimpleEntry entry = parserController.parseProcess(f.getAbsolutePath());
             if(entry != null && entry.getKey() != null && entry.getValue() != null){
                 processIdList.add(new ProcessIdentifier(
@@ -170,7 +167,7 @@ public class ProcessManager {
                 return pi.getProcess();
             }
         }
-        return addLocalScript(f);
+        return null;
     }
 
     /**

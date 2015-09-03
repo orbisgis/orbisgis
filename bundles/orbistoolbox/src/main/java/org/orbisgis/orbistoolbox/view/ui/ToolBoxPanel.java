@@ -115,7 +115,7 @@ public class ToolBoxPanel extends JPanel {
         tree.setRootVisible(false);
         tree.setScrollsOnExpand(true);
         tree.setCellRenderer(new CustomTreeCellRenderer(tree));
-        tree.addMouseListener(EventHandler.create(MouseListener.class, this, "onMouseClicked", "", "mouseClicked"));
+        tree.addMouseListener(EventHandler.create(MouseListener.class, this, "onMouseClicked", "", "mouseReleased"));
 
         JScrollPane treeScrollPane = new JScrollPane(tree);
         this.add(treeScrollPane, BorderLayout.CENTER);
@@ -245,17 +245,20 @@ public class ToolBoxPanel extends JPanel {
                     subSubCategoryNode.setValidProcess(false);
                 }
                 if(!isNodeExisting(script.getFilePath(), subSubCategoryNode)) {
+                    script.setValidProcess((toolBox.getProcessManager().getProcess(f) != null));
                     subSubCategoryNode.add(script);
                 }
             }
             else {
                 if(!isNodeExisting(script.getFilePath(), subCategoryNode)) {
+                    script.setValidProcess((toolBox.getProcessManager().getProcess(f) != null));
                     subCategoryNode.add(script);
                 }
             }
         }
         else {
             if(!isNodeExisting(script.getFilePath(), categoryNode)) {
+                script.setValidProcess((toolBox.getProcessManager().getProcess(f) != null));
                 categoryNode.add(script);
             }
         }
@@ -372,6 +375,7 @@ public class ToolBoxPanel extends JPanel {
                 TreeNodeWps script = new TreeNodeWps();
                 script.setUserObject(f.getName().replace(".groovy", ""));
                 script.setFilePath(f);
+                script.setValidProcess((toolBox.getProcessManager().getProcess(f) != null));
                 source.add(script);
                 isScript = true;
             }
@@ -480,14 +484,16 @@ public class ToolBoxPanel extends JPanel {
         if(node.isLeaf()){
             node.setValidProcess(toolBox.checkProcess(node.getFilePath()));
         }
-        if(tree.getModel().equals(categoryModel)){
-            for(TreeNodeWps child : getAllLeaf(node)){
-                child.setValidProcess(toolBox.checkProcess(child.getFilePath()));
+        else {
+            if (tree.getModel().equals(categoryModel)) {
+                for (TreeNodeWps child : getAllLeaf(node)) {
+                    child.setValidProcess(toolBox.checkProcess(child.getFilePath()));
+                }
             }
-        }
-        if(tree.getModel().equals(fileModel)){
-            this.remove(node);
-            toolBox.addLocalSource(node.getFilePath());
+            if (tree.getModel().equals(fileModel)) {
+                this.remove(node);
+                toolBox.addLocalSource(node.getFilePath());
+            }
         }
     }
 
