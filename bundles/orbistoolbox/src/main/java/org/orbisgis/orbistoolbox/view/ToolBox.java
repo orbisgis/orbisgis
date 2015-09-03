@@ -166,12 +166,20 @@ public class ToolBox extends JPanel implements DockingPanel {
         return dataUIManager;
     }
 
-    public void removeProcessExecutionData(ProcessExecutionData processExecutionData){
-        processExecutionDataList.remove(processExecutionData);
+    /**
+     * Save a processExecutionData to be able to retrieve it on reopening the process.
+     * @param processExecutionData ProcessExecutionData to save.
+     */
+    public void saveProcessExecutionData(ProcessExecutionData processExecutionData){
+        processExecutionDataList.add(processExecutionData);
     }
 
-    public void addProcessExecutionData(ProcessExecutionData processExecutionData){
-        processExecutionDataList.add(processExecutionData);
+    /**
+     * Deletes the processExecutionData.
+     * @param processExecutionData ProcessExecutionData to delete.
+     */
+    public void deleteProcessExecutionData(ProcessExecutionData processExecutionData){
+        processExecutionDataList.remove(processExecutionData);
     }
 
     public Map<String, Object> getProperties(){

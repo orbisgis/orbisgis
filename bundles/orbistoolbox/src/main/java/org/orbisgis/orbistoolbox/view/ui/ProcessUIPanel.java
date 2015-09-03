@@ -80,7 +80,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         processExecutionData.setInputDataMap(dataUIManager.getInputDefaultValues(process));
         processExecutionData.setOutputDataMap(dataUIManager.getOutputDefaultValues(process));
 
-        toolBox.addProcessExecutionData(processExecutionData);
+        toolBox.saveProcessExecutionData(processExecutionData);
 
         buildUI();
     }
@@ -135,7 +135,9 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
      */
     public void runProcess(){
         //Select the execution tab
+        runButton.setText("running");
         runButton.setEnabled(false);
+        stateLabel.setText(ProcessExecutionData.ProcessState.RUNNING.getValue());
         tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
         processExecutionData.runProcess();
     }
@@ -294,6 +296,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
             outputJLabelList.get(i).setText(outputs.get(i));
         }
         stateLabel.setText(state);
+        runButton.setText("run");
         runButton.setEnabled(true);
     }
 
@@ -311,7 +314,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
     public String validateInput() {
         processExecutionData.setProcessUIPanel(null);
         if(processExecutionData.getState() == ProcessExecutionData.ProcessState.COMPLETED){
-            toolBox.removeProcessExecutionData(processExecutionData);
+            toolBox.deleteProcessExecutionData(processExecutionData);
         }
 
         return null;
