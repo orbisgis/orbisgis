@@ -34,6 +34,8 @@ import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
@@ -56,6 +58,8 @@ public class ShapeFileUI implements DataUI{
         jtf.setColumns(25);
         jtf.getDocument().putProperty("dataMap", dataMap);
         jtf.getDocument().putProperty("uri", inputOrOutput.getIdentifier());
+        //add the listener to display the full file path when the text box is selected.
+        jtf.addMouseListener(EventHandler.create(MouseListener.class, this, "onSelected", "", "mouseClicked"));
         //add the listener for the text changes in the JTextField
         jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
                 this,
@@ -96,12 +100,12 @@ public class ShapeFileUI implements DataUI{
         openFilePanel.loadState();
         if (UIFactory.showDialog(openFilePanel, true, true)) {
             JButton source = (JButton)event.getSource();
+            JTextField textField = (JTextField)source.getClientProperty("JTextField");
+            textField.setText(openFilePanel.getSelectedFile().getName());
             Map<URI, Object> dataMap = (Map<URI, Object>)source.getClientProperty("dataMap");
             URI uri = (URI)source.getClientProperty("uri");
             dataMap.remove(uri);
             dataMap.put(uri, openFilePanel.getSelectedFile().getAbsolutePath());
-            JTextField textField = (JTextField)source.getClientProperty("JTextField");
-            textField.setText(openFilePanel.getSelectedFile().getName());
         }
     }
 
@@ -114,13 +118,22 @@ public class ShapeFileUI implements DataUI{
             Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
             URI uri = (URI)document.getProperty("uri");
             String name = document.getText(0, document.getLength());
-            if(new File(name).exists()) {
-                dataMap.remove(uri);
-                dataMap.put(uri, name);
-            }
+            dataMap.remove(uri);
+            dataMap.put(uri, name);
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(ShapeFileUI.class).error(e.getMessage());
         }
+    }
+
+    /**
+     * When the textField is selected, display the full file path instead of the file name to allow the user to edit it.
+     * @param me
+     */
+    public void onSelected(MouseEvent me){
+        JTextField textField = (JTextField)me.getSource();
+        Map<URI, Object> dataMap = (Map<URI, Object>)textField.getDocument().getProperty("dataMap");
+        String path = dataMap.get(textField.getDocument().getProperty("uri")).toString();
+        textField.setText(path);
     }
 
     @Override
