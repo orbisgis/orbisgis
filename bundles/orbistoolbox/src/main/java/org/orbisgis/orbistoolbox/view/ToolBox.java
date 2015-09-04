@@ -28,13 +28,13 @@ import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.SIFDialog;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -51,7 +51,7 @@ import java.util.Map;
  **/
 
 @Component(service = DockingPanel.class)
-public class ToolBox extends JPanel implements DockingPanel {
+public class ToolBox implements DockingPanel {
 
     /** Docking parameters used by DockingFrames */
     private DockingPanelParameters parameters;
@@ -82,6 +82,11 @@ public class ToolBox extends JPanel implements DockingPanel {
 
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
+    }
+
+    @Deactivate
+    public void dispose(){
+        toolBoxPanel.dispose();
     }
 
     /**
@@ -136,7 +141,7 @@ public class ToolBox extends JPanel implements DockingPanel {
         else{
             uiPanel = new ProcessUIPanel(process, this);
         }
-        SIFDialog dialog = UIFactory.getSimpleDialog(uiPanel, SwingUtilities.getWindowAncestor(this), true);
+        SIFDialog dialog = UIFactory.getSimpleDialog(uiPanel, SwingUtilities.getWindowAncestor(toolBoxPanel), true);
         dialog.pack();
         dialog.setAlwaysOnTop(true);
         dialog.setVisible(true);

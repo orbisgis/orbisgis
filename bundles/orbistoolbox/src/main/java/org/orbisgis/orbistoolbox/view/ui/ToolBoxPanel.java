@@ -23,10 +23,13 @@ import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.model.Metadata;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
-import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
-import org.orbisgis.orbistoolbox.view.utils.TreeNodeWps;
+import org.orbisgis.orbistoolbox.view.utils.*;
+import org.orbisgis.orbistoolbox.view.utils.Filter.IFilter;
+import org.orbisgis.orbistoolbox.view.utils.Filter.SearchFilter;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
+import org.orbisgis.sif.components.filter.DefaultActiveFilter;
+import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
@@ -56,6 +59,7 @@ public class ToolBoxPanel extends JPanel {
 
     private final static String CATEGORY_MODEL = "Category";
     private final static String FILE_MODEL = "File";
+    private final static String FILTERED_MODEL = "Filtered";
 
     private final static String UNDEFINED = "Undefined";
 
@@ -71,6 +75,10 @@ public class ToolBoxPanel extends JPanel {
     private FileTreeModel fileModel;
     /** Model of the JTree */
     private FileTreeModel categoryModel;
+    /** Model of the Jtree*/
+    private FileTreeModel filteredModel;
+    /** Model of the Jtree*/
+    private FileTreeModel selectedModel;
     /** Root node of the JTree */
     private TreeNodeWps root;
     /** Node that permit to add a process on double click */
@@ -82,6 +90,8 @@ public class ToolBoxPanel extends JPanel {
     private ActionCommands popupNodeActions;
     /** Action available in the right click popup on selecting a process (leaf) */
     private ActionCommands popupLeafActions;
+
+    private FilterFactoryManager<IFilter,DefaultActiveFilter> filterFactoryManager;
 
     public ToolBoxPanel(ToolBox toolBox){
         super(new BorderLayout());
@@ -105,6 +115,11 @@ public class ToolBoxPanel extends JPanel {
         categoryRoot.setIsRoot(true);
         categoryModel = new FileTreeModel(categoryRoot);
 
+        TreeNodeWps filteredRoot = new TreeNodeWps();
+        filteredRoot.setUserObject(FILTERED_MODEL);
+        filteredRoot.setIsRoot(true);
+        filteredModel = new FileTreeModel(filteredRoot);
+
         treeNodeBox = new JComboBox<>();
         treeNodeBox.addItem(FILE_MODEL);
         treeNodeBox.addItem(CATEGORY_MODEL);
@@ -121,12 +136,27 @@ public class ToolBoxPanel extends JPanel {
         this.add(treeScrollPane, BorderLayout.CENTER);
         this.add(treeNodeBox, BorderLayout.PAGE_END);
 
-        onModelSelected();
-
         popupGlobalActions = new ActionCommands();
         popupGlobalActions.setAccelerators(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         createPopupActions(toolBox);
+
+        //Sets the filter
+        filterFactoryManager = new FilterFactoryManager<>();
+        FilterFactoryManager.FilterChangeListener refreshFilterListener = EventHandler.create(FilterFactoryManager.FilterChangeListener.class,
+                this,
+                "setFilters",
+                "source.getFilters");
+        filterFactoryManager.getEventFilterChange().addListener(this, refreshFilterListener);
+        filterFactoryManager.getEventFilterFactoryChange().addListener(this, refreshFilterListener);
+        this.add(filterFactoryManager.makeFilterPanel(false), BorderLayout.NORTH);
+        SearchFilter searchFilter = new SearchFilter();
+        filterFactoryManager.registerFilterFactory(searchFilter);
+        filterFactoryManager.setUserCanRemoveFilter(false);
+        filterFactoryManager.addFilter(new SearchFilter().getDefaultFilterValue());
+
+        tree.setModel(fileModel);
+        onModelSelected();
     }
 
     /**
@@ -197,6 +227,7 @@ public class ToolBoxPanel extends JPanel {
             ((TreeNodeWps) fileModel.getRoot()).add(addWps);
             root = (TreeNodeWps) fileModel.getRoot();
             tree.setModel(fileModel);
+            selectedModel = fileModel;
         }
         else if(treeNodeBox.getSelectedItem().equals(CATEGORY_MODEL)){
             if(((TreeNodeWps) fileModel.getRoot()).isNodeChild(addWps)) {
@@ -205,6 +236,7 @@ public class ToolBoxPanel extends JPanel {
             ((TreeNodeWps) categoryModel.getRoot()).add(addWps);
             root = (TreeNodeWps) categoryModel.getRoot();
             tree.setModel(categoryModel);
+            selectedModel = categoryModel;
         }
     }
 
@@ -561,5 +593,35 @@ public class ToolBoxPanel extends JPanel {
         popupNodeActions.addAction(addSource);
         popupNodeActions.addAction(refresh_source);
         popupNodeActions.addAction(remove);
+    }
+
+    public void setFilters(List<IFilter> filters){
+        if(filters.size() == 1){
+            IFilter filter = filters.get(0);
+            if(filter.acceptsAll()){
+                tree.setModel(selectedModel);
+            }
+            else {
+                tree.setModel(filteredModel);
+                for (TreeNodeWps node : getAllLeaf((TreeNodeWps) fileModel.getRoot())) {
+                    TreeNodeWps filteredNode = getNodeFromFile(node.getFilePath(), (TreeNodeWps) filteredModel.getRoot());
+                    if (filteredNode == null) {
+                        if (filter.accepts(node)) {
+                            ((TreeNodeWps) filteredModel.getRoot()).add(node.deepCopy());
+                        }
+                    } else {
+                        if (!filter.accepts(filteredNode)) {
+                            filteredModel.removeNodeFromParent(filteredNode);
+                        }
+                    }
+                }
+                filteredModel.reload();
+            }
+        }
+    }
+
+    public void dispose(){
+        filterFactoryManager.getEventFilterChange().clearListeners();
+        filterFactoryManager.getEventFilterFactoryChange().clearListeners();
     }
 }

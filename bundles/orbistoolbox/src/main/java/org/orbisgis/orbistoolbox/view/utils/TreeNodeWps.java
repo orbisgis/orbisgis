@@ -123,4 +123,16 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
     public boolean isValidProcess(){
         return isValidProcess;
     }
+
+    public TreeNodeWps deepCopy(){
+        TreeNodeWps copy = new TreeNodeWps();
+        copy.setFilePath(this.file);
+        copy.isRoot = this.isRoot;
+        copy.isCustomIcon = this.isCustomIcon;
+        copy.customIconName = this.customIconName;
+        copy.isValidProcess = this.isValidProcess;
+        copy.canBeLeaf = this.canBeLeaf;
+
+        return copy;
+    }
 }
