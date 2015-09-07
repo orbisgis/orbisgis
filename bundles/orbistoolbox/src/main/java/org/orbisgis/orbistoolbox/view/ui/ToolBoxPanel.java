@@ -595,6 +595,10 @@ public class ToolBoxPanel extends JPanel {
         popupNodeActions.addAction(remove);
     }
 
+    /**
+     * Sets and applies the filters to the list of WPS scripts and display only the compatible one.
+     * @param filters List of IFilter to apply.
+     */
     public void setFilters(List<IFilter> filters){
         if(filters.size() == 1){
             IFilter filter = filters.get(0);

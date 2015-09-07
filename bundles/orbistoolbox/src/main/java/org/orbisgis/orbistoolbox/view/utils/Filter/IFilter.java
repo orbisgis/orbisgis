@@ -27,7 +27,16 @@ import org.orbisgis.orbistoolbox.view.utils.TreeNodeWps;
 
 public interface IFilter {
 
+    /**
+     * Returns true if the filter accepts the given node, false otherwise.
+     * @param node Node to test.
+     * @return If the filter accepts the node.
+     */
     public boolean accepts(TreeNodeWps node);
 
+    /**
+     * Returns true if the filter is able to accepts any node, false otherwise.
+     * @return True if the filter is able to accepts any node, false otherwise.
+     */
     public boolean acceptsAll();
 }
