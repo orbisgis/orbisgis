@@ -65,6 +65,7 @@ public class ParserController {
         Class clazz = null;
         File process = new File(processPath);
         try {
+            groovyClassLoader.clearCache();
             clazz = groovyClassLoader.parseClass(process);
         } catch (IOException|GroovyRuntimeException e) {
             return null;
@@ -101,7 +102,6 @@ public class ParserController {
                 }
             }
         }
-
         try {
             Process p = processParser.parseProcess(inputList,
                     outputList,
