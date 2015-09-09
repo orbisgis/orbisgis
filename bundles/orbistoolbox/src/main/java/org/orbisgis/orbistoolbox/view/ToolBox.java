@@ -130,7 +130,7 @@ public class ToolBox implements DockingPanel {
         Process process = processManager.getProcess(toolBoxPanel.getSelectedNode().getFilePath());
         ProcessExecutionData processExecutionData = null;
         for(ProcessExecutionData puid : processExecutionDataList){
-            if(puid.getProcess().equals(process)){
+            if(puid.getProcess().getIdentifier().equals(process.getIdentifier())){
                 processExecutionData = puid;
             }
         }

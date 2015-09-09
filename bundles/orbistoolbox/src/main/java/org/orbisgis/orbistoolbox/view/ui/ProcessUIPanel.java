@@ -31,8 +31,6 @@ import org.orbisgis.sif.UIPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -97,15 +95,24 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         dataUIManager = toolBox.getDataUIManager();
 
         buildUI();
-
         processExecutionData.setProcessUIPanel(this);
-        List<String> results = new ArrayList<>();
-        if(processExecutionData.getState().equals(ProcessExecutionData.ProcessState.COMPLETED)){
-            for(Map.Entry<URI, Object> entry : processExecutionData.getOutputDataMap().entrySet()){
-                results.add(entry.getValue().toString());
-            }
+
+        switch(processExecutionData.getState()){
+            case IDLE:
+                tabbedPane.setSelectedIndex(0);
+                break;
+            case RUNNING:
+                tabbedPane.setSelectedIndex(2);
+                break;
+            case COMPLETED:
+                List<String> results = new ArrayList<>();
+                for(Map.Entry<URI, Object> entry : processExecutionData.getOutputDataMap().entrySet()){
+                    results.add(entry.getValue().toString());
+                }
+                setOutputs(results, processExecutionData.getState().toString());
+                tabbedPane.setSelectedIndex(2);
+                break;
         }
-        setOutputs(results, processExecutionData.getState().toString());
     }
 
     /**
@@ -290,7 +297,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
      * @param outputs Outputs results.
      */
     public void setOutputs(List<String> outputs, String state) {
-        for(int i=0; i<outputs.size(); i++) {
+        for(int i=0; i<processExecutionData.getProcess().getOutput().size(); i++) {
             outputJLabelList.get(i).setText(outputs.get(i));
         }
         stateLabel.setText(state);
