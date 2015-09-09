@@ -123,6 +123,17 @@ public class UIFactory {
                 return dlg;
         }
 
+        public static SIFDialog getSimpleDialog(UIPanel panel, Window owner,
+                boolean okCancel, String okLabel, String cancelLabel) {
+                SIFDialog dlg = new SIFDialog(owner, okCancel);
+                dlg.btnOk.setText(okLabel);
+                dlg.btnCancel.setText(cancelLabel);
+                SimplePanel simplePanel = new SimplePanel(dlg, panel);
+                dlg.setTitle(panel.getTitle());
+                dlg.setComponent(simplePanel);
+                return dlg;
+        }
+
         public static SIFWizard getWizard(UIPanel[] panels) {
                 return getWizard(panels, mainFrame);
         }
