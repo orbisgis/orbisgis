@@ -56,8 +56,6 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
     /** Label containing the state of the process (running, completed or idle) */
     private JLabel stateLabel;
 
-    private JButton runButton;
-
     private ProcessExecutionData processExecutionData;
 
     private ToolBox toolBox;
@@ -132,14 +130,19 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
 
     /**
      * Run the process.
+     * @return True if the process has already been launch, false otherwise.
      */
-    public void runProcess(){
-        //Select the execution tab
-        runButton.setText("running");
-        runButton.setEnabled(false);
-        stateLabel.setText(ProcessExecutionData.ProcessState.RUNNING.getValue());
-        tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
-        processExecutionData.runProcess();
+    public boolean runProcess(){
+        if(processExecutionData.getState().equals(ProcessExecutionData.ProcessState.IDLE)) {
+            processExecutionData.runProcess();
+            //Select the execution tab
+            stateLabel.setText(processExecutionData.getState().getValue());
+            tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 
     /**
@@ -179,11 +182,6 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
                 }
             }
         }
-
-        runButton = new JButton("run");
-        runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
-        runButton.setEnabled(!processExecutionData.getState().equals(ProcessExecutionData.ProcessState.RUNNING));
-        panel.add(runButton, "growx, wrap");
         return panel;
     }
 
@@ -296,8 +294,6 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
             outputJLabelList.get(i).setText(outputs.get(i));
         }
         stateLabel.setText(state);
-        runButton.setText("run");
-        runButton.setEnabled(true);
     }
 
     @Override
@@ -312,12 +308,19 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
 
     @Override
     public String validateInput() {
-        processExecutionData.setProcessUIPanel(null);
         if(processExecutionData.getState() == ProcessExecutionData.ProcessState.COMPLETED){
             toolBox.deleteProcessExecutionData(processExecutionData);
+            processExecutionData.setProcessUIPanel(null);
+            return "";
         }
-
-        return null;
+        else{
+            if(!runProcess()){
+                return "";
+            }
+            else{
+                return "Process already running";
+            }
+        }
     }
 
     @Override

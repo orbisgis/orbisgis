@@ -141,7 +141,12 @@ public class ToolBox implements DockingPanel {
         else{
             uiPanel = new ProcessUIPanel(process, this);
         }
-        SIFDialog dialog = UIFactory.getSimpleDialog(uiPanel, SwingUtilities.getWindowAncestor(toolBoxPanel), true);
+        SIFDialog dialog = UIFactory.getSimpleDialog(uiPanel,
+                SwingUtilities.getWindowAncestor(toolBoxPanel),
+                true,
+                "run",
+                "close"
+                );
         dialog.pack();
         dialog.setAlwaysOnTop(true);
         dialog.setVisible(true);

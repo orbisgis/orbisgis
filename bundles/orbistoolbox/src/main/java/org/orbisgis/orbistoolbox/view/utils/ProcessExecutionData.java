@@ -94,6 +94,7 @@ public class ProcessExecutionData {
     public void runProcess(){
         //Check that all the data field were filled.
         if(inputDataMap.size() == process.getInput().size()) {
+            state = ProcessState.RUNNING;
             //Run the process in a separated thread
             ExecutionThread thread = new ExecutionThread(process, outputDataMap, inputDataMap, toolBox, this);
             thread.start();
