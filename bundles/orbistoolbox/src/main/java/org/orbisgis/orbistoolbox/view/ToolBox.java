@@ -38,6 +38,7 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.log.LogReaderService;
 
 import javax.swing.*;
 import java.io.File;
@@ -64,6 +65,8 @@ public class ToolBox implements DockingPanel {
 
     private Map<String, Object> properties;
     private List<ProcessExecutionData> processExecutionDataList;
+
+    private LogReaderService logReaderService;
 
     @Activate
     public void init(){
@@ -150,6 +153,8 @@ public class ToolBox implements DockingPanel {
         dialog.pack();
         dialog.setAlwaysOnTop(true);
         dialog.setVisible(true);
+
+        logReaderService.addLogListener(uiPanel.getProcessExecutionData().getLogListener());
     }
 
     /**
@@ -211,5 +216,14 @@ public class ToolBox implements DockingPanel {
 
     public void unsetDataSource(javax.sql.DataSource ds) {
         properties.remove("ds");
+    }
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    public void setLogReaderService(LogReaderService logReaderService) {
+        this.logReaderService = logReaderService;
+    }
+
+    public void unsetLogReaderService(LogReaderService logReaderService) {
+        this.logReaderService = null;
     }
 }

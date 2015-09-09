@@ -58,6 +58,8 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
 
     private ToolBox toolBox;
 
+    private JTextField logField;
+
     /**
      * Main constructor with no ProcessExecutionData.
      * @param process Process represented.
@@ -113,6 +115,8 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
                 tabbedPane.setSelectedIndex(2);
                 break;
         }
+
+        logField.setText(processExecutionData.getLog());
     }
 
     /**
@@ -285,9 +289,17 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
             resultPanel.add(result, "wrap");
         }
 
+        JPanel logPanel = new JPanel(new MigLayout());
+        logPanel.setBorder(BorderFactory.createTitledBorder("Log :"));
+        logField = new JTextField();
+        logField.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(logField);
+        logPanel.add(scrollPane, "wrap");
+
         panel.add(executorPanel, "growx, wrap");
         panel.add(statusPanel, "growx, wrap");
         panel.add(resultPanel, "growx, wrap");
+        panel.add(logPanel, "growx, wrap");
 
         return panel;
     }
@@ -318,7 +330,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         if(processExecutionData.getState() == ProcessExecutionData.ProcessState.COMPLETED){
             toolBox.deleteProcessExecutionData(processExecutionData);
             processExecutionData.setProcessUIPanel(null);
-            return "";
+            return null;
         }
         else{
             if(!runProcess()){
@@ -333,5 +345,9 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
     @Override
     public Component getComponent() {
         return this;
+    }
+
+    public void appendLog(String message) {
+        logField.setText(logField.getText()+"\n"+message);
     }
 }

@@ -23,6 +23,8 @@ import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionThread;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
+import org.osgi.service.log.LogEntry;
+import org.osgi.service.log.LogListener;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -44,12 +46,35 @@ public class ProcessExecutionData {
     private ProcessState state;
     private ToolBox toolBox;
     private ProcessUIPanel processUIPanel;
+    private String log;
+
+    private LogListener logListener;
 
     public ProcessExecutionData(ToolBox toolBox, Process process){
         this.toolBox = toolBox;
         this.process = process;
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
+
+        log = "";
+
+        logListener = new LogListener() {
+            @Override
+            public void logged(LogEntry entry) {
+                if(processUIPanel != null){
+                    processUIPanel.appendLog(entry.getMessage());
+                }
+                log+="\n"+entry.getMessage();
+            }
+        };
+    }
+
+    public LogListener getLogListener(){
+        return logListener;
+    }
+
+    public String getLog(){
+        return log;
     }
 
     public Map<URI, Object> getInputDataMap() {

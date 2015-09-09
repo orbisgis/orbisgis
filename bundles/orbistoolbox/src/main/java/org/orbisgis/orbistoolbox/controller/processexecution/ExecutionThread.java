@@ -59,22 +59,30 @@ public class ExecutionThread extends Thread{
 
     @Override
     public void run(){
-        GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(
-                process, inputDataMap, outputDataMap, toolBox.getProperties());
-        List<String> listOutput = new ArrayList<>();
-        for (Field field : groovyObject.getClass().getDeclaredFields()) {
-            if(field.getAnnotation(OutputAttribute.class) != null) {
-                try {
-                    field.setAccessible(true);
-                    URI uri = URI.create(field.getAnnotation(DescriptionTypeAttribute.class).identifier());
-                    outputDataMap.remove(uri);
-                    outputDataMap.put(uri, field.get(groovyObject));
-                    listOutput.add(field.get(groovyObject).toString());
-                } catch (IllegalAccessException e) {
-                    LoggerFactory.getLogger(ExecutionThread.class).error(e.getMessage());
+        //Catch all the Exception that can be get on executing the script.
+        try {
+            LoggerFactory.getLogger(ExecutionThread.class).info("Start process : "+process.getTitle());
+            GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(
+                    process, inputDataMap, outputDataMap, toolBox.getProperties());
+            List<String> listOutput = new ArrayList<>();
+            for (Field field : groovyObject.getClass().getDeclaredFields()) {
+                if (field.getAnnotation(OutputAttribute.class) != null) {
+                    try {
+                        field.setAccessible(true);
+                        URI uri = URI.create(field.getAnnotation(DescriptionTypeAttribute.class).identifier());
+                        outputDataMap.remove(uri);
+                        outputDataMap.put(uri, field.get(groovyObject));
+                        listOutput.add(field.get(groovyObject).toString());
+                    } catch (IllegalAccessException e) {
+                        LoggerFactory.getLogger(ExecutionThread.class).error(e.getMessage());
+                    }
                 }
             }
+            LoggerFactory.getLogger(ExecutionThread.class).info("End process : "+process.getTitle());
+            processExecutionData.endProcess(listOutput);
         }
-        processExecutionData.endProcess(listOutput);
+        catch (Exception e) {
+            LoggerFactory.getLogger(ExecutionThread.class).error(e.getMessage());
+        }
     }
 }
