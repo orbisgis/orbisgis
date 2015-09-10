@@ -34,17 +34,34 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Thread executing a process.
+ *
  * @author Sylvain PALOMINOS
  **/
 
 public class ExecutionThread extends Thread{
 
+    /** Process to execute */
     private Process process;
+    /** Input data map */
     private Map<URI, Object> inputDataMap;
+    /** Output data map */
     private Map<URI, Object> outputDataMap;
+    /** ToolBox */
     private ToolBox toolBox;
+    /** Data for the process execution */
     private ProcessExecutionData processExecutionData;
+    /** Start time*/
+    private long startTime;
 
+    /**
+     * Main constructor.
+     * @param process Process to execute.
+     * @param outputDataMap Output data map.
+     * @param inputDataMap Input data map.
+     * @param toolBox ToolBox.
+     * @param processExecutionData Execution data.
+     */
     public ExecutionThread(Process process,
                            Map<URI, Object> outputDataMap,
                            Map<URI, Object> inputDataMap,
@@ -59,29 +76,33 @@ public class ExecutionThread extends Thread{
 
     @Override
     public void run(){
+        startTime = System.currentTimeMillis();
         //Catch all the Exception that can be get on executing the script.
         try {
-            LoggerFactory.getLogger(ExecutionThread.class).info("Start process : "+process.getTitle());
+            processExecutionData.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessExecutionData.LogType.INFO,
+                    "Start process : " + process.getTitle());
             GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(
                     process, inputDataMap, outputDataMap, toolBox.getProperties());
             List<String> listOutput = new ArrayList<>();
             for (Field field : groovyObject.getClass().getDeclaredFields()) {
                 if (field.getAnnotation(OutputAttribute.class) != null) {
-                    try {
                         field.setAccessible(true);
                         URI uri = URI.create(field.getAnnotation(DescriptionTypeAttribute.class).identifier());
                         outputDataMap.remove(uri);
                         outputDataMap.put(uri, field.get(groovyObject));
                         listOutput.add(field.get(groovyObject).toString());
-                    } catch (IllegalAccessException e) {
-                        LoggerFactory.getLogger(ExecutionThread.class).error(e.getMessage());
-                    }
                 }
             }
-            LoggerFactory.getLogger(ExecutionThread.class).info("End process : "+process.getTitle());
+            processExecutionData.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessExecutionData.LogType.INFO,
+                    "End process : "+process.getTitle());
             processExecutionData.endProcess(listOutput);
         }
         catch (Exception e) {
+            processExecutionData.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessExecutionData.LogType.ERROR,
+                    e.getMessage());
             LoggerFactory.getLogger(ExecutionThread.class).error(e.getMessage());
         }
     }

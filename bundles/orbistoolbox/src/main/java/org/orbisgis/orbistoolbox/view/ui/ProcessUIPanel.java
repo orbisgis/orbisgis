@@ -28,8 +28,10 @@ import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.orbisgis.sif.UIPanel;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.*;
 import java.net.URI;
 import java.net.URL;
@@ -58,7 +60,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
 
     private ToolBox toolBox;
 
-    private JTextField logField;
+    private JTextPane logPane;
 
     /**
      * Main constructor with no ProcessExecutionData.
@@ -116,7 +118,9 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
                 break;
         }
 
-        logField.setText(processExecutionData.getLog());
+        for(Map.Entry<String, Color> entry : processExecutionData.getLogMap().entrySet()){
+            print(entry.getKey(), entry.getValue());
+        }
     }
 
     /**
@@ -289,17 +293,17 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
             resultPanel.add(result, "wrap");
         }
 
-        JPanel logPanel = new JPanel(new MigLayout());
+        JPanel logPanel = new JPanel(new BorderLayout());
         logPanel.setBorder(BorderFactory.createTitledBorder("Log :"));
-        logField = new JTextField();
-        logField.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(logField);
-        logPanel.add(scrollPane, "wrap");
+        logPane = new JTextPane();
+        logPane.setCaretPosition(0);
+        JScrollPane scrollPane = new JScrollPane(logPane);
+        logPanel.add(scrollPane, BorderLayout.CENTER);
 
         panel.add(executorPanel, "growx, wrap");
         panel.add(statusPanel, "growx, wrap");
         panel.add(resultPanel, "growx, wrap");
-        panel.add(logPanel, "growx, wrap");
+        panel.add(logPanel, "growx, growy, wrap");
 
         return panel;
     }
@@ -347,7 +351,22 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         return this;
     }
 
-    public void appendLog(String message) {
-        logField.setText(logField.getText()+"\n"+message);
+    /**
+     * Add the provided text with the provided color to the GUI document
+     * @param text The text that will be added
+     * @param color The color used to show the text
+     */
+    public void print(String text, Color color) {
+        StyleContext sc = StyleContext.getDefaultStyleContext();
+        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY,
+                StyleConstants.Foreground, color);
+        int len = logPane.getDocument().getLength();
+        try {
+            logPane.setCaretPosition(len);
+            logPane.getDocument().insertString(len, text+"\n", aset);
+        } catch (BadLocationException e) {
+            LoggerFactory.getLogger(ProcessUIPanel.class).error("Cannot show the log message", e);
+        }
+        logPane.setCaretPosition(logPane.getDocument().getLength());
     }
 }

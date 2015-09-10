@@ -23,13 +23,12 @@ import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionThread;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
-import org.osgi.service.log.LogEntry;
-import org.osgi.service.log.LogListener;
 
+import java.awt.*;
 import java.net.URI;
-import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Sylvain PALOMINOS
@@ -46,35 +45,19 @@ public class ProcessExecutionData {
     private ProcessState state;
     private ToolBox toolBox;
     private ProcessUIPanel processUIPanel;
-    private String log;
-
-    private LogListener logListener;
+    /** Map of the log message and their color.*/
+    private Map<String, Color> logMap;
 
     public ProcessExecutionData(ToolBox toolBox, Process process){
         this.toolBox = toolBox;
         this.process = process;
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
-
-        log = "";
-
-        logListener = new LogListener() {
-            @Override
-            public void logged(LogEntry entry) {
-                if(processUIPanel != null){
-                    processUIPanel.appendLog(entry.getMessage());
-                }
-                log+="\n"+entry.getMessage();
-            }
-        };
+        this.logMap = new LinkedHashMap<>();
     }
 
-    public LogListener getLogListener(){
-        return logListener;
-    }
-
-    public String getLog(){
-        return log;
+    public Map<String, Color> getLogMap(){
+        return logMap;
     }
 
     public Map<URI, Object> getInputDataMap() {
@@ -135,6 +118,34 @@ public class ProcessExecutionData {
         processUIPanel.setOutputs(outputList, ProcessState.COMPLETED.getValue());
     }
 
+    /**
+     * Append to the log a new entry.
+     * @param time Time since the beginning when it appends.
+     * @param logType Type of the message (INFO, WARN, ERROR ...).
+     * @param message Message.
+     */
+    public void appendLog(long time, LogType logType, String message){
+        Color color;
+        switch(logType){
+            case ERROR:
+                color = Color.RED;
+                break;
+            case WARN:
+                color = Color.ORANGE;
+                break;
+            case INFO:
+            default:
+                color = Color.BLACK;
+        }
+        Date date = new Date(time - 3600000);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        String log = timeFormat.format(date) + " : " + logType.name() + " : " + message + "";
+        logMap.put(log, color);
+        if(processUIPanel != null){
+            processUIPanel.print(log, color);
+        }
+    }
+
 
     public enum ProcessState{
         RUNNING("Running"),
@@ -151,4 +162,6 @@ public class ProcessExecutionData {
             return value;
         }
     }
+
+    public enum LogType{INFO, WARN, ERROR}
 }
