@@ -100,6 +100,7 @@ public class ExecutionThread extends Thread{
             processExecutionData.endProcess(listOutput);
         }
         catch (Exception e) {
+            processExecutionData.setState(ProcessExecutionData.ProcessState.ERROR);
             processExecutionData.appendLog(System.currentTimeMillis() - startTime,
                     ProcessExecutionData.LogType.ERROR,
                     e.getMessage());

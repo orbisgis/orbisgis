@@ -24,13 +24,15 @@ import org.orbisgis.sif.components.fstree.TreeNodePath;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 
 /**
  * @author Sylvain PALOMINOS
  **/
 
-public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCustomIcon, TreeNodePath {
+public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCustomIcon, TreeNodePath, PropertyChangeListener {
 
     private File file;
     private boolean isValidProcess = true;
@@ -134,5 +136,28 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         copy.canBeLeaf = this.canBeLeaf;
 
         return copy;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        ProcessExecutionData.ProcessState state = (ProcessExecutionData.ProcessState) propertyChangeEvent.getNewValue();
+        switch(state){
+            case RUNNING:
+                isCustomIcon = true;
+                customIconName = "script_running";
+                break;
+            case COMPLETED:
+                isCustomIcon = true;
+                customIconName = "script_completed";
+                break;
+            case ERROR:
+                isCustomIcon = true;
+                customIconName = "script_error";
+                break;
+            case IDLE:
+                isCustomIcon = false;
+                customIconName = "";
+                break;
+        }
     }
 }

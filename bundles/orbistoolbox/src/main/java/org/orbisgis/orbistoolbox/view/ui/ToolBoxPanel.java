@@ -39,6 +39,8 @@ import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
@@ -75,9 +77,9 @@ public class ToolBoxPanel extends JPanel {
     private FileTreeModel fileModel;
     /** Model of the JTree */
     private FileTreeModel categoryModel;
-    /** Model of the Jtree*/
+    /** Model of the JTree*/
     private FileTreeModel filteredModel;
-    /** Model of the Jtree*/
+    /** Model of the JTree*/
     private FileTreeModel selectedModel;
     /** Root node of the JTree */
     private TreeNodeWps root;

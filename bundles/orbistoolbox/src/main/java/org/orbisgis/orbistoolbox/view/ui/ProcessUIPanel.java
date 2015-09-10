@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.event.FocusListener;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -58,8 +59,6 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
 
     private ProcessExecutionData processExecutionData;
 
-    private ToolBox toolBox;
-
     private JTextPane logPane;
 
     /**
@@ -72,7 +71,6 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
 
         outputJLabelList = new ArrayList<>();
         dataUIManager = toolBox.getDataUIManager();
-        this.toolBox = toolBox;
 
         processExecutionData = new ProcessExecutionData(toolBox, process);
         processExecutionData.setState(ProcessExecutionData.ProcessState.IDLE);
@@ -93,7 +91,6 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
     public ProcessUIPanel(ProcessExecutionData processExecutionData, ToolBox toolBox){
         this.setLayout(new BorderLayout());
         this.processExecutionData = processExecutionData;
-        this.toolBox = toolBox;
 
         outputJLabelList = new ArrayList<>();
         dataUIManager = toolBox.getDataUIManager();
@@ -121,6 +118,8 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         for(Map.Entry<String, Color> entry : processExecutionData.getLogMap().entrySet()){
             print(entry.getKey(), entry.getValue());
         }
+
+        processExecutionData.setState(ProcessExecutionData.ProcessState.IDLE);
     }
 
     /**
@@ -148,7 +147,10 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
      * @return True if the process has already been launch, false otherwise.
      */
     public boolean runProcess(){
-        if(processExecutionData.getState().equals(ProcessExecutionData.ProcessState.IDLE)) {
+        if(processExecutionData.getState().equals(ProcessExecutionData.ProcessState.IDLE) ||
+                processExecutionData.getState().equals(ProcessExecutionData.ProcessState.ERROR) ||
+                processExecutionData.getState().equals(ProcessExecutionData.ProcessState.COMPLETED)) {
+            clearLogPanel();
             processExecutionData.runProcess();
             //Select the execution tab
             stateLabel.setText(processExecutionData.getState().getValue());
@@ -317,6 +319,9 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
             outputJLabelList.get(i).setText(outputs.get(i));
         }
         stateLabel.setText(state);
+        if(this.isFocusOwner()){
+            processExecutionData.setState(ProcessExecutionData.ProcessState.IDLE);
+        }
     }
 
     @Override
@@ -331,18 +336,11 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
 
     @Override
     public String validateInput() {
-        if(processExecutionData.getState() == ProcessExecutionData.ProcessState.COMPLETED){
-            toolBox.deleteProcessExecutionData(processExecutionData);
-            processExecutionData.setProcessUIPanel(null);
-            return null;
+        if(!runProcess()){
+            return "";
         }
         else{
-            if(!runProcess()){
-                return "";
-            }
-            else{
-                return "Process already running";
-            }
+            return "Process already running";
         }
     }
 
@@ -368,5 +366,13 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
             LoggerFactory.getLogger(ProcessUIPanel.class).error("Cannot show the log message", e);
         }
         logPane.setCaretPosition(logPane.getDocument().getLength());
+    }
+
+    public void clearLogPanel(){
+        try {
+            logPane.getDocument().remove(1, logPane.getDocument().getLength()-1);
+        } catch (BadLocationException e) {
+            LoggerFactory.getLogger(ProcessUIPanel.class).error(e.getMessage());
+        }
     }
 }

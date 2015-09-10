@@ -25,6 +25,8 @@ import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
 
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -35,6 +37,9 @@ import java.util.List;
  **/
 
 public class ProcessExecutionData {
+
+    public static final String STATE_PROPERTY = "STATE_PROPERTY";
+
     /** Map of input data (URI of the corresponding input) */
     private Map<URI, Object> inputDataMap;
     /** Map of output data (URI of the corresponding output) */
@@ -47,6 +52,8 @@ public class ProcessExecutionData {
     private ProcessUIPanel processUIPanel;
     /** Map of the log message and their color.*/
     private Map<String, Color> logMap;
+    /** List of listeners for the processState*/
+    private List<PropertyChangeListener> propertyChangeListenerList;
 
     public ProcessExecutionData(ToolBox toolBox, Process process){
         this.toolBox = toolBox;
@@ -54,6 +61,7 @@ public class ProcessExecutionData {
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
         this.logMap = new LinkedHashMap<>();
+        this.propertyChangeListenerList = new ArrayList<>();
     }
 
     public Map<String, Color> getLogMap(){
@@ -89,11 +97,28 @@ public class ProcessExecutionData {
     }
 
     public void setState(ProcessState state) {
+        ProcessState oldState = this.state;
         this.state = state;
+        firePropertyChange(oldState, state);
+        toolBox.getComponent().revalidate();
+        toolBox.getComponent().repaint();
     }
 
     public void setProcessUIPanel(ProcessUIPanel processUIPanel) {
         this.processUIPanel = processUIPanel;
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener propertyChangeListener){
+        if(!propertyChangeListenerList.contains(propertyChangeListener)){
+            propertyChangeListenerList.add(propertyChangeListener);
+        }
+    }
+
+    public void firePropertyChange(ProcessState oldValue, ProcessState newValue){
+        PropertyChangeEvent event = new PropertyChangeEvent(process, STATE_PROPERTY, oldValue, newValue);
+        for(PropertyChangeListener pcl : propertyChangeListenerList){
+            pcl.propertyChange(event);
+        }
     }
 
     /**
@@ -102,7 +127,7 @@ public class ProcessExecutionData {
     public void runProcess(){
         //Check that all the data field were filled.
         if(inputDataMap.size() == process.getInput().size()) {
-            state = ProcessState.RUNNING;
+            setState(ProcessState.RUNNING);
             //Run the process in a separated thread
             ExecutionThread thread = new ExecutionThread(process, outputDataMap, inputDataMap, toolBox, this);
             thread.start();
@@ -114,7 +139,7 @@ public class ProcessExecutionData {
      * @param outputList Map of the outputs results.
      */
     public void endProcess(List<String> outputList){
-        state = ProcessState.COMPLETED;
+        setState(ProcessState.COMPLETED);
         processUIPanel.setOutputs(outputList, ProcessState.COMPLETED.getValue());
     }
 
@@ -150,6 +175,7 @@ public class ProcessExecutionData {
     public enum ProcessState{
         RUNNING("Running"),
         COMPLETED("Completed"),
+        ERROR("Error"),
         IDLE("Idle");
 
         private String value;

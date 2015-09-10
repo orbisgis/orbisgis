@@ -150,6 +150,8 @@ public class ToolBox implements DockingPanel {
         dialog.pack();
         dialog.setAlwaysOnTop(true);
         dialog.setVisible(true);
+        //Make the node listen to the process state.
+        uiPanel.getProcessExecutionData().addPropertyChangeListener(toolBoxPanel.getSelectedNode());
     }
 
     /**
