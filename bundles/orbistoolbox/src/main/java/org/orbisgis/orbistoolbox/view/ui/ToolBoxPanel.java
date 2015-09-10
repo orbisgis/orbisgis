@@ -389,21 +389,26 @@ public class ToolBoxPanel extends JPanel {
     private void addLocalSourceInFileModel(File directory){
         TreeNodeWps root = (TreeNodeWps) fileModel.getRoot();
 
-        boolean exists = false;
+        TreeNodeWps source = null;
+        boolean isScript = false;
+
         for(int i=0; i<root.getChildCount(); i++){
             if(((TreeNodeWps)root.getChildAt(i)).getUserObject().equals(directory.getName())){
-                exists = true;
+                source = (TreeNodeWps)root.getChildAt(i);
+                isScript = true;
             }
         }
-        TreeNodeWps source = new TreeNodeWps();
-        source.setcanBeLeaf(false);
-        source.setValidProcess(false);
-        if(!exists){
-            boolean isScript = false;
+        if(source == null) {
+            source = new TreeNodeWps();
+            source.setcanBeLeaf(false);
+            source.setValidProcess(false);
             source.setUserObject(directory.getName());
             source.setFilePath(directory);
             root.add(source);
-            for(File f : getAllWpsScript(directory)){
+        }
+
+        for(File f : getAllWpsScript(directory)){
+            if(getNodeFromFile(f, source) == null) {
                 TreeNodeWps script = new TreeNodeWps();
                 script.setUserObject(f.getName().replace(".groovy", ""));
                 script.setFilePath(f);
@@ -411,8 +416,9 @@ public class ToolBoxPanel extends JPanel {
                 source.add(script);
                 isScript = true;
             }
-            source.setValidProcess(isScript);
         }
+        source.setValidProcess(isScript);
+
         this.reload();
     }
 
