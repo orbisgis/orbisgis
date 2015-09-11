@@ -151,7 +151,7 @@ public class ToolBox implements DockingPanel {
         dialog.setAlwaysOnTop(true);
         dialog.setVisible(true);
         //Make the node listen to the process state.
-        uiPanel.getProcessExecutionData().addPropertyChangeListener(toolBoxPanel.getSelectedNode());
+        uiPanel.setProcessStateListener(toolBoxPanel.getNodesFromSelectedOne());
     }
 
     /**
@@ -207,7 +207,7 @@ public class ToolBox implements DockingPanel {
         Process process = processManager.getProcess(file);
         if(process != null) {
             for (ProcessExecutionData ped : processExecutionDataList){
-                if(ped.getProcess().getIdentifier().equals(process.getIdentifier())){
+                if (ped.getProcess().getIdentifier().equals(process.getIdentifier())){
                     if(ped.getState().equals(ProcessExecutionData.ProcessState.RUNNING)){
                         return true;
                     }

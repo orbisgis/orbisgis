@@ -27,6 +27,7 @@ import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
+import org.orbisgis.orbistoolbox.view.utils.TreeNodeWps;
 import org.orbisgis.sif.UIPanel;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.MouseListener;
-import java.beans.EventHandler;
+import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -370,9 +371,15 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
 
     public void clearLogPanel(){
         try {
-            logPane.getDocument().remove(1, logPane.getDocument().getLength()-1);
+            logPane.getDocument().remove(1, logPane.getDocument().getLength() - 1);
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(ProcessUIPanel.class).error(e.getMessage());
+        }
+    }
+
+    public void setProcessStateListener(List<TreeNodeWps> listNode){
+        for(TreeNodeWps node : listNode){
+            processExecutionData.addPropertyChangeListener(node);
         }
     }
 }

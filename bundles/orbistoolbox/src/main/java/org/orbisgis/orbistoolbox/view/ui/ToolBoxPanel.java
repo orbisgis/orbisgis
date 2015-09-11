@@ -33,6 +33,7 @@ import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
+import sun.reflect.generics.tree.Tree;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
@@ -643,5 +644,17 @@ public class ToolBoxPanel extends JPanel {
     public void dispose(){
         filterFactoryManager.getEventFilterChange().clearListeners();
         filterFactoryManager.getEventFilterFactoryChange().clearListeners();
+    }
+
+    /**
+     * Return the list of nodes from all the model which has the same file as the selected one
+     * @return The node list.
+     */
+    public List<TreeNodeWps> getNodesFromSelectedOne() {
+        File f = ((TreeNodeWps)tree.getLastSelectedPathComponent()).getFilePath();
+        List<TreeNodeWps> list = new ArrayList<>();
+        list.add(getNodeFromFile(f, (TreeNodeWps)categoryModel.getRoot()));
+        list.add(getNodeFromFile(f, (TreeNodeWps)fileModel.getRoot()));
+        return list;
     }
 }
