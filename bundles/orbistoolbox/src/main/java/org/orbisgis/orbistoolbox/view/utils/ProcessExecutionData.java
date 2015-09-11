@@ -24,6 +24,7 @@ import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
 
+import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -125,6 +126,7 @@ public class ProcessExecutionData {
      * Run the process.
      */
     public void runProcess(){
+        logMap = new HashMap<>();
         //Check that all the data field were filled.
         if(inputDataMap.size() == process.getInput().size()) {
             setState(ProcessState.RUNNING);
@@ -141,6 +143,9 @@ public class ProcessExecutionData {
     public void endProcess(List<String> outputList){
         setState(ProcessState.COMPLETED);
         processUIPanel.setOutputs(outputList, ProcessState.COMPLETED.getValue());
+        if(processUIPanel != null && SwingUtilities.getWindowAncestor(processUIPanel).isVisible()){
+            this.setState(ProcessExecutionData.ProcessState.IDLE);
+        }
     }
 
     /**

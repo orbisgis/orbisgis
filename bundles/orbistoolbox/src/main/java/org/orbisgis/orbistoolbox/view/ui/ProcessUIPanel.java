@@ -33,7 +33,8 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.FocusListener;
+import java.awt.event.MouseListener;
+import java.beans.EventHandler;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -60,6 +61,8 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
     private ProcessExecutionData processExecutionData;
 
     private JTextPane logPane;
+
+    private MouseListener mouseListener;
 
     /**
      * Main constructor with no ProcessExecutionData.
@@ -319,9 +322,6 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
             outputJLabelList.get(i).setText(outputs.get(i));
         }
         stateLabel.setText(state);
-        if(this.isFocusOwner()){
-            processExecutionData.setState(ProcessExecutionData.ProcessState.IDLE);
-        }
     }
 
     @Override
