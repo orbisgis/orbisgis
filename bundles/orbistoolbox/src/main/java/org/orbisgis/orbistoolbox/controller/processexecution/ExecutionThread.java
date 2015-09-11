@@ -51,8 +51,6 @@ public class ExecutionThread extends Thread{
     private ToolBox toolBox;
     /** Data for the process execution */
     private ProcessExecutionData processExecutionData;
-    /** Start time*/
-    private long startTime;
 
     /**
      * Main constructor.
@@ -76,15 +74,18 @@ public class ExecutionThread extends Thread{
 
     @Override
     public void run(){
-        startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         //Catch all the Exception that can be get on executing the script.
         try {
+            //Print in the log the process execution start
             processExecutionData.appendLog(System.currentTimeMillis() - startTime,
                     ProcessExecutionData.LogType.INFO,
                     "Start process : " + process.getTitle());
+            //Execute the process and retrieve the groovy object.
             GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(
                     process, inputDataMap, outputDataMap, toolBox.getProperties());
             List<String> listOutput = new ArrayList<>();
+            //Retrieve the executed process output data
             for (Field field : groovyObject.getClass().getDeclaredFields()) {
                 if (field.getAnnotation(OutputAttribute.class) != null) {
                         field.setAccessible(true);
@@ -94,13 +95,16 @@ public class ExecutionThread extends Thread{
                         listOutput.add(field.get(groovyObject).toString());
                 }
             }
+            //Print in the log the process execution end
             processExecutionData.appendLog(System.currentTimeMillis() - startTime,
                     ProcessExecutionData.LogType.INFO,
                     "End process : "+process.getTitle());
+            //Print in the log the process end the process
             processExecutionData.endProcess(listOutput);
         }
         catch (Exception e) {
             processExecutionData.setState(ProcessExecutionData.ProcessState.ERROR);
+            //Print in the log the process execution error
             processExecutionData.appendLog(System.currentTimeMillis() - startTime,
                     ProcessExecutionData.LogType.ERROR,
                     e.getMessage());

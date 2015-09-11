@@ -34,8 +34,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.MouseListener;
-import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -60,10 +58,8 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
     private JLabel stateLabel;
 
     private ProcessExecutionData processExecutionData;
-
+    /**TextPane used to display the process execution log.*/
     private JTextPane logPane;
-
-    private MouseListener mouseListener;
 
     /**
      * Main constructor with no ProcessExecutionData.
@@ -102,6 +98,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         buildUI();
         processExecutionData.setProcessUIPanel(this);
 
+        //According to the process state, open the good tab
         switch(processExecutionData.getState()){
             case IDLE:
                 tabbedPane.setSelectedIndex(0);
@@ -110,6 +107,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
                 tabbedPane.setSelectedIndex(2);
                 break;
             case COMPLETED:
+            case ERROR:
                 List<String> results = new ArrayList<>();
                 for(Map.Entry<URI, Object> entry : processExecutionData.getOutputDataMap().entrySet()){
                     results.add(entry.getValue().toString());
@@ -118,7 +116,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
                 tabbedPane.setSelectedIndex(2);
                 break;
         }
-
+        //Print the process execution log.
         for(Map.Entry<String, Color> entry : processExecutionData.getLogMap().entrySet()){
             print(entry.getKey(), entry.getValue());
         }
@@ -337,6 +335,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
 
     @Override
     public String validateInput() {
+        //In each case return a string to avoid the SIFDialog close on clicking on running.
         if(!runProcess()){
             return "";
         }
@@ -369,6 +368,9 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         logPane.setCaretPosition(logPane.getDocument().getLength());
     }
 
+    /**
+     * Clear the log panel.
+     */
     public void clearLogPanel(){
         try {
             logPane.getDocument().remove(1, logPane.getDocument().getLength() - 1);
@@ -377,6 +379,10 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         }
     }
 
+    /**
+     * Add to the processExecutionData all the node concerned by the process execution state.
+     * @param listNode List of node concerned by the process state.
+     */
     public void setProcessStateListener(List<TreeNodeWps> listNode){
         for(TreeNodeWps node : listNode){
             processExecutionData.addPropertyChangeListener(node);

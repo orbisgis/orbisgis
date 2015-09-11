@@ -450,6 +450,7 @@ public class ToolBoxPanel extends JPanel {
             }
             for(TreeNodeWps leaf : leafList){
                 File file = leaf.getFilePath();
+                //Remove the node only if the process is not running.
                 if(!toolBox.isProcessRunning(file)) {
                     cleanParentNode(getNodeFromFile(file, (TreeNodeWps) fileModel.getRoot()), fileModel);
                     cleanParentNode(getNodeFromFile(file, (TreeNodeWps) categoryModel.getRoot()), categoryModel);
@@ -613,10 +614,11 @@ public class ToolBoxPanel extends JPanel {
                 tree.setModel(filteredModel);
                 for (TreeNodeWps node : getAllLeaf((TreeNodeWps) fileModel.getRoot())) {
                     if(node != addWps) {
-                        TreeNodeWps filteredNode = getNodeFromFile(node.getFilePath(), (TreeNodeWps) filteredModel.getRoot());
+                        TreeNodeWps filteredRoot = (TreeNodeWps) filteredModel.getRoot();
+                        TreeNodeWps filteredNode = getNodeFromFile(node.getFilePath(), filteredRoot);
                         if (filteredNode == null) {
                             if (filter.accepts(node)) {
-                                ((TreeNodeWps) filteredModel.getRoot()).add(node.deepCopy());
+                                filteredRoot.add(node.deepCopy();
                             }
                         } else {
                             if (!filter.accepts(filteredNode)) {
