@@ -466,9 +466,11 @@ public class ToolBoxPanel extends JPanel {
             }
             for(TreeNodeWps leaf : leafList){
                 File file = leaf.getFilePath();
-                cleanParentNode(getNodeFromFile(file, (TreeNodeWps) fileModel.getRoot()), fileModel);
-                cleanParentNode(getNodeFromFile(file, (TreeNodeWps) categoryModel.getRoot()), categoryModel);
-                toolBox.removeProcess(leaf.getFilePath());
+                if(!toolBox.isProcessRunning(file)) {
+                    cleanParentNode(getNodeFromFile(file, (TreeNodeWps) fileModel.getRoot()), fileModel);
+                    cleanParentNode(getNodeFromFile(file, (TreeNodeWps) categoryModel.getRoot()), categoryModel);
+                    toolBox.removeProcess(leaf.getFilePath());
+                }
             }
             this.reload();
         }

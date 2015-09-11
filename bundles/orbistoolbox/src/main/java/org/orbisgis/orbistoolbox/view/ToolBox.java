@@ -198,6 +198,25 @@ public class ToolBox implements DockingPanel {
         processExecutionDataList.remove(processExecutionData);
     }
 
+    /**
+     * Returns true if the process from the given file is running, false otherwise.
+     * @param file File of the process.
+     * @return True if the process is running, false otherwise.
+     */
+    public boolean isProcessRunning(File file){
+        Process process = processManager.getProcess(file);
+        if(process != null) {
+            for (ProcessExecutionData ped : processExecutionDataList){
+                if(ped.getProcess().getIdentifier().equals(process.getIdentifier())){
+                    if(ped.getState().equals(ProcessExecutionData.ProcessState.RUNNING)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public Map<String, Object> getProperties(){
         return properties;
     }
