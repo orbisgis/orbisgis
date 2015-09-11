@@ -625,14 +625,16 @@ public class ToolBoxPanel extends JPanel {
             else {
                 tree.setModel(filteredModel);
                 for (TreeNodeWps node : getAllLeaf((TreeNodeWps) fileModel.getRoot())) {
-                    TreeNodeWps filteredNode = getNodeFromFile(node.getFilePath(), (TreeNodeWps) filteredModel.getRoot());
-                    if (filteredNode == null) {
-                        if (filter.accepts(node)) {
-                            ((TreeNodeWps) filteredModel.getRoot()).add(node.deepCopy());
-                        }
-                    } else {
-                        if (!filter.accepts(filteredNode)) {
-                            filteredModel.removeNodeFromParent(filteredNode);
+                    if(node != addWps) {
+                        TreeNodeWps filteredNode = getNodeFromFile(node.getFilePath(), (TreeNodeWps) filteredModel.getRoot());
+                        if (filteredNode == null) {
+                            if (filter.accepts(node)) {
+                                ((TreeNodeWps) filteredModel.getRoot()).add(node.deepCopy());
+                            }
+                        } else {
+                            if (!filter.accepts(filteredNode)) {
+                                filteredModel.removeNodeFromParent(filteredNode);
+                            }
                         }
                     }
                 }
