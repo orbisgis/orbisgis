@@ -33,15 +33,12 @@ import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
-import sun.reflect.generics.tree.Tree;
 
 import javax.swing.*;
 import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.EventHandler;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
@@ -607,18 +604,21 @@ public class ToolBoxPanel extends JPanel {
     public void setFilters(List<IFilter> filters){
         if(filters.size() == 1){
             IFilter filter = filters.get(0);
+            //If the filter is empty, use the previously selected model.
             if(filter.acceptsAll()){
                 tree.setModel(selectedModel);
             }
+            //Else, use the filteredModel
             else {
                 tree.setModel(filteredModel);
                 for (TreeNodeWps node : getAllLeaf((TreeNodeWps) fileModel.getRoot())) {
                     if(node != addWps) {
+                        //For all the leaf, tests if they are accepted by the filter or not.
                         TreeNodeWps filteredRoot = (TreeNodeWps) filteredModel.getRoot();
                         TreeNodeWps filteredNode = getNodeFromFile(node.getFilePath(), filteredRoot);
                         if (filteredNode == null) {
                             if (filter.accepts(node)) {
-                                filteredRoot.add(node.deepCopy();
+                                filteredRoot.add(node.deepCopy());
                             }
                         } else {
                             if (!filter.accepts(filteredNode)) {
