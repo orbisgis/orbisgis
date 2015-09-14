@@ -24,16 +24,23 @@ import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
 
+import javax.swing.*;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URI;
-import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Sylvain PALOMINOS
  **/
 
 public class ProcessExecutionData {
+
+    public static final String STATE_PROPERTY = "STATE_PROPERTY";
+
     /** Map of input data (URI of the corresponding input) */
     private Map<URI, Object> inputDataMap;
     /** Map of output data (URI of the corresponding output) */
@@ -44,12 +51,22 @@ public class ProcessExecutionData {
     private ProcessState state;
     private ToolBox toolBox;
     private ProcessUIPanel processUIPanel;
+    /** Map of the log message and their color.*/
+    private Map<String, Color> logMap;
+    /** List of listeners for the processState*/
+    private List<PropertyChangeListener> propertyChangeListenerList;
 
     public ProcessExecutionData(ToolBox toolBox, Process process){
         this.toolBox = toolBox;
         this.process = process;
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
+        this.logMap = new LinkedHashMap<>();
+        this.propertyChangeListenerList = new ArrayList<>();
+    }
+
+    public Map<String, Color> getLogMap(){
+        return logMap;
     }
 
     public Map<URI, Object> getInputDataMap() {
@@ -81,19 +98,38 @@ public class ProcessExecutionData {
     }
 
     public void setState(ProcessState state) {
+        ProcessState oldState = this.state;
         this.state = state;
+        firePropertyChange(oldState, state);
+        toolBox.getComponent().revalidate();
+        toolBox.getComponent().repaint();
     }
 
     public void setProcessUIPanel(ProcessUIPanel processUIPanel) {
         this.processUIPanel = processUIPanel;
     }
 
+    public void addPropertyChangeListener(PropertyChangeListener propertyChangeListener){
+        if(!propertyChangeListenerList.contains(propertyChangeListener)){
+            propertyChangeListenerList.add(propertyChangeListener);
+        }
+    }
+
+    public void firePropertyChange(ProcessState oldValue, ProcessState newValue){
+        PropertyChangeEvent event = new PropertyChangeEvent(process, STATE_PROPERTY, oldValue, newValue);
+        for(PropertyChangeListener pcl : propertyChangeListenerList){
+            pcl.propertyChange(event);
+        }
+    }
+
     /**
      * Run the process.
      */
     public void runProcess(){
+        logMap = new HashMap<>();
         //Check that all the data field were filled.
         if(inputDataMap.size() == process.getInput().size()) {
+            setState(ProcessState.RUNNING);
             //Run the process in a separated thread
             ExecutionThread thread = new ExecutionThread(process, outputDataMap, inputDataMap, toolBox, this);
             thread.start();
@@ -105,14 +141,46 @@ public class ProcessExecutionData {
      * @param outputList Map of the outputs results.
      */
     public void endProcess(List<String> outputList){
-        state = ProcessState.COMPLETED;
+        setState(ProcessState.COMPLETED);
         processUIPanel.setOutputs(outputList, ProcessState.COMPLETED.getValue());
+        if(processUIPanel != null && SwingUtilities.getWindowAncestor(processUIPanel).isVisible()){
+            this.setState(ProcessExecutionData.ProcessState.IDLE);
+        }
+    }
+
+    /**
+     * Append to the log a new entry.
+     * @param time Time since the beginning when it appends.
+     * @param logType Type of the message (INFO, WARN, ERROR ...).
+     * @param message Message.
+     */
+    public void appendLog(long time, LogType logType, String message){
+        Color color;
+        switch(logType){
+            case ERROR:
+                color = Color.RED;
+                break;
+            case WARN:
+                color = Color.ORANGE;
+                break;
+            case INFO:
+            default:
+                color = Color.BLACK;
+        }
+        Date date = new Date(time - 3600000);
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        String log = timeFormat.format(date) + " : " + logType.name() + " : " + message + "";
+        logMap.put(log, color);
+        if(processUIPanel != null){
+            processUIPanel.print(log, color);
+        }
     }
 
 
     public enum ProcessState{
         RUNNING("Running"),
         COMPLETED("Completed"),
+        ERROR("Error"),
         IDLE("Idle");
 
         private String value;
@@ -125,4 +193,6 @@ public class ProcessExecutionData {
             return value;
         }
     }
+
+    public enum LogType{INFO, WARN, ERROR}
 }

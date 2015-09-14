@@ -130,7 +130,7 @@ public class ToolBox implements DockingPanel {
         Process process = processManager.getProcess(toolBoxPanel.getSelectedNode().getFilePath());
         ProcessExecutionData processExecutionData = null;
         for(ProcessExecutionData puid : processExecutionDataList){
-            if(puid.getProcess().equals(process)){
+            if(puid.getProcess().getIdentifier().equals(process.getIdentifier())){
                 processExecutionData = puid;
             }
         }
@@ -141,10 +141,17 @@ public class ToolBox implements DockingPanel {
         else{
             uiPanel = new ProcessUIPanel(process, this);
         }
-        SIFDialog dialog = UIFactory.getSimpleDialog(uiPanel, SwingUtilities.getWindowAncestor(toolBoxPanel), true);
+        SIFDialog dialog = UIFactory.getSimpleDialog(uiPanel,
+                SwingUtilities.getWindowAncestor(toolBoxPanel),
+                true,
+                "run",
+                "close"
+                );
         dialog.pack();
         dialog.setAlwaysOnTop(true);
         dialog.setVisible(true);
+        //Make the node listen to the process state.
+        uiPanel.setProcessStateListener(toolBoxPanel.getNodesFromSelectedOne());
     }
 
     /**
@@ -189,6 +196,25 @@ public class ToolBox implements DockingPanel {
      */
     public void deleteProcessExecutionData(ProcessExecutionData processExecutionData){
         processExecutionDataList.remove(processExecutionData);
+    }
+
+    /**
+     * Returns true if the process from the given file is running, false otherwise.
+     * @param file File of the process.
+     * @return True if the process is running, false otherwise.
+     */
+    public boolean isProcessRunning(File file){
+        Process process = processManager.getProcess(file);
+        if(process != null) {
+            for (ProcessExecutionData ped : processExecutionDataList){
+                if (ped.getProcess().getIdentifier().equals(process.getIdentifier())){
+                    if(ped.getState().equals(ProcessExecutionData.ProcessState.RUNNING)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public Map<String, Object> getProperties(){

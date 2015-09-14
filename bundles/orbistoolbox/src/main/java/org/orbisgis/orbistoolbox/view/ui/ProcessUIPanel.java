@@ -27,12 +27,13 @@ import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
+import org.orbisgis.orbistoolbox.view.utils.TreeNodeWps;
 import org.orbisgis.sif.UIPanel;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -56,11 +57,9 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
     /** Label containing the state of the process (running, completed or idle) */
     private JLabel stateLabel;
 
-    private JButton runButton;
-
     private ProcessExecutionData processExecutionData;
-
-    private ToolBox toolBox;
+    /**TextPane used to display the process execution log.*/
+    private JTextPane logPane;
 
     /**
      * Main constructor with no ProcessExecutionData.
@@ -72,7 +71,6 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
 
         outputJLabelList = new ArrayList<>();
         dataUIManager = toolBox.getDataUIManager();
-        this.toolBox = toolBox;
 
         processExecutionData = new ProcessExecutionData(toolBox, process);
         processExecutionData.setState(ProcessExecutionData.ProcessState.IDLE);
@@ -93,21 +91,37 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
     public ProcessUIPanel(ProcessExecutionData processExecutionData, ToolBox toolBox){
         this.setLayout(new BorderLayout());
         this.processExecutionData = processExecutionData;
-        this.toolBox = toolBox;
 
         outputJLabelList = new ArrayList<>();
         dataUIManager = toolBox.getDataUIManager();
 
         buildUI();
-
         processExecutionData.setProcessUIPanel(this);
-        List<String> results = new ArrayList<>();
-        if(processExecutionData.getState().equals(ProcessExecutionData.ProcessState.COMPLETED)){
-            for(Map.Entry<URI, Object> entry : processExecutionData.getOutputDataMap().entrySet()){
-                results.add(entry.getValue().toString());
-            }
+
+        //According to the process state, open the good tab
+        switch(processExecutionData.getState()){
+            case IDLE:
+                tabbedPane.setSelectedIndex(0);
+                break;
+            case RUNNING:
+                tabbedPane.setSelectedIndex(2);
+                break;
+            case COMPLETED:
+            case ERROR:
+                List<String> results = new ArrayList<>();
+                for(Map.Entry<URI, Object> entry : processExecutionData.getOutputDataMap().entrySet()){
+                    results.add(entry.getValue().toString());
+                }
+                setOutputs(results, processExecutionData.getState().toString());
+                tabbedPane.setSelectedIndex(2);
+                break;
         }
-        setOutputs(results, processExecutionData.getState().toString());
+        //Print the process execution log.
+        for(Map.Entry<String, Color> entry : processExecutionData.getLogMap().entrySet()){
+            print(entry.getKey(), entry.getValue());
+        }
+
+        processExecutionData.setState(ProcessExecutionData.ProcessState.IDLE);
     }
 
     /**
@@ -132,14 +146,22 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
 
     /**
      * Run the process.
+     * @return True if the process has already been launch, false otherwise.
      */
-    public void runProcess(){
-        //Select the execution tab
-        runButton.setText("running");
-        runButton.setEnabled(false);
-        stateLabel.setText(ProcessExecutionData.ProcessState.RUNNING.getValue());
-        tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
-        processExecutionData.runProcess();
+    public boolean runProcess(){
+        if(processExecutionData.getState().equals(ProcessExecutionData.ProcessState.IDLE) ||
+                processExecutionData.getState().equals(ProcessExecutionData.ProcessState.ERROR) ||
+                processExecutionData.getState().equals(ProcessExecutionData.ProcessState.COMPLETED)) {
+            clearLogPanel();
+            processExecutionData.runProcess();
+            //Select the execution tab
+            stateLabel.setText(processExecutionData.getState().getValue());
+            tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 
     /**
@@ -179,11 +201,6 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
                 }
             }
         }
-
-        runButton = new JButton("run");
-        runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
-        runButton.setEnabled(!processExecutionData.getState().equals(ProcessExecutionData.ProcessState.RUNNING));
-        panel.add(runButton, "growx, wrap");
         return panel;
     }
 
@@ -280,9 +297,17 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
             resultPanel.add(result, "wrap");
         }
 
+        JPanel logPanel = new JPanel(new BorderLayout());
+        logPanel.setBorder(BorderFactory.createTitledBorder("Log :"));
+        logPane = new JTextPane();
+        logPane.setCaretPosition(0);
+        JScrollPane scrollPane = new JScrollPane(logPane);
+        logPanel.add(scrollPane, BorderLayout.CENTER);
+
         panel.add(executorPanel, "growx, wrap");
         panel.add(statusPanel, "growx, wrap");
         panel.add(resultPanel, "growx, wrap");
+        panel.add(logPanel, "growx, growy, wrap");
 
         return panel;
     }
@@ -292,12 +317,10 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
      * @param outputs Outputs results.
      */
     public void setOutputs(List<String> outputs, String state) {
-        for(int i=0; i<outputs.size(); i++) {
+        for(int i=0; i<processExecutionData.getProcess().getOutput().size(); i++) {
             outputJLabelList.get(i).setText(outputs.get(i));
         }
         stateLabel.setText(state);
-        runButton.setText("run");
-        runButton.setEnabled(true);
     }
 
     @Override
@@ -312,16 +335,57 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
 
     @Override
     public String validateInput() {
-        processExecutionData.setProcessUIPanel(null);
-        if(processExecutionData.getState() == ProcessExecutionData.ProcessState.COMPLETED){
-            toolBox.deleteProcessExecutionData(processExecutionData);
+        //In each case return a string to avoid the SIFDialog close on clicking on running.
+        if(!runProcess()){
+            return "";
         }
-
-        return null;
+        else{
+            return "Process already running";
+        }
     }
 
     @Override
     public Component getComponent() {
         return this;
+    }
+
+    /**
+     * Add the provided text with the provided color to the GUI document
+     * @param text The text that will be added
+     * @param color The color used to show the text
+     */
+    public void print(String text, Color color) {
+        StyleContext sc = StyleContext.getDefaultStyleContext();
+        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY,
+                StyleConstants.Foreground, color);
+        int len = logPane.getDocument().getLength();
+        try {
+            logPane.setCaretPosition(len);
+            logPane.getDocument().insertString(len, text+"\n", aset);
+        } catch (BadLocationException e) {
+            LoggerFactory.getLogger(ProcessUIPanel.class).error("Cannot show the log message", e);
+        }
+        logPane.setCaretPosition(logPane.getDocument().getLength());
+    }
+
+    /**
+     * Clear the log panel.
+     */
+    public void clearLogPanel(){
+        try {
+            logPane.getDocument().remove(1, logPane.getDocument().getLength() - 1);
+        } catch (BadLocationException e) {
+            LoggerFactory.getLogger(ProcessUIPanel.class).error(e.getMessage());
+        }
+    }
+
+    /**
+     * Add to the processExecutionData all the node concerned by the process execution state.
+     * @param listNode List of node concerned by the process state.
+     */
+    public void setProcessStateListener(List<TreeNodeWps> listNode){
+        for(TreeNodeWps node : listNode){
+            processExecutionData.addPropertyChangeListener(node);
+        }
     }
 }

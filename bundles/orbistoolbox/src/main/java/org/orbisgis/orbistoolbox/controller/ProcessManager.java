@@ -74,15 +74,23 @@ public class ProcessManager {
      * @return The process corresponding to the script.
      */
     public Process addLocalScript(File f){
+        //Test that the script name is not only '.groovy'
         if (f.getName().endsWith(".groovy") && f.getName().length()>7) {
-            AbstractMap.SimpleEntry entry = parserController.parseProcess(f.getAbsolutePath());
-            if(entry != null && entry.getKey() != null && entry.getValue() != null){
-                processIdList.add(new ProcessIdentifier(
-                        (Class) entry.getValue(),
-                        (Process) entry.getKey(),
-                        f.getAbsolutePath()
-                ));
-                return (Process) entry.getKey();
+            //Ensure that the process does not already exists.
+            if(getProcess(f) == null) {
+                //Parse the process
+                AbstractMap.SimpleEntry<Process, Class> entry = parserController.parseProcess(f.getAbsolutePath());
+                //Check if the process has been well parsed
+                if (entry != null && entry.getKey() != null && entry.getValue() != null) {
+                    //Save the process in a ProcessIdentifier
+                    processIdList.add(new ProcessIdentifier(
+                            entry.getValue(),
+                            entry.getKey(),
+                            f.getAbsolutePath()
+                    ));
+                    //return the process
+                    return entry.getKey();
+                }
             }
         }
         return null;
@@ -192,6 +200,10 @@ public class ProcessManager {
         return null;
     }
 
+    /**
+     * Remove the given process.
+     * @param process Process to remove.
+     */
     public void removeProcess(Process process) {
         ProcessIdentifier toRemove = null;
         for(ProcessIdentifier pi : processIdList){
