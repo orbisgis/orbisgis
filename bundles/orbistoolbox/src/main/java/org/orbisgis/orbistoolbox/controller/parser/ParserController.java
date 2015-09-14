@@ -62,7 +62,7 @@ public class ParserController {
     }
 
     public AbstractMap.SimpleEntry<Process, Class> parseProcess(String processPath){
-        Class clazz = null;
+        Class clazz;
         File process = new File(processPath);
         try {
             groovyClassLoader.clearCache();
@@ -80,24 +80,24 @@ public class ParserController {
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                            inputList.add(parser.parseInput(f, process.getName()));
+                            inputList.add(parser.parseInput(f, process.getAbsolutePath()));
                             parsed = true;
                         }
                     }
                     if(!parsed){
-                        inputList.add(defaultParser.parseInput(f, process.getName()));
+                        inputList.add(defaultParser.parseInput(f, process.getAbsolutePath()));
                     }
                 }
                 if(a instanceof OutputAttribute){
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                            outputList.add(parser.parseOutput(f, process.getName()));
+                            outputList.add(parser.parseOutput(f, process.getAbsolutePath()));
                             parsed = true;
                         }
                     }
                     if(!parsed){
-                        outputList.add(defaultParser.parseOutput(f, process.getName()));
+                        outputList.add(defaultParser.parseOutput(f, process.getAbsolutePath()));
                     }
                 }
             }
@@ -106,7 +106,7 @@ public class ParserController {
             Process p = processParser.parseProcess(inputList,
                     outputList,
                     clazz.getDeclaredMethod("processing"),
-                    process.getName());
+                    process.getAbsolutePath());
             return new AbstractMap.SimpleEntry<>(p, clazz);
         } catch (NoSuchMethodException e) {
             return null;

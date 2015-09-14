@@ -33,12 +33,12 @@ import java.lang.reflect.Field;
 
 public class BoundingBoxParser implements Parser {
     @Override
-    public Input parseInput(Field f, String processName) {
+    public Input parseInput(Field f, String processId) {
         return null;
     }
 
     @Override
-    public Output parseOutput(Field f, String processName) {
+    public Output parseOutput(Field f, String processId) {
         return null;
     }
 

@@ -37,7 +37,7 @@ import java.util.List;
 
 public class DefaultParser implements Parser {
     @Override
-    public Input parseInput(Field f, String processName) {
+    public Input parseInput(Field f, String processId) {
         DataDescription data;
         List<Format> formatList = new ArrayList<>();
         List<LiteralDataDomain> lddList = new ArrayList<>();
@@ -116,7 +116,7 @@ public class DefaultParser implements Parser {
 
             //Instantiate the returned input
             Input input = new Input(f.getName(),
-                    URI.create("orbisgis:wps:" + processName + ":input:" + f.getName()),
+                    URI.create(processId + ":input:" + f.getName()),
                     data);
             input.setMinOccurs(0);
             input.setMaxOccurs(1);
@@ -130,7 +130,7 @@ public class DefaultParser implements Parser {
     }
 
     @Override
-    public Output parseOutput(Field f, String processName) {
+    public Output parseOutput(Field f, String processId) {
         DataDescription data;
         List<Format> formatList = new ArrayList<>();
         List<LiteralDataDomain> lddList = new ArrayList<>();
@@ -208,7 +208,7 @@ public class DefaultParser implements Parser {
             }
             //Instantiate the returned output
             Output output = new Output(f.getName(),
-                    URI.create("orbisgis:wps:" + processName + ":output:" + f.getName()),
+                    URI.create(processId + ":output:" + f.getName()),
                     data);
 
             return output;

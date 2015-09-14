@@ -39,7 +39,7 @@ import java.net.URI;
 public class ShapeFileParser implements Parser {
 
     @Override
-    public Input parseInput(Field f, String processName) {
+    public Input parseInput(Field f, String processId) {
         //Instantiate the RawData
         ShapeFileData shapeFile = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(ShapeFileAttribute.class));
 
@@ -47,7 +47,7 @@ public class ShapeFileParser implements Parser {
         try {
             //Instantiate the returned input
             input = new Input(f.getName(),
-                    URI.create("orbisgis:wps:"+processName+":input:"+f.getName()),
+                    URI.create(processId + ":input:" + f.getName()),
                     shapeFile);
         } catch (MalformedScriptException e) {
             e.printStackTrace();
@@ -61,7 +61,7 @@ public class ShapeFileParser implements Parser {
     }
 
     @Override
-    public Output parseOutput(Field f, String processName) {
+    public Output parseOutput(Field f, String processId) {
         //Instantiate the RawData
         ShapeFileData shapeFile = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(ShapeFileAttribute.class));
 
@@ -69,7 +69,7 @@ public class ShapeFileParser implements Parser {
         try {
             //Instantiate the returned output
             output = new Output(f.getName(),
-                    URI.create("orbisgis:wps:"+processName+":output:"+f.getName()),
+                    URI.create(processId + ":output:" + f.getName()),
                     shapeFile);
         } catch (MalformedScriptException e) {
             e.printStackTrace();
