@@ -19,9 +19,13 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
  * Groovy annotation that can be used in a groovy script to declare a GeoData which will be taken from OrbisGIS.
  *
  * @author Sylvain PALOMINOS
  */
+@Retention(RetentionPolicy.RUNTIME)
 @interface GeoDataAttribute {}

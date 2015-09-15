@@ -19,14 +19,10 @@
 
 package org.orbisgis.orbistoolbox.controller.parser;
 
-import org.orbisgis.orbistoolbox.model.Input;
-import org.orbisgis.orbistoolbox.model.MalformedScriptException;
-import org.orbisgis.orbistoolbox.model.Output;
-import org.orbisgis.orbistoolbox.model.ShapeFileData;
+import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.GeoDataAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute;
-import org.orbisgis.orbistoolboxapi.annotations.model.ShapeFileAttribute;
 
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -84,6 +80,6 @@ public class GeoDataParser implements Parser{
 
     @Override
     public Class getAnnotation() {
-        return GeoDataAttribute;
+        return GeoDataAttribute.class;
     }
 }

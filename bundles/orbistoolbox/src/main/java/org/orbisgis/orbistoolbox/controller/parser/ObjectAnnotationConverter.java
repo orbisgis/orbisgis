@@ -207,7 +207,7 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static ShapeFileData annotationToObject(GeoDataAttribute GeoDataAttribute) {
+    public static GeoData annotationToObject(GeoDataAttribute GeoDataAttribute) {
         try {
             return new GeoData();
         } catch (MalformedScriptException e) {

@@ -66,7 +66,7 @@ public class ToolBox implements DockingPanel {
     /** Object creating the UI corresponding to the data */
     private DataUIManager dataUIManager;
     /** DataManager */
-    private DataManager dataManager;
+    private static DataManager dataManager;
 
     private Map<String, Object> properties;
     private List<ProcessExecutionData> processExecutionDataList;
@@ -249,7 +249,7 @@ public class ToolBox implements DockingPanel {
         this.dataManager = null;
     }
 
-    private List<String> getTablesList(){
+    public static List<String> getTablesList(){
         List<String> list = new ArrayList<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();

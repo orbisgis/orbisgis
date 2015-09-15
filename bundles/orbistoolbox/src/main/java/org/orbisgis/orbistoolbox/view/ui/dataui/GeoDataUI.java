@@ -21,6 +21,7 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.*;
+import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
@@ -50,60 +51,11 @@ public class GeoDataUI implements DataUI{
     private static final String PLAIN_TEXT = "PLAIN_TEXT";
     private static final String GEOJSON = "GEOJSON";
     private static final String SHAPEFILE = "SHAPEFILE";
+    private static final String SQLTABLE = "SQLTABLE";
 
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
-        Map<URI, Object> uriDefaultValueMap = new HashMap<>();
-        java.util.List<DescriptionType> descriptionTypeList = new ArrayList<>();
-        DataDescription dataDescription = null;
-        URI identifier;
-
-        //Gets the descriptionType list if the argument is an input
-        if(inputOrOutput instanceof Input){
-            Input input = (Input) inputOrOutput;
-            if(input.getInput() != null){
-                descriptionTypeList.addAll(input.getInput());
-            }
-            else{
-                descriptionTypeList.add(input);
-            }
-        }
-
-        //Gets the descriptionType list if the argument is an output
-        if(inputOrOutput instanceof Output){
-            Output output = (Output) inputOrOutput;
-            if(output.getOutput() != null){
-                descriptionTypeList.addAll(output.getOutput());
-            }
-            else{
-                descriptionTypeList.add(output);
-            }
-        }
-
-        //Fill the map
-        for(DescriptionType dt : descriptionTypeList){
-            identifier = dt.getIdentifier();
-            if(dt instanceof Input){
-                dataDescription = ((Input) dt).getDataDescription();
-            }
-            else if(dt instanceof  Output){
-                dataDescription = ((Output) dt).getDataDescription();
-            }
-            //Find in the dataDescription the default LiteralDataDomain an retrieve its default value
-            if (dataDescription instanceof LiteralData) {
-                for (LiteralDataDomain ldda : ((LiteralData) dataDescription).getLiteralDomainType()) {
-                    if (ldda.isDefaultDomain()) {
-                        //If the default value is a Range, get the minimum as default value
-                        if (ldda.getDefaultValue() instanceof Range) {
-                            uriDefaultValueMap.put(identifier, ((Range) ldda.getDefaultValue()).getMinimumValue());
-                        } else if (ldda.getDefaultValue() instanceof Value) {
-                            uriDefaultValueMap.put(identifier, ((Value) ldda.getDefaultValue()).getValue());
-                        }
-                    }
-                }
-            }
-        }
-        return uriDefaultValueMap;
+        return new HashMap<>();
     }
 
     @Override
@@ -120,12 +72,31 @@ public class GeoDataUI implements DataUI{
         if(inputOrOutput instanceof Input){
             Input input = (Input)inputOrOutput;
             GeoData geoData = (GeoData)input.getDataDescription();
+            String defaultFormatMimeType = "";
+            for(Format format : geoData.getFormats()){
+                if(format.isDefaultFormat()){
+                    defaultFormatMimeType = format.getMimeType();
+                }
+            }
             //JComboBox with the input type
             JComboBox<String> comboBox = new JComboBox<>();
             comboBox.addItem(PLAIN_TEXT.toLowerCase());
             comboBox.addItem(GEOJSON.toLowerCase());
             comboBox.addItem(SHAPEFILE.toLowerCase());
+            comboBox.addItem(SQLTABLE.toLowerCase());
             panel.add(comboBox, "wrap");
+            if(defaultFormatMimeType.equals(GeoData.textMimeType)){
+                comboBox.setSelectedItem(PLAIN_TEXT.toLowerCase());
+            }
+            if(defaultFormatMimeType.equals(GeoData.geojsonMimeType)){
+                comboBox.setSelectedItem(GEOJSON.toLowerCase());
+            }
+            if(defaultFormatMimeType.equals(GeoData.shapeFileMimeType)){
+                comboBox.setSelectedItem(SHAPEFILE.toLowerCase());
+            }
+            if(defaultFormatMimeType.equals(GeoData.sqlTableMimeType)){
+                comboBox.setSelectedItem(SQLTABLE.toLowerCase());
+            }
 
             //JPanel containing the component to set the input value
             JComponent dataField = new JPanel();
@@ -162,6 +133,7 @@ public class GeoDataUI implements DataUI{
                 //Create the component
                 dataComponent = new JPanel();
                 dataComponent.setLayout(new FlowLayout(FlowLayout.LEFT));
+                //Adds the text field to display and write the file path
                 JTextField jtf = new JTextField();
                 jtf.setColumns(25);
                 jtf.getDocument().putProperty("dataMap", dataMap);
@@ -203,17 +175,27 @@ public class GeoDataUI implements DataUI{
 
                 dataComponent.add(button);
                 break;
+            case SQLTABLE:
+                dataComponent = new JPanel(new BorderLayout());
+                //Instantiate the component
+                JComboBox<String> box = new JComboBox<>();
+                for(String tableName : ToolBox.getTablesList()){
+                    box.addItem(tableName);
+                }
+                dataComponent.add(new JLabel("Select a table :"), BorderLayout.PAGE_START);
+                dataComponent.add(box, BorderLayout.CENTER);
+                break;
             case PLAIN_TEXT:
             default:
                 //Instantiate the component
-                dataComponent = new JTextArea(6, 20);
+                dataComponent = new JTextArea(6, 35);
                 dataComponent.setBorder(BorderFactory.createLineBorder(Color.lightGray));
                 //Put the data type, the dataMap and the uri as properties
                 Document doc = ((JTextArea) dataComponent).getDocument();
                 doc.putProperty("dataMap", comboBox.getClientProperty("dataMap"));
                 doc.putProperty("uri", comboBox.getClientProperty("uri"));
                 //Set the default value and adds the listener for saving the value set by the user
-                ((JTextArea)dataComponent).setText((String)dataMap.get(uri));
+                ((JTextArea)dataComponent).setText((String) dataMap.get(uri));
                 doc.addDocumentListener(EventHandler.create(
                         DocumentListener.class,
                         this,
@@ -232,6 +214,7 @@ public class GeoDataUI implements DataUI{
         JPanel panel = (JPanel) comboBox.getClientProperty("dataField");
         panel.removeAll();
         panel.add(dataComponent);
+        panel.revalidate();
     }
 
     /**
