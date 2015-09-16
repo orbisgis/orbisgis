@@ -94,7 +94,7 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
-            <artifactId>geocatalog</artifactId>
+            <artifactId>core-jdbc</artifactId>
             <version>5.1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

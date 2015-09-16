@@ -26,7 +26,17 @@ import org.orbisgis.orbistoolboxapi.annotations.model.GeoDataAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a GeoData field.
+ * The GeoData output allows to specify what to do with the output (like export as ShapeFile or GeoJSON).
+ *
+ * Usage :
+ *
+ * @GeoDataOutput(
+ *          title="inputTitle"
+ *          )
+ * String data
+ *
+ * where the string data contains the name of the SQL table which contain the output data.
+ *
  *
  * @author Sylvain PALOMINOS
  */

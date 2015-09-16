@@ -23,7 +23,8 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a GeoData which will be taken from OrbisGIS.
+ * The GeoData represent any data that can be loaded in OrbisGIS as a SQL table.
+ * It can be a ShapeFile, a GeoJSON or a sql table from OrbisGIS
  *
  * @author Sylvain PALOMINOS
  */

@@ -17,29 +17,37 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations.input
+import org.orbisgis.orbistoolboxapi.annotations.model.Process
+import org.orbisgis.orbistoolboxapi.annotations.input.GeoDataInput
+import org.orbisgis.orbistoolboxapi.annotations.output.GeoDataOutput
 
-import groovy.transform.AnnotationCollector
-import groovy.transform.Field
-import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.GeoDataAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute
-
+import groovy.sql.Sql
 /**
- * The GeoData input allows the user to specify an input data (like ShapeFile, GeoJSON or an OrbisGIS SQL table).
- * This data will be loaded in OrbisGIS as a SQL table and return back to the script the table name.
- *
- * Usage :
- *
- * @GeoDataInput(
- *          title="inputTitle"
- *          )
- * String data
- *
- * where the string data contains the name of the SQL table which contain the input data.
- *
+ * This example script show how to use the GeoData input and output.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, GeoDataAttribute, InputAttribute, DescriptionTypeAttribute])
-@interface GeoDataInput {}
+
+@GeoDataInput(
+        title = "input geoData",
+        abstrac = "Input GeoData"
+)
+String inputGeoData
+
+@GeoDataOutput(
+        title = "output geoData",
+        abstrac = "Output GeoData"
+)
+String outputGeoData
+
+
+@Process(
+        title = "Extract first geom",
+        abstrac = "Extract the first geom of the input"
+)
+def processing() {
+    sql = Sql.newInstance(grv_ds)
+
+    sql.execute("DROP TABLE IF EXISTS " + outputGeoData + ";")
+    sql.execute("CREATE TABLE " + outputGeoData + " as SELECT THE_GEOM  FROM  SHAPETABLE LIMIT 1;")
+}
