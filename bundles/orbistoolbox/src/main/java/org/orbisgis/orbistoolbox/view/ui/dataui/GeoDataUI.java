@@ -25,6 +25,7 @@ import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
+import org.orbisgis.sif.components.SaveFilePanel;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
@@ -48,7 +49,6 @@ import java.util.*;
 
 public class GeoDataUI implements DataUI{
 
-    private static final String PLAIN_TEXT = "PLAIN_TEXT";
     private static final String GEOJSON = "GEOJSON";
     private static final String SHAPEFILE = "SHAPEFILE";
     private static final String SQLTABLE = "SQLTABLE";
@@ -66,52 +66,55 @@ public class GeoDataUI implements DataUI{
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         JPanel panel = new JPanel(new MigLayout("fill"));
-
+        GeoData geoData = null;
         //If the descriptionType is an input, add a comboBox to select the input type and according to the type,
         // add a second JComponent to write the input value
         if(inputOrOutput instanceof Input){
             Input input = (Input)inputOrOutput;
-            GeoData geoData = (GeoData)input.getDataDescription();
-            String defaultFormatMimeType = "";
-            for(Format format : geoData.getFormats()){
-                if(format.isDefaultFormat()){
-                    defaultFormatMimeType = format.getMimeType();
-                }
-            }
-            //JComboBox with the input type
-            JComboBox<String> comboBox = new JComboBox<>();
-            comboBox.addItem(PLAIN_TEXT.toLowerCase());
-            comboBox.addItem(GEOJSON.toLowerCase());
-            comboBox.addItem(SHAPEFILE.toLowerCase());
-            comboBox.addItem(SQLTABLE.toLowerCase());
-            panel.add(comboBox, "wrap");
-            if(defaultFormatMimeType.equals(GeoData.textMimeType)){
-                comboBox.setSelectedItem(PLAIN_TEXT.toLowerCase());
-            }
-            if(defaultFormatMimeType.equals(GeoData.geojsonMimeType)){
-                comboBox.setSelectedItem(GEOJSON.toLowerCase());
-            }
-            if(defaultFormatMimeType.equals(GeoData.shapeFileMimeType)){
-                comboBox.setSelectedItem(SHAPEFILE.toLowerCase());
-            }
-            if(defaultFormatMimeType.equals(GeoData.sqlTableMimeType)){
-                comboBox.setSelectedItem(SQLTABLE.toLowerCase());
-            }
-
-            //JPanel containing the component to set the input value
-            JComponent dataField = new JPanel();
-            panel.add(dataField);
-
-            comboBox.putClientProperty("dataField", dataField);
-            comboBox.putClientProperty("uri", input.getIdentifier());
-            comboBox.putClientProperty("dataMap", dataMap);
-            comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onBoxChange", "source"));
-
-            onBoxChange(comboBox);
+            geoData = (GeoData)input.getDataDescription();
         }
-        else{
-
+        if(inputOrOutput instanceof Output){
+            Output output = (Output)inputOrOutput;
+            geoData = (GeoData)output.getDataDescription();
         }
+        if(geoData == null){
+            return panel;
+        }
+
+        String defaultFormatMimeType = "";
+        for(Format format : geoData.getFormats()){
+            if(format.isDefaultFormat()){
+                defaultFormatMimeType = format.getMimeType();
+            }
+        }
+        //JComboBox with the input type
+        JComboBox<String> comboBox = new JComboBox<>();
+        comboBox.addItem(GEOJSON.toLowerCase());
+        comboBox.addItem(SHAPEFILE.toLowerCase());
+        comboBox.addItem(SQLTABLE.toLowerCase());
+        panel.add(comboBox, "wrap");
+        if(defaultFormatMimeType.equals(GeoData.geojsonMimeType)){
+            comboBox.setSelectedItem(GEOJSON.toLowerCase());
+        }
+        if(defaultFormatMimeType.equals(GeoData.shapeFileMimeType)){
+            comboBox.setSelectedItem(SHAPEFILE.toLowerCase());
+        }
+        if(defaultFormatMimeType.equals(GeoData.sqlTableMimeType)){
+            comboBox.setSelectedItem(SQLTABLE.toLowerCase());
+        }
+
+        //JPanel containing the component to set the input value
+        JComponent dataField = new JPanel();
+        panel.add(dataField);
+
+        comboBox.putClientProperty("inputOrOutput", inputOrOutput);
+        comboBox.putClientProperty("dataField", dataField);
+        comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());
+        comboBox.putClientProperty("dataMap", dataMap);
+        comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onBoxChange", "source"));
+
+        onBoxChange(comboBox);
+
         return panel;
     }
 
@@ -125,56 +128,21 @@ public class GeoDataUI implements DataUI{
         JComboBox comboBox = (JComboBox) source;
         Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty("dataMap");
         URI uri = (URI) comboBox.getClientProperty("uri");
-        String s = (String) comboBox.getSelectedItem();
+        DescriptionType descriptionType = (DescriptionType) comboBox.getClientProperty("inputOrOutput");
+        String s = ((String) comboBox.getSelectedItem()).toUpperCase();
         JComponent dataComponent;
-        switch(s.toUpperCase()){
+        switch(s){
             case GEOJSON:
-            case SHAPEFILE:
-                //Create the component
-                dataComponent = new JPanel();
-                dataComponent.setLayout(new FlowLayout(FlowLayout.LEFT));
-                //Adds the text field to display and write the file path
-                JTextField jtf = new JTextField();
-                jtf.setColumns(25);
-                jtf.getDocument().putProperty("dataMap", dataMap);
-                jtf.getDocument().putProperty("uri", uri);
-                //add the listener to display the full file path when the text box is selected.
-                jtf.addMouseListener(EventHandler.create(MouseListener.class, this, "onSelected", "", "mouseClicked"));
-                //add the listener for the text changes in the JTextField
-                jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
-                        this,
-                        "saveDocumentText",
-                        "document"));
-
-                OpenFilePanel filePanel = null;
-                //if(inputOrOutput instanceof Input){
-                    filePanel = new OpenFilePanel("RawDataUI.File", "Select File");
-                /*}
-                else if(inputOrOutput instanceof Output){
-                    filePanel = new SaveFilePanel("RawDataUI.File", "Select File");
-                }*/
-                filePanel.addFilter(new String[]{"shp"}, "Shape File");
-                filePanel.addFilter(new String[]{"json"}, "JSON");
-                filePanel.addFilter(new String[]{"geojson"}, "GeoJSON");
-                filePanel.loadState();
-                if(dataMap.get(uri) != null)
-                    jtf.setText(dataMap.get(uri).toString());
-                else {
-                    jtf.setText(filePanel.getCurrentDirectory().getAbsolutePath());
-                }
-
-                dataComponent.add(jtf);
-                //Create the button Browse
-                JButton button = new JButton("Browse");
-                button.putClientProperty("dataMap", dataMap);
-                button.putClientProperty("uri", uri);
-                button.putClientProperty("JTextField", jtf);
-                button.putClientProperty("filePanel", filePanel);
-                //Add the listener for the click on the button
-                button.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
-
-                dataComponent.add(button);
+                Map<String [], String> mapJson = new HashMap<>();
+                mapJson.put(new String[]{"geojson", "json"}, "GeoJSON");
+                dataComponent = createBrowsePanel(mapJson, dataMap, uri, descriptionType);
                 break;
+            case SHAPEFILE:
+                Map<String [], String> mapShape = new HashMap<>();
+                mapShape.put(new String[]{"shp"}, "ShapeFile");
+                dataComponent = createBrowsePanel(mapShape, dataMap, uri, descriptionType);
+                break;
+            default:
             case SQLTABLE:
                 dataComponent = new JPanel(new BorderLayout());
                 //Instantiate the component
@@ -185,53 +153,100 @@ public class GeoDataUI implements DataUI{
                 dataComponent.add(new JLabel("Select a table :"), BorderLayout.PAGE_START);
                 dataComponent.add(box, BorderLayout.CENTER);
                 break;
-            case PLAIN_TEXT:
-            default:
-                //Instantiate the component
-                dataComponent = new JTextArea(6, 35);
-                dataComponent.setBorder(BorderFactory.createLineBorder(Color.lightGray));
-                //Put the data type, the dataMap and the uri as properties
-                Document doc = ((JTextArea) dataComponent).getDocument();
-                doc.putProperty("dataMap", comboBox.getClientProperty("dataMap"));
-                doc.putProperty("uri", comboBox.getClientProperty("uri"));
-                //Set the default value and adds the listener for saving the value set by the user
-                ((JTextArea)dataComponent).setText((String) dataMap.get(uri));
-                doc.addDocumentListener(EventHandler.create(
-                        DocumentListener.class,
-                        this,
-                        "onDocumentChanged",
-                        "document",
-                        "insertUpdate"));
-                doc.addDocumentListener(EventHandler.create(
-                        DocumentListener.class,
-                        this,
-                        "onDocumentChanged",
-                        "document",
-                        "removeUpdate"));
-                break;
         }
         //Adds to the dataField the dataComponent
         JPanel panel = (JPanel) comboBox.getClientProperty("dataField");
         panel.removeAll();
         panel.add(dataComponent);
         panel.revalidate();
+        setDefaultFormat(descriptionType, s);
     }
 
-    /**
-     * Call if the TextArea for the String type is changed and save the new text in the dataMap.
-     * @param document
-     */
-    public void onDocumentChanged(Document document){
-
-        Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
-        URI uri = (URI) document.getProperty("uri");
-        dataMap.remove(uri);
-        try {
-            dataMap.put(uri, document.getText(0, document.getLength()));
-        } catch (BadLocationException e) {
-            LoggerFactory.getLogger(LiteralDataUI.class).error(e.getMessage());
-            dataMap.put(uri, "");
+    private void setDefaultFormat(DescriptionType inputOrOutput, String selectedFormat){
+        GeoData geoData = null;
+        if(inputOrOutput instanceof Input) {
+            Input input = (Input) inputOrOutput;
+            geoData = (GeoData) input.getDataDescription();
         }
+        else if(inputOrOutput instanceof Output) {
+            Output output = (Output) inputOrOutput;
+            geoData = (GeoData) output.getDataDescription();
+        }
+        String mimeType;
+        if(selectedFormat.equals(GEOJSON.toLowerCase())){
+            mimeType = GeoData.geojsonMimeType;
+        }
+        else if(selectedFormat.equals(SHAPEFILE.toLowerCase())){
+            mimeType = GeoData.shapeFileMimeType;
+        }
+        else if(selectedFormat.equals(SQLTABLE.toLowerCase())){
+            mimeType = GeoData.sqlTableMimeType;
+        }
+        else{
+            return;
+        }
+        Format defaultFormat = null;
+        for (Format format : geoData.getFormats()) {
+            if (format.getMimeType().equals(mimeType)) {
+                defaultFormat = format;
+            }
+            if(format.isDefaultFormat()){
+                format.setDefaultFormat(false);
+            }
+        }
+        defaultFormat.setDefaultFormat(true);
+    }
+
+    private JComponent createBrowsePanel(Map<String[], String> formatFilter,
+                                    Map<URI, Object> dataMap,
+                                    URI uri,
+                                    DescriptionType inputOrOutput){
+        //Create the component
+        JPanel dataComponent = new JPanel();
+        dataComponent.setLayout(new FlowLayout(FlowLayout.LEFT));
+        //Adds the text field to display and write the file path
+        JTextField jtf = new JTextField();
+        jtf.setColumns(25);
+        jtf.getDocument().putProperty("dataMap", dataMap);
+        jtf.getDocument().putProperty("uri", uri);
+        //add the listener to display the full file path when the text box is selected.
+        jtf.addMouseListener(EventHandler.create(MouseListener.class, this, "onSelected", "", "mouseClicked"));
+        //add the listener for the text changes in the JTextField
+        jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
+                this,
+                "saveDocumentText",
+                "document"));
+
+        OpenFilePanel filePanel = null;
+        if(inputOrOutput instanceof Input){
+            filePanel = new OpenFilePanel("RawDataUI.File", "Select File");
+        }
+        else if(inputOrOutput instanceof Output){
+            filePanel = new SaveFilePanel("RawDataUI.File", "Select File");
+        }
+        for(Map.Entry<String[], String> entry : formatFilter.entrySet()){
+            filePanel.addFilter(entry.getKey(), entry.getValue());
+        }
+        filePanel.setCurrentFilter(0);
+        filePanel.loadState();
+        if(dataMap.get(uri) != null)
+            jtf.setText(dataMap.get(uri).toString());
+        else {
+            jtf.setText(filePanel.getCurrentDirectory().getAbsolutePath());
+        }
+
+        dataComponent.add(jtf);
+        //Create the button Browse
+        JButton button = new JButton("Browse");
+        button.putClientProperty("dataMap", dataMap);
+        button.putClientProperty("uri", uri);
+        button.putClientProperty("JTextField", jtf);
+        button.putClientProperty("filePanel", filePanel);
+        //Add the listener for the click on the button
+        button.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
+        dataComponent.add(button);
+
+        return dataComponent;
     }
 
     /**

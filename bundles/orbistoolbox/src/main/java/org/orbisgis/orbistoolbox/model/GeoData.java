@@ -33,7 +33,6 @@ public class GeoData extends ComplexData{
 
     public static final String geojsonMimeType = "application/json";
     public static final String shapeFileMimeType = "application/octet-stream";
-    public static final String textMimeType = "text/plain";
     public static final String sqlTableMimeType = "custom/sql";
 
     public GeoData() throws MalformedScriptException {
@@ -46,11 +45,9 @@ public class GeoData extends ComplexData{
         formatList.add(shapeFormat);
         Format geoJSONFormat = new Format(geojsonMimeType, URI.create("https://tools.ietf.org/html/rfc4627"));
         formatList.add(geoJSONFormat);
-        Format textFormat = new Format(textMimeType, URI.create("https://tools.ietf.org/html/rfc2046"));
-        formatList.add(textFormat);
-        textFormat.setDefaultFormat(true);
         Format sqlTableFormat = new Format(sqlTableMimeType, URI.create(""));
         formatList.add(sqlTableFormat);
+        sqlTableFormat.setDefaultFormat(true);
         return formatList;
     }
 }
