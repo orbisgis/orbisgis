@@ -49,5 +49,5 @@ def processing() {
     sql = Sql.newInstance(grv_ds)
 
     sql.execute("DROP TABLE IF EXISTS " + outputGeoData + ";")
-    sql.execute("CREATE TABLE " + outputGeoData + " as SELECT THE_GEOM  FROM  SHAPETABLE LIMIT 1;")
+    sql.execute("CREATE TABLE " + outputGeoData + " as SELECT THE_GEOM  FROM " + inputGeoData + " LIMIT 1;")
 }

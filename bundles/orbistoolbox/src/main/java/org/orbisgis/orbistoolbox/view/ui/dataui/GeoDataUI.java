@@ -173,13 +173,13 @@ public class GeoDataUI implements DataUI{
             geoData = (GeoData) output.getDataDescription();
         }
         String mimeType;
-        if(selectedFormat.equals(GEOJSON.toLowerCase())){
+        if(selectedFormat.equals(GEOJSON)){
             mimeType = GeoData.geojsonMimeType;
         }
-        else if(selectedFormat.equals(SHAPEFILE.toLowerCase())){
+        else if(selectedFormat.equals(SHAPEFILE)){
             mimeType = GeoData.shapeFileMimeType;
         }
-        else if(selectedFormat.equals(SQLTABLE.toLowerCase())){
+        else if(selectedFormat.equals(SQLTABLE)){
             mimeType = GeoData.sqlTableMimeType;
         }
         else{
