@@ -40,6 +40,8 @@
                             docking-frames-core;scope=compile;inline=true
                         </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
+                        <_exportcontents>bibliothek.gui.*, data.bibliothek.gui.*</_exportcontents>
+                        <Import-Package>!com.sun.awt.*, *</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -95,7 +97,7 @@
         <dependency>
             <groupId>org.dockingframes</groupId>
             <artifactId>docking-frames-ext-toolbar-common</artifactId>
-            <version>1.1.2-P5</version>
+            <version>1.1.2-P14e</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
