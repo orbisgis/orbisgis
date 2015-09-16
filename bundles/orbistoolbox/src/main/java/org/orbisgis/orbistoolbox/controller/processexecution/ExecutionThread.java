@@ -88,17 +88,24 @@ public class ExecutionThread extends Thread{
             //Retrieve the executed process output data
             for (Field field : groovyObject.getClass().getDeclaredFields()) {
                 if (field.getAnnotation(OutputAttribute.class) != null) {
-                        field.setAccessible(true);
-                        URI uri = URI.create(field.getAnnotation(DescriptionTypeAttribute.class).identifier());
-                        outputDataMap.remove(uri);
-                        outputDataMap.put(uri, field.get(groovyObject));
-                        listOutput.add(field.get(groovyObject).toString());
+                    field.setAccessible(true);
+                    DescriptionTypeAttribute annot = field.getAnnotation(DescriptionTypeAttribute.class);
+                    URI uri;
+                    if(annot != null && !annot.identifier().equals("")) {
+                        uri = URI.create(annot.identifier());
+                    }
+                    else{
+                        uri = URI.create(process.getIdentifier() + ":output:" + field.getName());
+                    }
+                    outputDataMap.remove(uri);
+                    outputDataMap.put(uri, field.get(groovyObject));
+                    listOutput.add(field.get(groovyObject).toString());
                 }
             }
             //Print in the log the process execution end
             processExecutionData.appendLog(System.currentTimeMillis() - startTime,
                     ProcessExecutionData.LogType.INFO,
-                    "End process : "+process.getTitle());
+                    "End process : " + process.getTitle());
             //Print in the log the process end the process
             processExecutionData.endProcess(listOutput);
         }

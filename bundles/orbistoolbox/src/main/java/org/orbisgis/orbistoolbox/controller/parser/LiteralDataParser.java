@@ -32,13 +32,13 @@ import java.net.URI;
 
 public class LiteralDataParser implements Parser {
     @Override
-    public Input parseInput(Field f, String processName) {
+    public Input parseInput(Field f, String processId) {
         DataDescription data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
 
         try {
             //Instantiate the returned input
             Input input = new Input(f.getName(),
-                    URI.create("orbisgis:wps:" + processName + ":input:" + f.getName()),
+                    URI.create(processId + ":input:" + f.getName()),
                     data);
 
             ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
@@ -52,13 +52,13 @@ public class LiteralDataParser implements Parser {
     }
 
     @Override
-    public Output parseOutput(Field f, String processName) {
+    public Output parseOutput(Field f, String processId) {
         DataDescription data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
 
         try {
             //Instantiate the returned output
             Output output = new Output(f.getName(),
-                    URI.create("orbisgis:wps:" + processName + ":output:" + f.getName()),
+                    URI.create(processId + ":output:" + f.getName()),
                     data);
 
             ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);

@@ -37,16 +37,18 @@ public interface Parser {
     /**
      * Parse the given field as an input and returns the corresponding DataDescription.
      * @param f Field to parse.
+     * @param processId The process identifier.
      * @return Parsed DataDescription.
      */
-    Input parseInput(Field f, String processName);
+    Input parseInput(Field f, String processId);
 
     /**
      * Parse the given field as an output and returns the corresponding DataDescription.
      * @param f Field to parse.
+     * @param processId The process identifier.
      * @return Parsed DataDescription.
      */
-    Output parseOutput(Field f, String processName);
+    Output parseOutput(Field f, String processId);
 
     /**
      * Returns the groovy annotation associated to this parser.

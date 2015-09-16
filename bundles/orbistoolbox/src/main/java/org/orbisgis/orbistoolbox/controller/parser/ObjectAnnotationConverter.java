@@ -25,6 +25,7 @@ import org.orbisgis.orbistoolboxapi.annotations.model.*;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.IncompleteAnnotationException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -206,6 +207,15 @@ public class ObjectAnnotationConverter {
         }
     }
 
+    public static GeoData annotationToObject(GeoDataAttribute GeoDataAttribute) {
+        try {
+            return new GeoData();
+        } catch (MalformedScriptException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static LiteralValue annotationToObject(LiteralValueAttribute literalValueAttribute){
         LiteralValue literalValue = new LiteralValue();
         if(!literalValueAttribute.uom().equals(LiteralValueAttribute.defaultUom)) {
@@ -246,5 +256,19 @@ public class ObjectAnnotationConverter {
 
     public static void annotationToObject(ProcessAttribute processAttribute, Process process){
         process.setLanguage(Locale.forLanguageTag(processAttribute.language()));
+    }
+
+    /**
+     * Returns the process identifier and if their is not, return an URI build around its title.
+     * @return String process identifier.
+     */
+    public static String getProcessIdentifier(Method method){
+        DescriptionTypeAttribute annot = method.getAnnotation(DescriptionTypeAttribute.class);
+        if(annot != null && !annot.identifier().equals(DescriptionTypeAttribute.defaultIdentifier)){
+            return annot.identifier();
+        }
+        else{
+            return "orbisgis:wps:" + annot.title();
+        }
     }
 }

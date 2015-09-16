@@ -35,7 +35,7 @@ import java.net.URI;
 public class RawDataParser implements Parser {
 
     @Override
-    public Input parseInput(Field f, String processName) {
+    public Input parseInput(Field f, String processId) {
         //Instantiate the RawData
         RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class));
 
@@ -43,7 +43,7 @@ public class RawDataParser implements Parser {
         try {
             //Instantiate the returned input
             input = new Input(f.getName(),
-                    URI.create("orbisgis:wps:" + processName + ":input:" + f.getName()),
+                    URI.create(processId + ":input:" + f.getName()),
                     rawData);
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(RawDataParser.class).error(e.getMessage());
@@ -57,7 +57,7 @@ public class RawDataParser implements Parser {
     }
 
     @Override
-    public Output parseOutput(Field f, String processName) {
+    public Output parseOutput(Field f, String processId) {
         //Instantiate the RawData
         RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class));
 
@@ -65,7 +65,7 @@ public class RawDataParser implements Parser {
         try {
             //Instantiate the returned output
             output = new Output(f.getName(),
-                    URI.create("orbisgis:wps:" + processName + ":output:" + f.getName()),
+                    URI.create(processId + ":output:" + f.getName()),
                     rawData);
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(RawDataParser.class).error(e.getMessage());
