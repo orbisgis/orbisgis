@@ -20,7 +20,6 @@
 package org.orbisgis.orbistoolbox.controller;
 
 import groovy.lang.GroovyObject;
-import groovy.lang.GroovyShell;
 import org.orbisgis.orbistoolbox.controller.parser.ParserController;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
@@ -106,59 +105,12 @@ public class ProcessManager {
                                        Map<URI, Object> inputDataMap,
                                        Map<URI, Object> outputDataMap,
                                        Map<String, Object> properties){
-        preProcessing(process, inputDataMap, outputDataMap, properties);
-        for(Map.Entry<URI, Object> entry : inputDataMap.entrySet()){
-            System.out.println(entry.getKey() +";"+entry.getValue());
-        }
         GroovyObject groovyObject = createProcess(process, inputDataMap, outputDataMap);
         for(Map.Entry<String, Object> variable : properties.entrySet()) {
             groovyObject.setProperty("grv_" + variable.getKey(), variable.getValue());
         }
         groovyObject.invokeMethod("processing", null);
-        postProcessing(process, outputDataMap);
         return groovyObject;
-    }
-
-    private void preProcessing(Process process,
-                               Map<URI, Object> inputDataMap,
-                               Map<URI, Object> outputDataMap,
-                               Map<String, Object> properties){
-        GroovyShell shell = new GroovyShell();
-        for(Map.Entry<String, Object> variable : properties.entrySet()) {
-            shell.setProperty("grv_" + variable.getKey(), variable.getValue());
-        }
-        for(Input input : process.getInput()){
-            if(input.getDataDescription() instanceof GeoData){
-                GeoData geoData = ((GeoData)input.getDataDescription());
-                for(Format format : geoData.getFormats()){
-                    if(format.isDefaultFormat()){
-                        if(format.getMimeType().equals(GeoData.shapeFileMimeType)){
-                            File shapeFile = new File((String)inputDataMap.get(input.getIdentifier()));
-                            String tableName = shapeFile.getName().replaceFirst("[.][^.]+$", "").toUpperCase();
-                            String script = "import groovy.sql.Sql\n" +
-                                    "sql = Sql.newInstance(grv_ds)\n" +
-                                    "sql.execute(\"DROP TABLE IF EXISTS " + tableName + "\")\n" +
-                                    "sql.execute(\"CALL SHPRead('" + shapeFile.getAbsolutePath() + "','" + tableName + "');\")";
-                            shell.evaluate(script);
-                            System.out.println(0);
-                            inputDataMap.put(input.getIdentifier(), tableName);
-                            System.out.println(1);
-                        }
-                    }
-                }
-            }
-        }
-        for(Output output : process.getOutput()){
-            if(output.getDataDescription() instanceof GeoData){
-                File shapeFile = new File((String)inputDataMap.get(output.getIdentifier()));
-                String tableName = shapeFile.getName().replaceFirst("[.][^.]+$", "").toUpperCase();
-                inputDataMap.put(output.getIdentifier(), tableName);
-            }
-        }
-    }
-
-    private void postProcessing(Process process,  Map<URI, Object> outputDataMap){
-
     }
 
     /**
@@ -188,9 +140,6 @@ public class ProcessManager {
             for(Input i : process.getInput()) {
                 Field f = getField(pi.getClazz(), i.getIdentifier());
                 f.setAccessible(true);
-                System.out.println(f);
-                System.out.println(i.getIdentifier());
-                System.out.println(inputDataMap.get(i.getIdentifier()));
                 f.set(groovyObject, inputDataMap.get(i.getIdentifier()));
             }
             for(Output o : process.getOutput()) {

@@ -21,6 +21,7 @@ package org.orbisgis.orbistoolbox.view;
 
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
+import org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing.ProcessingManager;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
@@ -38,6 +39,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
@@ -67,6 +69,7 @@ public class ToolBox implements DockingPanel {
     private DataUIManager dataUIManager;
     /** DataManager */
     private static DataManager dataManager;
+    private ProcessingManager processingManager;
 
     private Map<String, Object> properties;
     private List<ProcessExecutionData> processExecutionDataList;
@@ -77,6 +80,7 @@ public class ToolBox implements DockingPanel {
         processManager = new ProcessManager();
         dataUIManager = new DataUIManager();
         processExecutionDataList = new ArrayList<>();
+        processingManager = new ProcessingManager();
 
         ActionCommands dockingActions = new ActionCommands();
 
@@ -101,6 +105,10 @@ public class ToolBox implements DockingPanel {
      */
     public ProcessManager getProcessManager(){
         return processManager;
+    }
+
+    public ProcessingManager getProcessingManager(){
+        return processingManager;
     }
 
     @Override
@@ -242,11 +250,11 @@ public class ToolBox implements DockingPanel {
 
     @Reference
     public void setDataManager(DataManager dataManager) {
-        this.dataManager = dataManager;
+        ToolBox.dataManager = dataManager;
     }
 
     public void unsetDataManager(DataManager dataManager) {
-        this.dataManager = null;
+        ToolBox.dataManager = null;
     }
 
     public static List<String> getTablesList(){
@@ -256,7 +264,7 @@ public class ToolBox implements DockingPanel {
             String defaultSchema = "PUBLIC";
             try {
                 if (connection.getSchema() != null) {
-                    //defaultSchema = connection.getSchema();
+                    defaultSchema = connection.getSchema();
                 }
             } catch (AbstractMethodError | Exception ex) {
                 // Driver has been compiled with JAVA 6, or is not implemented
@@ -267,7 +275,7 @@ public class ToolBox implements DockingPanel {
                 list.add(rs.getString("F_TABLE_NAME"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return list;
     }

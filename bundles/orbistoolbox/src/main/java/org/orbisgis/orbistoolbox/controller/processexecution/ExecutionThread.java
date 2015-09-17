@@ -20,14 +20,12 @@
 package org.orbisgis.orbistoolbox.controller.processexecution;
 
 import groovy.lang.GroovyObject;
+import groovy.lang.GroovyShell;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
-import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
-import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,26 +79,25 @@ public class ExecutionThread extends Thread{
             processExecutionData.appendLog(System.currentTimeMillis() - startTime,
                     ProcessExecutionData.LogType.INFO,
                     "Start process : " + process.getTitle());
+
+            //Pre-process the inputs
+            GroovyShell shell = new GroovyShell();
+            for(Map.Entry<String, Object> variable : toolBox.getProperties().entrySet()) {
+                shell.setProperty("grv_" + variable.getKey(), variable.getValue());
+            }
+            toolBox.getProcessingManager().preProcessData(process, inputDataMap, outputDataMap, shell);
+
             //Execute the process and retrieve the groovy object.
             GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(
                     process, inputDataMap, outputDataMap, toolBox.getProperties());
-            List<String> listOutput = new ArrayList<>();
+
+            //Post-process the outputs.
+            toolBox.getProcessingManager().postProcessData(process, inputDataMap, outputDataMap, shell, groovyObject);
+
             //Retrieve the executed process output data
-            for (Field field : groovyObject.getClass().getDeclaredFields()) {
-                if (field.getAnnotation(OutputAttribute.class) != null) {
-                    field.setAccessible(true);
-                    DescriptionTypeAttribute annot = field.getAnnotation(DescriptionTypeAttribute.class);
-                    URI uri;
-                    if(annot != null && !annot.identifier().equals("")) {
-                        uri = URI.create(annot.identifier());
-                    }
-                    else{
-                        uri = URI.create(process.getIdentifier() + ":output:" + field.getName());
-                    }
-                    outputDataMap.remove(uri);
-                    outputDataMap.put(uri, field.get(groovyObject));
-                    listOutput.add(field.get(groovyObject).toString());
-                }
+            List<String> listOutput = new ArrayList<>();
+            for(Map.Entry<URI, Object> entry : outputDataMap.entrySet()){
+                listOutput.add(entry.getValue().toString());
             }
             //Print in the log the process execution end
             processExecutionData.appendLog(System.currentTimeMillis() - startTime,
