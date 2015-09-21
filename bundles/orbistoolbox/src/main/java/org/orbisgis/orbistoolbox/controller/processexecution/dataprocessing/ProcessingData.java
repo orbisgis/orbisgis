@@ -23,6 +23,7 @@ import groovy.lang.GroovyObject;
 import groovy.lang.GroovyShell;
 import org.orbisgis.orbistoolbox.model.DataDescription;
 import org.orbisgis.orbistoolbox.model.DescriptionType;
+import org.orbisgis.orbistoolbox.view.ToolBox;
 
 import java.net.URI;
 import java.util.Map;
@@ -44,25 +45,17 @@ public interface ProcessingData {
     /**
      * PreProcess the data.
      * @param inputOrOutput Input or Output to preProcess.
-     * @param inputDataMap Data map of the input.
-     * @param outputDataMap Data map of the output.
-     * @param shell GroovyShell used to manipulate the data (like loading a shapeFile in OrbisGIS).
+     * @param dataMap Data map of the input and output.
      */
     void preProcessing(DescriptionType inputOrOutput,
-                                Map<URI, Object> inputDataMap,
-                                Map<URI, Object> outputDataMap,
-                                GroovyShell shell);
+                                Map<URI, Object> dataMap,
+                                ToolBox toolBox);
     /**
      * PostProcess the data.
      * @param inputOrOutput Input or Output to preProcess.
-     * @param inputDataMap Data map of the input.
-     * @param outputDataMap Data map of the output.
-     * @param shell GroovyShell used to manipulate the data (like exporting a shapeFile).
-     * @param groovyObject GroovyObject containing the process result.
+     * @param dataMap Data map of the input and output.
      */
     void postProcessing(DescriptionType inputOrOutput,
-                                Map<URI, Object> inputDataMap,
-                                Map<URI, Object> outputDataMap,
-                                GroovyShell shell,
-                                GroovyObject groovyObject);
+                                Map<URI, Object> dataMap,
+                                ToolBox toolBox);
 }

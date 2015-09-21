@@ -20,6 +20,7 @@
 package org.orbisgis.orbistoolbox.view;
 
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing.ProcessingManager;
 import org.orbisgis.orbistoolbox.model.Process;
@@ -69,6 +70,7 @@ public class ToolBox implements DockingPanel {
     private DataUIManager dataUIManager;
     /** DataManager */
     private static DataManager dataManager;
+    private DriverFunctionContainer driverFunctionContainer;
     private ProcessingManager processingManager;
 
     private Map<String, Object> properties;
@@ -80,7 +82,7 @@ public class ToolBox implements DockingPanel {
         processManager = new ProcessManager();
         dataUIManager = new DataUIManager();
         processExecutionDataList = new ArrayList<>();
-        processingManager = new ProcessingManager();
+        processingManager = new ProcessingManager(this);
 
         ActionCommands dockingActions = new ActionCommands();
 
@@ -255,6 +257,23 @@ public class ToolBox implements DockingPanel {
 
     public void unsetDataManager(DataManager dataManager) {
         ToolBox.dataManager = null;
+    }
+
+    public DataManager getDataManager(){
+        return dataManager;
+    }
+
+    @Reference
+    public void setDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
+        this.driverFunctionContainer = driverFunctionContainer;
+    }
+
+    public void unsetDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
+        this.driverFunctionContainer = null;
+    }
+
+    public DriverFunctionContainer getDriverFunctionContainer(){
+        return driverFunctionContainer;
     }
 
     public static List<String> getTablesList(){

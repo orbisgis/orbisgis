@@ -20,9 +20,9 @@
 package org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing;
 
 import groovy.lang.GroovyObject;
-import groovy.lang.GroovyShell;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
+import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 import org.slf4j.LoggerFactory;
@@ -39,13 +39,16 @@ import java.util.Map;
  **/
 
 public class ProcessingManager {
+    /** ToolBox*/
+    ToolBox toolBox;
     /** Map of the ProcessingData and the corresponding data class. */
     private Map<Class, ProcessingData> classProcessingMap;
 
     /**
      * Main constructor.
      */
-    public ProcessingManager(){
+    public ProcessingManager(ToolBox toolBox){
+        this.toolBox = toolBox;
         classProcessingMap = new HashMap<>();
         classProcessingMap.put(DataDescription.class, new DefaultProcessing());
         classProcessingMap.put(GeoData.class, new GeoDataProcessing());
@@ -69,36 +72,28 @@ public class ProcessingManager {
     /**
      * PreProcess the data of the given process.
      * @param process Process to preProcess.
-     * @param inputDataMap Data map of the input.
-     * @param outputDataMap Data map of the output.
-     * @param shell GroovyShell used to manipulate the data (like loading a shapeFile in OrbisGIS).
+     * @param dataMap Data map of the input and output.
      */
     public void preProcessData(Process process,
-                               Map<URI, Object> inputDataMap,
-                               Map<URI, Object> outputDataMap,
-                               GroovyShell shell){
+                               Map<URI, Object> dataMap){
         for(Input input : process.getInput()){
             getProcessingData(input.getDataDescription().getClass())
-                    .preProcessing(input, inputDataMap, outputDataMap, shell);
+                    .preProcessing(input, dataMap, toolBox);
         }
         for(Output output : process.getOutput()){
             getProcessingData(output.getDataDescription().getClass())
-                    .preProcessing(output, inputDataMap, outputDataMap, shell);
+                    .preProcessing(output, dataMap, toolBox);
         }
     }
 
     /**
      * PostProcess the data of the given process.
      * @param process Process to postProcess.
-     * @param inputDataMap Data map of the input.
-     * @param outputDataMap Data map of the output.
-     * @param shell GroovyShell used to manipulate the data (like exporting a shapeFile).
+     * @param dataMap Data map of the input and output.
      * @param groovyObject GroovyObject containing the process result.
      */
     public void postProcessData(Process process,
-                                Map<URI, Object> inputDataMap,
-                                Map<URI, Object> outputDataMap,
-                                GroovyShell shell,
+                                Map<URI, Object> dataMap,
                                 GroovyObject groovyObject){
         for (Field field : groovyObject.getClass().getDeclaredFields()) {
             if (field.getAnnotation(OutputAttribute.class) != null) {
@@ -112,9 +107,9 @@ public class ProcessingManager {
                     uri = URI.create(process.getIdentifier() + ":output:" + field.getName());
                 }
                 try {
-                    outputDataMap.put(uri, field.get(groovyObject));
+                    dataMap.put(uri, field.get(groovyObject));
                 } catch (IllegalAccessException e) {
-                    outputDataMap.put(uri, null);
+                    dataMap.put(uri, null);
                     LoggerFactory.getLogger(ProcessingManager.class).error(e.getMessage());
                 }
             }
@@ -122,11 +117,11 @@ public class ProcessingManager {
 
         for(Input input : process.getInput()){
             getProcessingData(input.getDataDescription().getClass())
-                    .postProcessing(input, inputDataMap, outputDataMap, shell, groovyObject);
+                    .postProcessing(input, dataMap, toolBox);
         }
         for(Output output : process.getOutput()){
             getProcessingData(output.getDataDescription().getClass())
-                    .postProcessing(output, inputDataMap, outputDataMap, shell, groovyObject);
+                    .postProcessing(output, dataMap, toolBox);
         }
     }
 }

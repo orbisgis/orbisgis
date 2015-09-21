@@ -98,14 +98,13 @@ public class ProcessManager {
     /**
      * Execute the given process with the given data.
      * @param process Process to execute.
-     * @param inputDataMap Map containing the data for the process.
+     * @param dataMap Map containing the data for the process.
      * @return The groovy object on which the 'processing' method will be called.
      */
     public GroovyObject executeProcess(Process process,
-                                       Map<URI, Object> inputDataMap,
-                                       Map<URI, Object> outputDataMap,
+                                       Map<URI, Object> dataMap,
                                        Map<String, Object> properties){
-        GroovyObject groovyObject = createProcess(process, inputDataMap, outputDataMap);
+        GroovyObject groovyObject = createProcess(process, dataMap);
         for(Map.Entry<String, Object> variable : properties.entrySet()) {
             groovyObject.setProperty("grv_" + variable.getKey(), variable.getValue());
         }
@@ -116,10 +115,10 @@ public class ProcessManager {
     /**
      * Create a groovy object corresponding to the process with the given data.
      * @param process Process that will generate the groovy object.
-     * @param inputDataMap Map of the data for the process.
+     * @param dataMap Map of the data for the process.
      * @return A groovy object representing the process with the given data.
      */
-    private GroovyObject createProcess(Process process, Map<URI, Object> inputDataMap, Map<URI, Object> outputDataMap){
+    private GroovyObject createProcess(Process process, Map<URI, Object> dataMap){
         ProcessIdentifier pi = null;
         for(ProcessIdentifier proId : processIdList){
             if(proId.getProcess().getIdentifier().equals(process.getIdentifier())){
@@ -140,12 +139,12 @@ public class ProcessManager {
             for(Input i : process.getInput()) {
                 Field f = getField(pi.getClazz(), i.getIdentifier());
                 f.setAccessible(true);
-                f.set(groovyObject, inputDataMap.get(i.getIdentifier()));
+                f.set(groovyObject, dataMap.get(i.getIdentifier()));
             }
             for(Output o : process.getOutput()) {
                 Field f = getField(pi.getClazz(), o.getIdentifier());
                 f.setAccessible(true);
-                f.set(groovyObject, outputDataMap.get(o.getIdentifier()));
+                f.set(groovyObject, dataMap.get(o.getIdentifier()));
             }
         } catch (IllegalAccessException e) {
             LoggerFactory.getLogger(ProcessManager.class).error(e.getMessage());

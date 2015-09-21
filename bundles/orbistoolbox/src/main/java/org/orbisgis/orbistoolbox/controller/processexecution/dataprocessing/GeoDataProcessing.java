@@ -19,17 +19,17 @@
 
 package org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing;
 
-import groovy.lang.GroovyObject;
-import groovy.lang.GroovyShell;
+import org.h2gis.h2spatialapi.DriverFunction;
+import org.orbisgis.commons.progress.RootProgressMonitor;
+import org.orbisgis.corejdbc.H2GISProgressMonitor;
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
-import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
+import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.lang.reflect.Field;
+import java.io.IOException;
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,9 +48,9 @@ public class GeoDataProcessing implements ProcessingData{
     }
 
     public void preProcessing(DescriptionType inputOrOutput,
-                              Map<URI, Object> inputDataMap,
-                              Map<URI, Object> outputDataMap,
-                              GroovyShell shell) {
+                              Map<URI, Object> dataMap,
+                              ToolBox toolBox) {
+        //If the descriptionType is an input, try to import the input file in OrbisGIS
         if (inputOrOutput instanceof Input) {
             Input input = (Input)inputOrOutput;
             if (input.getDataDescription() instanceof GeoData) {
@@ -59,43 +59,38 @@ public class GeoDataProcessing implements ProcessingData{
                 Format tableFormat = null;
                 //Find the default format and the sql format
                 for (Format format : geoData.getFormats()) {
-                    if(format.getMimeType().equals(GeoData.sqlTableMimeType)){
-                        tableFormat = format;
-                    }
                     if (format.isDefaultFormat()) {
-                        if (format.getMimeType().equals(GeoData.shapeFileMimeType)) {
+                        if (!format.getMimeType().equals(GeoData.sqlTableMimeType)) {
                             //Load the shape file in OrbisGIS and put in the inputDataMap the table name.
-                            File shapeFile = new File((String) inputDataMap.get(input.getIdentifier()));
-                            String tableName = shapeFile.getName().replaceFirst("[.][^.]+$", "").toUpperCase();
-                            String script = "import groovy.sql.Sql\n" +
-                                    "sql = Sql.newInstance(grv_ds)\n" +
-                                    "sql.execute(\"DROP TABLE IF EXISTS " + tableName + "\")\n" +
-                                    "sql.execute(\"CALL SHPRead('" + shapeFile.getAbsolutePath() + "','" + tableName + "');\")";
-                            shell.evaluate(script);
-                            inputDataMap.put(input.getIdentifier(), tableName);
+                            File shapeFile = new File((String) dataMap.get(input.getIdentifier()));
+                            String tableName = null;
+                            try {
+                                tableName = toolBox.getDataManager().registerDataSource(shapeFile.toURI());
+                            } catch (SQLException e) {
+                                LoggerFactory.getLogger(GeoDataProcessing.class).error(e.getMessage());
+                            }
+                            dataMap.put(input.getIdentifier(), tableName);
                         }
                     }
                 }
-                tableFormat.setDefaultFormat(true);
             }
         }
+        //If the descriptionType is an output, save the file path, and get the table name.
         if (inputOrOutput instanceof Output) {
             Output output = (Output) inputOrOutput;
             if (output.getDataDescription() instanceof GeoData) {
                 //Save the output shape file path and replace it in the output by the table name.
-                saveMap.put(output.getIdentifier(), outputDataMap.get(output.getIdentifier()));
-                File shapeFile = new File((String) outputDataMap.get(output.getIdentifier()));
+                saveMap.put(output.getIdentifier(), dataMap.get(output.getIdentifier()));
+                File shapeFile = new File((String) dataMap.get(output.getIdentifier()));
                 String tableName = shapeFile.getName().replaceFirst("[.][^.]+$", "").toUpperCase();
-                outputDataMap.put(output.getIdentifier(), tableName);
+                dataMap.put(output.getIdentifier(), tableName);
             }
         }
     }
 
     public void postProcessing(DescriptionType inputOrOutput,
-                               Map<URI, Object> inputDataMap,
-                               Map<URI, Object> outputDataMap,
-                               GroovyShell shell,
-                               GroovyObject groovyObject){
+                               Map<URI, Object> dataMap,
+                               ToolBox toolBox){
         if (inputOrOutput instanceof Output) {
             Output output = (Output) inputOrOutput;
             if (output.getDataDescription() instanceof GeoData) {
@@ -104,14 +99,23 @@ public class GeoDataProcessing implements ProcessingData{
                 //Find the default format
                 for (Format format : geoData.getFormats()) {
                     if (format.isDefaultFormat()) {
-                        if (format.getMimeType().equals(GeoData.shapeFileMimeType)) {
-                            //Thank to the saved path, export the table as a shapefile.
+                        if (!format.getMimeType().equals(GeoData.sqlTableMimeType)) {
+                            //Thank to the saved path, export the table as a shapeFile.
                             URI uri = output.getIdentifier();
-                            String script = "import groovy.sql.Sql\n" +
-                                    "sql = Sql.newInstance(grv_ds)\n" +
-                                    "sql.execute(\"CALL SHPWrite('" + saveMap.get(uri) + "','" + outputDataMap.get(uri) + "');\")";
-                            shell.evaluate(script);
-                            outputDataMap.put(uri, saveMap.get(uri));
+                            String extension = saveMap.get(uri).toString().substring(
+                                    saveMap.get(uri).toString().lastIndexOf('.')+1);
+                            DriverFunction export =
+                                    toolBox.getDriverFunctionContainer().getExportDriverFromExt(
+                                    extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+                            try {
+                                export.exportTable(toolBox.getDataManager().getDataSource().getConnection(),
+                                        dataMap.get(uri).toString(),
+                                        new File(saveMap.get(uri).toString()),
+                                        new H2GISProgressMonitor(new RootProgressMonitor("postProcessing", 0)));
+                            } catch (SQLException|IOException e) {
+                                LoggerFactory.getLogger(GeoDataProcessing.class).error(e.getMessage());
+                            }
+                            dataMap.put(uri, saveMap.get(uri));
                         }
                     }
                 }

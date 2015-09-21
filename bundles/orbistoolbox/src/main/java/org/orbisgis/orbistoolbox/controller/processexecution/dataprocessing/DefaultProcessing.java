@@ -19,9 +19,8 @@
 
 package org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing;
 
-import groovy.lang.GroovyObject;
-import groovy.lang.GroovyShell;
 import org.orbisgis.orbistoolbox.model.*;
+import org.orbisgis.orbistoolbox.view.ToolBox;
 
 import java.net.URI;
 import java.util.Map;
@@ -40,14 +39,11 @@ public class DefaultProcessing implements ProcessingData{
 
     @Override
     public void preProcessing(DescriptionType inputOrOutput,
-                              Map<URI, Object> inputDataMap,
-                              Map<URI, Object> outputDataMap,
-                              GroovyShell shell) {}
+                              Map<URI, Object> dataMap,
+                              ToolBox toolBox) {}
 
     @Override
     public void postProcessing(DescriptionType inputOrOutput,
-                               Map<URI, Object> inputDataMap,
-                               Map<URI, Object> outputDataMap,
-                               GroovyShell shell,
-                               GroovyObject groovyObject) {}
+                               Map<URI, Object> dataMap,
+                               ToolBox toolBox) {}
 }
