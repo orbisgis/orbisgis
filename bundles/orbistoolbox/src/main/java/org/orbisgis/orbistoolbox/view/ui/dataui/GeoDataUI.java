@@ -280,7 +280,7 @@ public class GeoDataUI implements DataUI{
             dataMap.remove(uri);
             dataMap.put(uri, name);
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(ShapeFileUI.class).error(e.getMessage());
+            LoggerFactory.getLogger(GeoData.class).error(e.getMessage());
         }
     }
 

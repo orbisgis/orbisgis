@@ -198,15 +198,6 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static ShapeFileData annotationToObject(ShapeFileAttribute shapeFileAttribute) {
-        try {
-            return new ShapeFileData();
-        } catch (MalformedScriptException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public static GeoData annotationToObject(GeoDataAttribute GeoDataAttribute) {
         try {
             return new GeoData();

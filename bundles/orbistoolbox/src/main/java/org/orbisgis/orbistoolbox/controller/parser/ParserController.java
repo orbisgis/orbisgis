@@ -55,7 +55,6 @@ public class ParserController {
         parserList.add(new RawDataParser());
         parserList.add(new LiteralDataParser());
         parserList.add(new BoundingBoxParser());
-        parserList.add(new ShapeFileParser());
         parserList.add(new GeoDataParser());
         defaultParser = new DefaultParser();
         processParser = new ProcessParser();
