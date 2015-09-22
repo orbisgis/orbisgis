@@ -20,8 +20,8 @@
 package org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing;
 
 import org.h2gis.h2spatialapi.DriverFunction;
-import org.orbisgis.commons.progress.RootProgressMonitor;
 import org.orbisgis.corejdbc.H2GISProgressMonitor;
+import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionWorker;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.slf4j.LoggerFactory;
@@ -47,9 +47,9 @@ public class GeoDataProcessing implements ProcessingData{
         return GeoData.class;
     }
 
-    public void preProcessing(DescriptionType inputOrOutput,
-                              Map<URI, Object> dataMap,
-                              ToolBox toolBox) {
+    public void preProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker) {
+        Map<URI, Object> dataMap = executionWorker.getDataMap();
+        ToolBox toolBox = executionWorker.getToolBox();
         //If the descriptionType is an input, try to import the input file in OrbisGIS
         if (inputOrOutput instanceof Input) {
             Input input = (Input)inputOrOutput;
@@ -85,9 +85,9 @@ public class GeoDataProcessing implements ProcessingData{
         }
     }
 
-    public void postProcessing(DescriptionType inputOrOutput,
-                               Map<URI, Object> dataMap,
-                               ToolBox toolBox){
+    public void postProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker){
+        Map<URI, Object> dataMap = executionWorker.getDataMap();
+        ToolBox toolBox = executionWorker.getToolBox();
         if (inputOrOutput instanceof Output) {
             Output output = (Output) inputOrOutput;
             if (output.getDataDescription() instanceof GeoData) {
@@ -107,7 +107,7 @@ public class GeoDataProcessing implements ProcessingData{
                             export.exportTable(toolBox.getDataManager().getDataSource().getConnection(),
                                     dataMap.get(uri).toString(),
                                     new File(saveMap.get(uri).toString()),
-                                    new H2GISProgressMonitor(new RootProgressMonitor("postProcessing", 0)));
+                                    new H2GISProgressMonitor(executionWorker.getProgressMonitor()));
                         } catch (SQLException|IOException e) {
                             LoggerFactory.getLogger(GeoDataProcessing.class).error(e.getMessage());
                         }

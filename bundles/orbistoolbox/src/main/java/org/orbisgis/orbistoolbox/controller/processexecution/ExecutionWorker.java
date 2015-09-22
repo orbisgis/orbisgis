@@ -20,6 +20,7 @@
 package org.orbisgis.orbistoolbox.controller.processexecution;
 
 import groovy.lang.GroovyObject;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
@@ -37,7 +38,7 @@ import java.util.Map;
  * @author Sylvain PALOMINOS
  **/
 
-public class ExecutionThread extends Thread{
+public class ExecutionWorker extends SwingWorkerPM{
 
     /** Process to execute */
     private Process process;
@@ -47,6 +48,8 @@ public class ExecutionThread extends Thread{
     private ToolBox toolBox;
     /** Data for the process execution */
     private ProcessExecutionData processExecutionData;
+    /** GroovyObject of the process execution */
+    private GroovyObject groovyObject;
 
     /**
      * Main constructor.
@@ -56,7 +59,7 @@ public class ExecutionThread extends Thread{
      * @param toolBox ToolBox.
      * @param processExecutionData Execution data.
      */
-    public ExecutionThread(Process process,
+    public ExecutionWorker(Process process,
                            Map<URI, Object> outputDataMap,
                            Map<URI, Object> inputDataMap,
                            ToolBox toolBox,
@@ -70,7 +73,7 @@ public class ExecutionThread extends Thread{
     }
 
     @Override
-    public void run(){
+    protected Object doInBackground() throws Exception {
         long startTime = System.currentTimeMillis();
         //Catch all the Exception that can be get on executing the script.
         try {
@@ -80,28 +83,19 @@ public class ExecutionThread extends Thread{
                     "Start process : " + process.getTitle());
 
             //Pre-process the inputs
-            toolBox.getProcessingManager().preProcessData(process, dataMap);
+            toolBox.getProcessingManager().preProcessData(this);
 
             //Execute the process and retrieve the groovy object.
-            GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(
+            groovyObject = toolBox.getProcessManager().executeProcess(
                     process, dataMap, toolBox.getProperties());
 
             //Post-process the outputs.
-            toolBox.getProcessingManager().postProcessData(process, dataMap, groovyObject);
+            toolBox.getProcessingManager().postProcessData(this);
 
-            //Retrieve the executed process output data
-            List<String> listOutput = new ArrayList<>();
-            for(Map.Entry<URI, Object> entry : dataMap.entrySet()){
-                if(entry.getKey().toString().contains("output")) {
-                    listOutput.add(entry.getValue().toString());
-                }
-            }
             //Print in the log the process execution end
             processExecutionData.appendLog(System.currentTimeMillis() - startTime,
                     ProcessExecutionData.LogType.INFO,
                     "End process : " + process.getTitle());
-            //Print in the log the process end the process
-            processExecutionData.endProcess(listOutput);
         }
         catch (Exception e) {
             processExecutionData.setState(ProcessExecutionData.ProcessState.ERROR);
@@ -109,7 +103,37 @@ public class ExecutionThread extends Thread{
             processExecutionData.appendLog(System.currentTimeMillis() - startTime,
                     ProcessExecutionData.LogType.ERROR,
                     e.getMessage());
-            LoggerFactory.getLogger(ExecutionThread.class).error(e.getMessage());
+            LoggerFactory.getLogger(ExecutionWorker.class).error(e.getMessage());
         }
+        return null;
+    }
+
+    @Override
+    protected void done(){
+        //Retrieve the executed process output data
+        List<String> listOutput = new ArrayList<>();
+        for(Map.Entry<URI, Object> entry : dataMap.entrySet()){
+            if(entry.getKey().toString().contains("output")) {
+                listOutput.add(entry.getValue().toString());
+            }
+        }
+        //Print in the log the process end the process
+        processExecutionData.endProcess(listOutput);
+    }
+
+    public ToolBox getToolBox(){
+        return toolBox;
+    }
+
+    public GroovyObject getGroovyObject(){
+        return groovyObject;
+    }
+
+    public Process getProcess(){
+        return process;
+    }
+
+    public Map<URI, Object> getDataMap(){
+        return dataMap;
     }
 }
