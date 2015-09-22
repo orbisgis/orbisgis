@@ -5,7 +5,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>orbistoolbox-api</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <description>WPS toolbox API</description>
     <packaging>bundle</packaging>
 

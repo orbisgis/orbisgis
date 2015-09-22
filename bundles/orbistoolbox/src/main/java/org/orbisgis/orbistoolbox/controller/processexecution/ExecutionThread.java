@@ -23,13 +23,11 @@ import groovy.lang.GroovyObject;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
-import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
-import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,10 +41,8 @@ public class ExecutionThread extends Thread{
 
     /** Process to execute */
     private Process process;
-    /** Input data map */
-    private Map<URI, Object> inputDataMap;
-    /** Output data map */
-    private Map<URI, Object> outputDataMap;
+    /** Input and output data map */
+    private Map<URI, Object> dataMap;
     /** ToolBox */
     private ToolBox toolBox;
     /** Data for the process execution */
@@ -66,8 +62,9 @@ public class ExecutionThread extends Thread{
                            ToolBox toolBox,
                            ProcessExecutionData processExecutionData){
         this.process = process;
-        this.inputDataMap = inputDataMap;
-        this.outputDataMap = outputDataMap;
+        this.dataMap = new HashMap<>();
+        this.dataMap.putAll(inputDataMap);
+        this.dataMap.putAll(outputDataMap);
         this.toolBox = toolBox;
         this.processExecutionData = processExecutionData;
     }
@@ -81,24 +78,28 @@ public class ExecutionThread extends Thread{
             processExecutionData.appendLog(System.currentTimeMillis() - startTime,
                     ProcessExecutionData.LogType.INFO,
                     "Start process : " + process.getTitle());
+
+            //Pre-process the inputs
+            toolBox.getProcessingManager().preProcessData(process, dataMap);
+
             //Execute the process and retrieve the groovy object.
             GroovyObject groovyObject = toolBox.getProcessManager().executeProcess(
-                    process, inputDataMap, outputDataMap, toolBox.getProperties());
-            List<String> listOutput = new ArrayList<>();
+                    process, dataMap, toolBox.getProperties());
+
+            //Post-process the outputs.
+            toolBox.getProcessingManager().postProcessData(process, dataMap, groovyObject);
+
             //Retrieve the executed process output data
-            for (Field field : groovyObject.getClass().getDeclaredFields()) {
-                if (field.getAnnotation(OutputAttribute.class) != null) {
-                        field.setAccessible(true);
-                        URI uri = URI.create(field.getAnnotation(DescriptionTypeAttribute.class).identifier());
-                        outputDataMap.remove(uri);
-                        outputDataMap.put(uri, field.get(groovyObject));
-                        listOutput.add(field.get(groovyObject).toString());
+            List<String> listOutput = new ArrayList<>();
+            for(Map.Entry<URI, Object> entry : dataMap.entrySet()){
+                if(entry.getKey().toString().contains("output")) {
+                    listOutput.add(entry.getValue().toString());
                 }
             }
             //Print in the log the process execution end
             processExecutionData.appendLog(System.currentTimeMillis() - startTime,
                     ProcessExecutionData.LogType.INFO,
-                    "End process : "+process.getTitle());
+                    "End process : " + process.getTitle());
             //Print in the log the process end the process
             processExecutionData.endProcess(listOutput);
         }

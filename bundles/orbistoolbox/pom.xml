@@ -7,7 +7,6 @@
     <artifactId>orbistoolbox</artifactId>
     <name>orbistoolbox</name>
     <description>WPS toolbox</description>
-    <version>0.0.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <parent>
@@ -62,7 +61,7 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>orbistoolbox-api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -85,12 +84,17 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>orbisgis-sif</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${sl4j-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>dbjobs</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

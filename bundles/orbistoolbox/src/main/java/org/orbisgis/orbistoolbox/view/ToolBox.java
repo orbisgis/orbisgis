@@ -19,7 +19,10 @@
 
 package org.orbisgis.orbistoolbox.view;
 
+import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
+import org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing.ProcessingManager;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
@@ -37,10 +40,14 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +68,10 @@ public class ToolBox implements DockingPanel {
     private ToolBoxPanel toolBoxPanel;
     /** Object creating the UI corresponding to the data */
     private DataUIManager dataUIManager;
+    /** DataManager */
+    private static DataManager dataManager;
+    private DriverFunctionContainer driverFunctionContainer;
+    private ProcessingManager processingManager;
 
     private Map<String, Object> properties;
     private List<ProcessExecutionData> processExecutionDataList;
@@ -71,6 +82,7 @@ public class ToolBox implements DockingPanel {
         processManager = new ProcessManager();
         dataUIManager = new DataUIManager();
         processExecutionDataList = new ArrayList<>();
+        processingManager = new ProcessingManager(this);
 
         ActionCommands dockingActions = new ActionCommands();
 
@@ -95,6 +107,10 @@ public class ToolBox implements DockingPanel {
      */
     public ProcessManager getProcessManager(){
         return processManager;
+    }
+
+    public ProcessingManager getProcessingManager(){
+        return processingManager;
     }
 
     @Override
@@ -225,12 +241,61 @@ public class ToolBox implements DockingPanel {
         properties = new HashMap<>();
     }
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
+    @Reference
     public void setDataSource(javax.sql.DataSource ds) {
         properties.put("ds", ds);
     }
 
     public void unsetDataSource(javax.sql.DataSource ds) {
         properties.remove("ds");
+    }
+
+    @Reference
+    public void setDataManager(DataManager dataManager) {
+        ToolBox.dataManager = dataManager;
+    }
+
+    public void unsetDataManager(DataManager dataManager) {
+        ToolBox.dataManager = null;
+    }
+
+    public DataManager getDataManager(){
+        return dataManager;
+    }
+
+    @Reference
+    public void setDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
+        this.driverFunctionContainer = driverFunctionContainer;
+    }
+
+    public void unsetDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
+        this.driverFunctionContainer = null;
+    }
+
+    public DriverFunctionContainer getDriverFunctionContainer(){
+        return driverFunctionContainer;
+    }
+
+    public static List<String> getTablesList(){
+        List<String> list = new ArrayList<>();
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            String defaultSchema = "PUBLIC";
+            try {
+                if (connection.getSchema() != null) {
+                    defaultSchema = connection.getSchema();
+                }
+            } catch (AbstractMethodError | Exception ex) {
+                // Driver has been compiled with JAVA 6, or is not implemented
+            }
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery("SELECT * FROM "+defaultSchema+".geometry_columns");
+            while(rs.next()) {
+                list.add(rs.getString("F_TABLE_NAME"));
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+        }
+        return list;
     }
 }
