@@ -56,21 +56,18 @@ public class GeoDataProcessing implements ProcessingData{
             if (input.getDataDescription() instanceof GeoData) {
                 //Get the GeoData
                 GeoData geoData = ((GeoData) input.getDataDescription());
-                Format tableFormat = null;
                 //Find the default format and the sql format
                 for (Format format : geoData.getFormats()) {
-                    if (format.isDefaultFormat()) {
-                        if (!format.getMimeType().equals(GeoData.sqlTableMimeType)) {
-                            //Load the shape file in OrbisGIS and put in the inputDataMap the table name.
-                            File shapeFile = new File((String) dataMap.get(input.getIdentifier()));
-                            String tableName = null;
-                            try {
-                                tableName = toolBox.getDataManager().registerDataSource(shapeFile.toURI());
-                            } catch (SQLException e) {
-                                LoggerFactory.getLogger(GeoDataProcessing.class).error(e.getMessage());
-                            }
-                            dataMap.put(input.getIdentifier(), tableName);
+                    if (format.isDefaultFormat() && !format.getMimeType().equals(GeoData.sqlTableMimeType)) {
+                        //Load the shape file in OrbisGIS and put in the inputDataMap the table name.
+                        File shapeFile = new File((String) dataMap.get(input.getIdentifier()));
+                        String tableName = null;
+                        try {
+                            tableName = toolBox.getDataManager().registerDataSource(shapeFile.toURI());
+                        } catch (SQLException e) {
+                            LoggerFactory.getLogger(GeoDataProcessing.class).error(e.getMessage());
                         }
+                        dataMap.put(input.getIdentifier(), tableName);
                     }
                 }
             }
@@ -98,25 +95,23 @@ public class GeoDataProcessing implements ProcessingData{
                 GeoData geoData = ((GeoData) output.getDataDescription());
                 //Find the default format
                 for (Format format : geoData.getFormats()) {
-                    if (format.isDefaultFormat()) {
-                        if (!format.getMimeType().equals(GeoData.sqlTableMimeType)) {
-                            //Thank to the saved path, export the table as a shapeFile.
-                            URI uri = output.getIdentifier();
-                            String extension = saveMap.get(uri).toString().substring(
-                                    saveMap.get(uri).toString().lastIndexOf('.')+1);
-                            DriverFunction export =
-                                    toolBox.getDriverFunctionContainer().getExportDriverFromExt(
-                                    extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-                            try {
-                                export.exportTable(toolBox.getDataManager().getDataSource().getConnection(),
-                                        dataMap.get(uri).toString(),
-                                        new File(saveMap.get(uri).toString()),
-                                        new H2GISProgressMonitor(new RootProgressMonitor("postProcessing", 0)));
-                            } catch (SQLException|IOException e) {
-                                LoggerFactory.getLogger(GeoDataProcessing.class).error(e.getMessage());
-                            }
-                            dataMap.put(uri, saveMap.get(uri));
+                    if (format.isDefaultFormat() && !format.getMimeType().equals(GeoData.sqlTableMimeType)) {
+                        //Thank to the saved path, export the table as a shapeFile.
+                        URI uri = output.getIdentifier();
+                        String extension = saveMap.get(uri).toString().substring(
+                                saveMap.get(uri).toString().lastIndexOf('.')+1);
+                        DriverFunction export =
+                                toolBox.getDriverFunctionContainer().getExportDriverFromExt(
+                                extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+                        try {
+                            export.exportTable(toolBox.getDataManager().getDataSource().getConnection(),
+                                    dataMap.get(uri).toString(),
+                                    new File(saveMap.get(uri).toString()),
+                                    new H2GISProgressMonitor(new RootProgressMonitor("postProcessing", 0)));
+                        } catch (SQLException|IOException e) {
+                            LoggerFactory.getLogger(GeoDataProcessing.class).error(e.getMessage());
                         }
+                        dataMap.put(uri, saveMap.get(uri));
                     }
                 }
             }

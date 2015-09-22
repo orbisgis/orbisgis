@@ -28,26 +28,16 @@ import groovy.sql.Sql
  * @author Sylvain PALOMINOS
  */
 
-@GeoDataInput(
-        title = "input geoData",
-        abstrac = "Input GeoData"
-)
+@GeoDataInput(title = "input geoData", abstrac = "Input GeoData")
 String inputGeoData
 
-@GeoDataOutput(
-        title = "output geoData",
-        abstrac = "Output GeoData"
-)
+@GeoDataOutput(title = "output geoData", abstrac = "Output GeoData")
 String outputGeoData
 
 
-@Process(
-        title = "Extract first geom",
-        abstrac = "Extract the first geom of the input"
-)
+@Process(title = "Extract first geom", abstrac = "Extract the first geom of the input")
 def processing() {
     sql = Sql.newInstance(grv_ds)
-
     sql.execute("DROP TABLE IF EXISTS " + outputGeoData + ";")
     sql.execute("CREATE TABLE " + outputGeoData + " as SELECT THE_GEOM  FROM " + inputGeoData + " LIMIT 1;")
 }

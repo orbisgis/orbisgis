@@ -21,7 +21,8 @@ package org.orbisgis.orbistoolbox.controller;
 
 import groovy.lang.GroovyObject;
 import org.orbisgis.orbistoolbox.controller.parser.ParserController;
-import org.orbisgis.orbistoolbox.model.*;
+import org.orbisgis.orbistoolbox.model.Input;
+import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
 import org.slf4j.LoggerFactory;

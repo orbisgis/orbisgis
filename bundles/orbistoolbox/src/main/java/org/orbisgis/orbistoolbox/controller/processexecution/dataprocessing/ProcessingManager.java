@@ -50,7 +50,6 @@ public class ProcessingManager {
     public ProcessingManager(ToolBox toolBox){
         this.toolBox = toolBox;
         classProcessingMap = new HashMap<>();
-        classProcessingMap.put(DataDescription.class, new DefaultProcessing());
         classProcessingMap.put(GeoData.class, new GeoDataProcessing());
     }
 
@@ -64,9 +63,7 @@ public class ProcessingManager {
         if(processingData != null) {
             return classProcessingMap.get(clazz);
         }
-        else{
-            return classProcessingMap.get(DataDescription.class);
-        }
+        return null;
     }
 
     /**
@@ -76,13 +73,16 @@ public class ProcessingManager {
      */
     public void preProcessData(Process process,
                                Map<URI, Object> dataMap){
+        ProcessingData prossData;
         for(Input input : process.getInput()){
-            getProcessingData(input.getDataDescription().getClass())
-                    .preProcessing(input, dataMap, toolBox);
+            if((prossData = getProcessingData(input.getDataDescription().getClass())) != null) {
+                prossData.preProcessing(input, dataMap, toolBox);
+            }
         }
         for(Output output : process.getOutput()){
-            getProcessingData(output.getDataDescription().getClass())
-                    .preProcessing(output, dataMap, toolBox);
+            if((prossData = getProcessingData(output.getDataDescription().getClass())) != null) {
+                prossData.preProcessing(output, dataMap, toolBox);
+            }
         }
     }
 
@@ -114,14 +114,16 @@ public class ProcessingManager {
                 }
             }
         }
-
+        ProcessingData prossData;
         for(Input input : process.getInput()){
-            getProcessingData(input.getDataDescription().getClass())
-                    .postProcessing(input, dataMap, toolBox);
+            if((prossData = getProcessingData(input.getDataDescription().getClass())) != null) {
+                prossData.postProcessing(input, dataMap, toolBox);
+            }
         }
         for(Output output : process.getOutput()){
-            getProcessingData(output.getDataDescription().getClass())
-                    .postProcessing(output, dataMap, toolBox);
+            if((prossData = getProcessingData(output.getDataDescription().getClass())) != null) {
+                prossData.postProcessing(output, dataMap, toolBox);
+            }
         }
     }
 }
