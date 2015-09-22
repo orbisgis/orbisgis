@@ -100,7 +100,7 @@ public class ProcessingManager {
                 field.setAccessible(true);
                 DescriptionTypeAttribute annot = field.getAnnotation(DescriptionTypeAttribute.class);
                 URI uri;
-                if(annot != null && !annot.identifier().equals("")) {
+                if(annot != null && !annot.identifier().isEmpty()) {
                     uri = URI.create(annot.identifier());
                 }
                 else{

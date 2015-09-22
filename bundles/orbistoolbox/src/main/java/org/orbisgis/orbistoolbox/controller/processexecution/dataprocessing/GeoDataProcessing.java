@@ -59,11 +59,11 @@ public class GeoDataProcessing implements ProcessingData{
                 //Find the default format and the sql format
                 for (Format format : geoData.getFormats()) {
                     if (format.isDefaultFormat() && !format.getMimeType().equals(GeoData.sqlTableMimeType)) {
-                        //Load the shape file in OrbisGIS and put in the inputDataMap the table name.
-                        File shapeFile = new File((String) dataMap.get(input.getIdentifier()));
+                        //Load the geoFile in OrbisGIS and put in the inputDataMap the table name.
+                        File geoFile = new File((String) dataMap.get(input.getIdentifier()));
                         String tableName = null;
                         try {
-                            tableName = toolBox.getDataManager().registerDataSource(shapeFile.toURI());
+                            tableName = toolBox.getDataManager().registerDataSource(geoFile.toURI());
                         } catch (SQLException e) {
                             LoggerFactory.getLogger(GeoDataProcessing.class).error(e.getMessage());
                         }
@@ -76,10 +76,10 @@ public class GeoDataProcessing implements ProcessingData{
         if (inputOrOutput instanceof Output) {
             Output output = (Output) inputOrOutput;
             if (output.getDataDescription() instanceof GeoData) {
-                //Save the output shape file path and replace it in the output by the table name.
+                //Save the output geoFile path and replace it in the output by the table name.
                 saveMap.put(output.getIdentifier(), dataMap.get(output.getIdentifier()));
-                File shapeFile = new File((String) dataMap.get(output.getIdentifier()));
-                String tableName = shapeFile.getName().replaceFirst("[.][^.]+$", "").toUpperCase();
+                File geoFile = new File((String) dataMap.get(output.getIdentifier()));
+                String tableName = geoFile.getName().replaceFirst("[.][^.]+$", "").toUpperCase();
                 dataMap.put(output.getIdentifier(), tableName);
             }
         }
@@ -96,7 +96,7 @@ public class GeoDataProcessing implements ProcessingData{
                 //Find the default format
                 for (Format format : geoData.getFormats()) {
                     if (format.isDefaultFormat() && !format.getMimeType().equals(GeoData.sqlTableMimeType)) {
-                        //Thank to the saved path, export the table as a shapeFile.
+                        //Thank to the saved path, export the table as a geoFile.
                         URI uri = output.getIdentifier();
                         String extension = saveMap.get(uri).toString().substring(
                                 saveMap.get(uri).toString().lastIndexOf('.')+1);

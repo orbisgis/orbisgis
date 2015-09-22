@@ -53,6 +53,8 @@ public class GeoDataUI implements DataUI{
     private static final String SHAPEFILE = "SHAPEFILE";
     private static final String SQLTABLE = "SQLTABLE";
 
+    private static final int BROWSETEXTFIELD_WIDTH = 25;
+
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         return new HashMap<>();
@@ -206,7 +208,7 @@ public class GeoDataUI implements DataUI{
         dataComponent.setLayout(new FlowLayout(FlowLayout.LEFT));
         //Adds the text field to display and write the file path
         JTextField jtf = new JTextField();
-        jtf.setColumns(25);
+        jtf.setColumns(BROWSETEXTFIELD_WIDTH);
         jtf.getDocument().putProperty("dataMap", dataMap);
         jtf.getDocument().putProperty("uri", uri);
         //add the listener to display the full file path when the text box is selected.
