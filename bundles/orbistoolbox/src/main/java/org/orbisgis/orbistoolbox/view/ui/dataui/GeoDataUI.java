@@ -20,10 +20,12 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.slf4j.LoggerFactory;
@@ -49,10 +51,6 @@ import java.util.*;
 
 public class GeoDataUI implements DataUI{
 
-    private static final String GEOJSON = "GEOJSON";
-    private static final String SHAPEFILE = "SHAPEFILE";
-    private static final String SQLTABLE = "SQLTABLE";
-
     private static final int BROWSETEXTFIELD_WIDTH = 25;
 
     @Override
@@ -69,41 +67,38 @@ public class GeoDataUI implements DataUI{
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         JPanel panel = new JPanel(new MigLayout("fill"));
         GeoData geoData = null;
+        Map<String, String> extensionMap = null;
         //If the descriptionType is an input, add a comboBox to select the input type and according to the type,
         // add a second JComponent to write the input value
         if(inputOrOutput instanceof Input){
             Input input = (Input)inputOrOutput;
             geoData = (GeoData)input.getDataDescription();
+            extensionMap = ToolBox.getImportableGeoFormat();
         }
         if(inputOrOutput instanceof Output){
             Output output = (Output)inputOrOutput;
             geoData = (GeoData)output.getDataDescription();
+            extensionMap = ToolBox.getExportableGeoFormat();
         }
-        if(geoData == null){
+        if(geoData == null || extensionMap == null){
             return panel;
         }
 
-        String defaultFormatMimeType = "";
+        //JComboBox with the input type
+        JComboBox<ContainerItem> comboBox = new JComboBox<>();
         for(Format format : geoData.getFormats()){
+            String ext = FormatFactory.getFormatExtension(format);
+            if(extensionMap.get(ext) != null) {
+                comboBox.addItem(new ContainerItem<>(ext, extensionMap.get(ext)+" (*."+ext+")"));
+            }
+            else{
+                comboBox.addItem(new ContainerItem<>(ext, ext));
+            }
             if(format.isDefaultFormat()){
-                defaultFormatMimeType = format.getMimeType();
+                comboBox.setSelectedIndex(comboBox.getItemCount()-1);
             }
         }
-        //JComboBox with the input type
-        JComboBox<String> comboBox = new JComboBox<>();
-        comboBox.addItem(GEOJSON.toLowerCase());
-        comboBox.addItem(SHAPEFILE.toLowerCase());
-        comboBox.addItem(SQLTABLE.toLowerCase());
         panel.add(comboBox, "wrap");
-        if(defaultFormatMimeType.equals(GeoData.geojsonMimeType)){
-            comboBox.setSelectedItem(GEOJSON.toLowerCase());
-        }
-        if(defaultFormatMimeType.equals(GeoData.shapeFileMimeType)){
-            comboBox.setSelectedItem(SHAPEFILE.toLowerCase());
-        }
-        if(defaultFormatMimeType.equals(GeoData.sqlTableMimeType)){
-            comboBox.setSelectedItem(SQLTABLE.toLowerCase());
-        }
 
         //JPanel containing the component to set the input value
         JComponent dataField = new JPanel();
@@ -127,76 +122,34 @@ public class GeoDataUI implements DataUI{
      * @param source The comboBox containing the data type to use.
      */
     public void onBoxChange(Object source){
-        JComboBox comboBox = (JComboBox) source;
+        JComboBox<ContainerItem> comboBox = (JComboBox<ContainerItem>) source;
         Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty("dataMap");
         URI uri = (URI) comboBox.getClientProperty("uri");
         DescriptionType descriptionType = (DescriptionType) comboBox.getClientProperty("inputOrOutput");
-        String s = ((String) comboBox.getSelectedItem()).toUpperCase();
+        ContainerItem container = (ContainerItem) comboBox.getSelectedItem();
         JComponent dataComponent;
-        switch(s){
-            case GEOJSON:
-                Map<String [], String> mapJson = new HashMap<>();
-                mapJson.put(new String[]{"geojson", "json"}, "GeoJSON");
-                dataComponent = createBrowsePanel(mapJson, dataMap, uri, descriptionType);
-                break;
-            case SHAPEFILE:
-                Map<String [], String> mapShape = new HashMap<>();
-                mapShape.put(new String[]{"shp"}, "ShapeFile");
-                dataComponent = createBrowsePanel(mapShape, dataMap, uri, descriptionType);
-                break;
-            default:
-            case SQLTABLE:
-                dataComponent = new JPanel(new BorderLayout());
-                //Instantiate the component
-                JComboBox<String> box = new JComboBox<>();
-                for(String tableName : ToolBox.getTablesList()){
-                    box.addItem(tableName);
-                }
-                dataComponent.add(new JLabel("Select a table :"), BorderLayout.PAGE_START);
-                dataComponent.add(box, BorderLayout.CENTER);
-                break;
+        if(container.getKey().equals(FormatFactory.SQL_EXTENSION)){
+            dataComponent = new JPanel(new BorderLayout());
+            //Instantiate the component
+            JComboBox<String> box = new JComboBox<>();
+            for(String tableName : ToolBox.getTablesList()){
+                box.addItem(tableName);
+            }
+            dataComponent.add(new JLabel("Select a table :"), BorderLayout.PAGE_START);
+            dataComponent.add(box, BorderLayout.CENTER);
+        }
+        else{
+            Map<String [], String> mapJson = new HashMap<>();
+            mapJson.put(
+                    new String[]{container.getKey().toString()},
+                    container.getLabel().replace(" (*." + container.getKey() + ")", ""));
+            dataComponent = createBrowsePanel(mapJson, dataMap, uri, descriptionType);
         }
         //Adds to the dataField the dataComponent
         JPanel panel = (JPanel) comboBox.getClientProperty("dataField");
         panel.removeAll();
         panel.add(dataComponent);
         panel.revalidate();
-        setDefaultFormat(descriptionType, s);
-    }
-
-    private void setDefaultFormat(DescriptionType inputOrOutput, String selectedFormat){
-        GeoData geoData = null;
-        if(inputOrOutput instanceof Input) {
-            Input input = (Input) inputOrOutput;
-            geoData = (GeoData) input.getDataDescription();
-        }
-        else if(inputOrOutput instanceof Output) {
-            Output output = (Output) inputOrOutput;
-            geoData = (GeoData) output.getDataDescription();
-        }
-        String mimeType;
-        if(selectedFormat.equals(GEOJSON)){
-            mimeType = GeoData.geojsonMimeType;
-        }
-        else if(selectedFormat.equals(SHAPEFILE)){
-            mimeType = GeoData.shapeFileMimeType;
-        }
-        else if(selectedFormat.equals(SQLTABLE)){
-            mimeType = GeoData.sqlTableMimeType;
-        }
-        else{
-            return;
-        }
-        Format defaultFormat = null;
-        for (Format format : geoData.getFormats()) {
-            if (format.getMimeType().equals(mimeType)) {
-                defaultFormat = format;
-            }
-            if(format.isDefaultFormat()){
-                format.setDefaultFormat(false);
-            }
-        }
-        defaultFormat.setDefaultFormat(true);
     }
 
     private JComponent createBrowsePanel(Map<String[], String> formatFilter,
@@ -221,21 +174,18 @@ public class GeoDataUI implements DataUI{
 
         OpenFilePanel filePanel = null;
         if(inputOrOutput instanceof Input){
-            filePanel = new OpenFilePanel("RawDataUI.File", "Select File");
+            filePanel = new OpenFilePanel("RawDataUI.File."+uri, "Select File");
         }
         else if(inputOrOutput instanceof Output){
-            filePanel = new SaveFilePanel("RawDataUI.File", "Select File");
+            filePanel = new SaveFilePanel("RawDataUI.File."+uri, "Select File");
         }
         for(Map.Entry<String[], String> entry : formatFilter.entrySet()){
             filePanel.addFilter(entry.getKey(), entry.getValue());
         }
-        filePanel.setCurrentFilter(0);
+        filePanel.setAcceptAllFileFilterUsed(false);
         filePanel.loadState();
-        if(dataMap.get(uri) != null)
-            jtf.setText(dataMap.get(uri).toString());
-        else {
-            jtf.setText(filePanel.getCurrentDirectory().getAbsolutePath());
-        }
+        filePanel.setCurrentFilter(0);
+        jtf.setText(filePanel.getCurrentDirectory().getAbsolutePath());
 
         dataComponent.add(jtf);
         //Create the button Browse

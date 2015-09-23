@@ -19,8 +19,6 @@
 
 package org.orbisgis.orbistoolbox.model;
 
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,23 +29,7 @@ import java.util.List;
 
 public class GeoData extends ComplexData{
 
-    public static final String geojsonMimeType = "application/json";
-    public static final String shapeFileMimeType = "application/octet-stream";
-    public static final String sqlTableMimeType = "custom/sql";
-
-    public GeoData() throws MalformedScriptException {
-        super(getDefaultFormats());
-    }
-
-    private static List<Format> getDefaultFormats() throws MalformedScriptException {
-        List<Format> formatList = new ArrayList<>();
-        Format shapeFormat = new Format(shapeFileMimeType, URI.create("https://tools.ietf.org/html/rfc2046"));
-        formatList.add(shapeFormat);
-        Format geoJSONFormat = new Format(geojsonMimeType, URI.create("https://tools.ietf.org/html/rfc4627"));
-        formatList.add(geoJSONFormat);
-        Format sqlTableFormat = new Format(sqlTableMimeType, URI.create(""));
-        formatList.add(sqlTableFormat);
-        sqlTableFormat.setDefaultFormat(true);
-        return formatList;
+    public GeoData(List<Format> formatList) throws MalformedScriptException {
+        super(formatList);
     }
 }

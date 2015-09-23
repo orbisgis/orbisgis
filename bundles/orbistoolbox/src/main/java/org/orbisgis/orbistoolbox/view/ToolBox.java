@@ -19,6 +19,7 @@
 
 package org.orbisgis.orbistoolbox.view;
 
+import org.h2gis.h2spatialapi.DriverFunction;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
@@ -70,7 +71,7 @@ public class ToolBox implements DockingPanel {
     private DataUIManager dataUIManager;
     /** DataManager */
     private static DataManager dataManager;
-    private DriverFunctionContainer driverFunctionContainer;
+    private static DriverFunctionContainer driverFunctionContainer;
     private ProcessingManager processingManager;
 
     private Map<String, Object> properties;
@@ -297,5 +298,25 @@ public class ToolBox implements DockingPanel {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return list;
+    }
+
+    public static Map<String, String> getImportableGeoFormat(){
+        Map<String, String> formatMap = new HashMap<>();
+        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
+            for(String ext : df.getImportFormats()){
+                formatMap.put(ext, df.getFormatDescription(ext));
+            }
+        }
+        return formatMap;
+    }
+
+    public static Map<String, String> getExportableGeoFormat(){
+        Map<String, String> formatMap = new HashMap<>();
+        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
+            for(String ext : df.getExportFormats()){
+                formatMap.put(ext, df.getFormatDescription(ext));
+            }
+        }
+        return formatMap;
     }
 }

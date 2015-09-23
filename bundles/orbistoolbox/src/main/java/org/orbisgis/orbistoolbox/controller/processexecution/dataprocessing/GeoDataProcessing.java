@@ -22,6 +22,7 @@ package org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.orbisgis.corejdbc.H2GISProgressMonitor;
 import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionWorker;
+import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,7 @@ public class GeoDataProcessing implements ProcessingData{
                 GeoData geoData = ((GeoData) input.getDataDescription());
                 //Find the default format and the sql format
                 for (Format format : geoData.getFormats()) {
-                    if (format.isDefaultFormat() && !format.getMimeType().equals(GeoData.sqlTableMimeType)) {
+                    if (format.isDefaultFormat() && !format.getMimeType().equals(FormatFactory.SQL_MIMETYPE)) {
                         //Load the geoFile in OrbisGIS and put in the inputDataMap the table name.
                         File geoFile = new File((String) dataMap.get(input.getIdentifier()));
                         String tableName = null;
@@ -95,7 +96,7 @@ public class GeoDataProcessing implements ProcessingData{
                 GeoData geoData = ((GeoData) output.getDataDescription());
                 //Find the default format
                 for (Format format : geoData.getFormats()) {
-                    if (format.isDefaultFormat() && !format.getMimeType().equals(GeoData.sqlTableMimeType)) {
+                    if (format.isDefaultFormat() && !format.getMimeType().equals(FormatFactory.SQL_MIMETYPE)) {
                         //Thank to the saved path, export the table as a geoFile.
                         URI uri = output.getIdentifier();
                         String extension = saveMap.get(uri).toString().substring(

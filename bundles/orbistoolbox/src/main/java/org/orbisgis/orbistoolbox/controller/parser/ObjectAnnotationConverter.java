@@ -198,9 +198,9 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static GeoData annotationToObject(GeoDataAttribute GeoDataAttribute) {
+    public static GeoData annotationToObject(GeoDataAttribute GeoDataAttribute, List<Format> formatList) {
         try {
-            return new GeoData();
+            return new GeoData(formatList);
         } catch (MalformedScriptException e) {
             e.printStackTrace();
             return null;
