@@ -31,7 +31,6 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Parser for groovy GeoData annotations.
@@ -46,7 +45,7 @@ public class GeoDataParser implements Parser{
         //Instantiate the GeoData and its formats
         GeoDataAttribute geoDataAttribute = f.getAnnotation(GeoDataAttribute.class);
         List<Format> formatList;
-        List<String> importableGeoFormat = new ArrayList<>(ToolBox.getImportableGeoFormat().keySet());
+        List<String> importableGeoFormat = new ArrayList<>(ToolBox.getImportableSpatialFormat().keySet());
         if(geoDataAttribute.extensions().length!=0) {
             for(String extension : geoDataAttribute.extensions()){
                 if(!importableGeoFormat.contains(extension)){
@@ -84,7 +83,7 @@ public class GeoDataParser implements Parser{
         //Instantiate the GeoData and its formats
         GeoDataAttribute geoDataAttribute = f.getAnnotation(GeoDataAttribute.class);
         List<Format> formatList;
-        List<String> exportableGeoFormat = new ArrayList<>(ToolBox.getExportableGeoFormat().keySet());
+        List<String> exportableGeoFormat = new ArrayList<>(ToolBox.getExportableSpatialFormat().keySet());
         if(geoDataAttribute.extensions().length!=0) {
             for(String extension : geoDataAttribute.extensions()){
                 if(!exportableGeoFormat.contains(extension)){

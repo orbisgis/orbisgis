@@ -300,21 +300,25 @@ public class ToolBox implements DockingPanel {
         return list;
     }
 
-    public static Map<String, String> getImportableGeoFormat(){
+    public static Map<String, String> getImportableSpatialFormat(){
         Map<String, String> formatMap = new HashMap<>();
         for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
             for(String ext : df.getImportFormats()){
-                formatMap.put(ext, df.getFormatDescription(ext));
+                if(df.isSpatialFormat(ext)) {
+                    formatMap.put(ext, df.getFormatDescription(ext));
+                }
             }
         }
         return formatMap;
     }
 
-    public static Map<String, String> getExportableGeoFormat(){
+    public static Map<String, String> getExportableSpatialFormat(){
         Map<String, String> formatMap = new HashMap<>();
         for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
             for(String ext : df.getExportFormats()){
-                formatMap.put(ext, df.getFormatDescription(ext));
+                if(df.isSpatialFormat(ext)) {
+                    formatMap.put(ext, df.getFormatDescription(ext));
+                }
             }
         }
         return formatMap;

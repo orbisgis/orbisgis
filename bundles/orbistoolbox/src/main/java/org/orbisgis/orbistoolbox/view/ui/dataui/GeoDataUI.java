@@ -73,12 +73,12 @@ public class GeoDataUI implements DataUI{
         if(inputOrOutput instanceof Input){
             Input input = (Input)inputOrOutput;
             geoData = (GeoData)input.getDataDescription();
-            extensionMap = ToolBox.getImportableGeoFormat();
+            extensionMap = ToolBox.getImportableSpatialFormat();
         }
         if(inputOrOutput instanceof Output){
             Output output = (Output)inputOrOutput;
             geoData = (GeoData)output.getDataDescription();
-            extensionMap = ToolBox.getExportableGeoFormat();
+            extensionMap = ToolBox.getExportableSpatialFormat();
         }
         if(geoData == null || extensionMap == null){
             return panel;
