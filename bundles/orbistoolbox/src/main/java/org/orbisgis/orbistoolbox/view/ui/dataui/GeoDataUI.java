@@ -175,6 +175,7 @@ public class GeoDataUI implements DataUI{
         OpenFilePanel filePanel = null;
         if(inputOrOutput instanceof Input){
             filePanel = new OpenFilePanel("RawDataUI.File."+uri, "Select File");
+            filePanel.setAcceptAllFileFilterUsed(false);
         }
         else if(inputOrOutput instanceof Output){
             filePanel = new SaveFilePanel("RawDataUI.File."+uri, "Select File");
@@ -182,9 +183,7 @@ public class GeoDataUI implements DataUI{
         for(Map.Entry<String[], String> entry : formatFilter.entrySet()){
             filePanel.addFilter(entry.getKey(), entry.getValue());
         }
-        filePanel.setAcceptAllFileFilterUsed(false);
         filePanel.loadState();
-        filePanel.setCurrentFilter(0);
         jtf.setText(filePanel.getCurrentDirectory().getAbsolutePath());
 
         dataComponent.add(jtf);
