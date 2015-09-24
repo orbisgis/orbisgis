@@ -28,7 +28,7 @@ import groovy.sql.Sql
  * @author Sylvain PALOMINOS
  */
 
-@GeoDataInput(title = "input geoData", abstrac = "Input GeoData")
+@GeoDataInput(title = "input geoData", abstrac = "Input GeoData", extensions = ["shp", "geojson", "osm", "fdfsfgdsf"])
 String inputGeoData
 
 @GeoDataOutput(title = "output geoData", abstrac = "Output GeoData")
