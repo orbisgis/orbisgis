@@ -57,8 +57,8 @@ public class ToolBoxPanel extends JPanel {
     private static final String REFRESH_SOURCE = "REFRESH_SOURCE";
     private static final String REMOVE = "REMOVE";
 
-    private final static String CATEGORY_MODEL = "Category";
-    private final static String FILE_MODEL = "File";
+    private final static String CATEGORY_MODEL = "Advanced interface";
+    private final static String FILE_MODEL = "Simple interface";
     private final static String FILTERED_MODEL = "Filtered";
 
     private final static String UNDEFINED = "Undefined";
@@ -283,7 +283,6 @@ public class ToolBoxPanel extends JPanel {
                 categoryModel.insertNodeInto(script, categoryNode, 0);
             }
         }
-        //this.reload();
     }
 
     /**
