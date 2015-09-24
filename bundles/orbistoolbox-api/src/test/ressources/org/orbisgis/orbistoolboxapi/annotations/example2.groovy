@@ -37,7 +37,7 @@ import java.nio.file.StandardCopyOption
 
 @RawDataInput(
         title = "tar.gz file",
-        abstrac = "tar.gz compressed file to copy and rename",
+        resume = "tar.gz compressed file to copy and rename",
         formats = [
                 @FormatAttribute(
                         mimeType = "application/x-gzip",

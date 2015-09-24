@@ -36,7 +36,7 @@ import org.orbisgis.orbistoolboxapi.annotations.output.LiteralDataOutput
 
 @LiteralDataInput(
         title = "word",
-        abstrac = "Word to detect on a sentence",
+        resume = "Word to detect on a sentence",
         keywords = "word,detection,input",
         validDomains = [
                 @LiteralDataDomainAttribute(
@@ -67,7 +67,7 @@ sentence
 
 @LiteralDataOutput(
         title = "occurrence",
-        abstrac = "Occurrence of a word in a sentence",
+        resume = "Occurrence of a word in a sentence",
         valueAttribute = @LiteralValueAttribute(dataType = "INTEGER")
 )
 int occur

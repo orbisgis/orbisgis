@@ -175,7 +175,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         for(Input i : processExecutionData.getProcess().getInput()){
             JPanel inputPanel = new JPanel(new MigLayout("fill"));
             inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
-            JLabel inputAbstrac = new JLabel(i.getAbstrac());
+            JLabel inputAbstrac = new JLabel(i.getResume());
             inputAbstrac.setFont(inputAbstrac.getFont().deriveFont(Font.ITALIC));
             inputPanel.add(inputAbstrac, "wrap");
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getClass());
@@ -193,7 +193,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
                 if(component != null) {
                     JPanel outputPanel = new JPanel(new MigLayout("fill"));
                     outputPanel.setBorder(BorderFactory.createTitledBorder(o.getTitle()));
-                    JLabel outputAbstrac = new JLabel(o.getAbstrac());
+                    JLabel outputAbstrac = new JLabel(o.getResume());
                     outputAbstrac.setFont(outputAbstrac.getFont().deriveFont(Font.ITALIC));
                     outputPanel.add(outputAbstrac, "wrap");
                     outputPanel.add(component, "wrap");
@@ -215,8 +215,8 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         //Process info
         JLabel titleContentLabel = new JLabel(p.getTitle());
         JLabel abstracContentLabel = new JLabel();
-        if(p.getAbstrac() != null) {
-            abstracContentLabel.setText(p.getAbstrac());
+        if(p.getResume() != null) {
+            abstracContentLabel.setText(p.getResume());
         }
         else{
             abstracContentLabel.setText("-");
@@ -235,8 +235,8 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         for(Input i : p.getInput()){
             inputPanel.add(new JLabel(dataUIManager.getIconFromData(i)));
             inputPanel.add(new JLabel(i.getTitle()), "align left, wrap");
-            if(i.getAbstrac() != null) {
-                JLabel abstrac = new JLabel(i.getAbstrac());
+            if(i.getResume() != null) {
+                JLabel abstrac = new JLabel(i.getResume());
                 abstrac.setFont(abstrac.getFont().deriveFont(Font.ITALIC));
                 inputPanel.add(abstrac, "span 2, wrap");
             }
@@ -252,8 +252,8 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         for(Output o : p.getOutput()){
             outputPanel.add(new JLabel(dataUIManager.getIconFromData(o)));
             outputPanel.add(new JLabel(o.getTitle()), "align left, wrap");
-            if(o.getAbstrac() != null) {
-                JLabel abstrac = new JLabel(o.getAbstrac());
+            if(o.getResume() != null) {
+                JLabel abstrac = new JLabel(o.getResume());
                 abstrac.setFont(abstrac.getFont().deriveFont(Font.ITALIC));
                 outputPanel.add(abstrac, "span 2, wrap");
             }

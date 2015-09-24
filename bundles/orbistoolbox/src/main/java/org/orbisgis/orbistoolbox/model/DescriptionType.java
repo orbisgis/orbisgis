@@ -37,7 +37,7 @@ public class DescriptionType {
     /** Title of a process, input, and output. Normally available for display to a human. */
     private String title;
     /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
-    private String abstrac;
+    private String resume;
     /** Keywords that characterize a process, its inputs, and outputs. */
     private List<String> keywords;
     /** Unambiguous identifier of a process, input, and output. */
@@ -63,7 +63,7 @@ public class DescriptionType {
         }
         //Sets the attributes
         this.title = title;
-        this.abstrac = null;
+        this.resume = null;
         this.keywords = null;
         this.identifier = identifier;
         this.metadata = null;
@@ -94,21 +94,21 @@ public class DescriptionType {
     }
 
     /**
-     * Returns the abstract.
+     * Returns the resume.
      *
-     * @return The abstract.
+     * @return The resume.
      */
-    public String getAbstrac() {
-        return this.abstrac;
+    public String getResume() {
+        return this.resume;
     }
 
     /**
-     * Sets the abstract.
+     * Sets the resume.
      *
-     * @param abstrac The new abstract.
+     * @param resume The new resume.
      */
-    public void setAbstrac(String abstrac) {
-        this.abstrac = abstrac;
+    public void setResume(String resume) {
+        this.resume = resume;
     }
 
     /**

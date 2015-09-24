@@ -46,8 +46,8 @@ public class ObjectAnnotationConverter {
             if(!descriptionTypeAttribute.title().equals("")){
                     descriptionType.setTitle(descriptionTypeAttribute.title());
             }
-            if(!descriptionTypeAttribute.abstrac().equals(DescriptionTypeAttribute.defaultAbstrac)){
-                descriptionType.setAbstrac(descriptionTypeAttribute.abstrac());
+            if(!descriptionTypeAttribute.resume().equals(DescriptionTypeAttribute.defaultResume)){
+                descriptionType.setResume(descriptionTypeAttribute.resume());
             }
             if(!descriptionTypeAttribute.identifier().equals(DescriptionTypeAttribute.defaultIdentifier)){
                 descriptionType.setIdentifier(URI.create(descriptionTypeAttribute.identifier()));
