@@ -37,7 +37,7 @@ public class FormatFactory {
 
     public static final String SHAPEFILE_EXTENSION = "shp";
     public static final String GEOJSON_EXTENSION = "geojson";
-    public static final String SQL_EXTENSION = "sql";
+    public static final String SQL_EXTENSION = "sqlTable";
     public static final String OTHER_EXTENSION = "*";
 
     public static final String SHAPEFILE_MIMETYPE = "application/octet-stream";
@@ -50,6 +50,13 @@ public class FormatFactory {
     public static final String SQL_URI = "";
     public static final String OTHER_URI = "";
 
+    public static final String SQL_DESCRIPTION = "SQL table";
+
+    /**
+     * Returns the Format from the given extension. If the extension isn't recognize, return null.
+     * @param extension Extension used for the Format generation.
+     * @return Format corresponding to the given extension.
+     */
     public static Format getFormatFromExtension(String extension){
         try {
             switch(extension){
@@ -70,6 +77,11 @@ public class FormatFactory {
         }
     }
 
+    /**
+     * Return a list of Format from a list of extension.
+     * @param extensions List of extension for the Format generation.
+     * @return A list of Format.
+     */
     public static List<Format> getFormatsFromExtensions(List<String> extensions){
         List<Format> formatList = new ArrayList<>();
         for(String extension : extensions){
@@ -78,6 +90,11 @@ public class FormatFactory {
         return formatList;
     }
 
+    /**
+     * Return a list of Format from an array of extension.
+     * @param extensions List of extension for the Format generation.
+     * @return A list of Format.
+     */
     public static List<Format> getFormatsFromExtensions(String[] extensions){
         List<Format> formatList = new ArrayList<>();
         for(String extension : extensions){
@@ -86,6 +103,11 @@ public class FormatFactory {
         return formatList;
     }
 
+    /**
+     * Return the extension from a Format.
+     * @param format Format to decode.
+     * @return File extension.
+     */
     public static String getFormatExtension(Format format){
         switch(format.getMimeType()){
             case SHAPEFILE_MIMETYPE:
@@ -93,7 +115,7 @@ public class FormatFactory {
             case GEOJSON_MIMETYPE:
                 return GEOJSON_EXTENSION;
             case SQL_MIMETYPE:
-                return SQL_EXTENSION;
+                return SQL_DESCRIPTION;
             case OTHER_MIMETYPE:
                 return OTHER_EXTENSION;
             default:

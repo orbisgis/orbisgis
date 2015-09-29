@@ -121,7 +121,7 @@ public class ToolBoxPanel extends JPanel {
         treeNodeBox = new JComboBox<>();
         treeNodeBox.addItem(FILE_MODEL);
         treeNodeBox.addItem(CATEGORY_MODEL);
-        treeNodeBox.setSelectedItem(CATEGORY_MODEL);
+        treeNodeBox.setSelectedItem(FILE_MODEL);
         treeNodeBox.addActionListener(EventHandler.create(ActionListener.class, this, "onModelSelected"));
 
         tree = new FileTree();
@@ -153,7 +153,7 @@ public class ToolBoxPanel extends JPanel {
         filterFactoryManager.setUserCanRemoveFilter(false);
         filterFactoryManager.addFilter(new SearchFilter().getDefaultFilterValue());
 
-        tree.setModel(fileModel);
+        tree.setModel(categoryModel);
         onModelSelected();
     }
 

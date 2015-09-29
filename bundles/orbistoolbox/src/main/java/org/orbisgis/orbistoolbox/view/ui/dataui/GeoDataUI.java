@@ -32,15 +32,12 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
+import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.beans.EventHandler;
 import java.net.URI;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -105,6 +102,7 @@ public class GeoDataUI implements DataUI{
         panel.add(dataField);
 
         comboBox.putClientProperty("inputOrOutput", inputOrOutput);
+        comboBox.putClientProperty("geoData", geoData);
         comboBox.putClientProperty("dataField", dataField);
         comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());
         comboBox.putClientProperty("dataMap", dataMap);
@@ -128,13 +126,18 @@ public class GeoDataUI implements DataUI{
         DescriptionType descriptionType = (DescriptionType) comboBox.getClientProperty("inputOrOutput");
         ContainerItem container = (ContainerItem) comboBox.getSelectedItem();
         JComponent dataComponent;
-        if(container.getKey().equals(FormatFactory.SQL_EXTENSION)){
+        if(container.getKey().equals(FormatFactory.SQL_DESCRIPTION)){
             dataComponent = new JPanel(new BorderLayout());
             //Instantiate the component
             JComboBox<String> box = new JComboBox<>();
-            for(String tableName : ToolBox.getTablesList()){
+            for(String tableName : ToolBox.getGeoTableList()){
                 box.addItem(tableName);
             }
+            box.addItem("<new table>");
+            box.addItemListener(EventHandler.create(ItemListener.class, this, "onNewTableSelected", ""));
+            box.putClientProperty("dataComponent", dataComponent);
+            box.putClientProperty("dataMap", dataMap);
+            box.putClientProperty("uri", uri);
             dataComponent.add(new JLabel("Select a table :"), BorderLayout.PAGE_START);
             dataComponent.add(box, BorderLayout.CENTER);
         }
@@ -150,6 +153,42 @@ public class GeoDataUI implements DataUI{
         panel.removeAll();
         panel.add(dataComponent);
         panel.revalidate();
+    }
+
+    public void onNewTableSelected(ItemEvent ie){
+        JComboBox box = (JComboBox) ie.getSource();
+        JPanel panel = (JPanel) box.getClientProperty("dataComponent");
+        if(box.getSelectedItem().equals("<new table>")) {
+            JTextField jtf = new JTextField();
+            ((AbstractDocument) jtf.getDocument()).setDocumentFilter(new UppercaseDocumentFilter());
+            jtf.setColumns(BROWSETEXTFIELD_WIDTH);
+            jtf.getDocument().putProperty("dataMap", box.getClientProperty("dataMap"));
+            jtf.getDocument().putProperty("uri", box.getClientProperty("uri"));
+            //add the listener for the text changes in the JTextField
+            jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
+                    this,
+                    "saveDocumentText",
+                    "document"));
+            panel.add(jtf, BorderLayout.PAGE_END);
+        }
+        else{
+            panel.add(new JPanel(), BorderLayout.PAGE_END);
+        }
+        panel.revalidate();
+    }
+
+    private class UppercaseDocumentFilter extends DocumentFilter {
+        public void insertString(DocumentFilter.FilterBypass fb, int offset, String text,
+                                 AttributeSet attr) throws BadLocationException {
+
+            fb.insertString(offset, text.toUpperCase(), attr);
+        }
+
+        public void replace(DocumentFilter.FilterBypass fb, int offset, int length, String text,
+                            AttributeSet attrs) throws BadLocationException {
+
+            fb.replace(offset, length, text.toUpperCase(), attrs);
+        }
     }
 
     private JComponent createBrowsePanel(Map<String[], String> formatFilter,

@@ -46,6 +46,7 @@ public class GeoDataParser implements Parser{
         GeoDataAttribute geoDataAttribute = f.getAnnotation(GeoDataAttribute.class);
         List<Format> formatList;
         List<String> importableGeoFormat = new ArrayList<>(ToolBox.getImportableSpatialFormat().keySet());
+        //If there is extension, test if it is recognized by OrbisGIS and register it.
         if(geoDataAttribute.extensions().length!=0) {
             for(String extension : geoDataAttribute.extensions()){
                 if(!importableGeoFormat.contains(extension)){
@@ -54,6 +55,7 @@ public class GeoDataParser implements Parser{
             }
             formatList = FormatFactory.getFormatsFromExtensions(geoDataAttribute.extensions());
         }
+        //Else add all the extensions plus the sql one to use sql table.
         else{
             formatList = FormatFactory.getFormatsFromExtensions(importableGeoFormat);
             formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.SQL_EXTENSION));
@@ -84,6 +86,7 @@ public class GeoDataParser implements Parser{
         GeoDataAttribute geoDataAttribute = f.getAnnotation(GeoDataAttribute.class);
         List<Format> formatList;
         List<String> exportableGeoFormat = new ArrayList<>(ToolBox.getExportableSpatialFormat().keySet());
+        //If there is extension, test if it is recognized by OrbisGIS and register it.
         if(geoDataAttribute.extensions().length!=0) {
             for(String extension : geoDataAttribute.extensions()){
                 if(!exportableGeoFormat.contains(extension)){
@@ -92,6 +95,7 @@ public class GeoDataParser implements Parser{
             }
             formatList = FormatFactory.getFormatsFromExtensions(geoDataAttribute.extensions());
         }
+        //Else add all the extensions plus the sql one to use sql table.
         else{
             formatList = FormatFactory.getFormatsFromExtensions(exportableGeoFormat);
             formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.SQL_EXTENSION));
