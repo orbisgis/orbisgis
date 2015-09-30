@@ -153,6 +153,18 @@ public class GeoDataUI implements DataUI{
         panel.removeAll();
         panel.add(dataComponent);
         panel.revalidate();
+
+        //Sets the selected Format as the default one.
+        GeoData geoData = (GeoData) comboBox.getClientProperty("geoData");
+        for(Format format : geoData.getFormats()){
+            String ext = FormatFactory.getFormatExtension(format);
+            if(container.getKey().equals(ext)){
+                format.setDefaultFormat(true);
+            }
+            else{
+                format.setDefaultFormat(false);
+            }
+        }
     }
 
     public void onNewTableSelected(ItemEvent ie){

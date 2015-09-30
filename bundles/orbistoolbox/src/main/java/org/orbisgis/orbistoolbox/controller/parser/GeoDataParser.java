@@ -49,7 +49,7 @@ public class GeoDataParser implements Parser{
         //If there is extension, test if it is recognized by OrbisGIS and register it.
         if(geoDataAttribute.extensions().length!=0) {
             for(String extension : geoDataAttribute.extensions()){
-                if(!importableGeoFormat.contains(extension)){
+                if(!importableGeoFormat.contains(extension) || extension.equals(FormatFactory.SQL_EXTENSION)){
                     LoggerFactory.getLogger(GeoDataParser.class).warn("The format '" + extension + "' is not supported");
                 }
             }
@@ -89,7 +89,7 @@ public class GeoDataParser implements Parser{
         //If there is extension, test if it is recognized by OrbisGIS and register it.
         if(geoDataAttribute.extensions().length!=0) {
             for(String extension : geoDataAttribute.extensions()){
-                if(!exportableGeoFormat.contains(extension)){
+                if(!exportableGeoFormat.contains(extension) || extension.equals(FormatFactory.SQL_EXTENSION)){
                     LoggerFactory.getLogger(GeoDataParser.class).warn("The format '" + extension + "' is not supported");
                 }
             }
