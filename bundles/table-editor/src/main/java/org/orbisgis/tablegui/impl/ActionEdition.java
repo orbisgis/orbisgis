@@ -70,10 +70,10 @@ public class ActionEdition extends AbstractAction {
     public final void updateLabelAndIcon() {
         if(editable.isEditing()) {
             putValue(NAME, i18N.tr("Stop editing"));
-            putValue(SMALL_ICON, TableEditorIcon.getIcon("edition/unlock"));
+            putValue(SMALL_ICON, TableEditorIcon.getIcon("unlock"));
         } else {
             putValue(NAME, i18N.tr("Start editing"));
-            putValue(SMALL_ICON, TableEditorIcon.getIcon("edition/lock"));
+            putValue(SMALL_ICON, TableEditorIcon.getIcon("lock"));
         }
     }
     @Override
