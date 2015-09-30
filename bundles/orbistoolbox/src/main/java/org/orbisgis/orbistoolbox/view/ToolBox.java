@@ -19,10 +19,12 @@
 
 package org.orbisgis.orbistoolbox.view;
 
+import org.h2gis.h2spatialapi.DriverFunction;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing.ProcessingManager;
+import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
@@ -70,7 +72,7 @@ public class ToolBox implements DockingPanel {
     private DataUIManager dataUIManager;
     /** DataManager */
     private static DataManager dataManager;
-    private DriverFunctionContainer driverFunctionContainer;
+    private static DriverFunctionContainer driverFunctionContainer;
     private ProcessingManager processingManager;
 
     private Map<String, Object> properties;
@@ -276,7 +278,11 @@ public class ToolBox implements DockingPanel {
         return driverFunctionContainer;
     }
 
-    public static List<String> getTablesList(){
+    /**
+     * Returns the list of geo sql table from OrbisGIS.
+     * @return The list of geo sql table from OrbisGIS.
+     */
+    public static List<String> getGeoTableList(){
         List<String> list = new ArrayList<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();
@@ -297,5 +303,39 @@ public class ToolBox implements DockingPanel {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return list;
+    }
+
+    /**
+     * Returns a map of the importable spatial format.
+     * The map key is the format extension and the value is the format description.
+     * @return a map of the importable spatial format.
+     */
+    public static Map<String, String> getImportableSpatialFormat(){
+        Map<String, String> formatMap = new HashMap<>();
+        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
+            for(String ext : df.getImportFormats()){
+                if(df.isSpatialFormat(ext)) {
+                    formatMap.put(ext, df.getFormatDescription(ext));
+                }
+            }
+        }
+        return formatMap;
+    }
+
+    /**
+     * Returns a map of the exportable spatial format.
+     * The map key is the format extension and the value is the format description.
+     * @return a map of the exportable spatial format.
+     */
+    public static Map<String, String> getExportableSpatialFormat(){
+        Map<String, String> formatMap = new HashMap<>();
+        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
+            for(String ext : df.getExportFormats()){
+                if(df.isSpatialFormat(ext)) {
+                    formatMap.put(ext, df.getFormatDescription(ext));
+                }
+            }
+        }
+        return formatMap;
     }
 }

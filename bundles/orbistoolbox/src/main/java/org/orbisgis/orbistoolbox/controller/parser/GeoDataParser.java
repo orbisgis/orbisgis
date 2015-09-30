@@ -19,13 +19,18 @@
 
 package org.orbisgis.orbistoolbox.controller.parser;
 
+import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
+import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.GeoDataAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Parser for groovy GeoData annotations.
@@ -37,8 +42,26 @@ public class GeoDataParser implements Parser{
 
     @Override
     public Input parseInput(Field f, String processId) {
-        //Instantiate the RawData
-        GeoData geoData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeoDataAttribute.class));
+        //Instantiate the GeoData and its formats
+        GeoDataAttribute geoDataAttribute = f.getAnnotation(GeoDataAttribute.class);
+        List<Format> formatList;
+        List<String> importableGeoFormat = new ArrayList<>(ToolBox.getImportableSpatialFormat().keySet());
+        //If there is extension, test if it is recognized by OrbisGIS and register it.
+        if(geoDataAttribute.extensions().length!=0) {
+            for(String extension : geoDataAttribute.extensions()){
+                if(!importableGeoFormat.contains(extension) || extension.equals(FormatFactory.SQL_EXTENSION)){
+                    LoggerFactory.getLogger(GeoDataParser.class).warn("The format '" + extension + "' is not supported");
+                }
+            }
+            formatList = FormatFactory.getFormatsFromExtensions(geoDataAttribute.extensions());
+        }
+        //Else add all the extensions plus the sql one to use sql table.
+        else{
+            formatList = FormatFactory.getFormatsFromExtensions(importableGeoFormat);
+            formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.SQL_EXTENSION));
+        }
+        formatList.get(0).setDefaultFormat(true);
+        GeoData geoData = ObjectAnnotationConverter.annotationToObject(geoDataAttribute, formatList);
 
         Input input;
         try {
@@ -47,7 +70,7 @@ public class GeoDataParser implements Parser{
                     URI.create(processId + ":input:" + f.getName()),
                     geoData);
         } catch (MalformedScriptException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(GeoDataParser.class).error(e.getMessage());
             return null;
         }
 
@@ -59,8 +82,26 @@ public class GeoDataParser implements Parser{
 
     @Override
     public Output parseOutput(Field f, String processId) {
-        //Instantiate the RawData
-        GeoData geoData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeoDataAttribute.class));
+        //Instantiate the GeoData and its formats
+        GeoDataAttribute geoDataAttribute = f.getAnnotation(GeoDataAttribute.class);
+        List<Format> formatList;
+        List<String> exportableGeoFormat = new ArrayList<>(ToolBox.getExportableSpatialFormat().keySet());
+        //If there is extension, test if it is recognized by OrbisGIS and register it.
+        if(geoDataAttribute.extensions().length!=0) {
+            for(String extension : geoDataAttribute.extensions()){
+                if(!exportableGeoFormat.contains(extension) || extension.equals(FormatFactory.SQL_EXTENSION)){
+                    LoggerFactory.getLogger(GeoDataParser.class).warn("The format '" + extension + "' is not supported");
+                }
+            }
+            formatList = FormatFactory.getFormatsFromExtensions(geoDataAttribute.extensions());
+        }
+        //Else add all the extensions plus the sql one to use sql table.
+        else{
+            formatList = FormatFactory.getFormatsFromExtensions(exportableGeoFormat);
+            formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.SQL_EXTENSION));
+        }
+        formatList.get(0).setDefaultFormat(true);
+        GeoData geoData = ObjectAnnotationConverter.annotationToObject(geoDataAttribute, formatList);
 
         Output output;
         try {
@@ -69,7 +110,7 @@ public class GeoDataParser implements Parser{
                     URI.create(processId + ":output:" + f.getName()),
                     geoData);
         } catch (MalformedScriptException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(GeoDataParser.class).error(e.getMessage());
             return null;
         }
 

@@ -29,8 +29,8 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface DescriptionTypeAttribute {
-    /** Default value for the abstrac attribute */
-    String defaultAbstrac = ""
+    /** Default value for the resume attribute */
+    String defaultResume = ""
     /** Default value for the keywords attribute */
     String defaultKeywords = ""
     /** Default value for the identifier attribute */
@@ -42,7 +42,7 @@ import java.lang.annotation.RetentionPolicy
     /** Title of a process, input, and output. Normally available for display to a human. */
     String title()
     /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
-    String abstrac() default ""
+    String resume() default ""
     /** Coma separated keywords that characterize a process, its inputs, and outputs. */
     String keywords() default ""
     /** Unambiguous identifier of a process, input, and output. */

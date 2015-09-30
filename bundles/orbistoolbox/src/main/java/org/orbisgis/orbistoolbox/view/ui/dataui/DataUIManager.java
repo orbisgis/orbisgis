@@ -19,10 +19,8 @@
 
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
-import org.omg.PortableInterceptor.INACTIVE;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.RawData;
-import org.orbisgis.orbistoolbox.model.ShapeFileData;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
@@ -49,7 +47,6 @@ public class DataUIManager {
         dataUIMap = new HashMap<>();
         linkClassUI(LiteralData.class, new LiteralDataUI());
         linkClassUI(RawData.class, new RawDataUI());
-        linkClassUI(ShapeFileData.class, new ShapeFileUI());
         linkClassUI(GeoData.class, new GeoDataUI());
     }
 

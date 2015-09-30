@@ -19,7 +19,7 @@
 
 package org.orbisgis.orbistoolbox.view.utils;
 
-import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionThread;
+import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionWorker;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
@@ -131,8 +131,8 @@ public class ProcessExecutionData {
         if(inputDataMap.size() == process.getInput().size()) {
             setState(ProcessState.RUNNING);
             //Run the process in a separated thread
-            ExecutionThread thread = new ExecutionThread(process, outputDataMap, inputDataMap, toolBox, this);
-            thread.start();
+            ExecutionWorker thread = new ExecutionWorker(process, outputDataMap, inputDataMap, toolBox, this);
+            thread.execute();
         }
     }
 

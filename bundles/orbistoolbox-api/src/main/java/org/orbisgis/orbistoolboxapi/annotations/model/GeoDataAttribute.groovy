@@ -23,10 +23,12 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * The GeoData represent any data that can be loaded in OrbisGIS as a SQL table.
- * It can be a ShapeFile, a GeoJSON or a sql table from OrbisGIS
+ * The GeoData represent any spatial data that can be loaded in OrbisGIS as a SQL table.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface GeoDataAttribute {}
+@interface GeoDataAttribute {
+    /** Files extension accepted. If no extension are specified, all the format are accepted. */
+    String[] extensions() default [];
+}

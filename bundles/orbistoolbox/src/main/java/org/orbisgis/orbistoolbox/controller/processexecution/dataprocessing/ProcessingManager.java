@@ -19,7 +19,7 @@
 
 package org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing;
 
-import groovy.lang.GroovyObject;
+import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionWorker;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
@@ -68,34 +68,29 @@ public class ProcessingManager {
 
     /**
      * PreProcess the data of the given process.
-     * @param process Process to preProcess.
-     * @param dataMap Data map of the input and output.
+     * @param executionWorker The executionWorker which execute the process.
      */
-    public void preProcessData(Process process,
-                               Map<URI, Object> dataMap){
+    public void preProcessData(ExecutionWorker executionWorker){
         ProcessingData prossData;
+        Process process = executionWorker.getProcess();
         for(Input input : process.getInput()){
             if((prossData = getProcessingData(input.getDataDescription().getClass())) != null) {
-                prossData.preProcessing(input, dataMap, toolBox);
+                prossData.preProcessing(input, executionWorker);
             }
         }
         for(Output output : process.getOutput()){
             if((prossData = getProcessingData(output.getDataDescription().getClass())) != null) {
-                prossData.preProcessing(output, dataMap, toolBox);
+                prossData.preProcessing(output, executionWorker);
             }
         }
     }
 
     /**
      * PostProcess the data of the given process.
-     * @param process Process to postProcess.
-     * @param dataMap Data map of the input and output.
-     * @param groovyObject GroovyObject containing the process result.
+     * @param executionWorker The executionWorker which execute the process.
      */
-    public void postProcessData(Process process,
-                                Map<URI, Object> dataMap,
-                                GroovyObject groovyObject){
-        for (Field field : groovyObject.getClass().getDeclaredFields()) {
+    public void postProcessData(ExecutionWorker executionWorker){
+        for (Field field : executionWorker.getGroovyObject().getClass().getDeclaredFields()) {
             if (field.getAnnotation(OutputAttribute.class) != null) {
                 field.setAccessible(true);
                 DescriptionTypeAttribute annot = field.getAnnotation(DescriptionTypeAttribute.class);
@@ -104,25 +99,26 @@ public class ProcessingManager {
                     uri = URI.create(annot.identifier());
                 }
                 else{
-                    uri = URI.create(process.getIdentifier() + ":output:" + field.getName());
+                    uri = URI.create(executionWorker.getProcess().getIdentifier() + ":output:" + field.getName());
                 }
                 try {
-                    dataMap.put(uri, field.get(groovyObject));
+                    executionWorker.getDataMap().put(uri, field.get(executionWorker.getGroovyObject()));
                 } catch (IllegalAccessException e) {
-                    dataMap.put(uri, null);
+                    executionWorker.getDataMap().put(uri, null);
                     LoggerFactory.getLogger(ProcessingManager.class).error(e.getMessage());
                 }
             }
         }
         ProcessingData prossData;
+        Process process = executionWorker.getProcess();
         for(Input input : process.getInput()){
             if((prossData = getProcessingData(input.getDataDescription().getClass())) != null) {
-                prossData.postProcessing(input, dataMap, toolBox);
+                prossData.postProcessing(input, executionWorker);
             }
         }
         for(Output output : process.getOutput()){
             if((prossData = getProcessingData(output.getDataDescription().getClass())) != null) {
-                prossData.postProcessing(output, dataMap, toolBox);
+                prossData.postProcessing(output, executionWorker);
             }
         }
     }

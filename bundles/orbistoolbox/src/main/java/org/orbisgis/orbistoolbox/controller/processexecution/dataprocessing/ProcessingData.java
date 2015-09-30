@@ -19,14 +19,9 @@
 
 package org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing;
 
-import groovy.lang.GroovyObject;
-import groovy.lang.GroovyShell;
+import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionWorker;
 import org.orbisgis.orbistoolbox.model.DataDescription;
 import org.orbisgis.orbistoolbox.model.DescriptionType;
-import org.orbisgis.orbistoolbox.view.ToolBox;
-
-import java.net.URI;
-import java.util.Map;
 
 /**
  * Interface for the pre and post processing of data.
@@ -45,17 +40,13 @@ public interface ProcessingData {
     /**
      * PreProcess the data.
      * @param inputOrOutput Input or Output to preProcess.
-     * @param dataMap Data map of the input and output.
+     * @param executionWorker The executionWorker which execute the process.
      */
-    void preProcessing(DescriptionType inputOrOutput,
-                                Map<URI, Object> dataMap,
-                                ToolBox toolBox);
+    void preProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker);
     /**
      * PostProcess the data.
      * @param inputOrOutput Input or Output to preProcess.
-     * @param dataMap Data map of the input and output.
+     * @param executionWorker The executionWorker which execute the process.
      */
-    void postProcessing(DescriptionType inputOrOutput,
-                                Map<URI, Object> dataMap,
-                                ToolBox toolBox);
+    void postProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker);
 }
