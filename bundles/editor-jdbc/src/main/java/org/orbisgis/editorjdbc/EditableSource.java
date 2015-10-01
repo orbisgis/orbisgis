@@ -46,6 +46,11 @@ public interface EditableSource extends EditableElement {
     boolean isEditable();
 
     /**
+     * @return Translated explanation of not editable state.
+     */
+    String getNotEditableReason();
+
+    /**
      * Get the data source name
      *
      * @return Table location
