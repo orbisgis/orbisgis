@@ -48,6 +48,7 @@ public class DataUIManager {
         linkClassUI(LiteralData.class, new LiteralDataUI());
         linkClassUI(RawData.class, new RawDataUI());
         linkClassUI(GeoData.class, new GeoDataUI());
+        linkClassUI(GeometryData.class, new GeometryUI());
     }
 
     /**

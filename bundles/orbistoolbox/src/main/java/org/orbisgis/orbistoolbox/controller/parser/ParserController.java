@@ -27,6 +27,7 @@ import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +35,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -56,6 +58,7 @@ public class ParserController {
         parserList.add(new LiteralDataParser());
         parserList.add(new BoundingBoxParser());
         parserList.add(new GeoDataParser());
+        parserList.add(new GeometryParser());
         defaultParser = new DefaultParser();
         processParser = new ProcessParser();
         groovyClassLoader = new GroovyShell().getClassLoader();
@@ -68,9 +71,10 @@ public class ParserController {
             groovyClassLoader.clearCache();
             clazz = groovyClassLoader.parseClass(process);
         } catch (IOException|GroovyRuntimeException e) {
+            LoggerFactory.getLogger(ParserController.class).error("Can not parse the process : '"+processPath+"'");
+            LoggerFactory.getLogger(ParserController.class).error(e.getMessage());
             return null;
         }
-
         List<Input> inputList = new ArrayList<>();
         List<Output> outputList = new ArrayList<>();
 
