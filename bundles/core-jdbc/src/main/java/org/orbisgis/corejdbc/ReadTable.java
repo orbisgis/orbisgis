@@ -376,10 +376,17 @@ public class ReadTable {
         try( Connection connection = manager.getDataSource().getConnection()) {
                 Envelope selectionEnvelope = null;
                 List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName));
+                String fieldQuery;
                 if(geomFields.isEmpty()) {
-                    throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
+                    List<String> rasterFields = MetaData.getRasterColumns(connection, tableName);
+                    if(rasterFields.isEmpty()) {
+                        throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
+                    } else {
+                        fieldQuery = "ST_EXTENT(" + TableLocation.quoteIdentifier(rasterFields.get(0)) + "::geometry)";
+                    }
+                } else {
+                    fieldQuery = "ST_EXTENT(" + TableLocation.quoteIdentifier(geomFields.get(0)) + ")";
                 }
-            String fieldQuery = "ST_EXTENT(" + TableLocation.quoteIdentifier(geomFields.get(0)) + ")";
             try(FilteredResultSet fRs = new FilteredResultSet(connection, tableName, rowsId, pm, false, fieldQuery)) {
                 SpatialResultSet rs = fRs.getResultSet();
                 if (rs.next() && rs.getGeometry() != null) {

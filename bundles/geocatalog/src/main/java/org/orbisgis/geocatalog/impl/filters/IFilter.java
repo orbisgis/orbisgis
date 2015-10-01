@@ -41,7 +41,8 @@ public interface IFilter {
         TABLE_CAT ,TABLE_SCHEM,TABLE_NAME,TABLE_TYPE ,REMARKS,TYPE_CAT,TYPE_SCHEM,TYPE_NAME,SELF_REFERENCING_COL_NAME,REF_GENERATION,
         GEOMETRY_TYPE,  /** WKT geometry type */
         LOCATION,       /** Equivalent to TableLocation.toString()*/
-        LABEL           /** Table label in GeoCatalog */
+        LABEL,           /** Table label in GeoCatalog */
+        RASTER_TYPE     /** WKB Raster type */
         }
     /**
     * Does this filter reject or accept this Source

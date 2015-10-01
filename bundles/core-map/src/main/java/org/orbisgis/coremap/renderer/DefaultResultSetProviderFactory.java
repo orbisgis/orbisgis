@@ -101,10 +101,12 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
             this.pm = pm;
             connection = dataSource.getConnection();
             List<String> geometryFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(layer.getTableReference()));
-            if(geometryFields.isEmpty()) {
+            List<String> rasterFields = MetaData.getRasterColumns(connection, layer.getTableReference());
+            if(geometryFields.isEmpty() && rasterFields.isEmpty()) {
                 throw new SQLException(I18N.tr("Table {0} does not contains geometry fields",layer.getTableReference()));
             }
-            st = createStatement(connection, geometryFields.get(0), layer.getTableReference());
+            st = createStatement(connection, !geometryFields.isEmpty() ? geometryFields.get(0) : rasterFields.get(0),
+                    layer.getTableReference());
             st.setFetchSize(FETCH_SIZE);
             st.setFetchDirection(ResultSet.FETCH_FORWARD);
             connection.setAutoCommit(false);

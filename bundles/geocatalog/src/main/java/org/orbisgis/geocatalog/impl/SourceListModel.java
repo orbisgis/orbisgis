@@ -29,6 +29,7 @@
 package org.orbisgis.geocatalog.impl;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -180,6 +181,9 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
         if(attr.containsKey(IFilter.ATTRIBUTES.GEOMETRY_TYPE)) {
             return "geofile";
         }
+        if(attr.containsKey(IFilter.ATTRIBUTES.RASTER_TYPE)) {
+            return "image";
+        }
         String tableType = attr.get(IFilter.ATTRIBUTES.TABLE_TYPE);
         if(tableType != null) {
             switch(tableType) {
@@ -263,6 +267,17 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
             } catch (SQLException ex) {
                 LOGGER.warn(I18N.tr("Geometry columns information of tables are not available"), ex);
             }
+            // Fetch raster table
+            Map<String,String> tableRaster = new HashMap<>();
+            DatabaseMetaData meta = connection.getMetaData();
+            try(ResultSet rs = meta.getColumns("", "", "", "")) {
+                while(rs.next()) {
+                    if("RASTER".equalsIgnoreCase(rs.getString("TYPE_NAME"))) {
+                        tableGeometry.put(new TableLocation(rs.getString("TABLE_CAT"), rs.getString
+                                ("TABLE_SCHEM"), rs.getString("TABLE_NAME")).toString(), rs.getString("TYPE_NAME"));
+                    }
+                }
+            }
             // Fetch all tables
             try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {
                 while(rs.next()) {
@@ -303,6 +318,10 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
                     String type = tableGeometry.get(location.toString());
                     if(type != null) {
                         tableAttr.put(IFilter.ATTRIBUTES.GEOMETRY_TYPE, type);
+                    }
+                    String rasterType = tableGeometry.get(location.toString());
+                    if(type != null) {
+                        tableAttr.put(IFilter.ATTRIBUTES.RASTER_TYPE, rasterType);
                     }
                     newTables.add(tableAttr);
                 }

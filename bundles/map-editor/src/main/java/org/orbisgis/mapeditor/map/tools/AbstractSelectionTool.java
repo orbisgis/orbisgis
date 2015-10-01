@@ -71,6 +71,7 @@ import java.util.Set;
 
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -81,6 +82,8 @@ import org.orbisgis.mapeditor.map.tools.generated.Selection;
 
 import javax.swing.*;
 import org.orbisgis.coremap.renderer.se.Style;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Tool to select geometries
@@ -275,6 +278,7 @@ public abstract class AbstractSelectionTool extends Selection {
 
         private static class SelectionWorker extends SwingWorker<Set<Long>, Set<Long>> {
             AbstractSelectionTool automaton;
+            private static final I18n I18N = I18nFactory.getI18n(SelectionWorker.class);
             Geometry selectionRect;
             MapContext mc;
             ToolManager tm;
@@ -299,8 +303,20 @@ public abstract class AbstractSelectionTool extends Selection {
                 Set<Long> newSelection;
                 // Get all primary value where default geometry intersects a bounding box
                 try (Connection connection = SFSUtilities.wrapConnection(activeLayer.getDataManager().getDataSource().getConnection())) {
-                    String geomFieldName = SFSUtilities.getGeometryFields(connection,
-                            TableLocation.parse(activeLayer.getTableReference())).get(0);
+                    List<String> geometryFields = SFSUtilities.getGeometryFields(connection,
+                            TableLocation.parse(activeLayer.getTableReference()));
+                    String geomFieldName;
+                    if(!geometryFields.isEmpty()) {
+                        geomFieldName = geometryFields.get(0);
+                    } else {
+                        List<String> rasterFieldName = MetaData.getRasterColumns(connection, activeLayer.getTableReference());
+                        if(!rasterFieldName.isEmpty()) {
+                            geomFieldName = rasterFieldName.get(0);
+                        } else {
+                            automaton.transition(Code.NO_SELECTION);
+                            throw new TransitionException(I18N.tr("Current layer does not contain a geometry field"));
+                        }
+                    }
                     newSelection = ReadTable.getTablePkByEnvelope(mc.getDataManager(),
                             activeLayer.getTableReference(), geomFieldName, selectionRect, !intersects);
 

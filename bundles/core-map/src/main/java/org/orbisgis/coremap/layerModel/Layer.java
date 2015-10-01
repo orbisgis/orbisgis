@@ -48,6 +48,7 @@ import java.util.Set;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtility;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.coremap.stream.GeoStream;
 import org.orbisgis.coremap.stream.SimpleWMSDriver;
 import org.orbisgis.coremap.stream.WMSStreamSource;
@@ -232,7 +233,14 @@ public class Layer extends BeanLayer {
 
     @Override
 	public boolean isRaster() throws LayerException {
-		return false;
+        if(getTableReference().isEmpty()) {
+            return false;
+        }
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            return !MetaData.getRasterColumns(connection, getTableReference()).isEmpty();
+        } catch (SQLException ex) {
+            throw new LayerException(I18N.tr("Error while fetching source MetaData"));
+        }
 	}
 
     @Override

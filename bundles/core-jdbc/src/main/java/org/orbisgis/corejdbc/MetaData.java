@@ -38,7 +38,9 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -141,6 +143,20 @@ public class MetaData {
             }
         }
         throw new SQLException("Column or table not found");
+    }
+
+    public static List<String> getRasterColumns(Connection connection, String table) throws SQLException {
+        List<String> rasterColumns = new ArrayList<>();
+        DatabaseMetaData meta = connection.getMetaData();
+        TableLocation location = TableLocation.parse(table);
+        try(ResultSet rs = meta.getColumns(location.getCatalog(), location.getSchema(), location.getTable(), "")) {
+            while(rs.next()) {
+                if("RASTER".equalsIgnoreCase(rs.getString("TYPE_NAME"))) {
+                    rasterColumns.add(rs.getString("COLUMN_NAME"));
+                }
+            }
+        }
+        return rasterColumns;
     }
 
     /**

@@ -60,6 +60,7 @@ import net.opengis.ows_context.SLDType;
 import net.opengis.ows_context.StyleListType;
 import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
+import org.orbisgis.corejdbc.MetaData;
 import org.slf4j.*;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
@@ -118,7 +119,8 @@ public final class OwsMapContext extends BeanMapContext {
             try {
                 try (Connection connection = dataManager.getDataSource().getConnection()) {
                     List<String> geoFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableRef));
-                    if (!geoFields.isEmpty()) {
+                    List<String> rasterFields = MetaData.getRasterColumns(connection, tableRef);
+                    if (!geoFields.isEmpty() || !rasterFields.isEmpty()) {
                         return new Layer(layerName, tableRef, dataManager);
                     } else {
                         throw new LayerException(I18N.tr("The source contains no spatial info"));
