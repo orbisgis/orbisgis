@@ -38,10 +38,12 @@ import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.h2gis.utilities.RasterMetaData;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.coremap.ui.editors.map.tool.Rectangle2DDouble;
@@ -62,6 +64,11 @@ import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 
 /**
  * Renderer contains all the logic of the Symbology Encoding process based on java
@@ -402,7 +409,15 @@ public abstract class Renderer {
         public void draw(BufferedImage img, Envelope extent, ILayer layer) {
                 draw(img, extent, layer, new NullProgressMonitor());
         }
+    private static ImageReader fetchImageReader(ImageInputStream is) throws SQLException {
+        Iterator<ImageReader> readers = ImageIO.getImageReaders(is);
+        if(readers.hasNext()) {
+            return readers.next();
+        } else {
+            throw new SQLException(I18N.tr("Cannot found driver for reading provided raster"));
+        }
 
+    }
      /**
      * A workarround to draw a rasterlayer This method wil be updated with the
      * RasterSymbolizer
@@ -448,10 +463,29 @@ public abstract class Renderer {
                     } else {
                         rowSetProgress = pm.startTask("Drawing " + layer.getName(), 1);
                     }
+                    // Keep reader until there is a problem with reading raster
+                    ImageReader lastReader = null;
                     while (rs.next()) {
-                        Object[] arMeta = (Object[])rs.getObject("raster_metadata");
+                        try {
+                            RasterMetaData metaData = RasterMetaData.fetchRasterMetaData(rs, "raster_metadata");
+                            if(metaData != null) {
+                                // Fetch ImageReader
+                                ImageInputStream is = ImageIO.createImageInputStream(rs.getBlob(rasterField));
+                                if (is == null) {
+                                    throw new SQLException(I18N.tr("No input stream driver for Blob type"));
+                                }
+                                if(lastReader == null) {
+                                    lastReader = fetchImageReader(is);
+                                }
+                                // prepare image read
+                                lastReader.setInput(is);
+                                ImageReadParam readParam = lastReader.getDefaultReadParam();
 
-                        rowSetProgress.endTask();
+                            }
+                            rowSetProgress.endTask();
+                        } catch (IOException ex) {
+                            LOGGER.error(I18N.tr("Cannot read raster field"), ex);
+                        }
                     }
                     //        DataSource ds = layer.getTableReference();
                     //        long rowCount = ds.getRowCount();

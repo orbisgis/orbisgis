@@ -7,7 +7,7 @@
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>5.1.0-SNAPSHOT</version>
+        <version>5.2.0-SNAPSHOT</version>
         <relativePath>../..</relativePath>
     </parent>
     <packaging>bundle</packaging>
@@ -108,18 +108,6 @@
             <groupId>javax.media</groupId>
             <artifactId>jai_core</artifactId>
             <version>1.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.media</groupId>
-            <artifactId>jai_codec</artifactId>
-            <version>1.1.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.media</groupId>
-            <artifactId>jai_imageio</artifactId>
-            <version>1.1</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.kitfox.svg</groupId>
