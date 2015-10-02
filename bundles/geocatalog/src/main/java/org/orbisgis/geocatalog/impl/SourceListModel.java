@@ -270,10 +270,10 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
             // Fetch raster table
             Map<String,String> tableRaster = new HashMap<>();
             DatabaseMetaData meta = connection.getMetaData();
-            try(ResultSet rs = meta.getColumns("", "", "", "")) {
+            try(ResultSet rs = meta.getColumns(null, null, null, null)) {
                 while(rs.next()) {
                     if("RASTER".equalsIgnoreCase(rs.getString("TYPE_NAME"))) {
-                        tableGeometry.put(new TableLocation(rs.getString("TABLE_CAT"), rs.getString
+                        tableRaster.put(new TableLocation(rs.getString("TABLE_CAT"), rs.getString
                                 ("TABLE_SCHEM"), rs.getString("TABLE_NAME")).toString(), rs.getString("TYPE_NAME"));
                     }
                 }
@@ -319,8 +319,8 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
                     if(type != null) {
                         tableAttr.put(IFilter.ATTRIBUTES.GEOMETRY_TYPE, type);
                     }
-                    String rasterType = tableGeometry.get(location.toString());
-                    if(type != null) {
+                    String rasterType = tableRaster.get(location.toString());
+                    if(rasterType != null) {
                         tableAttr.put(IFilter.ATTRIBUTES.RASTER_TYPE, rasterType);
                     }
                     newTables.add(tableAttr);

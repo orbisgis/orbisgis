@@ -309,7 +309,8 @@ public abstract class AbstractSelectionTool extends Selection {
                     if(!geometryFields.isEmpty()) {
                         geomFieldName = geometryFields.get(0);
                     } else {
-                        List<String> rasterFieldName = MetaData.getRasterColumns(connection, activeLayer.getTableReference());
+                        List<String> rasterFieldName = SFSUtilities.getRasterFields(connection,
+                                TableLocation.parse(activeLayer.getTableReference()));
                         if(!rasterFieldName.isEmpty()) {
                             geomFieldName = rasterFieldName.get(0);
                         } else {

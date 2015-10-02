@@ -378,7 +378,7 @@ public class ReadTable {
                 List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName));
                 String fieldQuery;
                 if(geomFields.isEmpty()) {
-                    List<String> rasterFields = MetaData.getRasterColumns(connection, tableName);
+                    List<String> rasterFields = SFSUtilities.getRasterFields(connection, TableLocation.parse(tableName));
                     if(rasterFields.isEmpty()) {
                         throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableName));
                     } else {

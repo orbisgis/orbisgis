@@ -67,7 +67,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     // (0-1] Use spatial index query if the query envelope area rational number is smaller than this value.
     private static final double RATIONAL_USAGE_INDEX = 0.2;
     private final ReentrantLock lock = new ReentrantLock();
-    private ResultSetProviderFactory defaultFactory = new DefaultResultSetProviderFactory();
+    private DefaultResultSetProviderFactory defaultFactory = new DefaultResultSetProviderFactory();
 
     @Override
     public String getName() {
@@ -75,7 +75,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
     }
 
     @Override
-    public ResultSetProvider getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException {
+    public ResultSetProvider getResultSetProvider(ILayer layer,String[] extraFields, ProgressMonitor pm) throws SQLException {
         try {
             if(lock.tryLock(WAIT_FOR_INITIALISATION_TIMEOUT, TimeUnit.MILLISECONDS)) {
                 boolean isH2;
@@ -88,15 +88,18 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
                 }
                 if(!isH2) {
                     // Always use cursor with PostGIS
-                    return defaultFactory.getResultSetProvider(layer, pm);
+                    return defaultFactory.getResultSetProvider(layer, extraFields ,pm);
                 }
                 ReadRowSet readRowSet = cache.get(tableRef);
-                ResultSetProvider defaultResultSetProvider = defaultFactory.getResultSetProvider(layer, pm);
+                DefaultResultSetProviderFactory.DefaultResultSetProvider defaultResultSetProvider =
+                        defaultFactory.getResultSetProvider(layer,extraFields, pm);
                 if (readRowSet == null) {
                     readRowSet = layer.getDataManager().createReadRowSet();
                     // If the used PK is hidden (because it is system pk)
-                    if(integerPK.isEmpty()) {
-                        readRowSet.setCommand("SELECT " + defaultResultSetProvider.getPkName() + ", * FROM "+tableRef);
+                    if(integerPK.isEmpty() || extraFields.length > 0) {
+                        try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+                            readRowSet.setCommand(defaultResultSetProvider.getQuery(connection, false));
+                        }
                     }
                     readRowSet.setFetchSize(FETCH_SIZE);
                     readRowSet.setCloseDelay(ROWSET_FREE_DELAY);

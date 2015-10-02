@@ -1345,7 +1345,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                                 dropNode.insertLayer(nl, dropIndex);
                                 dropPaths.add(getPathFromNode(new TocTreeNodeLayer(nl)));
                             } catch (Exception e) {
-                                throw new RuntimeException(I18N.tr("Cannot add the layer to the destination"), e);
+                                LOGGER.error(I18N.tr("Cannot add the layer to the destination"), e);
+                                return null;
                             }
                         }
                         pmSources.endTask();

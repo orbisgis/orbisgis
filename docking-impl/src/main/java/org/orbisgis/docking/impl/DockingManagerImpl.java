@@ -735,8 +735,9 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
         return defaultLocation;
     }
 
-    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
-            ReferencePolicyOption.GREEDY)
+    // Deactivated Issue with DockingFrames
+    //@Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
+    //        ReferencePolicyOption.GREEDY)
     public void addToolBarFactory(ToolBarAction factory) {
         addActionFactory(factory, mainWindow);
     }

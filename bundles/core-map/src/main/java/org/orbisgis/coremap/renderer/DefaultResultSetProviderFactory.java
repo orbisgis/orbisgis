@@ -61,8 +61,8 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
     private static final I18n I18N = I18nFactory.getI18n(DefaultResultSetProviderFactory.class);
 
     @Override
-    public ResultSetProvider getResultSetProvider(ILayer layer, ProgressMonitor pm) {
-        return new DefaultResultSetProvider(layer.getDataManager().getDataSource(), layer);
+    public DefaultResultSetProvider getResultSetProvider(ILayer layer,String[] extraFields, ProgressMonitor pm) {
+        return new DefaultResultSetProvider(layer.getDataManager().getDataSource(),extraFields, layer);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
         return "Remote index";
     }
 
-    private static class DefaultResultSetProvider implements ResultSetProvider {
+    public static class DefaultResultSetProvider implements ResultSetProvider {
         private DataSource dataSource;
         private ILayer layer;
 
@@ -80,10 +80,12 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
         private ProgressMonitor pm;
         private static final Logger LOGGER = LoggerFactory.getLogger(DefaultResultSetProvider.class);
         private String pkName = "";
+        private final String[] extraFields;
 
-        private DefaultResultSetProvider(DataSource dataSource, ILayer layer) {
+        private DefaultResultSetProvider(DataSource dataSource,String[] extraFields, ILayer layer) {
             this.dataSource = dataSource;
             this.layer = layer;
+            this.extraFields = extraFields;
             try(Connection conn = dataSource.getConnection()) {
                 pkName = MetaData.getPkName(conn, layer.getTableReference(), true);
             } catch (SQLException ex) {
@@ -100,13 +102,7 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
         public SpatialResultSet execute(ProgressMonitor pm, Envelope extent) throws SQLException {
             this.pm = pm;
             connection = dataSource.getConnection();
-            List<String> geometryFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(layer.getTableReference()));
-            List<String> rasterFields = MetaData.getRasterColumns(connection, layer.getTableReference());
-            if(geometryFields.isEmpty() && rasterFields.isEmpty()) {
-                throw new SQLException(I18N.tr("Table {0} does not contains geometry fields",layer.getTableReference()));
-            }
-            st = createStatement(connection, !geometryFields.isEmpty() ? geometryFields.get(0) : rasterFields.get(0),
-                    layer.getTableReference());
+            st = createStatement(connection);
             st.setFetchSize(FETCH_SIZE);
             st.setFetchDirection(ResultSet.FETCH_FORWARD);
             connection.setAutoCommit(false);
@@ -119,9 +115,35 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
             return st.executeQuery().unwrap(SpatialResultSet.class);
         }
 
-        private PreparedStatement createStatement(Connection connection,String geometryField,String tableReference) throws SQLException {
-                return connection.prepareStatement(
-                        String.format("select "+pkName+",* from %s where %s && ?", tableReference, geometryField),
+        public String getQuery(Connection connection, boolean envelopeFilter) throws SQLException {
+            List<String> geometryFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(layer.getTableReference()));
+            List<String> rasterFields =SFSUtilities.getRasterFields(connection, TableLocation.parse(layer
+                    .getTableReference()));
+            if(geometryFields.isEmpty() && rasterFields.isEmpty()) {
+                throw new SQLException(I18N.tr("Table {0} does not contains geometry fields",layer.getTableReference()));
+            }
+            String geometryField = !geometryFields.isEmpty() ? geometryFields.get(0) : rasterFields.get(0);
+            String tableReference = layer.getTableReference();
+            StringBuilder computedField = new StringBuilder("select " + pkName + ",*");
+            if(extraFields.length != 0) {
+                for (String extraField : extraFields) {
+                    computedField.append(",");
+                    computedField.append(extraField);
+                }
+            }
+            computedField.append(" from ");
+            computedField.append(tableReference);
+            if(envelopeFilter) {
+                computedField.append(" where ");
+                computedField.append(geometryField);
+                computedField.append(" && ?");
+            }
+            return computedField.toString();
+        }
+
+
+        private PreparedStatement createStatement(Connection connection) throws SQLException {
+                return connection.prepareStatement(getQuery(connection, true),
                         ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
         }
 

@@ -43,11 +43,12 @@ public interface ResultSetProviderFactory {
 
     /**
      * @param layer Layer to be requested
+     * @param extraFields Additional field to returns
      * @param pm ProgressMonitor allows to display the process and cancel it.
      * @return Object that query the database.
      * @throws java.sql.SQLException
      */
-    ResultSetProvider getResultSetProvider(ILayer layer, ProgressMonitor pm) throws SQLException;
+    ResultSetProvider getResultSetProvider(ILayer layer,String[] extraFields, ProgressMonitor pm) throws SQLException;
 
     /**
      * @return Localized result set identifier

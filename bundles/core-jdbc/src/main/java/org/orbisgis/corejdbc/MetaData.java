@@ -46,6 +46,7 @@ import java.util.Map;
 
 /**
  * Class utility to extract information from JDBC Metadata
+ *
  * @author Nicolas Fortin
  */
 public class MetaData {
@@ -55,30 +56,30 @@ public class MetaData {
 
     /**
      * Returns a new unique name when registering a {@link javax.sql.DataSource}.
-     * @param table Table identifier
-     * @param meta JDBC meta data
-     * @param baseName Destination table additional name, may be empty
      *
+     * @param table    Table identifier
+     * @param meta     JDBC meta data
+     * @param baseName Destination table additional name, may be empty
      * @return New unique name
      */
-    public static String getNewUniqueName(String table, DatabaseMetaData meta,String baseName) throws SQLException {
+    public static String getNewUniqueName(String table, DatabaseMetaData meta, String baseName) throws SQLException {
         TableLocation uniqueName;
         TableLocation tableName = TableLocation.parse(table);
         int index = 0;
-        if(!baseName.isEmpty()) {
-            uniqueName = new TableLocation(tableName.getCatalog(),tableName.getSchema(),
-                tableName.getTable()+"_"+baseName);
+        if (!baseName.isEmpty()) {
+            uniqueName = new TableLocation(tableName.getCatalog(), tableName.getSchema(), tableName.getTable() + "_"
+                    + baseName);
         } else {
             uniqueName = tableName;
         }
         while (JDBCUtilities.tableExists(meta.getConnection(), uniqueName.toString())) {
             index++;
-            if(!baseName.isEmpty()) {
-                uniqueName = new TableLocation(tableName.getCatalog(),tableName.getSchema(),
-                        tableName.getTable()+"_"+baseName+"_"+index);
+            if (!baseName.isEmpty()) {
+                uniqueName = new TableLocation(tableName.getCatalog(), tableName.getSchema(), tableName.getTable() +
+                        "_" + baseName + "_" + index);
             } else {
-                uniqueName = new TableLocation(tableName.getCatalog(),tableName.getSchema(),
-                        tableName.getTable()+"_"+index);
+                uniqueName = new TableLocation(tableName.getCatalog(), tableName.getSchema(), tableName.getTable() +
+                        "_" + index);
             }
         }
         return uniqueName.toString();
@@ -86,6 +87,7 @@ public class MetaData {
 
     /**
      * Get table long system identifier
+     *
      * @return system row column name or expression
      */
     public static String getSystemLongRowIdentifier(boolean isH2) {
@@ -94,32 +96,37 @@ public class MetaData {
 
     /**
      * PostgreSQL ctid is not long, and long value must be casted into tid type.
+     *
      * @param pkName
      * @return
      */
     public static String castLongToTid(String pkName) {
-        return "CONCAT('(', "+pkName+" >> 32,',',"+pkName+" << 32 >> 32,')')::tid";
+        return "CONCAT('(', " + pkName + " >> 32,','," + pkName + " << 32 >> 32,')')::tid";
     }
 
     /**
      * Compute the map of primary key to row id.
-     * @param connection Active connection, not closed by this function
-     * @param table Table identifier [[catalog.]schema.]table
-     * @param pkFieldName Primary key column of the table {@link org.orbisgis.corejdbc.MetaData#getPkName(java.sql.Connection, String, boolean)}
-     * @return Map\<primary key, row id\>. Row id is the {@link java.sql.ResultSet#getRow()} of the "select * from table"
+     *
+     * @param connection  Active connection, not closed by this function
+     * @param table       Table identifier [[catalog.]schema.]table
+     * @param pkFieldName Primary key column of the table {@link org.orbisgis.corejdbc.MetaData#getPkName(java.sql
+     * .Connection, String, boolean)}
+     * @return Map\<primary key, row id\>. Row id is the {@link java.sql.ResultSet#getRow()} of the "select * from
+     * table"
      */
-    public static Map<Object,Integer> primaryKeyToRowId(Connection connection, String table, String pkFieldName) throws SQLException {
+    public static Map<Object, Integer> primaryKeyToRowId(Connection connection, String table, String pkFieldName)
+            throws SQLException {
         TableLocation tableLocation = TableLocation.parse(table);
-        int rowCount=0;
-        try(Statement st = connection.createStatement()) {
-            try(ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt from "+tableLocation.toString())) {
-                if(rs.next()) {
+        int rowCount = 0;
+        try (Statement st = connection.createStatement()) {
+            try (ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt from " + tableLocation.toString())) {
+                if (rs.next()) {
                     rowCount = rs.getInt(1);
                 }
             }
-            Map<Object,Integer> rowMap = new HashMap<>(rowCount);
-            try(ResultSet rs = st.executeQuery("SELECT "+pkFieldName+" from "+tableLocation.toString())) {
-                while(rs.next()) {
+            Map<Object, Integer> rowMap = new HashMap<>(rowCount);
+            try (ResultSet rs = st.executeQuery("SELECT " + pkFieldName + " from " + tableLocation.toString())) {
+                while (rs.next()) {
                     rowMap.put(rs.getObject(1), rs.getRow());
                 }
             }
@@ -128,35 +135,21 @@ public class MetaData {
     }
 
     /**
-     *
      * @param connection Active connection, not closed by this function
-     * @param table Table identifier [[catalog.]schema.]table
-     * @param fieldName Field name ex: My field
+     * @param table      Table identifier [[catalog.]schema.]table
+     * @param fieldName  Field name ex: My field
      * @return {@link java.sql.Types} value
      * @throws SQLException If the column/table is not found.
      */
     public static int getFieldType(Connection connection, String table, String fieldName) throws SQLException {
         TableLocation tableLocation = TableLocation.parse(table);
-        try(ResultSet rs = connection.getMetaData().getColumns(tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(), fieldName)) {
-            if(rs.next()) {
+        try (ResultSet rs = connection.getMetaData().getColumns(tableLocation.getCatalog(), tableLocation.getSchema()
+                , tableLocation.getTable(), fieldName)) {
+            if (rs.next()) {
                 return rs.getInt("DATA_TYPE");
             }
         }
         throw new SQLException("Column or table not found");
-    }
-
-    public static List<String> getRasterColumns(Connection connection, String table) throws SQLException {
-        List<String> rasterColumns = new ArrayList<>();
-        DatabaseMetaData meta = connection.getMetaData();
-        TableLocation location = TableLocation.parse(table);
-        try(ResultSet rs = meta.getColumns(location.getCatalog(), location.getSchema(), location.getTable(), "")) {
-            while(rs.next()) {
-                if("RASTER".equalsIgnoreCase(rs.getString("TYPE_NAME"))) {
-                    rasterColumns.add(rs.getString("COLUMN_NAME"));
-                }
-            }
-        }
-        return rasterColumns;
     }
 
     /**
@@ -164,7 +157,7 @@ public class MetaData {
      * @return True if the type is numeric
      */
     public static boolean isNumeric(int sqlType) {
-        switch(sqlType) {
+        switch (sqlType) {
             case Types.NUMERIC:
             case Types.DECIMAL:
             case Types.BIGINT:
@@ -185,7 +178,7 @@ public class MetaData {
      * @return True if the type is alphanumeric
      */
     public static boolean isAlphaNumeric(int sqlType) {
-        switch(sqlType) {
+        switch (sqlType) {
             case Types.NUMERIC:
             case Types.DECIMAL:
             case Types.BIGINT:
@@ -207,7 +200,8 @@ public class MetaData {
 
     /**
      * Check if two table identifier are equals
-     * @param tableIdentifier First table identifier
+     *
+     * @param tableIdentifier      First table identifier
      * @param otherTableIdentifier Second table identifier
      * @return True if there are equal.
      */
@@ -215,23 +209,24 @@ public class MetaData {
         TableLocation tableLocation = TableLocation.parse(tableIdentifier);
         TableLocation tableLocation1 = TableLocation.parse(otherTableIdentifier);
         return (tableLocation.getSchema().isEmpty() && tableLocation1.getSchema().equalsIgnoreCase("public") ||
-                tableLocation1.getSchema().isEmpty() && tableLocation.getSchema().equalsIgnoreCase("public")  ||
-                tableLocation1.getSchema().equals(tableLocation.getSchema()))
-                && tableLocation.getTable().equals(tableLocation1.getTable());
+                tableLocation1.getSchema().isEmpty() && tableLocation.getSchema().equalsIgnoreCase("public") ||
+                tableLocation1.getSchema().equals(tableLocation.getSchema())) && tableLocation.getTable().equals
+                (tableLocation1.getTable());
     }
 
     /**
      * This method is used when user type a sql value in a field.
+     *
      * @param userInput User field input
-     * @param sqlType Database column type {@link java.sql.Types}
+     * @param sqlType   Database column type {@link java.sql.Types}
      * @return Casted object
      * @throws NumberFormatException
      */
     public static Object castToSQLType(String userInput, int sqlType) throws NumberFormatException {
-        if(userInput == null || userInput.isEmpty()) {
+        if (userInput == null || userInput.isEmpty()) {
             return null;
         }
-        switch(sqlType) {
+        switch (sqlType) {
             case Types.CHAR:
             case Types.NCHAR:
             case Types.VARCHAR:
@@ -247,8 +242,8 @@ public class MetaData {
                 return Long.parseLong(userInput);
             case Types.BIT:
             case Types.BOOLEAN:
-                return userInput.equalsIgnoreCase(I18N.tr("true")) || userInput.equalsIgnoreCase(I18N.tr("yes"))
-                        || !(userInput.equalsIgnoreCase(I18N.tr("false")) || userInput.equalsIgnoreCase(I18N.tr("no")))
+                return userInput.equalsIgnoreCase(I18N.tr("true")) || userInput.equalsIgnoreCase(I18N.tr("yes")) || !
+                        (userInput.equalsIgnoreCase(I18N.tr("false")) || userInput.equalsIgnoreCase(I18N.tr("no")))
                         || new BigDecimal(userInput).signum() != 0;
             case Types.SMALLINT:
             case Types.TINYINT:
@@ -282,8 +277,8 @@ public class MetaData {
     /**
      * Find the primary key name of the table.
      *
-     * @param connection Connection
-     * @param table      Table location
+     * @param connection   Connection
+     * @param table        Table location
      * @param systemColumn If true system column are also returned if no primary key is found
      * @return The primary key name or empty
      * @throws SQLException
@@ -302,7 +297,8 @@ public class MetaData {
                 boolean isH2 = JDBCUtilities.isH2DataBase(meta);
                 String systemRowName = getSystemLongRowIdentifier(isH2);
                 // Check if this system column is available
-                try (ResultSet rs = st.executeQuery("select "+systemRowName+" from " + tableLocation + " LIMIT 0")) {
+                try (ResultSet rs = st.executeQuery("select " + systemRowName + " from " + tableLocation + " LIMIT " +
+                        "0")) {
                     pkName = systemRowName;
                 } catch (SQLException ex) {
                     //Ignore, key does not exists
@@ -314,34 +310,36 @@ public class MetaData {
 
     /**
      * Show known column meta data using JDBC
-     * @param meta DatabaseMetaData instance
+     *
+     * @param meta           DatabaseMetaData instance
      * @param tableReference Table identifier
-     * @param col Column index [1-n]
+     * @param col            Column index [1-n]
      * @return Localised column information
      * @throws SQLException
      */
-    public static String getColumnInformations(DatabaseMetaData meta, String tableReference, int col) throws SQLException {
+    public static String getColumnInformations(DatabaseMetaData meta, String tableReference, int col) throws
+            SQLException {
         TableLocation table = TableLocation.parse(tableReference);
         StringBuilder infos = new StringBuilder();
-        try(ResultSet rs = meta.getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
+        try (ResultSet rs = meta.getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
             while (rs.next()) {
-                if(rs.getInt("ORDINAL_POSITION") == col) {
-                    infos.append(I18N.tr("\nField name :\t{0}\n",rs.getString("COLUMN_NAME")));
-                    infos.append(I18N.tr("Field type :\t{0}\n",rs.getString("TYPE_NAME")));
+                if (rs.getInt("ORDINAL_POSITION") == col) {
+                    infos.append(I18N.tr("\nField name :\t{0}\n", rs.getString("COLUMN_NAME")));
+                    infos.append(I18N.tr("Field type :\t{0}\n", rs.getString("TYPE_NAME")));
                     String remarks = rs.getString("REMARKS");
-                    if(remarks != null && !remarks.isEmpty()) {
-                        infos.append(I18N.tr("Field remarks :\t{0}\n",remarks));
+                    if (remarks != null && !remarks.isEmpty()) {
+                        infos.append(I18N.tr("Field remarks :\t{0}\n", remarks));
                     }
                     int columnSize = rs.getInt("COLUMN_SIZE");
-                    if(!rs.wasNull() && Integer.MAX_VALUE > columnSize) {
+                    if (!rs.wasNull() && Integer.MAX_VALUE > columnSize) {
                         infos.append(I18N.tr("Size :\t{0}\n", columnSize));
                     }
                     int decimalDigits = rs.getInt("DECIMAL_DIGITS");
-                    if(!rs.wasNull() && Integer.MAX_VALUE > decimalDigits) {
+                    if (!rs.wasNull() && Integer.MAX_VALUE > decimalDigits) {
                         infos.append(I18N.tr("Decimal digits :\t{0}\n", decimalDigits));
                     }
                     int nullable = rs.getInt("NULLABLE");
-                    if(!rs.wasNull()) {
+                    if (!rs.wasNull()) {
                         switch (nullable) {
                             case DatabaseMetaData.columnNoNulls:
                                 // JDBC says might not allow <code>NULL</code> values
@@ -361,13 +359,12 @@ public class MetaData {
             }
         }
         infos.append(I18N.tr("Constraints :\n"));
-        try(ResultSet rs = meta.getIndexInfo(table.getCatalog(), table.getSchema(), table.getTable(), false, false)) {
+        try (ResultSet rs = meta.getIndexInfo(table.getCatalog(), table.getSchema(), table.getTable(), false, false)) {
             while (rs.next()) {
-                if(rs.getInt("ORDINAL_POSITION") == col) {
+                if (rs.getInt("ORDINAL_POSITION") == col) {
                     String filter = rs.getString("FILTER_CONDITION");
-                    if(filter != null && !filter.isEmpty()) {
-                        infos.append(I18N.tr("\t{0} :\t{1}\n",
-                                rs.getString("INDEX_NAME"),filter));
+                    if (filter != null && !filter.isEmpty()) {
+                        infos.append(I18N.tr("\t{0} :\t{1}\n", rs.getString("INDEX_NAME"), filter));
                     }
                     short type = rs.getShort("TYPE");
                     switch (type) {
@@ -389,21 +386,21 @@ public class MetaData {
         }
         return infos.toString();
     }
-    
+
     /**
      * Retrieves the table type available for a given table.
-     * 
+     *
      * @param connection Database connection
-     * @param tableName The table of the table
+     * @param tableName  The table of the table
      * @return the type of the table
-     * @throws SQLException 
+     * @throws SQLException
      */
     public static TableType getTableType(Connection connection, String tableName) throws SQLException {
         TableLocation tableLoc = TableLocation.parse(tableName);
-        try (ResultSet rs = connection.getMetaData().getTables(tableLoc.getCatalog(), tableLoc.getSchema(),
-                tableLoc.getTable(), null)) {
+        try (ResultSet rs = connection.getMetaData().getTables(tableLoc.getCatalog(), tableLoc.getSchema(), tableLoc
+                .getTable(), null)) {
             while (rs.next()) {
-                String type = rs.getString(4).toUpperCase();                
+                String type = rs.getString(4).toUpperCase();
                 switch (type) {
                     case "TABLE":
                         return TableType.TABLE;

@@ -119,7 +119,8 @@ public final class OwsMapContext extends BeanMapContext {
             try {
                 try (Connection connection = dataManager.getDataSource().getConnection()) {
                     List<String> geoFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableRef));
-                    List<String> rasterFields = MetaData.getRasterColumns(connection, tableRef);
+                    List<String> rasterFields = SFSUtilities.getRasterFields(connection, TableLocation.parse
+                            (tableRef));
                     if (!geoFields.isEmpty() || !rasterFields.isEmpty()) {
                         return new Layer(layerName, tableRef, dataManager);
                     } else {

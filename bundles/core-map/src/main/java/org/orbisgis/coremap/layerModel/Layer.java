@@ -237,7 +237,7 @@ public class Layer extends BeanLayer {
             return false;
         }
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            return !MetaData.getRasterColumns(connection, getTableReference()).isEmpty();
+            return !SFSUtilities.getRasterFields(connection, TableLocation.parse(getTableReference())).isEmpty();
         } catch (SQLException ex) {
             throw new LayerException(I18N.tr("Error while fetching source MetaData"));
         }

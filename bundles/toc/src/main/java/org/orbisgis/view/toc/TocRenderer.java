@@ -192,7 +192,7 @@ public class TocRenderer extends TreeLaFRenderer {
             } else {
                 if (layer.isStream()) {
                     return TocIcon.getIcon("wms_layer");
-                } else {
+                } else if(layer.isVectorial()) {
                     if(!tableGeomType.containsKey(layer.getTableReference())) {
                         tableGeomType.put(layer.getTableReference(), -2);
                         if(!fetchingTableIcons.getAndSet(true)) {
@@ -233,6 +233,9 @@ public class TocRenderer extends TreeLaFRenderer {
                             }
                             */
                     }
+                } else {
+                    // Raster
+                    return TocIcon.getIcon("image");
                 }
             }
         } catch (Exception ex) {

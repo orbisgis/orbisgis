@@ -531,7 +531,7 @@ public abstract class AbstractRowSet extends BaseRowSet implements SpatialResult
         if(cell instanceof Array) {
             return (Array)cell;
         } else {
-            throw new SQLException("Not instance of Array class");
+            throw new SQLException("Not instance of Array class ("+(cell.getClass().getName())+"");
         }
     }
 

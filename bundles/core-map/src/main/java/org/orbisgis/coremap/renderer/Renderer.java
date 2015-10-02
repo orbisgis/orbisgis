@@ -34,11 +34,17 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.sql.Array;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.coremap.ui.editors.map.tool.Rectangle2DDouble;
 import org.slf4j.*;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.coremap.layerModel.ILayer;
@@ -181,7 +187,7 @@ public abstract class Renderer {
                 ProgressMonitor rulesProgress = pm.startTask(rList.size());
                 for (Rule r : rList) {
                     beginLayer(r.getName());
-                    try(ResultSetProviderFactory.ResultSetProvider resultSetProvider = layerDataFactory.getResultSetProvider(layer, rulesProgress)) {
+                    try(ResultSetProviderFactory.ResultSetProvider resultSetProvider = layerDataFactory.getResultSetProvider(layer, new String[0],rulesProgress)) {
                         try(SpatialResultSet rs = resultSetProvider.execute(rulesProgress, extent)) {
                             int pkColumn = rs.findColumn(resultSetProvider.getPkName());
                             int fieldID = rs.getMetaData().unwrap(SpatialResultSetMetaData.class).getFirstGeometryFieldIndex();
@@ -349,10 +355,9 @@ public abstract class Renderer {
                                                     drawStreamLayer(g2, layer, width, height, extent, pm);
                                                 } else if(layer.isVectorial()) {
                                                     drawVector(g2, mt, layer, pm);
+                                                } else if(layer.isRaster()) {
+                                                    drawRaster(g2, mt, layer, width, height, pm);
                                                 }
-                                                // TODO
-                                                // if (layer.isRaster()) {
-                                                // this.drawRaster(g2, mt, layer,width,height, pm, perm);
                                         } catch (SQLException | LayerException e) {
                                                 LOGGER.error(I18N.tr("Layer {0} not drawn",layer.getName()), e);
                                         }
@@ -410,49 +415,78 @@ public abstract class Renderer {
      * @param pm
      */
     private void drawRaster(Graphics2D g2, MapTransform mt, ILayer layer, int width, int height, ProgressMonitor pm) throws SQLException {
-        //TODO Raster with h2
-        throw new UnsupportedOperationException("Not supported yet.");
-        /*
-
         GraphicsConfiguration configuration = null;
         boolean isHeadLess = GraphicsEnvironment.isHeadless();
         if (!isHeadLess) {
             configuration = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
         }
-        DataSource ds = layer.getTableReference();
-        long rowCount = ds.getRowCount();
-        for (int i = 0; i < rowCount; i++) {
-            GeoRaster geoRaster = ds.getRaster(i);
-            Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
-            BufferedImage layerImage;
-            if (isHeadLess) {
-                layerImage = new BufferedImage(width, height,
-                        BufferedImage.TYPE_INT_ARGB);
+        ResultSetProviderFactory layerDataFactory = rsProvider;
+        if(layerDataFactory == null) {
+            if(layer.getDataManager() != null && layer.getDataManager().getDataSource() != null) {
+                layerDataFactory = new DefaultResultSetProviderFactory();
             } else {
-                layerImage = configuration.createCompatibleImage(width,
-                        height, BufferedImage.TYPE_INT_ARGB);
+                throw new SQLException("There is neither a ResultSetProviderFactory instance nor available DataSource in the vectorial layer");
             }
-
-            // part or all of the GeoRaster is visible
-            Rectangle2DDouble layerPixelEnvelope = mt.toPixel(layerEnvelope);
-            Graphics2D gLayer = layerImage.createGraphics();
-
-            
-            try {
-                ColorModel cm = geoRaster.getDefaultColorModel();
-                Image dataImage = geoRaster.getImage(cm);
-                gLayer.drawImage(dataImage, (int) layerPixelEnvelope.getMinX(),
-                        (int) layerPixelEnvelope.getMinY(),
-                        (int) layerPixelEnvelope.getWidth() + 1,
-                        (int) layerPixelEnvelope.getHeight() + 1, null);
-
-            } catch (IOException ex) {
-                layerImage = createEmptyImage(width, height);
-            }
-
-            g2.drawImage(layerImage, 0, 0, null);
         }
-         */
+        beginLayer(layer.getName());
+        // Raster MetaData need to be queried along with Raster content
+        try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
+            List<String> rasterFields =
+                    SFSUtilities.getRasterFields(connection, TableLocation.parse(layer.getTableReference()));
+            if(rasterFields.isEmpty()) {
+                LOGGER.error("The table " + layer.getTableReference() + " does not contain raster fields");
+                return;
+            }
+            String rasterField = rasterFields.get(0);
+            String[] sqlFields = new String[]{"ST_METADATA("+TableLocation.quoteIdentifier(rasterField)+") raster_metadata"};
+            try (ResultSetProviderFactory.ResultSetProvider resultSetProvider = layerDataFactory.getResultSetProvider(layer,sqlFields, pm)) {
+                try (SpatialResultSet rs = resultSetProvider.execute(pm, mt.getAdjustedExtent())) {
+                    ProgressMonitor rowSetProgress;
+                    // Read row count for progress monitor
+                    if (rs instanceof ReadRowSet) {
+                        rowSetProgress = pm.startTask("Drawing " + layer.getName(), ((ReadRowSet) rs).getRowCount());
+                    } else {
+                        rowSetProgress = pm.startTask("Drawing " + layer.getName(), 1);
+                    }
+                    while (rs.next()) {
+                        Object[] arMeta = (Object[])rs.getObject("raster_metadata");
+
+                        rowSetProgress.endTask();
+                    }
+                    //        DataSource ds = layer.getTableReference();
+                    //        long rowCount = ds.getRowCount();
+                    //        for (int i = 0; i < rowCount; i++) {
+                    //            GeoRaster geoRaster = ds.getRaster(i);
+                    //            Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
+                    //            BufferedImage layerImage;
+                    //            if (isHeadLess) {
+                    //                layerImage = new BufferedImage(width, height,
+                    //                        BufferedImage.TYPE_INT_ARGB);
+                    //            } else {
+                    //                layerImage = configuration.createCompatibleImage(width,
+                    //                        height, BufferedImage.TYPE_INT_ARGB);
+                    //            }
+                    //
+                    //            // part or all of the GeoRaster is visible
+                    //            Rectangle2DDouble layerPixelEnvelope = mt.toPixel(layerEnvelope);
+                    //            Graphics2D gLayer = layerImage.createGraphics();
+                    //
+                    //
+                    //            try {
+                    //                ColorModel cm = geoRaster.getDefaultColorModel();
+                    //                Image dataImage = geoRaster.getImage(cm);
+                    //                gLayer.drawImage(dataImage, (int) layerPixelEnvelope.getMinX(),
+                    //                        (int) layerPixelEnvelope.getMinY(),
+                    //                        (int) layerPixelEnvelope.getWidth() + 1,
+                    //                        (int) layerPixelEnvelope.getHeight() + 1, null);
+                    //
+                    //            } catch (IOException ex) {
+                    //                layerImage = createEmptyImage(width, height);
+                    //            }
+                    //g2.drawImage(layerImage, 0, 0, null);
+                }
+            }
+        }
     }
     
     /**
