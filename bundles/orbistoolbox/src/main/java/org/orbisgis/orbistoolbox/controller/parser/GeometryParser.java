@@ -42,7 +42,7 @@ public class GeometryParser implements Parser{
     public Input parseInput(Field f, String processId) {
         //Instantiate the Geometry and its formats
         GeometryAttribute geometryAttribute = f.getAnnotation(GeometryAttribute.class);
-        String[] extensions = {"wkt", "wkb", "geometry"};
+        String[] extensions = {"wkt", "geometry"};
         List<Format> formatList = FormatFactory.getFormatsFromExtensions(extensions);
         formatList.get(0).setDefaultFormat(true);
         GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(geometryAttribute, formatList);
@@ -68,7 +68,7 @@ public class GeometryParser implements Parser{
     public Output parseOutput(Field f, String processId) {
         //Instantiate the GeoData and its formats
         GeometryAttribute geometryAttribute = f.getAnnotation(GeometryAttribute.class);
-        String[] extensions = {"wkt", "wkb", "geometry"};
+        String[] extensions = {"wkt", "geometry"};
         List<Format> formatList = FormatFactory.getFormatsFromExtensions(extensions);
         formatList.get(0).setDefaultFormat(true);
         GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(geometryAttribute, formatList);

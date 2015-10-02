@@ -76,14 +76,15 @@ public class GeometryUI implements DataUI {
         JComboBox<ContainerItem> comboBox = new JComboBox<>();
         for(Format format : geometryData.getFormats()){
             String ext = FormatFactory.getFormatExtension(format);
-            if(extensionMap.get(ext) != null) {
-                comboBox.addItem(new ContainerItem<>(ext, extensionMap.get(ext)+" (*."+ext+")"));
-            }
-            else{
-                comboBox.addItem(new ContainerItem<>(ext, ext));
-            }
-            if(format.isDefaultFormat()){
-                comboBox.setSelectedIndex(comboBox.getItemCount()-1);
+            if(!ext.equals(FormatFactory.GEOMETRY_EXTENSION)) {
+                if (extensionMap.get(ext) != null) {
+                    comboBox.addItem(new ContainerItem<>(ext, extensionMap.get(ext) + " (*." + ext + ")"));
+                } else {
+                    comboBox.addItem(new ContainerItem<>(ext, ext));
+                }
+                if (format.isDefaultFormat()) {
+                    comboBox.setSelectedIndex(comboBox.getItemCount() - 1);
+                }
             }
         }
         panel.add(comboBox, "wrap");
@@ -117,36 +118,29 @@ public class GeometryUI implements DataUI {
         DescriptionType descriptionType = (DescriptionType) comboBox.getClientProperty("inputOrOutput");
         ContainerItem container = (ContainerItem) comboBox.getSelectedItem();
         JComponent dataComponent;
-        if(container.getKey().equals(FormatFactory.WKB_DESCRIPTION)){
-            Map<String [], String> mapJson = new HashMap<>();
-            mapJson.put(
-                    new String[]{container.getKey().toString()},
-                    container.getLabel().replace(" (*." + container.getKey() + ")", ""));
-            dataComponent = createBrowsePanel(mapJson, dataMap, uri, descriptionType);
-        }
-        else{
-            //Instantiate the component
-            dataComponent = new JTextArea(6, 20);
-            dataComponent.setBorder(BorderFactory.createLineBorder(Color.lightGray));
-            //Put the data type, the dataMap and the uri as properties
-            Document doc = ((JTextArea) dataComponent).getDocument();
-            doc.putProperty("dataMap", comboBox.getClientProperty("dataMap"));
-            doc.putProperty("uri", comboBox.getClientProperty("uri"));
-            //Set the default value and adds the listener for saving the value set by the user
-            ((JTextArea)dataComponent).setText((String) dataMap.get(uri));
-            doc.addDocumentListener(EventHandler.create(
-                    DocumentListener.class,
-                    this,
-                    "onDocumentChanged",
-                    "document",
-                    "insertUpdate"));
-            doc.addDocumentListener(EventHandler.create(
-                    DocumentListener.class,
-                    this,
-                    "onDocumentChanged",
-                    "document",
-                    "removeUpdate"));
-        }
+
+        //Instantiate the component
+        dataComponent = new JTextArea(6, 20);
+        dataComponent.setBorder(BorderFactory.createLineBorder(Color.lightGray));
+        //Put the data type, the dataMap and the uri as properties
+        Document doc = ((JTextArea) dataComponent).getDocument();
+        doc.putProperty("dataMap", comboBox.getClientProperty("dataMap"));
+        doc.putProperty("uri", comboBox.getClientProperty("uri"));
+        //Set the default value and adds the listener for saving the value set by the user
+        ((JTextArea)dataComponent).setText((String) dataMap.get(uri));
+        doc.addDocumentListener(EventHandler.create(
+                DocumentListener.class,
+                this,
+                "onDocumentChanged",
+                "document",
+                "insertUpdate"));
+        doc.addDocumentListener(EventHandler.create(
+                DocumentListener.class,
+                this,
+                "onDocumentChanged",
+                "document",
+                "removeUpdate"));
+
         //Adds to the dataField the dataComponent
         JPanel panel = (JPanel) comboBox.getClientProperty("dataField");
         panel.removeAll();

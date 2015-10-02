@@ -39,26 +39,23 @@ public class FormatFactory {
     public static final String GEOJSON_EXTENSION = "geojson";
     public static final String SQL_EXTENSION = "sqlTable";
     public static final String WKT_EXTENSION = "wkt";
-    public static final String WKB_EXTENSION = "wkb";
+    public static final String GEOMETRY_EXTENSION = "geometry";
     public static final String OTHER_EXTENSION = "*";
 
     public static final String SHAPEFILE_MIMETYPE = "application/octet-stream";
     public static final String GEOJSON_MIMETYPE = "application/json";
     public static final String SQL_MIMETYPE = "custom/sql";
     public static final String WKT_MIMETYPE = "custom/wkt";
-    public static final String WKB_MIMETYPE = "custom/wkb";
     public static final String OTHER_MIMETYPE = "custom/other";
 
     public static final String SHAPEFILE_URI = "https://tools.ietf.org/html/rfc2046";
     public static final String GEOJSON_URI = "https://tools.ietf.org/html/rfc4627";
     public static final String SQL_URI = "";
     public static final String WKT_URI = "";
-    public static final String WKB_URI = "";
     public static final String OTHER_URI = "";
 
     public static final String SQL_DESCRIPTION = "SQL table";
     public static final String WKT_DESCRIPTION = "Well-Known Text";
-    public static final String WKB_DESCRIPTION = "Well-Known Binary";
 
     /**
      * Returns the Format from the given extension. If the extension isn't recognize, return null.
@@ -74,8 +71,6 @@ public class FormatFactory {
                     return new Format(GEOJSON_MIMETYPE, URI.create(GEOJSON_URI));
                 case SQL_EXTENSION:
                     return new Format(SQL_MIMETYPE, URI.create(SQL_URI));
-                case WKB_EXTENSION:
-                    return new Format(WKB_MIMETYPE, URI.create(WKB_URI));
                 case WKT_EXTENSION:
                     return new Format(WKT_MIMETYPE, URI.create(WKT_URI));
                 case OTHER_EXTENSION:
@@ -130,8 +125,6 @@ public class FormatFactory {
                 return SQL_DESCRIPTION;
             case WKT_MIMETYPE:
                 return WKT_DESCRIPTION;
-            case WKB_MIMETYPE:
-                return WKB_DESCRIPTION;
             case OTHER_MIMETYPE:
                 return OTHER_EXTENSION;
             default:

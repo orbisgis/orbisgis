@@ -148,9 +148,12 @@ public class LiteralDataUI implements DataUI {
             LiteralData literalData = (LiteralData)input.getDataDescription();
             //JComboBox with the input type
             JComboBox<String> comboBox = new JComboBox<>();
+            comboBox.addItem(literalData.getValue().getDataType().name());
+            /*
             for(LiteralDataDomain ldd : literalData.getLiteralDomainType()){
                 comboBox.addItem(ldd.getDataType().name().toLowerCase());
             }
+            */
             panel.add(comboBox, "wrap");
 
             //JPanel containing the component to set the input value
@@ -211,7 +214,9 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
                 dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
                 //Set the default value and adds the listener for saving the value set by the user
-                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
+                if(dataMap.get(uri)!=null) {
+                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
@@ -226,7 +231,9 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
                 dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
                 //Set the default value and adds the listener for saving the value set by the user
-                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
+                if(dataMap.get(uri)!=null) {
+                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
@@ -235,13 +242,15 @@ public class LiteralDataUI implements DataUI {
                 break;
             case LONG:
                 //Instantiate the component
-                dataComponent = new JSpinner(new SpinnerNumberModel(0, Long.MIN_VALUE, Long.MAX_VALUE, 1));
+                dataComponent = new JSpinner(new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
                 dataComponent.putClientProperty("type", DataType.LONG);
                 dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
                 dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
                 //Set the default value and adds the listener for saving the value set by the user
-                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
+                if(dataMap.get(uri)!=null) {
+                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
@@ -256,7 +265,9 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
                 dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
                 //Set the default value and adds the listener for saving the value set by the user
-                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
+                if(dataMap.get(uri)!=null) {
+                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
@@ -271,7 +282,9 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
                 dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
                 //Set the default value and adds the listener for saving the value set by the user
-                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
+                if(dataMap.get(uri)!=null) {
+                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
@@ -280,13 +293,15 @@ public class LiteralDataUI implements DataUI {
                 break;
             case DOUBLE:
                 //Instantiate the component
-                dataComponent = new JSpinner(new SpinnerNumberModel(0, Double.MIN_VALUE, Double.MAX_VALUE, 1));
+                dataComponent = new JSpinner(new SpinnerNumberModel(0D, Integer.MIN_VALUE, Integer.MAX_VALUE, 0.1));
                 //Put the data type, the dataMap and the uri as properties
                 dataComponent.putClientProperty("type", DataType.DOUBLE);
                 dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                dataComponent.putClientProperty("uri", comboBox.getClientProperty("uri"));
                 //Set the default value and adds the listener for saving the value set by the user
-                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
+                if(dataMap.get(uri)!=null) {
+                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
@@ -295,13 +310,15 @@ public class LiteralDataUI implements DataUI {
                 break;
             case FLOAT:
                 //Instantiate the component
-                dataComponent = new JSpinner(new SpinnerNumberModel(0, Float.MIN_VALUE, Float.MAX_VALUE, 1));
+                dataComponent = new JSpinner(new SpinnerNumberModel(0F, Float.MIN_VALUE, Float.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
                 dataComponent.putClientProperty("type", DataType.FLOAT);
                 dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
                 dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
                 //Set the default value and adds the listener for saving the value set by the user
-                ((JSpinner)dataComponent).setValue(dataMap.get(uri));
+                if(dataMap.get(uri)!=null) {
+                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,

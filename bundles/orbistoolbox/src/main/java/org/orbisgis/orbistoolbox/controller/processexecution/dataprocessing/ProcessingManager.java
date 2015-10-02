@@ -51,6 +51,7 @@ public class ProcessingManager {
         this.toolBox = toolBox;
         classProcessingMap = new HashMap<>();
         classProcessingMap.put(GeoData.class, new GeoDataProcessing());
+        classProcessingMap.put(GeometryData.class, new GeometryProcessing());
     }
 
     /**
