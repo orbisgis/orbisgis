@@ -42,11 +42,11 @@ public interface ProcessingData {
      * @param inputOrOutput Input or Output to preProcess.
      * @param executionWorker The executionWorker which execute the process.
      */
-    void preProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker);
+    void preProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker) throws Exception;
     /**
      * PostProcess the data.
      * @param inputOrOutput Input or Output to preProcess.
      * @param executionWorker The executionWorker which execute the process.
      */
-    void postProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker);
+    void postProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker) throws Exception;
 }

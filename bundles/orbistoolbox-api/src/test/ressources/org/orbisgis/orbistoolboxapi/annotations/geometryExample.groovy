@@ -22,7 +22,11 @@ import org.orbisgis.orbistoolboxapi.annotations.input.LiteralDataInput
 import org.orbisgis.orbistoolboxapi.annotations.model.Process
 import org.orbisgis.orbistoolboxapi.annotations.input.GeometryInput
 import org.orbisgis.orbistoolboxapi.annotations.output.GeometryOutput
-import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Geometry
+import groovy.sql.Sql
+import java.sql.PreparedStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
 
 /**
  * This example script show how to use the Geometry input and output with a buffer.
@@ -31,8 +35,8 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 
 @GeometryInput(
-        title = "input shapeFile",
-        resume = "Input ShapeFile "
+        title = "input geometry",
+        resume = "Input geometry "
 )
 Geometry inputGeometry
 
@@ -43,12 +47,15 @@ Geometry inputGeometry
 double bufferSize
 
 @GeometryOutput(
-        title = "output shapeFile",
-        resume = "Output ShapeFile"
+        title = "output geometry",
+        resume = "Output geometry"
 )
-String outputGeometry
+Geometry outputGeometry
 
 @Process(title = "Buffer")
 def processing() {
-        outputGeometry = ST_Buffer(inputGeometry, bufferSize);
+    sql = Sql.newInstance(grv_ds)
+    String query = "SELECT ST_Buffer(?,?);"
+    params = new ArrayList([inputGeometry, bufferSize])
+    outputGeometry = sql.firstRow(query, params).getAt(0)
 }

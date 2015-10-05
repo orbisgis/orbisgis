@@ -24,7 +24,6 @@ import com.vividsolutions.jts.io.*;
 import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionWorker;
 import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
-import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.Map;
@@ -40,7 +39,7 @@ public class GeometryProcessing implements ProcessingData {
     }
 
     @Override
-    public void preProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker) {
+    public void preProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker) throws Exception {
         Map<URI, Object> dataMap = executionWorker.getDataMap();
         if(inputOrOutput instanceof Input) {
             Input input = (Input) inputOrOutput;
@@ -48,13 +47,9 @@ public class GeometryProcessing implements ProcessingData {
             for (Format f : geometryData.getFormats()){
                 if(f.isDefaultFormat()){
                     if(f.getMimeType().equals(FormatFactory.WKT_MIMETYPE)){
-                        try {
-                            WKTReader reader = new WKTReader();
-                            String wkt = dataMap.get(input.getIdentifier()).toString();
-                            dataMap.put(input.getIdentifier(), "ST_GeomFromText('"+wkt+"')");
-                        } catch (ParseException e) {
-                            LoggerFactory.getLogger(GeometryProcessing.class).error(e.getMessage());
-                        }
+                        WKTReader reader = new WKTReader();
+                        String wkt = dataMap.get(input.getIdentifier()).toString();
+                        dataMap.put(input.getIdentifier(), reader.read(wkt));
                     }
                 }
             }
@@ -62,20 +57,16 @@ public class GeometryProcessing implements ProcessingData {
     }
 
     @Override
-    public void postProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker) {
-        System.out.println("postP");
+    public void postProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker) throws Exception {
         Map<URI, Object> dataMap = executionWorker.getDataMap();
         if(inputOrOutput instanceof Output) {
-            System.out.println("out");
             Output output = (Output) inputOrOutput;
             GeometryData geometryData = (GeometryData)output.getDataDescription();
             for (Format f : geometryData.getFormats()){
                 if(f.isDefaultFormat()){
                     if(f.getMimeType().equals(FormatFactory.WKT_MIMETYPE)){
-                        System.out.println("WKT");
                         WKTWriter writer = new WKTWriter();
                         Geometry geom = (Geometry)dataMap.get(output.getIdentifier());
-                        System.out.println(geom);
                         dataMap.put(output.getIdentifier(), writer.write(geom));
                     }
                 }

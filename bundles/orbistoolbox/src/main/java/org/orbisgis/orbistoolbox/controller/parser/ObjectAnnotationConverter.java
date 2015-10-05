@@ -268,7 +268,7 @@ public class ObjectAnnotationConverter {
             return annot.identifier();
         }
         else{
-            return "orbisgis:wps:" + annot.title();
+            return annot.title();
         }
     }
 }

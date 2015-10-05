@@ -48,7 +48,7 @@ public class GeoDataProcessing implements ProcessingData{
         return GeoData.class;
     }
 
-    public void preProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker) {
+    public void preProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker) throws Exception {
         Map<URI, Object> dataMap = executionWorker.getDataMap();
         ToolBox toolBox = executionWorker.getToolBox();
         //If the descriptionType is an input, try to import the input file in OrbisGIS
@@ -63,11 +63,7 @@ public class GeoDataProcessing implements ProcessingData{
                         //Load the geoFile in OrbisGIS and put in the inputDataMap the table name.
                         File geoFile = new File((String) dataMap.get(input.getIdentifier()));
                         String tableName = null;
-                        try {
-                            tableName = toolBox.getDataManager().registerDataSource(geoFile.toURI());
-                        } catch (SQLException e) {
-                            LoggerFactory.getLogger(GeoDataProcessing.class).error(e.getMessage());
-                        }
+                        tableName = toolBox.getDataManager().registerDataSource(geoFile.toURI());
                         dataMap.put(input.getIdentifier(), tableName);
                     }
                 }
@@ -86,7 +82,7 @@ public class GeoDataProcessing implements ProcessingData{
         }
     }
 
-    public void postProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker){
+    public void postProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker) throws Exception{
         Map<URI, Object> dataMap = executionWorker.getDataMap();
         ToolBox toolBox = executionWorker.getToolBox();
         if (inputOrOutput instanceof Output) {
@@ -104,14 +100,10 @@ public class GeoDataProcessing implements ProcessingData{
                         DriverFunction export =
                                 toolBox.getDriverFunctionContainer().getExportDriverFromExt(
                                 extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-                        try {
-                            export.exportTable(toolBox.getDataManager().getDataSource().getConnection(),
-                                    dataMap.get(uri).toString(),
-                                    new File(saveMap.get(uri).toString()),
-                                    new H2GISProgressMonitor(executionWorker.getProgressMonitor()));
-                        } catch (SQLException|IOException e) {
-                            LoggerFactory.getLogger(GeoDataProcessing.class).error(e.getMessage());
-                        }
+                        export.exportTable(toolBox.getDataManager().getDataSource().getConnection(),
+                                dataMap.get(uri).toString(),
+                                new File(saveMap.get(uri).toString()),
+                                new H2GISProgressMonitor(executionWorker.getProgressMonitor()));
                         dataMap.put(uri, saveMap.get(uri));
                     }
                 }
