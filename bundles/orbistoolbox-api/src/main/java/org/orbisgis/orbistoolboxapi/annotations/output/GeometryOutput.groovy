@@ -30,8 +30,8 @@ import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
  *
  * Usage :
  *
- * @GeometryInput(
- *          title="inputTitle"
+ * @GeometryOutput(
+ *          title="outputTitle"
  *          )
  * Geometry data
  *

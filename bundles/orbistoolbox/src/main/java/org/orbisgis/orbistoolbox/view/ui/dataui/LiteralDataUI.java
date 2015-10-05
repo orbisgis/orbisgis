@@ -149,11 +149,6 @@ public class LiteralDataUI implements DataUI {
             //JComboBox with the input type
             JComboBox<String> comboBox = new JComboBox<>();
             comboBox.addItem(literalData.getValue().getDataType().name());
-            /*
-            for(LiteralDataDomain ldd : literalData.getLiteralDomainType()){
-                comboBox.addItem(ldd.getDataType().name().toLowerCase());
-            }
-            */
             panel.add(comboBox, "wrap");
 
             //JPanel containing the component to set the input value

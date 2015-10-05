@@ -64,9 +64,7 @@ public class GeometryUI implements DataUI {
             extensionMap = ToolBox.getImportableSpatialFormat();
         }
         if(inputOrOutput instanceof Output){
-            Output output = (Output)inputOrOutput;
-            geometryData = (GeometryData)output.getDataDescription();
-            extensionMap = ToolBox.getExportableSpatialFormat();
+            return new JPanel();
         }
         if(geometryData == null || extensionMap == null){
             return panel;
