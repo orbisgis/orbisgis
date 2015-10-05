@@ -28,10 +28,20 @@
  */
 package org.orbisgis.coremap.renderer;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.Array;
@@ -43,6 +53,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.vividsolutions.jts.geom.Polygon;
 import org.h2gis.utilities.RasterMetaData;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -452,6 +463,7 @@ public abstract class Renderer {
                 LOGGER.error("The table " + layer.getTableReference() + " does not contain raster fields");
                 return;
             }
+            Envelope envView = mt.getAdjustedExtent();
             String rasterField = rasterFields.get(0);
             String[] sqlFields = new String[]{"ST_METADATA("+TableLocation.quoteIdentifier(rasterField)+") raster_metadata"};
             try (ResultSetProviderFactory.ResultSetProvider resultSetProvider = layerDataFactory.getResultSetProvider(layer,sqlFields, pm)) {
@@ -477,10 +489,53 @@ public abstract class Renderer {
                                 if(lastReader == null) {
                                     lastReader = fetchImageReader(is);
                                 }
+                                //Prepare Graphics Destination
+                                BufferedImage layerImage;
+                                if (isHeadLess) {
+                                    layerImage = new BufferedImage(width, height,
+                                            BufferedImage.TYPE_INT_ARGB);
+                                } else {
+                                    layerImage = configuration.createCompatibleImage(width,
+                                            height, BufferedImage.TYPE_INT_ARGB);
+                                }
+                                Graphics2D gLayer = layerImage.createGraphics();
+                                Polygon env = metaData.convexHull();
                                 // prepare image read
                                 lastReader.setInput(is);
                                 ImageReadParam readParam = lastReader.getDefaultReadParam();
-
+                                // Compute pixel envelope source
+                                // As raster can be transformed, all corners are retrieved
+                                int[] p0 = metaData.getPixelFromCoordinate(new Coordinate(envView.getMinX(),
+                                        envView.getMinY()));
+                                int[] p1 = metaData.getPixelFromCoordinate(new Coordinate(envView.getMaxX(),
+                                        envView.getMinY()));
+                                int[] p2 = metaData.getPixelFromCoordinate(new Coordinate(envView.getMaxX(),
+                                        envView.getMaxY()));
+                                int[] p3 = metaData.getPixelFromCoordinate(new Coordinate(envView.getMinX(),
+                                        envView.getMaxY()));
+                                int minX = Math.max(0, Math.min(Math.min(Math.min(p0[0], p1[0]), p2[0]), p3[0]));
+                                int maxX = Math.min(metaData.getWidth(), Math.max(Math.max(Math.max(p0[0], p1[0]),
+                                        p2[0]), p3[0]));
+                                int minY = Math.max(0, Math.min(Math.min(Math.min(p0[1], p1[1]), p2[1]), p3[1]));
+                                int maxY = Math.min(metaData.getHeight(), Math.max(Math.max(Math.max(p0[1], p1[1]),
+                                        p2[1]), p3[1]));
+                                Rectangle envPixSource = new Rectangle(minX, minY, maxX - minX,
+                                        maxY - minY);
+                                readParam.setSourceRegion(envPixSource);
+                                // Compute pixel envelope destination
+                                Rectangle2DDouble envPixDest = mt.toPixel(env.getEnvelopeInternal());
+                                // TODO {@link ImageReadParam#setSourceSubsampling}
+                                // Acquire image fragment
+                                BufferedImage rasterImage = lastReader.read(lastReader.getMinIndex(), readParam);
+                                // Draw image in dest
+                                gLayer.drawImage(rasterImage, (int)envPixDest.getMinX(), (int)envPixDest.getMinY(),
+                                       (int)envPixDest.getWidth(), (int)envPixDest.getHeight(), null);
+                                // Transform image
+                                AffineTransform skewTransform = AffineTransform.getShearInstance(metaData.getSkewX(),
+                                        metaData.getSkewY());
+                                gLayer.transform(skewTransform);
+                                // Draw transformed image to destination graphics
+                                g2.drawImage(layerImage, 0, 0, null);
                             }
                             rowSetProgress.endTask();
                         } catch (IOException ex) {
