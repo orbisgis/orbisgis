@@ -42,7 +42,9 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import java.sql.Connection;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * EditableElement that hold a table reference.
@@ -149,8 +151,43 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
     }
 
     @Override
+    public String getNotEditableReason() {
+        if(!isOpen()) {
+            return i18n.tr("The table is closed");
+        } else {
+            try(Connection connection = dataManager.getDataSource().getConnection()) {
+                connection.setAutoCommit(false);
+                if(MetaData.getPkName(connection, tableReference, false).isEmpty()) {
+                    return i18n.tr("For data safety issues, edition is disabled when no primary key are available");
+                }
+                ReversibleRowSet rowSet = getRowSet();
+                ResultSetMetaData meta = rowSet.getMetaData();
+                for(int columnId = 1; columnId < meta.getColumnCount(); columnId++) {
+                    if(meta.isReadOnly(columnId)) {
+                        return i18n.tr("One or more column are read-only");
+                    }
+                }
+                try {
+                    // Simulate a modification of the table. If the user have no write access or
+                    // if the table does not handle modifications then an error will be raised
+                    Statement st = connection.createStatement();
+                    st.execute("DELETE FROM " + TableLocation.quoteIdentifier(tableReference) + " LIMIT 1");
+                } catch (SQLException ex) {
+                    return i18n.tr("This table is read only for the following reason ("+ex.getLocalizedMessage()+")");
+                } finally {
+                    connection.rollback();
+                }
+                return "";
+            }catch (SQLException | EditableElementException ex) {
+                logger.error(ex.getLocalizedMessage(), ex);
+                return ex.getLocalizedMessage();
+            }
+        }
+    }
+
+    @Override
     public boolean isEditable() {
-        return true;
+        return getNotEditableReason().isEmpty();
     }
 
     @Override
