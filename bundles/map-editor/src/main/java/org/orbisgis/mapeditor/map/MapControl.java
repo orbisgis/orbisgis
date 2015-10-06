@@ -42,6 +42,7 @@ import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.SelectionEvent;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
+import org.orbisgis.coremap.renderer.DefaultResultSetProviderFactory;
 import org.orbisgis.coremap.renderer.ImageRenderer;
 import org.orbisgis.coremap.renderer.Renderer;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
@@ -86,7 +87,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MapControl extends JComponent implements ContainerListener {
         //Minimal Time in ms between two intermediate paint of drawing process
-        private ResultSetProviderFactory resultSetProviderFactory = new CachedResultSetContainer();
+        private ResultSetProviderFactory resultSetProviderFactory = new DefaultResultSetProviderFactory();//new CachedResultSetContainer();
         private static final Point MAX_IMAGE_SIZE = new Point(20000, 20000);
         private static final Logger LOGGER = LoggerFactory.getLogger(MapControl.class);
         private static final I18n I18N = I18nFactory.getI18n(MapControl.class);

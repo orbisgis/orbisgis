@@ -42,6 +42,7 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.Array;
@@ -523,17 +524,20 @@ public abstract class Renderer {
                                         maxY - minY);
                                 readParam.setSourceRegion(envPixSource);
                                 // Compute pixel envelope destination
-                                Rectangle2DDouble envPixDest = mt.toPixel(env.getEnvelopeInternal());
+                                Rectangle2D envPixDest = mt.toPixel(env.getEnvelopeInternal());
+                                envPixDest = envPixDest.createIntersection(new Rectangle(0, 0, width, height));
                                 // TODO {@link ImageReadParam#setSourceSubsampling}
                                 // Acquire image fragment
                                 BufferedImage rasterImage = lastReader.read(lastReader.getMinIndex(), readParam);
+                                // Transform image
+                                AffineTransform skewTransform =
+                                        AffineTransform.getShearInstance(-1 * Math.signum(metaData.getScaleX()) *  metaData.getSkewX(),
+                                        -1 * Math.signum(metaData.getScaleY()) *  metaData.getSkewY());
+                                gLayer.transform(skewTransform);
                                 // Draw image in dest
                                 gLayer.drawImage(rasterImage, (int)envPixDest.getMinX(), (int)envPixDest.getMinY(),
-                                       (int)envPixDest.getWidth(), (int)envPixDest.getHeight(), null);
-                                // Transform image
-                                AffineTransform skewTransform = AffineTransform.getShearInstance(metaData.getSkewX(),
-                                        metaData.getSkewY());
-                                gLayer.transform(skewTransform);
+                                        (int)envPixDest.getMaxX(),  (int)envPixDest.getMaxY(), 0, 0,
+                                        rasterImage.getWidth(), rasterImage.getHeight(), null);
                                 // Draw transformed image to destination graphics
                                 g2.drawImage(layerImage, 0, 0, null);
                             }
