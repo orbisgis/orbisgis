@@ -97,11 +97,17 @@
                             <stripVersion>true</stripVersion>
                             <includeScope>provided</includeScope>
                             <!-- Jar that are not compatible with OSGi -->
-                            <excludeGroupIds>ch.qos.logback, com.fifesoft, com.miglayout, com.vividsolutions, org.postgis,
-                                org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla, com.lowagie, rhino,
-                                org.easymock, net.sf.kxml, xmlpull</excludeGroupIds>
-                            <excludeArtifactIds>pax-logging-api, slf4j-api, markdown4j, org.apache.felix.scr.ds-annotations,org.osgi.core,
-                                animal-sniffer-annotations, org.apache.felix.scr.annotations, org.osgi.compendium, cm-API</excludeArtifactIds>
+                            <excludeGroupIds>ch.qos.logback, com.fifesoft, com.miglayout, com.vividsolutions,
+                                org.postgis,
+                                org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla,
+                                com.lowagie, rhino,
+                                org.easymock, net.sf.kxml, xmlpull
+                            </excludeGroupIds>
+                            <excludeArtifactIds>pax-logging-api, slf4j-api, markdown4j,
+                                org.apache.felix.scr.ds-annotations,org.osgi.core,
+                                animal-sniffer-annotations, org.apache.felix.scr.annotations, org.osgi.compendium,
+                                cm-API, org.apache.aries.spifly.weaver-internal, org.apache.aries.spifly.core-internal
+                            </excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -162,6 +168,13 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>framework</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <!-- spifly provide a service to manage java SPI into OSGi -->
+            <groupId>org.apache.aries.spifly</groupId>
+            <artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
+            <version>1.0.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

@@ -60,6 +60,9 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageInputStreamSpi;
+import javax.imageio.spi.ImageReaderSpi;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -171,6 +174,37 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         } else {
             swingWorker.execute();
         }
+    }
+
+    /**
+     * Register ImageIO services propagated through OSGi to local ImageIO register
+     * @param imageInputStreamSpi ImageInputStream factory
+     */
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    public void addImageInputStreamSpi(ImageInputStreamSpi imageInputStreamSpi) {
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        registry.registerServiceProvider(imageInputStreamSpi, ImageInputStreamSpi.class);
+    }
+
+    public void removeImageInputStreamSpi(ImageInputStreamSpi imageInputStreamSpi) {
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        registry.deregisterServiceProvider(imageInputStreamSpi, ImageInputStreamSpi.class);
+    }
+
+
+    /**
+     * Register ImageIO services propagated through OSGi to local ImageIO register
+     * @param imageReaderSpi ImageReader factory
+     */
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    public void addImageReaderSpi(ImageReaderSpi imageReaderSpi) {
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        registry.registerServiceProvider(imageReaderSpi, ImageReaderSpi.class);
+    }
+
+    public void removeImageReaderSpi(ImageReaderSpi imageReaderSpi) {
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        registry.deregisterServiceProvider(imageReaderSpi, ImageReaderSpi.class);
     }
 
     @Reference
