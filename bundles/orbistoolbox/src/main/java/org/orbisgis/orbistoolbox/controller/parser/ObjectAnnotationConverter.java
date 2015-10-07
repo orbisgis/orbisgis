@@ -202,7 +202,16 @@ public class ObjectAnnotationConverter {
         try {
             return new GeoData(formatList);
         } catch (MalformedScriptException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
+            return null;
+        }
+    }
+
+    public static GeometryData annotationToObject(GeometryAttribute GeoDataAttribute, List<Format> formatList) {
+        try {
+            return new GeometryData(formatList);
+        } catch (MalformedScriptException e) {
+            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;
         }
     }
@@ -259,7 +268,7 @@ public class ObjectAnnotationConverter {
             return annot.identifier();
         }
         else{
-            return "orbisgis:wps:" + annot.title();
+            return annot.title();
         }
     }
 }

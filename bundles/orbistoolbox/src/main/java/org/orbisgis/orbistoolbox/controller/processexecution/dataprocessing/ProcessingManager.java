@@ -51,6 +51,7 @@ public class ProcessingManager {
         this.toolBox = toolBox;
         classProcessingMap = new HashMap<>();
         classProcessingMap.put(GeoData.class, new GeoDataProcessing());
+        classProcessingMap.put(GeometryData.class, new GeometryProcessing());
     }
 
     /**
@@ -70,7 +71,7 @@ public class ProcessingManager {
      * PreProcess the data of the given process.
      * @param executionWorker The executionWorker which execute the process.
      */
-    public void preProcessData(ExecutionWorker executionWorker){
+    public void preProcessData(ExecutionWorker executionWorker) throws Exception{
         ProcessingData prossData;
         Process process = executionWorker.getProcess();
         for(Input input : process.getInput()){
@@ -89,7 +90,7 @@ public class ProcessingManager {
      * PostProcess the data of the given process.
      * @param executionWorker The executionWorker which execute the process.
      */
-    public void postProcessData(ExecutionWorker executionWorker){
+    public void postProcessData(ExecutionWorker executionWorker) throws Exception{
         for (Field field : executionWorker.getGroovyObject().getClass().getDeclaredFields()) {
             if (field.getAnnotation(OutputAttribute.class) != null) {
                 field.setAccessible(true);
@@ -101,12 +102,7 @@ public class ProcessingManager {
                 else{
                     uri = URI.create(executionWorker.getProcess().getIdentifier() + ":output:" + field.getName());
                 }
-                try {
-                    executionWorker.getDataMap().put(uri, field.get(executionWorker.getGroovyObject()));
-                } catch (IllegalAccessException e) {
-                    executionWorker.getDataMap().put(uri, null);
-                    LoggerFactory.getLogger(ProcessingManager.class).error(e.getMessage());
-                }
+                executionWorker.getDataMap().put(uri, field.get(executionWorker.getGroovyObject()));
             }
         }
         ProcessingData prossData;
