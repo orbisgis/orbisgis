@@ -39,9 +39,11 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -522,12 +524,28 @@ public abstract class Renderer {
                                 readParam.setSourceRegion(envPixSource);
                                 // TODO {@link ImageReadParam#setSourceSubsampling}
                                 // Acquire image fragment
-                                BufferedImage rasterImage = lastReader.read(lastReader.getMinIndex(), readParam);
                                 AffineTransform rasterTransform = new AffineTransform(mt.getAffineTransform());
                                 rasterTransform.concatenate(metaData.getTransform());
+                                // Compute the pixel offset
+                                // how many pixel at pixel source are contained into 1 pixel at destination
+                                try {
+                                    AffineTransform invTransf = rasterTransform.createInverse();
+                                    int pixelWidth = (int)Math.floor(invTransf.transform(new Point(1, 0), null).getX()
+                                            - invTransf.transform(new Point(0, 0), null).getX());
+                                    int pixelHeight = (int)Math.floor(invTransf.transform(new Point(0, 1), null).getY()
+                                            - invTransf.transform(new Point(0, 0), null).getY());
+                                    if(pixelWidth > 1 || pixelHeight > 1) {
+                                        // Renderer does not need all pixels from source. Then skip some pixels to
+                                        // get a smaller image to process.
+                                        readParam.setSourceSubsampling(pixelWidth, pixelHeight, minX, minY);
+                                    }
+                                } catch (NoninvertibleTransformException ex) {
+                                    // Nothing
+                                }
                                 final AffineTransform originalTransform = g2.getTransform();
                                 try {
                                     g2.setTransform(rasterTransform);
+                                    BufferedImage rasterImage = lastReader.read(lastReader.getMinIndex(), readParam);
                                     g2.drawImage(rasterImage, minX, minY, null);
                                 } finally {
                                     g2.setTransform(originalTransform);
