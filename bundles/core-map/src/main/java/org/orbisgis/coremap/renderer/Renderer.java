@@ -490,16 +490,6 @@ public abstract class Renderer {
                                 if(lastReader == null) {
                                     lastReader = fetchImageReader(is);
                                 }
-                                //Prepare Graphics Destination
-                                BufferedImage layerImage;
-                                if (isHeadLess) {
-                                    layerImage = new BufferedImage(width, height,
-                                            BufferedImage.TYPE_INT_ARGB);
-                                } else {
-                                    layerImage = configuration.createCompatibleImage(width,
-                                            height, BufferedImage.TYPE_INT_ARGB);
-                                }
-                                Graphics2D gLayer = layerImage.createGraphics();
                                 Polygon env = metaData.convexHull();
                                 // prepare image read
                                 lastReader.setInput(is);
@@ -522,61 +512,55 @@ public abstract class Renderer {
                                         p2[1]), p3[1]));
                                 Rectangle envPixSource = new Rectangle(minX, minY, maxX - minX,
                                         maxY - minY);
+                                if(!(envPixSource.width > 0 && envPixSource.height > 0)) {
+                                    continue;
+                                    // Skip this raster if there is no pixel to read
+                                }
                                 readParam.setSourceRegion(envPixSource);
                                 // Compute pixel envelope destination
+                                /*
+
+                                Rectangle2D envPixDest = mt.toPixel(new Envelope(metaData.getUpperLeftX(),
+                                        metaData.getUpperLeftX() + metaData.getWidth() ,
+                                        metaData.getUpperLeftY() - metaData.getHeight(), metaData.getUpperLeftY()));
+                                * */
                                 Rectangle2D envPixDest = mt.toPixel(env.getEnvelopeInternal());
                                 envPixDest = envPixDest.createIntersection(new Rectangle(0, 0, width, height));
+                                if(!(envPixDest.getWidth() > 0 && envPixDest.getHeight() > 0)) {
+                                    continue;
+                                    // Skip this raster if there is no pixel to write
+                                }
                                 // TODO {@link ImageReadParam#setSourceSubsampling}
                                 // Acquire image fragment
                                 BufferedImage rasterImage = lastReader.read(lastReader.getMinIndex(), readParam);
+                                // Prepare destination for transformed image
+                                // Prepare Graphics Destination
+                                BufferedImage layerImage;
+                                if (isHeadLess) {
+                                    layerImage = new BufferedImage((int)envPixDest.getWidth(), (int)envPixDest.getHeight(),
+                                            BufferedImage.TYPE_INT_ARGB);
+                                } else {
+                                    layerImage = configuration.createCompatibleImage((int)envPixDest.getWidth(),
+                                            (int)envPixDest.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                                }
+                                Graphics2D gLayer = layerImage.createGraphics();
                                 // Transform image
-                                AffineTransform skewTransform =
-                                        AffineTransform.getShearInstance(-1 * Math.signum(metaData.getScaleX()) *  metaData.getSkewX(),
-                                        -1 * Math.signum(metaData.getScaleY()) *  metaData.getSkewY());
-                                gLayer.transform(skewTransform);
-                                // Draw image in dest
-                                gLayer.drawImage(rasterImage, (int)envPixDest.getMinX(), (int)envPixDest.getMinY(),
-                                        (int)envPixDest.getMaxX(),  (int)envPixDest.getMaxY(), 0, 0,
-                                        rasterImage.getWidth(), rasterImage.getHeight(), null);
+                                mt.getScaleDenominator();
+                                AffineTransform rasterTransform =
+                                        AffineTransform.getShearInstance(metaData.getSkewX(),metaData.getSkewY());
+                                //rasterTransform.concatenate(AffineTransform.getScaleInstance(metaData.getScaleX(),
+                                //        -metaData.getScaleY()));
+                                gLayer.transform(rasterTransform);
+                                // Draw image in temp dest (do scale and skew)
+                                gLayer.drawImage(rasterImage, 0, 0, layerImage.getWidth(), layerImage.getHeight(), null);
                                 // Draw transformed image to destination graphics
-                                g2.drawImage(layerImage, 0, 0, null);
+                                g2.drawImage(layerImage, (int)envPixDest.getMinX(), (int)envPixDest.getMinY(), null);
                             }
                             rowSetProgress.endTask();
                         } catch (IOException ex) {
                             LOGGER.error(I18N.tr("Cannot read raster field"), ex);
                         }
                     }
-                    //        DataSource ds = layer.getTableReference();
-                    //        long rowCount = ds.getRowCount();
-                    //        for (int i = 0; i < rowCount; i++) {
-                    //            GeoRaster geoRaster = ds.getRaster(i);
-                    //            Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
-                    //            BufferedImage layerImage;
-                    //            if (isHeadLess) {
-                    //                layerImage = new BufferedImage(width, height,
-                    //                        BufferedImage.TYPE_INT_ARGB);
-                    //            } else {
-                    //                layerImage = configuration.createCompatibleImage(width,
-                    //                        height, BufferedImage.TYPE_INT_ARGB);
-                    //            }
-                    //
-                    //            // part or all of the GeoRaster is visible
-                    //            Rectangle2DDouble layerPixelEnvelope = mt.toPixel(layerEnvelope);
-                    //            Graphics2D gLayer = layerImage.createGraphics();
-                    //
-                    //
-                    //            try {
-                    //                ColorModel cm = geoRaster.getDefaultColorModel();
-                    //                Image dataImage = geoRaster.getImage(cm);
-                    //                gLayer.drawImage(dataImage, (int) layerPixelEnvelope.getMinX(),
-                    //                        (int) layerPixelEnvelope.getMinY(),
-                    //                        (int) layerPixelEnvelope.getWidth() + 1,
-                    //                        (int) layerPixelEnvelope.getHeight() + 1, null);
-                    //
-                    //            } catch (IOException ex) {
-                    //                layerImage = createEmptyImage(width, height);
-                    //            }
-                    //g2.drawImage(layerImage, 0, 0, null);
                 }
             }
         }
