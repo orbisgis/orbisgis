@@ -523,12 +523,15 @@ public abstract class Renderer {
                                 // TODO {@link ImageReadParam#setSourceSubsampling}
                                 // Acquire image fragment
                                 BufferedImage rasterImage = lastReader.read(lastReader.getMinIndex(), readParam);
-                                AffineTransform rasterTransform = mt.getAffineTransform();
+                                AffineTransform rasterTransform = new AffineTransform(mt.getAffineTransform());
                                 rasterTransform.concatenate(metaData.getTransform());
                                 final AffineTransform originalTransform = g2.getTransform();
-                                g2.setTransform(rasterTransform);
-                                g2.drawImage(rasterImage, minX, minY, null);
-                                g2.setTransform(originalTransform);
+                                try {
+                                    g2.setTransform(rasterTransform);
+                                    g2.drawImage(rasterImage, minX, minY, null);
+                                } finally {
+                                    g2.setTransform(originalTransform);
+                                }
                             }
                             rowSetProgress.endTask();
                         } catch (IOException ex) {
