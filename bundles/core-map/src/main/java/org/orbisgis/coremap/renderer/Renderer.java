@@ -479,6 +479,9 @@ public abstract class Renderer {
                     // Keep reader until there is a problem with reading raster
                     ImageReader lastReader = null;
                     while (rs.next()) {
+                        if(pm.isCancelled()) {
+                            break;
+                        }
                         try {
                             RasterMetaData metaData = RasterMetaData.fetchRasterMetaData(rs, "raster_metadata");
                             if(metaData != null) {
@@ -517,44 +520,15 @@ public abstract class Renderer {
                                     // Skip this raster if there is no pixel to read
                                 }
                                 readParam.setSourceRegion(envPixSource);
-                                // Compute pixel envelope destination
-                                /*
-
-                                Rectangle2D envPixDest = mt.toPixel(new Envelope(metaData.getUpperLeftX(),
-                                        metaData.getUpperLeftX() + metaData.getWidth() ,
-                                        metaData.getUpperLeftY() - metaData.getHeight(), metaData.getUpperLeftY()));
-                                * */
-                                Rectangle2D envPixDest = mt.toPixel(env.getEnvelopeInternal());
-                                envPixDest = envPixDest.createIntersection(new Rectangle(0, 0, width, height));
-                                if(!(envPixDest.getWidth() > 0 && envPixDest.getHeight() > 0)) {
-                                    continue;
-                                    // Skip this raster if there is no pixel to write
-                                }
                                 // TODO {@link ImageReadParam#setSourceSubsampling}
                                 // Acquire image fragment
                                 BufferedImage rasterImage = lastReader.read(lastReader.getMinIndex(), readParam);
-                                // Prepare destination for transformed image
-                                // Prepare Graphics Destination
-                                BufferedImage layerImage;
-                                if (isHeadLess) {
-                                    layerImage = new BufferedImage((int)envPixDest.getWidth(), (int)envPixDest.getHeight(),
-                                            BufferedImage.TYPE_INT_ARGB);
-                                } else {
-                                    layerImage = configuration.createCompatibleImage((int)envPixDest.getWidth(),
-                                            (int)envPixDest.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                                }
-                                Graphics2D gLayer = layerImage.createGraphics();
-                                // Transform image
-                                mt.getScaleDenominator();
-                                AffineTransform rasterTransform =
-                                        AffineTransform.getShearInstance(metaData.getSkewX(),metaData.getSkewY());
-                                //rasterTransform.concatenate(AffineTransform.getScaleInstance(metaData.getScaleX(),
-                                //        -metaData.getScaleY()));
-                                gLayer.transform(rasterTransform);
-                                // Draw image in temp dest (do scale and skew)
-                                gLayer.drawImage(rasterImage, 0, 0, layerImage.getWidth(), layerImage.getHeight(), null);
-                                // Draw transformed image to destination graphics
-                                g2.drawImage(layerImage, (int)envPixDest.getMinX(), (int)envPixDest.getMinY(), null);
+                                AffineTransform rasterTransform = mt.getAffineTransform();
+                                rasterTransform.concatenate(metaData.getTransform());
+                                final AffineTransform originalTransform = g2.getTransform();
+                                g2.setTransform(rasterTransform);
+                                g2.drawImage(rasterImage, minX, minY, null);
+                                g2.setTransform(originalTransform);
                             }
                             rowSetProgress.endTask();
                         } catch (IOException ex) {
