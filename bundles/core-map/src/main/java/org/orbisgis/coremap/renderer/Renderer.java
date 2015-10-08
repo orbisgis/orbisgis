@@ -537,7 +537,9 @@ public abstract class Renderer {
                                     if(pixelWidth > 1 || pixelHeight > 1) {
                                         // Renderer does not need all pixels from source. Then skip some pixels to
                                         // get a smaller image to process.
-                                        readParam.setSourceSubsampling(pixelWidth, pixelHeight, minX, minY);
+                                        readParam.setSourceSubsampling(pixelWidth, pixelHeight, 0, 0);
+                                        // Rescale according to the new subsampling
+                                        rasterTransform.concatenate(AffineTransform.getScaleInstance(pixelWidth, pixelHeight));
                                     }
                                 } catch (NoninvertibleTransformException ex) {
                                     // Nothing
