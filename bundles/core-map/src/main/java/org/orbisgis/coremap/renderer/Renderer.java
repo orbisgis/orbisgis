@@ -31,7 +31,33 @@ package org.orbisgis.coremap.renderer;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
+import org.h2gis.utilities.RasterMetaData;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.SpatialResultSet;
+import org.h2gis.utilities.SpatialResultSetMetaData;
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.commons.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
+import org.orbisgis.corejdbc.ReadRowSet;
+import org.orbisgis.coremap.layerModel.ILayer;
+import org.orbisgis.coremap.layerModel.LayerException;
+import org.orbisgis.coremap.map.MapTransform;
+import org.orbisgis.coremap.renderer.se.Rule;
+import org.orbisgis.coremap.renderer.se.Style;
+import org.orbisgis.coremap.renderer.se.Symbolizer;
+import org.orbisgis.coremap.renderer.se.VectorSymbolizer;
+import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.stream.GeoStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -44,10 +70,8 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -56,40 +80,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.vividsolutions.jts.geom.Polygon;
-import org.h2gis.utilities.RasterMetaData;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
-import org.orbisgis.coremap.ui.editors.map.tool.Rectangle2DDouble;
-import org.slf4j.*;
-import org.orbisgis.corejdbc.ReadRowSet;
-import org.orbisgis.coremap.layerModel.ILayer;
-import org.orbisgis.coremap.layerModel.LayerException;
-import org.orbisgis.coremap.map.MapTransform;
-import org.orbisgis.coremap.renderer.se.Rule;
-import org.orbisgis.coremap.renderer.se.Style;
-import org.orbisgis.coremap.renderer.se.Symbolizer;
-import org.orbisgis.coremap.renderer.se.VectorSymbolizer;
-import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
-import org.orbisgis.coremap.stream.GeoStream;
-import org.orbisgis.commons.progress.NullProgressMonitor;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.h2gis.utilities.SpatialResultSet;
-import org.h2gis.utilities.SpatialResultSetMetaData;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-
 /**
  * Renderer contains all the logic of the Symbology Encoding process based on java
  * Graphics2D. This is an abstract class and subclasses provided effectives methods
  * according to the rendering target (e.g. bitmap image, SVG, pdf, etc.)
  *
  * @author Maxence Laurent
+ * @author Nicolas Fortin
  */
 public abstract class Renderer {
 
@@ -495,7 +492,6 @@ public abstract class Renderer {
                                 if(lastReader == null) {
                                     lastReader = fetchImageReader(is);
                                 }
-                                Polygon env = metaData.convexHull();
                                 // prepare image read
                                 lastReader.setInput(is);
                                 ImageReadParam readParam = lastReader.getDefaultReadParam();
@@ -530,16 +526,18 @@ public abstract class Renderer {
                                 // how many pixel at pixel source are contained into 1 pixel at destination
                                 try {
                                     AffineTransform invTransf = rasterTransform.createInverse();
-                                    int pixelWidth = (int)Math.floor(invTransf.transform(new Point(1, 0), null).getX()
-                                            - invTransf.transform(new Point(0, 0), null).getX());
-                                    int pixelHeight = (int)Math.floor(invTransf.transform(new Point(0, 1), null).getY()
-                                            - invTransf.transform(new Point(0, 0), null).getY());
+                                    int pixelWidth = (int)Math.floor(Math.abs(invTransf.transform(new Point(1, 0), null).getX()
+                                            - invTransf.transform(new Point(0, 0), null).getX()));
+                                    int pixelHeight = (int)Math.floor(Math.abs(invTransf.transform(new Point(0, 1), null).getY()
+                                            - invTransf.transform(new Point(0, 0), null).getY()));
                                     if(pixelWidth > 1 || pixelHeight > 1) {
                                         // Renderer does not need all pixels from source. Then skip some pixels to
                                         // get a smaller image to process.
                                         readParam.setSourceSubsampling(pixelWidth, pixelHeight, 0, 0);
                                         // Rescale according to the new subsampling
                                         rasterTransform.concatenate(AffineTransform.getScaleInstance(pixelWidth, pixelHeight));
+                                        minX /= pixelWidth;
+                                        minY /= pixelHeight;
                                     }
                                 } catch (NoninvertibleTransformException ex) {
                                     // Nothing
