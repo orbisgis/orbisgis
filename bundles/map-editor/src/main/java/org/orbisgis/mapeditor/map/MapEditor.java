@@ -28,6 +28,8 @@
  */
 package org.orbisgis.mapeditor.map;
 
+import com.sun.media.jai.codecimpl.TIFFImage;
+import com.twelvemonkeys.imageio.plugins.tiff.TIFFImageReaderSpi;
 import com.vividsolutions.jts.geom.Envelope;
 
 import java.awt.BorderLayout;
@@ -60,6 +62,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.ImageInputStreamSpi;
 import javax.imageio.spi.ImageReaderSpi;
@@ -247,6 +250,9 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
     @Activate
     public void activate() {
+        // Register non-Osgi ImageIO drivers
+        IIORegistry.getDefaultInstance().registerServiceProvider(new TIFFImageReaderSpi());
+
         this.mapsManager = new MapsManager(viewWorkspace.getMapContextPath(),dataManager, editorManager);
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("map_editor");

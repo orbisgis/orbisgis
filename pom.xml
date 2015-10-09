@@ -59,16 +59,17 @@
                     <activeByDefault>true</activeByDefault>
                 </activation>
                 <modules>
-                    <module>external/mig-layout</module>
-                    <module>external/rsyntax-osgi</module>
-                    <module>external/rsyntax-language-support</module>
-                    <module>external/jts-osgi</module>
-                    <module>external/svg-salamander</module>
-                    <module>external/itextpdf</module>
-                    <module>external/jai</module>
-		    <module>bundles/orbistoolbox-api</module>
-		    <module>bundles/orbistoolbox</module>
-                    <module>orbisgis-dist</module>
+                        <module>external/mig-layout</module>
+                        <module>external/rsyntax-osgi</module>
+                        <module>external/rsyntax-language-support</module>
+                        <module>external/jts-osgi</module>
+                        <module>external/svg-salamander</module>
+                        <module>external/itextpdf</module>
+                        <module>external/jai</module>
+                        <module>external/twelvemonkeys</module>
+                        <module>bundles/orbistoolbox-api</module>
+                        <module>bundles/orbistoolbox</module>
+                        <module>orbisgis-dist</module>
                 </modules>
             </profile>
             <profile>

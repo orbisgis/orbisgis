@@ -442,11 +442,6 @@ public abstract class Renderer {
      * @param pm
      */
     private void drawRaster(Graphics2D g2, MapTransform mt, ILayer layer, int width, int height, ProgressMonitor pm) throws SQLException {
-        GraphicsConfiguration configuration = null;
-        boolean isHeadLess = GraphicsEnvironment.isHeadless();
-        if (!isHeadLess) {
-            configuration = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-        }
         ResultSetProviderFactory layerDataFactory = rsProvider;
         if(layerDataFactory == null) {
             if(layer.getDataManager() != null && layer.getDataManager().getDataSource() != null) {
