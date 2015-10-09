@@ -269,14 +269,14 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
             }
             // Fetch raster table
             Map<String,String> tableRaster = new HashMap<>();
-            DatabaseMetaData meta = connection.getMetaData();
-            try(ResultSet rs = meta.getColumns(null, null, null, null)) {
+            try(Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery("SELECT * FROM " + defaultSchema + ".raster_columns")) {
                 while(rs.next()) {
-                    if("RASTER".equalsIgnoreCase(rs.getString("TYPE_NAME"))) {
-                        tableRaster.put(new TableLocation(rs.getString("TABLE_CAT"), rs.getString
-                                ("TABLE_SCHEM"), rs.getString("TABLE_NAME")).toString(), rs.getString("TYPE_NAME"));
-                    }
+                    tableRaster.put(new TableLocation(rs.getString("R_TABLE_CATALOG"),
+                            rs.getString("R_TABLE_SCHEMA"), rs.getString("R_TABLE_NAME")).toString(), "raster");
                 }
+            } catch (SQLException ex) {
+                LOGGER.warn(I18N.tr("Raster columns information of tables are not available"), ex);
             }
             // Fetch all tables
             try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {

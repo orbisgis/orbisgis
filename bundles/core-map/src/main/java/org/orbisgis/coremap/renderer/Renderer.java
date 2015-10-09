@@ -75,6 +75,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -377,7 +378,7 @@ public abstract class Renderer {
                                                     drawRaster(g2, mt, layer, width, height, pm);
                                                 }
                                         } catch (SQLException | LayerException e) {
-                                                LOGGER.error(I18N.tr("Layer {0} not drawn",layer.getName()), e);
+                                                LOGGER.error(I18N.tr("Layer {0} not drawn",layer.getName())+": \n"+e.getLocalizedMessage(), e);
                                         }
                                 }
                         }
@@ -477,6 +478,7 @@ public abstract class Renderer {
                     }
                     // Keep reader until there is a problem with reading raster
                     ImageReader lastReader = null;
+                    boolean fetchBlob = Types.BLOB == rs.getMetaData().getColumnType(rs.findColumn(rasterField));
                     while (rs.next()) {
                         if(pm.isCancelled()) {
                             break;
@@ -485,7 +487,13 @@ public abstract class Renderer {
                             RasterMetaData metaData = RasterMetaData.fetchRasterMetaData(rs, "raster_metadata");
                             if(metaData != null) {
                                 // Fetch ImageReader
-                                ImageInputStream is = ImageIO.createImageInputStream(rs.getBlob(rasterField));
+                                Object streamObject;
+                                if(fetchBlob) {
+                                    streamObject = rs.getBlob(rasterField);
+                                } else {
+                                    streamObject = rs.getBinaryStream(rasterField);
+                                }
+                                ImageInputStream is = ImageIO.createImageInputStream(streamObject);
                                 if (is == null) {
                                     throw new SQLException(I18N.tr("No input stream driver for Blob type"));
                                 }

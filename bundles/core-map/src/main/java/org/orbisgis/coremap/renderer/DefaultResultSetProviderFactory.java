@@ -30,6 +30,7 @@ package org.orbisgis.coremap.renderer;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
@@ -125,6 +126,9 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
             String geometryField = !geometryFields.isEmpty() ? geometryFields.get(0) : rasterFields.get(0);
             String tableReference = layer.getTableReference();
             StringBuilder computedField = new StringBuilder("select " + pkName + ",*");
+            if(!rasterFields.isEmpty() && !JDBCUtilities.isH2DataBase(connection.getMetaData())) {
+                computedField= new StringBuilder("select " + pkName + ","+geometryField+"::BYTEA "+geometryField);
+            }
             if(extraFields.length != 0) {
                 for (String extraField : extraFields) {
                     computedField.append(",");

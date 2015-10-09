@@ -56,10 +56,12 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -109,10 +111,28 @@ public class ResultSetWrapper implements ResultSet {
             }
         }
         if(object instanceof PGobject) {
-            return new PGObjectWrapper((PGobject) object);
+            if("record".equals(((PGobject) object).getType())) {
+                return parseRecord(((PGobject) object).getValue());
+            } else {
+                return new PGObjectWrapper((PGobject) object);
+            }
         } else {
             return object;
         }
+    }
+
+    private Object[] parseRecord(String recordValue) {
+        List<Object> outArray = new ArrayList<>();
+        StringTokenizer tokenizer = new StringTokenizer(recordValue.substring(1, recordValue.length() - 1), ",");
+        while (tokenizer.hasMoreTokens()) {
+            String elem = tokenizer.nextToken();
+            try {
+                outArray.add(Double.valueOf(elem));
+            } catch (NumberFormatException ex) {
+                outArray.add(elem);
+            }
+        }
+        return outArray.toArray(new Object[outArray.size()]);
     }
 
     @Override
