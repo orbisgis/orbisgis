@@ -488,70 +488,63 @@ public abstract class Renderer {
                                 } else {
                                     streamObject = rs.getBinaryStream(rasterField);
                                 }
-                                ImageInputStream is = ImageIO.createImageInputStream(streamObject);
-                                if (is == null) {
-                                    throw new SQLException(I18N.tr("No input stream driver for Blob type"));
-                                }
-                                if(lastReader == null) {
-                                    lastReader = fetchImageReader(is);
-                                }
-                                // prepare image read
-                                lastReader.setInput(is);
-                                ImageReadParam readParam = lastReader.getDefaultReadParam();
-                                // Compute pixel envelope source
-                                // As raster can be transformed, all corners are retrieved
-                                int[] p0 = metaData.getPixelFromCoordinate(new Coordinate(envView.getMinX(),
-                                        envView.getMinY()));
-                                int[] p1 = metaData.getPixelFromCoordinate(new Coordinate(envView.getMaxX(),
-                                        envView.getMinY()));
-                                int[] p2 = metaData.getPixelFromCoordinate(new Coordinate(envView.getMaxX(),
-                                        envView.getMaxY()));
-                                int[] p3 = metaData.getPixelFromCoordinate(new Coordinate(envView.getMinX(),
-                                        envView.getMaxY()));
-                                int minX = Math.max(0, Math.min(Math.min(Math.min(p0[0], p1[0]), p2[0]), p3[0]));
-                                int maxX = Math.min(metaData.getWidth(), Math.max(Math.max(Math.max(p0[0], p1[0]),
-                                        p2[0]), p3[0]));
-                                int minY = Math.max(0, Math.min(Math.min(Math.min(p0[1], p1[1]), p2[1]), p3[1]));
-                                int maxY = Math.min(metaData.getHeight(), Math.max(Math.max(Math.max(p0[1], p1[1]),
-                                        p2[1]), p3[1]));
-                                Rectangle envPixSource = new Rectangle(minX, minY, maxX - minX,
-                                        maxY - minY);
-                                if(!(envPixSource.width > 0 && envPixSource.height > 0)) {
-                                    continue;
-                                    // Skip this raster if there is no pixel to read
-                                }
-                                readParam.setSourceRegion(envPixSource);
-                                // TODO {@link ImageReadParam#setSourceSubsampling}
-                                // Acquire image fragment
-                                AffineTransform rasterTransform = new AffineTransform(mt.getAffineTransform());
-                                rasterTransform.concatenate(metaData.getTransform());
-                                // Compute the pixel offset
-                                // how many pixel at pixel source are contained into 1 pixel at destination
-                                try {
-                                    AffineTransform invTransf = rasterTransform.createInverse();
-                                    int pixelWidth = (int)Math.floor(Math.abs(invTransf.transform(new Point(1, 0), null).getX()
-                                            - invTransf.transform(new Point(0, 0), null).getX()));
-                                    int pixelHeight = (int)Math.floor(Math.abs(invTransf.transform(new Point(0, 1), null).getY()
-                                            - invTransf.transform(new Point(0, 0), null).getY()));
-                                    if(pixelWidth > 1 || pixelHeight > 1) {
-                                        // Renderer does not need all pixels from source. Then skip some pixels to
-                                        // get a smaller image to process.
-                                        readParam.setSourceSubsampling(pixelWidth, pixelHeight, 0, 0);
-                                        // Rescale according to the new subsampling
-                                        rasterTransform.concatenate(AffineTransform.getScaleInstance(pixelWidth, pixelHeight));
-                                        minX /= pixelWidth;
-                                        minY /= pixelHeight;
+                                try (ImageInputStream is = ImageIO.createImageInputStream(streamObject)) {
+                                    if (is == null) {
+                                        throw new SQLException(I18N.tr("No image input stream driver for " +
+                                                rs.getMetaData().getColumnTypeName(rs.findColumn(rasterField))+" type"));
                                     }
-                                } catch (NoninvertibleTransformException ex) {
-                                    // Nothing
-                                }
-                                final AffineTransform originalTransform = g2.getTransform();
-                                try {
-                                    g2.setTransform(rasterTransform);
-                                    BufferedImage rasterImage = lastReader.read(lastReader.getMinIndex(), readParam);
-                                    g2.drawImage(rasterImage, minX, minY, null);
-                                } finally {
-                                    g2.setTransform(originalTransform);
+                                    if (lastReader == null) {
+                                        lastReader = fetchImageReader(is);
+                                    }
+                                    // prepare image read
+                                    lastReader.setInput(is);
+                                    ImageReadParam readParam = lastReader.getDefaultReadParam();
+                                    // Compute pixel envelope source
+                                    // As raster can be transformed, all corners are retrieved
+                                    int[] p0 = metaData.getPixelFromCoordinate(new Coordinate(envView.getMinX(), envView.getMinY()));
+                                    int[] p1 = metaData.getPixelFromCoordinate(new Coordinate(envView.getMaxX(), envView.getMinY()));
+                                    int[] p2 = metaData.getPixelFromCoordinate(new Coordinate(envView.getMaxX(), envView.getMaxY()));
+                                    int[] p3 = metaData.getPixelFromCoordinate(new Coordinate(envView.getMinX(), envView.getMaxY()));
+                                    int minX = Math.max(0, Math.min(Math.min(Math.min(p0[0], p1[0]), p2[0]), p3[0]));
+                                    int maxX = Math.min(metaData.getWidth(), Math.max(Math.max(Math.max(p0[0], p1[0]), p2[0]), p3[0]));
+                                    int minY = Math.max(0, Math.min(Math.min(Math.min(p0[1], p1[1]), p2[1]), p3[1]));
+                                    int maxY = Math.min(metaData.getHeight(), Math.max(Math.max(Math.max(p0[1], p1[1]), p2[1]), p3[1]));
+                                    Rectangle envPixSource = new Rectangle(minX, minY, maxX - minX, maxY - minY);
+                                    if (!(envPixSource.width > 0 && envPixSource.height > 0)) {
+                                        continue;
+                                        // Skip this raster if there is no pixel to read
+                                    }
+                                    readParam.setSourceRegion(envPixSource);
+                                    // TODO {@link ImageReadParam#setSourceSubsampling}
+                                    // Acquire image fragment
+                                    AffineTransform rasterTransform = new AffineTransform(mt.getAffineTransform());
+                                    rasterTransform.concatenate(metaData.getTransform());
+                                    // Compute the pixel offset
+                                    // how many pixel at pixel source are contained into 1 pixel at destination
+                                    try {
+                                        AffineTransform invTransf = rasterTransform.createInverse();
+                                        int pixelWidth = (int) Math.floor(Math.abs(invTransf.transform(new Point(1, 0), null).getX() - invTransf.transform(new Point(0, 0), null).getX()));
+                                        int pixelHeight = (int) Math.floor(Math.abs(invTransf.transform(new Point(0, 1), null).getY() - invTransf.transform(new Point(0, 0), null).getY()));
+                                        if (pixelWidth > 1 || pixelHeight > 1) {
+                                            // Renderer does not need all pixels from source. Then skip some pixels to
+                                            // get a smaller image to process.
+                                            readParam.setSourceSubsampling(pixelWidth, pixelHeight, 0, 0);
+                                            // Rescale according to the new subsampling
+                                            rasterTransform.concatenate(AffineTransform.getScaleInstance(pixelWidth, pixelHeight));
+                                            minX /= pixelWidth;
+                                            minY /= pixelHeight;
+                                        }
+                                    } catch (NoninvertibleTransformException ex) {
+                                        // Nothing
+                                    }
+                                    final AffineTransform originalTransform = g2.getTransform();
+                                    try {
+                                        g2.setTransform(rasterTransform);
+                                        BufferedImage rasterImage = lastReader.read(lastReader.getMinIndex(), readParam);
+                                        g2.drawImage(rasterImage, minX, minY, null);
+                                    } finally {
+                                        g2.setTransform(originalTransform);
+                                    }
                                 }
                             }
                             rowSetProgress.endTask();
