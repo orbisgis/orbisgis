@@ -17,36 +17,16 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing;
+package org.orbisgis.orbistoolbox.model;
 
-import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionWorker;
-import org.orbisgis.orbistoolbox.model.DataDescription;
-import org.orbisgis.orbistoolbox.model.DescriptionType;
+import java.util.List;
 
 /**
- * Interface for the pre and post processing of data.
- *
  * @author Sylvain PALOMINOS
  **/
 
-public interface ProcessingData {
-
-    /**
-     * Returns the DataDescription class that this class can pre and post process.
-     * @return DataDescription class.
-     */
-    Class<? extends DataDescription> getDataClass();
-
-    /**
-     * PreProcess the data.
-     * @param inputOrOutput Input or Output to preProcess.
-     * @param executionWorker The executionWorker which execute the process.
-     */
-    void preProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker) throws Exception;
-    /**
-     * PostProcess the data.
-     * @param inputOrOutput Input or Output to preProcess.
-     * @param executionWorker The executionWorker which execute the process.
-     */
-    void postProcessing(DescriptionType inputOrOutput, ExecutionWorker executionWorker) throws Exception;
+public class GeometryData extends ComplexData{
+    public GeometryData(List<Format> formatList) throws MalformedScriptException {
+        super(formatList);
+    }
 }

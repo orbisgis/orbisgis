@@ -329,13 +329,13 @@ public class ToolBoxPanel extends JPanel {
         categories[2] = null;
         if(p != null && p.getMetadata() != null) {
             for (Metadata m : p.getMetadata()) {
-                if (m.getRole().equals(URI.create("orbisgis:wps:utils:category"))) {
+                if (m.getRole().equals(URI.create("utils:category"))) {
                     categories[0] = m.getTitle();
                 }
-                if (m.getRole().equals(URI.create("orbisgis:wps:utils:subCategory"))) {
+                if (m.getRole().equals(URI.create("utils:subCategory"))) {
                     categories[1] = m.getTitle();
                 }
-                if (m.getRole().equals(URI.create("orbisgis:wps:utils:subSubCategory"))) {
+                if (m.getRole().equals(URI.create("utils:subSubCategory"))) {
                     categories[2] = m.getTitle();
                 }
             }

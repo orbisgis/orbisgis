@@ -30,10 +30,14 @@
 package org.orbisgis.tablegui.impl;
 
 
+import org.jooq.SQL;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.sif.components.actions.ActionTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -42,6 +46,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Lock/Unlock table edition action.
@@ -50,6 +56,7 @@ import java.beans.PropertyChangeListener;
 public class ActionEdition extends AbstractAction {
     private final TableEditableElement editable;
     private final I18n i18N = I18nFactory.getI18n(ActionEdition.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActionEdition.class);
 
     /**
      * Constructor
@@ -70,14 +77,18 @@ public class ActionEdition extends AbstractAction {
     public final void updateLabelAndIcon() {
         if(editable.isEditing()) {
             putValue(NAME, i18N.tr("Stop editing"));
-            putValue(SMALL_ICON, TableEditorIcon.getIcon("edition/unlock"));
+            putValue(SMALL_ICON, TableEditorIcon.getIcon("unlock"));
         } else {
             putValue(NAME, i18N.tr("Start editing"));
-            putValue(SMALL_ICON, TableEditorIcon.getIcon("edition/lock"));
+            putValue(SMALL_ICON, TableEditorIcon.getIcon("lock"));
         }
     }
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        editable.setEditing(!editable.isEditing());
+        if(editable.isEditable()) {
+            editable.setEditing(!editable.isEditing());
+        } else {
+            LOGGER.warn(editable.getNotEditableReason());
+        }
     }
 }

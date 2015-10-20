@@ -44,6 +44,35 @@ public class LiteralDataParser implements Parser {
             ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
             ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
 
+            //Get the type of the field to use it as the input type
+            if(f.getType().equals(Integer.class)){
+                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.INTEGER);
+            }
+            else if(f.getType().equals(Double.class)){
+                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.DOUBLE);
+            }
+            else if(f.getType().equals(String.class)){
+                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.STRING);
+            }
+            else if(f.getType().equals(Boolean.class)){
+                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.BOOLEAN);
+            }
+            else if(f.getType().equals(Byte.class)){
+                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.BYTE);
+            }
+            else if(f.getType().equals(Float.class)){
+                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.FLOAT);
+            }
+            else if(f.getType().equals(Long.class)){
+                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.LONG);
+            }
+            else if(f.getType().equals(Short.class)){
+                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.SHORT);
+            }
+            else if(f.getType().equals(Character.class)){
+                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.UNSIGNED_BYTE);
+            }
+
             return input;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(LiteralDataParser.class).error(e.getMessage());

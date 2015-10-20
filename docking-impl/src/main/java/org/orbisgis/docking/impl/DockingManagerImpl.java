@@ -69,6 +69,7 @@ import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 
 import org.orbisgis.commons.events.BeanPropertyChangeSupport;
@@ -749,14 +750,18 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
     @Override
     public <TargetComponent> void addActionFactory(ActionFactoryService<TargetComponent> factory, TargetComponent
             targetComponent) throws IllegalArgumentException {
+        SwingUtilities.invokeLater(new AddToolBarFactory<TargetComponent>(this, factory, targetComponent));
+    }
+
+    private <TargetComponent>  void doAddActionFactory(ActionFactoryService<TargetComponent> factory, TargetComponent
+            targetComponent) {
         if (!actionFromFactory.containsKey(factory)) {
             MenuTrackerAction<TargetComponent> menuTrackerAction = new MenuTrackerAction<>(factory, factory
                     .createActions(targetComponent), targetComponent);
             addActions(menuTrackerAction.getActions());
             actionFromFactory.put(factory, menuTrackerAction);
         } else {
-            // Developer exception
-            throw new IllegalArgumentException("ActionFactoryService instance is already pushed");
+            LOGGER.error("ActionFactoryService instance is already pushed");
         }
     }
 
@@ -856,6 +861,30 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
         @Override
         public void run() {
             control.removeSingleDockable(panelId);
+        }
+    }
+
+    private static class AddToolBarFactory<TargetComponent> extends SwingWorker {
+        private DockingManagerImpl dockingManager;
+        private ActionFactoryService<TargetComponent> factory;
+        private TargetComponent targetComponent;
+
+        public AddToolBarFactory(DockingManagerImpl dockingManager, ActionFactoryService<TargetComponent> factory,
+                                 TargetComponent targetComponent) {
+            this.dockingManager = dockingManager;
+            this.factory = factory;
+            this.targetComponent = targetComponent;
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            dockingManager.doAddActionFactory(factory, targetComponent);
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            return I18N.tr("Register toolbar..");
         }
     }
 }

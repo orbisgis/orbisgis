@@ -40,7 +40,7 @@ public class ProcessParser {
     public Process parseProcess(List<Input> inputList, List<Output> outputList, Method processingMethod, String processName){
         try {
             Process process = new Process(processName,
-                    URI.create("orbisgis:wps:" + processName + ":process"),
+                    URI.create(processName),
                     outputList);
             ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(DescriptionTypeAttribute.class),
                     process);
