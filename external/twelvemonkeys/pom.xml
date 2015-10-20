@@ -28,7 +28,7 @@
                             common-lang;scope=compile;inline=true,
                             common-image;scope=compile;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
-                        <Bundle-Version>3.1.2</Bundle-Version>
+                        <Bundle-Version>3.2-SNAPSHOT</Bundle-Version>
                         <_exportcontents>com.twelvemonkeys.*</_exportcontents>
                         <Import-Package>!com.sun.image.*,!sun.security.action.*,!com.sun.medialib.*,!sun.awt.image.*,!magick, *</Import-Package>
                     </instructions>
@@ -43,17 +43,17 @@
             <dependency>
                 <groupId>com.twelvemonkeys.imageio</groupId>
                 <artifactId>imageio-tiff</artifactId>
-                <version>3.1.2</version>
+                <version>3.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.twelvemonkeys.imageio</groupId>
                 <artifactId>imageio-core</artifactId>
-                <version>3.1.2</version>
+                <version>3.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.twelvemonkeys.imageio</groupId>
                 <artifactId>imageio-metadata</artifactId>
-                <version>3.1.2</version>
+                <version>3.2-SNAPSHOT</version>
             </dependency>
     </dependencies>
 </project>
