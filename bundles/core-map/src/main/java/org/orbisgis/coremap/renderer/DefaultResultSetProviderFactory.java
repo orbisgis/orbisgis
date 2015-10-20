@@ -125,9 +125,18 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
             }
             String geometryField = !geometryFields.isEmpty() ? geometryFields.get(0) : rasterFields.get(0);
             String tableReference = layer.getTableReference();
-            StringBuilder computedField = new StringBuilder("select " + pkName + ",*");
+            StringBuilder computedField = new StringBuilder("select ");
+            if(!pkName.isEmpty()) {
+                computedField.append(pkName);
+                computedField.append(",");
+            }
             if(!rasterFields.isEmpty() && !JDBCUtilities.isH2DataBase(connection.getMetaData())) {
-                computedField= new StringBuilder("select " + pkName + ","+geometryField+"::BYTEA "+geometryField);
+                computedField.append(",");
+                computedField.append(geometryField);
+                computedField.append("::BYTEA ");
+                computedField.append(geometryField);
+            } else {
+                computedField.append("*");
             }
             if(extraFields.length != 0) {
                 for (String extraField : extraFields) {

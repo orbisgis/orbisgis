@@ -515,7 +515,6 @@ public abstract class Renderer {
                                         // Skip this raster if there is no pixel to read
                                     }
                                     readParam.setSourceRegion(envPixSource);
-                                    // TODO {@link ImageReadParam#setSourceSubsampling}
                                     // Acquire image fragment
                                     AffineTransform rasterTransform = new AffineTransform(mt.getAffineTransform());
                                     rasterTransform.concatenate(metaData.getTransform());
