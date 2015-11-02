@@ -141,7 +141,7 @@ public class LayerAction extends DefaultAction {
         int selectedLayersCount = 0;
         boolean rowSelection = false;
         boolean hasRealLayer = false;
-        boolean hasNonVectorSource = false;
+        boolean hasNonVectorSource = false;        
         for(TocTreeNodeLayer layerNode : layerIterator) {
             selectedLayersCount++;
             ILayer layer = layerNode.getLayer();
