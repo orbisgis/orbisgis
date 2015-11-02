@@ -1,7 +1,6 @@
 package org.orbisgis.tablegui.api;
 
 import org.orbisgis.editorjdbc.EditableSource;
-import org.orbisgis.sif.edition.EditableElementException;
 
 import java.util.Set;
 import java.util.SortedSet;
