@@ -39,7 +39,10 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import org.slf4j.*;
+import org.h2gis.utilities.SpatialResultSet;
+import org.h2gis.utilities.SpatialResultSetMetaData;
+import org.orbisgis.commons.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.LayerException;
@@ -49,11 +52,9 @@ import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.coremap.renderer.se.VectorSymbolizer;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
+import org.orbisgis.coremap.renderer.se.visitors.FeaturesVisitor;
 import org.orbisgis.coremap.stream.GeoStream;
-import org.orbisgis.commons.progress.NullProgressMonitor;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.h2gis.utilities.SpatialResultSet;
-import org.h2gis.utilities.SpatialResultSetMetaData;
+import org.slf4j.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -179,10 +180,13 @@ public abstract class Renderer {
                 // Get a graphics for each symbolizer
                 initGraphics2D(symbs, g2, mt);
                 ProgressMonitor rulesProgress = pm.startTask(rList.size());
-                for (Rule r : rList) {
+                for (Rule r : rList) {                    
                     beginLayer(r.getName());
+                    FeaturesVisitor fv  = new FeaturesVisitor();
+                    fv.visitSymbolizerNode(r);
+                    Set<String> fields = fv.getResult();
                     try(ResultSetProviderFactory.ResultSetProvider resultSetProvider = layerDataFactory.getResultSetProvider(layer, rulesProgress)) {
-                        try(SpatialResultSet rs = resultSetProvider.execute(rulesProgress, extent)) {
+                        try(SpatialResultSet rs = resultSetProvider.execute(rulesProgress, extent, fields)) {
                             int pkColumn = rs.findColumn(resultSetProvider.getPkName());
                             int fieldID = rs.getMetaData().unwrap(SpatialResultSetMetaData.class).getFirstGeometryFieldIndex();
                             ProgressMonitor rowSetProgress;

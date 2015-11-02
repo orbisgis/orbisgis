@@ -50,6 +50,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Standard select * from mytable query without cache or index.
@@ -97,14 +98,14 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
         }
 
         @Override
-        public SpatialResultSet execute(ProgressMonitor pm, Envelope extent) throws SQLException {
+        public SpatialResultSet execute(ProgressMonitor pm, Envelope extent, Set<String> fields) throws SQLException {
             this.pm = pm;
             connection = dataSource.getConnection();
             List<String> geometryFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(layer.getTableReference()));
             if(geometryFields.isEmpty()) {
                 throw new SQLException(I18N.tr("Table {0} does not contains geometry fields",layer.getTableReference()));
             }
-            st = createStatement(connection, geometryFields.get(0), layer.getTableReference());
+            st = createStatement(connection, geometryFields.get(0), layer.getTableReference(), fields);
             st.setFetchSize(FETCH_SIZE);
             st.setFetchDirection(ResultSet.FETCH_FORWARD);
             connection.setAutoCommit(false);
@@ -117,10 +118,36 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
             return st.executeQuery().unwrap(SpatialResultSet.class);
         }
 
-        private PreparedStatement createStatement(Connection connection,String geometryField,String tableReference) throws SQLException {
-                return connection.prepareStatement(
-                        String.format("select "+pkName+",* from %s where %s && ?", tableReference, geometryField),
+        /**
+         * Build a preparedstatement using 
+         * @param connection
+         * @param geometryField the first geometryfield
+         * @param tableReference the name of the input table
+         * @param fields a list of columns
+         * @return
+         * @throws SQLException 
+         */
+        private PreparedStatement createStatement(Connection connection,String geometryField,String tableReference, Set<String> fields) throws SQLException {            
+            if(fields.isEmpty()){            
+            return connection.prepareStatement(
+                        String.format("select "+pkName+",%s from %s where %s && ?", geometryField,tableReference, geometryField),
                         ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+            }
+            else{
+                StringBuilder sb = new StringBuilder("select ").append(pkName).append(",");
+                
+                for (String field : fields) {
+                    sb.append(field).append(",");
+                    
+                }
+                if(fields.contains(geometryField)){
+                sb.append(" from ").append(tableReference).append(" where ").append(geometryField).append(" && ?");
+                }
+                else{
+                sb.append(geometryField).append(" from ").append(tableReference).append(" where ").append(geometryField).append(" && ?");
+                }
+                return connection.prepareStatement(sb.toString());
+            }
         }
 
         @Override

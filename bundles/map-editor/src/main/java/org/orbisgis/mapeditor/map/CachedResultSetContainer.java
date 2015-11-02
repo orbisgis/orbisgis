@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -161,7 +162,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
         }
 
         @Override
-        public SpatialResultSet execute(ProgressMonitor pm, Envelope extent) throws SQLException {
+        public SpatialResultSet execute(ProgressMonitor pm, Envelope extent, Set<String> fields) throws SQLException {
             lock = readRowSet.getReadLock();
             try {
                 lock.tryLock(LOCK_TIMEOUT, TimeUnit.SECONDS);
@@ -172,7 +173,7 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
                     readRowSet.beforeFirst();
                     return readRowSet;
                 } else {
-                    return resultSetProvider.execute(pm, extent);
+                    return resultSetProvider.execute(pm, extent, fields);
                 }
             } catch (InterruptedException ex) {
                 throw new SQLException(I18N.tr("Lock timeout while fetching {0}, another job is using this resource.",
