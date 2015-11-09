@@ -30,7 +30,6 @@
 package org.orbisgis.tablegui.impl;
 
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.sif.UIFactory;
 
 import org.orbisgis.sif.components.SQLMessageDialog;
 import org.orbisgis.sif.components.actions.ActionTools;
