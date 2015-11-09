@@ -106,7 +106,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	private ToolManager toolManager;
 
-	private Color backColor = Color.white;
+	private Color defaultBackColor = Color.white;
 
     // True if mapTransform is a intermediateDrawing and should be drawn instead of adapting updatedMapTranform image
     private AtomicBoolean intermediateDrawing = new AtomicBoolean(false);
@@ -253,7 +253,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
             // we always fill the Graphics with an opaque color
             // before drawing anything.
-            g.setColor(backColor);
+            g.setColor(getBackColor());
             g.fillRect(0, 0, getWidth(), getHeight());
 
             // Overwrite the updateImage if the draw status is up to date.
@@ -342,7 +342,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
     private void initImage(Graphics gImg) {
         // filling image
-        gImg.setColor(backColor);
+        gImg.setColor(getBackColor());
         gImg.fillRect(0, 0, getWidth(), getHeight());
     }
 
@@ -356,11 +356,20 @@ public class MapControl extends JComponent implements ContainerListener {
 	}
 
 	public Color getBackColor() {
-		return backColor;
-	}
+            String bColor = System.getProperty("map.editor.color.background");
+            if (!bColor.isEmpty()) {
+             try {
+                return Color.decode(bColor);
+
+             } catch (NumberFormatException e) {
+                 return defaultBackColor;
+             }
+             }
+            return defaultBackColor;
+         }
 
 	public void setBackColor(Color backColor) {
-		this.backColor = backColor;
+		this.defaultBackColor = backColor;
 	}
 
 	public void setTool(Automaton tool) throws TransitionException {

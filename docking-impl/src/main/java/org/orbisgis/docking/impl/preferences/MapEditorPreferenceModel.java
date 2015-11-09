@@ -106,14 +106,12 @@ public class MapEditorPreferenceModel extends DefaultPreferenceModel{
         }
         try {
             Color color = Color.decode(preference.getValue().trim());            
-            if (color!=null) {
+            if (color==null) {
                 skipEvent = true;
                 mapEditorInfo.setValue(I18N.tr("The background colour is invalid"));
                 preference.setValue(oldBackgroundColor);
             }
-            else{
-                skipEvent=false;
-            }
+            
         } catch (NumberFormatException e) {
             skipEvent = true;
             mapEditorInfo.setValue(I18N.tr("The background colour must be specified in HTML notation  : #aabbcc"));
@@ -125,6 +123,7 @@ public class MapEditorPreferenceModel extends DefaultPreferenceModel{
         }
         mapEditorInfo.setValue("");
         oldBackgroundColor = preference.getValue();
+        System.setProperty("map.editor.color.background", oldBackgroundColor);
     }
     
     
