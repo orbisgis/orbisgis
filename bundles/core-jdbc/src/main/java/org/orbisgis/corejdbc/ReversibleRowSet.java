@@ -40,6 +40,7 @@ public interface ReversibleRowSet extends ReadRowSet {
 
     /**
      * Table update done through ReversibleRowSet will be fire through theses listeners
+     * @param table
      * @param listener Listener instance
      */
     void addTableEditListener(String table, TableEditListener listener);
