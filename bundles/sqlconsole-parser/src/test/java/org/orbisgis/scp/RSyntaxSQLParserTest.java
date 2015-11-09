@@ -8,6 +8,7 @@ import org.h2.util.OsgiDataSourceFactory;
 import org.junit.Test;
 
 import java.awt.GraphicsEnvironment;
+import java.awt.*;
 import java.util.List;
 import java.util.Properties;
 

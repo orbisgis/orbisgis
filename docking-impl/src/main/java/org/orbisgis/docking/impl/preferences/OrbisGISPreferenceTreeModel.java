@@ -80,6 +80,8 @@ public class OrbisGISPreferenceTreeModel extends PreferenceTreeModel {
         //Custom properties
         putNode(new Path( "web"),I18N.tr("Web configuration"));
         put(new Path( "web.proxy" ),I18N.tr("Proxy"),new ProxyPreferenceModel(controller).initListeners());
+        putNode(new Path( "map"),I18N.tr("Map configuration"));
+        put(new Path( "map.editor" ), I18N.tr("MapEditor"), new MapEditorPreferenceModel(controller).initListeners());
         
     }
 }
