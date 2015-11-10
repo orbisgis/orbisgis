@@ -33,7 +33,8 @@
                             it.geosolutions.imageio.imageioimpl.*,
                             it.geosolutions.imageio.utilities.*
                         </_exportcontents>
-                        <Import-Package>*</Import-Package>
+                        <Import-Package>!com.sun.imageio.plugins.*,!com.sun.imageio.spi,!com.sun.media.imageio.stream,
+                            *</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
