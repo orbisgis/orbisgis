@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>orbisgis</artifactId>
+        <groupId>org.orbisgis</groupId>
+        <version>5.2.0-SNAPSHOT</version>
+        <relativePath>../..</relativePath>
+    </parent>
+    <artifactId>geosolutions-imageio-ext-common</artifactId>
+    <description>Package imageio-ext-streams and imageio-ext-utilities into a single bundle</description>
+    <name>geosolutions-imageio-ext-common</name>
+    <packaging>bundle</packaging>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <unpackBundle>true</unpackBundle>
+                    <instructions>
+                        <Embed-Dependency>
+                            imageio-ext-streams;scope=compile;inline=true,
+                            imageio-ext-utilities;scope=compile;inline=true
+                        </Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
+                        <Bundle-Version>1.2-SNAPSHOT</Bundle-Version>
+                        <_exportcontents>
+                            it.geosolutions.imageio.stream.*,
+                            it.geosolutions.io.*,
+                            it.geosolutions.imageio.imageioimpl.*,
+                            it.geosolutions.imageio.utilities.*
+                        </_exportcontents>
+                        <Import-Package>*</Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+        <dependencies>
+            <dependency>
+                <groupId>it.geosolutions.imageio-ext</groupId>
+                <artifactId>imageio-ext-streams</artifactId>
+                <version>1.2-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>it.geosolutions.imageio-ext</groupId>
+                <artifactId>imageio-ext-utilities</artifactId>
+                <version>1.2-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+</project>
