@@ -31,6 +31,17 @@
                         <Bundle-Version>3.2-SNAPSHOT</Bundle-Version>
                         <_exportcontents>com.twelvemonkeys.*</_exportcontents>
                         <Import-Package>!com.sun.image.*,!sun.security.action.*,!com.sun.medialib.*,!sun.awt.image.*,!magick, *</Import-Package>
+                        <Require-Capability>osgi.extender;
+                            filter:="(osgi.extender=osgi.serviceloader.registrar)";resolution:=optional
+                        </Require-Capability>
+                        <SPI-Provider>javax.imageio.spi.ServiceRegistry#lookupProviders(java.lang.Class)</SPI-Provider>
+                        <SPI-Consumer>javax.imageio.spi.ServiceRegistry#lookupProviders(java.lang.Class)</SPI-Consumer>
+                        <Provide-Capability>
+                            osgi.serviceloader;
+                            osgi.serviceloader=javax.imageio.spi.ImageWriterSpi,
+                            osgi.serviceloader;
+                            osgi.serviceloader=javax.imageio.spi.ImageReaderSpi
+                        </Provide-Capability>
                     </instructions>
                 </configuration>
             </plugin>
