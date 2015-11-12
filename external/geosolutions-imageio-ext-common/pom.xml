@@ -33,8 +33,17 @@
                             it.geosolutions.imageio.imageioimpl.*,
                             it.geosolutions.imageio.utilities.*
                         </_exportcontents>
-                        <Import-Package>!com.sun.imageio.plugins.*,!com.sun.imageio.spi,!com.sun.media.imageio.stream,
-                            *</Import-Package>
+                        <Require-Capability>osgi.extender;
+                            filter:="(osgi.extender=osgi.serviceloader.registrar)";resolution:=optional
+                        </Require-Capability>
+                        <SPI-Provider>javax.imageio.spi.ServiceRegistry#lookupProviders(java.lang.Class)</SPI-Provider>
+                        <SPI-Consumer>javax.imageio.spi.ServiceRegistry#lookupProviders(java.lang.Class)</SPI-Consumer>
+                        <Provide-Capability>
+                            osgi.serviceloader;
+                            osgi.serviceloader=javax.imageio.spi.ImageInputStreamSpi,
+                            osgi.serviceloader;
+                            osgi.serviceloader=javax.imageio.spi.ImageOutputStreamSpi
+                        </Provide-Capability>
                     </instructions>
                 </configuration>
             </plugin>

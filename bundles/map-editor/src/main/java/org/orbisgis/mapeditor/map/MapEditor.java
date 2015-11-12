@@ -28,8 +28,6 @@
  */
 package org.orbisgis.mapeditor.map;
 
-import com.sun.media.jai.codecimpl.TIFFImage;
-import com.twelvemonkeys.imageio.plugins.tiff.TIFFImageReaderSpi;
 import com.vividsolutions.jts.geom.Envelope;
 
 import java.awt.BorderLayout;
@@ -62,10 +60,11 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import javax.imageio.spi.ImageInputStreamSpi;
+import javax.imageio.spi.ImageOutputStreamSpi;
 import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.spi.ImageWriterSpi;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -210,6 +209,53 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         registry.deregisterServiceProvider(imageReaderSpi, ImageReaderSpi.class);
     }
 
+    /**
+     * Register ImageIO services propagated through OSGi to local ImageIO register
+     * @param imageWriterSpi ImageWriter factory
+     */
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    public void addImageWriterSpi(ImageWriterSpi imageWriterSpi) {
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        registry.registerServiceProvider(imageWriterSpi, ImageWriterSpi.class);
+    }
+
+    public void removeImageWriterSpi(ImageWriterSpi imageWriterSpi) {
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        registry.deregisterServiceProvider(imageWriterSpi, ImageWriterSpi.class);
+    }
+
+
+    /**
+     * Register ImageIO services propagated through OSGi to local ImageIO register
+     * @param imageInputStreamSpi new instance
+     */
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    public void addImageInputStreamSPI(ImageInputStreamSpi imageInputStreamSpi) {
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        registry.registerServiceProvider(imageInputStreamSpi, ImageInputStreamSpi.class);
+    }
+
+    public void removeImageInputStreamSPI(ImageInputStreamSpi imageInputStreamSpi) {
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        registry.deregisterServiceProvider(imageInputStreamSpi, ImageInputStreamSpi.class);
+    }
+
+    /**
+     * Register ImageIO services propagated through OSGi to local ImageIO register
+     * @param imageOutputStreamSpi new instance
+     */
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    public void addImageOutputStreamSPI(ImageOutputStreamSpi imageOutputStreamSpi) {
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        registry.registerServiceProvider(imageOutputStreamSpi, ImageOutputStreamSpi.class);
+    }
+
+    public void removeImageOutputStreamSPI(ImageOutputStreamSpi imageOutputStreamSpi) {
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        registry.deregisterServiceProvider(imageOutputStreamSpi, ImageOutputStreamSpi.class);
+    }
+
+
     @Reference
     public void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
@@ -250,9 +296,6 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
     @Activate
     public void activate() {
-        // Register non-Osgi ImageIO drivers
-        IIORegistry.getDefaultInstance().registerServiceProvider(new TIFFImageReaderSpi());
-
         this.mapsManager = new MapsManager(viewWorkspace.getMapContextPath(),dataManager, editorManager);
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("map_editor");
