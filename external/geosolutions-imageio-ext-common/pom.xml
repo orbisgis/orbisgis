@@ -7,8 +7,9 @@
         <version>5.2.0-SNAPSHOT</version>
         <relativePath>../..</relativePath>
     </parent>
-    <artifactId>twelvemonkeys-osgi</artifactId>
-    <name>twelvemonkeys-osgi</name>
+    <artifactId>geosolutions-imageio-ext-common</artifactId>
+    <description>Package imageio-ext-streams and imageio-ext-utilities into a single bundle</description>
+    <name>geosolutions-imageio-ext-common</name>
     <packaging>bundle</packaging>
     <build>
         <plugins>
@@ -21,16 +22,17 @@
                     <unpackBundle>true</unpackBundle>
                     <instructions>
                         <Embed-Dependency>
-                            imageio-tiff;scope=compile;inline=true,
-                            imageio-core;scope=compile;inline=true,
-                            imageio-metadata;scope=compile;inline=true,
-                            common-io;scope=compile;inline=true,
-                            common-lang;scope=compile;inline=true,
-                            common-image;scope=compile;inline=true</Embed-Dependency>
+                            imageio-ext-streams;scope=compile;inline=true,
+                            imageio-ext-utilities;scope=compile;inline=true
+                        </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
-                        <Bundle-Version>3.2-SNAPSHOT</Bundle-Version>
-                        <_exportcontents>com.twelvemonkeys.*</_exportcontents>
-                        <Import-Package>!com.sun.image.*,!sun.security.action.*,!com.sun.medialib.*,!sun.awt.image.*,!magick, *</Import-Package>
+                        <Bundle-Version>1.2-SNAPSHOT</Bundle-Version>
+                        <_exportcontents>
+                            it.geosolutions.imageio.stream.*,
+                            it.geosolutions.io.*,
+                            it.geosolutions.imageio.imageioimpl.*,
+                            it.geosolutions.imageio.utilities.*
+                        </_exportcontents>
                         <Require-Capability>osgi.extender;
                             filter:="(osgi.extender=osgi.serviceloader.registrar)";resolution:=optional
                         </Require-Capability>
@@ -38,9 +40,9 @@
                         <SPI-Consumer>javax.imageio.spi.ServiceRegistry#lookupProviders(java.lang.Class)</SPI-Consumer>
                         <Provide-Capability>
                             osgi.serviceloader;
-                            osgi.serviceloader=javax.imageio.spi.ImageWriterSpi,
+                            osgi.serviceloader=javax.imageio.spi.ImageInputStreamSpi,
                             osgi.serviceloader;
-                            osgi.serviceloader=javax.imageio.spi.ImageReaderSpi
+                            osgi.serviceloader=javax.imageio.spi.ImageOutputStreamSpi
                         </Provide-Capability>
                     </instructions>
                 </configuration>
@@ -52,19 +54,14 @@
     </properties>
         <dependencies>
             <dependency>
-                <groupId>com.twelvemonkeys.imageio</groupId>
-                <artifactId>imageio-tiff</artifactId>
-                <version>3.2-SNAPSHOT</version>
+                <groupId>it.geosolutions.imageio-ext</groupId>
+                <artifactId>imageio-ext-streams</artifactId>
+                <version>1.2-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.twelvemonkeys.imageio</groupId>
-                <artifactId>imageio-core</artifactId>
-                <version>3.2-SNAPSHOT</version>
+                <groupId>it.geosolutions.imageio-ext</groupId>
+                <artifactId>imageio-ext-utilities</artifactId>
+                <version>1.2-SNAPSHOT</version>
             </dependency>
-            <dependency>
-                <groupId>com.twelvemonkeys.imageio</groupId>
-                <artifactId>imageio-metadata</artifactId>
-                <version>3.2-SNAPSHOT</version>
-            </dependency>
-    </dependencies>
+        </dependencies>
 </project>

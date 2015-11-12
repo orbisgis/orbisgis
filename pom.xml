@@ -67,6 +67,8 @@
                         <module>external/itextpdf</module>
                         <module>external/jai</module>
                         <module>external/twelvemonkeys</module>
+                        <module>external/geosolutions-imageio-ext-common</module>
+                        <module>external/geosolutions-imageio-ext-arcgrid</module>
                         <module>bundles/orbistoolbox-api</module>
                         <module>bundles/orbistoolbox</module>
                         <module>orbisgis-dist</module>

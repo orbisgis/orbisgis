@@ -101,7 +101,8 @@
                                 org.postgis,
                                 org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla,
                                 com.lowagie, rhino,
-                                org.easymock, net.sf.kxml, xmlpull,com.twelvemonkeys.imageio, com.twelvemonkeys.common
+                                org.easymock, net.sf.kxml, xmlpull,com.twelvemonkeys.imageio, com.twelvemonkeys.common,
+                                it.geosolutions.imageio-ext
                             </excludeGroupIds>
                             <excludeArtifactIds>pax-logging-api, slf4j-api, markdown4j,
                                 org.apache.felix.scr.ds-annotations,org.osgi.core,
@@ -291,6 +292,18 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>itext-osgi</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>geosolutions-imageio-ext-arcgrid</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>geosolutions-imageio-ext-common</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
