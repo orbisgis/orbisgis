@@ -70,12 +70,12 @@ public class GeoDataUI implements DataUI{
         if(inputOrOutput instanceof Input){
             Input input = (Input)inputOrOutput;
             geoData = (GeoData)input.getDataDescription();
-            extensionMap = ToolBox.getImportableSpatialFormat();
+            extensionMap = ToolBox.getImportableFormat(true);
         }
         if(inputOrOutput instanceof Output){
             Output output = (Output)inputOrOutput;
             geoData = (GeoData)output.getDataDescription();
-            extensionMap = ToolBox.getExportableSpatialFormat();
+            extensionMap = ToolBox.getExportableFormat(true);
         }
         if(geoData == null || extensionMap == null){
             return panel;
@@ -130,7 +130,7 @@ public class GeoDataUI implements DataUI{
             dataComponent = new JPanel(new BorderLayout());
             //Instantiate the component
             JComboBox<String> box = new JComboBox<>();
-            for(String tableName : ToolBox.getGeoTableList()){
+            for(String tableName : ToolBox.getGeocatalogTableList(false)){
                 box.addItem(tableName);
             }
             box.addItem("<new table>");

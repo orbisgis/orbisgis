@@ -45,10 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -278,10 +275,47 @@ public class ToolBox implements DockingPanel {
     }
 
     /**
-     * Returns the list of geo sql table from OrbisGIS.
+     * Returns a map of the importable format.
+     * The map key is the format extension and the value is the format description.
+     * @param onlySpatial If true, returns only the spatial table.
+     * @return a map of the importable  format.
+     */
+    public static Map<String, String> getImportableFormat(boolean onlySpatial){
+        Map<String, String> formatMap = new HashMap<>();
+        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
+            for(String ext : df.getImportFormats()){
+                if(df.isSpatialFormat(ext) || !onlySpatial) {
+                    formatMap.put(ext, df.getFormatDescription(ext));
+                }
+            }
+        }
+        return formatMap;
+    }
+
+    /**
+     * Returns a map of the exportable spatial format.
+     * The map key is the format extension and the value is the format description.
+     * @param onlySpatial If true, returns only the spatial table.
+     * @return a map of the exportable spatial format.
+     */
+    public static Map<String, String> getExportableFormat(boolean onlySpatial){
+        Map<String, String> formatMap = new HashMap<>();
+        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
+            for(String ext : df.getExportFormats()){
+                if(df.isSpatialFormat(ext) || !onlySpatial) {
+                    formatMap.put(ext, df.getFormatDescription(ext));
+                }
+            }
+        }
+        return formatMap;
+    }
+
+    /**
+     * Returns the list of sql table from OrbisGIS.
+     * @param onlySpatial If true, returns only the spatial table.
      * @return The list of geo sql table from OrbisGIS.
      */
-    public static List<String> getGeoTableList(){
+    public static List<String> getGeocatalogTableList(boolean onlySpatial) {
         List<String> list = new ArrayList<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();
@@ -293,78 +327,26 @@ public class ToolBox implements DockingPanel {
             } catch (AbstractMethodError | Exception ex) {
                 // Driver has been compiled with JAVA 6, or is not implemented
             }
-            Statement st = connection.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM "+defaultSchema+".geometry_columns");
-            while(rs.next()) {
-                list.add(rs.getString("F_TABLE_NAME"));
+            if(onlySpatial) {
+                DatabaseMetaData md = connection.getMetaData();
+                ResultSet rs = md.getTables(null, defaultSchema, "%", null);
+                while (rs.next()) {
+                    String tableName = rs.getString("F_TABLE_NAME");
+                    if (!tableName.equalsIgnoreCase("SPATIAL_REF_SYS") && !tableName.equalsIgnoreCase("GEOMETRY_COLUMNS")) {
+                        list.add(tableName);
+                    }
+                }
+            }
+            else{
+                Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery("SELECT * FROM "+defaultSchema+".geometry_columns");
+                while(rs.next()) {
+                    list.add(rs.getString("F_TABLE_NAME"));
+                }
             }
         } catch (SQLException e) {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return list;
-    }
-
-    /**
-     * Returns a map of the importable spatial format.
-     * The map key is the format extension and the value is the format description.
-     * @return a map of the importable spatial format.
-     */
-    public static Map<String, String> getImportableSpatialFormat(){
-        Map<String, String> formatMap = new HashMap<>();
-        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
-            for(String ext : df.getImportFormats()){
-                if(df.isSpatialFormat(ext)) {
-                    formatMap.put(ext, df.getFormatDescription(ext));
-                }
-            }
-        }
-        return formatMap;
-    }
-
-    /**
-     * Returns a map of the importable format.
-     * The map key is the format extension and the value is the format description.
-     * @return a map of the importable  format.
-     */
-    public static Map<String, String> getImportableFormat(){
-        Map<String, String> formatMap = new HashMap<>();
-        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
-            for(String ext : df.getImportFormats()){
-                formatMap.put(ext, df.getFormatDescription(ext));
-            }
-        }
-        return formatMap;
-    }
-
-    /**
-     * Returns a map of the exportable spatial format.
-     * The map key is the format extension and the value is the format description.
-     * @return a map of the exportable spatial format.
-     */
-    public static Map<String, String> getExportableSpatialFormat(){
-        Map<String, String> formatMap = new HashMap<>();
-        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
-            for(String ext : df.getExportFormats()){
-                if(df.isSpatialFormat(ext)) {
-                    formatMap.put(ext, df.getFormatDescription(ext));
-                }
-            }
-        }
-        return formatMap;
-    }
-
-    /**
-     * Returns a map of the exportable spatial format.
-     * The map key is the format extension and the value is the format description.
-     * @return a map of the exportable spatial format.
-     */
-    public static Map<String, String> getExportableFormat(){
-        Map<String, String> formatMap = new HashMap<>();
-        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
-            for(String ext : df.getExportFormats()){
-                formatMap.put(ext, df.getFormatDescription(ext));
-            }
-        }
-        return formatMap;
     }
 }

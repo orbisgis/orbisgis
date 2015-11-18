@@ -51,10 +51,10 @@ public class DataStoreParser implements Parser{
         boolean isDataBase = false;
 
         if(dataStoreAttribute.isSpatial()){
-            importableFormat = new ArrayList<>(ToolBox.getImportableSpatialFormat().keySet());
+            importableFormat = new ArrayList<>(ToolBox.getImportableFormat(true).keySet());
         }
         else{
-            importableFormat = new ArrayList<>(ToolBox.getImportableFormat().keySet());
+            importableFormat = new ArrayList<>(ToolBox.getImportableFormat(false).keySet());
         }
         //If there is extension, test if it is recognized by OrbisGIS and register it.
         if(dataStoreAttribute.extensions().length!=0) {
@@ -124,10 +124,10 @@ public class DataStoreParser implements Parser{
         boolean isDataBase = false;
 
         if(dataStoreAttribute.isSpatial()){
-            exportableGeoFormat = new ArrayList<>(ToolBox.getExportableSpatialFormat().keySet());
+            exportableGeoFormat = new ArrayList<>(ToolBox.getExportableFormat(true).keySet());
         }
         else{
-            exportableGeoFormat = new ArrayList<>(ToolBox.getExportableFormat().keySet());
+            exportableGeoFormat = new ArrayList<>(ToolBox.getExportableFormat(false).keySet());
         }
 
         //If there is extension, test if it is recognized by OrbisGIS and register it.

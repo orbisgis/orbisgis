@@ -45,7 +45,7 @@ public class GeoDataParser implements Parser{
         //Instantiate the GeoData and its formats
         GeoDataAttribute geoDataAttribute = f.getAnnotation(GeoDataAttribute.class);
         List<Format> formatList;
-        List<String> importableGeoFormat = new ArrayList<>(ToolBox.getImportableSpatialFormat().keySet());
+        List<String> importableGeoFormat = new ArrayList<>(ToolBox.getImportableFormat(true).keySet());
         //If there is extension, test if it is recognized by OrbisGIS and register it.
         if(geoDataAttribute.extensions().length!=0) {
             for(String extension : geoDataAttribute.extensions()){
@@ -85,7 +85,7 @@ public class GeoDataParser implements Parser{
         //Instantiate the GeoData and its formats
         GeoDataAttribute geoDataAttribute = f.getAnnotation(GeoDataAttribute.class);
         List<Format> formatList;
-        List<String> exportableGeoFormat = new ArrayList<>(ToolBox.getExportableSpatialFormat().keySet());
+        List<String> exportableGeoFormat = new ArrayList<>(ToolBox.getExportableFormat(true).keySet());
         //If there is extension, test if it is recognized by OrbisGIS and register it.
         if(geoDataAttribute.extensions().length!=0) {
             for(String extension : geoDataAttribute.extensions()){

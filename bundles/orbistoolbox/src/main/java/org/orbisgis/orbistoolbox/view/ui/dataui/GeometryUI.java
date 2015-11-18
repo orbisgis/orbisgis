@@ -61,7 +61,7 @@ public class GeometryUI implements DataUI {
         if(inputOrOutput instanceof Input){
             Input input = (Input)inputOrOutput;
             geometryData = (GeometryData)input.getDataDescription();
-            extensionMap = ToolBox.getImportableSpatialFormat();
+            extensionMap = ToolBox.getImportableFormat(true);
         }
         if(inputOrOutput instanceof Output){
             return new JPanel();
