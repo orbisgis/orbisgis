@@ -322,6 +322,21 @@ public class ToolBox implements DockingPanel {
     }
 
     /**
+     * Returns a map of the importable format.
+     * The map key is the format extension and the value is the format description.
+     * @return a map of the importable  format.
+     */
+    public static Map<String, String> getImportableFormat(){
+        Map<String, String> formatMap = new HashMap<>();
+        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
+            for(String ext : df.getImportFormats()){
+                formatMap.put(ext, df.getFormatDescription(ext));
+            }
+        }
+        return formatMap;
+    }
+
+    /**
      * Returns a map of the exportable spatial format.
      * The map key is the format extension and the value is the format description.
      * @return a map of the exportable spatial format.
@@ -333,6 +348,21 @@ public class ToolBox implements DockingPanel {
                 if(df.isSpatialFormat(ext)) {
                     formatMap.put(ext, df.getFormatDescription(ext));
                 }
+            }
+        }
+        return formatMap;
+    }
+
+    /**
+     * Returns a map of the exportable spatial format.
+     * The map key is the format extension and the value is the format description.
+     * @return a map of the exportable spatial format.
+     */
+    public static Map<String, String> getExportableFormat(){
+        Map<String, String> formatMap = new HashMap<>();
+        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
+            for(String ext : df.getExportFormats()){
+                formatMap.put(ext, df.getFormatDescription(ext));
             }
         }
         return formatMap;

@@ -42,6 +42,9 @@ public class FormatFactory {
     public static final String GEOMETRY_EXTENSION = "geometry";
     public static final String OTHER_EXTENSION = "*";
 
+    public static final String GEOCATALOG_EXTENSION = "geocatalog";
+    public static final String DATABASE_EXTENSION = "dataBase";
+
     public static final String SHAPEFILE_MIMETYPE = "application/octet-stream";
     public static final String GEOJSON_MIMETYPE = "application/json";
     public static final String SQL_MIMETYPE = "custom/sql";
