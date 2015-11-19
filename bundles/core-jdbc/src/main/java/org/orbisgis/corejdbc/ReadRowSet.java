@@ -5,8 +5,6 @@ import org.orbisgis.commons.progress.ProgressMonitor;
 
 import javax.sql.rowset.JdbcRowSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
 
@@ -19,6 +17,7 @@ import java.util.concurrent.locks.Lock;
 public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
     /**
      * @return Number of rows inside the table
+     * @throws java.sql.SQLException
      */
     long getRowCount() throws SQLException;
 

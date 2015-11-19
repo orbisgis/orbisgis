@@ -29,6 +29,7 @@
 
 package org.orbisgis.tablegui.impl;
 
+import java.awt.Component;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
@@ -51,7 +52,8 @@ public class ActionAddColumn extends AbstractAction implements ActionDispose {
     private static final I18n I18N = I18nFactory.getI18n(ActionAddColumn.class);
     private final Logger logger = LoggerFactory.getLogger(ActionAddColumn.class);
     private final PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, this, "updateEnabledState");
-
+    private Component parentComponent;
+    
     /**
      * Constructor
      * @param editable Table editable instance
@@ -61,6 +63,7 @@ public class ActionAddColumn extends AbstractAction implements ActionDispose {
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
         putValue(ActionTools.MENU_ID,TableEditorActions.A_ADD_FIELD);
         this.editable = editable;
+        this.parentComponent = parentComponent;
         updateEnabledState();
         editable.addPropertyChangeListener(TableEditableElement.PROP_EDITING,
                 listener);
@@ -81,7 +84,9 @@ public class ActionAddColumn extends AbstractAction implements ActionDispose {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if(editable.isEditing()) {
-
+            //Create panel to add a column
+            
+            
         }
     }
 }
