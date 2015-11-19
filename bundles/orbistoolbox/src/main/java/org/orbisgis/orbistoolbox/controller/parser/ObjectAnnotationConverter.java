@@ -258,6 +258,16 @@ public class ObjectAnnotationConverter {
         process.setLanguage(Locale.forLanguageTag(processAttribute.language()));
     }
 
+    public static DataStore annotationToObject(DataStoreAttribute dataStoreAttribute, List<Format> formatList) {
+        try {
+            return new DataStore(formatList);
+        } catch (MalformedScriptException e) {
+            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
+            return null;
+        }
+    }
+
+
     /**
      * Returns the process identifier and if their is not, return an URI build around its title.
      * @return String process identifier.

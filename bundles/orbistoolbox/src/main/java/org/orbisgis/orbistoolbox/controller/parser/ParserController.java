@@ -58,6 +58,7 @@ public class ParserController {
         parserList.add(new BoundingBoxParser());
         parserList.add(new GeoDataParser());
         parserList.add(new GeometryParser());
+        parserList.add(new DataStoreParser());
         defaultParser = new DefaultParser();
         processParser = new ProcessParser();
         groovyClassLoader = new GroovyShell().getClassLoader();
