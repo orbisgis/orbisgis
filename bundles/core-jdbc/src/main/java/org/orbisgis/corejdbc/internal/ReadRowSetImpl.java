@@ -129,6 +129,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     // When close is called, in how many ms the result set is really closed
     private int closeDelay = 0;
     protected boolean isH2;
+    // The primary key may be not required by user but included in batch query
+    private int columnOffset = 0;
 
 
     /**
@@ -532,6 +534,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         }
         if(resultSetHolder.getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
             cacheColumnNames();
+            columnOffset = cachedColumnNames.containsKey(pk_name) ? 0 : 1;
             PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
             try (Resource resource = resultSetHolder.getResource()) {
@@ -643,7 +646,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         try(Resource res = resultSetHolder.getResource()) {
             ResultSet resultSet = res.getResultSet();
             resultSet.absolute(getBatchRow());
-            cell = resultSet.getObject(i);
+            cell = resultSet.getObject(i + columnOffset);
         }
         setWasNull(cell == null);
         return cell;
@@ -817,14 +820,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public void refreshRow() throws SQLException {
-        try(Resource res = resultSetHolder.getResource()) {
-            currentBatchId = -1;
-            if(res.getResultSet().getRow() > 0 && !res.getResultSet().isAfterLast()) {
-                res.getResultSet().refreshRow();
-            }
-        } catch (SQLException ex) {
-            LOGGER.warn(ex.getLocalizedMessage(), ex);
-        }
+        currentBatchId = -1;
+        resultSetHolder.close();
     }
 
     @Override
@@ -1594,7 +1591,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         try(Resource res = resultSetHolder.getResource()) {
             ResultSet resultSet = res.getResultSet();
             resultSet.absolute(getBatchRow());
-            value = resultSet.getAsciiStream(i);
+            value = resultSet.getAsciiStream(i + columnOffset);
         }
         setWasNull(value == null);
         return value;
@@ -1608,7 +1605,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         try(Resource res = resultSetHolder.getResource()) {
             ResultSet resultSet = res.getResultSet();
             resultSet.absolute(getBatchRow());
-            value = resultSet.getUnicodeStream(i);
+            value = resultSet.getUnicodeStream(i + columnOffset);
         }
         setWasNull(value == null);
         return value;
@@ -1622,7 +1619,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         try(Resource res = resultSetHolder.getResource()) {
             ResultSet resultSet = res.getResultSet();
             resultSet.absolute(getBatchRow());
-            value = resultSet.getBinaryStream(i);
+            value = resultSet.getBinaryStream(i + columnOffset);
         }
         setWasNull(value == null);
         return value;
@@ -1636,7 +1633,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         try(Resource res = resultSetHolder.getResource()) {
             ResultSet resultSet = res.getResultSet();
             resultSet.absolute(getBatchRow());
-            value = resultSet.getCharacterStream(i);
+            value = resultSet.getCharacterStream(i + columnOffset);
         }
         setWasNull(value == null);
         return value;
@@ -1650,7 +1647,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         try(Resource res = resultSetHolder.getResource()) {
             ResultSet resultSet = res.getResultSet();
             resultSet.absolute(getBatchRow());
-            value = resultSet.getBlob(i);
+            value = resultSet.getBlob(i + columnOffset);
         }
         setWasNull(value == null);
         return value;
@@ -1664,7 +1661,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         try(Resource res = resultSetHolder.getResource()) {
             ResultSet resultSet = res.getResultSet();
             resultSet.absolute(getBatchRow());
-            value = resultSet.getClob(i);
+            value = resultSet.getClob(i + columnOffset);
         }
         setWasNull(value == null);
         return value;
