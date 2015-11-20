@@ -87,7 +87,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MapControl extends JComponent implements ContainerListener {
         //Minimal Time in ms between two intermediate paint of drawing process
-        private ResultSetProviderFactory resultSetProviderFactory = new DefaultResultSetProviderFactory();//new CachedResultSetContainer();
+        private ResultSetProviderFactory resultSetProviderFactory = new CachedResultSetContainer();
         private static final Point MAX_IMAGE_SIZE = new Point(20000, 20000);
         private static final Logger LOGGER = LoggerFactory.getLogger(MapControl.class);
         private static final I18n I18N = I18nFactory.getI18n(MapControl.class);

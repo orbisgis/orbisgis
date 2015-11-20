@@ -31,7 +31,6 @@ package org.orbisgis.corejdbc.internal;
 import com.vividsolutions.jts.geom.Geometry;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
-import org.apache.commons.collections4.map.LRUMap;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSetMetaData;
@@ -82,10 +81,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
@@ -98,17 +95,15 @@ import java.util.regex.Pattern;
  *
  * @author Nicolas Fortin
  */
-public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSource, SpatialResultSetMetaData, ReadRowSet {
-    private static final int WAITING_FOR_RESULTSET = 5;
+public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSource, SpatialResultSetMetaData, ReadRowSet, ResultSetProvider {
+
     public static final int DEFAULT_FETCH_SIZE = 30;
-    public static final int DEFAULT_CACHE_SIZE = 100;
     // Like binary search, max intermediate batch fetching
     private static final int MAX_INTERMEDIATE_BATCH = 5;
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadRowSetImpl.class);
     protected static final I18n I18N = I18nFactory.getI18n(ReadRowSetImpl.class, Locale.getDefault(), I18nFactory.FALLBACK);
     protected TableLocation location;
     protected final DataSource dataSource;
-    protected Row currentRow;
     protected long rowId = 0;
     /** If the table has been updated or never read, rowCount is set to -1 (unknown) */
     protected long cachedRowCount = -1;
@@ -128,15 +123,14 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     protected final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
     protected final Lock readLock = rwl.writeLock(); // Read here is exclusive
     protected int fetchSize = DEFAULT_FETCH_SIZE;
-    // Cache of requested rows
-    protected Map<Long, Row> cache = new LRUMap<>(DEFAULT_CACHE_SIZE);
     // Cache of last queried batch
     protected long currentBatchId = -1;
-    protected List<Row> currentBatch = new ArrayList<>();
     private int fetchDirection = FETCH_UNKNOWN;
     // When close is called, in how many ms the result set is really closed
     private int closeDelay = 0;
     protected boolean isH2;
+    // The primary key may be not required by user but included in batch query
+    private int columnOffset = 0;
 
 
     /**
@@ -146,7 +140,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
      */
     public ReadRowSetImpl(DataSource dataSource) {
         this.dataSource = dataSource;
-        resultSetHolder = new ResultSetHolder(fetchSize, this);
+        resultSetHolder = new ResultSetHolder(dataSource, this);
     }
 
     @Override
@@ -159,6 +153,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     }
 
     protected void checkColumnIndex(int columnIndex) throws SQLException {
+        if(cachedColumnCount == -1) {
+            getColumnCount();
+        }
         if(columnIndex < 1 || columnIndex > cachedColumnCount) {
             throw new SQLException(new IndexOutOfBoundsException("Column index "+columnIndex+" out of bound[1-"+cachedColumnCount+"]"));
         }
@@ -167,7 +164,11 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public long getPk() throws SQLException {
         checkCurrentRow();
-        return currentRow.pk;
+        try(Resource res = resultSetHolder.getResource()) {
+            ResultSet resultSet = res.getResultSet();
+            resultSet.absolute(getBatchRow());
+            return resultSet.getLong(pk_name);
+        }
     }
 
     @Override
@@ -182,43 +183,43 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             Iterator<Long> fetchPkIt = pkSet.iterator();
             int batchIterId = -1;
             List<Long> batchPK = new ArrayList<>(fetchSize);
-            while (fetchPkIt.hasNext()) {
-                Long fetchPk = fetchPkIt.next();
-                if(fetchPk != null) {
-                    if(batchIterId == -1 || fetchPk > batchPK.get(batchPK.size() - 1)) {
-                        batchPK.clear();
-                        // Iterate through batch until next PK is superior than search pk.
-                        // For optimisation sake, a binary search could be faster than serial search
-                        Long nextPk;
-                        final int batchCount = getBatchCount();
-                        do  {
-                            batchIterId++;
-                            if (batchIterId + 1 >= rowFetchFirstPk.size() || rowFetchFirstPk.get(batchIterId + 1) == null) {
-                                fetchBatchPk(batchIterId + 1);
+            try(Connection connection = dataSource.getConnection()) {
+                while (fetchPkIt.hasNext()) {
+                    Long fetchPk = fetchPkIt.next();
+                    if (fetchPk != null) {
+                        if (batchIterId == -1 || fetchPk > batchPK.get(batchPK.size() - 1)) {
+                            batchPK.clear();
+                            // Iterate through batch until next PK is superior than search pk.
+                            // For optimisation sake, a binary search could be faster than serial search
+                            Long nextPk;
+                            final int batchCount = getBatchCount();
+                            do {
+                                batchIterId++;
+                                if (batchIterId + 1 >= rowFetchFirstPk.size() || rowFetchFirstPk.get(batchIterId + 1) == null) {
+                                    fetchBatchPk(connection, batchIterId + 1);
+                                }
+                                nextPk = rowFetchFirstPk.get(batchIterId + 1);
+                            } while (nextPk < fetchPk && batchIterId + 1 < batchCount - 1);
+                            if (nextPk <= fetchPk) {
+                                batchIterId++;
                             }
-                            nextPk = rowFetchFirstPk.get(batchIterId + 1);
-                        } while (nextPk < fetchPk && batchIterId + 1 < batchCount - 1);
-                        if(nextPk <= fetchPk) {
-                            batchIterId++;
                         }
-                    }
-                    fetchBatchPk(batchIterId);
-                    Long batchFirstPk = rowFetchFirstPk.get(batchIterId);
-                    // We are in good batch
-                    // Query only PK for this batch
-                    if(batchPK.isEmpty()) {
-                        try (Connection connection = dataSource.getConnection();
-                             PreparedStatement st = createBatchQuery(connection, batchFirstPk, false, 0, fetchSize,
-                                     true)) {
-                            try (ResultSet rs = st.executeQuery()) {
-                                while (rs.next()) {
-                                    batchPK.add(rs.getLong(1));
+                        fetchBatchPk(connection, batchIterId);
+                        Long batchFirstPk = rowFetchFirstPk.get(batchIterId);
+                        // We are in good batch
+                        // Query only PK for this batch
+                        if (batchPK.isEmpty()) {
+                            try (PreparedStatement st = createBatchQuery(connection, batchFirstPk, false, 0, fetchSize, true)) {
+                                try (ResultSet rs = st.executeQuery()) {
+                                    while (rs.next()) {
+                                        batchPK.add(rs.getLong(1));
+                                    }
                                 }
                             }
                         }
+                        // Target batch is in memory, just find the target pk index in it
+                        rowsNum.add(batchIterId * fetchSize + Collections.binarySearch(batchPK, fetchPk) + 1);
                     }
-                    // Target batch is in memory, just find the target pk index in it
-                    rowsNum.add(batchIterId * fetchSize + Collections.binarySearch(batchPK, fetchPk) + 1);
                 }
             }
         }
@@ -237,31 +238,21 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         if(rowId < 1 || rowId > getRowCount()) {
             throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
         }
-        if(currentRow == null) {
-            refreshRowCache();
-            if(currentRow == null) {
-                throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
-            }
+        if(currentBatchId == -1) {
+            syncRowBatch();
         }
     }
 
     protected void cacheColumnNames() throws SQLException {
         cachedColumnNames = new DualHashBidiMap<>();
-        try(Resource res = resultSetHolder.getResource()) {
-            ResultSetMetaData meta = res.getResultSet().getMetaData();
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement preparedStatement = createPreparedStatement(connection, select_fields, "", "LIMIT 0")) {
+            ResultSetMetaData meta = preparedStatement.getMetaData();
             for (int idColumn = 1; idColumn <= meta.getColumnCount(); idColumn++) {
                 cachedColumnNames.put(meta.getColumnName(idColumn), idColumn);
             }
         }
     }
-
-    /**
-     * Clear local cache of rows
-     */
-    protected void clearRowCache() {
-        currentRow = null;
-    }
-
 
     private PreparedStatement createBatchQuery(Connection connection, Long firstPk, boolean cacheData, int queryOffset, int limit, boolean queryPk) throws SQLException {
         StringBuilder command = new StringBuilder();
@@ -303,7 +294,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             command.append(" OFFSET ");
             command.append(queryOffset);
         }
-        PreparedStatement st = connection.prepareStatement(command.toString());
+        PreparedStatement st = connection.prepareStatement(command.toString(), ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
         for(Map.Entry<Integer, Object> entry : parameters.entrySet()) {
             st.setObject(entry.getKey(), entry.getValue());
         }
@@ -318,6 +310,22 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         return st;
     }
 
+    private Long getNextBatchPk(ResultSet rsBatch, boolean cacheData) throws SQLException {
+        rsBatch.beforeFirst();
+        int curRow = 1;
+        while (rsBatch.next()) {
+            long currentRowPk = rsBatch.getLong(pk_name);
+            if (cacheData) {
+                if (curRow++ == fetchSize + 1) {
+                    return rsBatch.getLong(pk_name);
+                }
+            } else {
+                return currentRowPk;
+            }
+        }
+        return null;
+    }
+
     /**
      * Fetch a batch that start with firstPk
      *
@@ -327,127 +335,77 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
      * @return Pk of next batch
      * @throws SQLException
      */
-    private Long fetchBatch(Long firstPk, boolean cacheData, int queryOffset) throws SQLException {
-        if (cacheData) {
-            currentBatch.clear();
-        }
-        final int columnCount = getColumnCount();
-        if (cachedColumnNames == null) {
-            cacheColumnNames();
-        }
+    private ResultSet fetchBatch(Connection connection, Long firstPk, boolean cacheData, int queryOffset) throws SQLException {
         boolean ignoreFirstColumn = !cachedColumnNames.containsKey(pk_name);
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement st = createBatchQuery(connection, firstPk, cacheData, queryOffset, cacheData ?
-                     fetchSize + 1 : 1, ignoreFirstColumn || !cacheData);
-             ResultSet rsBatch = st.executeQuery()) {
+        PreparedStatement st = createBatchQuery(connection, firstPk, cacheData, queryOffset, cacheData ?
+                fetchSize + 1 : 1, ignoreFirstColumn || !cacheData);
+        return st.executeQuery();
+    }
 
-            int curRow = 1;
-            while (rsBatch.next()) {
-                long currentRowPk = rsBatch.getLong(pk_name);
-                if (cacheData) {
-                    int offset = ignoreFirstColumn ? 1 : 0;
-                    Object[] row = new Object[columnCount];
-                    for (int idColumn = 1 + offset; idColumn <= columnCount + offset; idColumn++) {
-                        row[idColumn - 1 - offset] = rsBatch.getObject(idColumn);
-                    }
-                    currentBatch.add(new Row(row, currentRowPk));
-                    if (curRow++ == fetchSize + 1) {
-                        return rsBatch.getLong(pk_name);
-                    }
+    private void syncRowBatch() throws SQLException{
+        final int targetBatch = (int) (rowId - 1) / fetchSize;
+        if(currentBatchId != targetBatch && rowId > 0 && rowId <= getRowCount()) {
+            // Ask ResultSet holder to refresh in order to go to requested batch
+            resultSetHolder.close();
+        }
+    }
+
+
+    /**
+     * Generate ResultSet for background thread
+     * @param connection
+     * @return
+     * @throws SQLException
+     */
+    @Override
+    public ResultSet getResultSet(Connection connection) throws SQLException {
+        final int targetBatch = (int) (rowId - 1) / fetchSize;
+        // Do not use pk if not available or if using indeterminate fetch without filtering
+        // Fetch block pk of current row
+        if (targetBatch >= rowFetchFirstPk.size() || (targetBatch != 0 && rowFetchFirstPk.get(targetBatch) == null)) {
+            // For optimisation sake
+            // Like binary search if the gap of target batch is too wide, require average PK values
+            int topBatchCount = getBatchCount();
+            int lowerBatchCount = 0;
+            int intermediateBatchFetching = 0;
+            while(lowerBatchCount + ((topBatchCount - lowerBatchCount) / 2) != targetBatch &&
+                    intermediateBatchFetching < MAX_INTERMEDIATE_BATCH) {
+                int midleBatchTarget = lowerBatchCount + ((topBatchCount - lowerBatchCount) / 2);
+                if(targetBatch < midleBatchTarget) {
+                    topBatchCount = midleBatchTarget;
                 } else {
-                    return currentRowPk;
+                    if(midleBatchTarget >= rowFetchFirstPk.size() ||
+                            rowFetchFirstPk.get(midleBatchTarget) == null) {
+                        fetchBatchPk(connection, midleBatchTarget);
+                    }
+                    intermediateBatchFetching++;
+                    lowerBatchCount = midleBatchTarget;
                 }
             }
-            return null;
-
+            fetchBatchPk(connection, targetBatch);
         }
+        // Fetch all data of current batch
+        ResultSet resultSet = fetchBatch(connection,rowFetchFirstPk.get(targetBatch), true, 0);
+        Long firstPk = getNextBatchPk(resultSet, true);
+        if(firstPk!=null) {
+            if(targetBatch + 1 < rowFetchFirstPk.size()) {
+                rowFetchFirstPk.set(targetBatch + 1, firstPk);
+            } else {
+                rowFetchFirstPk.add(firstPk);
+            }
+        }
+        currentBatchId = targetBatch;
+        return resultSet;
     }
 
     /**
-     * Read the content of the DB near the current row id
+     * @return {@link ResultSetHolder#getResource()} Batch 1-based row position.
      */
-    protected void refreshRowCache() throws SQLException {
-        if(!cache.containsKey(rowId) && rowId > 0 && rowId <= getRowCount()) {
-            try(Resource res = resultSetHolder.getResource()) {
-                ResultSet rs = res.getResultSet();
-                final int columnCount = getColumnCount();
-                if(cachedColumnNames == null) {
-                    cacheColumnNames();
-                }
-                // Do not use pk if not available or if using indeterminate fetch without filtering
-                if(pk_name.isEmpty()) {
-                    boolean validRow = false;
-                    if(rs.getType() == ResultSet.TYPE_FORWARD_ONLY) {
-                        if(rowId < rs.getRow()) {
-                            // If the result set is Forward only, we have to re-execute the request in order to read the row
-                            resultSetHolder.close();
-                            res.close();
-                            try(Resource res2 = resultSetHolder.getResource()) {
-                                rs = res2.getResultSet();
-                            }
-                        }
-                        while (rs.getRow() < rowId) {
-                            validRow = rs.next();
-                        }
-                    } else {
-                        validRow = rs.absolute((int)rowId);
-                    }
-                    if(validRow) {
-                        Object[] row = new Object[columnCount];
-                        for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                            row[idColumn-1] = rs.getObject(idColumn);
-                        }
-                        cache.put(rowId, new Row(row, null));
-                    }
-                } else {
-                    // Fetch block pk of current row
-                    final int targetBatch = (int) (rowId - 1) / fetchSize;
-                    if (currentBatchId != targetBatch) {
-                        if (targetBatch >= rowFetchFirstPk.size() || (targetBatch != 0 && rowFetchFirstPk.get(targetBatch) == null)) {
-                            // For optimisation sake
-                            // Like binary search if the gap of target batch is too wide, require average PK values
-                            int topBatchCount = getBatchCount();
-                            int lowerBatchCount = 0;
-                            int intermediateBatchFetching = 0;
-                            while(lowerBatchCount + ((topBatchCount - lowerBatchCount) / 2) != targetBatch &&
-                                    intermediateBatchFetching < MAX_INTERMEDIATE_BATCH) {
-                                int midleBatchTarget = lowerBatchCount + ((topBatchCount - lowerBatchCount) / 2);
-                                if(targetBatch < midleBatchTarget) {
-                                    topBatchCount = midleBatchTarget;
-                                } else {
-                                    if(midleBatchTarget >= rowFetchFirstPk.size() ||
-                                            rowFetchFirstPk.get(midleBatchTarget) == null) {
-                                        fetchBatchPk(midleBatchTarget);
-                                    }
-                                    intermediateBatchFetching++;
-                                    lowerBatchCount = midleBatchTarget;
-                                }
-                            }
-                            fetchBatchPk(targetBatch);
-                        }
-                        // Fetch all data of current batch
-                        Long firstPk = fetchBatch(rowFetchFirstPk.get(targetBatch), true, 0);
-                        if(firstPk!=null) {
-                            if(targetBatch + 1 < rowFetchFirstPk.size()) {
-                                rowFetchFirstPk.set(targetBatch + 1, firstPk);
-                            } else {
-                                rowFetchFirstPk.add(firstPk);
-                            }
-                        }
-                        currentBatchId = targetBatch;
-                    }
-                    // Ok, still in current batch
-                    int targetRowInBatch = (int) (rowId - 1) % fetchSize;
-                    if(targetRowInBatch < currentBatch.size()) {
-                        cache.put(rowId, currentBatch.get(targetRowInBatch));
-                    }
-                }
-            }
-        }
-        currentRow = cache.get(rowId);
+    protected int getBatchRow() {
+        return (int) ((rowId - 1) % fetchSize) + 1;
     }
 
-    private void fetchBatchPk(int targetBatch) throws SQLException {
+    private void fetchBatchPk(Connection connection, int targetBatch) throws SQLException {
         Long firstPk = null;
         if (targetBatch >= rowFetchFirstPk.size() || rowFetchFirstPk.get(targetBatch) == null) {
             // Using limit and offset in query try to reduce query time
@@ -464,7 +422,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     lastNullBatchPK--;
                 }
             }
-            firstPk = fetchBatch(firstPk, false, (targetBatch - lastNullBatchPK) * fetchSize);
+            try(ResultSet resultSet = fetchBatch(connection, firstPk, false, (targetBatch - lastNullBatchPK) * fetchSize)) {
+                firstPk = getNextBatchPk(resultSet, false);
+            }
             if(firstPk == null) {
                 throw new SQLException("Algo error");
             }
@@ -573,18 +533,13 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             getRowCount(pm);
         }
         if(resultSetHolder.getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
-            resultSetHolder.setParameters(parameters);
-            if (!pk_name.isEmpty()) {
-                // Always use PK to fetch rows
-                resultSetHolder.setCommand(getCommand() + " LIMIT 0");
-            } else {
-                resultSetHolder.setCommand(getCommand());
-                PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
-                pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
-                try (Resource resource = resultSetHolder.getResource()) {
-                } finally {
-                    pm.removePropertyChangeListener(listener);
-                }
+            cacheColumnNames();
+            columnOffset = cachedColumnNames.containsKey(pk_name) ? 0 : 1;
+            PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
+            pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
+            try (Resource resource = resultSetHolder.getResource()) {
+            } finally {
+                pm.removePropertyChangeListener(listener);
             }
         } else {
             // Clear cache of all rows
@@ -609,7 +564,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public void close() throws SQLException {
-        clearRowCache();
         try {
             resultSetHolder.delayedClose(closeDelay);
         } catch (Exception ex) {
@@ -625,7 +579,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public long getRowCount(ProgressMonitor pm) throws SQLException {
         if(cachedRowCount == -1) {
             try (Connection connection = getConnection();
-                 PreparedStatement st = createPreparedStatement(connection, "COUNT(*) CPT", "")) {
+                 PreparedStatement st = createPreparedStatement(connection, "COUNT(*) CPT", "", "")) {
                 PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
                 pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, listener);
                 try(ResultSet rs = st.executeQuery()) {
@@ -644,8 +598,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         return getRowCount(new NullProgressMonitor());
     }
 
-    protected PreparedStatement createPreparedStatement(Connection connection, String fields, String additionalWhere) throws SQLException {
-        PreparedStatement st = connection.prepareStatement("SELECT "+fields+" "+getCommandWithoutFields(additionalWhere));
+    protected PreparedStatement createPreparedStatement(Connection connection, String fields, String additionalWhere, String endQuery) throws SQLException {
+        PreparedStatement st = connection.prepareStatement("SELECT "+fields+" "+getCommandWithoutFields(additionalWhere)+ " "+ endQuery);
         for(Map.Entry<Integer, Object> entry : parameters.entrySet()) {
             st.setObject(entry.getKey(), entry.getValue());
         }
@@ -688,7 +642,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public Object getObject(int i) throws SQLException {
         checkColumnIndex(i);
         checkCurrentRow();
-        Object cell = currentRow.row[i-1];
+        Object cell = null;
+        try(Resource res = resultSetHolder.getResource()) {
+            ResultSet resultSet = res.getResultSet();
+            resultSet.absolute(getBatchRow());
+            cell = resultSet.getObject(i + columnOffset);
+        }
         setWasNull(cell == null);
         return cell;
     }
@@ -762,14 +721,14 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         rowId = i;
         boolean validRow = !(rowId == 0 || rowId > getRowCount());
         if(validRow) {
-            refreshRowCache();
+            syncRowBatch();
         } else {
-            currentRow = null;
+            currentBatchId = -1;
         }
         if(rowId != oldRowId) {
             notifyCursorMoved();
         }
-        return validRow && currentRow != null;
+        return validRow;
     }
 
     @Override
@@ -795,11 +754,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public void setFetchSize(int i) throws SQLException {
         fetchSize = i;
-        LRUMap<Long, Row> lruMap = new LRUMap<>(fetchSize + 1);
-        lruMap.putAll(cache);
-        cache = lruMap;
         rowFetchFirstPk = new ArrayList<>(Arrays.asList(new Long[]{null}));
-        currentBatch.clear();
         currentBatchId = -1;
     }
 
@@ -849,7 +804,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             Set<Integer> batchIds = new HashSet<>();
             for(int refRowId : rowsIndex) {
                 batchIds.add(refRowId / fetchSize);
-                cache.remove(((long)refRowId));
             }
             for(int batchId : batchIds) {
                 if(batchId < rowFetchFirstPk.size() && batchId >= 0) {
@@ -857,7 +811,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 }
                 if(batchId == currentBatchId) {
                     currentBatchId = -1;
-                    currentBatch = new ArrayList<>(fetchSize + 1);
                 }
             }
         } catch (SQLException ex) {
@@ -867,17 +820,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public void refreshRow() throws SQLException {
-        try(Resource res = resultSetHolder.getResource()) {
-            currentRow = null;
-            cache.clear();
-            currentBatch = new ArrayList<>(fetchSize + 1);
-            currentBatchId = -1;
-            if(res.getResultSet().getRow() > 0 && !res.getResultSet().isAfterLast()) {
-                res.getResultSet().refreshRow();
-            }
-        } catch (SQLException ex) {
-            LOGGER.warn(ex.getLocalizedMessage(), ex);
-        }
+        currentBatchId = -1;
+        resultSetHolder.close();
     }
 
     @Override
@@ -1640,6 +1584,90 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     }
 
     @Override
+    public InputStream getAsciiStream(int i) throws SQLException {
+        checkColumnIndex(i);
+        checkCurrentRow();
+        InputStream value;
+        try(Resource res = resultSetHolder.getResource()) {
+            ResultSet resultSet = res.getResultSet();
+            resultSet.absolute(getBatchRow());
+            value = resultSet.getAsciiStream(i + columnOffset);
+        }
+        setWasNull(value == null);
+        return value;
+    }
+
+    @Override
+    public InputStream getUnicodeStream(int i) throws SQLException {
+        checkColumnIndex(i);
+        checkCurrentRow();
+        InputStream value;
+        try(Resource res = resultSetHolder.getResource()) {
+            ResultSet resultSet = res.getResultSet();
+            resultSet.absolute(getBatchRow());
+            value = resultSet.getUnicodeStream(i + columnOffset);
+        }
+        setWasNull(value == null);
+        return value;
+    }
+
+    @Override
+    public InputStream getBinaryStream(int i) throws SQLException {
+        checkColumnIndex(i);
+        checkCurrentRow();
+        InputStream value;
+        try(Resource res = resultSetHolder.getResource()) {
+            ResultSet resultSet = res.getResultSet();
+            resultSet.absolute(getBatchRow());
+            value = resultSet.getBinaryStream(i + columnOffset);
+        }
+        setWasNull(value == null);
+        return value;
+    }
+
+    @Override
+    public Reader getCharacterStream(int i) throws SQLException {
+        checkColumnIndex(i);
+        checkCurrentRow();
+        Reader value;
+        try(Resource res = resultSetHolder.getResource()) {
+            ResultSet resultSet = res.getResultSet();
+            resultSet.absolute(getBatchRow());
+            value = resultSet.getCharacterStream(i + columnOffset);
+        }
+        setWasNull(value == null);
+        return value;
+    }
+
+    @Override
+    public Blob getBlob(int i) throws SQLException {
+        checkColumnIndex(i);
+        checkCurrentRow();
+        Blob value;
+        try(Resource res = resultSetHolder.getResource()) {
+            ResultSet resultSet = res.getResultSet();
+            resultSet.absolute(getBatchRow());
+            value = resultSet.getBlob(i + columnOffset);
+        }
+        setWasNull(value == null);
+        return value;
+    }
+
+    @Override
+    public Clob getClob(int i) throws SQLException {
+        checkColumnIndex(i);
+        checkCurrentRow();
+        Clob value;
+        try(Resource res = resultSetHolder.getResource()) {
+            ResultSet resultSet = res.getResultSet();
+            resultSet.absolute(getBatchRow());
+            value = resultSet.getClob(i + columnOffset);
+        }
+        setWasNull(value == null);
+        return value;
+    }
+
+    @Override
     public void updateGeometry(int columnIndex, Geometry geometry) throws SQLException {
         throw new SQLFeatureNotSupportedException("Read only RowSet");
     }
@@ -1678,172 +1706,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         }
     }
 
-    /**
-     * This thread guaranty that the connection,ResultSet is released when no longer used.
-     */
-    private static class ResultSetHolder implements Runnable,AutoCloseable {
-        private static final int SLEEP_TIME = 1000;
-        private static final int RESULT_SET_TIMEOUT = 60000;
-        private final int fetchSize;
-        public enum STATUS { NEVER_STARTED, STARTED , READY, CLOSING, CLOSED, EXCEPTION}
-        private Exception ex;
-        private ResultSet resultSet;
-        private DataSource dataSource;
-        private String command;
-        private Map<Integer, Object> parameters = new HashMap<>();
-        private STATUS status = STATUS.NEVER_STARTED;
-        private long lastUsage = System.currentTimeMillis();
-        private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetHolder.class);
-        private int openCount = 0;
-        private Statement cancelStatement;
-
-        private ResultSetHolder(int fetchSize, DataSource dataSource) {
-            this.fetchSize = fetchSize;
-            this.dataSource = dataSource;
-        }
-
-        /**
-         * @param command SQL command to execute
-         */
-        public void setCommand(String command) {
-            this.command = command;
-        }
-
-        public void setParameters(Map<Integer, Object> parameters) {
-            this.parameters = parameters;
-        }
-
-        /**
-         * @return SQL Command, may be null if not set
-         */
-        public String getCommand() {
-            return command;
-        }
-
-        @Override
-        public void run() {
-            lastUsage = System.currentTimeMillis();
-            status = STATUS.STARTED;
-            try (Connection connection = dataSource.getConnection()) {
-                boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-                try (
-                        PreparedStatement st = connection.prepareStatement(command, isH2 ? ResultSet
-                                .TYPE_SCROLL_SENSITIVE : ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
-                    cancelStatement = st;
-                    st.setFetchSize(fetchSize);
-                    for(Map.Entry<Integer, Object> entry : parameters.entrySet()) {
-                        st.setObject(entry.getKey(), entry.getValue());
-                    }
-                    if (!isH2) {
-                        // Memory optimisation for PostGre
-                        connection.setAutoCommit(false);
-                    }
-                    // PostGreSQL use cursor only if auto commit is false
-                    try (ResultSet activeResultSet = st.executeQuery()) {
-                        resultSet = activeResultSet;
-                        status = STATUS.READY;
-                        while (lastUsage + RESULT_SET_TIMEOUT > System.currentTimeMillis() || openCount != 0) {
-                            Thread.sleep(SLEEP_TIME);
-                        }
-                    }
-                }
-            } catch (Exception ex) {
-                LOGGER.error(ex.getLocalizedMessage(), ex);
-                this.ex = ex;
-                status = STATUS.EXCEPTION;
-            } finally {
-                if (status != STATUS.EXCEPTION) {
-                    status = STATUS.CLOSED;
-                }
-            }
-        }
-
-        @Override
-        public void close() throws SQLException {
-            lastUsage = 0;
-            openCount = 0;
-            status = STATUS.CLOSING;
-        }
-
-        public void delayedClose(int milliSec) {
-            lastUsage = System.currentTimeMillis() - RESULT_SET_TIMEOUT + milliSec;
-            openCount = 0;
-        }
-
-        /**
-         * {@link java.sql.Statement#cancel()}
-         * @throws SQLException
-         */
-        public void cancel() throws SQLException {
-            Statement cancelObj = cancelStatement;
-            if(cancelObj != null && !cancelObj.isClosed()) {
-                cancelObj.cancel();
-            }
-        }
-
-        /**
-         * @return ResultSet status
-         */
-        public STATUS getStatus() {
-            return status;
-        }
-
-        public Resource getResource() throws SQLException {
-            // Wait execution of request
-            while(getStatus() != STATUS.READY) {
-                // Reactivate result set if necessary
-                if(getStatus() == ResultSetHolder.STATUS.CLOSED || getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
-                    Thread resultSetThread = new Thread(this, "ResultSet of "+command);
-                    resultSetThread.start();
-                }
-                if(status == STATUS.EXCEPTION) {
-                    if(ex instanceof SQLException) {
-                        throw (SQLException)ex;
-                    } else {
-                        throw new SQLException(ex);
-                    }
-                }
-                try {
-                    Thread.sleep(WAITING_FOR_RESULTSET);
-                } catch (InterruptedException e) {
-                    throw new SQLException(e);
-                }
-            }
-            lastUsage = System.currentTimeMillis();
-            openCount++;
-            return new Resource(this, resultSet);
-        }
-
-        /**
-         * Even if the timer should close the result set, the connection is not closed
-         */
-        public void onResourceClosed() {
-            openCount = Math.max(0, openCount-1);
-        }
-    }
-
-    /**
-     * This class is created each time the result set is necessary, close this object to release the result set.
-     */
-    private static class Resource implements AutoCloseable {
-        private final ResultSet resultSet;
-        private final ResultSetHolder holder;
-
-        private Resource(ResultSetHolder holder, ResultSet resultSet) {
-            this.holder = holder;
-            this.resultSet = resultSet;
-        }
-
-        @Override
-        public void close() {
-            holder.onResourceClosed();
-        }
-
-        private ResultSet getResultSet() {
-            return resultSet;
-        }
-    }
-
     private static class Tid implements Ref {
         private long value;
 
@@ -1869,16 +1731,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         @Override
         public void setObject(Object value) throws SQLException {
             throw new UnsupportedOperationException();
-        }
-    }
-
-    protected static class Row {
-        public final Object[] row;
-        public final Long pk;
-
-        public Row(Object[] row, Long pk) {
-            this.row = row;
-            this.pk = pk;
         }
     }
 }
