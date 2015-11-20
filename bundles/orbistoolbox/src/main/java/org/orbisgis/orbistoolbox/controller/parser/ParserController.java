@@ -22,9 +22,8 @@ package org.orbisgis.orbistoolbox.controller.parser;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
-import org.orbisgis.orbistoolbox.model.Input;
+import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 import org.slf4j.LoggerFactory;
@@ -112,9 +111,23 @@ public class ParserController {
                     outputList,
                     clazz.getDeclaredMethod("processing"),
                     process.getAbsolutePath());
+            link(p);
             return new AbstractMap.SimpleEntry<>(p, clazz);
         } catch (NoSuchMethodException e) {
             return null;
+        }
+    }
+
+    private void link(Process p){
+        for(Input i : p.getInput()){
+            if(i.getDataDescription() instanceof DataField){
+                DataField dataField = (DataField)i.getDataDescription();
+                for(Input dataStore : p.getInput()){
+                    if(dataStore.getIdentifier().equals(dataField.getDataStoreIdentifier())){
+                        ((DataStore)dataStore.getDataDescription()).addDataField(dataField);
+                    }
+                }
+            }
         }
     }
 }

@@ -41,6 +41,13 @@ import java.util.Map;
  **/
 
 public class DataFieldUI implements DataUI{
+
+    private ToolBox toolBox;
+
+    public void setToolBox(ToolBox toolBox){
+        this.toolBox = toolBox;
+    }
+
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         JPanel panel = new JPanel(new MigLayout("fill"));
@@ -90,10 +97,9 @@ public class DataFieldUI implements DataUI{
         HashMap<URI, Object> dataMap = (HashMap)comboBox.getClientProperty("dataMap");
 
         if(!dataField.isSourceLoaded()) {
-            URI uri = (URI) dataMap.get(dataField.getDataStoreIdentifier());
+            String tableName = (String) dataMap.get(dataField.getDataStoreIdentifier());
             comboBox.removeAll();
-            dataField.setIsSourceLoaded(true);
-            for (String field : ToolBox.getTableFieldList(uri, dataField.getFieldTypeList())) {
+            for (String field : ToolBox.getTableFieldList(tableName, dataField.getFieldTypeList())) {
                 comboBox.addItem(field);
             }
         }

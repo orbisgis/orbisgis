@@ -19,6 +19,7 @@
 
 package org.orbisgis.orbistoolbox.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,9 +37,12 @@ public class DataStore extends ComplexData{
     private boolean isFile;
     /** True if the data comes from a dataBase, false otherwise **/
     private boolean isDataBase;
+    /** List of DataField liked to the DataStore */
+    private List<DataField> listDataField;
 
     public DataStore(List<Format> formatList) throws MalformedScriptException {
         super(formatList);
+        listDataField = new ArrayList<>();
     }
 
     public void setSpatial(boolean isSpatial){
@@ -71,5 +75,13 @@ public class DataStore extends ComplexData{
 
     public void setIsDataBase(boolean isDataBase) {
         this.isDataBase = isDataBase;
+    }
+
+    public void addDataField(DataField dataField){
+        this.listDataField.add(dataField);
+    }
+
+    public List<DataField> getListDataField(){
+        return listDataField;
     }
 }

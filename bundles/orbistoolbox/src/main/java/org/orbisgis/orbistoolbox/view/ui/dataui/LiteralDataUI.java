@@ -22,6 +22,7 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.LiteralDataDomain;
+import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,12 @@ import java.util.Map;
  **/
 
 public class LiteralDataUI implements DataUI {
+
+    private ToolBox toolBox;
+
+    public void setToolBox(ToolBox toolBox){
+        this.toolBox = toolBox;
+    }
 
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {

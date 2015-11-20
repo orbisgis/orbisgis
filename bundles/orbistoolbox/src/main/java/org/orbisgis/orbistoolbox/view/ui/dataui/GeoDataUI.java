@@ -50,6 +50,12 @@ public class GeoDataUI implements DataUI{
 
     private static final int BROWSETEXTFIELD_WIDTH = 25;
 
+    private ToolBox toolBox;
+
+    public void setToolBox(ToolBox toolBox){
+        this.toolBox = toolBox;
+    }
+
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         return new HashMap<>();

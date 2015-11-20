@@ -30,6 +30,7 @@ import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
+import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
 import org.orbisgis.sif.SIFDialog;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
+import java.net.URI;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,7 +80,7 @@ public class ToolBox implements DockingPanel {
     public void init(){
         toolBoxPanel = new ToolBoxPanel(this);
         processManager = new ProcessManager();
-        dataUIManager = new DataUIManager();
+        dataUIManager = new DataUIManager(this);
         processExecutionDataList = new ArrayList<>();
         processingManager = new ProcessingManager(this);
 
@@ -348,5 +350,42 @@ public class ToolBox implements DockingPanel {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return list;
+    }
+
+    /**
+     * Return the list of the field of a table.
+     * @param tableName Name of the table.
+     * @param fieldTypes Type of the field accepted. If empty, accepts all the field.
+     * @return The list of the field name.
+     */
+    public static List<String> getTableFieldList(String tableName, List<FieldType> fieldTypes){
+        List<String> fieldList = new ArrayList<>();
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            DatabaseMetaData dmd = connection.getMetaData();
+            ResultSet result = dmd.getColumns(connection.getCatalog(), null, tableName, "%");
+            ResultSetMetaData rsmd = result.getMetaData();
+            while(result.next()){
+                for(int i=0; i<rsmd.getColumnCount(); i++){
+                    if(!fieldTypes.isEmpty()){
+                        if(rsmd.getColumnName(i + 1).equalsIgnoreCase("COLUMN_NAME")) {
+                            for (FieldType fieldType : fieldTypes) {
+                                if (fieldType.name().equalsIgnoreCase(result.getObject(i + 3).toString())){
+                                    fieldList.add("" + result.getObject(i + 1));
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        if (rsmd.getColumnName(i + 1).equalsIgnoreCase("COLUMN_NAME")) {
+                            fieldList.add("" + result.getObject(i + 1));
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+        }
+        return fieldList;
     }
 }
