@@ -27,6 +27,9 @@ package org.orbisgis.corejdbc;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import org.h2.api.GeoRaster;
+import org.h2.util.GeoRasterRenderedImage;
+import org.h2.util.RasterUtils;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.h2gis.utilities.SFSUtilities;
@@ -42,7 +45,11 @@ import javax.sql.RowSetEvent;
 import javax.sql.RowSetListener;
 import javax.sql.rowset.JdbcRowSet;
 import javax.sql.rowset.RowSetFactory;
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -650,6 +657,42 @@ public class RowSetTest {
             listenerList.eventList.get(0).getUndoableEdit().redo();
             rs.execute();
             assertEquals(0, rs.getRowCount());
+        }
+    }
+
+    @Test
+    public void testRaster() throws SQLException, IOException {
+        try(Connection connection = dataSource.getConnection()) {
+            BufferedImage image = new BufferedImage(50, 50, BufferedImage.TYPE_INT_RGB);
+            WritableRaster raster = image.getRaster();
+            for (int y = 0; y < 10; y++) {
+                for (int x = 0; x < 10; x++) {
+                    int red = 0;
+                    int green = 0;
+                    int blue = 255;
+                    raster.setPixel(x, y, new int[]{red, green, blue});
+                }
+            }
+            Statement st = connection.createStatement();
+            st.execute("drop table if exists test");
+            st.execute("create table test(id identity, the_raster raster)");
+            // Create table with test image
+            PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " + "values(?)");
+            ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0).asWKBRaster());
+            ps.execute();
+            ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 25, -25, 0, 125, 0, 0, 27572, 0).asWKBRaster());
+            ps.execute();
+            ps.close();
+
+            try (ReadRowSetImpl rs = new ReadRowSetImpl(dataSource)) {
+                rs.initialize("TEST", "id",new NullProgressMonitor());
+                assertTrue(rs.next());
+                assertEquals(1, rs.getInt(1));
+                GeoRaster geoRaster = (GeoRaster)rs.getObject(2);
+                RasterUtils.RasterMetaData metaData = geoRaster.getMetaData();
+                assertEquals(1, metaData.scaleX, 1e-12);
+                assertEquals(-1, metaData.scaleY, 1e-12);
+            }
         }
     }
 }

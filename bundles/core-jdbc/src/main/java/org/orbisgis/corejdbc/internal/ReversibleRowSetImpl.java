@@ -359,7 +359,6 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
                         getPk() , TableModelEvent.DELETE));
             } else {
                 updateRow = null;
-                cache.remove(rowId);
                 currentRow = null;
                 currentBatch.clear();
                 currentBatchId = -1;

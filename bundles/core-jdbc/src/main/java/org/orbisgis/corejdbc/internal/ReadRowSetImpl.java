@@ -82,10 +82,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.locks.Lock;
@@ -101,7 +99,6 @@ import java.util.regex.Pattern;
 public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSource, SpatialResultSetMetaData, ReadRowSet {
     private static final int WAITING_FOR_RESULTSET = 5;
     public static final int DEFAULT_FETCH_SIZE = 30;
-    public static final int DEFAULT_CACHE_SIZE = 100;
     // Like binary search, max intermediate batch fetching
     private static final int MAX_INTERMEDIATE_BATCH = 5;
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadRowSetImpl.class);
@@ -128,8 +125,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     protected final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
     protected final Lock readLock = rwl.writeLock(); // Read here is exclusive
     protected int fetchSize = DEFAULT_FETCH_SIZE;
-    // Cache of requested rows
-    protected Map<Long, Row> cache = new LRUMap<>(DEFAULT_CACHE_SIZE);
     // Cache of last queried batch
     protected long currentBatchId = -1;
     protected List<Row> currentBatch = new ArrayList<>();
@@ -238,7 +233,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
         }
         if(currentRow == null) {
-            refreshRowCache();
+            syncRowBatch();
             if(currentRow == null) {
                 throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
             }
@@ -366,85 +361,46 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     /**
      * Read the content of the DB near the current row id
      */
-    protected void refreshRowCache() throws SQLException {
-        if(!cache.containsKey(rowId) && rowId > 0 && rowId <= getRowCount()) {
-            try(Resource res = resultSetHolder.getResource()) {
-                ResultSet rs = res.getResultSet();
-                final int columnCount = getColumnCount();
-                if(cachedColumnNames == null) {
-                    cacheColumnNames();
-                }
-                // Do not use pk if not available or if using indeterminate fetch without filtering
-                if(pk_name.isEmpty()) {
-                    boolean validRow = false;
-                    if(rs.getType() == ResultSet.TYPE_FORWARD_ONLY) {
-                        if(rowId < rs.getRow()) {
-                            // If the result set is Forward only, we have to re-execute the request in order to read the row
-                            resultSetHolder.close();
-                            res.close();
-                            try(Resource res2 = resultSetHolder.getResource()) {
-                                rs = res2.getResultSet();
-                            }
-                        }
-                        while (rs.getRow() < rowId) {
-                            validRow = rs.next();
-                        }
+    protected void syncRowBatch() throws SQLException {
+        final int targetBatch = (int) (rowId - 1) / fetchSize;
+        if(currentBatchId != targetBatch && rowId > 0 && rowId <= getRowCount()) {
+            // Do not use pk if not available or if using indeterminate fetch without filtering
+            // Fetch block pk of current row
+            if (targetBatch >= rowFetchFirstPk.size() || (targetBatch != 0 && rowFetchFirstPk.get(targetBatch) == null)) {
+                // For optimisation sake
+                // Like binary search if the gap of target batch is too wide, require average PK values
+                int topBatchCount = getBatchCount();
+                int lowerBatchCount = 0;
+                int intermediateBatchFetching = 0;
+                while(lowerBatchCount + ((topBatchCount - lowerBatchCount) / 2) != targetBatch &&
+                        intermediateBatchFetching < MAX_INTERMEDIATE_BATCH) {
+                    int midleBatchTarget = lowerBatchCount + ((topBatchCount - lowerBatchCount) / 2);
+                    if(targetBatch < midleBatchTarget) {
+                        topBatchCount = midleBatchTarget;
                     } else {
-                        validRow = rs.absolute((int)rowId);
-                    }
-                    if(validRow) {
-                        Object[] row = new Object[columnCount];
-                        for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                            row[idColumn-1] = rs.getObject(idColumn);
+                        if(midleBatchTarget >= rowFetchFirstPk.size() ||
+                                rowFetchFirstPk.get(midleBatchTarget) == null) {
+                            fetchBatchPk(midleBatchTarget);
                         }
-                        cache.put(rowId, new Row(row, null));
+                        intermediateBatchFetching++;
+                        lowerBatchCount = midleBatchTarget;
                     }
+                }
+                fetchBatchPk(targetBatch);
+            }
+            // Fetch all data of current batch
+            Long firstPk = fetchBatch(rowFetchFirstPk.get(targetBatch), true, 0);
+            if(firstPk!=null) {
+                if(targetBatch + 1 < rowFetchFirstPk.size()) {
+                    rowFetchFirstPk.set(targetBatch + 1, firstPk);
                 } else {
-                    // Fetch block pk of current row
-                    final int targetBatch = (int) (rowId - 1) / fetchSize;
-                    if (currentBatchId != targetBatch) {
-                        if (targetBatch >= rowFetchFirstPk.size() || (targetBatch != 0 && rowFetchFirstPk.get(targetBatch) == null)) {
-                            // For optimisation sake
-                            // Like binary search if the gap of target batch is too wide, require average PK values
-                            int topBatchCount = getBatchCount();
-                            int lowerBatchCount = 0;
-                            int intermediateBatchFetching = 0;
-                            while(lowerBatchCount + ((topBatchCount - lowerBatchCount) / 2) != targetBatch &&
-                                    intermediateBatchFetching < MAX_INTERMEDIATE_BATCH) {
-                                int midleBatchTarget = lowerBatchCount + ((topBatchCount - lowerBatchCount) / 2);
-                                if(targetBatch < midleBatchTarget) {
-                                    topBatchCount = midleBatchTarget;
-                                } else {
-                                    if(midleBatchTarget >= rowFetchFirstPk.size() ||
-                                            rowFetchFirstPk.get(midleBatchTarget) == null) {
-                                        fetchBatchPk(midleBatchTarget);
-                                    }
-                                    intermediateBatchFetching++;
-                                    lowerBatchCount = midleBatchTarget;
-                                }
-                            }
-                            fetchBatchPk(targetBatch);
-                        }
-                        // Fetch all data of current batch
-                        Long firstPk = fetchBatch(rowFetchFirstPk.get(targetBatch), true, 0);
-                        if(firstPk!=null) {
-                            if(targetBatch + 1 < rowFetchFirstPk.size()) {
-                                rowFetchFirstPk.set(targetBatch + 1, firstPk);
-                            } else {
-                                rowFetchFirstPk.add(firstPk);
-                            }
-                        }
-                        currentBatchId = targetBatch;
-                    }
-                    // Ok, still in current batch
-                    int targetRowInBatch = (int) (rowId - 1) % fetchSize;
-                    if(targetRowInBatch < currentBatch.size()) {
-                        cache.put(rowId, currentBatch.get(targetRowInBatch));
-                    }
+                    rowFetchFirstPk.add(firstPk);
                 }
             }
+            currentBatchId = targetBatch;
         }
-        currentRow = cache.get(rowId);
+        int targetRowInBatch = (int) (rowId - 1) % fetchSize;
+        currentRow = currentBatch.get(targetRowInBatch);
     }
 
     private void fetchBatchPk(int targetBatch) throws SQLException {
@@ -762,7 +718,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         rowId = i;
         boolean validRow = !(rowId == 0 || rowId > getRowCount());
         if(validRow) {
-            refreshRowCache();
+            syncRowBatch();
         } else {
             currentRow = null;
         }
@@ -795,9 +751,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public void setFetchSize(int i) throws SQLException {
         fetchSize = i;
-        LRUMap<Long, Row> lruMap = new LRUMap<>(fetchSize + 1);
-        lruMap.putAll(cache);
-        cache = lruMap;
         rowFetchFirstPk = new ArrayList<>(Arrays.asList(new Long[]{null}));
         currentBatch.clear();
         currentBatchId = -1;
@@ -849,7 +802,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             Set<Integer> batchIds = new HashSet<>();
             for(int refRowId : rowsIndex) {
                 batchIds.add(refRowId / fetchSize);
-                cache.remove(((long)refRowId));
             }
             for(int batchId : batchIds) {
                 if(batchId < rowFetchFirstPk.size() && batchId >= 0) {
@@ -869,7 +821,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public void refreshRow() throws SQLException {
         try(Resource res = resultSetHolder.getResource()) {
             currentRow = null;
-            cache.clear();
             currentBatch = new ArrayList<>(fetchSize + 1);
             currentBatchId = -1;
             if(res.getResultSet().getRow() > 0 && !res.getResultSet().isAfterLast()) {
