@@ -359,8 +359,6 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
                         getPk() , TableModelEvent.DELETE));
             } else {
                 updateRow = null;
-                currentRow = null;
-                currentBatch.clear();
                 currentBatchId = -1;
             }
         }
@@ -370,8 +368,8 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
     public void deleteRow() throws SQLException {
         checkCurrentRow();
         TableUndoableDelete deleteEvt = new TableUndoableDelete(manager, location, pk_name, isH2);
-        for(int idColumn = 0; idColumn < currentRow.row.length; idColumn++) {
-            deleteEvt.setValue(getColumnLabel(idColumn + 1), currentRow.row[idColumn]);
+        for(int idColumn = 0; idColumn < getColumnCount(); idColumn++) {
+            deleteEvt.setValue(getColumnLabel(idColumn + 1), getObject(idColumn + 1));
         }
         deleteEvt.redo(false);
         cachedRowCount--;

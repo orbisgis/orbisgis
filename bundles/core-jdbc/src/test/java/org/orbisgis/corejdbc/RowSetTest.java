@@ -40,14 +40,19 @@ import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.corejdbc.internal.ReadRowSetImpl;
 import org.orbisgis.commons.progress.NullProgressMonitor;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.sql.DataSource;
 import javax.sql.RowSetEvent;
 import javax.sql.RowSetListener;
 import javax.sql.rowset.JdbcRowSet;
 import javax.sql.rowset.RowSetFactory;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,6 +61,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -688,10 +694,17 @@ public class RowSetTest {
                 rs.initialize("TEST", "id",new NullProgressMonitor());
                 assertTrue(rs.next());
                 assertEquals(1, rs.getInt(1));
-                GeoRaster geoRaster = (GeoRaster)rs.getObject(2);
-                RasterUtils.RasterMetaData metaData = geoRaster.getMetaData();
+                Blob blob = rs.getBlob(2);
+                assertEquals(50, blob.getBytes(0, 50).length);
+                ImageInputStream imageInputStream = ImageIO.createImageInputStream(blob);
+                ImageReader imageReader = ImageIO.getImageReaders(imageInputStream).next();
+                imageReader.setInput(imageInputStream);
+                RenderedImage image1 = imageReader.readAsRenderedImage(imageReader.getMinIndex(), imageReader.getDefaultReadParam());
+                RasterUtils.RasterMetaData metaData = RasterUtils.RasterMetaData.fetchMetaData(rs.getBinaryStream(2));
                 assertEquals(1, metaData.scaleX, 1e-12);
                 assertEquals(-1, metaData.scaleY, 1e-12);
+                assertEquals(image.getWidth(), image1.getWidth());
+                assertEquals(image.getHeight(), image1.getHeight());
             }
         }
     }
