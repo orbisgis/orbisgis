@@ -43,7 +43,7 @@ import java.sql.Statement;
  */
 public class ResultSetHolder implements Runnable,AutoCloseable {
     public static final int WAITING_FOR_RESULTSET = 5;
-    private static final int SLEEP_TIME = 10;
+    private static final int SLEEP_TIME = 50;
     private static final int RESULT_SET_TIMEOUT = 60000;
     public enum STATUS { NEVER_STARTED, STARTED , READY, CLOSING, CLOSED, EXCEPTION}
     private Exception ex;
@@ -55,10 +55,15 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
     private int openCount = 0;
     private Statement cancelStatement;
     private ResultSetProvider resultSetProvider;
+    private Thread resultSetThread;
 
     public ResultSetHolder(DataSource dataSource, ResultSetProvider resultSetProvider) {
         this.dataSource = dataSource;
         this.resultSetProvider = resultSetProvider;
+    }
+
+    public void setCancelStatement(Statement cancelStatement) {
+        this.cancelStatement = cancelStatement;
     }
 
     @Override
@@ -74,6 +79,8 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
                     Thread.sleep(SLEEP_TIME);
                 }
             }
+        } catch(InterruptedException ex) {
+            // Ignore
         } catch (Exception ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
             this.ex = ex;
@@ -90,6 +97,7 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
         lastUsage = 0;
         openCount = 0;
         status = STATUS.CLOSING;
+        resultSetThread.interrupt();
     }
 
     public void delayedClose(int milliSec) {
@@ -106,6 +114,7 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
         if(cancelObj != null && !cancelObj.isClosed()) {
             cancelObj.cancel();
         }
+        resultSetThread.interrupt();
     }
 
     /**
@@ -119,8 +128,10 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
         // Wait execution of request
         while(getStatus() != STATUS.READY) {
             // Reactivate result set if necessary
-            if(getStatus() == ResultSetHolder.STATUS.CLOSED || getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
-                Thread resultSetThread = new Thread(this, "ResultSet");
+            if(resultSetThread == null || !resultSetThread.isAlive() ||
+                    getStatus() == ResultSetHolder.STATUS.CLOSED ||
+                    getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
+                resultSetThread = new Thread(this, "ResultSet");
                 resultSetThread.start();
             }
             if(status == STATUS.EXCEPTION) {
