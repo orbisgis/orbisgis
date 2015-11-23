@@ -352,7 +352,10 @@ public class DataStoreUI implements DataUI{
 
     private String loadDataStore(URI dataStoreURI){
         try {
-            return toolBox.getDataManager().registerDataSource(dataStoreURI);
+            File f = new File(dataStoreURI);
+            if(f.isFile()) {
+                return toolBox.getDataManager().registerDataSource(dataStoreURI);
+            }
         } catch (SQLException e) {
             LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
         }

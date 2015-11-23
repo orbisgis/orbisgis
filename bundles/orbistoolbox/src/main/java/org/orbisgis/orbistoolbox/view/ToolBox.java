@@ -329,11 +329,11 @@ public class ToolBox implements DockingPanel {
             } catch (AbstractMethodError | Exception ex) {
                 // Driver has been compiled with JAVA 6, or is not implemented
             }
-            if(onlySpatial) {
+            if(!onlySpatial) {
                 DatabaseMetaData md = connection.getMetaData();
                 ResultSet rs = md.getTables(null, defaultSchema, "%", null);
                 while (rs.next()) {
-                    String tableName = rs.getString("F_TABLE_NAME");
+                    String tableName = rs.getString(3);
                     if (!tableName.equalsIgnoreCase("SPATIAL_REF_SYS") && !tableName.equalsIgnoreCase("GEOMETRY_COLUMNS")) {
                         list.add(tableName);
                     }
@@ -346,6 +346,7 @@ public class ToolBox implements DockingPanel {
                     list.add(rs.getString("F_TABLE_NAME"));
                 }
             }
+            System.out.println(list);
         } catch (SQLException e) {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }

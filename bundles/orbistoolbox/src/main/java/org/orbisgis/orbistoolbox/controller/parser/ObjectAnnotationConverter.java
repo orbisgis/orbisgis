@@ -270,7 +270,10 @@ public class ObjectAnnotationConverter {
     public static DataField annotationToObject(DataFieldAttribute dataFieldAttribute, Format format, URI dataStoreUri) {
         try {
             format.setDefaultFormat(true);
-            List<FieldType> fieldTypeList = Arrays.asList(dataFieldAttribute.fieldTypes());
+            List<FieldType> fieldTypeList = new ArrayList<>();
+            for(String str : Arrays.asList(dataFieldAttribute.fieldTypes())){
+                fieldTypeList.add(FieldType.valueOf(str.toUpperCase()));
+            }
             return new DataField(format, fieldTypeList, dataStoreUri);
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
