@@ -74,7 +74,7 @@ public class DataFieldUI implements DataUI{
         comboBox.putClientProperty("dataField", dataField);
         comboBox.putClientProperty("dataMap", dataMap);
         comboBox.addFocusListener(EventHandler.create(FocusListener.class, this, "refreshComboBox", "source"));
-        comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "refreshComboBox", "source"));
+        //comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "refreshComboBox", "source"));
         comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
         panel.add(comboBox);
 
@@ -95,8 +95,8 @@ public class DataFieldUI implements DataUI{
         JComboBox<String> comboBox = (JComboBox)source;
         DataField dataField = (DataField)comboBox.getClientProperty("dataField");
         HashMap<URI, Object> dataMap = (HashMap)comboBox.getClientProperty("dataMap");
-
         if(!dataField.isSourceLoaded()) {
+            dataField.setIsSourceLoaded(true);
             String tableName = (String) dataMap.get(dataField.getDataStoreIdentifier());
             comboBox.removeAll();
             for (String field : ToolBox.getTableFieldList(tableName, dataField.getFieldTypeList())) {

@@ -346,7 +346,6 @@ public class ToolBox implements DockingPanel {
                     list.add(rs.getString("F_TABLE_NAME"));
                 }
             }
-            System.out.println(list);
         } catch (SQLException e) {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
@@ -366,20 +365,18 @@ public class ToolBox implements DockingPanel {
             DatabaseMetaData dmd = connection.getMetaData();
             ResultSet result = dmd.getColumns(connection.getCatalog(), null, tableName, "%");
             ResultSetMetaData rsmd = result.getMetaData();
+            //TODO : check if the position of "TABLE_NAME" is always 3.
             while(result.next()){
-                for(int i=0; i<rsmd.getColumnCount(); i++){
-                    if(!fieldTypes.isEmpty()){
-                        if(rsmd.getColumnName(i + 1).equalsIgnoreCase("COLUMN_NAME")) {
+                if(result.getObject(3).toString().equalsIgnoreCase(tableName)){
+                    if (rsmd.getColumnName(4).equalsIgnoreCase("COLUMN_NAME")) {
+                        if (!fieldTypes.isEmpty()) {
                             for (FieldType fieldType : fieldTypes) {
-                                if (fieldType.name().equalsIgnoreCase(result.getObject(i + 3).toString())){
-                                    fieldList.add("" + result.getObject(i + 1));
+                                if (fieldType.name().equalsIgnoreCase(result.getObject(6).toString())) {
+                                    fieldList.add("" + result.getObject(4));
                                 }
                             }
-                        }
-                    }
-                    else {
-                        if (rsmd.getColumnName(i + 1).equalsIgnoreCase("COLUMN_NAME")) {
-                            fieldList.add("" + result.getObject(i + 1));
+                        } else{
+                            fieldList.add("" + result.getObject(4));
                         }
                     }
                 }

@@ -105,7 +105,7 @@ public class DataStoreUI implements DataUI{
         else {
             comboBox = new JComboBox<>(ToolBox.getGeocatalogTableList(false).toArray(new String[]{}));
         }
-        comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onGeocatalogTableSelected", "source"));
+        comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onGeocatalogTableSelected", "source"));
         comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());
         comboBox.putClientProperty("dataMap", dataMap);
         comboBox.putClientProperty("dataStore", dataStore);
@@ -211,18 +211,16 @@ public class DataStoreUI implements DataUI{
     }
 
     public void onGeocatalogTableSelected(Object source){
-        if(source instanceof JComboBox){
-            JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
-            Map<URI, Object> dataMap = (Map<URI, Object>)comboBox.getClientProperty("dataMap");
-            URI uri = (URI)comboBox.getClientProperty("uri");
-            DataStore dataStore = (DataStore)comboBox.getClientProperty("dataStore");
-            //Tells all the dataField linked that the data source is loaded
-            for(DataField dataField : dataStore.getListDataField()){
-                dataField.setIsSourceLoaded(true);
-            }
-            dataMap.remove(uri);
-            dataMap.put(uri, comboBox.getSelectedItem());
+        JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
+        Map<URI, Object> dataMap = (Map<URI, Object>)comboBox.getClientProperty("dataMap");
+        URI uri = (URI)comboBox.getClientProperty("uri");
+        DataStore dataStore = (DataStore)comboBox.getClientProperty("dataStore");
+        //Tells all the dataField linked that the data source is loaded
+        for(DataField dataField : dataStore.getListDataField()){
+            dataField.setIsSourceLoaded(false);
         }
+        dataMap.remove(uri);
+        dataMap.put(uri, comboBox.getSelectedItem());
     }
 
     public void onParameters(Object source){
@@ -354,6 +352,7 @@ public class DataStoreUI implements DataUI{
         try {
             File f = new File(dataStoreURI);
             if(f.isFile()) {
+                System.out.println(dataStoreURI);
                 return toolBox.getDataManager().registerDataSource(dataStoreURI);
             }
         } catch (SQLException e) {

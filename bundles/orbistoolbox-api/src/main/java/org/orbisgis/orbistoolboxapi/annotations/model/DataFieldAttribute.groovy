@@ -35,5 +35,5 @@ import java.lang.annotation.RetentionPolicy
      * Indicates the type of the data contain in the column.
      * If the value is the default one, it means that all the type is accepted.
      */
-    String fieldTypes()
+    String[] fieldTypes() default []
 }

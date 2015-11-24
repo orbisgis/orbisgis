@@ -20,7 +20,7 @@
 package org.orbisgis.orbistoolboxapi.annotations.model
 
 enum FieldType {
-    STRING,
+    VARCHAR,
     INTEGER,
     BYTE,
     CHAR,
