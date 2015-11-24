@@ -20,6 +20,7 @@
 package org.orbisgis.orbistoolbox.view;
 
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
@@ -390,42 +391,8 @@ public class ToolBox implements DockingPanel {
 
     public String loadFile(File f) {
         try {
-            Connection connection = dataManager.getDataSource().getConnection();
-            for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
-                for(String ext : df.getImportFormats()){
-                    int indexExt = f.getName().lastIndexOf('.');
-                    if(ext.equalsIgnoreCase(f.getName().substring(indexExt+1))) {
-
-                        //Check if the file name is already used.
-                        boolean validName = true;
-                        String fileName = f.getName().substring(0, indexExt);
-                        List<String> geocatalogTableList = getGeocatalogTableList(false);
-                        for(String tableName : geocatalogTableList){
-                            if(tableName.equalsIgnoreCase(fileName)){
-                                validName = false;
-                            }
-                        }
-                        //create an avaliable table name
-                        int index = 1;
-                        while (!validName){
-                            validName = true;
-                            for(String tableName : geocatalogTableList){
-                                if(tableName.equalsIgnoreCase(fileName+index)){
-                                    validName = false;
-                                }
-                            }
-                            if(validName){
-                                fileName += index;
-                            }
-                            index++;
-                        }
-                        fileName = fileName.toUpperCase();
-                        df.importFile(connection, fileName, f, null);
-                        return fileName;
-                    }
-                }
-            }
-        } catch (SQLException | IOException e) {
+            dataManager.registerDataSource(f.toURI());
+        } catch (SQLException e) {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return null;
