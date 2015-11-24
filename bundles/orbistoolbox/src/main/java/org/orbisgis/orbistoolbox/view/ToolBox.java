@@ -369,18 +369,14 @@ public class ToolBox implements DockingPanel {
             ResultSetMetaData rsmd = result.getMetaData();
             //TODO : check if the position of "TABLE_NAME" is always 3.
             while(result.next()){
-                if(result.getObject(3).toString().equalsIgnoreCase(tableName)){
-                    if (rsmd.getColumnName(4).equalsIgnoreCase("COLUMN_NAME")) {
-                        if (!fieldTypes.isEmpty()) {
-                            for (FieldType fieldType : fieldTypes) {
-                                if (fieldType.name().equalsIgnoreCase(result.getObject(6).toString())) {
-                                    fieldList.add("" + result.getObject(4));
-                                }
-                            }
-                        } else{
+                if (!fieldTypes.isEmpty()) {
+                    for (FieldType fieldType : fieldTypes) {
+                        if (fieldType.name().equalsIgnoreCase(result.getObject(6).toString())) {
                             fieldList.add("" + result.getObject(4));
                         }
                     }
+                } else{
+                    fieldList.add("" + result.getObject(4));
                 }
             }
         } catch (SQLException e) {

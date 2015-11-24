@@ -97,7 +97,7 @@ public class DataFieldUI implements DataUI{
         if(!dataField.isSourceLoaded()) {
             dataField.setIsSourceLoaded(true);
             String tableName = (String) dataMap.get(dataField.getDataStoreIdentifier());
-            comboBox.removeAll();
+            comboBox.removeAllItems();
             for (String field : ToolBox.getTableFieldList(tableName, dataField.getFieldTypeList())) {
                 comboBox.addItem(field);
             }
