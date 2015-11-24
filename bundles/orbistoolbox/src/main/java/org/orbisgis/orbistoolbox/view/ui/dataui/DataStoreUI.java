@@ -20,6 +20,7 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import org.h2gis.h2spatialapi.DriverFunction;
 import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
@@ -281,12 +282,12 @@ public class DataStoreUI implements DataUI{
                 dataMap.remove(uri);
                 dataMap.put(uri, tableName);
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setIsSourceLoaded(true);
+                    dataField.setIsSourceLoaded(false);
                 }
             }
             else{
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setIsSourceLoaded(false);
+                    dataField.setIsSourceLoaded(true);
                 }
             }
         }
@@ -349,14 +350,9 @@ public class DataStoreUI implements DataUI{
     }
 
     private String loadDataStore(URI dataStoreURI){
-        try {
-            File f = new File(dataStoreURI);
-            if(f.isFile()) {
-                System.out.println(dataStoreURI);
-                return toolBox.getDataManager().registerDataSource(dataStoreURI);
-            }
-        } catch (SQLException e) {
-            LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
+        File f = new File(dataStoreURI);
+        if(f.isFile()) {
+            return toolBox.loadFile(f);
         }
         return null;
     }

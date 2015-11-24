@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.sql.*;
 import java.util.ArrayList;
@@ -385,5 +386,48 @@ public class ToolBox implements DockingPanel {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return fieldList;
+    }
+
+    public String loadFile(File f) {
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
+                for(String ext : df.getImportFormats()){
+                    int indexExt = f.getName().lastIndexOf('.');
+                    if(ext.equalsIgnoreCase(f.getName().substring(indexExt+1))) {
+
+                        //Check if the file name is already used.
+                        boolean validName = true;
+                        String fileName = f.getName().substring(0, indexExt);
+                        List<String> geocatalogTableList = getGeocatalogTableList(false);
+                        for(String tableName : geocatalogTableList){
+                            if(tableName.equalsIgnoreCase(fileName)){
+                                validName = false;
+                            }
+                        }
+                        //create an avaliable table name
+                        int index = 1;
+                        while (!validName){
+                            validName = true;
+                            for(String tableName : geocatalogTableList){
+                                if(tableName.equalsIgnoreCase(fileName+index)){
+                                    validName = false;
+                                }
+                            }
+                            if(validName){
+                                fileName += index;
+                            }
+                            index++;
+                        }
+                        fileName = fileName.toUpperCase();
+                        df.importFile(connection, fileName, f, null);
+                        return fileName;
+                    }
+                }
+            }
+        } catch (SQLException | IOException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+        }
+        return null;
     }
 }
