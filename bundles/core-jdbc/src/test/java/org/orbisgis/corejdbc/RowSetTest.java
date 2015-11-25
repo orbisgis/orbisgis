@@ -684,9 +684,9 @@ public class RowSetTest {
             st.execute("create table test(id identity, the_raster raster)");
             // Create table with test image
             PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " + "values(?)");
-            ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0).asWKBRaster());
+            ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0.).asWKBRaster());
             ps.execute();
-            ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 25, -25, 0, 125, 0, 0, 27572, 0).asWKBRaster());
+            ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 25, -25, 0, 125, 0, 0, 27572, 0.).asWKBRaster());
             ps.execute();
             ps.close();
 
