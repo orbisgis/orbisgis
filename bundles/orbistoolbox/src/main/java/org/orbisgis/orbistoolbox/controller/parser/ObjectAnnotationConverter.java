@@ -286,6 +286,16 @@ public class ObjectAnnotationConverter {
         }
     }
 
+    public static FieldValue annotationToObject(FieldValueAttribute fieldvalueAttribute, Format format, URI dataFieldUri) {
+        try {
+            format.setDefaultFormat(true);
+            return new FieldValue(format, dataFieldUri, fieldvalueAttribute.multiSelection());
+        } catch (MalformedScriptException e) {
+            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
+            return null;
+        }
+    }
+
     /**
      * Returns the process identifier and if their is not, return an URI build around its title.
      * @return String process identifier.

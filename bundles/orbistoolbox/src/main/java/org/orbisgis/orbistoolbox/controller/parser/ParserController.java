@@ -51,7 +51,7 @@ public class ParserController {
     private GroovyClassLoader groovyClassLoader;
 
     public ParserController(){
-        //Instantitate the parser list
+        //Instantiate the parser list
         parserList = new ArrayList<>();
         parserList.add(new RawDataParser());
         parserList.add(new LiteralDataParser());
@@ -60,6 +60,7 @@ public class ParserController {
         parserList.add(new GeometryParser());
         parserList.add(new DataStoreParser());
         parserList.add(new DataFieldParser());
+        parserList.add(new FieldValueParser());
         defaultParser = new DefaultParser();
         processParser = new ProcessParser();
         groovyClassLoader = new GroovyShell().getClassLoader();
