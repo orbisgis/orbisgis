@@ -28,7 +28,6 @@ import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemListener;
 import java.beans.EventHandler;
@@ -94,8 +93,8 @@ public class DataFieldUI implements DataUI{
         JComboBox<String> comboBox = (JComboBox)source;
         DataField dataField = (DataField)comboBox.getClientProperty("dataField");
         HashMap<URI, Object> dataMap = (HashMap)comboBox.getClientProperty("dataMap");
-        if(!dataField.isSourceLoaded()) {
-            dataField.setIsSourceLoaded(true);
+        if(dataField.isSourceModified()) {
+            dataField.setSourceModifiedd(false);
             String tableName = (String) dataMap.get(dataField.getDataStoreIdentifier());
             comboBox.removeAllItems();
             for (String field : ToolBox.getTableFieldList(tableName, dataField.getFieldTypeList())) {

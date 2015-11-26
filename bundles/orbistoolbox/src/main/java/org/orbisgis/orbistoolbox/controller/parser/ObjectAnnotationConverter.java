@@ -271,8 +271,13 @@ public class ObjectAnnotationConverter {
         try {
             format.setDefaultFormat(true);
             List<FieldType> fieldTypeList = new ArrayList<>();
+            //For each fieldType value from the groovy annotation, test if it is contain in the FieldType enumeration.
             for(String str : Arrays.asList(dataFieldAttribute.fieldTypes())){
-                fieldTypeList.add(FieldType.valueOf(str.toUpperCase()));
+                for(FieldType enumValue : FieldType.values()){
+                    if(enumValue.name().equals(str.toUpperCase())){
+                        fieldTypeList.add(FieldType.valueOf(str.toUpperCase()));
+                    }
+                }
             }
             return new DataField(format, fieldTypeList, dataStoreUri);
         } catch (MalformedScriptException e) {

@@ -19,7 +19,6 @@
 
 
 import org.orbisgis.orbistoolboxapi.annotations.input.LiteralDataInput
-import org.orbisgis.orbistoolboxapi.annotations.model.FieldType
 import org.orbisgis.orbistoolboxapi.annotations.model.Process
 import org.orbisgis.orbistoolboxapi.annotations.input.GeometryInput
 import org.orbisgis.orbistoolboxapi.annotations.output.GeometryOutput
@@ -59,5 +58,4 @@ def processing() {
     String query = "SELECT ST_Buffer(?,?);"
     params = new ArrayList([inputGeometry, bufferSize])
     outputGeometry = sql.firstRow(query, params).getAt(0)
-    fieldType = FieldType.BOOLEAN
 }

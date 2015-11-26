@@ -20,7 +20,6 @@
 package org.orbisgis.orbistoolbox.view;
 
 import org.h2gis.h2spatialapi.DriverFunction;
-import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
@@ -47,8 +46,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
-import java.net.URI;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -366,8 +363,7 @@ public class ToolBox implements DockingPanel {
             Connection connection = dataManager.getDataSource().getConnection();
             DatabaseMetaData dmd = connection.getMetaData();
             ResultSet result = dmd.getColumns(connection.getCatalog(), null, tableName, "%");
-            ResultSetMetaData rsmd = result.getMetaData();
-            //TODO : check if the position of "TABLE_NAME" is always 3.
+            //TODO : replace the value 3, 4 ... with constants taking into account the database used (H2, postgres ...).
             while(result.next()){
                 if (!fieldTypes.isEmpty()) {
                     for (FieldType fieldType : fieldTypes) {

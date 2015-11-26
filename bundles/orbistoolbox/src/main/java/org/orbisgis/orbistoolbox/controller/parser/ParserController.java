@@ -51,6 +51,7 @@ public class ParserController {
     private GroovyClassLoader groovyClassLoader;
 
     public ParserController(){
+        //Instantitate the parser list
         parserList = new ArrayList<>();
         parserList.add(new RawDataParser());
         parserList.add(new LiteralDataParser());
@@ -65,6 +66,7 @@ public class ParserController {
     }
 
     public AbstractMap.SimpleEntry<Process, Class> parseProcess(String processPath){
+        //Retrieve the class corresponding to the Groovy script.
         Class clazz;
         File process = new File(processPath);
         try {
@@ -75,12 +77,14 @@ public class ParserController {
             LoggerFactory.getLogger(ParserController.class).error(e.getMessage());
             return null;
         }
+        //Retrieve the list of input and output of the script.
         List<Input> inputList = new ArrayList<>();
         List<Output> outputList = new ArrayList<>();
 
         for(Field f : clazz.getDeclaredFields()){
             for(Annotation a : f.getDeclaredAnnotations()){
                 if(a instanceof InputAttribute){
+                    //Find the good parser and parse the input.
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
@@ -93,6 +97,7 @@ public class ParserController {
                     }
                 }
                 if(a instanceof OutputAttribute){
+                    //Find the good parser and parse the output.
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
@@ -106,6 +111,7 @@ public class ParserController {
                 }
             }
         }
+        //Then parse the process
         try {
             Process p = processParser.parseProcess(inputList,
                     outputList,
@@ -118,6 +124,11 @@ public class ParserController {
         }
     }
 
+    /**
+     * Links the input and output with the 'parent'.
+     * i.e. : The DataStore contains a list of DataField related.
+     * @param p
+     */
     private void link(Process p){
         for(Input i : p.getInput()){
             if(i.getDataDescription() instanceof DataField){

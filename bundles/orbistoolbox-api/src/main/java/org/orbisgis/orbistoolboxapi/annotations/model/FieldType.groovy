@@ -19,6 +19,12 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+/**
+ * Enumeration of the type of the field of a DataStore.
+ * Those type are used to put a constraint on the selection of the DataField.
+ *
+ * @author Sylvain PALOMINOS
+ */
 enum FieldType {
     VARCHAR,
     INTEGER,

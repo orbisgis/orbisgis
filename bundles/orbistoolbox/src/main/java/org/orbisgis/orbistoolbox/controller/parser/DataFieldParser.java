@@ -28,6 +28,8 @@ import java.lang.reflect.Field;
 import java.net.URI;
 
 /**
+ * Parser for the DataField input/output annotations.
+ *
  * @author Sylvain PALOMINOS
  **/
 
@@ -35,14 +37,15 @@ public class DataFieldParser implements Parser {
 
     @Override
     public Input parseInput(Field f, String processId) {
+        //Instantiate the DataField object
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
         URI dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStore());
-
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
+
+        //Instantiate the returned input
         Input input;
         try {
-            //Instantiate the returned input
             input = new Input(f.getName(),
                     URI.create(processId + ":input:" + f.getName()),
                     dataField);
@@ -59,14 +62,15 @@ public class DataFieldParser implements Parser {
 
     @Override
     public Output parseOutput(Field f, String processId) {
+        //Instantiate the DataField object
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
         URI dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStore());
-
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
+
+        //Instantiate the returned output
         Output output;
         try {
-            //Instantiate the returned input
             output = new Output(f.getName(),
                     URI.create(processId + ":input:" + f.getName()),
                     dataField);

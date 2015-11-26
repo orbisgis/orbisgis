@@ -30,28 +30,54 @@ import java.util.List;
 
 public class DataField extends ComplexData{
 
+    /** Identifier of the parent DataStore */
     private URI dataStoreIdentifier;
-    private boolean isSourceLoaded = false;
+    /** Indicates if the DataField should be reloaded because of a modification of the parent DataStore.*/
+    private boolean isSourceModified = false;
+    /** List of type accepted for the field.*/
     private List<FieldType> fieldTypeList;
 
+    /**
+     * Main constructor.
+     * @param format Format of the data accepted.
+     * @param fieldTypeList List of the type accepted for this field.
+     * @param dataStoreURI Identifier of the parent dataStore.
+     * @throws MalformedScriptException
+     */
     public DataField(Format format, List<FieldType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
         super(format);
         this.fieldTypeList = fieldTypeList;
         this.dataStoreIdentifier = dataStoreURI;
     }
 
+    /**
+     * Returns the identifier of the parent DataStore.
+     * @return The identifier of the DataStore.
+     */
     public URI getDataStoreIdentifier(){
         return dataStoreIdentifier;
     }
 
-    public boolean isSourceLoaded() {
-        return isSourceLoaded;
+    /**
+     * Tells if the parent DataStore has been modified since last time it was checked.
+     * @return True if the parent DataStore has been modified, false otherwise.
+     */
+    public boolean isSourceModified() {
+        return isSourceModified;
     }
 
-    public void setIsSourceLoaded(boolean isSourceLoaded) {
-        this.isSourceLoaded = isSourceLoaded;
+    /**
+     * Sets if the parent dataStore has been modified
+     * @param isSourceModified True if the parent DataStore has been modified, false otherwise.
+     */
+    public void setSourceModifiedd(boolean isSourceModified) {
+        this.isSourceModified = isSourceModified;
     }
 
+    /**
+     * Returns the list of valid type for the field.
+     * @return List of valie FieldType.
+     */
     public List<FieldType> getFieldTypeList() {
         return fieldTypeList;
     }
