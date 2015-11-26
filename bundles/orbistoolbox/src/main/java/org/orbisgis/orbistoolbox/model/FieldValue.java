@@ -29,6 +29,12 @@ public class FieldValue extends ComplexData{
 
     /** Identifier of the 'parent' DataField */
     private URI dataFieldIdentifier;
+    /** Indicates if the FieldValue should be reloaded because of a modification of the parent DataField.*/
+    private boolean isDataFieldModified = false;
+    /** Identifier of the 'parent' DataStore */
+    private URI dataStoreIdentifier;
+    /** Indicates if the FieldValue should be reloaded because of a modification of the parent DataStore.*/
+    private boolean isDataStoreModified = false;
     /** Enable the selection of more than one value if true.*/
     private boolean multiSelection;
 
@@ -59,6 +65,55 @@ public class FieldValue extends ComplexData{
      */
     public URI getDataFieldIdentifier(){
         return dataFieldIdentifier;
+    }
+
+    /**
+     * Tells if the parent DataField has been modified since last time it was checked.
+     * @return True if the parent DataField has been modified, false otherwise.
+     */
+    public boolean isDataFieldModified() {
+        return isDataFieldModified;
+    }
+
+    /**
+     * Sets if the parent DataField has been modified
+     * @param isDataFieldModified True if the parent DataField has been modified, false otherwise.
+     */
+    public void setDataFieldModified(boolean isDataFieldModified) {
+        this.isDataFieldModified = isDataFieldModified;
+    }
+
+
+    /**
+     * Sets the URI of the parent DataStore.
+     * @param dataStoreIdentifier URI of the DataStore.
+     */
+    public void setDataStoredIdentifier(URI dataStoreIdentifier){
+        this.dataStoreIdentifier = dataStoreIdentifier;
+    }
+
+    /**
+     * Returns the DataStore identifier.
+     * @return The DataStore identifier.
+     */
+    public URI getDataStoreIdentifier(){
+        return dataStoreIdentifier;
+    }
+
+    /**
+     * Tells if the parent DataStore has been modified since last time it was checked.
+     * @return True if the parent DataField has been modified, false otherwise.
+     */
+    public boolean isDataStoreModified() {
+        return isDataStoreModified;
+    }
+
+    /**
+     * Sets if the parent DataStore has been modified
+     * @param isDataStoreModified True if the parent DataStore has been modified, false otherwise.
+     */
+    public void setDataStoreModified(boolean isDataStoreModified) {
+        this.isDataStoreModified = isDataStoreModified;
     }
 
     /**

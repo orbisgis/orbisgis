@@ -65,14 +65,14 @@ public class DataFieldParser implements Parser {
         //Instantiate the DataField object
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
-        URI dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStore());
+        URI dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.dataStore());
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 
         //Instantiate the returned output
         Output output;
         try {
             output = new Output(f.getName(),
-                    URI.create(processId + ":input:" + f.getName()),
+                    URI.create(processId + ":output:" + f.getName()),
                     dataField);
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(DataFieldParser.class).error(e.getMessage());

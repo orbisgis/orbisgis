@@ -65,14 +65,14 @@ public class FieldValueParser implements Parser {
         //Instantiate the FieldValue object
         FieldValueAttribute fieldValueAttribute = f.getAnnotation(FieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
-        URI dataFieldUri = URI.create(processId + ":input:" + fieldValueAttribute.dataField());
+        URI dataFieldUri = URI.create(processId + ":output:" + fieldValueAttribute.dataField());
         FieldValue fieldValue = ObjectAnnotationConverter.annotationToObject(fieldValueAttribute, format, dataFieldUri);
 
         //Instantiate the returned output
         Output output;
         try {
             output = new Output(f.getName(),
-                    URI.create(processId + ":input:" + f.getName()),
+                    URI.create(processId + ":output:" + f.getName()),
                     fieldValue);
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(FieldValueParser.class).error(e.getMessage());

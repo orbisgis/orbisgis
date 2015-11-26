@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
+import java.net.URI;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -388,5 +389,26 @@ public class ToolBox implements DockingPanel {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return null;
+    }
+
+    /**
+     * Returns the list of distinct values contained by a field from a table from the database
+     * @param tableName Name of the table containing the field.
+     * @param fieldName Name of the field containing the values.
+     * @return The list of distinct values of the field.
+     */
+    public static List<String> getFieldValueList(String tableName, String fieldName) {
+        List<String> fieldValues = new ArrayList<>();
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT DISTINCT "+fieldName+" FROM "+tableName);
+            while(result.next()){
+                fieldValues.add(result.getString(1));
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+        }
+        return fieldValues;
     }
 }

@@ -217,7 +217,7 @@ public class DataStoreUI implements DataUI{
         DataStore dataStore = (DataStore)comboBox.getClientProperty("dataStore");
         //Tells all the dataField linked that the data source is loaded
         for(DataField dataField : dataStore.getListDataField()){
-            dataField.setSourceModifiedd(true);
+            dataField.setSourceModified(true);
         }
         dataMap.remove(uri);
         dataMap.put(uri, comboBox.getSelectedItem());
@@ -286,12 +286,12 @@ public class DataStoreUI implements DataUI{
                 dataMap.put(uri, tableName);
                 //tells the dataField they should revalidate
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModifiedd(true);
+                    dataField.setSourceModified(true);
                 }
             }
             else{
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModifiedd(false);
+                    dataField.setSourceModified(false);
                 }
             }
         }
@@ -315,12 +315,12 @@ public class DataStoreUI implements DataUI{
                 dataMap.put(uri, tableName);
                 //tells the dataField they should revalidate
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModifiedd(false);
+                    dataField.setSourceModified(false);
                 }
             }
             else{
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModifiedd(true);
+                    dataField.setSourceModified(true);
                 }
             }
         } catch (BadLocationException e) {
@@ -346,12 +346,12 @@ public class DataStoreUI implements DataUI{
                 dataMap.put(uri, tableName);
                 //tells the dataField they should revalidate
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModifiedd(false);
+                    dataField.setSourceModified(false);
                 }
             }
             else{
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModifiedd(true);
+                    dataField.setSourceModified(true);
                 }
             }
         } catch (BadLocationException e) {

@@ -55,6 +55,7 @@ public class DataUIManager {
         linkClassUI(GeometryData.class, new GeometryUI());
         linkClassUI(DataStore.class, new DataStoreUI());
         linkClassUI(DataField.class, new DataFieldUI());
+        linkClassUI(FieldValue.class, new FieldValueUI());
     }
 
     /**

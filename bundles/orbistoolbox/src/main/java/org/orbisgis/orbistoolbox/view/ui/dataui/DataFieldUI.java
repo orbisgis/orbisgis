@@ -20,10 +20,7 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.orbistoolbox.model.DataField;
-import org.orbisgis.orbistoolbox.model.DescriptionType;
-import org.orbisgis.orbistoolbox.model.Input;
-import org.orbisgis.orbistoolbox.model.Output;
+import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
@@ -94,7 +91,7 @@ public class DataFieldUI implements DataUI{
         DataField dataField = (DataField)comboBox.getClientProperty("dataField");
         HashMap<URI, Object> dataMap = (HashMap)comboBox.getClientProperty("dataMap");
         if(dataField.isSourceModified()) {
-            dataField.setSourceModifiedd(false);
+            dataField.setSourceModified(false);
             String tableName = (String) dataMap.get(dataField.getDataStoreIdentifier());
             comboBox.removeAllItems();
             for (String field : ToolBox.getTableFieldList(tableName, dataField.getFieldTypeList())) {
@@ -107,10 +104,15 @@ public class DataFieldUI implements DataUI{
     public void onItemSelected(Object source){
         if(source instanceof JComboBox){
             JComboBox<String> comboBox = (JComboBox)source;
+            DataField dataField = (DataField)comboBox.getClientProperty("dataField");
             Map<URI, Object> dataMap = (Map<URI, Object>)comboBox.getClientProperty("dataMap");
             URI uri = (URI)comboBox.getClientProperty("uri");
             dataMap.remove(uri);
             dataMap.put(uri, comboBox.getSelectedItem());
+            //Tells to the fieldValues that the datafield has been modified
+            for (FieldValue fieldValue : dataField.getListFieldValue()) {
+                fieldValue.setDataFieldModified(true);
+            }
         }
     }
 }
