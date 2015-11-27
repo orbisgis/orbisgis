@@ -62,7 +62,6 @@ public class RawDataUI implements DataUI {
         JComponent component = new JPanel();
         component.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        //component.add(new JLabel(sourceCA.getName()));
         //Display the SourceCA into a JTextField
         JTextField jtf = new JTextField();
         jtf.setColumns(25);
@@ -90,7 +89,7 @@ public class RawDataUI implements DataUI {
             jtf.setText(filePanel.getCurrentDirectory().getAbsolutePath());
         }
 
-        component.add(jtf);
+        component.add(jtf, "growx");
         //Create the button Browse
         JButton button = new JButton("Browse");
         //"Save" the sourceCA and the JTextField in the button

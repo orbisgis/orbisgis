@@ -60,10 +60,10 @@ public class DataFieldUI implements DataUI{
         }
 
         if(inputOrOutput.getResume().isEmpty()){
-            panel.add(new JLabel(inputOrOutput.getTitle()), "wrap");
+            panel.add(new JLabel(inputOrOutput.getTitle()), "growx, wrap");
         }
         else {
-            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "wrap");
+            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "growx, wrap");
         }
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());
@@ -71,7 +71,7 @@ public class DataFieldUI implements DataUI{
         comboBox.putClientProperty("dataMap", dataMap);
         comboBox.addFocusListener(EventHandler.create(FocusListener.class, this, "refreshComboBox", "source"));
         comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
-        panel.add(comboBox);
+        panel.add(comboBox, "growx, wrap");
 
         return panel;
     }

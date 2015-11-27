@@ -73,10 +73,10 @@ public class EnumerationUI implements DataUI{
         }
         //Adds the text label to the panel
         if(inputOrOutput.getResume().isEmpty()){
-            panel.add(new JLabel(inputOrOutput.getTitle()), "wrap");
+            panel.add(new JLabel(inputOrOutput.getTitle()), "growx, wrap");
         }
         else {
-            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "wrap");
+            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "growx, wrap");
         }
         //Build the JList containing the data
         DefaultListModel<String> model = new DefaultListModel<>();
@@ -105,7 +105,7 @@ public class EnumerationUI implements DataUI{
         list.setVisibleRowCount(-1);
         JScrollPane listScroller = new JScrollPane(list);
         listScroller.setMinimumSize(new Dimension(JLIST_WIDTH, JLIST_HEIGHT));
-        panel.add(listScroller, "wrap");
+        panel.add(listScroller, "growx, wrap");
         list.putClientProperty("uri", inputOrOutput.getIdentifier());
         list.putClientProperty("enumeration", enumeration);
         list.putClientProperty("dataMap", dataMap);
@@ -122,7 +122,7 @@ public class EnumerationUI implements DataUI{
                     "saveDocumentTextFile",
                     "document"));
 
-            panel.add(textField);
+            panel.add(textField, "growx, wrap");
             list.putClientProperty("textField", textField);
         }
 

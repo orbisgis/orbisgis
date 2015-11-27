@@ -63,10 +63,10 @@ public class FieldValueUI implements DataUI{
         }
 
         if(inputOrOutput.getResume().isEmpty()){
-            panel.add(new JLabel(inputOrOutput.getTitle()), "wrap");
+            panel.add(new JLabel(inputOrOutput.getTitle()), "growx, wrap");
         }
         else {
-            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "wrap");
+            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "growx, wrap");
         }
         JList list = new JList(new DefaultListModel());
         if(fieldValue.getMuliSelection()){
@@ -79,7 +79,7 @@ public class FieldValueUI implements DataUI{
         list.setVisibleRowCount(-1);
         JScrollPane listScroller = new JScrollPane(list);
         listScroller.setMinimumSize(new Dimension(250, 80));
-        panel.add(listScroller);
+        panel.add(listScroller, "growx, wrap");
         list.putClientProperty("uri", inputOrOutput.getIdentifier());
         list.putClientProperty("fieldValue", fieldValue);
         list.putClientProperty("dataMap", dataMap);

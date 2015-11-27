@@ -180,7 +180,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
             inputPanel.add(inputAbstrac, "wrap");
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getClass());
             if(dataUI!=null) {
-                inputPanel.add(dataUI.createUI(i, processExecutionData.getInputDataMap()), "wrap");
+                inputPanel.add(dataUI.createUI(i, processExecutionData.getInputDataMap()), "growx, wrap");
             }
             panel.add(inputPanel, "growx, wrap");
         }
@@ -195,8 +195,8 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
                     outputPanel.setBorder(BorderFactory.createTitledBorder(o.getTitle()));
                     JLabel outputAbstrac = new JLabel(o.getResume());
                     outputAbstrac.setFont(outputAbstrac.getFont().deriveFont(Font.ITALIC));
-                    outputPanel.add(outputAbstrac, "wrap");
-                    outputPanel.add(component, "wrap");
+                    outputPanel.add(outputAbstrac, "growx, wrap");
+                    outputPanel.add(component, "growx, wrap");
                     panel.add(outputPanel, "growx, wrap");
                 }
             }
