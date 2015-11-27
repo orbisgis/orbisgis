@@ -20,8 +20,7 @@
 
 import org.orbisgis.orbistoolboxapi.annotations.input.LiteralDataInput
 import org.orbisgis.orbistoolboxapi.annotations.model.Process
-import org.orbisgis.orbistoolboxapi.annotations.input.GeometryInput
-import org.orbisgis.orbistoolboxapi.annotations.output.GeometryOutput
+
 import com.vividsolutions.jts.geom.Geometry
 import groovy.sql.Sql
 import java.sql.PreparedStatement;

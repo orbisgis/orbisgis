@@ -23,7 +23,6 @@ import org.h2gis.h2spatialapi.DriverFunction;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
-import org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing.ProcessingManager;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
@@ -46,7 +45,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
-import java.net.URI;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,7 +69,6 @@ public class ToolBox implements DockingPanel {
     /** DataManager */
     private static DataManager dataManager;
     private static DriverFunctionContainer driverFunctionContainer;
-    private ProcessingManager processingManager;
 
     private Map<String, Object> properties;
     private List<ProcessExecutionData> processExecutionDataList;
@@ -82,7 +79,6 @@ public class ToolBox implements DockingPanel {
         processManager = new ProcessManager();
         dataUIManager = new DataUIManager(this);
         processExecutionDataList = new ArrayList<>();
-        processingManager = new ProcessingManager(this);
 
         ActionCommands dockingActions = new ActionCommands();
 
@@ -107,10 +103,6 @@ public class ToolBox implements DockingPanel {
      */
     public ProcessManager getProcessManager(){
         return processManager;
-    }
-
-    public ProcessingManager getProcessingManager(){
-        return processingManager;
     }
 
     @Override

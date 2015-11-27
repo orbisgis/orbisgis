@@ -18,8 +18,7 @@
  */
 
 import org.orbisgis.orbistoolboxapi.annotations.model.Process
-import org.orbisgis.orbistoolboxapi.annotations.input.GeoDataInput
-import org.orbisgis.orbistoolboxapi.annotations.output.GeoDataOutput
+
 
 import groovy.sql.Sql
 /**

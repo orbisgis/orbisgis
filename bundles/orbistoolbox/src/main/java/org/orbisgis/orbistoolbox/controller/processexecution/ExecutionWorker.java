@@ -82,15 +82,9 @@ public class ExecutionWorker extends SwingWorkerPM{
                     ProcessExecutionData.LogType.INFO,
                     "Start process : " + process.getTitle());
 
-            //Pre-process the inputs
-            toolBox.getProcessingManager().preProcessData(this);
-
             //Execute the process and retrieve the groovy object.
             groovyObject = toolBox.getProcessManager().executeProcess(
                     process, dataMap, toolBox.getProperties());
-
-            //Post-process the outputs.
-            toolBox.getProcessingManager().postProcessData(this);
 
             //Print in the log the process execution end
             processExecutionData.appendLog(System.currentTimeMillis() - startTime,
