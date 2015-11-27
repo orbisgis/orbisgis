@@ -315,12 +315,12 @@ public class DataStoreUI implements DataUI{
                 dataMap.put(uri, tableName);
                 //tells the dataField they should revalidate
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModified(false);
+                    dataField.setSourceModified(true);
                 }
             }
             else{
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModified(true);
+                    dataField.setSourceModified(false);
                 }
             }
         } catch (BadLocationException e) {
@@ -346,12 +346,12 @@ public class DataStoreUI implements DataUI{
                 dataMap.put(uri, tableName);
                 //tells the dataField they should revalidate
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModified(false);
+                    dataField.setSourceModified(true);
                 }
             }
             else{
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModified(true);
+                    dataField.setSourceModified(false);
                 }
             }
         } catch (BadLocationException e) {

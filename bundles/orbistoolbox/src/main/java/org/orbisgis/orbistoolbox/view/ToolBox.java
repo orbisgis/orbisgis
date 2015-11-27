@@ -361,11 +361,11 @@ public class ToolBox implements DockingPanel {
                 if (!fieldTypes.isEmpty()) {
                     for (FieldType fieldType : fieldTypes) {
                         if (fieldType.name().equalsIgnoreCase(result.getObject(6).toString())) {
-                            fieldList.add("" + result.getObject(4));
+                            fieldList.add(result.getObject(4).toString());
                         }
                     }
                 } else{
-                    fieldList.add("" + result.getObject(4));
+                    fieldList.add(result.getObject(4).toString());
                 }
             }
         } catch (SQLException e) {
@@ -376,7 +376,7 @@ public class ToolBox implements DockingPanel {
 
     public String loadFile(File f) {
         try {
-            dataManager.registerDataSource(f.toURI());
+            return dataManager.registerDataSource(f.toURI()).replaceAll("\"", "");
         } catch (SQLException e) {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
