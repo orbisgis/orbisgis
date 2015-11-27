@@ -17,19 +17,19 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations.input
+package org.orbisgis.orbistoolboxapi.annotations.output
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
-import org.orbisgis.orbistoolboxapi.annotations.model.FieldValueAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.EnumerationAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
 
 /**
- * The FieldValue input allows the user to specify a value from a table column.
+ * The Enumeration output allow the user to select one or more value from a predefined list.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, FieldValueAttribute, InputAttribute, DescriptionTypeAttribute])
-@interface FieldValueInput {
+@AnnotationCollector([Field, EnumerationAttribute, OutputAttribute, DescriptionTypeAttribute])
+@interface EnumerationOutput {
 }
