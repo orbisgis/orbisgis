@@ -19,10 +19,14 @@
 
 package org.orbisgis.orbistoolboxapi.annotations.model
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
 /**
  * This represent an enumeration.
  * @author Sylvain PALOMINOS
  */
+@Retention(RetentionPolicy.RUNTIME)
 @interface EnumerationAttribute {
     /** Enable or not to select more than one value.*/
     boolean multiSelection() default false
