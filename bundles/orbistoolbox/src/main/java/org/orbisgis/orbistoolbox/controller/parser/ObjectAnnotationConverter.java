@@ -298,7 +298,8 @@ public class ObjectAnnotationConverter {
 
     public static Enumeration annotationToObject(EnumerationAttribute enumAttribute, Format format) {
         try{
-            Enumeration enumeration = new Enumeration(format, enumAttribute.values(), enumAttribute.defaultValue());
+            format.setDefaultFormat(true);
+            Enumeration enumeration = new Enumeration(format, enumAttribute.values(), enumAttribute.defaultValues());
             enumeration.setEditable(enumAttribute.isEditable());
             enumeration.setMultiSelection(enumAttribute.multiSelection());
             return enumeration;

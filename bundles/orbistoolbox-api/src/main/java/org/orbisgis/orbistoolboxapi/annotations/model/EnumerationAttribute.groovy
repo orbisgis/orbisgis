@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy
 
 /**
  * This represent an enumeration.
+ *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -34,6 +35,6 @@ import java.lang.annotation.RetentionPolicy
     boolean isEditable() default false
     /** List of possible values.*/
     String[] values()
-    /** Default selected value, can be empty.*/
-    String defaultValue() default ""
+    /** Default selected values, can be empty.*/
+    String[] defaultValues() default []
 }

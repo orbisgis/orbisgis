@@ -28,8 +28,8 @@ public class Enumeration extends ComplexData{
 
     /** List of values.*/
     private String[] values;
-    /** Default value.*/
-    private String defaultValue;
+    /** Default values.*/
+    private String[] defaultValues;
     /** Enable or not the selection of more than one value.*/
     private boolean multiSelection = false;
     /** Enable or not the user to use its own value.*/
@@ -39,19 +39,13 @@ public class Enumeration extends ComplexData{
      * Main constructor.
      * @param format Format of the data accepted.
      * @param valueList List of values.
-     * @param defaultValue Default value. If null, no default value.
+     * @param defaultValues Default value. If null, no default value.
      * @throws MalformedScriptException
      */
-    public Enumeration(Format format, String[] valueList, String defaultValue) throws MalformedScriptException {
+    public Enumeration(Format format, String[] valueList, String[] defaultValues) throws MalformedScriptException {
         super(format);
         this.values = valueList;
-        //Test if the defaultValue is inside the value list. If not, no default value.
-        this.defaultValue = null;
-        for(String value : valueList){
-            if(value.equals(defaultValue)){
-                this.defaultValue = defaultValue;
-            }
-        }
+        this.defaultValues = defaultValues;
     }
 
     /**
@@ -63,11 +57,11 @@ public class Enumeration extends ComplexData{
     }
 
     /**
-     * Returns the default value.
-     * @return The default value.
+     * Returns the default values.
+     * @return The default values.
      */
-    public String getDefaultValue() {
-        return defaultValue;
+    public String[] getDefaultValues() {
+        return defaultValues;
     }
 
     /**

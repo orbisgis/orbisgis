@@ -56,6 +56,7 @@ public class DataUIManager {
         linkClassUI(DataStore.class, new DataStoreUI());
         linkClassUI(DataField.class, new DataFieldUI());
         linkClassUI(FieldValue.class, new FieldValueUI());
+        linkClassUI(Enumeration.class, new EnumerationUI());
     }
 
     /**

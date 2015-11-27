@@ -90,6 +90,6 @@ public class EnumerationParser implements Parser{
 
     @Override
     public Class getAnnotation() {
-        return DataStoreAttribute.class;
+        return EnumerationAttribute.class;
     }
 }
