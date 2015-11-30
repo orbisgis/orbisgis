@@ -27,6 +27,8 @@ import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
+import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
+import org.orbisgis.orbistoolbox.view.utils.ProcessEditorFactory;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
@@ -37,6 +39,7 @@ import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.orbisgis.sif.edition.EditorManager;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Component;
@@ -72,6 +75,8 @@ public class ToolBox implements DockingPanel {
 
     private Map<String, Object> properties;
     private List<ProcessExecutionData> processExecutionDataList;
+    private EditorManager editorManager;
+    private ProcessEditorFactory pef;
 
     @Activate
     public void init(){
@@ -90,10 +95,14 @@ public class ToolBox implements DockingPanel {
 
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
+
+        pef = new ProcessEditorFactory(dataManager, editorManager, this);
+        editorManager.addEditorFactory(pef);
     }
 
     @Deactivate
     public void dispose(){
+        editorManager.removeEditorFactory(pef);
         toolBoxPanel.dispose();
     }
 
@@ -136,6 +145,8 @@ public class ToolBox implements DockingPanel {
      */
     public void openProcess(){
         Process process = processManager.getProcess(toolBoxPanel.getSelectedNode().getFilePath());
+        editorManager.openEditable(new ProcessEditableElement(process));
+
         ProcessExecutionData processExecutionData = null;
         for(ProcessExecutionData puid : processExecutionDataList){
             if(puid.getProcess().getIdentifier().equals(process.getIdentifier())){
@@ -266,6 +277,20 @@ public class ToolBox implements DockingPanel {
 
     public DriverFunctionContainer getDriverFunctionContainer(){
         return driverFunctionContainer;
+    }
+
+    /**
+     * @param editorManager Editor windows manager
+     */
+    @Reference
+    public void setEditorManager(EditorManager editorManager) {
+        this.editorManager = editorManager;
+    }
+    /**
+     * @param editorManager Editor windows manager
+     */
+    public void unsetEditorManager(EditorManager editorManager) {
+        this.editorManager = editorManager;
     }
 
     /**
