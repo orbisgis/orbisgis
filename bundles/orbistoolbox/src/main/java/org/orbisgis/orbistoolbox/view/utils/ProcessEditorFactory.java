@@ -21,7 +21,6 @@ package org.orbisgis.orbistoolbox.view.utils;
 
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.orbistoolbox.view.ToolBox;
-import org.orbisgis.orbistoolbox.view.utils.Filter.ProcessPanelLayout;
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.edition.*;
 import org.osgi.service.component.annotations.Reference;

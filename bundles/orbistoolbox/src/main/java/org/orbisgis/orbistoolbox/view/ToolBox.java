@@ -78,6 +78,8 @@ public class ToolBox implements DockingPanel {
     private EditorManager editorManager;
     private ProcessEditorFactory pef;
 
+    private static final String TOOLBOX_REFERENCE = "orbistoolbox";
+
     @Activate
     public void init(){
         toolBoxPanel = new ToolBoxPanel(this);
@@ -88,10 +90,10 @@ public class ToolBox implements DockingPanel {
         ActionCommands dockingActions = new ActionCommands();
 
         parameters = new DockingPanelParameters();
-        parameters.setName("orbistoolbox");
         parameters.setTitle("OrbisToolBox");
         parameters.setTitleIcon(ToolBoxIcon.getIcon("orbistoolbox"));
         parameters.setCloseable(true);
+        parameters.setName(TOOLBOX_REFERENCE);
 
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
@@ -104,6 +106,10 @@ public class ToolBox implements DockingPanel {
     public void dispose(){
         editorManager.removeEditorFactory(pef);
         toolBoxPanel.dispose();
+    }
+
+    public String getReference(){
+        return TOOLBOX_REFERENCE;
     }
 
     /**
@@ -146,7 +152,7 @@ public class ToolBox implements DockingPanel {
     public void openProcess(){
         Process process = processManager.getProcess(toolBoxPanel.getSelectedNode().getFilePath());
         editorManager.openEditable(new ProcessEditableElement(process));
-
+/*
         ProcessExecutionData processExecutionData = null;
         for(ProcessExecutionData puid : processExecutionDataList){
             if(puid.getProcess().getIdentifier().equals(process.getIdentifier())){
@@ -170,7 +176,7 @@ public class ToolBox implements DockingPanel {
         dialog.setAlwaysOnTop(true);
         dialog.setVisible(true);
         //Make the node listen to the process state.
-        uiPanel.setProcessStateListener(toolBoxPanel.getNodesFromSelectedOne());
+        uiPanel.setProcessStateListener(toolBoxPanel.getNodesFromSelectedOne());*/
     }
 
     /**

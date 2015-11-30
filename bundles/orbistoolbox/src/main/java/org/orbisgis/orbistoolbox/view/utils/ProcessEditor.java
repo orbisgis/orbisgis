@@ -22,6 +22,7 @@ package org.orbisgis.orbistoolbox.view.utils;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
+import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
@@ -34,14 +35,20 @@ import javax.swing.*;
 public class ProcessEditor extends JPanel implements EditorDockable {
     private ProcessEditableElement pee;
     private ToolBox toolBox;
+    private DockingPanelParameters dockingPanelParameters;
 
     public ProcessEditor(ToolBox toolBox){
         this.toolBox = toolBox;
+        dockingPanelParameters = new DockingPanelParameters();
+        dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("process"));
+        dockingPanelParameters.setDefaultDockingLocation(
+                new DockingLocation(DockingLocation.Location.STACKED_ON, toolBox.getReference()));
+        dockingPanelParameters.setTitle("Process configuration");
     }
 
     @Override
     public DockingPanelParameters getDockingParameters() {
-        return new DockingPanelParameters();
+        return dockingPanelParameters;
     }
 
     @Override
@@ -61,7 +68,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
 
     @Override
     public void setEditableElement(EditableElement editableElement) {
-        System.out.println("set : "+editableElement);
         this.pee = (ProcessEditableElement)editableElement;
+        dockingPanelParameters.setTitle(pee.getProcessReference());
     }
 }

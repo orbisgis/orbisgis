@@ -17,9 +17,8 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view.utils.Filter;
+package org.orbisgis.orbistoolbox.view.utils;
 
-import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.docking.XElement;
 
