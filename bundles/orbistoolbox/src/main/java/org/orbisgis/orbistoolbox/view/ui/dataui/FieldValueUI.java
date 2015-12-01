@@ -40,6 +40,7 @@ import java.util.List;
  **/
 
 public class FieldValueUI implements DataUI{
+    private static final int JLIST_ROW_COUNT = 10;
 
     private ToolBox toolBox;
 
@@ -75,10 +76,9 @@ public class FieldValueUI implements DataUI{
         else {
             list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         }
-        list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        list.setVisibleRowCount(-1);
+        list.setLayoutOrientation(JList.VERTICAL);
+        list.setVisibleRowCount(JLIST_ROW_COUNT);
         JScrollPane listScroller = new JScrollPane(list);
-        listScroller.setMinimumSize(new Dimension(250, 80));
         panel.add(listScroller, "growx, wrap");
         list.putClientProperty("uri", inputOrOutput.getIdentifier());
         list.putClientProperty("fieldValue", fieldValue);

@@ -31,10 +31,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import java.awt.*;
-import java.awt.event.FocusListener;
 import java.beans.EventHandler;
-import java.io.File;
 import java.net.URI;
 import java.util.*;
 import java.util.List;
@@ -46,9 +43,7 @@ import java.util.List;
  **/
 
 public class EnumerationUI implements DataUI{
-    private static final int TEXTFIELD_WIDTH = 25;
-    private static final int JLIST_WIDTH = 250;
-    private static final int JLIST_HEIGHT = 80;
+    private static final int JLIST_ROW_COUNT = 10;
 
     private ToolBox toolBox;
 
@@ -101,10 +96,9 @@ public class EnumerationUI implements DataUI{
         }
         list.setSelectedIndices(array);
         //Configure the JList
-        list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        list.setVisibleRowCount(-1);
+        list.setLayoutOrientation(JList.VERTICAL);
+        list.setVisibleRowCount(JLIST_ROW_COUNT);
         JScrollPane listScroller = new JScrollPane(list);
-        listScroller.setMinimumSize(new Dimension(JLIST_WIDTH, JLIST_HEIGHT));
         panel.add(listScroller, "growx, wrap");
         list.putClientProperty("uri", inputOrOutput.getIdentifier());
         list.putClientProperty("enumeration", enumeration);
@@ -113,7 +107,7 @@ public class EnumerationUI implements DataUI{
 
         //case of the editable value
         if(enumeration.isEditable()){
-            JTextField textField = new JTextField(TEXTFIELD_WIDTH);
+            JTextField textField = new JTextField();
             textField.getDocument().putProperty("dataMap", dataMap);
             textField.getDocument().putProperty("uri", inputOrOutput.getIdentifier());
             textField.getDocument().putProperty("enumeration", enumeration);
@@ -152,7 +146,7 @@ public class EnumerationUI implements DataUI{
         JList list = (JList)source;
         //If there is a textfield and if it contain a text, it means that their is a custom value and it will be used
         if(list.getClientProperty("textField")!=null){
-            TextField textField = (TextField)list.getClientProperty("textField");
+            JTextField textField = (JTextField)list.getClientProperty("textField");
             if(!textField.getText().isEmpty()){
                 return;
             }
