@@ -43,9 +43,9 @@ import java.sql.Statement;
  */
 public class ResultSetHolder implements Runnable,AutoCloseable {
     public static final int WAITING_FOR_RESULTSET = 5;
-    private static final int SLEEP_TIME = 50;
+    private static final int SLEEP_TIME = 5;
     private static final int RESULT_SET_TIMEOUT = 60000;
-    public enum STATUS { NEVER_STARTED, STARTED , READY, CLOSING, CLOSED, EXCEPTION}
+    public enum STATUS { NEVER_STARTED, STARTED , READY, REFRESH,CLOSING, CLOSED, EXCEPTION}
     private Exception ex;
     private ResultSet resultSet;
     private DataSource dataSource;
@@ -72,13 +72,16 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
         status = STATUS.STARTED;
         try (Connection connection = dataSource.getConnection()) {
             // PostGreSQL use cursor only if auto commit is false
-            try (ResultSet activeResultSet = resultSetProvider.getResultSet(connection)) {
-                resultSet = activeResultSet;
-                status = STATUS.READY;
-                while (lastUsage + RESULT_SET_TIMEOUT > System.currentTimeMillis() || openCount != 0) {
-                    Thread.sleep(SLEEP_TIME);
+            do {
+                try (ResultSet activeResultSet = resultSetProvider.getResultSet(connection)) {
+                    resultSet = activeResultSet;
+                    status = STATUS.READY;
+                    while (status != STATUS.REFRESH &&
+                            (lastUsage + RESULT_SET_TIMEOUT > System.currentTimeMillis() || openCount != 0)) {
+                        Thread.sleep(SLEEP_TIME);
+                    }
                 }
-            }
+            } while (status == STATUS.REFRESH);
         } catch(InterruptedException ex) {
             // Ignore
         } catch (Exception ex) {
@@ -90,6 +93,10 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
                 status = STATUS.CLOSED;
             }
         }
+    }
+
+    public void refresh() {
+        status = STATUS.REFRESH;
     }
 
     @Override

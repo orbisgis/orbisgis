@@ -345,8 +345,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private void syncRowBatch() throws SQLException{
         final int targetBatch = (int) (rowId - 1) / fetchSize;
         if(currentBatchId != targetBatch && rowId > 0 && rowId <= getRowCount()) {
-            // Ask ResultSet holder to refresh in order to go to requested batch
-            resultSetHolder.close();
+            // Ask ResultSet holder to refresh in order to go to the requested batch
+            resultSetHolder.refresh();
         }
     }
 
