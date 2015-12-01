@@ -19,6 +19,7 @@
 
 package org.orbisgis.orbistoolbox.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,46 +31,102 @@ import java.util.List;
 public class DataStore extends ComplexData{
     /** True if the data is spatial, false otherwise **/
     private boolean isSpatial;
-    /** True if the data comes from the OrbisGIS geocatalog spatial, false otherwise **/
+    /** True if the data can come from the OrbisGIS geocatalog spatial, false otherwise **/
     private boolean isGeocatalog;
-    /** True if the data is a file, false otherwise **/
+    /** True if the data can be a file, false otherwise **/
     private boolean isFile;
-    /** True if the data comes from a dataBase, false otherwise **/
+    /** True if the data can come from an external dataBase, false otherwise **/
     private boolean isDataBase;
+    /** List of DataField liked to the DataStore */
+    private List<DataField> listDataField;
 
+    /**
+     * Main constructor
+     * @param formatList List of formats accepted.
+     * @throws MalformedScriptException
+     */
     public DataStore(List<Format> formatList) throws MalformedScriptException {
         super(formatList);
+        listDataField = new ArrayList<>();
     }
 
-    public void setSpatial(boolean isSpatial){
+    /**
+     * Sets if the data should be spatial or no matter.
+     * @param isSpatial True if the data should be spatial, false if no matter.
+     */
+    public void setIsSpatial(boolean isSpatial){
         this.isSpatial = isSpatial;
     }
 
+    /**
+     * Tells if the data should be spatial or if no matter.
+     * @return True if the data should be spatial, false if no matter.
+     */
     public boolean isSpatial(){
         return isSpatial;
     }
 
+    /**
+     * Tells if the data can come from the OrbisGIS geocatalog.
+     * @return True if the data can come from the geocatalog, false otherwise.
+     */
     public boolean isGeocatalog() {
         return isGeocatalog;
     }
 
+    /**
+     * Sets if the data can come from the geocatalog or not.
+     * @param isGeocatalog True if the data can come from the geocatalog, false otherwise.
+     */
     public void setIsGeocatalog(boolean isGeocatalog) {
         this.isGeocatalog = isGeocatalog;
     }
 
+    /**
+     * Tells if the data can be a file.
+     * @return True if the data can be a file.
+     */
     public boolean isFile() {
         return isFile;
     }
 
+    /**
+     * Sets if the data can be a file.
+     * @param isFile True if the data can be a file, false otherwise.
+     */
     public void setIsFile(boolean isFile) {
         this.isFile = isFile;
     }
 
+    /**
+     * Tells if the data can come from an external database.
+     * @return True if the data can come from an external database.
+     */
     public boolean isDataBase() {
         return isDataBase;
     }
 
+    /**
+     * Sets if the data can come from an external database or not.
+     * @param isDataBase True if the data can come from an external database, false otherwise.
+     */
     public void setIsDataBase(boolean isDataBase) {
         this.isDataBase = isDataBase;
+    }
+
+    /**
+     * Adds a DataField as a 'child' of the DataStore.
+     * @param dataField DataField to add.
+     */
+    public void addDataField(DataField dataField){
+        this.listDataField.add(dataField);
+    }
+
+    /**
+     * Return the list of 'child' DataField.
+     * @return List of DataField.
+     */
+    public List<DataField> getListDataField(){
+        return listDataField;
     }
 }

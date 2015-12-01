@@ -39,6 +39,7 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.EventHandler;
+import java.io.File;
 import java.net.URI;
 import java.util.*;
 
@@ -52,6 +53,12 @@ public class DataStoreUI implements DataUI{
 
     /** constant size of the text fields **/
     private static final int TEXTFIELD_WIDTH = 25;
+
+    private ToolBox toolBox;
+
+    public void setToolBox(ToolBox toolBox){
+        this.toolBox = toolBox;
+    }
 
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
@@ -97,14 +104,14 @@ public class DataStoreUI implements DataUI{
         else {
             comboBox = new JComboBox<>(ToolBox.getGeocatalogTableList(false).toArray(new String[]{}));
         }
-        comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
+        comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onGeocatalogTableSelected", "source"));
         comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());
         comboBox.putClientProperty("dataMap", dataMap);
         comboBox.putClientProperty("dataStore", dataStore);
         optionPanelGeocatalog.add(new JLabel("Geocatalog :"));
         optionPanelGeocatalog.add(comboBox);
         geocatalog.putClientProperty("optionPanel", optionPanelGeocatalog);
-        geocatalog.addActionListener(EventHandler.create(ActionListener.class, this, "onActionPerformed", "source"));
+        geocatalog.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
 
         /**Instantiate the file radioButton and its optionPanel**/
         JRadioButton file = new JRadioButton("File");
@@ -160,7 +167,7 @@ public class DataStoreUI implements DataUI{
 
         optionPanelFile.add(browseButton);
         file.putClientProperty("optionPanel", optionPanelFile);
-        file.addActionListener(EventHandler.create(ActionListener.class, this, "onActionPerformed", "source"));
+        file.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
 
         /**Instantiate the dataBase radioButton and its optionPanel**/
         JRadioButton database = new JRadioButton("Database");
@@ -180,7 +187,7 @@ public class DataStoreUI implements DataUI{
         parametersButton.addActionListener(EventHandler.create(ActionListener.class, this, "onParameters", "source"));
         optionPanelDataBase.add(parametersButton);
         database.putClientProperty("optionPanel", optionPanelDataBase);
-        database.addActionListener(EventHandler.create(ActionListener.class, this, "onActionPerformed", "source"));
+        database.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
 
         geocatalog.setEnabled(dataStore.isGeocatalog());
         file.setEnabled(dataStore.isFile());
@@ -202,18 +209,18 @@ public class DataStoreUI implements DataUI{
         return panel;
     }
 
-    public void onItemSelected(Object source){
-        if(source instanceof JComboBox){
-            JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
-            Map<URI, Object> dataMap = (Map<URI, Object>)comboBox.getClientProperty("dataMap");
-            URI uri = (URI)comboBox.getClientProperty("uri");
-            DataStore dataStore = (DataStore)comboBox.getClientProperty("dataStore");
-            /*for(DataField dataField : dataStore.getListDataField()){
-                dataField.setIsSourceLoaded(false);
-            }*/
-            dataMap.remove(uri);
-            dataMap.put(uri, URI.create("geocatalog:" + comboBox.getSelectedItem()));
+    public void onGeocatalogTableSelected(Object source){
+        //Retrieve the client properties
+        JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
+        Map<URI, Object> dataMap = (Map<URI, Object>)comboBox.getClientProperty("dataMap");
+        URI uri = (URI)comboBox.getClientProperty("uri");
+        DataStore dataStore = (DataStore)comboBox.getClientProperty("dataStore");
+        //Tells all the dataField linked that the data source is loaded
+        for(DataField dataField : dataStore.getListDataField()){
+            dataField.setSourceModifiedd(true);
         }
+        dataMap.remove(uri);
+        dataMap.put(uri, comboBox.getSelectedItem());
     }
 
     public void onParameters(Object source){
@@ -241,7 +248,7 @@ public class DataStoreUI implements DataUI{
         }
     }
 
-    public void onActionPerformed(Object source){
+    public void onRadioSelected(Object source){
         if(source instanceof JRadioButton){
             JRadioButton radioButton = (JRadioButton)source;
             if(radioButton.isSelected()) {
@@ -260,19 +267,33 @@ public class DataStoreUI implements DataUI{
      * @param event
      */
     public void onBrowse(ActionEvent event){
+        //Open the file browse window
         JButton source = (JButton)event.getSource();
         OpenFilePanel openFilePanel = (OpenFilePanel)source.getClientProperty("filePanel");
         if (UIFactory.showDialog(openFilePanel, true, true)) {
-            JTextField textField = (JTextField)source.getClientProperty("JTextField");
-            textField.setText(openFilePanel.getSelectedFile().getName());
-            Map<URI, Object> dataMap = (Map<URI, Object>)source.getClientProperty("dataMap");
-            URI uri = (URI)source.getClientProperty("uri");
-            DataStore dataStore = (DataStore)source.getClientProperty("dataStore");
-            /*for(DataField dataField : dataStore.getListDataField()){
-                dataField.setIsSourceLoaded(false);
-            }*/
-            dataMap.remove(uri);
-            dataMap.put(uri, openFilePanel.getSelectedFile().toURI());
+            DataStore dataStore = (DataStore) source.getClientProperty("dataStore");
+            URI selectedFileURI = openFilePanel.getSelectedFile().toURI();
+            //Load the selected file an retrieve the table name.
+            String tableName = loadDataStore(selectedFileURI);
+            if(tableName != null) {
+                //Set the UI with the selected value
+                JTextField textField = (JTextField) source.getClientProperty("JTextField");
+                textField.setText(openFilePanel.getSelectedFile().getName());
+                Map<URI, Object> dataMap = (Map<URI, Object>) source.getClientProperty("dataMap");
+                //Store the selection
+                URI uri = (URI) source.getClientProperty("uri");
+                dataMap.remove(uri);
+                dataMap.put(uri, tableName);
+                //tells the dataField they should revalidate
+                for (DataField dataField : dataStore.getListDataField()) {
+                    dataField.setSourceModifiedd(true);
+                }
+            }
+            else{
+                for (DataField dataField : dataStore.getListDataField()) {
+                    dataField.setSourceModifiedd(false);
+                }
+            }
         }
     }
 
@@ -282,18 +303,26 @@ public class DataStoreUI implements DataUI{
      */
     public void saveDocumentTextFile(Document document){
         try {
-            Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
-            URI uri = (URI)document.getProperty("uri");
-            String name = document.getText(0, document.getLength());
-            dataMap.remove(uri);
-            if(name.startsWith("file:")) {
-                name = "file:"+name;
-            }
             DataStore dataStore = (DataStore)document.getProperty("dataStore");
-            /*for(DataField dataField : dataStore.getListDataField()){
-                dataField.setIsSourceLoaded(false);
-            }*/
-            dataMap.put(uri, URI.create(name));
+            File file = new File(document.getText(0, document.getLength()));
+            //Load the selected file an retrieve the table name.
+            String tableName = loadDataStore(file.toURI());
+            if(tableName != null) {
+                //Store the selection
+                Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
+                URI uri = (URI)document.getProperty("uri");
+                dataMap.remove(uri);
+                dataMap.put(uri, tableName);
+                //tells the dataField they should revalidate
+                for (DataField dataField : dataStore.getListDataField()) {
+                    dataField.setSourceModifiedd(false);
+                }
+            }
+            else{
+                for (DataField dataField : dataStore.getListDataField()) {
+                    dataField.setSourceModifiedd(true);
+                }
+            }
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
         }
@@ -305,17 +334,41 @@ public class DataStoreUI implements DataUI{
      */
     public void saveDocumentTextDataBase(Document document){
         try {
-            Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
-            URI uri = (URI)document.getProperty("uri");
-            String name = document.getText(0, document.getLength());
-            dataMap.remove(uri);
-            dataMap.put(uri, URI.create(name));
             DataStore dataStore = (DataStore)document.getProperty("dataStore");
-            /*for(DataField dataField : dataStore.getListDataField()){
-                dataField.setIsSourceLoaded(false);
-            }*/
+            URI dataBaseURI = URI.create(document.getText(0, document.getLength()));
+            //Load the selected file an retrieve the table name.
+            String tableName = loadDataStore(dataBaseURI);
+            if(tableName != null) {
+                //Store the selection
+                Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
+                URI uri = (URI)document.getProperty("uri");
+                dataMap.remove(uri);
+                dataMap.put(uri, tableName);
+                //tells the dataField they should revalidate
+                for (DataField dataField : dataStore.getListDataField()) {
+                    dataField.setSourceModifiedd(false);
+                }
+            }
+            else{
+                for (DataField dataField : dataStore.getListDataField()) {
+                    dataField.setSourceModifiedd(true);
+                }
+            }
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
         }
+    }
+
+    /**
+     * Load the given data source.
+     * @param dataStoreURI Uri of the data source to load.
+     * @return The table name of the data source.
+     */
+    private String loadDataStore(URI dataStoreURI){
+        File f = new File(dataStoreURI);
+        if(f.isFile()) {
+            return toolBox.loadFile(f);
+        }
+        return null;
     }
 }

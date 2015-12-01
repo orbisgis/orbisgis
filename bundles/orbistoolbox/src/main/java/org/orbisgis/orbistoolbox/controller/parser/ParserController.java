@@ -22,9 +22,8 @@ package org.orbisgis.orbistoolbox.controller.parser;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
-import org.orbisgis.orbistoolbox.model.Input;
+import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
 import org.slf4j.LoggerFactory;
@@ -52,6 +51,7 @@ public class ParserController {
     private GroovyClassLoader groovyClassLoader;
 
     public ParserController(){
+        //Instantitate the parser list
         parserList = new ArrayList<>();
         parserList.add(new RawDataParser());
         parserList.add(new LiteralDataParser());
@@ -59,12 +59,14 @@ public class ParserController {
         parserList.add(new GeoDataParser());
         parserList.add(new GeometryParser());
         parserList.add(new DataStoreParser());
+        parserList.add(new DataFieldParser());
         defaultParser = new DefaultParser();
         processParser = new ProcessParser();
         groovyClassLoader = new GroovyShell().getClassLoader();
     }
 
     public AbstractMap.SimpleEntry<Process, Class> parseProcess(String processPath){
+        //Retrieve the class corresponding to the Groovy script.
         Class clazz;
         File process = new File(processPath);
         try {
@@ -75,12 +77,14 @@ public class ParserController {
             LoggerFactory.getLogger(ParserController.class).error(e.getMessage());
             return null;
         }
+        //Retrieve the list of input and output of the script.
         List<Input> inputList = new ArrayList<>();
         List<Output> outputList = new ArrayList<>();
 
         for(Field f : clazz.getDeclaredFields()){
             for(Annotation a : f.getDeclaredAnnotations()){
                 if(a instanceof InputAttribute){
+                    //Find the good parser and parse the input.
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
@@ -93,6 +97,7 @@ public class ParserController {
                     }
                 }
                 if(a instanceof OutputAttribute){
+                    //Find the good parser and parse the output.
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
@@ -106,14 +111,34 @@ public class ParserController {
                 }
             }
         }
+        //Then parse the process
         try {
             Process p = processParser.parseProcess(inputList,
                     outputList,
                     clazz.getDeclaredMethod("processing"),
                     process.getAbsolutePath());
+            link(p);
             return new AbstractMap.SimpleEntry<>(p, clazz);
         } catch (NoSuchMethodException e) {
             return null;
+        }
+    }
+
+    /**
+     * Links the input and output with the 'parent'.
+     * i.e. : The DataStore contains a list of DataField related.
+     * @param p
+     */
+    private void link(Process p){
+        for(Input i : p.getInput()){
+            if(i.getDataDescription() instanceof DataField){
+                DataField dataField = (DataField)i.getDataDescription();
+                for(Input dataStore : p.getInput()){
+                    if(dataStore.getIdentifier().equals(dataField.getDataStoreIdentifier())){
+                        ((DataStore)dataStore.getDataDescription()).addDataField(dataField);
+                    }
+                }
+            }
         }
     }
 }

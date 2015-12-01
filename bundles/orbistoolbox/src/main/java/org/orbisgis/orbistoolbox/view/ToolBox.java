@@ -30,6 +30,7 @@ import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
+import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
 import org.orbisgis.sif.SIFDialog;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
@@ -78,7 +79,7 @@ public class ToolBox implements DockingPanel {
     public void init(){
         toolBoxPanel = new ToolBoxPanel(this);
         processManager = new ProcessManager();
-        dataUIManager = new DataUIManager();
+        dataUIManager = new DataUIManager(this);
         processExecutionDataList = new ArrayList<>();
         processingManager = new ProcessingManager(this);
 
@@ -327,11 +328,11 @@ public class ToolBox implements DockingPanel {
             } catch (AbstractMethodError | Exception ex) {
                 // Driver has been compiled with JAVA 6, or is not implemented
             }
-            if(onlySpatial) {
+            if(!onlySpatial) {
                 DatabaseMetaData md = connection.getMetaData();
                 ResultSet rs = md.getTables(null, defaultSchema, "%", null);
                 while (rs.next()) {
-                    String tableName = rs.getString("F_TABLE_NAME");
+                    String tableName = rs.getString(3);
                     if (!tableName.equalsIgnoreCase("SPATIAL_REF_SYS") && !tableName.equalsIgnoreCase("GEOMETRY_COLUMNS")) {
                         list.add(tableName);
                     }
@@ -348,5 +349,44 @@ public class ToolBox implements DockingPanel {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return list;
+    }
+
+    /**
+     * Return the list of the field of a table.
+     * @param tableName Name of the table.
+     * @param fieldTypes Type of the field accepted. If empty, accepts all the field.
+     * @return The list of the field name.
+     */
+    public static List<String> getTableFieldList(String tableName, List<FieldType> fieldTypes){
+        List<String> fieldList = new ArrayList<>();
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            DatabaseMetaData dmd = connection.getMetaData();
+            ResultSet result = dmd.getColumns(connection.getCatalog(), null, tableName, "%");
+            //TODO : replace the value 3, 4 ... with constants taking into account the database used (H2, postgres ...).
+            while(result.next()){
+                if (!fieldTypes.isEmpty()) {
+                    for (FieldType fieldType : fieldTypes) {
+                        if (fieldType.name().equalsIgnoreCase(result.getObject(6).toString())) {
+                            fieldList.add("" + result.getObject(4));
+                        }
+                    }
+                } else{
+                    fieldList.add("" + result.getObject(4));
+                }
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+        }
+        return fieldList;
+    }
+
+    public String loadFile(File f) {
+        try {
+            dataManager.registerDataSource(f.toURI());
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+        }
+        return null;
     }
 }
