@@ -30,6 +30,7 @@ import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
+import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
 import org.orbisgis.sif.SIFDialog;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
@@ -45,10 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,7 +79,7 @@ public class ToolBox implements DockingPanel {
     public void init(){
         toolBoxPanel = new ToolBoxPanel(this);
         processManager = new ProcessManager();
-        dataUIManager = new DataUIManager();
+        dataUIManager = new DataUIManager(this);
         processExecutionDataList = new ArrayList<>();
         processingManager = new ProcessingManager(this);
 
@@ -278,10 +276,47 @@ public class ToolBox implements DockingPanel {
     }
 
     /**
-     * Returns the list of geo sql table from OrbisGIS.
+     * Returns a map of the importable format.
+     * The map key is the format extension and the value is the format description.
+     * @param onlySpatial If true, returns only the spatial table.
+     * @return a map of the importable  format.
+     */
+    public static Map<String, String> getImportableFormat(boolean onlySpatial){
+        Map<String, String> formatMap = new HashMap<>();
+        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
+            for(String ext : df.getImportFormats()){
+                if(df.isSpatialFormat(ext) || !onlySpatial) {
+                    formatMap.put(ext, df.getFormatDescription(ext));
+                }
+            }
+        }
+        return formatMap;
+    }
+
+    /**
+     * Returns a map of the exportable spatial format.
+     * The map key is the format extension and the value is the format description.
+     * @param onlySpatial If true, returns only the spatial table.
+     * @return a map of the exportable spatial format.
+     */
+    public static Map<String, String> getExportableFormat(boolean onlySpatial){
+        Map<String, String> formatMap = new HashMap<>();
+        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
+            for(String ext : df.getExportFormats()){
+                if(df.isSpatialFormat(ext) || !onlySpatial) {
+                    formatMap.put(ext, df.getFormatDescription(ext));
+                }
+            }
+        }
+        return formatMap;
+    }
+
+    /**
+     * Returns the list of sql table from OrbisGIS.
+     * @param onlySpatial If true, returns only the spatial table.
      * @return The list of geo sql table from OrbisGIS.
      */
-    public static List<String> getGeoTableList(){
+    public static List<String> getGeocatalogTableList(boolean onlySpatial) {
         List<String> list = new ArrayList<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();
@@ -293,10 +328,22 @@ public class ToolBox implements DockingPanel {
             } catch (AbstractMethodError | Exception ex) {
                 // Driver has been compiled with JAVA 6, or is not implemented
             }
-            Statement st = connection.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM "+defaultSchema+".geometry_columns");
-            while(rs.next()) {
-                list.add(rs.getString("F_TABLE_NAME"));
+            if(!onlySpatial) {
+                DatabaseMetaData md = connection.getMetaData();
+                ResultSet rs = md.getTables(null, defaultSchema, "%", null);
+                while (rs.next()) {
+                    String tableName = rs.getString(3);
+                    if (!tableName.equalsIgnoreCase("SPATIAL_REF_SYS") && !tableName.equalsIgnoreCase("GEOMETRY_COLUMNS")) {
+                        list.add(tableName);
+                    }
+                }
+            }
+            else{
+                Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery("SELECT * FROM "+defaultSchema+".geometry_columns");
+                while(rs.next()) {
+                    list.add(rs.getString("F_TABLE_NAME"));
+                }
             }
         } catch (SQLException e) {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
@@ -305,36 +352,41 @@ public class ToolBox implements DockingPanel {
     }
 
     /**
-     * Returns a map of the importable spatial format.
-     * The map key is the format extension and the value is the format description.
-     * @return a map of the importable spatial format.
+     * Return the list of the field of a table.
+     * @param tableName Name of the table.
+     * @param fieldTypes Type of the field accepted. If empty, accepts all the field.
+     * @return The list of the field name.
      */
-    public static Map<String, String> getImportableSpatialFormat(){
-        Map<String, String> formatMap = new HashMap<>();
-        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
-            for(String ext : df.getImportFormats()){
-                if(df.isSpatialFormat(ext)) {
-                    formatMap.put(ext, df.getFormatDescription(ext));
+    public static List<String> getTableFieldList(String tableName, List<FieldType> fieldTypes){
+        List<String> fieldList = new ArrayList<>();
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            DatabaseMetaData dmd = connection.getMetaData();
+            ResultSet result = dmd.getColumns(connection.getCatalog(), null, tableName, "%");
+            //TODO : replace the value 3, 4 ... with constants taking into account the database used (H2, postgres ...).
+            while(result.next()){
+                if (!fieldTypes.isEmpty()) {
+                    for (FieldType fieldType : fieldTypes) {
+                        if (fieldType.name().equalsIgnoreCase(result.getObject(6).toString())) {
+                            fieldList.add("" + result.getObject(4));
+                        }
+                    }
+                } else{
+                    fieldList.add("" + result.getObject(4));
                 }
             }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
-        return formatMap;
+        return fieldList;
     }
 
-    /**
-     * Returns a map of the exportable spatial format.
-     * The map key is the format extension and the value is the format description.
-     * @return a map of the exportable spatial format.
-     */
-    public static Map<String, String> getExportableSpatialFormat(){
-        Map<String, String> formatMap = new HashMap<>();
-        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
-            for(String ext : df.getExportFormats()){
-                if(df.isSpatialFormat(ext)) {
-                    formatMap.put(ext, df.getFormatDescription(ext));
-                }
-            }
+    public String loadFile(File f) {
+        try {
+            dataManager.registerDataSource(f.toURI());
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
-        return formatMap;
+        return null;
     }
 }

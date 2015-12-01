@@ -22,6 +22,7 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.RawData;
 import org.orbisgis.orbistoolbox.model.Process;
+import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
 import javax.swing.*;
@@ -40,15 +41,20 @@ public class DataUIManager {
     /** Map linking the data class and its UI*/
     private Map<Class<? extends DataDescription>, DataUI> dataUIMap;
 
+    ToolBox toolBox;
+
     /**
      * Main constructor.
      */
-    public DataUIManager(){
+    public DataUIManager(ToolBox toolBox){
+        this.toolBox = toolBox;
         dataUIMap = new HashMap<>();
         linkClassUI(LiteralData.class, new LiteralDataUI());
         linkClassUI(RawData.class, new RawDataUI());
         linkClassUI(GeoData.class, new GeoDataUI());
         linkClassUI(GeometryData.class, new GeometryUI());
+        linkClassUI(DataStore.class, new DataStoreUI());
+        linkClassUI(DataField.class, new DataFieldUI());
     }
 
     /**
@@ -57,6 +63,7 @@ public class DataUIManager {
      * @param dataUI UI corresponding to the class.
      */
     public void linkClassUI(Class<? extends DataDescription> clazz, DataUI dataUI){
+        dataUI.setToolBox(toolBox);
         dataUIMap.put(clazz, dataUI);
     }
 

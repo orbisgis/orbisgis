@@ -20,6 +20,7 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import org.orbisgis.orbistoolbox.model.DescriptionType;
+import org.orbisgis.orbistoolbox.view.ToolBox;
 
 import javax.swing.*;
 import java.net.URI;
@@ -55,4 +56,10 @@ public interface DataUI {
      * @return The icon associated to the given data.
      */
     public ImageIcon getIconFromData(DescriptionType inputOrOutput);
+
+    /**
+     * Sets the ToolBox associated to the DataUI.
+     * @param toolBox ToolBox
+     */
+    public void setToolBox(ToolBox toolBox);
 }

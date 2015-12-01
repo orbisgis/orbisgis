@@ -332,7 +332,12 @@ public class MapControl extends JComponent implements ContainerListener {
                     // Stop the drawing
                     // The drawer will call paint when it will release the awaitingDrawing
                     try {
-                        drawer.cancel(false);
+                        if(drawer.isDone()) {
+                            // Drawer have failing to restore awaitingDrawing flag value.
+                            awaitingDrawing.set(false);
+                        } else {
+                            drawer.cancel(false);
+                        }
                     } catch (Exception ex) {
                         // Ignore errors
                     }

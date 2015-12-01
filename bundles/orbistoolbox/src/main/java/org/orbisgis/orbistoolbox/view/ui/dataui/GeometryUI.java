@@ -51,6 +51,12 @@ public class GeometryUI implements DataUI {
 
     private static final int BROWSETEXTFIELD_WIDTH = 25;
 
+    private ToolBox toolBox;
+
+    public void setToolBox(ToolBox toolBox){
+        this.toolBox = toolBox;
+    }
+
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         JPanel panel = new JPanel(new MigLayout("fill"));
@@ -61,7 +67,7 @@ public class GeometryUI implements DataUI {
         if(inputOrOutput instanceof Input){
             Input input = (Input)inputOrOutput;
             geometryData = (GeometryData)input.getDataDescription();
-            extensionMap = ToolBox.getImportableSpatialFormat();
+            extensionMap = ToolBox.getImportableFormat(true);
         }
         if(inputOrOutput instanceof Output){
             return new JPanel();
