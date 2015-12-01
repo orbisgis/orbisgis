@@ -73,6 +73,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         dockingPanelParameters.setTitle(pee.getProcessReference());
         this.setLayout(new BorderLayout());
         dataUIManager = toolBox.getDataUIManager();
+        stateLabel = new JLabel();
 
         buildUI();
 
@@ -165,7 +166,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             ExecutionWorker thread = new ExecutionWorker(pee, toolBox, this);
             thread.execute();
             //Select the execution tab
-            stateLabel.setText(pee.getState().getValue());
             tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
             return false;
         }
@@ -303,7 +303,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
         JPanel statusPanel = new JPanel(new MigLayout());
         statusPanel.setBorder(BorderFactory.createTitledBorder("Status :"));
-        stateLabel = new JLabel(pee.getState().getValue());
         statusPanel.add(stateLabel);
 
         resultPanel = new JPanel(new MigLayout());
@@ -336,7 +335,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             resultPanel.add(title);
             resultPanel.add(result, "wrap");
         }
-        stateLabel.setText(state);
     }
 
     /**

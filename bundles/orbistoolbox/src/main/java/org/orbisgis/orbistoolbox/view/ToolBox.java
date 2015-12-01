@@ -71,7 +71,6 @@ public class ToolBox implements DockingPanel {
     private static DriverFunctionContainer driverFunctionContainer;
 
     private Map<String, Object> properties;
-    private List<ProcessExecutionData> processExecutionDataList;
     private EditorManager editorManager;
     private ProcessEditorFactory pef;
 
@@ -82,7 +81,6 @@ public class ToolBox implements DockingPanel {
         toolBoxPanel = new ToolBoxPanel(this);
         processManager = new ProcessManager();
         dataUIManager = new DataUIManager(this);
-        processExecutionDataList = new ArrayList<>();
 
         ActionCommands dockingActions = new ActionCommands();
 
@@ -177,25 +175,6 @@ public class ToolBox implements DockingPanel {
      */
     public DataUIManager getDataUIManager(){
         return dataUIManager;
-    }
-
-    /**
-     * Returns true if the process from the given file is running, false otherwise.
-     * @param file File of the process.
-     * @return True if the process is running, false otherwise.
-     */
-    public boolean isProcessRunning(File file){
-        Process process = processManager.getProcess(file);
-        if(process != null) {
-            for (ProcessExecutionData ped : processExecutionDataList){
-                if (ped.getProcess().getIdentifier().equals(process.getIdentifier())){
-                    if(ped.getState().equals(ProcessExecutionData.ProcessState.RUNNING)){
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     public Map<String, Object> getProperties(){
