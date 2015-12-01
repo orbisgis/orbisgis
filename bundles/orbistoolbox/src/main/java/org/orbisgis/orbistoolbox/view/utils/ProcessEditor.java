@@ -48,6 +48,9 @@ import java.util.Map;
  * @author Sylvain PALOMINOS
  */
 public class ProcessEditor extends JPanel implements EditorDockable, PropertyChangeListener {
+
+    private static final int SCROLLBAR_UNIT_INCREMENT = 16;
+
     private ProcessEditableElement pee;
     private ToolBox toolBox;
     private DockingPanelParameters dockingPanelParameters;
@@ -87,7 +90,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 break;
             case COMPLETED:
             case ERROR:
-                setOutputs(pee.getOutputDataMap(), pee.getState().toString());
+                setOutputs(pee.getOutputDataMap());
                 tabbedPane.setSelectedIndex(2);
                 break;
         }
@@ -180,7 +183,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      */
     public void endProcess(Map<URI, Object> outputMap){
         pee.setState(ProcessEditableElement.ProcessState.COMPLETED);
-        this.setOutputs(outputMap, ProcessEditableElement.ProcessState.COMPLETED.getValue());
+        this.setOutputs(outputMap);
         pee.setState(ProcessEditableElement.ProcessState.IDLE);
     }
 
@@ -223,7 +226,9 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JButton runButton = new JButton("Run");
         runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
         panel.add(runButton, "growx, wrap");
-        return new JScrollPane(panel);
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+        return scrollPane;
     }
 
     /**
@@ -287,7 +292,9 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         panel.add(inputPanel, "growx, wrap");
         panel.add(outputPanel, "growx, wrap");
 
-        return panel;
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+        return scrollPane;
     }
 
     /**
@@ -312,22 +319,24 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         logPanel.setBorder(BorderFactory.createTitledBorder("Log :"));
         logPane = new JTextPane();
         logPane.setCaretPosition(0);
-        JScrollPane scrollPane = new JScrollPane(logPane);
-        logPanel.add(scrollPane, BorderLayout.CENTER);
+        JScrollPane scrollPaneLog = new JScrollPane(logPane);
+        logPanel.add(scrollPaneLog, BorderLayout.CENTER);
 
         panel.add(executorPanel, "growx, wrap");
         panel.add(statusPanel, "growx, wrap");
         panel.add(resultPanel, "growx, wrap");
         panel.add(logPanel, "growx, growy, wrap");
 
-        return panel;
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+        return scrollPane;
     }
 
     /**
      * Sets the outputs label with the outputs results.
      * @param outputs Outputs results.
      */
-    public void setOutputs(Map<URI, Object> outputs, String state) {
+    public void setOutputs(Map<URI, Object> outputs) {
         resultPanel.removeAll();
         for(Output o : pee.getProcess().getOutput()) {
             JLabel title = new JLabel(o.getTitle()+" : ");
