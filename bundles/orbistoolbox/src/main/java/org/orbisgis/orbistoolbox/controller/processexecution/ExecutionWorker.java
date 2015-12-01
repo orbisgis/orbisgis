@@ -25,13 +25,10 @@ import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
 import org.orbisgis.orbistoolbox.view.utils.ProcessEditor;
-import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

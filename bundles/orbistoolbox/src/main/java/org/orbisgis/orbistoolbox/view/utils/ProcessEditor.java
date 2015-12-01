@@ -25,7 +25,6 @@ import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
-import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.sif.docking.DockingLocation;
@@ -354,7 +353,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             logPane.setCaretPosition(len);
             logPane.getDocument().insertString(len, text+"\n", aset);
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(ProcessUIPanel.class).error("Cannot show the log message", e);
+            LoggerFactory.getLogger(ProcessEditor.class).error("Cannot show the log message", e);
         }
         logPane.setCaretPosition(logPane.getDocument().getLength());
     }
@@ -366,7 +365,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         try {
             logPane.getDocument().remove(1, logPane.getDocument().getLength() - 1);
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(ProcessUIPanel.class).error(e.getMessage());
+            LoggerFactory.getLogger(ProcessEditor.class).error(e.getMessage());
         }
     }
 }

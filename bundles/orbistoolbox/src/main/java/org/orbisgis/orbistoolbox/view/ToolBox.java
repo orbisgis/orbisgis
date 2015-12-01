@@ -28,7 +28,6 @@ import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
 import org.orbisgis.orbistoolbox.view.utils.ProcessEditorFactory;
-import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
 import org.orbisgis.sif.UIFactory;
@@ -178,22 +177,6 @@ public class ToolBox implements DockingPanel {
      */
     public DataUIManager getDataUIManager(){
         return dataUIManager;
-    }
-
-    /**
-     * Save a processExecutionData to be able to retrieve it on reopening the process.
-     * @param processExecutionData ProcessExecutionData to save.
-     */
-    public void saveProcessExecutionData(ProcessExecutionData processExecutionData){
-        processExecutionDataList.add(processExecutionData);
-    }
-
-    /**
-     * Deletes the processExecutionData.
-     * @param processExecutionData ProcessExecutionData to delete.
-     */
-    public void deleteProcessExecutionData(ProcessExecutionData processExecutionData){
-        processExecutionDataList.remove(processExecutionData);
     }
 
     /**
