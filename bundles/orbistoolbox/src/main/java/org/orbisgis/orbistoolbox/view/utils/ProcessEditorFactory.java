@@ -19,11 +19,9 @@
 
 package org.orbisgis.orbistoolbox.view.utils;
 
-import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.edition.*;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -34,11 +32,9 @@ import org.slf4j.LoggerFactory;
 public class ProcessEditorFactory implements EditorFactory{
     public static final String FACTORY_ID = "WPSProcessEditorFactory";
     private EditorManager editorManager;
-    private DataManager dataManager;
     private ToolBox toolBox;
 
-    public ProcessEditorFactory(DataManager dataManager, EditorManager editorManager, ToolBox toolBox){
-        this.dataManager = dataManager;
+    public ProcessEditorFactory(EditorManager editorManager, ToolBox toolBox){
         this.editorManager = editorManager;
         this.toolBox = toolBox;
     }
@@ -49,9 +45,7 @@ public class ProcessEditorFactory implements EditorFactory{
     }
 
     @Override
-    public void dispose() {
-
-    }
+    public void dispose() {}
 
     @Override
     public DockingPanelLayout makeEditableLayout(EditableElement editableElement) {
@@ -68,19 +62,6 @@ public class ProcessEditorFactory implements EditorFactory{
         }
     }
 
-    /**
-     * Set editor manager instance in order to check if a table editor is already opened
-     * @param editorManager
-     */
-    @Reference
-    public void setEditorManager(EditorManager editorManager) {
-        this.editorManager = editorManager;
-    }
-
-    public void unsetEditorManager(EditorManager editorManager) {
-        this.editorManager = null;
-    }
-
     private boolean isEditableAlreadyOpened(EditableElement editable) {
         for(Editor editor : editorManager.getEditors()) {
             if(editor instanceof ProcessEditor && editable.equals(editor.getEditableElement())) {
@@ -88,20 +69,6 @@ public class ProcessEditorFactory implements EditorFactory{
             }
         }
         return false;
-    }
-
-    /**
-     * @param dataManager JDBC DataManager factory
-     */
-    @Reference
-    public void setDataManager(DataManager dataManager) {
-        this.dataManager = dataManager;
-    }
-    /**
-     * @param dataManager JDBC DataManager factory
-     */
-    public void unsetDataManager(DataManager dataManager) {
-        this.dataManager = dataManager;
     }
 
     @Override
@@ -118,8 +85,7 @@ public class ProcessEditorFactory implements EditorFactory{
     public EditorDockable create(DockingPanelLayout layout) {
         ProcessEditableElement editableProcess = ((ProcessPanelLayout)layout).getProcessEditableElement();
         //Check the DataSource state
-        ProcessEditor pe = new ProcessEditor(toolBox);
-        pe.setEditableElement(editableProcess);
+        ProcessEditor pe = new ProcessEditor(toolBox, editableProcess);
         return pe;
     }
 }

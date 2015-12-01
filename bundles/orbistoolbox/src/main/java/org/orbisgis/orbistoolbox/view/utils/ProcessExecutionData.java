@@ -131,8 +131,8 @@ public class ProcessExecutionData {
         if(inputDataMap.size() == process.getInput().size()) {
             setState(ProcessState.RUNNING);
             //Run the process in a separated thread
-            ExecutionWorker thread = new ExecutionWorker(process, outputDataMap, inputDataMap, toolBox, this);
-            thread.execute();
+            //ExecutionWorker thread = new ExecutionWorker(process, outputDataMap, inputDataMap, toolBox, this);
+            //thread.execute();
         }
     }
 

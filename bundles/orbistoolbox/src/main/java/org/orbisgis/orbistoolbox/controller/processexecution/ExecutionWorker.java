@@ -23,6 +23,8 @@ import groovy.lang.GroovyObject;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.model.Process;
+import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
+import org.orbisgis.orbistoolbox.view.utils.ProcessEditor;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.slf4j.LoggerFactory;
 
@@ -47,29 +49,24 @@ public class ExecutionWorker extends SwingWorkerPM{
     /** ToolBox */
     private ToolBox toolBox;
     /** Data for the process execution */
-    private ProcessExecutionData processExecutionData;
+    private ProcessEditableElement pee;
     /** GroovyObject of the process execution */
     private GroovyObject groovyObject;
+    private ProcessEditor processEditor;
 
     /**
      * Main constructor.
-     * @param process Process to execute.
-     * @param outputDataMap Output data map.
-     * @param inputDataMap Input data map.
+     * @param pee ProcessEditableElement.
      * @param toolBox ToolBox.
-     * @param processExecutionData Execution data.
      */
-    public ExecutionWorker(Process process,
-                           Map<URI, Object> outputDataMap,
-                           Map<URI, Object> inputDataMap,
-                           ToolBox toolBox,
-                           ProcessExecutionData processExecutionData){
-        this.process = process;
+    public ExecutionWorker(ProcessEditableElement pee,ToolBox toolBox, ProcessEditor processEditor){
+        this.pee = pee;
+        this.process = pee.getProcess();
         this.dataMap = new HashMap<>();
-        this.dataMap.putAll(inputDataMap);
-        this.dataMap.putAll(outputDataMap);
+        this.dataMap.putAll(pee.getInputDataMap());
+        this.dataMap.putAll(pee.getOutputDataMap());
         this.toolBox = toolBox;
-        this.processExecutionData = processExecutionData;
+        this.processEditor = processEditor;
     }
 
     @Override
@@ -78,8 +75,8 @@ public class ExecutionWorker extends SwingWorkerPM{
         //Catch all the Exception that can be get on executing the script.
         try {
             //Print in the log the process execution start
-            processExecutionData.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionData.LogType.INFO,
+            pee.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessEditableElement.LogType.INFO,
                     "Start process : " + process.getTitle());
 
             //Execute the process and retrieve the groovy object.
@@ -87,15 +84,15 @@ public class ExecutionWorker extends SwingWorkerPM{
                     process, dataMap, toolBox.getProperties());
 
             //Print in the log the process execution end
-            processExecutionData.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionData.LogType.INFO,
+            pee.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessEditableElement.LogType.INFO,
                     "End process : " + process.getTitle());
         }
         catch (Exception e) {
-            processExecutionData.setState(ProcessExecutionData.ProcessState.ERROR);
+            pee.setState(ProcessEditableElement.ProcessState.ERROR);
             //Print in the log the process execution error
-            processExecutionData.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionData.LogType.ERROR,
+            pee.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessEditableElement.LogType.ERROR,
                     e.getMessage());
             LoggerFactory.getLogger(ExecutionWorker.class).error(e.getMessage());
         }
@@ -105,14 +102,14 @@ public class ExecutionWorker extends SwingWorkerPM{
     @Override
     protected void done(){
         //Retrieve the executed process output data
-        List<String> listOutput = new ArrayList<>();
+        Map<URI, Object> mapOutput = new HashMap<>();
         for(Map.Entry<URI, Object> entry : dataMap.entrySet()){
             if(entry.getKey().toString().contains("output")) {
-                listOutput.add(entry.getValue().toString());
+                mapOutput.put(entry.getKey(), entry.getValue());
             }
         }
         //Print in the log the process end the process
-        processExecutionData.endProcess(listOutput);
+        processEditor.endProcess(mapOutput);
     }
 
     public ToolBox getToolBox(){

@@ -24,7 +24,6 @@ import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
@@ -32,7 +31,6 @@ import org.orbisgis.orbistoolbox.view.utils.ProcessEditorFactory;
 import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
-import org.orbisgis.sif.SIFDialog;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
@@ -98,7 +96,7 @@ public class ToolBox implements DockingPanel {
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
 
-        pef = new ProcessEditorFactory(dataManager, editorManager, this);
+        pef = new ProcessEditorFactory(editorManager, this);
         editorManager.addEditorFactory(pef);
     }
 
@@ -151,32 +149,7 @@ public class ToolBox implements DockingPanel {
      */
     public void openProcess(){
         Process process = processManager.getProcess(toolBoxPanel.getSelectedNode().getFilePath());
-        editorManager.openEditable(new ProcessEditableElement(process));
-/*
-        ProcessExecutionData processExecutionData = null;
-        for(ProcessExecutionData puid : processExecutionDataList){
-            if(puid.getProcess().getIdentifier().equals(process.getIdentifier())){
-                processExecutionData = puid;
-            }
-        }
-        ProcessUIPanel uiPanel;
-        if(processExecutionData != null){
-            uiPanel = new ProcessUIPanel(processExecutionData, this);
-        }
-        else{
-            uiPanel = new ProcessUIPanel(process, this);
-        }
-        SIFDialog dialog = UIFactory.getSimpleDialog(uiPanel,
-                SwingUtilities.getWindowAncestor(toolBoxPanel),
-                true,
-                "run",
-                "close"
-                );
-        dialog.pack();
-        dialog.setAlwaysOnTop(true);
-        dialog.setVisible(true);
-        //Make the node listen to the process state.
-        uiPanel.setProcessStateListener(toolBoxPanel.getNodesFromSelectedOne());*/
+        editorManager.openEditable(new ProcessEditableElement(process, toolBoxPanel.getNodesFromSelectedOne()));
     }
 
     /**
