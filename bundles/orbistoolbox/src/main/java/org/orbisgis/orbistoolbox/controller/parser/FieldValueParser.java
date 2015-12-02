@@ -28,29 +28,29 @@ import java.lang.reflect.Field;
 import java.net.URI;
 
 /**
- * Parser for the DataField input/output annotations.
+ * Parser for the FieldValue input/output annotations.
  *
  * @author Sylvain PALOMINOS
  **/
 
-public class DataFieldParser implements Parser {
+public class FieldValueParser implements Parser {
 
     @Override
     public Input parseInput(Field f, String processId) {
-        //Instantiate the DataField object
-        DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
+        //Instantiate the FieldValue object
+        FieldValueAttribute fieldValueAttribute = f.getAnnotation(FieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
-        URI dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStore());
-        DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
+        URI dataFieldUri = URI.create(processId + ":input:" + fieldValueAttribute.dataField());
+        FieldValue fieldValue = ObjectAnnotationConverter.annotationToObject(fieldValueAttribute, format, dataFieldUri);
 
         //Instantiate the returned input
         Input input;
         try {
             input = new Input(f.getName(),
                     URI.create(processId + ":input:" + f.getName()),
-                    dataField);
+                    fieldValue);
         } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(DataFieldParser.class).error(e.getMessage());
+            LoggerFactory.getLogger(FieldValueParser.class).error(e.getMessage());
             return null;
         }
 
@@ -62,20 +62,20 @@ public class DataFieldParser implements Parser {
 
     @Override
     public Output parseOutput(Field f, String processId) {
-        //Instantiate the DataField object
-        DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
+        //Instantiate the FieldValue object
+        FieldValueAttribute fieldValueAttribute = f.getAnnotation(FieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
-        URI dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.dataStore());
-        DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
+        URI dataFieldUri = URI.create(processId + ":output:" + fieldValueAttribute.dataField());
+        FieldValue fieldValue = ObjectAnnotationConverter.annotationToObject(fieldValueAttribute, format, dataFieldUri);
 
         //Instantiate the returned output
         Output output;
         try {
             output = new Output(f.getName(),
                     URI.create(processId + ":output:" + f.getName()),
-                    dataField);
+                    fieldValue);
         } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(DataFieldParser.class).error(e.getMessage());
+            LoggerFactory.getLogger(FieldValueParser.class).error(e.getMessage());
             return null;
         }
 
@@ -86,6 +86,6 @@ public class DataFieldParser implements Parser {
 
     @Override
     public Class getAnnotation() {
-        return DataFieldAttribute.class;
+        return FieldValueAttribute.class;
     }
 }
