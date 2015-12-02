@@ -48,6 +48,8 @@ import java.util.Map;
 
 public class LiteralDataUI implements DataUI {
 
+    private static final int ROW_NUMBER = 10;
+
     private ToolBox toolBox;
 
     public void setToolBox(ToolBox toolBox){
@@ -159,7 +161,7 @@ public class LiteralDataUI implements DataUI {
             panel.add(comboBox, "growx, wrap");
 
             //JPanel containing the component to set the input value
-            JComponent dataField = new JPanel();
+            JComponent dataField = new JPanel(new MigLayout("fill"));
             panel.add(dataField, "growx, wrap");
 
             comboBox.putClientProperty("dataField", dataField);
@@ -330,14 +332,15 @@ public class LiteralDataUI implements DataUI {
             case STRING:
             default:
                 //Instantiate the component
-                dataComponent = new JTextArea(6, 20);
-                dataComponent.setBorder(BorderFactory.createLineBorder(Color.lightGray));
+                JTextArea textArea = new JTextArea();
+                textArea.setLineWrap(true);
+                textArea.setRows(ROW_NUMBER);
                 //Put the data type, the dataMap and the uri as properties
-                Document doc = ((JTextArea) dataComponent).getDocument();
+                Document doc = textArea.getDocument();
                 doc.putProperty("dataMap", comboBox.getClientProperty("dataMap"));
                 doc.putProperty("uri", comboBox.getClientProperty("uri"));
                 //Set the default value and adds the listener for saving the value set by the user
-                ((JTextArea)dataComponent).setText((String)dataMap.get(uri));
+                textArea.setText((String)dataMap.get(uri));
                 doc.addDocumentListener(EventHandler.create(
                         DocumentListener.class,
                         this,
@@ -350,6 +353,7 @@ public class LiteralDataUI implements DataUI {
                         "onDocumentChanged",
                         "document",
                         "removeUpdate"));
+                dataComponent = new JScrollPane(textArea);
                 break;
         }
         //Adds to the dataField the dataComponent
