@@ -75,12 +75,16 @@ public class DataStoreUI implements DataUI{
         JPanel panel = new JPanel(new MigLayout("fill"));
         DataStore dataStore = null;
         Map<String, String> extensionMap = null;
+        boolean isOptional = false;
         //If the descriptionType is an input, add a comboBox to select the input type and according to the type,
         // add a second JComponent to write the input value
         if(inputOrOutput instanceof Input){
             Input input = (Input)inputOrOutput;
             dataStore = (DataStore)input.getDataDescription();
             extensionMap = ToolBox.getImportableFormat(true);
+            if(input.getMinOccurs() == 0){
+                isOptional = true;
+            }
         }
         if(inputOrOutput instanceof Output){
             Output output = (Output)inputOrOutput;
@@ -92,7 +96,24 @@ public class DataStoreUI implements DataUI{
         }
         panel.add(new JLabel("Select "+inputOrOutput.getResume()), "span");
 
-        ButtonGroup group = new ButtonGroup();
+        ButtonGroup group;
+        if(isOptional) {
+            //Override the setSelected method to allow to unselect buttons
+            group = new ButtonGroup(){
+                @Override
+                public void setSelected(ButtonModel m, boolean b) {
+                    if(b && m != null && m != getSelection()){
+                        super.setSelected(m, b);
+                    }
+                    else if (!b && m == getSelection()){
+                        clearSelection();
+                    }
+                }
+            };
+        }
+        else{
+            group = new ButtonGroup();
+        }
 
         /**Instantiate the geocatalog radioButton and its optionPanel**/
         JRadioButton geocatalog = new JRadioButton("Geocatalog");
@@ -108,6 +129,7 @@ public class DataStoreUI implements DataUI{
         comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());
         comboBox.putClientProperty("dataMap", dataMap);
         comboBox.putClientProperty("dataStore", dataStore);
+        comboBox.setBackground(Color.WHITE);
         optionPanelGeocatalog.add(new JLabel("Geocatalog :"));
         optionPanelGeocatalog.add(comboBox);
         geocatalog.putClientProperty("optionPanel", optionPanelGeocatalog);
@@ -205,8 +227,14 @@ public class DataStoreUI implements DataUI{
 
         JComponent dataField = new JPanel();
         geocatalog.putClientProperty("dataField", dataField);
+        geocatalog.putClientProperty("dataMap", dataMap);
+        geocatalog.putClientProperty("uri", inputOrOutput.getIdentifier());
         file.putClientProperty("dataField", dataField);
+        file.putClientProperty("dataMap", dataMap);
+        file.putClientProperty("uri", inputOrOutput.getIdentifier());
         database.putClientProperty("dataField", dataField);
+        database.putClientProperty("dataMap", dataMap);
+        database.putClientProperty("uri", inputOrOutput.getIdentifier());
         panel.add(dataField, "growx, span");
 
         return panel;
@@ -254,14 +282,19 @@ public class DataStoreUI implements DataUI{
     public void onRadioSelected(Object source){
         if(source instanceof JRadioButton){
             JRadioButton radioButton = (JRadioButton)source;
+            JPanel dataField = (JPanel) radioButton.getClientProperty("dataField");
+            dataField.removeAll();
             if(radioButton.isSelected()) {
                 JPanel optionPanel = (JPanel) radioButton.getClientProperty("optionPanel");
-                JPanel dataField = (JPanel) radioButton.getClientProperty("dataField");
-                dataField.removeAll();
                 dataField.setLayout(new MigLayout("fill"));
                 dataField.add(optionPanel, "growx, span");
-                dataField.revalidate();
             }
+            else{
+                HashMap<URI, Object> dataMap = (HashMap<URI, Object>)radioButton.getClientProperty("dataMap");
+                URI uri = (URI)radioButton.getClientProperty("uri");
+                dataMap.put(uri, null);
+            }
+            dataField.revalidate();
         }
     }
 

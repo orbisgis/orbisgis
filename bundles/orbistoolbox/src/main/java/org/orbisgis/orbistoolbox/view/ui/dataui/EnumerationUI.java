@@ -44,6 +44,7 @@ import java.util.List;
 
 public class EnumerationUI implements DataUI{
     private static final int JLIST_ROW_COUNT = 10;
+    private static final String OPTIONAL_VALUE= "<NONE>";
 
     private ToolBox toolBox;
 
@@ -56,8 +57,12 @@ public class EnumerationUI implements DataUI{
         JPanel panel = new JPanel(new MigLayout("fill"));
         //Get the enumeration object
         Enumeration enumeration = null;
+        boolean isOptional = false;
         if(inputOrOutput instanceof Input){
             enumeration = (Enumeration)((Input)inputOrOutput).getDataDescription();
+            if(((Input)inputOrOutput).getMinOccurs() == 0){
+                isOptional = true;
+            }
         }
         else if(inputOrOutput instanceof Output){
             enumeration = (Enumeration)((Output)inputOrOutput).getDataDescription();
@@ -78,6 +83,9 @@ public class EnumerationUI implements DataUI{
         for(String element : enumeration.getValues()){
             model.addElement(element);
         }
+        if(isOptional){
+            model.addElement(OPTIONAL_VALUE);
+        }
         JList<String> list = new JList<>(model);
         if(enumeration.isMultiSelection()){
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -87,11 +95,16 @@ public class EnumerationUI implements DataUI{
         }
         //Select the default values
         List<Integer> selectedIndex = new ArrayList<>();
-        for(String defaultValue : enumeration.getDefaultValues()){
-            selectedIndex.add(model.indexOf(defaultValue));
+        if(!isOptional) {
+            for (String defaultValue : enumeration.getDefaultValues()) {
+                selectedIndex.add(model.indexOf(defaultValue));
+            }
+        }
+        else{
+            selectedIndex.add(model.indexOf(OPTIONAL_VALUE));
         }
         int[] array = new int[selectedIndex.size()];
-        for(int i=0; i<selectedIndex.size(); i++){
+        for (int i = 0; i < selectedIndex.size(); i++) {
             array[i] = selectedIndex.get(i);
         }
         list.setSelectedIndices(array);
@@ -103,6 +116,7 @@ public class EnumerationUI implements DataUI{
         list.putClientProperty("uri", inputOrOutput.getIdentifier());
         list.putClientProperty("enumeration", enumeration);
         list.putClientProperty("dataMap", dataMap);
+        list.putClientProperty("isOptional", isOptional);
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
 
         //case of the editable value
@@ -144,16 +158,23 @@ public class EnumerationUI implements DataUI{
 
     public void onListSelection(Object source){
         JList list = (JList)source;
-        //If there is a textfield and if it contain a text, it means that their is a custom value and it will be used
-        if(list.getClientProperty("textField")!=null){
-            JTextField textField = (JTextField)list.getClientProperty("textField");
-            if(!textField.getText().isEmpty()){
-                return;
+        List<String> listValues;
+        boolean isOptional = (boolean)list.getClientProperty("isOptional");
+        if(!isOptional) {
+            //If there is a textfield and if it contain a text, it means that their is a custom value and it will be used
+            if (list.getClientProperty("textField") != null) {
+                JTextField textField = (JTextField) list.getClientProperty("textField");
+                if (!textField.getText().isEmpty()) {
+                    return;
+                }
+            }
+            listValues = new ArrayList<>();
+            for (int i : list.getSelectedIndices()) {
+                listValues.add(list.getModel().getElementAt(i).toString());
             }
         }
-        List<String> listValues = new ArrayList<>();
-        for(int i : list.getSelectedIndices()){
-            listValues.add(list.getModel().getElementAt(i).toString());
+        else{
+            listValues = null;
         }
         URI uri = (URI)list.getClientProperty("uri");
         HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");

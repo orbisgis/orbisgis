@@ -41,6 +41,7 @@ import java.util.List;
 
 public class FieldValueUI implements DataUI{
     private static final int JLIST_ROW_COUNT = 10;
+    private static final String OPTIONAL_VALUE = "<NONE>";
 
     private ToolBox toolBox;
 
@@ -52,8 +53,12 @@ public class FieldValueUI implements DataUI{
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         JPanel panel = new JPanel(new MigLayout("fill"));
         FieldValue fieldValue = null;
+        boolean isOptional = false;
         if(inputOrOutput instanceof Input){
             fieldValue = (FieldValue)((Input)inputOrOutput).getDataDescription();
+            if(((Input)inputOrOutput).getMinOccurs() == 0){
+                isOptional = true;
+            }
         }
         else if(inputOrOutput instanceof Output){
             fieldValue = (FieldValue)((Output)inputOrOutput).getDataDescription();
@@ -83,6 +88,7 @@ public class FieldValueUI implements DataUI{
         list.putClientProperty("uri", inputOrOutput.getIdentifier());
         list.putClientProperty("fieldValue", fieldValue);
         list.putClientProperty("dataMap", dataMap);
+        list.putClientProperty("isOptional", isOptional);
         list.addFocusListener(EventHandler.create(FocusListener.class, this, "onGainingFocus", "source"));
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
 
@@ -103,14 +109,18 @@ public class FieldValueUI implements DataUI{
         JList list = (JList)source;
         FieldValue fieldValue = (FieldValue)list.getClientProperty("fieldValue");
         HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
+        boolean isOptional = (boolean)list.getClientProperty("isOptional");
         if(fieldValue.isDataFieldModified()) {
             fieldValue.setDataFieldModified(false);
             String tableName = dataMap.get(fieldValue.getDataStoreIdentifier()).toString();
             String fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
-            DefaultListModel model = (DefaultListModel)list.getModel();
+            DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
             model.removeAllElements();
             for (String field : ToolBox.getFieldValueList(tableName, fieldName)) {
                 model.addElement(field);
+            }
+            if(isOptional){
+                model.addElement(OPTIONAL_VALUE);
             }
         }
         list.revalidate();
@@ -121,6 +131,10 @@ public class FieldValueUI implements DataUI{
         List<String> listValues = new ArrayList<>();
         for(int i : list.getSelectedIndices()){
             listValues.add(list.getModel().getElementAt(i).toString());
+            if(list.getModel().getElementAt(i).equals(OPTIONAL_VALUE)){
+                listValues = null;
+                break;
+            }
         }
         URI uri = (URI)list.getClientProperty("uri");
         HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");

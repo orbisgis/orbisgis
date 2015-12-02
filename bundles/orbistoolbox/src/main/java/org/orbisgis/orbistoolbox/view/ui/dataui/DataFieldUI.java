@@ -25,6 +25,7 @@ import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemListener;
 import java.beans.EventHandler;
@@ -38,6 +39,8 @@ import java.util.Map;
 
 public class DataFieldUI implements DataUI{
 
+    private static final String OPTIONAL_VALUE = "<NONE>";
+
     private ToolBox toolBox;
 
     public void setToolBox(ToolBox toolBox){
@@ -48,8 +51,12 @@ public class DataFieldUI implements DataUI{
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         JPanel panel = new JPanel(new MigLayout("fill"));
         DataField dataField = null;
+        boolean isOptional = false;
         if(inputOrOutput instanceof Input){
             dataField = (DataField)((Input)inputOrOutput).getDataDescription();
+            if(((Input)inputOrOutput).getMinOccurs() == 0){
+                isOptional = true;
+            }
         }
         else if(inputOrOutput instanceof Output){
             dataField = (DataField)((Output)inputOrOutput).getDataDescription();
@@ -65,10 +72,13 @@ public class DataFieldUI implements DataUI{
         else {
             panel.add(new JLabel("Select " + inputOrOutput.getResume()), "growx, wrap");
         }
+
         JComboBox<String> comboBox = new JComboBox<>();
+        comboBox.setBackground(Color.WHITE);
         comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());
         comboBox.putClientProperty("dataField", dataField);
         comboBox.putClientProperty("dataMap", dataMap);
+        comboBox.putClientProperty("isOptional", isOptional);
         comboBox.addFocusListener(EventHandler.create(FocusListener.class, this, "refreshComboBox", "source"));
         comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
         panel.add(comboBox, "growx, wrap");
@@ -98,20 +108,33 @@ public class DataFieldUI implements DataUI{
                 comboBox.addItem(field);
             }
         }
+        boolean isOptional = (boolean)comboBox.getClientProperty("isOptional");
+        if(isOptional) {
+            comboBox.addItem(OPTIONAL_VALUE);
+            comboBox.setSelectedItem(OPTIONAL_VALUE);
+        }
+
         comboBox.revalidate();
     }
 
     public void onItemSelected(Object source){
         if(source instanceof JComboBox){
             JComboBox<String> comboBox = (JComboBox)source;
-            DataField dataField = (DataField)comboBox.getClientProperty("dataField");
-            Map<URI, Object> dataMap = (Map<URI, Object>)comboBox.getClientProperty("dataMap");
-            URI uri = (URI)comboBox.getClientProperty("uri");
-            dataMap.remove(uri);
-            dataMap.put(uri, comboBox.getSelectedItem());
-            //Tells to the fieldValues that the datafield has been modified
-            for (FieldValue fieldValue : dataField.getListFieldValue()) {
-                fieldValue.setDataFieldModified(true);
+            if(comboBox.getSelectedItem() != null) {
+                DataField dataField = (DataField) comboBox.getClientProperty("dataField");
+                Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty("dataMap");
+                URI uri = (URI) comboBox.getClientProperty("uri");
+                dataMap.remove(uri);
+                if (!comboBox.getSelectedItem().equals(OPTIONAL_VALUE)) {
+                    dataMap.put(uri, null);
+                }
+                else{
+                    dataMap.put(uri, comboBox.getSelectedItem());
+                }
+                //Tells to the fieldValues that the datafield has been modified
+                for (FieldValue fieldValue : dataField.getListFieldValue()) {
+                    fieldValue.setDataFieldModified(true);
+                }
             }
         }
     }

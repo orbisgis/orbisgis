@@ -168,6 +168,7 @@ public class LiteralDataUI implements DataUI {
             comboBox.putClientProperty("uri", input.getIdentifier());
             comboBox.putClientProperty("dataMap", dataMap);
             comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onBoxChange", "source"));
+            comboBox.setBackground(Color.WHITE);
 
             onBoxChange(comboBox);
         }
@@ -195,6 +196,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent = new JComboBox<Boolean>();
                 ((JComboBox)dataComponent).addItem(Boolean.TRUE);
                 ((JComboBox)dataComponent).addItem(Boolean.FALSE);
+                dataComponent.setBackground(Color.WHITE);
                 //Put the data type, the dataMap and the uri as properties
                 dataComponent.putClientProperty("type", DataType.BOOLEAN);
                 dataComponent.putClientProperty("dataMap",dataMap);
