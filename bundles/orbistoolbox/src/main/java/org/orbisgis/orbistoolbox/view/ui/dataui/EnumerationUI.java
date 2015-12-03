@@ -43,8 +43,7 @@ import java.util.List;
  **/
 
 public class EnumerationUI implements DataUI{
-    private static final int JLIST_ROW_COUNT = 10;
-    private static final String OPTIONAL_VALUE= "<NONE>";
+    private static final int JLIST_MAX_ROW_COUNT = 10;
 
     private ToolBox toolBox;
 
@@ -83,9 +82,6 @@ public class EnumerationUI implements DataUI{
         for(String element : enumeration.getValues()){
             model.addElement(element);
         }
-        if(isOptional){
-            model.addElement(OPTIONAL_VALUE);
-        }
         JList<String> list = new JList<>(model);
         if(enumeration.isMultiSelection()){
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -100,9 +96,6 @@ public class EnumerationUI implements DataUI{
                 selectedIndex.add(model.indexOf(defaultValue));
             }
         }
-        else{
-            selectedIndex.add(model.indexOf(OPTIONAL_VALUE));
-        }
         int[] array = new int[selectedIndex.size()];
         for (int i = 0; i < selectedIndex.size(); i++) {
             array[i] = selectedIndex.get(i);
@@ -110,13 +103,19 @@ public class EnumerationUI implements DataUI{
         list.setSelectedIndices(array);
         //Configure the JList
         list.setLayoutOrientation(JList.VERTICAL);
-        list.setVisibleRowCount(JLIST_ROW_COUNT);
+        if(enumeration.getValues().length < JLIST_MAX_ROW_COUNT){
+            list.setVisibleRowCount(enumeration.getValues().length);
+        }
+        else {
+            list.setVisibleRowCount(JLIST_MAX_ROW_COUNT);
+        }
         JScrollPane listScroller = new JScrollPane(list);
         panel.add(listScroller, "growx, wrap");
         list.putClientProperty("uri", inputOrOutput.getIdentifier());
         list.putClientProperty("enumeration", enumeration);
         list.putClientProperty("dataMap", dataMap);
         list.putClientProperty("isOptional", isOptional);
+        list.putClientProperty("isMultiSelection", enumeration.isMultiSelection());
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
 
         //case of the editable value
@@ -125,6 +124,9 @@ public class EnumerationUI implements DataUI{
             textField.getDocument().putProperty("dataMap", dataMap);
             textField.getDocument().putProperty("uri", inputOrOutput.getIdentifier());
             textField.getDocument().putProperty("enumeration", enumeration);
+            textField.getDocument().putProperty("list", list);
+            textField.getDocument().putProperty("isMultiSelection", enumeration.isMultiSelection());
+            textField.getDocument().putProperty("isOptional", isOptional);
             textField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
                     this,
                     "saveDocumentTextFile",
@@ -158,37 +160,71 @@ public class EnumerationUI implements DataUI{
 
     public void onListSelection(Object source){
         JList list = (JList)source;
-        List<String> listValues;
+        List<String> listValues = new ArrayList<>();
+        URI uri = (URI) list.getClientProperty("uri");
+        HashMap<URI, Object> dataMap = (HashMap) list.getClientProperty("dataMap");
+        boolean isMultiSelection = (boolean)list.getClientProperty("isMultiSelection");
         boolean isOptional = (boolean)list.getClientProperty("isOptional");
-        if(!isOptional) {
-            //If there is a textfield and if it contain a text, it means that their is a custom value and it will be used
-            if (list.getClientProperty("textField") != null) {
-                JTextField textField = (JTextField) list.getClientProperty("textField");
-                if (!textField.getText().isEmpty()) {
-                    return;
+        //If there is a textfield and if it contain a text, add the coma separated values
+        if (list.getClientProperty("textField") != null) {
+            JTextField textField = (JTextField) list.getClientProperty("textField");
+            if (!textField.getText().isEmpty()) {
+                if(!isMultiSelection && list.getSelectedIndices().length != 0){
+                    textField.setText("");
+                }
+                else {
+                    listValues.add(textField.getText());
                 }
             }
-            listValues = new ArrayList<>();
-            for (int i : list.getSelectedIndices()) {
-                listValues.add(list.getModel().getElementAt(i).toString());
+        }
+        //Add the selected JList values
+        for (int i : list.getSelectedIndices()) {
+            listValues.add(list.getModel().getElementAt(i).toString());
+        }
+        //if no values are selected, put null is isOptional, or select the first value if not
+        if(listValues.isEmpty()){
+            if(isOptional) {
+                dataMap.put(uri, null);
+            }
+            else{
+                list.setSelectedIndices(new int[]{0});
             }
         }
-        else{
-            listValues = null;
+        else {
+            dataMap.put(uri, listValues);
         }
-        URI uri = (URI)list.getClientProperty("uri");
-        HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
-        dataMap.put(uri, listValues);
     }
 
     public void saveDocumentTextFile(Document document){
         try {
             Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
             URI uri = (URI)document.getProperty("uri");
-            dataMap.remove(uri);
-            List<String> list = new ArrayList<>();
-            list.add(document.getText(0,document.getLength()));
-            dataMap.put(uri, list);
+            JList list = (JList<String>) document.getProperty("list");
+            boolean isMultiSelection = (boolean)document.getProperty("isMultiSelection");
+            boolean isOptional = (boolean)document.getProperty("isOptional");
+            String text = document.getText(0, document.getLength());
+            if(!isOptional){
+                if(text.isEmpty() && list.getSelectedIndices().length == 0) {
+                    list.setSelectedIndices(new int[]{0});
+                }
+            }
+            if(!text.isEmpty() && !isMultiSelection){
+                list.clearSelection();
+            }
+            List<String> listValues = new ArrayList<>();
+            if(!isMultiSelection && !text.isEmpty()){
+                listValues.add(text.split(",")[0]);
+            }
+            else {
+                dataMap.remove(uri);
+                if(!text.isEmpty()) {
+                    Collections.addAll(listValues, text.split(","));
+                }
+                for (int i : list.getSelectedIndices()) {
+                    listValues.add(list.getModel().getElementAt(i).toString());
+                }
+                dataMap.put(uri, listValues);
+            }
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
         }
