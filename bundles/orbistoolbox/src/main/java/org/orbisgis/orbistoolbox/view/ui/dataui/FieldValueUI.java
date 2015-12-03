@@ -41,7 +41,6 @@ import java.util.List;
 
 public class FieldValueUI implements DataUI{
     private static final int JLIST_ROW_COUNT = 10;
-    private static final String OPTIONAL_VALUE = "<NONE>";
 
     private ToolBox toolBox;
 
@@ -109,7 +108,6 @@ public class FieldValueUI implements DataUI{
         JList list = (JList)source;
         FieldValue fieldValue = (FieldValue)list.getClientProperty("fieldValue");
         HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
-        boolean isOptional = (boolean)list.getClientProperty("isOptional");
         if(fieldValue.isDataFieldModified()) {
             fieldValue.setDataFieldModified(false);
             String tableName = dataMap.get(fieldValue.getDataStoreIdentifier()).toString();
@@ -119,9 +117,6 @@ public class FieldValueUI implements DataUI{
             for (String field : ToolBox.getFieldValueList(tableName, fieldName)) {
                 model.addElement(field);
             }
-            if(isOptional){
-                model.addElement(OPTIONAL_VALUE);
-            }
         }
         list.revalidate();
     }
@@ -129,11 +124,13 @@ public class FieldValueUI implements DataUI{
     public void onListSelection(Object source){
         JList list = (JList)source;
         List<String> listValues = new ArrayList<>();
-        for(int i : list.getSelectedIndices()){
-            listValues.add(list.getModel().getElementAt(i).toString());
-            if(list.getModel().getElementAt(i).equals(OPTIONAL_VALUE)){
-                listValues = null;
-                break;
+
+        if(list.getSelectedIndices().length == 0){
+            listValues = null;
+        }
+        else {
+            for (int i : list.getSelectedIndices()) {
+                listValues.add(list.getModel().getElementAt(i).toString());
             }
         }
         URI uri = (URI)list.getClientProperty("uri");

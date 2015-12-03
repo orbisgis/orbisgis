@@ -39,8 +39,6 @@ import java.util.Map;
 
 public class DataFieldUI implements DataUI{
 
-    private static final String OPTIONAL_VALUE = "<NONE>";
-
     private ToolBox toolBox;
 
     public void setToolBox(ToolBox toolBox){
@@ -100,6 +98,7 @@ public class DataFieldUI implements DataUI{
         JComboBox<String> comboBox = (JComboBox)source;
         DataField dataField = (DataField)comboBox.getClientProperty("dataField");
         HashMap<URI, Object> dataMap = (HashMap)comboBox.getClientProperty("dataMap");
+        boolean isOptional = (boolean)comboBox.getClientProperty("isOptional");
         if(dataField.isSourceModified()) {
             dataField.setSourceModified(false);
             String tableName = (String) dataMap.get(dataField.getDataStoreIdentifier());
@@ -107,11 +106,9 @@ public class DataFieldUI implements DataUI{
             for (String field : ToolBox.getTableFieldList(tableName, dataField.getFieldTypeList())) {
                 comboBox.addItem(field);
             }
-        }
-        boolean isOptional = (boolean)comboBox.getClientProperty("isOptional");
-        if(isOptional) {
-            comboBox.addItem(OPTIONAL_VALUE);
-            comboBox.setSelectedItem(OPTIONAL_VALUE);
+            if(isOptional) {
+                comboBox.addItem("");
+            }
         }
 
         comboBox.revalidate();
@@ -124,8 +121,9 @@ public class DataFieldUI implements DataUI{
                 DataField dataField = (DataField) comboBox.getClientProperty("dataField");
                 Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty("dataMap");
                 URI uri = (URI) comboBox.getClientProperty("uri");
+                boolean isOptional = (boolean)comboBox.getClientProperty("isOptional");
                 dataMap.remove(uri);
-                if (!comboBox.getSelectedItem().equals(OPTIONAL_VALUE)) {
+                if (isOptional && comboBox.getSelectedItem().toString().isEmpty()) {
                     dataMap.put(uri, null);
                 }
                 else{
