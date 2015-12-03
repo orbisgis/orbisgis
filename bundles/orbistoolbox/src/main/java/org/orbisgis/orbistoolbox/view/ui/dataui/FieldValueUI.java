@@ -26,7 +26,6 @@ import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
 import java.awt.event.FocusListener;
 import java.beans.EventHandler;
 import java.net.URI;
@@ -40,7 +39,8 @@ import java.util.List;
  **/
 
 public class FieldValueUI implements DataUI{
-    private static final int JLIST_ROW_COUNT = 10;
+    private static final int MAX_JLIST_ROW_COUNT = 10;
+    private static final int MIN_JLIST_ROW_COUNT = 1;
 
     private ToolBox toolBox;
 
@@ -81,7 +81,7 @@ public class FieldValueUI implements DataUI{
             list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         }
         list.setLayoutOrientation(JList.VERTICAL);
-        list.setVisibleRowCount(JLIST_ROW_COUNT);
+        list.setVisibleRowCount(MIN_JLIST_ROW_COUNT);
         JScrollPane listScroller = new JScrollPane(list);
         panel.add(listScroller, "growx, wrap");
         list.putClientProperty("uri", inputOrOutput.getIdentifier());
@@ -114,8 +114,15 @@ public class FieldValueUI implements DataUI{
             String fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
             DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
             model.removeAllElements();
-            for (String field : ToolBox.getFieldValueList(tableName, fieldName)) {
+            List<String> listFields = ToolBox.getFieldValueList(tableName, fieldName);
+            for (String field : listFields) {
                 model.addElement(field);
+            }
+            if(listFields.size() < MAX_JLIST_ROW_COUNT){
+                list.setVisibleRowCount(listFields.size());
+            }
+            else{
+                list.setVisibleRowCount(MAX_JLIST_ROW_COUNT);
             }
         }
         list.revalidate();
