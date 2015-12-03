@@ -158,11 +158,9 @@ public class LiteralDataUI implements DataUI {
             //JComboBox with the input type
             JComboBox<String> comboBox = new JComboBox<>();
             comboBox.addItem(literalData.getValue().getDataType().name());
-            panel.add(comboBox, "growx, wrap");
 
             //JPanel containing the component to set the input value
             JComponent dataField = new JPanel(new MigLayout("fill"));
-            panel.add(dataField, "growx, wrap");
 
             comboBox.putClientProperty("dataField", dataField);
             comboBox.putClientProperty("uri", input.getIdentifier());
@@ -171,11 +169,14 @@ public class LiteralDataUI implements DataUI {
             comboBox.setBackground(Color.WHITE);
 
             onBoxChange(comboBox);
-        }
-        else{
 
+            if(comboBox.getItemCount() > 1){
+                panel.add(comboBox, "growx, wrap");
+            }
+            panel.add(dataField, "growx, wrap");
+            return panel;
         }
-        return panel;
+        return null;
     }
 
     /**

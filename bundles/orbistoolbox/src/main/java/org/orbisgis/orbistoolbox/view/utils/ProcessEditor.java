@@ -195,16 +195,20 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JPanel panel = new JPanel(new MigLayout("fill"));
         //For each input, display its title, its abstract and gets its UI from the dataUIManager
         for(Input i : pee.getProcess().getInput()){
-            JPanel inputPanel = new JPanel(new MigLayout("fill"));
-            inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
-            JLabel inputAbstrac = new JLabel(i.getResume());
-            inputAbstrac.setFont(inputAbstrac.getFont().deriveFont(Font.ITALIC));
-            inputPanel.add(inputAbstrac, "wrap");
+
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getClass());
             if(dataUI!=null) {
-                inputPanel.add(dataUI.createUI(i, pee.getInputDataMap()), "growx, wrap");
+                JComponent comp = dataUI.createUI(i, pee.getInputDataMap());
+                if(comp != null) {
+                    JPanel inputPanel = new JPanel(new MigLayout("fill"));
+                    inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
+                    JLabel inputAbstrac = new JLabel(i.getResume());
+                    inputAbstrac.setFont(inputAbstrac.getFont().deriveFont(Font.ITALIC));
+                    inputPanel.add(inputAbstrac, "wrap");
+                    inputPanel.add(comp, "growx, wrap");
+                    panel.add(inputPanel, "growx, wrap");
+                }
             }
-            panel.add(inputPanel, "growx, wrap");
         }
 
         //For each output, display its title, its abstract and gets its UI from the dataUIManager
