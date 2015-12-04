@@ -23,11 +23,13 @@ import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
+import org.orbisgis.sif.common.ContainerItem;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.net.URI;
@@ -80,6 +82,7 @@ public class DataFieldUI implements DataUI{
         comboBox.putClientProperty("isOptional", isOptional);
         comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
         comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "refreshComboBox", "source", "mouseEntered"));
+        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
         panel.add(comboBox, "growx, wrap");
 
         return panel;
@@ -93,6 +96,15 @@ public class DataFieldUI implements DataUI{
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
         return ToolBoxIcon.getIcon("datafield");
+    }
+
+    public void onComboBoxExited(Object source){
+        //Retrieve the client properties
+        JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
+        if(comboBox.getItemCount() == 0) {
+            comboBox.setToolTipText((String)comboBox.getClientProperty("toolTipText"));
+            ToolTipManager.sharedInstance().setInitialDelay((int)comboBox.getClientProperty("initialDelay"));
+        }
     }
 
     public void refreshComboBox(Object source){
@@ -110,6 +122,17 @@ public class DataFieldUI implements DataUI{
             if(isOptional) {
                 comboBox.addItem("");
             }
+        }
+
+        if(comboBox.getItemCount() == 0) {
+            comboBox.putClientProperty("initialDelay", ToolTipManager.sharedInstance().getInitialDelay());
+            comboBox.putClientProperty("toolTipText", comboBox.getToolTipText());
+            ToolTipManager.sharedInstance().setInitialDelay(0);
+            ToolTipManager.sharedInstance().setDismissDelay(2500);
+            String dataFieldStr = dataField.getDataStoreIdentifier().toString();
+            comboBox.setToolTipText("First configure the DataStore : " + dataFieldStr.substring(dataFieldStr.lastIndexOf(":")+1));
+            ToolTipManager.sharedInstance().mouseMoved(
+                    new MouseEvent(comboBox,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
         }
 
         comboBox.revalidate();

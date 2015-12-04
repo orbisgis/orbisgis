@@ -27,6 +27,7 @@ import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.net.URI;
@@ -90,6 +91,7 @@ public class FieldValueUI implements DataUI{
         list.putClientProperty("dataMap", dataMap);
         list.putClientProperty("isOptional", isOptional);
         list.addMouseListener(EventHandler.create(MouseListener.class, this, "refreshList", "source", "mouseEntered"));
+        list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
 
         return panel;
@@ -103,6 +105,15 @@ public class FieldValueUI implements DataUI{
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
         return ToolBoxIcon.getIcon("fieldvalue");
+    }
+
+    public void onComboBoxExited(Object source){
+        //Retrieve the client properties
+        JList<String> list = (JList)source;
+        if(list.getSelectedIndices().length == 0) {
+            list.setToolTipText((String)list.getClientProperty("toolTipText"));
+            ToolTipManager.sharedInstance().setInitialDelay((int)list.getClientProperty("initialDelay"));
+        }
     }
 
     public void refreshList(Object source){
@@ -125,6 +136,20 @@ public class FieldValueUI implements DataUI{
             else{
                 list.setVisibleRowCount(MAX_JLIST_ROW_COUNT);
             }
+        }
+
+        if(list.getSelectedIndices().length == 0) {
+            list.putClientProperty("initialDelay", ToolTipManager.sharedInstance().getInitialDelay());
+            list.putClientProperty("toolTipText", list.getToolTipText());
+            ToolTipManager.sharedInstance().setInitialDelay(0);
+            ToolTipManager.sharedInstance().setDismissDelay(2500);
+            String fieldValueStr = fieldValue.getDataFieldIdentifier().toString();
+            list.setToolTipText("First configure the DataField : " + fieldValueStr.substring(fieldValueStr.lastIndexOf(":")+1));
+            ToolTipManager.sharedInstance().mouseMoved(
+                    new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
+        }
+        else{
+            list.setSelectedIndices(new int[]{0});
         }
         list.revalidate();
     }
