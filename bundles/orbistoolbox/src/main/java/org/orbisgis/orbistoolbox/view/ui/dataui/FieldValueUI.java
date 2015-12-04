@@ -101,7 +101,7 @@ public class FieldValueUI implements DataUI{
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon("fieldValue");
+        return ToolBoxIcon.getIcon("fieldvalue");
     }
 
     public void onGainingFocus(Object source){

@@ -91,7 +91,7 @@ public class DataFieldUI implements DataUI{
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon("dataField");
+        return ToolBoxIcon.getIcon("datafield");
     }
 
     public void refreshComboBox(Object source){

@@ -67,7 +67,7 @@ public class DataStoreUI implements DataUI{
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon("geodata");
+        return ToolBoxIcon.getIcon("datastore");
     }
 
     @Override
