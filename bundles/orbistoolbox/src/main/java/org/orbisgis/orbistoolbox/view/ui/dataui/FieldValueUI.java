@@ -27,6 +27,7 @@ import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.net.URI;
 import java.util.*;
@@ -88,7 +89,7 @@ public class FieldValueUI implements DataUI{
         list.putClientProperty("fieldValue", fieldValue);
         list.putClientProperty("dataMap", dataMap);
         list.putClientProperty("isOptional", isOptional);
-        list.addFocusListener(EventHandler.create(FocusListener.class, this, "onGainingFocus", "source"));
+        list.addMouseListener(EventHandler.create(MouseListener.class, this, "refreshList", "source", "mouseEntered"));
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
 
         return panel;
@@ -104,7 +105,7 @@ public class FieldValueUI implements DataUI{
         return ToolBoxIcon.getIcon("fieldvalue");
     }
 
-    public void onGainingFocus(Object source){
+    public void refreshList(Object source){
         JList list = (JList)source;
         FieldValue fieldValue = (FieldValue)list.getClientProperty("fieldValue");
         HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");

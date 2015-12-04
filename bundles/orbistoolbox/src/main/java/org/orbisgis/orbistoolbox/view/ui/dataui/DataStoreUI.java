@@ -237,6 +237,13 @@ public class DataStoreUI implements DataUI{
         database.putClientProperty("uri", inputOrOutput.getIdentifier());
         panel.add(dataField, "growx, span");
 
+        geocatalog.setSelected(true);
+        dataField.setLayout(new MigLayout("fill"));
+        dataField.add(optionPanelGeocatalog, "growx, span");
+        if(comboBox.getItemCount() > 0){
+            comboBox.setSelectedIndex(0);
+        }
+
         return panel;
     }
 
@@ -286,7 +293,6 @@ public class DataStoreUI implements DataUI{
             dataField.removeAll();
             if(radioButton.isSelected()) {
                 JPanel optionPanel = (JPanel) radioButton.getClientProperty("optionPanel");
-                dataField.setLayout(new MigLayout("fill"));
                 dataField.add(optionPanel, "growx, span");
             }
             else{

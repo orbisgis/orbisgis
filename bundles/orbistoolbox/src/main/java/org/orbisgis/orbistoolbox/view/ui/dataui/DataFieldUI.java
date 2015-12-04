@@ -28,6 +28,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.net.URI;
 import java.util.HashMap;
@@ -77,8 +78,8 @@ public class DataFieldUI implements DataUI{
         comboBox.putClientProperty("dataField", dataField);
         comboBox.putClientProperty("dataMap", dataMap);
         comboBox.putClientProperty("isOptional", isOptional);
-        comboBox.addFocusListener(EventHandler.create(FocusListener.class, this, "refreshComboBox", "source"));
         comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
+        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "refreshComboBox", "source", "mouseEntered"));
         panel.add(comboBox, "growx, wrap");
 
         return panel;
