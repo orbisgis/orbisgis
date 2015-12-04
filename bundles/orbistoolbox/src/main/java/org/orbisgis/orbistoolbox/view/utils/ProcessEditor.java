@@ -200,13 +200,25 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             if(dataUI!=null) {
                 JComponent comp = dataUI.createUI(i, pee.getInputDataMap());
                 if(comp != null) {
+                    comp.setVisible(false);
                     JPanel inputPanel = new JPanel(new MigLayout("fill"));
                     inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
+                    JPanel upPanel = new JPanel(new MigLayout());
+                    JButton showButton = new JButton(ToolBoxIcon.getIcon("btnright"));
+                    showButton.addActionListener(EventHandler.create(ActionListener.class, this, "onClickButton", "source"));
+                    showButton.putClientProperty("body", comp);
+                    showButton.putClientProperty("parent", inputPanel);
+                    showButton.setBorderPainted(false);
+                    showButton.setMargin(new Insets(0, 0, 0, 0));
+                    showButton.setContentAreaFilled(false);
+                    showButton.setOpaque(false);
+                    showButton.setFocusable(false);
+                    upPanel.add(showButton);
                     JLabel inputAbstrac = new JLabel(i.getResume());
                     inputAbstrac.setFont(inputAbstrac.getFont().deriveFont(Font.ITALIC));
-                    inputPanel.add(inputAbstrac, "wrap");
-                    inputPanel.add(comp, "growx, wrap");
-                    panel.add(inputPanel, "growx, wrap");
+                    upPanel.add(inputAbstrac, "wrap");
+                    inputPanel.add(upPanel, "growx, span");
+                    panel.add(inputPanel, "growx, span");
                 }
             }
         }
@@ -217,13 +229,25 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             if(dataUI!=null) {
                 JComponent component = dataUI.createUI(o, pee.getOutputDataMap());
                 if(component != null) {
+                    component.setVisible(false);
                     JPanel outputPanel = new JPanel(new MigLayout("fill"));
                     outputPanel.setBorder(BorderFactory.createTitledBorder(o.getTitle()));
+                    JPanel upPanel = new JPanel(new MigLayout());
+                    JButton showButton = new JButton(ToolBoxIcon.getIcon("btnright"));
+                    showButton.addActionListener(EventHandler.create(ActionListener.class, this, "onClickButton", "source"));
+                    showButton.putClientProperty("body", component);
+                    showButton.putClientProperty("parent", outputPanel);
+                    showButton.setBorderPainted(false);
+                    showButton.setMargin(new Insets(0, 0, 0, 0));
+                    showButton.setContentAreaFilled(false);
+                    showButton.setOpaque(false);
+                    showButton.setFocusable(false);
+                    upPanel.add(showButton);
                     JLabel outputAbstrac = new JLabel(o.getResume());
                     outputAbstrac.setFont(outputAbstrac.getFont().deriveFont(Font.ITALIC));
-                    outputPanel.add(outputAbstrac, "growx, wrap");
-                    outputPanel.add(component, "growx, wrap");
-                    panel.add(outputPanel, "growx, wrap");
+                    upPanel.add(outputAbstrac, "wrap");
+                    outputPanel.add(upPanel, "growx, span");
+                    panel.add(outputPanel, "growx, span");
                 }
             }
         }
@@ -233,6 +257,24 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JScrollPane scrollPane = new JScrollPane(panel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
         return scrollPane;
+    }
+
+    public void onClickButton(Object source){
+        JButton showButton = (JButton)source;
+        JComponent body = (JComponent)showButton.getClientProperty("body");
+        JComponent parent = (JComponent)showButton.getClientProperty("parent");
+        boolean isVisible = body.isVisible();
+        if(isVisible) {
+            body.setVisible(false);
+            parent.remove(body);
+            showButton.setIcon(ToolBoxIcon.getIcon("btnright"));
+        }
+        else{
+            body.setVisible(true);
+            parent.add(body, "growx, span");
+            showButton.setIcon(ToolBoxIcon.getIcon("btndown"));
+        }
+        parent.revalidate();
     }
 
     /**
