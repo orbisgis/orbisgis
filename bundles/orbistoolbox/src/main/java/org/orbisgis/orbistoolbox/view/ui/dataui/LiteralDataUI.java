@@ -213,7 +213,7 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
-
+                onDataChanged(dataComponent);
                 break;
             case BYTE:
                 //Instantiate the component
@@ -231,6 +231,7 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                onDataChanged(dataComponent);
                 break;
             case INTEGER:
                 //Instantiate the component
@@ -248,6 +249,7 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                onDataChanged(dataComponent);
                 break;
             case LONG:
                 //Instantiate the component
@@ -265,6 +267,7 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                onDataChanged(dataComponent);
                 break;
             case SHORT:
                 //Instantiate the component
@@ -282,6 +285,7 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                onDataChanged(dataComponent);
                 break;
             case UNSIGNED_BYTE:
                 //Instantiate the component
@@ -299,6 +303,7 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                onDataChanged(dataComponent);
                 break;
             case DOUBLE:
                 //Instantiate the component
@@ -316,6 +321,7 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                onDataChanged(dataComponent);
                 break;
             case FLOAT:
                 //Instantiate the component
@@ -333,6 +339,7 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                onDataChanged(dataComponent);
                 break;
             case STRING:
             default:
@@ -365,6 +372,7 @@ public class LiteralDataUI implements DataUI {
                 scrollPane.getViewport().putClientProperty("verticalBar", scrollPane.getVerticalScrollBar());
                 scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
                 dataComponent = scrollPane;
+                textArea.setText("");
                 break;
         }
         //Adds to the dataField the dataComponent

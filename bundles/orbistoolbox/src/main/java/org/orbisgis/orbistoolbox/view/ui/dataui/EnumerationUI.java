@@ -135,7 +135,7 @@ public class EnumerationUI implements DataUI{
             panel.add(textField, "growx, wrap");
             list.putClientProperty("textField", textField);
         }
-
+        list.setSelectedIndices(new int[]{0});
         return panel;
     }
 
