@@ -19,7 +19,11 @@
 
 package org.orbisgis.orbistoolbox.view;
 
+import org.apache.commons.io.FilenameUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.commons.utils.FileUtils;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
@@ -45,6 +49,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -342,8 +347,12 @@ public class ToolBox implements DockingPanel {
 
     public String loadFile(File f) {
         try {
-            return dataManager.registerDataSource(f.toURI()).replaceAll("\"", "");
-        } catch (SQLException e) {
+            String tableName = dataManager.findUniqueTableName(TableLocation.capsIdentifier(f.getName(), true));
+            String extension = FilenameUtils.getExtension(f.getAbsolutePath());
+            DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+            driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+            return tableName;
+        } catch (SQLException|IOException e) {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return null;
