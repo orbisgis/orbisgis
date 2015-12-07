@@ -132,8 +132,19 @@ public class DataStoreUI implements DataUI{
         comboBox.putClientProperty("dataMap", dataMap);
         comboBox.putClientProperty("dataStore", dataStore);
         comboBox.setBackground(Color.WHITE);
+        JPanel tableSelection = new JPanel(new MigLayout("fill"));
+        tableSelection.add(comboBox, "growx, span");
+        if(inputOrOutput instanceof Output){
+            comboBox.addItem("");
+            JTextField newTableField = new JTextField();
+            tableSelection.add(newTableField, "growx, span");
+            comboBox.putClientProperty("textField", newTableField);
+            newTableField.getDocument().putProperty("comboBox", comboBox);
+            newTableField.getDocument().addDocumentListener(
+                    EventHandler.create(DocumentListener.class, this, "onNewTable", "document"));
+        }
         optionPanelGeocatalog.add(new JLabel("Geocatalog :"), BorderLayout.LINE_START);
-        optionPanelGeocatalog.add(comboBox, BorderLayout.CENTER);
+        optionPanelGeocatalog.add(tableSelection, BorderLayout.CENTER);
         geocatalog.putClientProperty("optionPanel", optionPanelGeocatalog);
         geocatalog.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
 
@@ -273,17 +284,45 @@ public class DataStoreUI implements DataUI{
     }
 
     public void onGeocatalogTableSelected(Object source){
+        JComboBox<ContainerItem<String>> comboBox = (JComboBox) source;
+        if(comboBox.getClientProperty("textField") != null){
+            JTextField textField = (JTextField)comboBox.getClientProperty("textField");
+            if(!textField.getText().isEmpty() && comboBox.getSelectedIndex() != comboBox.getItemCount()-1) {
+                textField.setText("");
+            }
+            if(!textField.getText().isEmpty() && comboBox.getSelectedIndex() == comboBox.getItemCount()-1){
+                return;
+            }
+        }
         //Retrieve the client properties
-        JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
-        Map<URI, Object> dataMap = (Map<URI, Object>)comboBox.getClientProperty("dataMap");
-        URI uri = (URI)comboBox.getClientProperty("uri");
-        DataStore dataStore = (DataStore)comboBox.getClientProperty("dataStore");
+        Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty("dataMap");
+        URI uri = (URI) comboBox.getClientProperty("uri");
+        DataStore dataStore = (DataStore) comboBox.getClientProperty("dataStore");
         //Tells all the dataField linked that the data source is loaded
-        for(DataField dataField : dataStore.getListDataField()){
+        for (DataField dataField : dataStore.getListDataField()) {
             dataField.setSourceModified(true);
         }
         dataMap.remove(uri);
         dataMap.put(uri, comboBox.getSelectedItem());
+    }
+
+    public void onNewTable(Document document){
+        try {
+            JComboBox<String> comboBox = (JComboBox<String>)document.getProperty("comboBox");
+            Map<URI, Object> dataMap = (Map<URI, Object>)comboBox.getClientProperty("dataMap");
+            URI uri = (URI)comboBox.getClientProperty("uri");
+            String text = document.getText(0, document.getLength());
+            if(text.isEmpty()){
+                comboBox.setSelectedIndex(0);
+                dataMap.put(uri, comboBox.getSelectedItem());
+            }
+            else{
+                comboBox.setSelectedIndex(comboBox.getItemCount()-1);
+                dataMap.put(uri, text.toUpperCase());
+            }
+        } catch (BadLocationException e) {
+            LoggerFactory.getLogger(DataStoreUI.class).error(e.getMessage());
+        }
     }
 
     public void onParameters(Object source){
