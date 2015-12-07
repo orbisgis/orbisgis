@@ -201,7 +201,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
                 }
             }
         }
-        return panel;
+        return new JScrollPane(panel);
     }
 
     /**
