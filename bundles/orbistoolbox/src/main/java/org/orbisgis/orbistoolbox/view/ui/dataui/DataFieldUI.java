@@ -114,7 +114,7 @@ public class DataFieldUI implements DataUI{
         boolean isOptional = (boolean)comboBox.getClientProperty("isOptional");
         if(dataField.isSourceModified()) {
             dataField.setSourceModified(false);
-            String tableName = (String) dataMap.get(dataField.getDataStoreIdentifier());
+            String tableName = ((URI) dataMap.get(dataField.getDataStoreIdentifier())).getFragment();
             comboBox.removeAllItems();
             for (String field : ToolBox.getTableFieldList(tableName, dataField.getFieldTypeList())) {
                 comboBox.addItem(field);

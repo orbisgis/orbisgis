@@ -33,6 +33,7 @@ import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
 import org.orbisgis.orbistoolbox.view.utils.ProcessEditorFactory;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
+import org.orbisgis.orbistoolbox.view.utils.dataProcessing.DataProcessingManager;
 import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
@@ -78,6 +79,7 @@ public class ToolBox implements DockingPanel {
     private Map<String, Object> properties;
     private EditorManager editorManager;
     private ProcessEditorFactory pef;
+    private DataProcessingManager dataProcessingManager;
 
     private static final String TOOLBOX_REFERENCE = "orbistoolbox";
 
@@ -100,6 +102,7 @@ public class ToolBox implements DockingPanel {
 
         pef = new ProcessEditorFactory(editorManager, this);
         editorManager.addEditorFactory(pef);
+        dataProcessingManager = new DataProcessingManager(this);
     }
 
     @Deactivate
@@ -239,6 +242,10 @@ public class ToolBox implements DockingPanel {
         this.editorManager = editorManager;
     }
 
+    public DataProcessingManager getDataProcessingManager() {
+        return dataProcessingManager;
+    }
+
     /**
      * Returns a map of the importable format.
      * The map key is the format extension and the value is the format description.
@@ -347,7 +354,7 @@ public class ToolBox implements DockingPanel {
 
     public String loadFile(File f) {
         try {
-            String tableName = dataManager.findUniqueTableName(TableLocation.capsIdentifier(f.getName(), true));
+            String tableName = dataManager.findUniqueTableName(TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), true)).replaceAll("\"", "");
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
             DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
             driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
@@ -356,6 +363,16 @@ public class ToolBox implements DockingPanel {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return null;
+    }
+
+    public void saveFile(File f, String tableName){
+        try {
+            String extension = FilenameUtils.getExtension(f.getAbsolutePath());
+            DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+            driver.exportTable(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+        } catch (SQLException|IOException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+        }
     }
 
     /**

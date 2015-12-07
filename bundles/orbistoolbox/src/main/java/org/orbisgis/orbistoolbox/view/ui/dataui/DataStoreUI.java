@@ -303,7 +303,7 @@ public class DataStoreUI implements DataUI{
             dataField.setSourceModified(true);
         }
         dataMap.remove(uri);
-        dataMap.put(uri, comboBox.getSelectedItem());
+        dataMap.put(uri, URI.create("geocatalog:"+comboBox.getSelectedItem()+"#"+comboBox.getSelectedItem()));
     }
 
     public void onNewTable(Document document){
@@ -314,11 +314,11 @@ public class DataStoreUI implements DataUI{
             String text = document.getText(0, document.getLength());
             if(text.isEmpty()){
                 comboBox.setSelectedIndex(0);
-                dataMap.put(uri, comboBox.getSelectedItem());
+                dataMap.put(uri, URI.create("geocatalog:"+comboBox.getSelectedItem()+"#"+comboBox.getSelectedItem()));
             }
             else{
                 comboBox.setSelectedIndex(comboBox.getItemCount()-1);
-                dataMap.put(uri, text.toUpperCase());
+                dataMap.put(uri, URI.create("geocatalog:"+text.toUpperCase()+"#"+text.toUpperCase()));
             }
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(DataStoreUI.class).error(e.getMessage());
@@ -382,6 +382,8 @@ public class DataStoreUI implements DataUI{
             //Load the selected file an retrieve the table name.
             String tableName = loadDataStore(selectedFileURI);
             if(tableName != null) {
+                //Saves the table name in the URI into the uri fragment
+                selectedFileURI = URI.create(selectedFileURI.toString()+"#"+tableName);
                 //Set the UI with the selected value
                 JTextField textField = (JTextField) source.getClientProperty("JTextField");
                 textField.setText(openFilePanel.getSelectedFile().getName());
@@ -389,7 +391,7 @@ public class DataStoreUI implements DataUI{
                 //Store the selection
                 URI uri = (URI) source.getClientProperty("uri");
                 dataMap.remove(uri);
-                dataMap.put(uri, tableName);
+                dataMap.put(uri, selectedFileURI);
                 //tells the dataField they should revalidate
                 for (DataField dataField : dataStore.getListDataField()) {
                     dataField.setSourceModified(true);
@@ -414,11 +416,13 @@ public class DataStoreUI implements DataUI{
             //Load the selected file an retrieve the table name.
             String tableName = loadDataStore(file.toURI());
             if(tableName != null) {
+                //Saves the table name in the URI into the uri fragment
+                URI selectedFileURI = URI.create(file.toURI().toString()+"#"+tableName);
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
                 URI uri = (URI)document.getProperty("uri");
                 dataMap.remove(uri);
-                dataMap.put(uri, tableName);
+                dataMap.put(uri, selectedFileURI);
                 //tells the dataField they should revalidate
                 for (DataField dataField : dataStore.getListDataField()) {
                     dataField.setSourceModified(true);
