@@ -20,6 +20,7 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.io.FilenameUtils;
 import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
@@ -41,6 +42,7 @@ import java.awt.event.*;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -154,7 +156,7 @@ public class DataStoreUI implements DataUI{
         optionPanelFile.add(new JLabel("file :"), BorderLayout.LINE_START);
         JTextField textField = new JTextField();
         textField.getDocument().putProperty("dataMap", dataMap);
-        textField.getDocument().putProperty("uri", inputOrOutput.getIdentifier());
+        textField.getDocument().putProperty("inputOrOutput", inputOrOutput);
         textField.getDocument().putProperty("dataStore", dataStore);
         textField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
                 this,
@@ -184,7 +186,7 @@ public class DataStoreUI implements DataUI{
             }
         }
         else {
-            filePanel = new SaveFilePanel("RawDataUI.File."+inputOrOutput.getIdentifier(), "Select File");
+            filePanel = new SaveFilePanel("RawDataUI.File."+inputOrOutput.getIdentifier(), "Save File");
             for(Format format : dataStore.getFormats()){
                 String ext = FormatFactory.getFormatExtension(format);
                 String description = "";
@@ -412,28 +414,40 @@ public class DataStoreUI implements DataUI{
     public void saveDocumentTextFile(Document document){
         try {
             DataStore dataStore = (DataStore)document.getProperty("dataStore");
+            DescriptionType inputOrOutput = (DescriptionType)document.getProperty("inputOrOutput");
             File file = new File(document.getText(0, document.getLength()));
-            //Load the selected file an retrieve the table name.
-            String tableName = loadDataStore(file.toURI());
-            if(tableName != null) {
-                //Saves the table name in the URI into the uri fragment
-                URI selectedFileURI = URI.create(file.toURI().toString()+"#"+tableName);
+            if(inputOrOutput instanceof Input) {
+                //Load the selected file an retrieve the table name.
+                String tableName = loadDataStore(file.toURI());
+                if (tableName != null) {
+                    //Saves the table name in the URI into the uri fragment
+                    URI selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
+                    //Store the selection
+                    Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
+                    URI uri = inputOrOutput.getIdentifier();
+                    dataMap.remove(uri);
+                    dataMap.put(uri, selectedFileURI);
+                    //tells the dataField they should revalidate
+                    for (DataField dataField : dataStore.getListDataField()) {
+                        dataField.setSourceModified(true);
+                    }
+                }
+                else{
+                    for (DataField dataField : dataStore.getListDataField()) {
+                        dataField.setSourceModified(false);
+                    }
+                }
+            }
+            if(inputOrOutput instanceof Output){
+                String tableName = toolBox.getDataManager().findUniqueTableName(FilenameUtils.getBaseName(file.getName()));
+                URI selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
                 //Store the selection
-                Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
-                URI uri = (URI)document.getProperty("uri");
+                Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
+                URI uri = inputOrOutput.getIdentifier();
                 dataMap.remove(uri);
                 dataMap.put(uri, selectedFileURI);
-                //tells the dataField they should revalidate
-                for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModified(true);
-                }
             }
-            else{
-                for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModified(false);
-                }
-            }
-        } catch (BadLocationException e) {
+        } catch (BadLocationException|SQLException e) {
             LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
         }
     }

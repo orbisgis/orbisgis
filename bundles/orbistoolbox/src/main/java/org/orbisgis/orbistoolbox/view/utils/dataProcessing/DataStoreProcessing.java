@@ -67,13 +67,13 @@ public class DataStoreProcessing implements DataProcessing {
         }
         if(inputOrOutput instanceof Output){
             if(dataStoreURI.getScheme().equals("geocatalog")){
-                stash.put(uri, dataMap.get(uri));
+                stash.put(uri, dataStoreURI);
                 tableName = dataStoreURI.getSchemeSpecificPart();
                 dataMap.put(uri, tableName);
             }
             else if(dataStoreURI.getScheme().equals("file")){
-                stash.put(uri, dataMap.get(uri));
-                tableName = toolBox.loadFile(new File(dataStoreURI.getPath()));
+                stash.put(uri, dataStoreURI);
+                tableName = dataStoreURI.getFragment();
                 dataMap.put(uri, tableName);
             }
         }
@@ -89,7 +89,7 @@ public class DataStoreProcessing implements DataProcessing {
             URI uri = inputOrOutput.getIdentifier();
             URI dataStoreURI = (URI)stash.get(uri);
             if(dataStoreURI.getScheme().equals("file")){
-                toolBox.saveFile(new File(dataStoreURI), dataMap.get(uri).toString());
+                toolBox.saveFile(new File(dataStoreURI.getSchemeSpecificPart()), dataMap.get(uri).toString().toUpperCase());
             }
         }
         return null;
