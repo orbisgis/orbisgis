@@ -393,11 +393,6 @@ public abstract class Renderer {
                 mt.setImage(img);
                 draw(mt, layer, pm);
         }
-
-        public void draw(BufferedImage img, Envelope extent, ILayer layer) {
-                draw(img, extent, layer, new NullProgressMonitor());
-        }
-
      /**
      * A workarround to draw a rasterlayer This method wil be updated with the
      * RasterSymbolizer

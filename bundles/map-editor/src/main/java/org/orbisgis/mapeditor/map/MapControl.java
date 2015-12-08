@@ -249,6 +249,7 @@ public class MapControl extends JComponent implements ContainerListener {
 	 */
         @Override
         protected void paintComponent(Graphics g) {
+            mapTransform.updateRenderingHints();            
             BufferedImage mapTransformImage = mapTransform.getImage();
 
             // we always fill the Graphics with an opaque color
@@ -360,18 +361,22 @@ public class MapControl extends JComponent implements ContainerListener {
 		return mapTransform.getImage();
 	}
 
-	   public Color getBackColor() {
-        String bColor = System.getProperty("map.editor.color.background");
-        if ((bColor != null) || (!bColor.isEmpty())) {
-            try {
-                return Color.decode(bColor);
+        /**
+         * Return the background color
+         * @return 
+         */
+	public Color getBackColor() {
+            String bColor = System.getProperty("map.editor.color.background");
+            if ((bColor != null) || (!bColor.isEmpty())) {
+                try {
+                    return Color.decode(bColor);
 
-            } catch (NumberFormatException e) {
+                } catch (NumberFormatException e) {
                 return defaultBackColor;
+                }
             }
+            return defaultBackColor;
         }
-        return defaultBackColor;
-    }
 
 	public void setBackColor(Color backColor) {
 		this.defaultBackColor = backColor;
