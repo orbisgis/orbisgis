@@ -360,18 +360,18 @@ public class MapControl extends JComponent implements ContainerListener {
 		return mapTransform.getImage();
 	}
 
-	public Color getBackColor() {
-            String bColor = System.getProperty("map.editor.color.background");
-            if (!bColor.isEmpty()) {
-             try {
+	   public Color getBackColor() {
+        String bColor = System.getProperty("map.editor.color.background");
+        if ((bColor != null) || (!bColor.isEmpty())) {
+            try {
                 return Color.decode(bColor);
 
-             } catch (NumberFormatException e) {
-                 return defaultBackColor;
-             }
-             }
-            return defaultBackColor;
-         }
+            } catch (NumberFormatException e) {
+                return defaultBackColor;
+            }
+        }
+        return defaultBackColor;
+    }
 
 	public void setBackColor(Color backColor) {
 		this.defaultBackColor = backColor;
