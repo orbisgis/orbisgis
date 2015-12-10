@@ -466,8 +466,7 @@ public class MapTransform implements PointTransformation {
      * renderer.
      */
     public void updateRenderingHints() {
-        boolean antialiasForGeom = Boolean.valueOf(System.getProperty("map.editor.renderer.value_antialias_on"));
-        screenHints.put(RenderingHints.KEY_ANTIALIASING, antialiasForGeom
+        screenHints.put(RenderingHints.KEY_ANTIALIASING, Boolean.valueOf(System.getProperty("map.editor.renderer.value_antialias_on"))
                 ? RenderingHints.VALUE_ANTIALIAS_ON
                 : RenderingHints.VALUE_ANTIALIAS_OFF);
     }

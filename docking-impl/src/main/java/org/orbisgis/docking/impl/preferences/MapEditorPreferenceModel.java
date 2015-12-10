@@ -98,7 +98,7 @@ public class MapEditorPreferenceModel extends DefaultPreferenceModel{
         useAntialiasOn = new DockPropertyPreference<Boolean>(controller.getProperties(),VALUE_ANTIALIAS_ON, Path.TYPE_BOOLEAN_PATH, new Path(USE_VALUE_ANTIALIAS_KEY));
         useAntialiasOn.setLabel(I18N.tr("Geometry antialiasing"));
         useAntialiasOn.setDefaultValue(Boolean.TRUE);
-        this.add(useAntialiasOn);
+        this.add(useAntialiasOn);        
     }
     
     
@@ -142,8 +142,7 @@ public class MapEditorPreferenceModel extends DefaultPreferenceModel{
         oldBackgroundColor = preference.getValue();
         System.setProperty(MAPEDITOR_BACKGROUNDCOLOR_KEY, oldBackgroundColor);
         preference.setValue(oldBackgroundColor);
-        //System.setProperty(USE_VALUE_ANTIALIAS_KEY, String.valueOf(useAntialiasOn.getValue()));
-    }
+     }
     
     /**
      * Update the system properties
