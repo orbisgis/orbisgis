@@ -74,7 +74,7 @@ public class MapEditorPreferenceModel extends DefaultPreferenceModel{
     
     public static final PropertyKey<Boolean> VALUE_ANTIALIAS_ON = 
         new PropertyKey<Boolean>( USE_VALUE_ANTIALIAS_KEY,
-        		new ConstantPropertyFactory<Boolean>( false ), true );
+        		new ConstantPropertyFactory<Boolean>( true ), true );
     
     
     private boolean skipEvent = false; //Skip event while update values
@@ -141,7 +141,8 @@ public class MapEditorPreferenceModel extends DefaultPreferenceModel{
         mapEditorInfo.setValue("");
         oldBackgroundColor = preference.getValue();
         System.setProperty(MAPEDITOR_BACKGROUNDCOLOR_KEY, oldBackgroundColor);
-        System.setProperty(USE_VALUE_ANTIALIAS_KEY, String.valueOf(useAntialiasOn.getValue()));
+        preference.setValue(oldBackgroundColor);
+        //System.setProperty(USE_VALUE_ANTIALIAS_KEY, String.valueOf(useAntialiasOn.getValue()));
     }
     
     /**

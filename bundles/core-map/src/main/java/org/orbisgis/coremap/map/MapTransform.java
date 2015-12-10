@@ -426,8 +426,8 @@ public class MapTransform implements PointTransformation {
                 * Choose a fairly conservative decimation distance to avoid visual artifacts
                 * TODO : decimation must be activate in relation with the crs to prevent rendering bug
                 */
-                // Double dec = adjustedExtent == null ? 0 : MAXPIXEL_DISPLAY / getScaleDenominator();
-                //converter.setDecimation(dec);
+                Double dec = adjustedExtent == null ? 0 : MAXPIXEL_DISPLAY / getScaleDenominator();
+                converter.setDecimation(dec);
                 return converter;
         }
 
