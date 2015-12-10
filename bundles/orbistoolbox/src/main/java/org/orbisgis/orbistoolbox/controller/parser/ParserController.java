@@ -61,6 +61,7 @@ public class ParserController {
         parserList.add(new DataStoreParser());
         parserList.add(new DataFieldParser());
         parserList.add(new FieldValueParser());
+        parserList.add(new EnumerationParser());
         defaultParser = new DefaultParser();
         processParser = new ProcessParser();
         groovyClassLoader = new GroovyShell().getClassLoader();

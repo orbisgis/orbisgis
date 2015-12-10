@@ -296,6 +296,19 @@ public class ObjectAnnotationConverter {
         }
     }
 
+    public static Enumeration annotationToObject(EnumerationAttribute enumAttribute, Format format) {
+        try{
+            format.setDefaultFormat(true);
+            Enumeration enumeration = new Enumeration(format, enumAttribute.values(), enumAttribute.defaultValues());
+            enumeration.setEditable(enumAttribute.isEditable());
+            enumeration.setMultiSelection(enumAttribute.multiSelection());
+            return enumeration;
+        } catch (MalformedScriptException e) {
+            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
+            return null;
+        }
+    }
+
     /**
      * Returns the process identifier and if their is not, return an URI build around its title.
      * @return String process identifier.
