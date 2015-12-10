@@ -26,7 +26,7 @@ import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
 
 /**
- * The DataField input allows the user to specify a table column.
+ * The FieldValue output allows the user to specify a value from a table column.
  *
  * @author Sylvain PALOMINOS
  */
