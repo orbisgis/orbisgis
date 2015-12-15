@@ -307,10 +307,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
                 LinkedList<Point2D> points = new LinkedList<Point2D>();
 
                 AffineTransform at = mt.getAffineTransform();
-
                 Coordinate[] coordinates = geom.getCoordinates();
-
-
                 for (Coordinate coord : coordinates) {
                         points.add(at.transform(new Point2D.Double(coord.x, coord.y), null));
                 }
