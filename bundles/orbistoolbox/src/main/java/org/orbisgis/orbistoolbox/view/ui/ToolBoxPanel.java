@@ -446,12 +446,10 @@ public class ToolBoxPanel extends JPanel {
             }
             for(TreeNodeWps leaf : leafList){
                 File file = leaf.getFilePath();
-                //Remove the node only if the process is not running.
-                if(!toolBox.isProcessRunning(file)) {
-                    cleanParentNode(getNodeFromFile(file, (TreeNodeWps) fileModel.getRoot()), fileModel);
-                    cleanParentNode(getNodeFromFile(file, (TreeNodeWps) categoryModel.getRoot()), categoryModel);
-                    toolBox.removeProcess(leaf.getFilePath());
-                }
+                //Remove the node
+                cleanParentNode(getNodeFromFile(file, (TreeNodeWps) fileModel.getRoot()), fileModel);
+                cleanParentNode(getNodeFromFile(file, (TreeNodeWps) categoryModel.getRoot()), categoryModel);
+                toolBox.removeProcess(leaf.getFilePath());
             }
         }
     }

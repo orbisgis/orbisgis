@@ -51,8 +51,6 @@ public class DataUIManager {
         dataUIMap = new HashMap<>();
         linkClassUI(LiteralData.class, new LiteralDataUI());
         linkClassUI(RawData.class, new RawDataUI());
-        linkClassUI(GeoData.class, new GeoDataUI());
-        linkClassUI(GeometryData.class, new GeometryUI());
         linkClassUI(DataStore.class, new DataStoreUI());
         linkClassUI(DataField.class, new DataFieldUI());
         linkClassUI(FieldValue.class, new FieldValueUI());

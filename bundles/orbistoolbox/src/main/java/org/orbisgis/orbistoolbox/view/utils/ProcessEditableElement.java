@@ -19,12 +19,11 @@
 
 package org.orbisgis.orbistoolbox.view.utils;
 
-import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionWorker;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.view.ToolBox;
-import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
+import org.orbisgis.commons.progress.ProgressMonitor;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditableElementException;
 
-import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -34,35 +33,105 @@ import java.util.*;
 import java.util.List;
 
 /**
+ * EditableElement of a process which contains all the information about a process instance
+ * (input data, output data, state ...).
+ *
  * @author Sylvain PALOMINOS
- **/
-
-public class ProcessExecutionData {
-
+ */
+public class ProcessEditableElement implements EditableElement{
+    public static final String ID = "WPSProcessEditableElement";
     public static final String STATE_PROPERTY = "STATE_PROPERTY";
+    public static final String LOG_PROPERTY = "LOG_PROPERTY";
+    private Process process;
+    private boolean isOpen;
 
     /** Map of input data (URI of the corresponding input) */
     private Map<URI, Object> inputDataMap;
     /** Map of output data (URI of the corresponding output) */
     private Map<URI, Object> outputDataMap;
-    /** Process represented */
-    private Process process;
     /**State of the process */
     private ProcessState state;
-    private ToolBox toolBox;
-    private ProcessUIPanel processUIPanel;
     /** Map of the log message and their color.*/
     private Map<String, Color> logMap;
     /** List of listeners for the processState*/
     private List<PropertyChangeListener> propertyChangeListenerList;
+    private List<TreeNodeWps> listNode;
 
-    public ProcessExecutionData(ToolBox toolBox, Process process){
-        this.toolBox = toolBox;
+    public ProcessEditableElement(Process process, List<TreeNodeWps> listNode){
         this.process = process;
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
         this.logMap = new LinkedHashMap<>();
         this.propertyChangeListenerList = new ArrayList<>();
+        this.listNode = listNode;
+        this.state = ProcessState.IDLE;
+    }
+
+    @Override
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        if(!propertyChangeListenerList.contains(listener)){
+            propertyChangeListenerList.add(listener);
+        }
+    }
+
+    @Override
+    public void addPropertyChangeListener(String prop, PropertyChangeListener listener) {}
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        if(!propertyChangeListenerList.contains(listener)){
+            propertyChangeListenerList.remove(listener);
+        }
+    }
+
+    @Override
+    public void removePropertyChangeListener(String prop, PropertyChangeListener listener) {}
+
+    @Override
+    public String getId() {
+        return ID;
+    }
+
+    @Override
+    public boolean isModified() {
+        return false;
+    }
+
+    @Override
+    public void setModified(boolean modified) {}
+
+    @Override
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    @Override
+    public String getTypeId() {
+        return null;
+    }
+
+    @Override
+    public void open(ProgressMonitor progressMonitor) throws UnsupportedOperationException, EditableElementException {
+        isOpen = true;
+    }
+
+    @Override
+    public void save() throws UnsupportedOperationException, EditableElementException {
+
+    }
+
+    @Override
+    public void close(ProgressMonitor progressMonitor) throws UnsupportedOperationException, EditableElementException {
+        isOpen = false;
+    }
+
+    @Override
+    public Object getObject() throws UnsupportedOperationException {
+        return process;
+    }
+
+    public String getProcessReference(){
+        return process.getTitle();
     }
 
     public Map<String, Color> getLogMap(){
@@ -89,10 +158,6 @@ public class ProcessExecutionData {
         return process;
     }
 
-    public void setProcess(Process process) {
-        this.process = process;
-    }
-
     public ProcessState getState() {
         return state;
     }
@@ -101,50 +166,16 @@ public class ProcessExecutionData {
         ProcessState oldState = this.state;
         this.state = state;
         firePropertyChange(oldState, state);
-        toolBox.getComponent().revalidate();
-        toolBox.getComponent().repaint();
     }
 
-    public void setProcessUIPanel(ProcessUIPanel processUIPanel) {
-        this.processUIPanel = processUIPanel;
-    }
-
-    public void addPropertyChangeListener(PropertyChangeListener propertyChangeListener){
-        if(!propertyChangeListenerList.contains(propertyChangeListener)){
-            propertyChangeListenerList.add(propertyChangeListener);
-        }
+    public List<TreeNodeWps> getNodeList(){
+        return listNode;
     }
 
     public void firePropertyChange(ProcessState oldValue, ProcessState newValue){
         PropertyChangeEvent event = new PropertyChangeEvent(process, STATE_PROPERTY, oldValue, newValue);
         for(PropertyChangeListener pcl : propertyChangeListenerList){
             pcl.propertyChange(event);
-        }
-    }
-
-    /**
-     * Run the process.
-     */
-    public void runProcess(){
-        logMap = new HashMap<>();
-        //Check that all the data field were filled.
-        if(inputDataMap.size() == process.getInput().size()) {
-            setState(ProcessState.RUNNING);
-            //Run the process in a separated thread
-            ExecutionWorker thread = new ExecutionWorker(process, outputDataMap, inputDataMap, toolBox, this);
-            thread.execute();
-        }
-    }
-
-    /**
-     * Indicated that the process has ended and register the outputs results.
-     * @param outputList Map of the outputs results.
-     */
-    public void endProcess(List<String> outputList){
-        setState(ProcessState.COMPLETED);
-        processUIPanel.setOutputs(outputList, ProcessState.COMPLETED.getValue());
-        if(processUIPanel != null && SwingUtilities.getWindowAncestor(processUIPanel).isVisible()){
-            this.setState(ProcessExecutionData.ProcessState.IDLE);
         }
     }
 
@@ -171,9 +202,13 @@ public class ProcessExecutionData {
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         String log = timeFormat.format(date) + " : " + logType.name() + " : " + message + "";
         logMap.put(log, color);
-        if(processUIPanel != null){
-            processUIPanel.print(log, color);
+        for(PropertyChangeListener pcl : propertyChangeListenerList){
+            pcl.propertyChange(new PropertyChangeEvent(this, LOG_PROPERTY, null, new AbstractMap.SimpleEntry<>(log, color)));
         }
+    }
+
+    public void clearLog(){
+        logMap = new HashMap<>();
     }
 
 

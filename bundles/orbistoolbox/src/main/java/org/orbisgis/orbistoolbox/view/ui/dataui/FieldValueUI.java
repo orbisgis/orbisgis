@@ -26,7 +26,6 @@ import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
 import java.awt.event.FocusListener;
 import java.beans.EventHandler;
 import java.net.URI;
@@ -40,6 +39,8 @@ import java.util.List;
  **/
 
 public class FieldValueUI implements DataUI{
+    private static final int MAX_JLIST_ROW_COUNT = 10;
+    private static final int MIN_JLIST_ROW_COUNT = 1;
 
     private ToolBox toolBox;
 
@@ -51,8 +52,12 @@ public class FieldValueUI implements DataUI{
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         JPanel panel = new JPanel(new MigLayout("fill"));
         FieldValue fieldValue = null;
+        boolean isOptional = false;
         if(inputOrOutput instanceof Input){
             fieldValue = (FieldValue)((Input)inputOrOutput).getDataDescription();
+            if(((Input)inputOrOutput).getMinOccurs() == 0){
+                isOptional = true;
+            }
         }
         else if(inputOrOutput instanceof Output){
             fieldValue = (FieldValue)((Output)inputOrOutput).getDataDescription();
@@ -63,10 +68,10 @@ public class FieldValueUI implements DataUI{
         }
 
         if(inputOrOutput.getResume().isEmpty()){
-            panel.add(new JLabel(inputOrOutput.getTitle()), "wrap");
+            panel.add(new JLabel(inputOrOutput.getTitle()), "growx, wrap");
         }
         else {
-            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "wrap");
+            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "growx, wrap");
         }
         JList list = new JList(new DefaultListModel());
         if(fieldValue.getMuliSelection()){
@@ -75,14 +80,14 @@ public class FieldValueUI implements DataUI{
         else {
             list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         }
-        list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        list.setVisibleRowCount(-1);
+        list.setLayoutOrientation(JList.VERTICAL);
+        list.setVisibleRowCount(MIN_JLIST_ROW_COUNT);
         JScrollPane listScroller = new JScrollPane(list);
-        listScroller.setMinimumSize(new Dimension(250, 80));
-        panel.add(listScroller);
+        panel.add(listScroller, "growx, wrap");
         list.putClientProperty("uri", inputOrOutput.getIdentifier());
         list.putClientProperty("fieldValue", fieldValue);
         list.putClientProperty("dataMap", dataMap);
+        list.putClientProperty("isOptional", isOptional);
         list.addFocusListener(EventHandler.create(FocusListener.class, this, "onGainingFocus", "source"));
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
 
@@ -107,10 +112,17 @@ public class FieldValueUI implements DataUI{
             fieldValue.setDataFieldModified(false);
             String tableName = dataMap.get(fieldValue.getDataStoreIdentifier()).toString();
             String fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
-            DefaultListModel model = (DefaultListModel)list.getModel();
+            DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
             model.removeAllElements();
-            for (String field : ToolBox.getFieldValueList(tableName, fieldName)) {
+            List<String> listFields = ToolBox.getFieldValueList(tableName, fieldName);
+            for (String field : listFields) {
                 model.addElement(field);
+            }
+            if(listFields.size() < MAX_JLIST_ROW_COUNT){
+                list.setVisibleRowCount(listFields.size());
+            }
+            else{
+                list.setVisibleRowCount(MAX_JLIST_ROW_COUNT);
             }
         }
         list.revalidate();
@@ -119,8 +131,14 @@ public class FieldValueUI implements DataUI{
     public void onListSelection(Object source){
         JList list = (JList)source;
         List<String> listValues = new ArrayList<>();
-        for(int i : list.getSelectedIndices()){
-            listValues.add(list.getModel().getElementAt(i).toString());
+
+        if(list.getSelectedIndices().length == 0){
+            listValues = null;
+        }
+        else {
+            for (int i : list.getSelectedIndices()) {
+                listValues.add(list.getModel().getElementAt(i).toString());
+            }
         }
         URI uri = (URI)list.getClientProperty("uri");
         HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");

@@ -61,8 +61,8 @@ public class RawDataUI implements DataUI {
         //Create the component
         JComponent component = new JPanel();
         component.setLayout(new FlowLayout(FlowLayout.LEFT));
+        boolean isOptional = false;
 
-        //component.add(new JLabel(sourceCA.getName()));
         //Display the SourceCA into a JTextField
         JTextField jtf = new JTextField();
         jtf.setColumns(25);
@@ -77,6 +77,9 @@ public class RawDataUI implements DataUI {
         OpenFilePanel filePanel = null;
         if(inputOrOutput instanceof Input){
             filePanel = new OpenFilePanel("RawDataUI.File", "Select File");
+            if(((Input)inputOrOutput).getMinOccurs() == 0){
+                isOptional = true;
+            }
         }
         else if(inputOrOutput instanceof Output){
             filePanel = new SaveFilePanel("RawDataUI.File", "Select File");
@@ -90,7 +93,7 @@ public class RawDataUI implements DataUI {
             jtf.setText(filePanel.getCurrentDirectory().getAbsolutePath());
         }
 
-        component.add(jtf);
+        component.add(jtf, "growx");
         //Create the button Browse
         JButton button = new JButton("Browse");
         //"Save" the sourceCA and the JTextField in the button
@@ -98,6 +101,7 @@ public class RawDataUI implements DataUI {
         button.putClientProperty("uri", inputOrOutput.getIdentifier());
         button.putClientProperty("JTextField", jtf);
         button.putClientProperty("filePanel", filePanel);
+        button.putClientProperty("isOptional", isOptional);
         //Add the listener for the click on the button
         button.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
 
@@ -140,8 +144,11 @@ public class RawDataUI implements DataUI {
         try {
             Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
             URI uri = (URI)document.getProperty("uri");
+            boolean isOptional = (boolean)document.getProperty("isOptional");
             String name = document.getText(0, document.getLength());
-            dataMap.remove(uri);
+            if(isOptional && name.isEmpty()){
+                name = null;
+            }
             dataMap.put(uri, name);
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(RawData.class).error(e.getMessage());

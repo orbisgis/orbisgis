@@ -17,19 +17,50 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.model;
+package org.orbisgis.orbistoolbox.view.utils;
 
-import java.util.List;
+import org.orbisgis.sif.docking.DockingPanelLayout;
+import org.orbisgis.sif.docking.XElement;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
- * GeoData represent a data which can be an SQL table, a JSON file, a Shape file ...
- *
  * @author Sylvain PALOMINOS
- **/
+ */
+public class ProcessPanelLayout implements DockingPanelLayout {
+    private ProcessEditableElement pee;
 
-public class GeoData extends ComplexData{
+    public ProcessPanelLayout(ProcessEditableElement processEditableElement){
+        this.pee = processEditableElement;
+    }
 
-    public GeoData(List<Format> formatList) throws MalformedScriptException {
-        super(formatList);
+    public ProcessPanelLayout(){
+        this.pee = null;
+    }
+
+    @Override
+    public void writeStream(DataOutputStream out) throws IOException {
+
+    }
+
+    @Override
+    public void readStream(DataInputStream in) throws IOException {
+
+    }
+
+    @Override
+    public void writeXML(XElement element) {
+
+    }
+
+    @Override
+    public void readXML(XElement element) {
+
+    }
+
+    public ProcessEditableElement getProcessEditableElement(){
+        return pee;
     }
 }

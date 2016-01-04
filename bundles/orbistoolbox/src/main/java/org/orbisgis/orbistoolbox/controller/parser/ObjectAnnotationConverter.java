@@ -198,24 +198,6 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static GeoData annotationToObject(GeoDataAttribute GeoDataAttribute, List<Format> formatList) {
-        try {
-            return new GeoData(formatList);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
-        }
-    }
-
-    public static GeometryData annotationToObject(GeometryAttribute GeoDataAttribute, List<Format> formatList) {
-        try {
-            return new GeometryData(formatList);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
-        }
-    }
-
     public static LiteralValue annotationToObject(LiteralValueAttribute literalValueAttribute){
         LiteralValue literalValue = new LiteralValue();
         if(!literalValueAttribute.uom().equals(LiteralValueAttribute.defaultUom)) {

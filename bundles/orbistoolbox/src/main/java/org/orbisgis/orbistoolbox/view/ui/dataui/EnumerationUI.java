@@ -31,10 +31,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import java.awt.*;
-import java.awt.event.FocusListener;
 import java.beans.EventHandler;
-import java.io.File;
 import java.net.URI;
 import java.util.*;
 import java.util.List;
@@ -46,9 +43,7 @@ import java.util.List;
  **/
 
 public class EnumerationUI implements DataUI{
-    private static final int TEXTFIELD_WIDTH = 25;
-    private static final int JLIST_WIDTH = 250;
-    private static final int JLIST_HEIGHT = 80;
+    private static final int JLIST_MAX_ROW_COUNT = 10;
 
     private ToolBox toolBox;
 
@@ -61,8 +56,12 @@ public class EnumerationUI implements DataUI{
         JPanel panel = new JPanel(new MigLayout("fill"));
         //Get the enumeration object
         Enumeration enumeration = null;
+        boolean isOptional = false;
         if(inputOrOutput instanceof Input){
             enumeration = (Enumeration)((Input)inputOrOutput).getDataDescription();
+            if(((Input)inputOrOutput).getMinOccurs() == 0){
+                isOptional = true;
+            }
         }
         else if(inputOrOutput instanceof Output){
             enumeration = (Enumeration)((Output)inputOrOutput).getDataDescription();
@@ -73,10 +72,10 @@ public class EnumerationUI implements DataUI{
         }
         //Adds the text label to the panel
         if(inputOrOutput.getResume().isEmpty()){
-            panel.add(new JLabel(inputOrOutput.getTitle()), "wrap");
+            panel.add(new JLabel(inputOrOutput.getTitle()), "growx, wrap");
         }
         else {
-            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "wrap");
+            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "growx, wrap");
         }
         //Build the JList containing the data
         DefaultListModel<String> model = new DefaultListModel<>();
@@ -92,37 +91,48 @@ public class EnumerationUI implements DataUI{
         }
         //Select the default values
         List<Integer> selectedIndex = new ArrayList<>();
-        for(String defaultValue : enumeration.getDefaultValues()){
-            selectedIndex.add(model.indexOf(defaultValue));
+        if(!isOptional) {
+            for (String defaultValue : enumeration.getDefaultValues()) {
+                selectedIndex.add(model.indexOf(defaultValue));
+            }
         }
         int[] array = new int[selectedIndex.size()];
-        for(int i=0; i<selectedIndex.size(); i++){
+        for (int i = 0; i < selectedIndex.size(); i++) {
             array[i] = selectedIndex.get(i);
         }
         list.setSelectedIndices(array);
         //Configure the JList
-        list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-        list.setVisibleRowCount(-1);
+        list.setLayoutOrientation(JList.VERTICAL);
+        if(enumeration.getValues().length < JLIST_MAX_ROW_COUNT){
+            list.setVisibleRowCount(enumeration.getValues().length);
+        }
+        else {
+            list.setVisibleRowCount(JLIST_MAX_ROW_COUNT);
+        }
         JScrollPane listScroller = new JScrollPane(list);
-        listScroller.setMinimumSize(new Dimension(JLIST_WIDTH, JLIST_HEIGHT));
-        panel.add(listScroller, "wrap");
+        panel.add(listScroller, "growx, wrap");
         list.putClientProperty("uri", inputOrOutput.getIdentifier());
         list.putClientProperty("enumeration", enumeration);
         list.putClientProperty("dataMap", dataMap);
+        list.putClientProperty("isOptional", isOptional);
+        list.putClientProperty("isMultiSelection", enumeration.isMultiSelection());
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
 
         //case of the editable value
         if(enumeration.isEditable()){
-            JTextField textField = new JTextField(TEXTFIELD_WIDTH);
+            JTextField textField = new JTextField();
             textField.getDocument().putProperty("dataMap", dataMap);
             textField.getDocument().putProperty("uri", inputOrOutput.getIdentifier());
             textField.getDocument().putProperty("enumeration", enumeration);
+            textField.getDocument().putProperty("list", list);
+            textField.getDocument().putProperty("isMultiSelection", enumeration.isMultiSelection());
+            textField.getDocument().putProperty("isOptional", isOptional);
             textField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
                     this,
                     "saveDocumentTextFile",
                     "document"));
 
-            panel.add(textField);
+            panel.add(textField, "growx, wrap");
             list.putClientProperty("textField", textField);
         }
 
@@ -150,30 +160,73 @@ public class EnumerationUI implements DataUI{
 
     public void onListSelection(Object source){
         JList list = (JList)source;
-        //If there is a textfield and if it contain a text, it means that their is a custom value and it will be used
-        if(list.getClientProperty("textField")!=null){
-            TextField textField = (TextField)list.getClientProperty("textField");
-            if(!textField.getText().isEmpty()){
-                return;
+        List<String> listValues = new ArrayList<>();
+        URI uri = (URI) list.getClientProperty("uri");
+        HashMap<URI, Object> dataMap = (HashMap) list.getClientProperty("dataMap");
+        boolean isMultiSelection = (boolean)list.getClientProperty("isMultiSelection");
+        boolean isOptional = (boolean)list.getClientProperty("isOptional");
+        //If there is a textfield and if it contain a text, add the coma separated values
+        if (list.getClientProperty("textField") != null) {
+            JTextField textField = (JTextField) list.getClientProperty("textField");
+            if (!textField.getText().isEmpty()) {
+                if(!isMultiSelection && list.getSelectedIndices().length != 0){
+                    textField.setText("");
+                }
+                else {
+                    listValues.add(textField.getText());
+                }
             }
         }
-        List<String> listValues = new ArrayList<>();
-        for(int i : list.getSelectedIndices()){
+        //Add the selected JList values
+        for (int i : list.getSelectedIndices()) {
             listValues.add(list.getModel().getElementAt(i).toString());
         }
-        URI uri = (URI)list.getClientProperty("uri");
-        HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
-        dataMap.put(uri, listValues);
+        //if no values are selected, put null is isOptional, or select the first value if not
+        if(listValues.isEmpty()){
+            if(isOptional) {
+                dataMap.put(uri, null);
+            }
+            else{
+                list.setSelectedIndices(new int[]{0});
+            }
+        }
+        else {
+            dataMap.put(uri, listValues);
+        }
     }
 
     public void saveDocumentTextFile(Document document){
         try {
             Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
             URI uri = (URI)document.getProperty("uri");
-            dataMap.remove(uri);
-            List<String> list = new ArrayList<>();
-            list.add(document.getText(0,document.getLength()));
-            dataMap.put(uri, list);
+            JList list = (JList<String>) document.getProperty("list");
+            boolean isMultiSelection = (boolean)document.getProperty("isMultiSelection");
+            boolean isOptional = (boolean)document.getProperty("isOptional");
+            String text = document.getText(0, document.getLength());
+            //If not optional and there is no text and no element select, then, select the first element.
+            if(!isOptional){
+                if(text.isEmpty() && list.getSelectedIndices().length == 0) {
+                    list.setSelectedIndices(new int[]{0});
+                }
+            }
+            //If there is a text and the multi selection is not allowed, empty the list selection
+            if(!text.isEmpty() && !isMultiSelection){
+                list.clearSelection();
+            }
+            List<String> listValues = new ArrayList<>();
+            if(!isMultiSelection && !text.isEmpty()){
+                listValues.add(text.split(",")[0]);
+            }
+            else {
+                dataMap.remove(uri);
+                if(!text.isEmpty()) {
+                    Collections.addAll(listValues, text.split(","));
+                }
+                for (int i : list.getSelectedIndices()) {
+                    listValues.add(list.getModel().getElementAt(i).toString());
+                }
+                dataMap.put(uri, listValues);
+            }
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
         }
