@@ -63,6 +63,7 @@ public class UnsavedPreference<V> extends DefaultPreference<V> {
         return null;
     }
     
+    @Override
     public void read() {
        setValue(getDefaultValue());
     }

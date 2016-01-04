@@ -29,7 +29,6 @@
 package org.orbisgis.geocatalog.impl.sourceWizards.db;
 
 import org.orbisgis.sif.multiInputPanel.*;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

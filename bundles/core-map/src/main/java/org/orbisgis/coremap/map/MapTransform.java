@@ -38,11 +38,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.renderable.RenderContext;
 import java.util.ArrayList;
-import javax.media.jai.ImageLayout;
-import javax.media.jai.JAI;
+import java.util.Collections;
 import org.slf4j.*;
 import org.orbisgis.coremap.ui.editors.map.tool.Rectangle2DDouble;
 import org.xnap.commons.i18n.I18n;
@@ -51,6 +48,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MapTransform implements PointTransformation {
         private static final Logger LOGGER = LoggerFactory.getLogger(MapTransform.class);
         private static final I18n I18N = I18nFactory.getI18n(MapTransform.class);
+        private static RenderingHints screenHints;
         private boolean adjustExtent;
         private BufferedImage image = null;
         private Envelope adjustedExtent = new Envelope();
@@ -59,42 +57,20 @@ public class MapTransform implements PointTransformation {
         private Envelope extent;
         private ArrayList<TransformListener> listeners = new ArrayList<TransformListener>();
         private ShapeWriter converter;
-        private RenderContext currentRenderContext = screenContext;
-        private static RenderContext draftContext;
-        private static RenderContext screenContext;
         private double dpi;
-        private static final double DEFAULT_DPI = 96.0;
-
-        static {
-                ImageLayout layout = new ImageLayout();
-                layout.setColorModel(ColorModel.getRGBdefault());
-
-                RenderingHints screenHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
-                screenHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                screenHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                screenHints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-                screenHints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-                screenHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                screenHints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
-                screenHints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-                screenHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-
-                screenContext = new RenderContext(AffineTransform.getTranslateInstance(0.0, 0.0), screenHints);
-
-                RenderingHints draftHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
-
-                draftHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-                draftHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-                draftHints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
-                draftHints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
-                draftHints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
-                draftHints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-                draftHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-                draftHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-
-                draftContext = new RenderContext(AffineTransform.getTranslateInstance(0.0, 0.0), draftHints);
-        }
+        private static final double DEFAULT_DPI = 96.0;       
         private double MAXPIXEL_DISPLAY = 0;
+        
+        static {
+            screenHints = new RenderingHints(Collections.EMPTY_MAP);
+            screenHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+            screenHints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+            screenHints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
+            screenHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+            screenHints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
+            screenHints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+            screenHints.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+        }
 
         public MapTransform() {
                 adjustExtent = true;
@@ -103,7 +79,8 @@ public class MapTransform implements PointTransformation {
                 } else {
                     LOGGER.trace(I18N.tr("Headless graphics environment, set current DPI to 96.0"));
                     this.dpi = DEFAULT_DPI;
-                }
+                }                
+                updateRenderingHints();
         }
 
         /**
@@ -129,30 +106,12 @@ public class MapTransform implements PointTransformation {
                 calculateAffineTransform();
         }
 
-        public void switchToDraft() {
-                this.currentRenderContext = MapTransform.draftContext;
-                LOGGER.debug("Switch to draft!");
-        }
-
-        public void switchToScreen() {
-                this.currentRenderContext = MapTransform.screenContext;
-                LOGGER.debug("Switch to Hign-Quality!");
-        }
-
-        /**
-         * Gets the current {@code RenderContext}
-         * @return the current {@link RenderContext}
-         */
-        public RenderContext getCurrentRenderContext() {
-                return this.currentRenderContext;
-        }
-
         /**
          * Gets the current {@code RenderingHints}
          * @return the current {@link RenderingHints}
          */
         public RenderingHints getRenderingHints() {
-                return this.currentRenderContext.getRenderingHints();
+                return screenHints;
         }
 
         /**
@@ -467,8 +426,8 @@ public class MapTransform implements PointTransformation {
                 * Choose a fairly conservative decimation distance to avoid visual artifacts
                 * TODO : decimation must be activate in relation with the crs to prevent rendering bug
                 */
-                // Double dec = adjustedExtent == null ? 0 : MAXPIXEL_DISPLAY / getScaleDenominator();
-                //converter.setDecimation(dec);
+                Double dec = adjustedExtent == null ? 0 : MAXPIXEL_DISPLAY / getScaleDenominator();
+                converter.setDecimation(dec);
                 return converter;
         }
 
@@ -501,4 +460,14 @@ public class MapTransform implements PointTransformation {
                         listener.extentChanged(this.adjustedExtent, this);
                 }
         }
+
+    /**
+     * Update the rendering hints use to perform the quality or the speed of the
+     * renderer.
+     */
+    public void updateRenderingHints() {
+        screenHints.put(RenderingHints.KEY_ANTIALIASING, Boolean.valueOf(System.getProperty("map.editor.renderer.value_antialias_on"))
+                ? RenderingHints.VALUE_ANTIALIAS_ON
+                : RenderingHints.VALUE_ANTIALIAS_OFF);
+    }
 }
