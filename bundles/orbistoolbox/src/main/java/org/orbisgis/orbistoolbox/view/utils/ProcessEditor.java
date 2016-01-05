@@ -116,7 +116,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
     @Override
     public boolean match(EditableElement editableElement) {
-        return editableElement instanceof ProcessEditableElement;
+        //Return true if the editable is the one contained by the Process editor
+        return editableElement instanceof ProcessEditableElement && editableElement.getId().equals(pee.getId());
     }
 
     @Override

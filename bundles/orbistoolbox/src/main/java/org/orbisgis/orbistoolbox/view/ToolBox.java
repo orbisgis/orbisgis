@@ -23,16 +23,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.commons.utils.FileUtils;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
-import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
-import org.orbisgis.orbistoolbox.view.utils.ProcessEditorFactory;
-import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
+import org.orbisgis.orbistoolbox.view.utils.*;
 import org.orbisgis.orbistoolbox.view.utils.dataProcessing.DataProcessingManager;
 import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
 import org.orbisgis.sif.UIFactory;
@@ -41,6 +38,7 @@ import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.orbisgis.sif.edition.Editor;
 import org.orbisgis.sif.edition.EditorManager;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
@@ -49,6 +47,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
@@ -81,6 +80,8 @@ public class ToolBox implements DockingPanel {
     private ProcessEditorFactory pef;
     private DataProcessingManager dataProcessingManager;
 
+    private Map<String, ProcessEditableElement> mapIdPee;
+
     private static final String TOOLBOX_REFERENCE = "orbistoolbox";
 
     @Activate
@@ -103,6 +104,7 @@ public class ToolBox implements DockingPanel {
         pef = new ProcessEditorFactory(editorManager, this);
         editorManager.addEditorFactory(pef);
         dataProcessingManager = new DataProcessingManager(this);
+        mapIdPee = new HashMap<>();
     }
 
     @Deactivate
@@ -150,11 +152,34 @@ public class ToolBox implements DockingPanel {
     }
 
     /**
-     * Open the process window for the selected process
+     * Open the process window for the selected process.
+     * @return The process instance ID.
      */
-    public void openProcess(){
+    public ProcessEditableElement openProcess(){
         Process process = processManager.getProcess(toolBoxPanel.getSelectedNode().getFilePath());
-        editorManager.openEditable(new ProcessEditableElement(process, toolBoxPanel.getNodesFromSelectedOne()));
+        ProcessEditableElement pee = new ProcessEditableElement(
+                this,
+                process,
+                process.getTitle().replace(" ", "_") + System.currentTimeMillis());
+        editorManager.openEditable(pee);
+        mapIdPee.put(pee.getId(), pee);
+        return pee;
+    }
+
+    /**
+     * Open the process instance.
+     */
+    public void openInstance(String instanceID){
+        editorManager.openEditable(mapIdPee.get(instanceID));
+    }
+
+    public void closeInstance(String instanceID){
+        for(Editor editor : editorManager.getEditors()){
+            if(editor instanceof ProcessEditor && editor.getEditableElement().getId().equals(instanceID)){
+                ((ProcessEditor) editor).removeAll();
+            }
+        }
+        mapIdPee.remove(instanceID);
     }
 
     /**

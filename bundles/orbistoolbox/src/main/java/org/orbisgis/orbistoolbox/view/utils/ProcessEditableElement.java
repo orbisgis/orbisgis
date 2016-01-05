@@ -21,6 +21,7 @@ package org.orbisgis.orbistoolbox.view.utils;
 
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.commons.progress.ProgressMonitor;
+import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
 
@@ -36,7 +37,6 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 public class ProcessEditableElement implements EditableElement{
-    public static final String ID = "WPSProcessEditableElement";
     public static final String STATE_PROPERTY = "STATE_PROPERTY";
     public static final String LOG_PROPERTY = "LOG_PROPERTY";
     private Process process;
@@ -52,24 +52,25 @@ public class ProcessEditableElement implements EditableElement{
     private Map<String, Color> logMap;
     /** List of listeners for the processState*/
     private List<PropertyChangeListener> propertyChangeListenerList;
-    private List<TreeNodeWps> listNode;
+    private List<TreeNodeWps> nodeList;
+    /** Unique identifier of this ProcessEditableElement. */
+    private final String ID;
+    private ToolBox toolBox;
 
-    public ProcessEditableElement(Process process, List<TreeNodeWps> listNode){
-        this.process = process;
+    public ProcessEditableElement(ToolBox toolBox, Process process, String ID){
         this.process = process;
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
         this.logMap = new LinkedHashMap<>();
         this.propertyChangeListenerList = new ArrayList<>();
-        this.listNode = listNode;
         this.state = ProcessState.IDLE;
+        this.ID = ID;
+        this.toolBox = toolBox;
+        this.nodeList = new ArrayList<>();
     }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        if(!propertyChangeListenerList.contains(listener)){
-            propertyChangeListenerList.add(listener);
-        }
     }
 
     @Override
@@ -77,9 +78,6 @@ public class ProcessEditableElement implements EditableElement{
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        if(!propertyChangeListenerList.contains(listener)){
-            propertyChangeListenerList.remove(listener);
-        }
     }
 
     @Override
@@ -156,6 +154,15 @@ public class ProcessEditableElement implements EditableElement{
         return process;
     }
 
+    public List<TreeNodeWps> getNodes(){
+        return nodeList;
+    }
+
+    public void addNode(TreeNodeWps node){
+        this.nodeList.add(node);
+        this.setState(this.state);
+    }
+
     public ProcessState getState() {
         return state;
     }
@@ -163,17 +170,11 @@ public class ProcessEditableElement implements EditableElement{
     public void setState(ProcessState state) {
         ProcessState oldState = this.state;
         this.state = state;
-        firePropertyChange(oldState, state);
-    }
-
-    public List<TreeNodeWps> getNodeList(){
-        return listNode;
-    }
-
-    public void firePropertyChange(ProcessState oldValue, ProcessState newValue){
-        PropertyChangeEvent event = new PropertyChangeEvent(process, STATE_PROPERTY, oldValue, newValue);
-        for(PropertyChangeListener pcl : propertyChangeListenerList){
-            pcl.propertyChange(event);
+        if(nodeList != null && !nodeList.isEmpty()) {
+            PropertyChangeEvent event = new PropertyChangeEvent(process, STATE_PROPERTY, oldState, state);
+            for(TreeNodeWps node : nodeList) {
+                node.propertyChange(event);
+            }
         }
     }
 

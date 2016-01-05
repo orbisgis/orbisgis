@@ -189,6 +189,10 @@ public class TreeNodeWps
         nodeType = type;
     }
 
+    public String getNodeType(){
+        return nodeType;
+    }
+
     public void setValidNode(boolean isValid) {
         this.isValid = isValid;
     }
@@ -199,10 +203,11 @@ public class TreeNodeWps
 
     public TreeNodeWps deepCopy(){
         TreeNodeWps copy = new TreeNodeWps();
-        copy.setFilePath(this.file);
-        copy.instanceIconName = this.instanceIconName;
+        copy.file = this.file;
         copy.isValid = this.isValid;
         copy.nodeType = this.nodeType;
+        copy.userObject = this.userObject;
+        copy.instanceIconName = this.instanceIconName;
 
         return copy;
     }
