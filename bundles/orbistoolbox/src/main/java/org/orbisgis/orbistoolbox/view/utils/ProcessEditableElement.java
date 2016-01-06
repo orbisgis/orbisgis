@@ -163,6 +163,11 @@ public class ProcessEditableElement implements EditableElement{
         this.setState(this.state);
     }
 
+    public void addAllNodes(List<TreeNodeWps> nodeList){
+        this.nodeList.addAll(nodeList);
+        this.setState(this.state);
+    }
+
     public ProcessState getState() {
         return state;
     }
