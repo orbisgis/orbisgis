@@ -71,7 +71,6 @@ public class FeaturesVisitor implements ISymbolizerVisitor {
                 for(SymbolizerNode c : children){
                         visitImpl(c);
                 }
-
         }
 
         /**

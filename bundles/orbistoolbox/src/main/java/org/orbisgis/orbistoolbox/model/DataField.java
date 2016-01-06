@@ -22,6 +22,7 @@ package org.orbisgis.orbistoolbox.model;
 import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +37,8 @@ public class DataField extends ComplexData{
     private boolean isSourceModified = false;
     /** List of type accepted for the field.*/
     private List<FieldType> fieldTypeList;
+    /** List of FieldValue liked to the DataField */
+    private List<FieldValue> listFieldValue;
 
     /**
      * Main constructor.
@@ -46,6 +49,7 @@ public class DataField extends ComplexData{
      */
     public DataField(Format format, List<FieldType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
         super(format);
+        listFieldValue = new ArrayList<>();
         this.fieldTypeList = fieldTypeList;
         this.dataStoreIdentifier = dataStoreURI;
     }
@@ -70,8 +74,11 @@ public class DataField extends ComplexData{
      * Sets if the parent dataStore has been modified
      * @param isSourceModified True if the parent DataStore has been modified, false otherwise.
      */
-    public void setSourceModifiedd(boolean isSourceModified) {
+    public void setSourceModified(boolean isSourceModified) {
         this.isSourceModified = isSourceModified;
+        for(FieldValue fieldValue : listFieldValue){
+            fieldValue.setDataStoreModified(isSourceModified);
+        }
     }
 
     /**
@@ -80,5 +87,21 @@ public class DataField extends ComplexData{
      */
     public List<FieldType> getFieldTypeList() {
         return fieldTypeList;
+    }
+
+    /**
+     * Adds a FieldValue as a 'child' of the DataField.
+     * @param fieldValue FieldValue to add.
+     */
+    public void addFieldValue(FieldValue fieldValue){
+        this.listFieldValue.add(fieldValue);
+    }
+
+    /**
+     * Return the list of 'child' FieldValue.
+     * @return List of FieldValue.
+     */
+    public List<FieldValue> getListFieldValue(){
+        return listFieldValue;
     }
 }

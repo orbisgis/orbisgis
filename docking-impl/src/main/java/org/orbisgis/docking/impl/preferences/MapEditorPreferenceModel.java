@@ -58,15 +58,25 @@ public class MapEditorPreferenceModel extends DefaultPreferenceModel{
     private static final I18n I18N = I18nFactory.getI18n(MapEditorPreferenceModel.class);
     private final String DEFAULT_BACKGROUNDCOLOR = "#FFFFFF";
      private String oldBackgroundColor = DEFAULT_BACKGROUNDCOLOR;
+    
     private static final String MAPEDITOR_BACKGROUNDCOLOR_KEY = "map.editor.color.background";
+    private static final String USE_VALUE_ANTIALIAS_KEY = "map.editor.renderer.value_antialias_on";
     private static final String MAPEDITOR_LABEL_KEY = "map.editor.mapeditorlabel";
     private DefaultPreference<String> mapEditorInfo;
+    private DockPropertyPreference<Boolean> useAntialiasOn;
     
-    //Proxy Port
+    //Background color
     public static final PropertyKey<String> MAPEDITOR_BACKGROUNDCOLOR = 
         new PropertyKey<String>( MAPEDITOR_BACKGROUNDCOLOR_KEY,
         		new ConstantPropertyFactory<String>("#FFFFFF"), true );  
     private final DockPropertyPreference<String> backgroundColor;
+    
+    
+    public static final PropertyKey<Boolean> VALUE_ANTIALIAS_ON = 
+        new PropertyKey<Boolean>( USE_VALUE_ANTIALIAS_KEY,
+        		new ConstantPropertyFactory<Boolean>( true ), true );
+    
+    
     private boolean skipEvent = false; //Skip event while update values
     
     public MapEditorPreferenceModel(DockController controller) {
@@ -83,6 +93,12 @@ public class MapEditorPreferenceModel extends DefaultPreferenceModel{
         backgroundColor.setLabel(I18N.tr("Background color"));
         backgroundColor.setDefaultValue(DEFAULT_BACKGROUNDCOLOR);
         this.add(backgroundColor);
+        
+        //Use antialiasing 
+        useAntialiasOn = new DockPropertyPreference<Boolean>(controller.getProperties(),VALUE_ANTIALIAS_ON, Path.TYPE_BOOLEAN_PATH, new Path(USE_VALUE_ANTIALIAS_KEY));
+        useAntialiasOn.setLabel(I18N.tr("Geometry antialiasing"));
+        useAntialiasOn.setDefaultValue(Boolean.TRUE);
+        this.add(useAntialiasOn);        
     }
     
     
@@ -92,13 +108,14 @@ public class MapEditorPreferenceModel extends DefaultPreferenceModel{
      */
     public MapEditorPreferenceModel initListeners() {        
         backgroundColor.addPreferenceListener(EventHandler.create(StringPreferenceListener.class, this,"onUserSetColorChange",""));        
+        useAntialiasOn.addPreferenceListener(EventHandler.create(PreferenceListener.class, this,"onUseAntialias","")); 
         return this;
     }
     
     
     /**
-     * User update the background color value
-     * @param preference Updated preference, the color input
+     * User update the background color and renderer value
+     * @param preference Updated preference
      */
     public void onUserSetColorChange(Preference<String> preference) {
         if(skipEvent) {
@@ -123,8 +140,19 @@ public class MapEditorPreferenceModel extends DefaultPreferenceModel{
         }
         mapEditorInfo.setValue("");
         oldBackgroundColor = preference.getValue();
-        System.setProperty("map.editor.color.background", oldBackgroundColor);
+        System.setProperty(MAPEDITOR_BACKGROUNDCOLOR_KEY, oldBackgroundColor);
+        preference.setValue(oldBackgroundColor);
+     }
+    
+    /**
+     * Update the system properties
+     *
+     * @param preference
+     */
+    public void onUseAntialias(Preference<Boolean> preference) {
+        System.setProperty(USE_VALUE_ANTIALIAS_KEY, String.valueOf(useAntialiasOn.getValue()));
     }
+    
     
     
 }

@@ -17,89 +17,74 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view.ui;
+package org.orbisgis.orbistoolbox.view.utils;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.orbistoolbox.model.*;
+import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionWorker;
+import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
-import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
-import org.orbisgis.orbistoolbox.view.utils.TreeNodeWps;
-import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.docking.DockingLocation;
+import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.orbisgis.sif.edition.EditableElement;
+import org.orbisgis.sif.edition.EditorDockable;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.AbstractMap;
 import java.util.Map;
 
 /**
- * Frame used to configure and run a process.
+ * UI for the configuration and the run of a WPS process.
+ * It extends the EditorDockable interface to be able to be docked in OrbisGIS.
  *
  * @author Sylvain PALOMINOS
- **/
+ */
+public class ProcessEditor extends JPanel implements EditorDockable, PropertyChangeListener {
 
-public class ProcessUIPanel extends JPanel implements UIPanel {
+    private static final int SCROLLBAR_UNIT_INCREMENT = 16;
 
+    private ProcessEditableElement pee;
+    private ToolBox toolBox;
+    private DockingPanelParameters dockingPanelParameters;
     /** TabbedPane containing the configuration panel, the info panel and the execution panel */
     private JTabbedPane tabbedPane;
-    /** Map of the label containing the outputs values and their identifier*/
-    private List<JLabel> outputJLabelList;
     /** DataUIManager used to create the UI corresponding the the data */
     private DataUIManager dataUIManager;
     /** Label containing the state of the process (running, completed or idle) */
     private JLabel stateLabel;
-
-    private ProcessExecutionData processExecutionData;
     /**TextPane used to display the process execution log.*/
     private JTextPane logPane;
 
-    /**
-     * Main constructor with no ProcessExecutionData.
-     * @param process Process represented.
-     * @param toolBox Toolbox
-     */
-    public ProcessUIPanel(Process process, ToolBox toolBox) {
+    private JPanel resultPanel;
+
+    public ProcessEditor(ToolBox toolBox, ProcessEditableElement pee){
+        this.toolBox = toolBox;
+        this.pee = pee;
+        this.pee.addPropertyChangeListener(this);
+        dockingPanelParameters = new DockingPanelParameters();
+        dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("script"));
+        dockingPanelParameters.setDefaultDockingLocation(
+                new DockingLocation(DockingLocation.Location.STACKED_ON, toolBox.getReference()));
+        dockingPanelParameters.setTitle(pee.getProcessReference());
         this.setLayout(new BorderLayout());
-
-        outputJLabelList = new ArrayList<>();
         dataUIManager = toolBox.getDataUIManager();
-
-        processExecutionData = new ProcessExecutionData(toolBox, process);
-        processExecutionData.setState(ProcessExecutionData.ProcessState.IDLE);
-        processExecutionData.setProcessUIPanel(this);
-        processExecutionData.setInputDataMap(dataUIManager.getInputDefaultValues(process));
-        processExecutionData.setOutputDataMap(dataUIManager.getOutputDefaultValues(process));
-
-        toolBox.saveProcessExecutionData(processExecutionData);
+        stateLabel = new JLabel();
 
         buildUI();
-    }
-
-    /**
-     * Constructor with an existing processUIData.
-     * @param processExecutionData Data for the UI
-     * @param toolBox ToolBox
-     */
-    public ProcessUIPanel(ProcessExecutionData processExecutionData, ToolBox toolBox){
-        this.setLayout(new BorderLayout());
-        this.processExecutionData = processExecutionData;
-
-        outputJLabelList = new ArrayList<>();
-        dataUIManager = toolBox.getDataUIManager();
-
-        buildUI();
-        processExecutionData.setProcessUIPanel(this);
 
         //According to the process state, open the good tab
-        switch(processExecutionData.getState()){
+        switch(pee.getState()){
             case IDLE:
                 tabbedPane.setSelectedIndex(0);
                 break;
@@ -108,20 +93,55 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
                 break;
             case COMPLETED:
             case ERROR:
-                List<String> results = new ArrayList<>();
-                for(Map.Entry<URI, Object> entry : processExecutionData.getOutputDataMap().entrySet()){
-                    results.add(entry.getValue().toString());
-                }
-                setOutputs(results, processExecutionData.getState().toString());
+                setOutputs(pee.getOutputDataMap());
                 tabbedPane.setSelectedIndex(2);
                 break;
         }
         //Print the process execution log.
-        for(Map.Entry<String, Color> entry : processExecutionData.getLogMap().entrySet()){
+        for(Map.Entry<String, Color> entry : pee.getLogMap().entrySet()){
             print(entry.getKey(), entry.getValue());
         }
 
-        processExecutionData.setState(ProcessExecutionData.ProcessState.IDLE);
+        pee.setState(ProcessEditableElement.ProcessState.IDLE);
+        this.revalidate();
+    }
+
+    @Override
+    public DockingPanelParameters getDockingParameters() {
+        return dockingPanelParameters;
+    }
+
+    @Override
+    public JComponent getComponent() {
+        return this;
+    }
+
+    @Override
+    public boolean match(EditableElement editableElement) {
+        return editableElement instanceof ProcessEditableElement;
+    }
+
+    @Override
+    public EditableElement getEditableElement() {
+        return pee;
+    }
+
+    @Override
+    public void setEditableElement(EditableElement editableElement) {
+        this.pee = (ProcessEditableElement)editableElement;
+        dockingPanelParameters.setTitle(pee.getProcessReference());
+        pee.addPropertyChangeListener(this);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.STATE_PROPERTY)){
+            stateLabel.setText(pee.getState().name());
+        }
+        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.LOG_PROPERTY)){
+            AbstractMap.Entry<String, Color> entry = (AbstractMap.Entry)propertyChangeEvent.getNewValue();
+            print(entry.getKey(), entry.getValue());
+        }
     }
 
     /**
@@ -130,18 +150,10 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
     private void buildUI(){
         //Adds to the tabbedPane the 3 panels
         tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Configuration", buildUIConf(processExecutionData));
-        tabbedPane.addTab("Information", buildUIInfo(processExecutionData));
-        tabbedPane.addTab("Execution", buildUIExec(processExecutionData));
+        tabbedPane.addTab("Configuration", buildUIConf());
+        tabbedPane.addTab("Information", buildUIInfo());
+        tabbedPane.addTab("Execution", buildUIExec());
         this.add(tabbedPane, BorderLayout.CENTER);
-    }
-
-    /**
-     * Returns the processExecutionData.
-     * @return The processExecutionData.
-     */
-    public ProcessExecutionData getProcessExecutionData(){
-        return processExecutionData;
     }
 
     /**
@@ -149,13 +161,17 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
      * @return True if the process has already been launch, false otherwise.
      */
     public boolean runProcess(){
-        if(processExecutionData.getState().equals(ProcessExecutionData.ProcessState.IDLE) ||
-                processExecutionData.getState().equals(ProcessExecutionData.ProcessState.ERROR) ||
-                processExecutionData.getState().equals(ProcessExecutionData.ProcessState.COMPLETED)) {
+        if(pee.getState().equals(ProcessEditableElement.ProcessState.IDLE) ||
+                pee.getState().equals(ProcessEditableElement.ProcessState.ERROR) ||
+                pee.getState().equals(ProcessEditableElement.ProcessState.COMPLETED)) {
             clearLogPanel();
-            processExecutionData.runProcess();
+            //Check that all the data field were filled.
+            pee.clearLog();
+            pee.setState(ProcessEditableElement.ProcessState.RUNNING);
+            //Run the process in a separated thread
+            ExecutionWorker thread = new ExecutionWorker(pee, toolBox, this);
+            thread.execute();
             //Select the execution tab
-            stateLabel.setText(processExecutionData.getState().getValue());
             tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
             return false;
         }
@@ -165,53 +181,70 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
     }
 
     /**
+     * Indicated that the process has ended and register the outputs results.
+     * @param outputMap Map of the outputs results.
+     */
+    public void endProcess(Map<URI, Object> outputMap){
+        pee.setState(ProcessEditableElement.ProcessState.COMPLETED);
+        this.setOutputs(outputMap);
+        pee.setState(ProcessEditableElement.ProcessState.IDLE);
+    }
+
+    /**
      * Build the UI of the given process according to the given data.
-     * @param processExecutionData Process data.
      * @return The UI for the configuration of the process.
      */
-    public JComponent buildUIConf(ProcessExecutionData processExecutionData){
+    private JComponent buildUIConf(){
         JPanel panel = new JPanel(new MigLayout("fill"));
         //For each input, display its title, its abstract and gets its UI from the dataUIManager
-        for(Input i : processExecutionData.getProcess().getInput()){
-            JPanel inputPanel = new JPanel(new MigLayout("fill"));
-            inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
-            JLabel inputAbstrac = new JLabel(i.getResume());
-            inputAbstrac.setFont(inputAbstrac.getFont().deriveFont(Font.ITALIC));
-            inputPanel.add(inputAbstrac, "wrap");
+        for(Input i : pee.getProcess().getInput()){
+
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getClass());
             if(dataUI!=null) {
-                inputPanel.add(dataUI.createUI(i, processExecutionData.getInputDataMap()), "wrap");
+                JComponent comp = dataUI.createUI(i, pee.getInputDataMap());
+                if(comp != null) {
+                    JPanel inputPanel = new JPanel(new MigLayout("fill"));
+                    inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
+                    JLabel inputAbstrac = new JLabel(i.getResume());
+                    inputAbstrac.setFont(inputAbstrac.getFont().deriveFont(Font.ITALIC));
+                    inputPanel.add(inputAbstrac, "wrap");
+                    inputPanel.add(comp, "growx, wrap");
+                    panel.add(inputPanel, "growx, wrap");
+                }
             }
-            panel.add(inputPanel, "growx, wrap");
         }
 
         //For each output, display its title, its abstract and gets its UI from the dataUIManager
-        for(Output o : processExecutionData.getProcess().getOutput()){
+        for(Output o : pee.getProcess().getOutput()){
             DataUI dataUI = dataUIManager.getDataUI(o.getDataDescription().getClass());
             if(dataUI!=null) {
-                JComponent component = dataUI.createUI(o, processExecutionData.getOutputDataMap());
+                JComponent component = dataUI.createUI(o, pee.getOutputDataMap());
                 if(component != null) {
                     JPanel outputPanel = new JPanel(new MigLayout("fill"));
                     outputPanel.setBorder(BorderFactory.createTitledBorder(o.getTitle()));
                     JLabel outputAbstrac = new JLabel(o.getResume());
                     outputAbstrac.setFont(outputAbstrac.getFont().deriveFont(Font.ITALIC));
-                    outputPanel.add(outputAbstrac, "wrap");
-                    outputPanel.add(component, "wrap");
+                    outputPanel.add(outputAbstrac, "growx, wrap");
+                    outputPanel.add(component, "growx, wrap");
                     panel.add(outputPanel, "growx, wrap");
                 }
             }
         }
-        return panel;
+        JButton runButton = new JButton("Run");
+        runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
+        panel.add(runButton, "growx, wrap");
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+        return scrollPane;
     }
 
     /**
      * Build the UI of the given process according to the given data.
-     * @param processExecutionData Process data.
      * @return The UI for the configuration of the process.
      */
-    public JComponent buildUIInfo(ProcessExecutionData processExecutionData){
+    private JComponent buildUIInfo(){
         JPanel panel = new JPanel(new MigLayout("fill"));
-        Process p  = processExecutionData.getProcess();
+        Process p  = pee.getProcess();
         //Process info
         JLabel titleContentLabel = new JLabel(p.getTitle());
         JLabel abstracContentLabel = new JLabel();
@@ -266,15 +299,16 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         panel.add(inputPanel, "growx, wrap");
         panel.add(outputPanel, "growx, wrap");
 
-        return panel;
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+        return scrollPane;
     }
 
     /**
      * Build the UI of the given process according to the given data.
-     * @param processExecutionData Process data.
      * @return The UI for the configuration of the process.
      */
-    public JComponent buildUIExec(ProcessExecutionData processExecutionData){
+    private JComponent buildUIExec(){
         JPanel panel = new JPanel(new MigLayout("fill"));
 
         JPanel executorPanel = new JPanel(new MigLayout());
@@ -283,70 +317,40 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
 
         JPanel statusPanel = new JPanel(new MigLayout());
         statusPanel.setBorder(BorderFactory.createTitledBorder("Status :"));
-        stateLabel = new JLabel(processExecutionData.getState().getValue());
         statusPanel.add(stateLabel);
 
-        JPanel resultPanel = new JPanel(new MigLayout());
+        resultPanel = new JPanel(new MigLayout());
         resultPanel.setBorder(BorderFactory.createTitledBorder("Result :"));
-        for(Output o : processExecutionData.getProcess().getOutput()) {
-            JLabel title = new JLabel(o.getTitle()+" : ");
-            JLabel result = new JLabel();
-            result.putClientProperty("URI", o.getIdentifier());
-            outputJLabelList.add(result);
-            resultPanel.add(title);
-            resultPanel.add(result, "wrap");
-        }
 
         JPanel logPanel = new JPanel(new BorderLayout());
         logPanel.setBorder(BorderFactory.createTitledBorder("Log :"));
         logPane = new JTextPane();
         logPane.setCaretPosition(0);
-        JScrollPane scrollPane = new JScrollPane(logPane);
-        logPanel.add(scrollPane, BorderLayout.CENTER);
+        JScrollPane scrollPaneLog = new JScrollPane(logPane);
+        logPanel.add(scrollPaneLog, BorderLayout.CENTER);
 
         panel.add(executorPanel, "growx, wrap");
         panel.add(statusPanel, "growx, wrap");
         panel.add(resultPanel, "growx, wrap");
         panel.add(logPanel, "growx, growy, wrap");
 
-        return panel;
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+        return scrollPane;
     }
 
     /**
      * Sets the outputs label with the outputs results.
      * @param outputs Outputs results.
      */
-    public void setOutputs(List<String> outputs, String state) {
-        for(int i=0; i<processExecutionData.getProcess().getOutput().size(); i++) {
-            outputJLabelList.get(i).setText(outputs.get(i));
+    public void setOutputs(Map<URI, Object> outputs) {
+        resultPanel.removeAll();
+        for(Output o : pee.getProcess().getOutput()) {
+            JLabel title = new JLabel(o.getTitle()+" : ");
+            JLabel result = new JLabel(outputs.get(o.getIdentifier()).toString());
+            resultPanel.add(title);
+            resultPanel.add(result, "wrap");
         }
-        stateLabel.setText(state);
-    }
-
-    @Override
-    public URL getIconURL() {
-        return null;
-    }
-
-    @Override
-    public String getTitle() {
-        return processExecutionData.getProcess().getTitle();
-    }
-
-    @Override
-    public String validateInput() {
-        //In each case return a string to avoid the SIFDialog close on clicking on running.
-        if(!runProcess()){
-            return "";
-        }
-        else{
-            return "Process already running";
-        }
-    }
-
-    @Override
-    public Component getComponent() {
-        return this;
     }
 
     /**
@@ -363,7 +367,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
             logPane.setCaretPosition(len);
             logPane.getDocument().insertString(len, text+"\n", aset);
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(ProcessUIPanel.class).error("Cannot show the log message", e);
+            LoggerFactory.getLogger(ProcessEditor.class).error("Cannot show the log message", e);
         }
         logPane.setCaretPosition(logPane.getDocument().getLength());
     }
@@ -375,17 +379,7 @@ public class ProcessUIPanel extends JPanel implements UIPanel {
         try {
             logPane.getDocument().remove(1, logPane.getDocument().getLength() - 1);
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(ProcessUIPanel.class).error(e.getMessage());
-        }
-    }
-
-    /**
-     * Add to the processExecutionData all the node concerned by the process execution state.
-     * @param listNode List of node concerned by the process state.
-     */
-    public void setProcessStateListener(List<TreeNodeWps> listNode){
-        for(TreeNodeWps node : listNode){
-            processExecutionData.addPropertyChangeListener(node);
+            LoggerFactory.getLogger(ProcessEditor.class).error(e.getMessage());
         }
     }
 }

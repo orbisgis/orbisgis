@@ -17,15 +17,19 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations.model
+package org.orbisgis.orbistoolboxapi.annotations.input
 
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
+import groovy.transform.AnnotationCollector
+import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.EnumerationAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute
 
 /**
- * The GeoData represent a geometry.
+ * The Enumeration input allow the user to select one or more value from a predefined list.
  *
  * @author Sylvain PALOMINOS
  */
-@Retention(RetentionPolicy.RUNTIME)
-@interface GeometryAttribute {}
+@AnnotationCollector([Field, EnumerationAttribute, InputAttribute, DescriptionTypeAttribute])
+@interface EnumerationInput {
+}

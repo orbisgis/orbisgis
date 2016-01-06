@@ -17,29 +17,19 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolboxapi.annotations.input
+package org.orbisgis.orbistoolboxapi.annotations.output
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.FieldValueAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.GeoDataAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute
+import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
 
 /**
- * The GeoData input allows the user to specify an input data (like ShapeFile, GeoJSON or an OrbisGIS SQL table).
- * This data will be loaded in OrbisGIS as a SQL table and return back to the script the table name.
- *
- * Usage :
- *
- * @GeoDataInput(
- *          title="inputTitle"
- *          )
- * String data
- *
- * where the string data contains the name of the SQL table which contain the input data.
- *
+ * The FieldValue output allows the user to specify a value from a table column.
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, GeoDataAttribute, InputAttribute, DescriptionTypeAttribute])
-@interface GeoDataInput {}
+@AnnotationCollector([Field, FieldValueAttribute, OutputAttribute, DescriptionTypeAttribute])
+@interface FieldValueOutput {
+}

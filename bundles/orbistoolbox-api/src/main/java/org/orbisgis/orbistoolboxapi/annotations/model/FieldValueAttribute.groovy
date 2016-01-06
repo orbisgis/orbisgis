@@ -23,13 +23,14 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a raw data.
+ * The GeometryField represent a column of the table (@DataStore) of a sql table.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface ShapeFileAttribute {
-
-    /** List of supported formats */
-    String path() default ""
+@interface FieldValueAttribute {
+    /** Name of the variable which is the dataStore.*/
+    String dataField()
+    /** Indicates if more than one value can be selected.*/
+    boolean multiSelection() default false
 }

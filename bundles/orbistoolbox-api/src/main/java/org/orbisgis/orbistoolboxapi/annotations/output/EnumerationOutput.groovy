@@ -21,23 +21,15 @@ package org.orbisgis.orbistoolboxapi.annotations.output
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
+import org.orbisgis.orbistoolboxapi.annotations.model.EnumerationAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute
-import org.orbisgis.orbistoolboxapi.annotations.model.GeometryAttribute
 import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute
 
 /**
- * The GeometryOutput input allows the user to specify a geometry as output data.
- *
- * Usage :
- *
- * @GeometryOutput(
- *          title="outputTitle"
- *          )
- * Geometry data
- *
+ * The Enumeration output allow the user to select one or more value from a predefined list.
  *
  * @author Sylvain PALOMINOS
  */
-
-@AnnotationCollector([Field, GeometryAttribute, OutputAttribute, DescriptionTypeAttribute])
-@interface GeometryOutput {}
+@AnnotationCollector([Field, EnumerationAttribute, OutputAttribute, DescriptionTypeAttribute])
+@interface EnumerationOutput {
+}

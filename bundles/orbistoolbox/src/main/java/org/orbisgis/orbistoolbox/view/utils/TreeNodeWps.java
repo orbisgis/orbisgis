@@ -140,7 +140,7 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
 
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        ProcessExecutionData.ProcessState state = (ProcessExecutionData.ProcessState) propertyChangeEvent.getNewValue();
+        ProcessEditableElement.ProcessState state = (ProcessEditableElement.ProcessState) propertyChangeEvent.getNewValue();
         switch(state){
             case RUNNING:
                 isCustomIcon = true;

@@ -75,12 +75,16 @@ public class DataStoreUI implements DataUI{
         JPanel panel = new JPanel(new MigLayout("fill"));
         DataStore dataStore = null;
         Map<String, String> extensionMap = null;
+        boolean isOptional = false;
         //If the descriptionType is an input, add a comboBox to select the input type and according to the type,
         // add a second JComponent to write the input value
         if(inputOrOutput instanceof Input){
             Input input = (Input)inputOrOutput;
             dataStore = (DataStore)input.getDataDescription();
             extensionMap = ToolBox.getImportableFormat(true);
+            if(input.getMinOccurs() == 0){
+                isOptional = true;
+            }
         }
         if(inputOrOutput instanceof Output){
             Output output = (Output)inputOrOutput;
@@ -90,9 +94,26 @@ public class DataStoreUI implements DataUI{
         if(dataStore == null || extensionMap == null){
             return panel;
         }
-        panel.add(new JLabel("Select "+inputOrOutput.getResume()), "cell 0 0 6 1");
+        panel.add(new JLabel("Select "+inputOrOutput.getResume()), "span");
 
-        ButtonGroup group = new ButtonGroup();
+        ButtonGroup group;
+        if(isOptional) {
+            //Override the setSelected method to allow to unselect buttons
+            group = new ButtonGroup(){
+                @Override
+                public void setSelected(ButtonModel m, boolean b) {
+                    if(b && m != null && m != getSelection()){
+                        super.setSelected(m, b);
+                    }
+                    else if (!b && m == getSelection()){
+                        clearSelection();
+                    }
+                }
+            };
+        }
+        else{
+            group = new ButtonGroup();
+        }
 
         /**Instantiate the geocatalog radioButton and its optionPanel**/
         JRadioButton geocatalog = new JRadioButton("Geocatalog");
@@ -108,6 +129,7 @@ public class DataStoreUI implements DataUI{
         comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());
         comboBox.putClientProperty("dataMap", dataMap);
         comboBox.putClientProperty("dataStore", dataStore);
+        comboBox.setBackground(Color.WHITE);
         optionPanelGeocatalog.add(new JLabel("Geocatalog :"));
         optionPanelGeocatalog.add(comboBox);
         geocatalog.putClientProperty("optionPanel", optionPanelGeocatalog);
@@ -115,9 +137,9 @@ public class DataStoreUI implements DataUI{
 
         /**Instantiate the file radioButton and its optionPanel**/
         JRadioButton file = new JRadioButton("File");
-        JPanel optionPanelFile = new JPanel(new MigLayout());
-        optionPanelFile.add(new JLabel("file :"));
-        JTextField textField = new JTextField(TEXTFIELD_WIDTH);
+        JPanel optionPanelFile = new JPanel(new BorderLayout());
+        optionPanelFile.add(new JLabel("file :"), BorderLayout.LINE_START);
+        JTextField textField = new JTextField();
         textField.getDocument().putProperty("dataMap", dataMap);
         textField.getDocument().putProperty("uri", inputOrOutput.getIdentifier());
         textField.getDocument().putProperty("dataStore", dataStore);
@@ -126,7 +148,7 @@ public class DataStoreUI implements DataUI{
                 "saveDocumentTextFile",
                 "document"));
 
-        optionPanelFile.add(textField);
+        optionPanelFile.add(textField, BorderLayout.CENTER);
         JButton browseButton = new JButton("Browse");
         browseButton.addActionListener(EventHandler.create(ActionListener.class, this, "onBrowse", ""));
         browseButton.putClientProperty("uri", inputOrOutput.getIdentifier());
@@ -165,15 +187,16 @@ public class DataStoreUI implements DataUI{
         textField.setText(filePanel.getCurrentDirectory().getAbsolutePath());
         browseButton.putClientProperty("filePanel", filePanel);
 
-        optionPanelFile.add(browseButton);
+        optionPanelFile.add(browseButton, BorderLayout.LINE_END);
         file.putClientProperty("optionPanel", optionPanelFile);
         file.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
 
         /**Instantiate the dataBase radioButton and its optionPanel**/
         JRadioButton database = new JRadioButton("Database");
-        JPanel optionPanelDataBase = new JPanel(new MigLayout());
-        optionPanelDataBase.add(new JLabel("database :"));
-        JTextField parametersTextField = new JTextField(TEXTFIELD_WIDTH);
+        JPanel optionPanelDataBase = new JPanel(new BorderLayout());
+        JLabel label = new JLabel("database :");
+        optionPanelDataBase.add(label, BorderLayout.LINE_START);
+        JTextField parametersTextField = new JTextField();
         parametersTextField.getDocument().putProperty("dataMap", dataMap);
         parametersTextField.getDocument().putProperty("uri", inputOrOutput.getIdentifier());
         parametersTextField.getDocument().putProperty("dataStore", dataStore);
@@ -181,11 +204,11 @@ public class DataStoreUI implements DataUI{
                 this,
                 "saveDocumentTextDataBase",
                 "document"));
-        optionPanelDataBase.add(parametersTextField);
+        optionPanelDataBase.add(parametersTextField, BorderLayout.CENTER);
         JButton parametersButton = new JButton("Parameters");
         parametersButton.putClientProperty("textField", parametersTextField);
         parametersButton.addActionListener(EventHandler.create(ActionListener.class, this, "onParameters", "source"));
-        optionPanelDataBase.add(parametersButton);
+        optionPanelDataBase.add(parametersButton, BorderLayout.LINE_END);
         database.putClientProperty("optionPanel", optionPanelDataBase);
         database.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
 
@@ -196,15 +219,23 @@ public class DataStoreUI implements DataUI{
         group.add(geocatalog);
         group.add(file);
         group.add(database);
-        panel.add(geocatalog, "cell 0 1 2 1");
-        panel.add(file, "cell 2 1 2 1");
-        panel.add(database, "cell 4 1 2 1");
+        JPanel radioPanel = new JPanel(new MigLayout("fill"));
+        radioPanel.add(geocatalog, "growx");
+        radioPanel.add(file, "growx");
+        radioPanel.add(database, "growx, wrap");
+        panel.add(radioPanel, "growx, wrap");
 
         JComponent dataField = new JPanel();
         geocatalog.putClientProperty("dataField", dataField);
+        geocatalog.putClientProperty("dataMap", dataMap);
+        geocatalog.putClientProperty("uri", inputOrOutput.getIdentifier());
         file.putClientProperty("dataField", dataField);
+        file.putClientProperty("dataMap", dataMap);
+        file.putClientProperty("uri", inputOrOutput.getIdentifier());
         database.putClientProperty("dataField", dataField);
-        panel.add(dataField, "cell 0 2 6 1");
+        database.putClientProperty("dataMap", dataMap);
+        database.putClientProperty("uri", inputOrOutput.getIdentifier());
+        panel.add(dataField, "growx, span");
 
         return panel;
     }
@@ -217,7 +248,7 @@ public class DataStoreUI implements DataUI{
         DataStore dataStore = (DataStore)comboBox.getClientProperty("dataStore");
         //Tells all the dataField linked that the data source is loaded
         for(DataField dataField : dataStore.getListDataField()){
-            dataField.setSourceModifiedd(true);
+            dataField.setSourceModified(true);
         }
         dataMap.remove(uri);
         dataMap.put(uri, comboBox.getSelectedItem());
@@ -251,14 +282,19 @@ public class DataStoreUI implements DataUI{
     public void onRadioSelected(Object source){
         if(source instanceof JRadioButton){
             JRadioButton radioButton = (JRadioButton)source;
+            JPanel dataField = (JPanel) radioButton.getClientProperty("dataField");
+            dataField.removeAll();
             if(radioButton.isSelected()) {
                 JPanel optionPanel = (JPanel) radioButton.getClientProperty("optionPanel");
-                JPanel dataField = (JPanel) radioButton.getClientProperty("dataField");
-                dataField.removeAll();
-                dataField.setLayout(new BorderLayout());
-                dataField.add(optionPanel, BorderLayout.CENTER);
-                dataField.revalidate();
+                dataField.setLayout(new MigLayout("fill"));
+                dataField.add(optionPanel, "growx, span");
             }
+            else{
+                HashMap<URI, Object> dataMap = (HashMap<URI, Object>)radioButton.getClientProperty("dataMap");
+                URI uri = (URI)radioButton.getClientProperty("uri");
+                dataMap.put(uri, null);
+            }
+            dataField.revalidate();
         }
     }
 
@@ -286,12 +322,12 @@ public class DataStoreUI implements DataUI{
                 dataMap.put(uri, tableName);
                 //tells the dataField they should revalidate
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModifiedd(true);
+                    dataField.setSourceModified(true);
                 }
             }
             else{
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModifiedd(false);
+                    dataField.setSourceModified(false);
                 }
             }
         }
@@ -315,12 +351,12 @@ public class DataStoreUI implements DataUI{
                 dataMap.put(uri, tableName);
                 //tells the dataField they should revalidate
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModifiedd(false);
+                    dataField.setSourceModified(true);
                 }
             }
             else{
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModifiedd(true);
+                    dataField.setSourceModified(false);
                 }
             }
         } catch (BadLocationException e) {
@@ -346,12 +382,12 @@ public class DataStoreUI implements DataUI{
                 dataMap.put(uri, tableName);
                 //tells the dataField they should revalidate
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModifiedd(false);
+                    dataField.setSourceModified(true);
                 }
             }
             else{
                 for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModifiedd(true);
+                    dataField.setSourceModified(false);
                 }
             }
         } catch (BadLocationException e) {

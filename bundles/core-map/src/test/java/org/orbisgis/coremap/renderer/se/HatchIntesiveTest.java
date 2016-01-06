@@ -61,6 +61,7 @@ import org.junit.Test;
 import org.h2gis.utilities.SFSUtilities;
 
 import static org.junit.Assert.*;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 
 /**
  *
@@ -126,7 +127,7 @@ public class HatchIntesiveTest {
             BufferedImage img = mt.getImage();
             Graphics2D g2 = (Graphics2D) img.getGraphics();
 
-            g2.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
+            g2.setRenderingHints(mt.getRenderingHints());
 
             ILayer layer = new Layer("swiss", tableReference, getDataManager());
 
@@ -141,7 +142,7 @@ public class HatchIntesiveTest {
             graphics.fillRect(0, 0, WIDTH, HEIGHT);
 
 
-            renderer.draw(img, effectiveExtent , layer);
+            renderer.draw(img, effectiveExtent , layer, new NullProgressMonitor());
 
             if (source != null) {
                 graphics.setColor(Color.black);

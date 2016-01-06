@@ -198,24 +198,6 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static GeoData annotationToObject(GeoDataAttribute GeoDataAttribute, List<Format> formatList) {
-        try {
-            return new GeoData(formatList);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
-        }
-    }
-
-    public static GeometryData annotationToObject(GeometryAttribute GeoDataAttribute, List<Format> formatList) {
-        try {
-            return new GeometryData(formatList);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
-        }
-    }
-
     public static LiteralValue annotationToObject(LiteralValueAttribute literalValueAttribute){
         LiteralValue literalValue = new LiteralValue();
         if(!literalValueAttribute.uom().equals(LiteralValueAttribute.defaultUom)) {
@@ -280,6 +262,29 @@ public class ObjectAnnotationConverter {
                 }
             }
             return new DataField(format, fieldTypeList, dataStoreUri);
+        } catch (MalformedScriptException e) {
+            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
+            return null;
+        }
+    }
+
+    public static FieldValue annotationToObject(FieldValueAttribute fieldvalueAttribute, Format format, URI dataFieldUri) {
+        try {
+            format.setDefaultFormat(true);
+            return new FieldValue(format, dataFieldUri, fieldvalueAttribute.multiSelection());
+        } catch (MalformedScriptException e) {
+            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
+            return null;
+        }
+    }
+
+    public static Enumeration annotationToObject(EnumerationAttribute enumAttribute, Format format) {
+        try{
+            format.setDefaultFormat(true);
+            Enumeration enumeration = new Enumeration(format, enumAttribute.values(), enumAttribute.defaultValues());
+            enumeration.setEditable(enumAttribute.isEditable());
+            enumeration.setMultiSelection(enumAttribute.multiSelection());
+            return enumeration;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;

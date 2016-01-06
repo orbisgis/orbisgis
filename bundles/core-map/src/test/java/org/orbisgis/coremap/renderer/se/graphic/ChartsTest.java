@@ -36,6 +36,7 @@ import java.awt.Container;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
+import java.awt.image.renderable.RenderContext;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -102,7 +103,7 @@ public class ChartsTest {
 
         dj.setBounds((int)rg.getMinX(), (int)rg.getMinY(), (int)rg.getWidth(), (int)rg.getHeight());
 
-        RenderedImage r = rg.createRendering(mt.getCurrentRenderContext());
+        RenderedImage r = rg.createRendering(new RenderContext(AffineTransform.getTranslateInstance(0.0, 0.0),mt.getRenderingHints()));
         dj.set(r, (int)rg.getWidth()/2, (int)rg.getHeight()/2);
 
         File file = new File("/tmp/charts.png");

@@ -20,14 +20,12 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.orbistoolbox.model.DataField;
-import org.orbisgis.orbistoolbox.model.DescriptionType;
-import org.orbisgis.orbistoolbox.model.Input;
-import org.orbisgis.orbistoolbox.model.Output;
+import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemListener;
 import java.beans.EventHandler;
@@ -51,8 +49,12 @@ public class DataFieldUI implements DataUI{
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         JPanel panel = new JPanel(new MigLayout("fill"));
         DataField dataField = null;
+        boolean isOptional = false;
         if(inputOrOutput instanceof Input){
             dataField = (DataField)((Input)inputOrOutput).getDataDescription();
+            if(((Input)inputOrOutput).getMinOccurs() == 0){
+                isOptional = true;
+            }
         }
         else if(inputOrOutput instanceof Output){
             dataField = (DataField)((Output)inputOrOutput).getDataDescription();
@@ -63,18 +65,21 @@ public class DataFieldUI implements DataUI{
         }
 
         if(inputOrOutput.getResume().isEmpty()){
-            panel.add(new JLabel(inputOrOutput.getTitle()), "wrap");
+            panel.add(new JLabel(inputOrOutput.getTitle()), "growx, wrap");
         }
         else {
-            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "wrap");
+            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "growx, wrap");
         }
+
         JComboBox<String> comboBox = new JComboBox<>();
+        comboBox.setBackground(Color.WHITE);
         comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());
         comboBox.putClientProperty("dataField", dataField);
         comboBox.putClientProperty("dataMap", dataMap);
+        comboBox.putClientProperty("isOptional", isOptional);
         comboBox.addFocusListener(EventHandler.create(FocusListener.class, this, "refreshComboBox", "source"));
         comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
-        panel.add(comboBox);
+        panel.add(comboBox, "growx, wrap");
 
         return panel;
     }
@@ -93,24 +98,42 @@ public class DataFieldUI implements DataUI{
         JComboBox<String> comboBox = (JComboBox)source;
         DataField dataField = (DataField)comboBox.getClientProperty("dataField");
         HashMap<URI, Object> dataMap = (HashMap)comboBox.getClientProperty("dataMap");
+        boolean isOptional = (boolean)comboBox.getClientProperty("isOptional");
         if(dataField.isSourceModified()) {
-            dataField.setSourceModifiedd(false);
+            dataField.setSourceModified(false);
             String tableName = (String) dataMap.get(dataField.getDataStoreIdentifier());
             comboBox.removeAllItems();
             for (String field : ToolBox.getTableFieldList(tableName, dataField.getFieldTypeList())) {
                 comboBox.addItem(field);
             }
+            if(isOptional) {
+                comboBox.addItem("");
+            }
         }
+
         comboBox.revalidate();
     }
 
     public void onItemSelected(Object source){
         if(source instanceof JComboBox){
             JComboBox<String> comboBox = (JComboBox)source;
-            Map<URI, Object> dataMap = (Map<URI, Object>)comboBox.getClientProperty("dataMap");
-            URI uri = (URI)comboBox.getClientProperty("uri");
-            dataMap.remove(uri);
-            dataMap.put(uri, comboBox.getSelectedItem());
+            if(comboBox.getSelectedItem() != null) {
+                DataField dataField = (DataField) comboBox.getClientProperty("dataField");
+                Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty("dataMap");
+                URI uri = (URI) comboBox.getClientProperty("uri");
+                boolean isOptional = (boolean)comboBox.getClientProperty("isOptional");
+                dataMap.remove(uri);
+                if (isOptional && comboBox.getSelectedItem().toString().isEmpty()) {
+                    dataMap.put(uri, null);
+                }
+                else{
+                    dataMap.put(uri, comboBox.getSelectedItem());
+                }
+                //Tells to the fieldValues that the datafield has been modified
+                for (FieldValue fieldValue : dataField.getListFieldValue()) {
+                    fieldValue.setDataFieldModified(true);
+                }
+            }
         }
     }
 }

@@ -21,40 +21,36 @@ package org.orbisgis.orbistoolbox.controller.parser;
 
 import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
-import org.orbisgis.orbistoolboxapi.annotations.model.GeometryAttribute;
-import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute;
+import org.orbisgis.orbistoolboxapi.annotations.model.*;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.List;
 
 /**
- * Parser for groovy Geometry annotations.
+ * Parser for the FieldValue input/output annotations.
  *
  * @author Sylvain PALOMINOS
  **/
 
-public class GeometryParser implements Parser{
+public class FieldValueParser implements Parser {
 
     @Override
     public Input parseInput(Field f, String processId) {
-        //Instantiate the Geometry and its formats
-        GeometryAttribute geometryAttribute = f.getAnnotation(GeometryAttribute.class);
-        String[] extensions = {"wkt", "geometry"};
-        List<Format> formatList = FormatFactory.getFormatsFromExtensions(extensions);
-        formatList.get(0).setDefaultFormat(true);
-        GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(geometryAttribute, formatList);
+        //Instantiate the FieldValue object
+        FieldValueAttribute fieldValueAttribute = f.getAnnotation(FieldValueAttribute.class);
+        Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
+        URI dataFieldUri = URI.create(processId + ":input:" + fieldValueAttribute.dataField());
+        FieldValue fieldValue = ObjectAnnotationConverter.annotationToObject(fieldValueAttribute, format, dataFieldUri);
 
+        //Instantiate the returned input
         Input input;
         try {
-            //Instantiate the returned input
             input = new Input(f.getName(),
                     URI.create(processId + ":input:" + f.getName()),
-                    geometryData);
+                    fieldValue);
         } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(GeometryParser.class).error(e.getMessage());
+            LoggerFactory.getLogger(FieldValueParser.class).error(e.getMessage());
             return null;
         }
 
@@ -66,21 +62,20 @@ public class GeometryParser implements Parser{
 
     @Override
     public Output parseOutput(Field f, String processId) {
-        //Instantiate the GeoData and its formats
-        GeometryAttribute geometryAttribute = f.getAnnotation(GeometryAttribute.class);
-        String[] extensions = {"wkt", "geometry"};
-        List<Format> formatList = FormatFactory.getFormatsFromExtensions(extensions);
-        formatList.get(0).setDefaultFormat(true);
-        GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(geometryAttribute, formatList);
+        //Instantiate the FieldValue object
+        FieldValueAttribute fieldValueAttribute = f.getAnnotation(FieldValueAttribute.class);
+        Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
+        URI dataFieldUri = URI.create(processId + ":output:" + fieldValueAttribute.dataField());
+        FieldValue fieldValue = ObjectAnnotationConverter.annotationToObject(fieldValueAttribute, format, dataFieldUri);
 
+        //Instantiate the returned output
         Output output;
         try {
-            //Instantiate the returned output
             output = new Output(f.getName(),
                     URI.create(processId + ":output:" + f.getName()),
-                    geometryData);
+                    fieldValue);
         } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(GeometryParser.class).error(e.getMessage());
+            LoggerFactory.getLogger(FieldValueParser.class).error(e.getMessage());
             return null;
         }
 
@@ -91,6 +86,6 @@ public class GeometryParser implements Parser{
 
     @Override
     public Class getAnnotation() {
-        return GeometryAttribute.class;
+        return FieldValueAttribute.class;
     }
 }

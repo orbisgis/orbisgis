@@ -27,6 +27,7 @@ import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -47,6 +48,9 @@ import java.util.Map;
  **/
 
 public class LiteralDataUI implements DataUI {
+
+    private static final int MAX_ROW_NUMBER = 10;
+    private static final int MIN_ROW_NUMBER = 3;
 
     private ToolBox toolBox;
 
@@ -156,23 +160,25 @@ public class LiteralDataUI implements DataUI {
             //JComboBox with the input type
             JComboBox<String> comboBox = new JComboBox<>();
             comboBox.addItem(literalData.getValue().getDataType().name());
-            panel.add(comboBox, "wrap");
 
             //JPanel containing the component to set the input value
-            JComponent dataField = new JPanel();
-            panel.add(dataField);
+            JComponent dataField = new JPanel(new MigLayout("fill"));
 
             comboBox.putClientProperty("dataField", dataField);
             comboBox.putClientProperty("uri", input.getIdentifier());
             comboBox.putClientProperty("dataMap", dataMap);
             comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onBoxChange", "source"));
+            comboBox.setBackground(Color.WHITE);
 
             onBoxChange(comboBox);
-        }
-        else{
 
+            if(comboBox.getItemCount() > 1){
+                panel.add(comboBox, "growx, wrap");
+            }
+            panel.add(dataField, "growx, wrap");
+            return panel;
         }
-        return panel;
+        return null;
     }
 
     /**
@@ -193,6 +199,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent = new JComboBox<Boolean>();
                 ((JComboBox)dataComponent).addItem(Boolean.TRUE);
                 ((JComboBox)dataComponent).addItem(Boolean.FALSE);
+                dataComponent.setBackground(Color.WHITE);
                 //Put the data type, the dataMap and the uri as properties
                 dataComponent.putClientProperty("type", DataType.BOOLEAN);
                 dataComponent.putClientProperty("dataMap",dataMap);
@@ -330,14 +337,15 @@ public class LiteralDataUI implements DataUI {
             case STRING:
             default:
                 //Instantiate the component
-                dataComponent = new JTextArea(6, 20);
-                dataComponent.setBorder(BorderFactory.createLineBorder(Color.lightGray));
+                JTextArea textArea = new JTextArea();
+                textArea.setLineWrap(true);
+                textArea.setRows(MIN_ROW_NUMBER);
                 //Put the data type, the dataMap and the uri as properties
-                Document doc = ((JTextArea) dataComponent).getDocument();
+                Document doc = textArea.getDocument();
                 doc.putProperty("dataMap", comboBox.getClientProperty("dataMap"));
                 doc.putProperty("uri", comboBox.getClientProperty("uri"));
                 //Set the default value and adds the listener for saving the value set by the user
-                ((JTextArea)dataComponent).setText((String)dataMap.get(uri));
+                textArea.setText((String)dataMap.get(uri));
                 doc.addDocumentListener(EventHandler.create(
                         DocumentListener.class,
                         this,
@@ -350,12 +358,32 @@ public class LiteralDataUI implements DataUI {
                         "onDocumentChanged",
                         "document",
                         "removeUpdate"));
+                JScrollPane scrollPane = new JScrollPane(textArea);
+                scrollPane.getViewport().addChangeListener(EventHandler.create(
+                        ChangeListener.class, this, "onViewportStateChange", ""));
+                scrollPane.getViewport().putClientProperty("textArea", textArea);
+                scrollPane.getViewport().putClientProperty("verticalBar", scrollPane.getVerticalScrollBar());
+                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                dataComponent = scrollPane;
                 break;
         }
         //Adds to the dataField the dataComponent
         JPanel panel = (JPanel) comboBox.getClientProperty("dataField");
         panel.removeAll();
-        panel.add(dataComponent);
+        panel.add(dataComponent, "growx, wrap");
+    }
+
+    /**
+     * Call when the state of the viewport of the JScrollPane of the textArea state change.
+     * It uses the vertical bar properties to detect when the user need more lines to write.
+     */
+    public void onViewportStateChange(ChangeEvent e){
+        JViewport vp = (JViewport)e.getSource();
+        JTextArea textArea = (JTextArea)vp.getClientProperty("textArea");
+        JScrollBar vertical = (JScrollBar)vp.getClientProperty("verticalBar");
+        if(textArea.getRows()<MAX_ROW_NUMBER && vertical.getValue()>0 && vertical.getMaximum()>vertical.getVisibleAmount()){
+            textArea.setRows(textArea.getRows()+1);
+        }
     }
 
     /**

@@ -23,21 +23,20 @@ import org.h2gis.h2spatialapi.DriverFunction;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
-import org.orbisgis.orbistoolbox.controller.processexecution.dataprocessing.ProcessingManager;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.view.ui.ProcessUIPanel;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
-import org.orbisgis.orbistoolbox.view.utils.ProcessExecutionData;
+import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
+import org.orbisgis.orbistoolbox.view.utils.ProcessEditorFactory;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
-import org.orbisgis.sif.SIFDialog;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.orbisgis.sif.edition.EditorManager;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Component;
@@ -70,34 +69,44 @@ public class ToolBox implements DockingPanel {
     /** DataManager */
     private static DataManager dataManager;
     private static DriverFunctionContainer driverFunctionContainer;
-    private ProcessingManager processingManager;
 
     private Map<String, Object> properties;
-    private List<ProcessExecutionData> processExecutionDataList;
+    /** OrbisGIS editorManager */
+    private EditorManager editorManager;
+    /** Factory for the creation of the ProcessEditor (UI of a process instance) */
+    private ProcessEditorFactory pef;
+
+    private static final String TOOLBOX_REFERENCE = "orbistoolbox";
 
     @Activate
     public void init(){
         toolBoxPanel = new ToolBoxPanel(this);
         processManager = new ProcessManager();
         dataUIManager = new DataUIManager(this);
-        processExecutionDataList = new ArrayList<>();
-        processingManager = new ProcessingManager(this);
 
         ActionCommands dockingActions = new ActionCommands();
 
         parameters = new DockingPanelParameters();
-        parameters.setName("orbistoolbox");
         parameters.setTitle("OrbisToolBox");
         parameters.setTitleIcon(ToolBoxIcon.getIcon("orbistoolbox"));
         parameters.setCloseable(true);
+        parameters.setName(TOOLBOX_REFERENCE);
 
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
+
+        pef = new ProcessEditorFactory(editorManager, this);
+        editorManager.addEditorFactory(pef);
     }
 
     @Deactivate
     public void dispose(){
+        editorManager.removeEditorFactory(pef);
         toolBoxPanel.dispose();
+    }
+
+    public String getReference(){
+        return TOOLBOX_REFERENCE;
     }
 
     /**
@@ -106,10 +115,6 @@ public class ToolBox implements DockingPanel {
      */
     public ProcessManager getProcessManager(){
         return processManager;
-    }
-
-    public ProcessingManager getProcessingManager(){
-        return processingManager;
     }
 
     @Override
@@ -143,30 +148,7 @@ public class ToolBox implements DockingPanel {
      */
     public void openProcess(){
         Process process = processManager.getProcess(toolBoxPanel.getSelectedNode().getFilePath());
-        ProcessExecutionData processExecutionData = null;
-        for(ProcessExecutionData puid : processExecutionDataList){
-            if(puid.getProcess().getIdentifier().equals(process.getIdentifier())){
-                processExecutionData = puid;
-            }
-        }
-        ProcessUIPanel uiPanel;
-        if(processExecutionData != null){
-            uiPanel = new ProcessUIPanel(processExecutionData, this);
-        }
-        else{
-            uiPanel = new ProcessUIPanel(process, this);
-        }
-        SIFDialog dialog = UIFactory.getSimpleDialog(uiPanel,
-                SwingUtilities.getWindowAncestor(toolBoxPanel),
-                true,
-                "run",
-                "close"
-                );
-        dialog.pack();
-        dialog.setAlwaysOnTop(true);
-        dialog.setVisible(true);
-        //Make the node listen to the process state.
-        uiPanel.setProcessStateListener(toolBoxPanel.getNodesFromSelectedOne());
+        editorManager.openEditable(new ProcessEditableElement(process, toolBoxPanel.getNodesFromSelectedOne()));
     }
 
     /**
@@ -195,41 +177,6 @@ public class ToolBox implements DockingPanel {
      */
     public DataUIManager getDataUIManager(){
         return dataUIManager;
-    }
-
-    /**
-     * Save a processExecutionData to be able to retrieve it on reopening the process.
-     * @param processExecutionData ProcessExecutionData to save.
-     */
-    public void saveProcessExecutionData(ProcessExecutionData processExecutionData){
-        processExecutionDataList.add(processExecutionData);
-    }
-
-    /**
-     * Deletes the processExecutionData.
-     * @param processExecutionData ProcessExecutionData to delete.
-     */
-    public void deleteProcessExecutionData(ProcessExecutionData processExecutionData){
-        processExecutionDataList.remove(processExecutionData);
-    }
-
-    /**
-     * Returns true if the process from the given file is running, false otherwise.
-     * @param file File of the process.
-     * @return True if the process is running, false otherwise.
-     */
-    public boolean isProcessRunning(File file){
-        Process process = processManager.getProcess(file);
-        if(process != null) {
-            for (ProcessExecutionData ped : processExecutionDataList){
-                if (ped.getProcess().getIdentifier().equals(process.getIdentifier())){
-                    if(ped.getState().equals(ProcessExecutionData.ProcessState.RUNNING)){
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     public Map<String, Object> getProperties(){
@@ -273,6 +220,23 @@ public class ToolBox implements DockingPanel {
 
     public DriverFunctionContainer getDriverFunctionContainer(){
         return driverFunctionContainer;
+    }
+
+    /**
+     * Sets the EditorManager to use.
+     * @param editorManager Editor windows manager
+     */
+    @Reference
+    public void setEditorManager(EditorManager editorManager) {
+        this.editorManager = editorManager;
+    }
+
+    /**
+     * Unset the ProcessEditor.
+     * @param editorManager Editor windows manager
+     */
+    public void unsetEditorManager(EditorManager editorManager) {
+        this.editorManager = editorManager;
     }
 
     /**
@@ -368,11 +332,11 @@ public class ToolBox implements DockingPanel {
                 if (!fieldTypes.isEmpty()) {
                     for (FieldType fieldType : fieldTypes) {
                         if (fieldType.name().equalsIgnoreCase(result.getObject(6).toString())) {
-                            fieldList.add("" + result.getObject(4));
+                            fieldList.add(result.getObject(4).toString());
                         }
                     }
                 } else{
-                    fieldList.add("" + result.getObject(4));
+                    fieldList.add(result.getObject(4).toString());
                 }
             }
         } catch (SQLException e) {
@@ -383,10 +347,31 @@ public class ToolBox implements DockingPanel {
 
     public String loadFile(File f) {
         try {
-            dataManager.registerDataSource(f.toURI());
+            return dataManager.registerDataSource(f.toURI()).replaceAll("\"", "");
         } catch (SQLException e) {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return null;
+    }
+
+    /**
+     * Returns the list of distinct values contained by a field from a table from the database
+     * @param tableName Name of the table containing the field.
+     * @param fieldName Name of the field containing the values.
+     * @return The list of distinct values of the field.
+     */
+    public static List<String> getFieldValueList(String tableName, String fieldName) {
+        List<String> fieldValues = new ArrayList<>();
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT DISTINCT "+fieldName+" FROM "+tableName);
+            while(result.next()){
+                fieldValues.add(result.getString(1));
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+        }
+        return fieldValues;
     }
 }
