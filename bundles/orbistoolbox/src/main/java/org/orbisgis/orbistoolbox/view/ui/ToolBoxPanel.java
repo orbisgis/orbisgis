@@ -201,7 +201,28 @@ public class ToolBoxPanel extends JPanel {
             if(selectedNode != null) {
                 //if a simple click is done
                 if (event.getClickCount() == 1 && selectedNode.isLeaf()) {
-                    selectedNode.setValidNode(toolBox.checkProcess(selectedNode.getFilePath()));
+                    boolean isValid = false;
+                    switch(selectedNode.getNodeType()){
+                        case TreeNodeWps.HOST_DISTANT:
+                            //TODO : check if the host is reachable an if it contains a WPS service.
+                            isValid = true;
+                            break;
+                        case TreeNodeWps.HOST_LOCAL:
+                            //TODO : check if the OrbisGIS WPS script folder is available or not
+                            isValid = true;
+                            break;
+                        case TreeNodeWps.FOLDER:
+                            //Check if the folder exists and it it contains some scripts
+                            isValid = toolBox.checkFolder(selectedNode.getFilePath());
+                            break;
+                        case TreeNodeWps.PROCESS:
+                            isValid = toolBox.checkProcess(selectedNode.getFilePath());
+                            break;
+                        case TreeNodeWps.INSTANCE:
+                            isValid = true;
+                            break;
+                    }
+                    selectedNode.setValidNode(isValid);
                 }
                 //If a double click is done
                 if (event.getClickCount() == 2) {

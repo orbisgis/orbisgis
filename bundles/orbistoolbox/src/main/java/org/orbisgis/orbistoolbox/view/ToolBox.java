@@ -63,6 +63,8 @@ import java.util.Map;
 @Component(service = DockingPanel.class)
 public class ToolBox implements DockingPanel {
 
+    private static final String GROOVY_EXTENSION = "groovy";
+
     /** Docking parameters used by DockingFrames */
     private DockingPanelParameters parameters;
     /** Process manager */
@@ -193,6 +195,22 @@ public class ToolBox implements DockingPanel {
             processManager.removeProcess(process);
         }
         return (processManager.addLocalScript(f) != null);
+    }
+
+    /**
+     * Verify if the given file is a well formed script.
+     * @param f File to check.
+     * @return True if the file is well formed, false otherwise.
+     */
+    public boolean checkFolder(File f){
+        if(f.exists() && f.isDirectory()){
+            for(File file : f.listFiles()){
+                if(file.getAbsolutePath().endsWith("."+GROOVY_EXTENSION)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
