@@ -35,6 +35,7 @@ import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -256,11 +257,19 @@ public class ToolBoxPanel extends JPanel {
         List<FileTreeModel> modelList = new ArrayList<>();
         modelList.add(categoryModel);
         modelList.add(fileModel);
+        modelList.add(filteredModel);
 
         for(FileTreeModel model : modelList){
             TreeNodeWps modelNode = node.deepCopy();
             TreeNodeWps modelParent = getNodeInModel(parent, model);
-            model.insertNodeInto(modelNode, modelParent, 0);
+            if(modelParent != null) {
+                model.insertNodeInto(modelNode, modelParent, 0);
+                if (selectedModel.equals(model)) {
+                    if (tree.isCollapsed(new TreePath(modelNode.getPath()))) {
+                        tree.expandPath(new TreePath(modelNode.getPath()));
+                    }
+                }
+            }
         }
     }
 
@@ -293,6 +302,7 @@ public class ToolBoxPanel extends JPanel {
         List<FileTreeModel> modelList = new ArrayList<>();
         modelList.add(categoryModel);
         modelList.add(fileModel);
+        modelList.add(filteredModel);
         for(FileTreeModel model : modelList) {
             TreeNodeWps n = getNodeInModel(node, model);
             if(n != null){
@@ -528,17 +538,20 @@ public class ToolBoxPanel extends JPanel {
             for(TreeNodeWps leaf : leafList){
                 TreeNodeWps fileModelRoot = (TreeNodeWps) fileModel.getRoot();
                 TreeNodeWps cateModelRoot = (TreeNodeWps) categoryModel.getRoot();
+                TreeNodeWps filtModelRoot = (TreeNodeWps) filteredModel.getRoot();
                 switch(leaf.getNodeType()){
                     case TreeNodeWps.FOLDER:
                     case TreeNodeWps.PROCESS:
                         File file = leaf.getFilePath();
                         cleanParentNode(getChildWithFile(file, fileModelRoot), fileModel);
                         cleanParentNode(getChildWithFile(file, cateModelRoot), categoryModel);
+                        cleanParentNode(getChildWithFile(file, filtModelRoot), filteredModel);
                         toolBox.removeProcess(leaf.getFilePath());
                         break;
                     case TreeNodeWps.INSTANCE:
                         fileModel.removeNodeFromParent(getChildWithUserObject(node.getUserObject(), fileModelRoot));
                         categoryModel.removeNodeFromParent(getChildWithUserObject(node.getUserObject(), cateModelRoot));
+                        filteredModel.removeNodeFromParent(getChildWithUserObject(node.getUserObject(), filtModelRoot));
                         toolBox.closeInstance(leaf.getUserObject().toString());
                         break;
                 }
@@ -657,6 +670,26 @@ public class ToolBoxPanel extends JPanel {
     }
 
     /**
+     * Returns all the node child of a node with the specified type.
+     * @param node Node to explore.
+     * @param nodeType Type of the nodes.
+     * @return List of child nodes.
+     */
+    private List<TreeNodeWps> getAllChild(TreeNodeWps node, String nodeType){
+        List<TreeNodeWps> nodeList = new ArrayList<>();
+        for(int i=0; i<node.getChildCount(); i++){
+            TreeNodeWps child = (TreeNodeWps) node.getChildAt(i);
+            if(child.getNodeType().equals(nodeType)){
+                nodeList.add(child);
+            }
+            else if(!child.isLeaf()){
+                nodeList.addAll(getAllChild(child, nodeType));
+            }
+        }
+        return nodeList;
+    }
+
+    /**
      * Creates the action for the popup.
      * @param toolBox ToolBox.
      */
@@ -716,28 +749,39 @@ public class ToolBoxPanel extends JPanel {
     public void setFilters(List<IFilter> filters){
         if(filters.size() == 1){
             IFilter filter = filters.get(0);
-            //If the filter is empty, use the previously selected model.
+            //If the filter is empty, use the previously selected model and open the tree.
             if(filter.acceptsAll()){
                 tree.setModel(selectedModel);
+                if(selectedModel != null) {
+                    TreeNodeWps root = (TreeNodeWps) selectedModel.getRoot();
+                    tree.expandPath(new TreePath(((TreeNodeWps)root.getChildAt(0)).getPath()));
+                }
             }
             //Else, use the filteredModel
             else {
                 tree.setModel(filteredModel);
-                for (TreeNodeWps node : getAllLeaf((TreeNodeWps) fileModel.getRoot())) {
+                for (TreeNodeWps node : getAllChild((TreeNodeWps) fileModel.getRoot(), TreeNodeWps.PROCESS)) {
                     //For all the leaf, tests if they are accepted by the filter or not.
                     TreeNodeWps filteredRoot = (TreeNodeWps) filteredModel.getRoot();
                     TreeNodeWps filteredNode = getChildWithFile(node.getFilePath(), filteredRoot);
                     if (filteredNode == null) {
                         if (filter.accepts(node)) {
-                            filteredRoot.add(node.deepCopy());
+                            TreeNodeWps newNode = node.deepCopy();
+                            filteredModel.insertNodeInto(newNode, filteredRoot, 0);
+                            for(int i=0; i<node.getChildCount(); i++){
+                                filteredModel.insertNodeInto(((TreeNodeWps)node.getChildAt(i)).deepCopy(), newNode, 0);
+                            }
+                            tree.expandPath(new TreePath(newNode.getPath()));
                         }
                     } else {
                         if (!filter.accepts(filteredNode)) {
                             filteredModel.removeNodeFromParent(filteredNode);
                         }
+                        else{
+                            tree.expandPath(new TreePath(filteredNode.getPath()));
+                        }
                     }
                 }
-                filteredModel.reload();
             }
         }
     }
