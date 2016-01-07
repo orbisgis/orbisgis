@@ -35,7 +35,6 @@ import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -74,7 +73,7 @@ public class ToolBoxPanel extends JPanel {
     private ToolBox toolBox;
 
     /** JTree */
-    private FileTree tree;
+    private JTree tree;
     /** Model of the JTree */
     private FileTreeModel fileModel;
     /** Model of the JTree */
@@ -131,6 +130,7 @@ public class ToolBoxPanel extends JPanel {
         tree = new FileTree();
         tree.setRootVisible(false);
         tree.setScrollsOnExpand(true);
+        tree.setToggleClickCount(1);
         tree.setCellRenderer(new CustomTreeCellRenderer(tree));
         tree.addMouseListener(EventHandler.create(MouseListener.class, this, "onMouseClicked", "", "mouseReleased"));
 
@@ -201,7 +201,7 @@ public class ToolBoxPanel extends JPanel {
             TreeNodeWps selectedNode = (TreeNodeWps) ((FileTree)event.getSource()).getLastSelectedPathComponent();
             if(selectedNode != null) {
                 //if a simple click is done
-                if (event.getClickCount() == 1 && selectedNode.isLeaf()) {
+                if (event.getClickCount() == 1) {
                     boolean isValid = false;
                     switch(selectedNode.getNodeType()){
                         case TreeNodeWps.HOST_DISTANT:
@@ -264,11 +264,7 @@ public class ToolBoxPanel extends JPanel {
             TreeNodeWps modelParent = getNodeInModel(parent, model);
             if(modelParent != null) {
                 model.insertNodeInto(modelNode, modelParent, 0);
-                if (selectedModel.equals(model)) {
-                    if (tree.isCollapsed(new TreePath(modelNode.getPath()))) {
-                        tree.expandPath(new TreePath(modelNode.getPath()));
-                    }
-                }
+                tree.expandPath(new TreePath(modelNode.getPath()));
             }
         }
     }
