@@ -36,8 +36,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -186,7 +185,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     public void endProcess(Map<URI, Object> outputMap){
         pee.setState(ProcessEditableElement.ProcessState.COMPLETED);
         this.setOutputs(outputMap);
-        pee.setState(ProcessEditableElement.ProcessState.IDLE);
+        toolBox.getToolBoxPanel().updateAllNodes(pee);
     }
 
     /**

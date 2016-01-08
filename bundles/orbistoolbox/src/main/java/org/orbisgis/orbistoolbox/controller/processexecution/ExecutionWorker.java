@@ -89,6 +89,9 @@ public class ExecutionWorker extends SwingWorkerPM{
             }
 
             //Execute the process and retrieve the groovy object.
+            pee.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessEditableElement.LogType.INFO,
+                    "Execute script : " + process.getTitle());
             groovyObject = toolBox.getProcessManager().executeProcess(
                     process, dataMap, toolBox.getProperties());
 

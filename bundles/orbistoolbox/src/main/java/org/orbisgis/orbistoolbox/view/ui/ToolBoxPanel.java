@@ -35,6 +35,7 @@ import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
 
 import javax.swing.*;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -816,5 +817,17 @@ public class ToolBoxPanel extends JPanel {
     public void dispose(){
         filterFactoryManager.getEventFilterChange().clearListeners();
         filterFactoryManager.getEventFilterFactoryChange().clearListeners();
+    }
+
+    public void updateAllNodes(ProcessEditableElement pee){
+        TreeNodeWps node = pee.getNodes().get(0);
+
+        List<FileTreeModel> modelList = new ArrayList<>();
+        modelList.add(categoryModel);
+        modelList.add(fileModel);
+        modelList.add(filteredModel);
+        for(FileTreeModel model : modelList) {
+            model.nodeChanged(getNodeInModel(node, model));
+        }
     }
 }

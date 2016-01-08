@@ -21,7 +21,6 @@ package org.orbisgis.orbistoolbox.view.utils;
 
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
 
@@ -55,9 +54,8 @@ public class ProcessEditableElement implements EditableElement{
     private List<TreeNodeWps> nodeList;
     /** Unique identifier of this ProcessEditableElement. */
     private final String ID;
-    private ToolBox toolBox;
 
-    public ProcessEditableElement(ToolBox toolBox, Process process, String ID){
+    public ProcessEditableElement(Process process, String ID){
         this.process = process;
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
@@ -65,23 +63,28 @@ public class ProcessEditableElement implements EditableElement{
         this.propertyChangeListenerList = new ArrayList<>();
         this.state = ProcessState.IDLE;
         this.ID = ID;
-        this.toolBox = toolBox;
         this.nodeList = new ArrayList<>();
     }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeListenerList.add(listener);
     }
 
     @Override
-    public void addPropertyChangeListener(String prop, PropertyChangeListener listener) {}
+    public void addPropertyChangeListener(String prop, PropertyChangeListener listener) {
+        propertyChangeListenerList.add(listener);
+    }
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeListenerList.remove(listener);
     }
 
     @Override
-    public void removePropertyChangeListener(String prop, PropertyChangeListener listener) {}
+    public void removePropertyChangeListener(String prop, PropertyChangeListener listener) {
+        propertyChangeListenerList.remove(listener);
+    }
 
     @Override
     public String getId() {
@@ -177,6 +180,7 @@ public class ProcessEditableElement implements EditableElement{
         this.state = state;
         if(nodeList != null && !nodeList.isEmpty()) {
             PropertyChangeEvent event = new PropertyChangeEvent(process, STATE_PROPERTY, oldState, state);
+            firePropertyChangeEvent(event);
             for(TreeNodeWps node : nodeList) {
                 node.propertyChange(event);
             }
@@ -206,8 +210,13 @@ public class ProcessEditableElement implements EditableElement{
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         String log = timeFormat.format(date) + " : " + logType.name() + " : " + message + "";
         logMap.put(log, color);
+        firePropertyChangeEvent(new PropertyChangeEvent(
+                this, LOG_PROPERTY, null, new AbstractMap.SimpleEntry<>(log, color)));
+    }
+
+    public void firePropertyChangeEvent(PropertyChangeEvent event){
         for(PropertyChangeListener pcl : propertyChangeListenerList){
-            pcl.propertyChange(new PropertyChangeEvent(this, LOG_PROPERTY, null, new AbstractMap.SimpleEntry<>(log, color)));
+            pcl.propertyChange(event);
         }
     }
 

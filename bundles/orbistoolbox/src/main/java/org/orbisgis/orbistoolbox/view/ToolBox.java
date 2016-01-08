@@ -159,9 +159,7 @@ public class ToolBox implements DockingPanel {
     public ProcessEditableElement openProcess(File filePath, int index){
         Process process = processManager.getProcess(filePath);
         ProcessEditableElement pee = new ProcessEditableElement(
-                this,
-                process,
-                process.getTitle().replace(" ", "_") + "_" + index);
+                process, process.getTitle().replace(" ", "_") + "_" + index);
         editorManager.openEditable(pee);
         mapIdPee.put(pee.getId(), pee);
         return pee;
@@ -286,6 +284,10 @@ public class ToolBox implements DockingPanel {
 
     public DataProcessingManager getDataProcessingManager() {
         return dataProcessingManager;
+    }
+
+    public ToolBoxPanel getToolBoxPanel(){
+        return toolBoxPanel;
     }
 
     /**
