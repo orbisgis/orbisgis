@@ -156,12 +156,12 @@ public class ToolBox implements DockingPanel {
      * Open the process window for the selected process.
      * @return The process instance ID.
      */
-    public ProcessEditableElement openProcess(){
-        Process process = processManager.getProcess(toolBoxPanel.getSelectedNode().getFilePath());
+    public ProcessEditableElement openProcess(File filePath, int index){
+        Process process = processManager.getProcess(filePath);
         ProcessEditableElement pee = new ProcessEditableElement(
                 this,
                 process,
-                process.getTitle().replace(" ", "_") + System.currentTimeMillis());
+                process.getTitle().replace(" ", "_") + "_" + index);
         editorManager.openEditable(pee);
         mapIdPee.put(pee.getId(), pee);
         return pee;
