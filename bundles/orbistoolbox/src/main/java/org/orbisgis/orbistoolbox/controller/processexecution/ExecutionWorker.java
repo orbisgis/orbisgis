@@ -46,10 +46,11 @@ public class ExecutionWorker extends SwingWorkerPM{
     private Map<URI, Object> dataMap;
     /** ToolBox */
     private ToolBox toolBox;
-    /** Data for the process execution */
+    /** Process element containing all the information it */
     private ProcessEditableElement pee;
     /** GroovyObject of the process execution */
     private GroovyObject groovyObject;
+    /** Process UI */
     private ProcessEditor processEditor;
 
     /**

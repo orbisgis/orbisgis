@@ -77,7 +77,9 @@ public class ToolBox implements DockingPanel {
     private static DriverFunctionContainer driverFunctionContainer;
 
     private Map<String, Object> properties;
+    /** OrbisGIS editorManager */
     private EditorManager editorManager;
+    /** Factory for the creation of the ProcessEditor (UI of a process instance) */
     private ProcessEditorFactory pef;
     private DataProcessingManager dataProcessingManager;
 
@@ -229,13 +231,16 @@ public class ToolBox implements DockingPanel {
     }
 
     /**
+     * Sets the EditorManager to use.
      * @param editorManager Editor windows manager
      */
     @Reference
     public void setEditorManager(EditorManager editorManager) {
         this.editorManager = editorManager;
     }
+
     /**
+     * Unset the ProcessEditor.
      * @param editorManager Editor windows manager
      */
     public void unsetEditorManager(EditorManager editorManager) {

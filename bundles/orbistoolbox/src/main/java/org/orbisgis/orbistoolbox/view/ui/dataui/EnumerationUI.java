@@ -208,11 +208,13 @@ public class EnumerationUI implements DataUI{
             boolean isMultiSelection = (boolean)document.getProperty("isMultiSelection");
             boolean isOptional = (boolean)document.getProperty("isOptional");
             String text = document.getText(0, document.getLength());
+            //If not optional and there is no text and no element select, then, select the first element.
             if(!isOptional){
                 if(text.isEmpty() && list.getSelectedIndices().length == 0) {
                     list.setSelectedIndices(new int[]{0});
                 }
             }
+            //If there is a text and the multi selection is not allowed, empty the list selection
             if(!text.isEmpty() && !isMultiSelection){
                 list.clearSelection();
             }

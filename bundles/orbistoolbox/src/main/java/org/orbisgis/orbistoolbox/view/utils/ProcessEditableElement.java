@@ -33,6 +33,9 @@ import java.util.*;
 import java.util.List;
 
 /**
+ * EditableElement of a process which contains all the information about a process instance
+ * (input data, output data, state ...).
+ *
  * @author Sylvain PALOMINOS
  */
 public class ProcessEditableElement implements EditableElement{
@@ -55,7 +58,6 @@ public class ProcessEditableElement implements EditableElement{
     private List<TreeNodeWps> listNode;
 
     public ProcessEditableElement(Process process, List<TreeNodeWps> listNode){
-        this.process = process;
         this.process = process;
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
