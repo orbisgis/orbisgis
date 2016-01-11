@@ -20,11 +20,13 @@
 package org.orbisgis.orbistoolbox.view;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
+import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
@@ -37,9 +39,11 @@ import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.docking.DockingPanel;
+import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.docking.DockingPanelParameters;
-import org.orbisgis.sif.edition.Editor;
-import org.orbisgis.sif.edition.EditorManager;
+import org.orbisgis.sif.edition.*;
+import org.orbisgis.wkguiapi.ViewWorkspace;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Component;
@@ -47,21 +51,21 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Sylvain PALOMINOS
  **/
 
 @Component(service = DockingPanel.class)
-public class ToolBox implements DockingPanel {
+public class ToolBox implements DockingPanel, EditorFactory {
 
+    public static final String FACTORY_ID = "WPSProcessEditorFactory";
     private static final String GROOVY_EXTENSION = "groovy";
 
     /** Docking parameters used by DockingFrames */
@@ -78,12 +82,13 @@ public class ToolBox implements DockingPanel {
 
     private Map<String, Object> properties;
     private EditorManager editorManager;
-    private ProcessEditorFactory pef;
     private DataProcessingManager dataProcessingManager;
+    private CoreWorkspace coreWorkspace;
 
     private Map<String, ProcessEditableElement> mapIdPee;
 
     private static final String TOOLBOX_REFERENCE = "orbistoolbox";
+    private static final String WPS_SCRIPT_FOLDER = "scripts";
 
     @Activate
     public void init(){
@@ -102,15 +107,58 @@ public class ToolBox implements DockingPanel {
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
 
-        pef = new ProcessEditorFactory(editorManager, this);
-        editorManager.addEditorFactory(pef);
+        editorManager.addEditorFactory(this);
         dataProcessingManager = new DataProcessingManager(this);
         mapIdPee = new HashMap<>();
+
+        //Sets the WPS script folder
+        File wpsScriptFolder = new File(coreWorkspace.getApplicationFolder(), WPS_SCRIPT_FOLDER);
+        if(!wpsScriptFolder.exists()){
+            if(!wpsScriptFolder.mkdir()){
+                LoggerFactory.getLogger(ToolBox.class).warn("Unable to find or create a script folder.\n" +
+                    "No basic script will be available.");
+            }
+        }
+        if(wpsScriptFolder.exists() && wpsScriptFolder.isDirectory()){
+            try {
+                //Retrieve all the scripts url
+                String folderPath = ToolBox.class.getResource("scripts").getFile();
+                Enumeration<URL> enumUrl = FrameworkUtil.getBundle(ToolBox.class).findEntries(folderPath, "*", false);
+                //For each url
+                while(enumUrl.hasMoreElements()){
+                    URL scriptUrl = enumUrl.nextElement();
+                    String scriptPath = scriptUrl.getFile();
+                    //Test if it's a groovy file
+                    if(scriptPath.endsWith("."+GROOVY_EXTENSION)){
+                        //If the script is already in the .OrbisGIS folder, remove it.
+                        for(File existingFile : wpsScriptFolder.listFiles()){
+                            if(existingFile.getName().endsWith(scriptPath) && existingFile.delete()){
+                                LoggerFactory.getLogger(ToolBox.class).
+                                        warn("Replacing script "+existingFile.getName()+" by the default one");
+                            }
+                        }
+                        //Copy the script into the .OrbisGIS folder.
+                        OutputStream out = new FileOutputStream(
+                                new File(wpsScriptFolder.getAbsolutePath(),
+                                new File(scriptPath).getName()));
+                        InputStream in = scriptUrl.openStream();
+                        IOUtils.copy(in, out);
+                        out.close();
+                        in.close();
+                    }
+                }
+            } catch (IOException e) {
+                LoggerFactory.getLogger(ToolBox.class).warn("Unable to copy the scripts. \n" +
+                        "No basic script will be available. \n" +
+                        "Error : "+e.getMessage());
+            }
+        }
+        addLocalSource(wpsScriptFolder);
     }
 
     @Deactivate
     public void dispose(){
-        editorManager.removeEditorFactory(pef);
+        editorManager.removeEditorFactory(this);
         toolBoxPanel.dispose();
     }
 
@@ -240,6 +288,15 @@ public class ToolBox implements DockingPanel {
 
     public void unsetDataSource(javax.sql.DataSource ds) {
         properties.remove("ds");
+    }
+
+    @Reference
+    public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
+        this.coreWorkspace = coreWorkspace;
+    }
+
+    public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
+        this.coreWorkspace = null;
     }
 
     @Reference
@@ -438,5 +495,52 @@ public class ToolBox implements DockingPanel {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return fieldValues;
+    }
+
+    @Override
+    public String getId() {
+        return FACTORY_ID;
+    }
+
+    private boolean isEditableAlreadyOpened(EditableElement editable) {
+        for(Editor editor : editorManager.getEditors()) {
+            if(editor instanceof ProcessEditor && editable.equals(editor.getEditableElement())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public DockingPanelLayout makeEditableLayout(EditableElement editableElement) {
+        if(editableElement instanceof ProcessEditableElement) {
+            ProcessEditableElement editableProcess= (ProcessEditableElement)editableElement;
+            if(isEditableAlreadyOpened(editableProcess)) { //Panel already created
+                LoggerFactory.getLogger(ToolBox.class)
+                        .info("This process ("+editableProcess.getProcessReference()+") is already shown in an editor.");
+                return null;
+            }
+            return new ProcessPanelLayout(editableProcess);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public DockingPanelLayout makeEmptyLayout() {
+        return new ProcessPanelLayout();
+    }
+
+    @Override
+    public boolean match(DockingPanelLayout dockingPanelLayout) {
+        return dockingPanelLayout instanceof ProcessPanelLayout;
+    }
+
+    @Override
+    public EditorDockable create(DockingPanelLayout layout) {
+        ProcessEditableElement editableProcess = ((ProcessPanelLayout)layout).getProcessEditableElement();
+        //Check the DataSource state
+        ProcessEditor pe = new ProcessEditor(this, editableProcess);
+        return pe;
     }
 }
