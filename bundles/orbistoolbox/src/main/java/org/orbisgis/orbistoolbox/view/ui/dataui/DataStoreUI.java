@@ -171,8 +171,9 @@ public class DataStoreUI implements DataUI{
         browseButton.putClientProperty("JTextField", textField);
         browseButton.putClientProperty("dataStore", dataStore);
         OpenFilePanel filePanel;
+        //If it is an input, the file panel is an Open one
         if(inputOrOutput instanceof Input){
-            filePanel = new OpenFilePanel("RawDataUI.File."+inputOrOutput.getIdentifier(), "Select File");
+            filePanel = new OpenFilePanel("DataStoreUI.File."+inputOrOutput.getIdentifier(), "Select File");
             filePanel.setAcceptAllFileFilterUsed(false);
             for(Format format : dataStore.getFormats()){
                 String ext = FormatFactory.getFormatExtension(format);
@@ -185,8 +186,9 @@ public class DataStoreUI implements DataUI{
                 filePanel.addFilter(ext, description);
             }
         }
+        //If it is an output, the file panel is an Save one
         else {
-            filePanel = new SaveFilePanel("RawDataUI.File."+inputOrOutput.getIdentifier(), "Save File");
+            filePanel = new SaveFilePanel("DataStoreUI.File."+inputOrOutput.getIdentifier(), "Save File");
             for(Format format : dataStore.getFormats()){
                 String ext = FormatFactory.getFormatExtension(format);
                 String description = "";
@@ -262,6 +264,11 @@ public class DataStoreUI implements DataUI{
         return panel;
     }
 
+    /**
+     * When the mouse enter in the JComboBox and their is no sources listed in the JComboBox,
+     * it shows a tooltip text to the user.
+     * @param source Source JComboBox
+     */
     public void onComboBoxEntered(Object source){
         //Retrieve the client properties
         JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
@@ -276,15 +283,29 @@ public class DataStoreUI implements DataUI{
         }
     }
 
+    /**
+     * When the mouse leaves the JComboBox, reset the tooltip text delay.
+     * @param source JComboBox source.
+     */
     public void onComboBoxExited(Object source){
         //Retrieve the client properties
         JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
-        if(comboBox.getItemCount() == 0) {
-            comboBox.setToolTipText((String)comboBox.getClientProperty("toolTipText"));
-            ToolTipManager.sharedInstance().setInitialDelay((int)comboBox.getClientProperty("initialDelay"));
+        Object tooltipText = comboBox.getClientProperty("toolTipText");
+        if(tooltipText != null) {
+            comboBox.setToolTipText((String)tooltipText);
+        }
+        Object delay = comboBox.getClientProperty("initialDelay");
+        if(delay != null){
+            ToolTipManager.sharedInstance().setInitialDelay((int)delay);
         }
     }
 
+    /**
+     * When a table is selected in the geocatalog field, empty the textField for a new table,
+     * save the selectedtable,
+     * tell the child DataField that there is a modification.
+     * @param source Source geocatalog JComboBox
+     */
     public void onGeocatalogTableSelected(Object source){
         JComboBox<ContainerItem<String>> comboBox = (JComboBox) source;
         if(comboBox.getClientProperty("textField") != null){
@@ -308,6 +329,10 @@ public class DataStoreUI implements DataUI{
         dataMap.put(uri, URI.create("geocatalog:"+comboBox.getSelectedItem()+"#"+comboBox.getSelectedItem()));
     }
 
+    /**
+     * When a new table name is set, empty the comboBox and save the table name.
+     * @param document
+     */
     public void onNewTable(Document document){
         try {
             JComboBox<String> comboBox = (JComboBox<String>)document.getProperty("comboBox");

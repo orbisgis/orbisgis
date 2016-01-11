@@ -272,11 +272,19 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         return scrollPane;
     }
 
+    /**
+     * When the title arrow button is clicked, expand the input/output components.
+     * @param source Arrow button.
+     */
     public void onClickButton(Object source) {
         JButton button = (JButton)source;
         onClickHeader(button.getClientProperty("upPanel"));
     }
 
+    /**
+     * When the title is clicked, expand the input/output components.
+     * @param source Title text.
+     */
     public void onClickHeader(Object source){
         JPanel panel = (JPanel)source;
         JButton showButton = (JButton)panel.getClientProperty("button");
