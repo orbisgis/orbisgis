@@ -38,7 +38,7 @@ import java.net.URI;
 public class EnumerationParser implements Parser{
 
     @Override
-    public Input parseInput(Field f, String processId) {
+    public Input parseInput(Field f, Object defaultValue, String processId) {
         //Instantiate the DataStore and its formats
         EnumerationAttribute enumerationAttribute = f.getAnnotation(EnumerationAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);

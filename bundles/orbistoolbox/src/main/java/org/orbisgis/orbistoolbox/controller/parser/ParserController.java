@@ -80,20 +80,38 @@ public class ParserController {
         //Retrieve the list of input and output of the script.
         List<Input> inputList = new ArrayList<>();
         List<Output> outputList = new ArrayList<>();
+        Object scriptObject = null;
+        try {
+            scriptObject = clazz.newInstance();
+        } catch (InstantiationException|IllegalAccessException e) {
+            LoggerFactory.getLogger(ParserController.class).error(
+                    "Unable to create a new instance of the groovy script.\n" + e.getMessage());
+        }
 
         for(Field f : clazz.getDeclaredFields()){
+            f.setAccessible(true);
             for(Annotation a : f.getDeclaredAnnotations()){
                 if(a instanceof InputAttribute){
+                    Object defaultValue = null;
+                    if(scriptObject != null) {
+                        try {
+                            f.setAccessible(true);
+                            defaultValue = f.get(scriptObject);
+                        } catch (IllegalAccessException e) {
+                            LoggerFactory.getLogger(ParserController.class).error(
+                                    "Unable to retrieve the default value of the field : "+ f + ".\n" + e.getMessage());
+                        }
+                    }
                     //Find the good parser and parse the input.
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                            inputList.add(parser.parseInput(f, process.getAbsolutePath()));
+                            inputList.add(parser.parseInput(f, defaultValue, process.getAbsolutePath()));
                             parsed = true;
                         }
                     }
                     if(!parsed){
-                        inputList.add(defaultParser.parseInput(f, process.getAbsolutePath()));
+                        inputList.add(defaultParser.parseInput(f, defaultValue, process.getAbsolutePath()));
                     }
                 }
                 if(a instanceof OutputAttribute){

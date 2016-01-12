@@ -63,7 +63,7 @@ public class LiteralDataUI implements DataUI {
         Map<URI, Object> uriDefaultValueMap = new HashMap<>();
         List<DescriptionType> descriptionTypeList = new ArrayList<>();
         DataDescription dataDescription = null;
-        URI identifier;
+        URI identifier = inputOrOutput.getIdentifier();
         boolean isOptional = false;
 
         //Gets the descriptionType list if the argument is an input
@@ -78,6 +78,7 @@ public class LiteralDataUI implements DataUI {
             if(input.getMinOccurs() == 0){
                 isOptional = true;
             }
+            dataDescription = input.getDataDescription();
         }
 
         //Gets the descriptionType list if the argument is an output
@@ -89,19 +90,17 @@ public class LiteralDataUI implements DataUI {
             else{
                 descriptionTypeList.add(output);
             }
+            dataDescription = output.getDataDescription();
         }
 
-        //Fill the map
-        for(DescriptionType dt : descriptionTypeList){
-            identifier = dt.getIdentifier();
-            if(dt instanceof Input){
-                dataDescription = ((Input) dt).getDataDescription();
+        if (dataDescription instanceof LiteralData) {
+            LiteralData literalData = (LiteralData)dataDescription;
+            //If the LiteralData already contains a Value, uses it, else, uses one of the LiteralDataDomain.
+            if(literalData.getValue().getData() instanceof Value){
+                uriDefaultValueMap.put(identifier, ((Value)literalData.getValue().getData()).getValue());
             }
-            else if(dt instanceof  Output){
-                dataDescription = ((Output) dt).getDataDescription();
-            }
-            //Find in the dataDescription the default LiteralDataDomain an retrieve its default value
-            if (dataDescription instanceof LiteralData) {
+            else{
+                //Find in the dataDescription the default LiteralDataDomain an retrieve its default value
                 for (LiteralDataDomain ldda : ((LiteralData) dataDescription).getLiteralDomainType()) {
                     if (ldda.isDefaultDomain()) {
                         //If the default value is a Range, get the minimum as default value

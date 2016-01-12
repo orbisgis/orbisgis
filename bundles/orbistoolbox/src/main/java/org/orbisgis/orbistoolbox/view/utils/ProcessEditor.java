@@ -42,6 +42,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URI;
 import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -199,8 +200,19 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         for(Input i : pee.getProcess().getInput()){
 
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getClass());
+            //Merge all the Entry from the defaultValue map with the input map of the pee if
+            // the entry isn't already in the input map.
+            Map<URI, Object> defaultDataMap = dataUIManager.getInputDefaultValues(pee.getProcess());
+            Map<URI, Object> mergeMap = new HashMap<>();
+            for(Map.Entry<URI, Object> entry : defaultDataMap.entrySet()){
+                mergeMap.put(entry.getKey(), entry.getValue());
+            }
+            for(Map.Entry<URI, Object> entry : pee.getInputDataMap().entrySet()){
+                mergeMap.put(entry.getKey(), entry.getValue());
+            }
+
             if(dataUI!=null) {
-                JComponent comp = dataUI.createUI(i, pee.getInputDataMap());
+                JComponent comp = dataUI.createUI(i, mergeMap);
                 if(comp != null) {
                     comp.setVisible(false);
                     JPanel inputPanel = new JPanel(new MigLayout("fill"));
