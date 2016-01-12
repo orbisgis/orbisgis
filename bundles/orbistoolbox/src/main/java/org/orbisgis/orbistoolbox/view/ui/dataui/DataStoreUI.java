@@ -20,6 +20,7 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.io.FilenameUtils;
 import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
@@ -41,6 +42,7 @@ import java.awt.event.*;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -67,7 +69,7 @@ public class DataStoreUI implements DataUI{
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon("geodata");
+        return ToolBoxIcon.getIcon("datastore");
     }
 
     @Override
@@ -117,7 +119,7 @@ public class DataStoreUI implements DataUI{
 
         /**Instantiate the geocatalog radioButton and its optionPanel**/
         JRadioButton geocatalog = new JRadioButton("Geocatalog");
-        JPanel optionPanelGeocatalog = new JPanel(new MigLayout());
+        JPanel optionPanelGeocatalog = new JPanel(new BorderLayout());
         JComboBox<String> comboBox;
         if(dataStore.isSpatial()) {
             comboBox = new JComboBox<>(ToolBox.getGeocatalogTableList(true).toArray(new String[]{}));
@@ -126,12 +128,25 @@ public class DataStoreUI implements DataUI{
             comboBox = new JComboBox<>(ToolBox.getGeocatalogTableList(false).toArray(new String[]{}));
         }
         comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onGeocatalogTableSelected", "source"));
+        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
+        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
         comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());
         comboBox.putClientProperty("dataMap", dataMap);
         comboBox.putClientProperty("dataStore", dataStore);
         comboBox.setBackground(Color.WHITE);
-        optionPanelGeocatalog.add(new JLabel("Geocatalog :"));
-        optionPanelGeocatalog.add(comboBox);
+        JPanel tableSelection = new JPanel(new MigLayout("fill"));
+        tableSelection.add(comboBox, "growx, span");
+        if(inputOrOutput instanceof Output){
+            comboBox.addItem("");
+            JTextField newTableField = new JTextField();
+            tableSelection.add(newTableField, "growx, span");
+            comboBox.putClientProperty("textField", newTableField);
+            newTableField.getDocument().putProperty("comboBox", comboBox);
+            newTableField.getDocument().addDocumentListener(
+                    EventHandler.create(DocumentListener.class, this, "onNewTable", "document"));
+        }
+        optionPanelGeocatalog.add(new JLabel("Geocatalog :"), BorderLayout.LINE_START);
+        optionPanelGeocatalog.add(tableSelection, BorderLayout.CENTER);
         geocatalog.putClientProperty("optionPanel", optionPanelGeocatalog);
         geocatalog.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
 
@@ -141,7 +156,7 @@ public class DataStoreUI implements DataUI{
         optionPanelFile.add(new JLabel("file :"), BorderLayout.LINE_START);
         JTextField textField = new JTextField();
         textField.getDocument().putProperty("dataMap", dataMap);
-        textField.getDocument().putProperty("uri", inputOrOutput.getIdentifier());
+        textField.getDocument().putProperty("inputOrOutput", inputOrOutput);
         textField.getDocument().putProperty("dataStore", dataStore);
         textField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
                 this,
@@ -156,8 +171,9 @@ public class DataStoreUI implements DataUI{
         browseButton.putClientProperty("JTextField", textField);
         browseButton.putClientProperty("dataStore", dataStore);
         OpenFilePanel filePanel;
+        //If it is an input, the file panel is an Open one
         if(inputOrOutput instanceof Input){
-            filePanel = new OpenFilePanel("RawDataUI.File."+inputOrOutput.getIdentifier(), "Select File");
+            filePanel = new OpenFilePanel("DataStoreUI.File."+inputOrOutput.getIdentifier(), "Select File");
             filePanel.setAcceptAllFileFilterUsed(false);
             for(Format format : dataStore.getFormats()){
                 String ext = FormatFactory.getFormatExtension(format);
@@ -170,8 +186,9 @@ public class DataStoreUI implements DataUI{
                 filePanel.addFilter(ext, description);
             }
         }
+        //If it is an output, the file panel is an Save one
         else {
-            filePanel = new SaveFilePanel("RawDataUI.File."+inputOrOutput.getIdentifier(), "Select File");
+            filePanel = new SaveFilePanel("DataStoreUI.File."+inputOrOutput.getIdentifier(), "Save File");
             for(Format format : dataStore.getFormats()){
                 String ext = FormatFactory.getFormatExtension(format);
                 String description = "";
@@ -237,21 +254,102 @@ public class DataStoreUI implements DataUI{
         database.putClientProperty("uri", inputOrOutput.getIdentifier());
         panel.add(dataField, "growx, span");
 
+        geocatalog.setSelected(true);
+        dataField.setLayout(new MigLayout("fill"));
+        dataField.add(optionPanelGeocatalog, "growx, span");
+        if(comboBox.getItemCount() > 0){
+            comboBox.setSelectedIndex(0);
+        }
+
         return panel;
     }
 
-    public void onGeocatalogTableSelected(Object source){
+    /**
+     * When the mouse enter in the JComboBox and their is no sources listed in the JComboBox,
+     * it shows a tooltip text to the user.
+     * @param source Source JComboBox
+     */
+    public void onComboBoxEntered(Object source){
         //Retrieve the client properties
         JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
-        Map<URI, Object> dataMap = (Map<URI, Object>)comboBox.getClientProperty("dataMap");
-        URI uri = (URI)comboBox.getClientProperty("uri");
-        DataStore dataStore = (DataStore)comboBox.getClientProperty("dataStore");
+        if(comboBox.getItemCount() == 0) {
+            comboBox.putClientProperty("initialDelay", ToolTipManager.sharedInstance().getInitialDelay());
+            comboBox.putClientProperty("toolTipText", comboBox.getToolTipText());
+            ToolTipManager.sharedInstance().setInitialDelay(0);
+            ToolTipManager.sharedInstance().setDismissDelay(2500);
+            comboBox.setToolTipText("First add a table to the Geocatalog");
+            ToolTipManager.sharedInstance().mouseMoved(
+                    new MouseEvent(comboBox,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
+        }
+    }
+
+    /**
+     * When the mouse leaves the JComboBox, reset the tooltip text delay.
+     * @param source JComboBox source.
+     */
+    public void onComboBoxExited(Object source){
+        //Retrieve the client properties
+        JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
+        Object tooltipText = comboBox.getClientProperty("toolTipText");
+        if(tooltipText != null) {
+            comboBox.setToolTipText((String)tooltipText);
+        }
+        Object delay = comboBox.getClientProperty("initialDelay");
+        if(delay != null){
+            ToolTipManager.sharedInstance().setInitialDelay((int)delay);
+        }
+    }
+
+    /**
+     * When a table is selected in the geocatalog field, empty the textField for a new table,
+     * save the selectedtable,
+     * tell the child DataField that there is a modification.
+     * @param source Source geocatalog JComboBox
+     */
+    public void onGeocatalogTableSelected(Object source){
+        JComboBox<ContainerItem<String>> comboBox = (JComboBox) source;
+        if(comboBox.getClientProperty("textField") != null){
+            JTextField textField = (JTextField)comboBox.getClientProperty("textField");
+            if(!textField.getText().isEmpty() && comboBox.getSelectedIndex() != comboBox.getItemCount()-1) {
+                textField.setText("");
+            }
+            if(!textField.getText().isEmpty() && comboBox.getSelectedIndex() == comboBox.getItemCount()-1){
+                return;
+            }
+        }
+        //Retrieve the client properties
+        Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty("dataMap");
+        URI uri = (URI) comboBox.getClientProperty("uri");
+        DataStore dataStore = (DataStore) comboBox.getClientProperty("dataStore");
         //Tells all the dataField linked that the data source is loaded
-        for(DataField dataField : dataStore.getListDataField()){
+        for (DataField dataField : dataStore.getListDataField()) {
             dataField.setSourceModified(true);
         }
         dataMap.remove(uri);
-        dataMap.put(uri, comboBox.getSelectedItem());
+        dataMap.put(uri, URI.create("geocatalog:"+comboBox.getSelectedItem()+"#"+comboBox.getSelectedItem()));
+    }
+
+    /**
+     * When a new table name is set, empty the comboBox and save the table name.
+     * @param document
+     */
+    public void onNewTable(Document document){
+        try {
+            JComboBox<String> comboBox = (JComboBox<String>)document.getProperty("comboBox");
+            Map<URI, Object> dataMap = (Map<URI, Object>)comboBox.getClientProperty("dataMap");
+            URI uri = (URI)comboBox.getClientProperty("uri");
+            String text = document.getText(0, document.getLength());
+            if(text.isEmpty()){
+                comboBox.setSelectedIndex(0);
+                dataMap.put(uri, URI.create("geocatalog:"+comboBox.getSelectedItem()+"#"+comboBox.getSelectedItem()));
+            }
+            else{
+                comboBox.setSelectedIndex(comboBox.getItemCount()-1);
+                dataMap.put(uri, URI.create("geocatalog:"+text.toUpperCase()+"#"+text.toUpperCase()));
+            }
+        } catch (BadLocationException e) {
+            LoggerFactory.getLogger(DataStoreUI.class).error(e.getMessage());
+        }
     }
 
     public void onParameters(Object source){
@@ -286,15 +384,14 @@ public class DataStoreUI implements DataUI{
             dataField.removeAll();
             if(radioButton.isSelected()) {
                 JPanel optionPanel = (JPanel) radioButton.getClientProperty("optionPanel");
-                dataField.setLayout(new MigLayout("fill"));
                 dataField.add(optionPanel, "growx, span");
+                dataField.repaint();
             }
             else{
                 HashMap<URI, Object> dataMap = (HashMap<URI, Object>)radioButton.getClientProperty("dataMap");
                 URI uri = (URI)radioButton.getClientProperty("uri");
                 dataMap.put(uri, null);
             }
-            dataField.revalidate();
         }
     }
 
@@ -312,6 +409,8 @@ public class DataStoreUI implements DataUI{
             //Load the selected file an retrieve the table name.
             String tableName = loadDataStore(selectedFileURI);
             if(tableName != null) {
+                //Saves the table name in the URI into the uri fragment
+                selectedFileURI = URI.create(selectedFileURI.toString()+"#"+tableName);
                 //Set the UI with the selected value
                 JTextField textField = (JTextField) source.getClientProperty("JTextField");
                 textField.setText(openFilePanel.getSelectedFile().getName());
@@ -319,7 +418,7 @@ public class DataStoreUI implements DataUI{
                 //Store the selection
                 URI uri = (URI) source.getClientProperty("uri");
                 dataMap.remove(uri);
-                dataMap.put(uri, tableName);
+                dataMap.put(uri, selectedFileURI);
                 //tells the dataField they should revalidate
                 for (DataField dataField : dataStore.getListDataField()) {
                     dataField.setSourceModified(true);
@@ -340,26 +439,40 @@ public class DataStoreUI implements DataUI{
     public void saveDocumentTextFile(Document document){
         try {
             DataStore dataStore = (DataStore)document.getProperty("dataStore");
+            DescriptionType inputOrOutput = (DescriptionType)document.getProperty("inputOrOutput");
             File file = new File(document.getText(0, document.getLength()));
-            //Load the selected file an retrieve the table name.
-            String tableName = loadDataStore(file.toURI());
-            if(tableName != null) {
+            if(inputOrOutput instanceof Input) {
+                //Load the selected file an retrieve the table name.
+                String tableName = loadDataStore(file.toURI());
+                if (tableName != null) {
+                    //Saves the table name in the URI into the uri fragment
+                    URI selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
+                    //Store the selection
+                    Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
+                    URI uri = inputOrOutput.getIdentifier();
+                    dataMap.remove(uri);
+                    dataMap.put(uri, selectedFileURI);
+                    //tells the dataField they should revalidate
+                    for (DataField dataField : dataStore.getListDataField()) {
+                        dataField.setSourceModified(true);
+                    }
+                }
+                else{
+                    for (DataField dataField : dataStore.getListDataField()) {
+                        dataField.setSourceModified(false);
+                    }
+                }
+            }
+            if(inputOrOutput instanceof Output){
+                String tableName = toolBox.getDataManager().findUniqueTableName(FilenameUtils.getBaseName(file.getName()));
+                URI selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
                 //Store the selection
-                Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
-                URI uri = (URI)document.getProperty("uri");
+                Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
+                URI uri = inputOrOutput.getIdentifier();
                 dataMap.remove(uri);
-                dataMap.put(uri, tableName);
-                //tells the dataField they should revalidate
-                for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModified(true);
-                }
+                dataMap.put(uri, selectedFileURI);
             }
-            else{
-                for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModified(false);
-                }
-            }
-        } catch (BadLocationException e) {
+        } catch (BadLocationException|SQLException e) {
             LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
         }
     }

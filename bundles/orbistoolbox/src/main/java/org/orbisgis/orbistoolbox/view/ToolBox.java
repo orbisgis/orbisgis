@@ -19,7 +19,11 @@
 
 package org.orbisgis.orbistoolbox.view;
 
+import org.apache.commons.io.FilenameUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.commons.utils.FileUtils;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
@@ -29,6 +33,7 @@ import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
 import org.orbisgis.orbistoolbox.view.utils.ProcessEditorFactory;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
+import org.orbisgis.orbistoolbox.view.utils.dataProcessing.DataProcessingManager;
 import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
@@ -45,6 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,6 +81,7 @@ public class ToolBox implements DockingPanel {
     private EditorManager editorManager;
     /** Factory for the creation of the ProcessEditor (UI of a process instance) */
     private ProcessEditorFactory pef;
+    private DataProcessingManager dataProcessingManager;
 
     private static final String TOOLBOX_REFERENCE = "orbistoolbox";
 
@@ -97,6 +104,7 @@ public class ToolBox implements DockingPanel {
 
         pef = new ProcessEditorFactory(editorManager, this);
         editorManager.addEditorFactory(pef);
+        dataProcessingManager = new DataProcessingManager(this);
     }
 
     @Deactivate
@@ -239,6 +247,10 @@ public class ToolBox implements DockingPanel {
         this.editorManager = editorManager;
     }
 
+    public DataProcessingManager getDataProcessingManager() {
+        return dataProcessingManager;
+    }
+
     /**
      * Returns a map of the importable format.
      * The map key is the format extension and the value is the format description.
@@ -345,13 +357,43 @@ public class ToolBox implements DockingPanel {
         return fieldList;
     }
 
+    /**
+     * Loads the given file into the geocatalog and return its table name.
+     * @param f File to load.
+     * @return Table name of the loaded file. Returns null if the file can't be loaded.
+     */
     public String loadFile(File f) {
         try {
-            return dataManager.registerDataSource(f.toURI()).replaceAll("\"", "");
-        } catch (SQLException e) {
+            //Get the table name of the file
+            String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), true);
+            String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
+            //Find the corresponding driver and load the file
+            String extension = FilenameUtils.getExtension(f.getAbsolutePath());
+            DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
+                    extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+            driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+            return tableName;
+        } catch (SQLException|IOException e) {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return null;
+    }
+
+    /**
+     * Save a geocatalog table into a file.
+     * @param f File where the table will be saved.
+     * @param tableName Name of the table to save.
+     */
+    public void saveFile(File f, String tableName){
+        try {
+            //Find the good driver and save the file.
+            String extension = FilenameUtils.getExtension(f.getAbsolutePath());
+            DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
+                    extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+            driver.exportTable(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+        } catch (SQLException|IOException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+        }
     }
 
     /**

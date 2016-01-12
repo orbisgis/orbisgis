@@ -27,6 +27,8 @@ import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.net.URI;
 import java.util.*;
@@ -88,7 +90,8 @@ public class FieldValueUI implements DataUI{
         list.putClientProperty("fieldValue", fieldValue);
         list.putClientProperty("dataMap", dataMap);
         list.putClientProperty("isOptional", isOptional);
-        list.addFocusListener(EventHandler.create(FocusListener.class, this, "onGainingFocus", "source"));
+        list.addMouseListener(EventHandler.create(MouseListener.class, this, "refreshList", "source", "mouseEntered"));
+        list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
 
         return panel;
@@ -101,13 +104,35 @@ public class FieldValueUI implements DataUI{
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon("fieldValue");
+        return ToolBoxIcon.getIcon("fieldvalue");
     }
 
-    public void onGainingFocus(Object source){
+    /**
+     * When the jList is exited, reset the tooltipText delay.
+     * @param source JComboBox.
+     */
+    public void onComboBoxExited(Object source){
+        //Retrieve the client properties
+        JList<String> list = (JList)source;
+        Object tooltipText = list.getClientProperty("toolTipText");
+        if(tooltipText != null) {
+            list.setToolTipText((String)tooltipText);
+        }
+        Object delay = list.getClientProperty("initialDelay");
+        if(delay != null){
+            ToolTipManager.sharedInstance().setInitialDelay((int)delay);
+        }
+    }
+
+    /**
+     * Update the JList according to if DataField parent.
+     * @param source the source JList.
+     */
+    public void refreshList(Object source){
         JList list = (JList)source;
         FieldValue fieldValue = (FieldValue)list.getClientProperty("fieldValue");
         HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
+        //If the DataField related to the FieldValue has been modified, reload the dataField values
         if(fieldValue.isDataFieldModified()) {
             fieldValue.setDataFieldModified(false);
             String tableName = dataMap.get(fieldValue.getDataStoreIdentifier()).toString();
@@ -124,6 +149,22 @@ public class FieldValueUI implements DataUI{
             else{
                 list.setVisibleRowCount(MAX_JLIST_ROW_COUNT);
             }
+        }
+
+        //If the jList doesn't contains any values, it mean that the DataField hasn't been well selected.
+        //So show a tooltip text to warn the user.
+        if(list.getSelectedIndices().length == 0) {
+            list.putClientProperty("initialDelay", ToolTipManager.sharedInstance().getInitialDelay());
+            list.putClientProperty("toolTipText", list.getToolTipText());
+            ToolTipManager.sharedInstance().setInitialDelay(0);
+            ToolTipManager.sharedInstance().setDismissDelay(2500);
+            String fieldValueStr = fieldValue.getDataFieldIdentifier().toString();
+            list.setToolTipText("First configure the DataField : " + fieldValueStr.substring(fieldValueStr.lastIndexOf(":")+1));
+            ToolTipManager.sharedInstance().mouseMoved(
+                    new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
+        }
+        else{
+            list.setSelectedIndices(new int[]{0});
         }
         list.revalidate();
     }
