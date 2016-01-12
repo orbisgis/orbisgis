@@ -286,7 +286,12 @@ public class DataStoreUI implements DataUI{
     }
 
     public void onGeocatalogTableSelected(Object source){
-        JComboBox<ContainerItem<String>> comboBox = (JComboBox) source;
+        JComboBox<String> comboBox = (JComboBox) source;
+        //If the ComboBox is empty, don't do anything.
+        //The process won't launch util the user sets the DataStore
+        if(comboBox.getItemCount()>0 && comboBox.getItemAt(0).isEmpty()){
+            return;
+        }
         if(comboBox.getClientProperty("textField") != null){
             JTextField textField = (JTextField)comboBox.getClientProperty("textField");
             if(!textField.getText().isEmpty() && comboBox.getSelectedIndex() != comboBox.getItemCount()-1) {

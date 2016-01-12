@@ -64,6 +64,7 @@ public class LiteralDataUI implements DataUI {
         List<DescriptionType> descriptionTypeList = new ArrayList<>();
         DataDescription dataDescription = null;
         URI identifier;
+        boolean isOptional = false;
 
         //Gets the descriptionType list if the argument is an input
         if(inputOrOutput instanceof Input){
@@ -73,6 +74,9 @@ public class LiteralDataUI implements DataUI {
             }
             else{
                 descriptionTypeList.add(input);
+            }
+            if(input.getMinOccurs() == 0){
+                isOptional = true;
             }
         }
 

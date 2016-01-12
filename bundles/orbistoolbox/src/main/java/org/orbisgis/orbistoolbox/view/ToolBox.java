@@ -59,7 +59,7 @@ import java.util.*;
  * @author Sylvain PALOMINOS
  **/
 
-@Component(service = DockingPanel.class)
+@Component
 public class ToolBox implements DockingPanel, EditorFactory {
 
     public static final String FACTORY_ID = "WPSProcessEditorFactory";
@@ -86,6 +86,7 @@ public class ToolBox implements DockingPanel, EditorFactory {
 
     private static final String TOOLBOX_REFERENCE = "orbistoolbox";
     private static final String WPS_SCRIPT_FOLDER = "scripts";
+    private static boolean areScriptsCopied = false;
 
     @Activate
     public void init(){
@@ -104,16 +105,24 @@ public class ToolBox implements DockingPanel, EditorFactory {
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
 
-        editorManager.addEditorFactory(this);
         dataProcessingManager = new DataProcessingManager(this);
         mapIdPee = new HashMap<>();
 
+        if(!areScriptsCopied) {
+            setScriptFolder();
+        }
+    }
+
+    /**
+     * Sets all the default OrbisGIS WPS script into the script folder of the .OrbisGIS folder.
+     */
+    private void setScriptFolder(){
         //Sets the WPS script folder
         File wpsScriptFolder = new File(coreWorkspace.getApplicationFolder(), WPS_SCRIPT_FOLDER);
         if(!wpsScriptFolder.exists()){
             if(!wpsScriptFolder.mkdir()){
                 LoggerFactory.getLogger(ToolBox.class).warn("Unable to find or create a script folder.\n" +
-                    "No basic script will be available.");
+                        "No basic script will be available.");
             }
         }
         if(wpsScriptFolder.exists() && wpsScriptFolder.isDirectory()){
@@ -137,7 +146,7 @@ public class ToolBox implements DockingPanel, EditorFactory {
                         //Copy the script into the .OrbisGIS folder.
                         OutputStream out = new FileOutputStream(
                                 new File(wpsScriptFolder.getAbsolutePath(),
-                                new File(scriptPath).getName()));
+                                        new File(scriptPath).getName()));
                         InputStream in = scriptUrl.openStream();
                         IOUtils.copy(in, out);
                         out.close();
@@ -150,6 +159,7 @@ public class ToolBox implements DockingPanel, EditorFactory {
                         "Error : "+e.getMessage());
             }
         }
+        areScriptsCopied = true;
         addLocalSource(wpsScriptFolder);
     }
 
@@ -157,6 +167,7 @@ public class ToolBox implements DockingPanel, EditorFactory {
     public void dispose(){
         editorManager.removeEditorFactory(this);
         toolBoxPanel.dispose();
+        areScriptsCopied = false;
     }
 
     public String getReference(){
