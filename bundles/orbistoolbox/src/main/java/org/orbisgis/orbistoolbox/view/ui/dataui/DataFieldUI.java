@@ -37,6 +37,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * User Interface generator for the DataField input/output.
+ *
  * @author Sylvain PALOMINOS
  **/
 
@@ -44,6 +46,7 @@ public class DataFieldUI implements DataUI{
 
     private ToolBox toolBox;
 
+    @Override
     public void setToolBox(ToolBox toolBox){
         this.toolBox = toolBox;
     }
@@ -53,6 +56,8 @@ public class DataFieldUI implements DataUI{
         JPanel panel = new JPanel(new MigLayout("fill"));
         DataField dataField = null;
         boolean isOptional = false;
+        //Retrieve the DataField
+        //If it is an input, find if it is optional.
         if(inputOrOutput instanceof Input){
             dataField = (DataField)((Input)inputOrOutput).getDataDescription();
             if(((Input)inputOrOutput).getMinOccurs() == 0){
@@ -98,6 +103,10 @@ public class DataFieldUI implements DataUI{
         return ToolBoxIcon.getIcon("datafield");
     }
 
+    /**
+     * When the comboBox is exited, reset the tooltipText delay.
+     * @param source JComboBox.
+     */
     public void onComboBoxExited(Object source){
         //Retrieve the client properties
         JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
@@ -107,11 +116,16 @@ public class DataFieldUI implements DataUI{
         }
     }
 
+    /**
+     * Update the JComboBox according to if DataStore parent.
+     * @param source the source JComboBox.
+     */
     public void refreshComboBox(Object source){
         JComboBox<String> comboBox = (JComboBox)source;
         DataField dataField = (DataField)comboBox.getClientProperty("dataField");
         HashMap<URI, Object> dataMap = (HashMap)comboBox.getClientProperty("dataMap");
         boolean isOptional = (boolean)comboBox.getClientProperty("isOptional");
+        //If the DataStore related to the DataField has been modified, reload the dataField values
         if(dataField.isSourceModified()) {
             dataField.setSourceModified(false);
             String tableName = ((URI) dataMap.get(dataField.getDataStoreIdentifier())).getFragment();
@@ -124,13 +138,16 @@ public class DataFieldUI implements DataUI{
             }
         }
 
+        //If the comboBox doesn't contains any values, it mean that the DataStore hasn't been well selected.
+        //So show a tooltip text to warn the user.
         if(comboBox.getItemCount() == 0) {
             comboBox.putClientProperty("initialDelay", ToolTipManager.sharedInstance().getInitialDelay());
             comboBox.putClientProperty("toolTipText", comboBox.getToolTipText());
             ToolTipManager.sharedInstance().setInitialDelay(0);
             ToolTipManager.sharedInstance().setDismissDelay(2500);
             String dataFieldStr = dataField.getDataStoreIdentifier().toString();
-            comboBox.setToolTipText("First configure the DataStore : " + dataFieldStr.substring(dataFieldStr.lastIndexOf(":")+1));
+            comboBox.setToolTipText("First configure the DataStore : " +
+                    dataFieldStr.substring(dataFieldStr.lastIndexOf(":")+1));
             ToolTipManager.sharedInstance().mouseMoved(
                     new MouseEvent(comboBox,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
         }

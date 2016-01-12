@@ -77,7 +77,9 @@ public class ToolBox implements DockingPanel {
     private static DriverFunctionContainer driverFunctionContainer;
 
     private Map<String, Object> properties;
+    /** OrbisGIS editorManager */
     private EditorManager editorManager;
+    /** Factory for the creation of the ProcessEditor (UI of a process instance) */
     private ProcessEditorFactory pef;
     private DataProcessingManager dataProcessingManager;
 
@@ -269,13 +271,16 @@ public class ToolBox implements DockingPanel {
     }
 
     /**
+     * Sets the EditorManager to use.
      * @param editorManager Editor windows manager
      */
     @Reference
     public void setEditorManager(EditorManager editorManager) {
         this.editorManager = editorManager;
     }
+
     /**
+     * Unset the ProcessEditor.
      * @param editorManager Editor windows manager
      */
     public void unsetEditorManager(EditorManager editorManager) {
@@ -396,11 +401,20 @@ public class ToolBox implements DockingPanel {
         return fieldList;
     }
 
+    /**
+     * Loads the given file into the geocatalog and return its table name.
+     * @param f File to load.
+     * @return Table name of the loaded file. Returns null if the file can't be loaded.
+     */
     public String loadFile(File f) {
         try {
-            String tableName = dataManager.findUniqueTableName(TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), true)).replaceAll("\"", "");
+            //Get the table name of the file
+            String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), true);
+            String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
+            //Find the corresponding driver and load the file
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
-            DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+            DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
+                    extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
             driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
             return tableName;
         } catch (SQLException|IOException e) {
@@ -409,10 +423,17 @@ public class ToolBox implements DockingPanel {
         return null;
     }
 
+    /**
+     * Save a geocatalog table into a file.
+     * @param f File where the table will be saved.
+     * @param tableName Name of the table to save.
+     */
     public void saveFile(File f, String tableName){
         try {
+            //Find the good driver and save the file.
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
-            DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+            DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
+                    extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
             driver.exportTable(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
         } catch (SQLException|IOException e) {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());

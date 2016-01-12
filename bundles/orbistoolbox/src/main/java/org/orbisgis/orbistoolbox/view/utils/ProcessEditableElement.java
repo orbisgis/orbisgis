@@ -33,6 +33,9 @@ import java.util.*;
 import java.util.List;
 
 /**
+ * EditableElement of a process which contains all the information about a process instance
+ * (input data, output data, state ...).
+ *
  * @author Sylvain PALOMINOS
  */
 public class ProcessEditableElement implements EditableElement{

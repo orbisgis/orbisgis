@@ -179,6 +179,7 @@ public final class GeometryTypeUtil {
     /**
      * Returns true if the geometry type is a surface
      * @param geom 
+     * @return  
      */
     public static boolean isSurface(Geometry geom) {
         throw new UnsupportedOperationException("Not yet implemented");

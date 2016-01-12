@@ -31,7 +31,6 @@ package org.orbisgis.mapeditor.map.mapsManager;
 
 import org.orbisgis.mapeditorapi.MapsManagerData;
 import org.orbisgis.sif.docking.DockingPanelLayout;
-import org.orbisgis.sif.docking.PropertyHost;
 import org.orbisgis.sif.docking.XElement;
 
 import java.beans.PropertyChangeListener;

@@ -45,6 +45,9 @@ import java.util.AbstractMap;
 import java.util.Map;
 
 /**
+ * UI for the configuration and the run of a WPS process.
+ * It extends the EditorDockable interface to be able to be docked in OrbisGIS.
+ *
  * @author Sylvain PALOMINOS
  */
 public class ProcessEditor extends JPanel implements EditorDockable, PropertyChangeListener {
@@ -269,11 +272,19 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         return scrollPane;
     }
 
+    /**
+     * When the title arrow button is clicked, expand the input/output components.
+     * @param source Arrow button.
+     */
     public void onClickButton(Object source) {
         JButton button = (JButton)source;
         onClickHeader(button.getClientProperty("upPanel"));
     }
 
+    /**
+     * When the title is clicked, expand the input/output components.
+     * @param source Title text.
+     */
     public void onClickHeader(Object source){
         JPanel panel = (JPanel)source;
         JButton showButton = (JButton)panel.getClientProperty("button");
