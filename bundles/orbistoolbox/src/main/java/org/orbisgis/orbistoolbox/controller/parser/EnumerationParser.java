@@ -21,8 +21,6 @@ package org.orbisgis.orbistoolbox.controller.parser;
 
 import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.view.ToolBox;
-import org.orbisgis.orbistoolboxapi.annotations.model.DataStoreAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.EnumerationAttribute;
 import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute;
@@ -30,8 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Parser for the groovy Enumeration annotations.

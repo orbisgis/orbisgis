@@ -19,18 +19,14 @@
 
 package org.orbisgis.orbistoolbox.view.utils.dataProcessing;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.orbisgis.orbistoolbox.model.DescriptionType;
 import org.orbisgis.orbistoolbox.model.DataStore;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.view.ToolBox;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
