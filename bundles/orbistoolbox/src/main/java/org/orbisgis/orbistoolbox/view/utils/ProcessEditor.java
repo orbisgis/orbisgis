@@ -37,6 +37,7 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -196,6 +197,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      */
     private JComponent buildUIConf(){
         JPanel panel = new JPanel(new MigLayout("fill"));
+        JScrollPane scrollPane = new JScrollPane(panel);
         //For each input, display its title, its abstract and gets its UI from the dataUIManager
         for(Input i : pee.getProcess().getInput()){
 
@@ -203,13 +205,29 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             if(dataUI!=null) {
                 JComponent comp = dataUI.createUI(i, pee.getInputDataMap());
                 if(comp != null) {
+                    comp.setVisible(false);
                     JPanel inputPanel = new JPanel(new MigLayout("fill"));
                     inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
+                    JPanel upPanel = new JPanel(new MigLayout());
+                    JButton showButton = new JButton(ToolBoxIcon.getIcon("btnright"));
+                    showButton.setBorderPainted(false);
+                    showButton.setMargin(new Insets(0, 0, 0, 0));
+                    showButton.setContentAreaFilled(false);
+                    showButton.setOpaque(false);
+                    showButton.setFocusable(false);
+                    showButton.putClientProperty("upPanel", upPanel);
+                    showButton.addMouseListener(EventHandler.create(MouseListener.class, this, "onClickButton", "source", "mouseClicked"));
+                    upPanel.add(showButton);
                     JLabel inputAbstrac = new JLabel(i.getResume());
                     inputAbstrac.setFont(inputAbstrac.getFont().deriveFont(Font.ITALIC));
-                    inputPanel.add(inputAbstrac, "wrap");
-                    inputPanel.add(comp, "growx, wrap");
-                    panel.add(inputPanel, "growx, wrap");
+                    upPanel.add(inputAbstrac, "wrap");
+                    upPanel.putClientProperty("body", comp);
+                    upPanel.putClientProperty("parent", inputPanel);
+                    upPanel.putClientProperty("button", showButton);
+                    upPanel.putClientProperty("scrollPane", scrollPane);
+                    upPanel.addMouseListener(EventHandler.create(MouseListener.class, this, "onClickHeader", "source", "mouseClicked"));
+                    inputPanel.add(upPanel, "growx, span");
+                    panel.add(inputPanel, "growx, span");
                 }
             }
         }
@@ -220,22 +238,79 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             if(dataUI!=null) {
                 JComponent component = dataUI.createUI(o, pee.getOutputDataMap());
                 if(component != null) {
+                    component.setVisible(false);
                     JPanel outputPanel = new JPanel(new MigLayout("fill"));
                     outputPanel.setBorder(BorderFactory.createTitledBorder(o.getTitle()));
+                    JPanel upPanel = new JPanel(new MigLayout());
+                    JButton showButton = new JButton(ToolBoxIcon.getIcon("btnright"));
+                    showButton.setBorderPainted(false);
+                    showButton.setMargin(new Insets(0, 0, 0, 0));
+                    showButton.setContentAreaFilled(false);
+                    showButton.setOpaque(false);
+                    showButton.setFocusable(false);
+                    showButton.putClientProperty("upPanel", upPanel);
+                    showButton.addMouseListener(EventHandler.create(MouseListener.class, this, "onClickButton", "source", "mouseClicked"));
+                    upPanel.add(showButton);
                     JLabel outputAbstrac = new JLabel(o.getResume());
                     outputAbstrac.setFont(outputAbstrac.getFont().deriveFont(Font.ITALIC));
-                    outputPanel.add(outputAbstrac, "growx, wrap");
-                    outputPanel.add(component, "growx, wrap");
-                    panel.add(outputPanel, "growx, wrap");
+                    upPanel.add(outputAbstrac, "wrap");
+                    upPanel.putClientProperty("body", component);
+                    upPanel.putClientProperty("parent", outputPanel);
+                    upPanel.putClientProperty("button", showButton);
+                    upPanel.putClientProperty("scrollPane", scrollPane);
+                    upPanel.addMouseListener(EventHandler.create(MouseListener.class, this, "onClickHeader", "source", "mouseClicked"));
+                    outputPanel.add(upPanel, "growx, span");
+                    panel.add(outputPanel, "growx, span");
                 }
             }
         }
         JButton runButton = new JButton("Run");
         runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
         panel.add(runButton, "growx, wrap");
-        JScrollPane scrollPane = new JScrollPane(panel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
         return scrollPane;
+    }
+
+    /**
+     * When the title arrow button is clicked, expand the input/output components.
+     * @param source Arrow button.
+     */
+    public void onClickButton(Object source) {
+        JButton button = (JButton)source;
+        onClickHeader(button.getClientProperty("upPanel"));
+    }
+
+    /**
+     * When the title is clicked, expand the input/output components.
+     * @param source Title text.
+     */
+    public void onClickHeader(Object source){
+        JPanel panel = (JPanel)source;
+        JButton showButton = (JButton)panel.getClientProperty("button");
+        final JComponent body = (JComponent)panel.getClientProperty("body");
+        JComponent parent = (JComponent)panel.getClientProperty("parent");
+        final JScrollPane scrollPane = (JScrollPane)panel.getClientProperty("scrollPane");
+        boolean isVisible = body.isVisible();
+        if(isVisible) {
+            body.setVisible(false);
+            parent.remove(body);
+            showButton.setIcon(ToolBoxIcon.getIcon("btnright"));
+        }
+        else{
+            body.setVisible(true);
+            parent.add(body, "growx, span");
+            showButton.setIcon(ToolBoxIcon.getIcon("btndown"));
+            //Later scrollDown to the element
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    scrollPane.scrollRectToVisible(body.getBounds());
+                }
+            });
+            scrollPane.scrollRectToVisible(body.getBounds());
+        }
+        parent.revalidate();
     }
 
     /**

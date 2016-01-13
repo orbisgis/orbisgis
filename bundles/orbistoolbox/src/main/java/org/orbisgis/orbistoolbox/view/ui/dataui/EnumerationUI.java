@@ -135,7 +135,7 @@ public class EnumerationUI implements DataUI{
             panel.add(textField, "growx, wrap");
             list.putClientProperty("textField", textField);
         }
-
+        list.setSelectedIndices(new int[]{0});
         return panel;
     }
 
@@ -191,7 +191,12 @@ public class EnumerationUI implements DataUI{
             }
         }
         else {
-            dataMap.put(uri, listValues);
+            if(isMultiSelection){
+                dataMap.put(uri, listValues.toArray(new String[listValues.size()]));
+            }
+            else {
+                dataMap.put(uri, listValues.get(0));
+            }
         }
     }
 

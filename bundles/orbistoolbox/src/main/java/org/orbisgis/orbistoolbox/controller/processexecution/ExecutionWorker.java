@@ -21,6 +21,7 @@ package org.orbisgis.orbistoolbox.controller.processexecution;
 
 import groovy.lang.GroovyObject;
 import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.orbisgis.orbistoolbox.model.DescriptionType;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
@@ -77,9 +78,31 @@ public class ExecutionWorker extends SwingWorkerPM{
                     ProcessEditableElement.LogType.INFO,
                     "Start process : " + process.getTitle());
 
+            //pre process the data
+            pee.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessEditableElement.LogType.INFO,
+                    "preProcess : " + process.getTitle());
+            for(DescriptionType inputOrOutput : pee.getProcess().getOutput()){
+                toolBox.getDataProcessingManager().preProcessData(inputOrOutput, dataMap);
+            }
+            for(DescriptionType inputOrOutput : pee.getProcess().getInput()){
+                toolBox.getDataProcessingManager().preProcessData(inputOrOutput, dataMap);
+            }
+
             //Execute the process and retrieve the groovy object.
             groovyObject = toolBox.getProcessManager().executeProcess(
                     process, dataMap, toolBox.getProperties());
+
+            //post process the data
+            pee.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessEditableElement.LogType.INFO,
+                    "postProcess : " + process.getTitle());
+            for(DescriptionType inputOrOutput : pee.getProcess().getOutput()){
+                toolBox.getDataProcessingManager().postProcessData(inputOrOutput, dataMap);
+            }
+            for(DescriptionType inputOrOutput : pee.getProcess().getInput()){
+                toolBox.getDataProcessingManager().postProcessData(inputOrOutput, dataMap);
+            }
 
             //Print in the log the process execution end
             pee.appendLog(System.currentTimeMillis() - startTime,
