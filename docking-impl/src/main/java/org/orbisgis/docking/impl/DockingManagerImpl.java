@@ -484,18 +484,18 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
     @Override
     @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, policyOption =
             ReferencePolicyOption.GREEDY)
-    public void addDockingPanel(DockingPanel frame) {
+    public String addDockingPanel(DockingPanel frame) {
         if (SwingUtilities.isEventDispatchThread()) {
-            show(frame);
+            return show(frame);
         } else {
             AddPanel addPanel = new AddPanel(this, frame);
             try {
                 SwingUtilities.invokeAndWait(addPanel);
             } catch (Exception ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
-                return;
+                return null;
             }
-            addPanel.getPanelId();
+            return addPanel.getPanelId();
         }
     }
 
