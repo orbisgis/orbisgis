@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view.utils;
+package org.orbisgis.orbistoolbox.view.utils.editor.process;
 
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.commons.progress.ProgressMonitor;
@@ -48,15 +48,13 @@ public class ProcessEditableElement implements EditableElement{
     private Map<URI, Object> inputDataMap;
     /** Map of output data (URI of the corresponding output) */
     private Map<URI, Object> outputDataMap;
-    /**State of the process */
-    private ProcessState state;
     /** Map of the log message and their color.*/
     private Map<String, Color> logMap;
     /** List of listeners for the processState*/
     private List<PropertyChangeListener> propertyChangeListenerList;
-    private List<TreeNodeWps> nodeList;
     /** Unique identifier of this ProcessEditableElement. */
     private final String ID;
+    private ProcessState state;
 
     public ProcessEditableElement(Process process, String ID){
         this.process = process;
@@ -64,9 +62,7 @@ public class ProcessEditableElement implements EditableElement{
         this.inputDataMap = new HashMap<>();
         this.logMap = new LinkedHashMap<>();
         this.propertyChangeListenerList = new ArrayList<>();
-        this.state = ProcessState.IDLE;
-        this.ID = ID;
-        this.nodeList = new ArrayList<>();
+        this.ID = ID+System.currentTimeMillis();
     }
 
     @Override
@@ -159,35 +155,8 @@ public class ProcessEditableElement implements EditableElement{
     public Process getProcess() {
         return process;
     }
-
-    public List<TreeNodeWps> getNodes(){
-        return nodeList;
-    }
-
-    public void addNode(TreeNodeWps node){
-        this.nodeList.add(node);
-        this.setState(this.state);
-    }
-
-    public void addAllNodes(List<TreeNodeWps> nodeList){
-        this.nodeList.addAll(nodeList);
-        this.setState(this.state);
-    }
-
-    public ProcessState getState() {
+    public ProcessState getProcessState() {
         return state;
-    }
-
-    public void setState(ProcessState state) {
-        ProcessState oldState = this.state;
-        this.state = state;
-        if(nodeList != null && !nodeList.isEmpty()) {
-            PropertyChangeEvent event = new PropertyChangeEvent(process, STATE_PROPERTY, oldState, state);
-            firePropertyChangeEvent(event);
-            for(TreeNodeWps node : nodeList) {
-                node.propertyChange(event);
-            }
-        }
     }
 
     /**
@@ -217,16 +186,17 @@ public class ProcessEditableElement implements EditableElement{
                 this, LOG_PROPERTY, null, new AbstractMap.SimpleEntry<>(log, color)));
     }
 
+    public void setProcessState(ProcessState processState){
+        this.state = processState;
+        firePropertyChangeEvent(new PropertyChangeEvent(
+                this, STATE_PROPERTY, null, processState));
+    }
+
     public void firePropertyChangeEvent(PropertyChangeEvent event){
         for(PropertyChangeListener pcl : propertyChangeListenerList){
             pcl.propertyChange(event);
         }
     }
-
-    public void clearLog(){
-        logMap = new HashMap<>();
-    }
-
 
     public enum ProcessState{
         RUNNING("Running"),

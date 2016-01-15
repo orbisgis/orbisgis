@@ -31,14 +31,19 @@ import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.*;
 import org.orbisgis.orbistoolbox.view.utils.dataProcessing.DataProcessingManager;
+import org.orbisgis.orbistoolbox.view.utils.editor.log.LogEditableElement;
+import org.orbisgis.orbistoolbox.view.utils.editor.log.LogEditor;
+import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
+import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditor;
 import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
+import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
-import org.orbisgis.sif.edition.Editor;
+import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
@@ -77,13 +82,14 @@ public class ToolBox implements DockingPanel {
     private static DriverFunctionContainer driverFunctionContainer;
 
     private Map<String, Object> properties;
-    /** OrbisGIS editorManager */
-    private EditorManager editorManager;
     /** Factory for the creation of the ProcessEditor (UI of a process instance) */
-    private ProcessEditorFactory pef;
     private DataProcessingManager dataProcessingManager;
+    private DockingManager dockingManager;
 
-    private Map<String, ProcessEditableElement> mapIdPee;
+    private LogEditableElement lee;
+    private LogEditor le;
+
+    private List<EditorDockable> openEditorList;
 
     private static final String TOOLBOX_REFERENCE = "orbistoolbox";
 
@@ -104,15 +110,18 @@ public class ToolBox implements DockingPanel {
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
 
-        pef = new ProcessEditorFactory(editorManager, this);
-        editorManager.addEditorFactory(pef);
         dataProcessingManager = new DataProcessingManager(this);
-        mapIdPee = new HashMap<>();
+        openEditorList = new ArrayList<>();
+        lee = new LogEditableElement();
+        le = null;
     }
 
     @Deactivate
     public void dispose(){
-        editorManager.removeEditorFactory(pef);
+        for(EditorDockable ed : openEditorList){
+            dockingManager.removeDockingPanel(ed.getDockingParameters().getName());
+        }
+        openEditorList = new ArrayList<>();
         toolBoxPanel.dispose();
     }
 
@@ -130,6 +139,18 @@ public class ToolBox implements DockingPanel {
 
     @Override
     public DockingPanelParameters getDockingParameters() {
+        //when the toolBox is closed, close all the editors
+        if(!parameters.isVisible()){
+            for(EditorDockable ed : openEditorList) {
+                if (ed instanceof ProcessEditor) {
+                    ((ProcessEditor)ed).setAlive(false);
+                }
+                dockingManager.removeDockingPanel(ed.getDockingParameters().getName());
+            }
+            openEditorList = new ArrayList<>();
+            lee.removePropertyChangeListener(le);
+            le = null;
+        }
         return parameters;
     }
 
@@ -162,25 +183,34 @@ public class ToolBox implements DockingPanel {
         Process process = processManager.getProcess(filePath);
         ProcessEditableElement pee = new ProcessEditableElement(
                 process, process.getTitle().replace(" ", "_") + "_" + index);
-        editorManager.openEditable(pee);
-        mapIdPee.put(pee.getId(), pee);
+        ProcessEditor pe = new ProcessEditor(this, pee);
+        boolean alreadyOpen = false;
+        for(EditorDockable ed : openEditorList){
+            if(ed.getDockingParameters().getName().equals(pe.getDockingParameters().getName())){
+                alreadyOpen = true;
+            }
+        }
+        if(!alreadyOpen) {
+            dockingManager.addDockingPanel(pe);
+            openEditorList.add(pe);
+        }
+        else{
+            LoggerFactory.getLogger(ToolBox.class).warn("The process '"+pee.getProcess().getTitle()+"' is already open.");
+        }
         return pee;
     }
 
-    /**
-     * Open the process instance.
-     */
-    public void openInstance(String instanceID){
-        editorManager.openEditable(mapIdPee.get(instanceID));
-    }
-
-    public void closeInstance(String instanceID){
-        for(Editor editor : editorManager.getEditors()){
-            if(editor instanceof ProcessEditor && editor.getEditableElement().getId().equals(instanceID)){
-                ((ProcessEditor) editor).removeAll();
-            }
+    public void validateInstance(ProcessEditableElement pee, ProcessEditor pe){
+        //If the LogEditor is not displayed, just do it <°>.
+        if(le == null) {
+            le = new LogEditor(this, lee);
+            dockingManager.addDockingPanel(le);
+            openEditorList.add(le);
         }
-        mapIdPee.remove(instanceID);
+
+        lee.addProcessEditableElement(pee);
+        dockingManager.removeDockingPanel(pe.getDockingParameters().getName());
+        openEditorList.remove(pe);
     }
 
     /**
@@ -258,6 +288,15 @@ public class ToolBox implements DockingPanel {
     }
 
     @Reference
+    public void setDockingManager(DockingManager dockingManager) {
+        this.dockingManager = dockingManager;
+    }
+
+    public void unsetDockingManager(DockingManager dockingManager) {
+        this.dockingManager = null;
+    }
+
+    @Reference
     public void setDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
         this.driverFunctionContainer = driverFunctionContainer;
     }
@@ -268,23 +307,6 @@ public class ToolBox implements DockingPanel {
 
     public DriverFunctionContainer getDriverFunctionContainer(){
         return driverFunctionContainer;
-    }
-
-    /**
-     * Sets the EditorManager to use.
-     * @param editorManager Editor windows manager
-     */
-    @Reference
-    public void setEditorManager(EditorManager editorManager) {
-        this.editorManager = editorManager;
-    }
-
-    /**
-     * Unset the ProcessEditor.
-     * @param editorManager Editor windows manager
-     */
-    public void unsetEditorManager(EditorManager editorManager) {
-        this.editorManager = editorManager;
     }
 
     public DataProcessingManager getDataProcessingManager() {
@@ -459,5 +481,12 @@ public class ToolBox implements DockingPanel {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return fieldValues;
+    }
+
+    public void killEditor(EditorDockable ed) {
+        if(openEditorList.contains(ed)){
+            dockingManager.removeDockingPanel(ed.getDockingParameters().getName());
+        }
+        openEditorList.remove(ed);
     }
 }

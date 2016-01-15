@@ -17,24 +17,25 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view.utils;
+package org.orbisgis.orbistoolbox.view.utils.editor.log;
 
 import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessPanelLayout;
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.edition.*;
 import org.slf4j.LoggerFactory;
 
 /**
- * EditorFactory for the WPS processes.
+ *
  *
  * @author Sylvain PALOMINOS
  */
-public class ProcessEditorFactory implements EditorFactory{
-    public static final String FACTORY_ID = "WPSProcessEditorFactory";
+public class LogEditorFactory implements EditorFactory{
+    public static final String FACTORY_ID = "WPSLogEditorFactory";
     private EditorManager editorManager;
     private ToolBox toolBox;
 
-    public ProcessEditorFactory(EditorManager editorManager, ToolBox toolBox){
+    public LogEditorFactory(EditorManager editorManager, ToolBox toolBox){
         this.editorManager = editorManager;
         this.toolBox = toolBox;
     }
@@ -49,14 +50,14 @@ public class ProcessEditorFactory implements EditorFactory{
 
     @Override
     public DockingPanelLayout makeEditableLayout(EditableElement editableElement) {
-        if(editableElement instanceof ProcessEditableElement) {
-            ProcessEditableElement editableProcess= (ProcessEditableElement)editableElement;
+        if(editableElement instanceof LogEditableElement) {
+            LogEditableElement editableProcess= (LogEditableElement)editableElement;
             if(isEditableAlreadyOpened(editableProcess)) { //Panel already created
-                LoggerFactory.getLogger(ProcessEditorFactory.class)
-                        .info("This process ("+editableProcess.getProcessReference()+") is already shown in an editor.");
+                LoggerFactory.getLogger(LogEditorFactory.class)
+                        .info("The process log is already shown in an editor.");
                 return null;
             }
-            return new ProcessPanelLayout(editableProcess);
+            return new LogPanelLayout(editableProcess);
         } else {
             return null;
         }
@@ -64,7 +65,7 @@ public class ProcessEditorFactory implements EditorFactory{
 
     private boolean isEditableAlreadyOpened(EditableElement editable) {
         for(Editor editor : editorManager.getEditors()) {
-            if(editor instanceof ProcessEditor && editable.equals(editor.getEditableElement())) {
+            if(editor instanceof LogEditor) {
                 return true;
             }
         }
@@ -83,9 +84,8 @@ public class ProcessEditorFactory implements EditorFactory{
 
     @Override
     public EditorDockable create(DockingPanelLayout layout) {
-        ProcessEditableElement editableProcess = ((ProcessPanelLayout)layout).getProcessEditableElement();
+        LogEditableElement editableProcess = ((LogPanelLayout)layout).getLogEditableElement();
         //Check the DataSource state
-        ProcessEditor pe = new ProcessEditor(toolBox, editableProcess);
-        return pe;
+        return new LogEditor(toolBox, editableProcess);
     }
 }

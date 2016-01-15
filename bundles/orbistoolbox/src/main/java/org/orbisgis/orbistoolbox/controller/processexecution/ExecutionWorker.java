@@ -24,8 +24,8 @@ import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.orbistoolbox.model.DescriptionType;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
-import org.orbisgis.orbistoolbox.view.utils.ProcessEditor;
+import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
+import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditor;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
@@ -76,12 +76,12 @@ public class ExecutionWorker extends SwingWorkerPM{
             //Print in the log the process execution start
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
-                    "Start process : " + process.getTitle());
+                    "Start process");
 
             //pre process the data
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
-                    "preProcess : " + process.getTitle());
+                    "preProcess");
             for(DescriptionType inputOrOutput : pee.getProcess().getOutput()){
                 toolBox.getDataProcessingManager().preProcessData(inputOrOutput, dataMap);
             }
@@ -92,14 +92,14 @@ public class ExecutionWorker extends SwingWorkerPM{
             //Execute the process and retrieve the groovy object.
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
-                    "Execute script : " + process.getTitle());
+                    "Execute script");
             groovyObject = toolBox.getProcessManager().executeProcess(
                     process, dataMap, toolBox.getProperties());
 
             //post process the data
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
-                    "postProcess : " + process.getTitle());
+                    "postProcess");
             for(DescriptionType inputOrOutput : pee.getProcess().getOutput()){
                 toolBox.getDataProcessingManager().postProcessData(inputOrOutput, dataMap);
             }
@@ -110,10 +110,10 @@ public class ExecutionWorker extends SwingWorkerPM{
             //Print in the log the process execution end
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
-                    "End process : " + process.getTitle());
+                    "End process");
         }
         catch (Exception e) {
-            pee.setState(ProcessEditableElement.ProcessState.ERROR);
+            pee.setProcessState(ProcessEditableElement.ProcessState.ERROR);
             //Print in the log the process execution error
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.ERROR,
@@ -132,6 +132,7 @@ public class ExecutionWorker extends SwingWorkerPM{
                 mapOutput.put(entry.getKey(), entry.getValue());
             }
         }
+        pee.setProcessState(ProcessEditableElement.ProcessState.COMPLETED);
         //Print in the log the process end the process
         processEditor.endProcess(mapOutput);
     }
