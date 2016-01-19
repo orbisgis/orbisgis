@@ -30,23 +30,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * EditableElement associated to the LogEditor.
+ *
  * @author Sylvain PALOMINOS
  */
 public class LogEditableElement implements EditableElement, PropertyChangeListener {
-
+    /** Unique id of the LogEditableElement. */
     public static final String ID = "LOG_EDITABLE_ELEMENT";
-    public static final String NEW_PEE_PROPERTY = "NEW_PEE_PROPERTY";
-
-    private boolean isModified = false;
-    private boolean isOpen = false;
+    /** List of ProcessEditableElements displayed by the Editor. */
     private List<ProcessEditableElement> listPee = new ArrayList<>();
+    /** List of listeners. */
     private List<PropertyChangeListener> changeListenerList = new ArrayList<>();
 
     public void addProcessEditableElement(ProcessEditableElement pee){
         listPee.add(pee);
         pee.addPropertyChangeListener(this);
-        PropertyChangeEvent event = new PropertyChangeEvent(this, NEW_PEE_PROPERTY, null, pee);
-        firePropertyChange(event);
     }
 
     @Override
@@ -76,17 +74,16 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
 
     @Override
     public boolean isModified() {
-        return isModified;
+        return false;
     }
 
     @Override
     public void setModified(boolean modified) {
-        isModified = modified;
     }
 
     @Override
     public boolean isOpen() {
-        return isOpen;
+        return false;
     }
 
     @Override
@@ -96,7 +93,6 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
 
     @Override
     public void open(ProgressMonitor progressMonitor) throws UnsupportedOperationException, EditableElementException {
-        isOpen = true;
     }
 
     @Override
@@ -106,7 +102,6 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
 
     @Override
     public void close(ProgressMonitor progressMonitor) throws UnsupportedOperationException, EditableElementException {
-        isOpen = false;
     }
 
     @Override

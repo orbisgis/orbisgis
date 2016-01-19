@@ -31,22 +31,35 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
+ * This class display all the usefull information about a running process.
+ *
  * @author Sylvain PALOMINOS
  */
 public class LogPanel extends JPanel {
 
-    private JLabel icon;
-    private JLabel time;
-    private long startTime;
-    private Timer timer;
-    private JTextArea logArea;
+    private static final int ONE_SECOND = 1000;
 
+    /** Icon of the state of the process. */
+    private JLabel icon;
+    /** Running time of the process. */
+    private JLabel time;
+    /** Time in milliseconds when the process has started. */
+    private long startTime;
+    /** Timer of 1 second used to refresh the process running time. */
+    private Timer timer;
+    /** TextArea where the process log is displayed. */
+    private JTextArea logArea;
+    /** Tells if the log is running or not. */
     private boolean running;
 
+    /**
+     * Main Constructor.
+     * @param processName Name of the running process.
+     */
     public LogPanel(String processName){
         startTime = System.currentTimeMillis();
         running = true;
-
+        //Build the UI
         this.setLayout(new MigLayout("fill"));
         icon = new JLabel();
         this.add(icon);
@@ -63,15 +76,21 @@ public class LogPanel extends JPanel {
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         this.add(scrollPane, "growx, span");
 
-        timer = new Timer(1000, EventHandler.create(ActionListener.class, this, "setTime"));
+        timer = new Timer(ONE_SECOND, EventHandler.create(ActionListener.class, this, "setTime"));
         timer.start();
     }
 
+    /**
+     * Stop the log.
+     */
     public void stop(){
         timer.stop();
         running = false;
     }
 
+    /**
+     * Refresh the running time displayed.
+     */
     public void setTime(){
         if(running) {
             Date date = new Date(System.currentTimeMillis() - startTime - 3600 * 1000);
@@ -80,6 +99,10 @@ public class LogPanel extends JPanel {
         }
     }
 
+    /**
+     * Sets the process state.
+     * @param state State of the running process.
+     */
     public void setState(ProcessEditableElement.ProcessState state){
         switch(state){
             case COMPLETED:
@@ -94,7 +117,14 @@ public class LogPanel extends JPanel {
         }
     }
 
+    /**
+     * Adds text to the log.
+     * @param newLine New text line to add to the log.
+     */
     public void addLogText(String newLine){
-        logArea.setText(logArea.getText()+"\n"+newLine);
+        if(!logArea.getText().isEmpty()){
+            logArea.setText(logArea.getText()+"\n");
+        }
+        logArea.setText(logArea.getText()+newLine);
     }
 }

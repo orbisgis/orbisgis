@@ -52,6 +52,7 @@ import java.util.Map;
 public class ProcessEditor extends JPanel implements EditorDockable, PropertyChangeListener {
 
     private static final int SCROLLBAR_UNIT_INCREMENT = 16;
+    /** Name of the EditorDockable. */
     public static final String NAME = "PROCESS_EDITOR";
 
     private ProcessEditableElement pee;
@@ -61,7 +62,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private JTabbedPane tabbedPane;
     /** DataUIManager used to create the UI corresponding the the data */
     private DataUIManager dataUIManager;
-
+    /** Tells if the this editor has been open or not. */
     private boolean alive;
 
     public ProcessEditor(ToolBox toolBox, ProcessEditableElement pee){
@@ -83,12 +84,17 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         this.revalidate();
     }
 
+    /**
+     * Sets if this editor has been open..
+     * @param alive True if this editor is open, false otherwise.
+     */
     public void setAlive(boolean alive){
         this.alive = alive;
     }
 
     @Override
     public DockingPanelParameters getDockingParameters() {
+        //if this editor is not visible but was open, close it.
         if(!dockingPanelParameters.isVisible() && alive){
             alive = false;
             toolBox.killEditor(this);

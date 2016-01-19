@@ -47,17 +47,27 @@ import java.util.Map;
  * @author Sylvain PALOMINOS
  */
 public class LogEditor extends JPanel implements EditorDockable, PropertyChangeListener {
-
+    private static final int FIVE_SECOND = 5000;
+    /** Name of the EditorDockable. */
     private static final String NAME = "LOG_EDITOR";
-    private static final String PROCESS_RUNNING_TEXT = "Process running : ";
 
+    /** LogEditableElement. */
     private LogEditableElement lee;
+    /** DockingParameters. */
     private DockingPanelParameters dockingPanelParameters;
+    /** Map of LogPanel to display. */
     private Map<String, LogPanel> componentMap;
+    /** List of process ended, waiting the 5 seconds before beeing removed.*/
     private LinkedList<String> endProcessFIFO;
+    /** Content panel which is only scrollable vertically. */
     private VerticalScrollablePanel contentPanel;
+    /** Label displaying the actual number of process running. */
     private JLabel processRunning;
 
+    /**
+     * Main constructor.
+     * @param lee LogEditableElement associated to this LogEditor.
+     */
     public LogEditor(LogEditableElement lee){
         this.setLayout(new MigLayout("fill, top"));
         this.lee = lee;
@@ -76,7 +86,7 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         this.add(scrollPane, "growx, growy");
-        processRunning = new JLabel(PROCESS_RUNNING_TEXT+0);
+        processRunning = new JLabel("Process running : "+0);
         contentPanel.add(processRunning, "growx, wrap");
         contentPanel.add(new JSeparator(), "growx, wrap");
 
@@ -84,21 +94,27 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         endProcessFIFO = new LinkedList<>();
     }
 
+    /**
+     * Adds a new running process.
+     * Its log will be displayed dynamically.
+     * @param pee ProcessEditableElement of the running process to add.
+     */
     private void addNewLog(ProcessEditableElement pee){
         LogPanel panel = new LogPanel(pee.getProcess().getTitle());
+        panel.setState(ProcessEditableElement.ProcessState.RUNNING);
         componentMap.put(pee.getId(), panel);
         contentPanel.add(panel, "growx, span");
-        processRunning.setText(PROCESS_RUNNING_TEXT+componentMap.size());
+        processRunning.setText("Process running : "+componentMap.size());
     }
 
+    /**
+     * The LogPanel corresponding to the process represented by the ProcessEditableElement is prepared to be removed
+     * in 5 seconds and its log is copied to the OrbisGIS log.
+     * @param pee ProcessEditableElement corresponding to the process.
+     * @param successful True if the process has been successfully run, false otherwise.
+     */
     private void removeLog(ProcessEditableElement pee, boolean successful){
         LogPanel lp = componentMap.get(pee.getId());
-        if(successful) {
-            lp.setState(ProcessEditableElement.ProcessState.COMPLETED);
-        }
-        else{
-            lp.setState(ProcessEditableElement.ProcessState.ERROR);
-        }
         String log = "\n=====================================\n"+
                 "WPS Process : "+pee.getProcess().getTitle() +"\n"+
                 "=====================================\n"+
@@ -107,21 +123,32 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         for(Map.Entry<String, Color> entry : pee.getLogMap().entrySet()){
             log+=entry.getKey()+"\n";
         }
-        LoggerFactory.getLogger(LogEditor.class).info(log);
+        if(successful) {
+            LoggerFactory.getLogger(LogEditor.class).info(log);
+            lp.setState(ProcessEditableElement.ProcessState.COMPLETED);
+        }
+        else{
+            LoggerFactory.getLogger(LogEditor.class).error(log);
+            lp.setState(ProcessEditableElement.ProcessState.ERROR);
+        }
         lp.stop();
         lp.addLogText("(This window will be automatically closed in 5 seconds)\n" +
                 "(The process log will be printed in the OrbisGIS log)");
         endProcessFIFO.add(pee.getId());
-        Timer timer5S = new Timer(5000, EventHandler.create(ActionListener.class, this, "endInstance"));
+        //Start the time to fully remove the log in 5 second.
+        Timer timer5S = new Timer(FIVE_SECOND, EventHandler.create(ActionListener.class, this, "endInstance"));
         timer5S.setRepeats(false);
         timer5S.start();
     }
 
+    /**
+     * Fully remove the log from the UI.
+     */
     public void endInstance(){
         String id = endProcessFIFO.removeFirst();
         contentPanel.remove(componentMap.get(id));
         componentMap.remove(id);
-        processRunning.setText(PROCESS_RUNNING_TEXT+componentMap.size());
+        processRunning.setText("Process running : "+componentMap.size());
         this.repaint();
     }
 
@@ -176,6 +203,10 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         }
     }
 
+    /**
+     * This class extends the JPanel class and implement the Scrollable interface.
+     * By implementing Scrollable, this class take all the width of the JScrollPane and won't be scrolled horizontally.
+     */
     private class VerticalScrollablePanel extends JPanel implements Scrollable{
         private static final int MAGIC_UNIT_INCREMENT = 16;
         private static final int MAGIC_BLOCK_INCREMENT = 16;
