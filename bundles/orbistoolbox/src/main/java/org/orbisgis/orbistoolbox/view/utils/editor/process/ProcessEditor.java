@@ -73,7 +73,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         dockingPanelParameters.setName(NAME+"_"+pee.getProcess().getTitle());
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("script"));
         dockingPanelParameters.setDefaultDockingLocation(
-                new DockingLocation(DockingLocation.Location.STACKED_ON, toolBox.getReference()));
+                new DockingLocation(DockingLocation.Location.STACKED_ON, ToolBox.TOOLBOX_REFERENCE));
         dockingPanelParameters.setTitle(pee.getProcessReference());
         this.setLayout(new BorderLayout());
         dataUIManager = toolBox.getDataUIManager();
@@ -142,7 +142,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      * @return True if the process has already been launch, false otherwise.
      */
     public boolean runProcess(){
-        toolBox.validateInstance(pee, this);
+        toolBox.validateInstance(this);
         pee.setProcessState(ProcessEditableElement.ProcessState.RUNNING);
         //Run the process in a separated thread
         ExecutionWorker thread = new ExecutionWorker(pee, toolBox);

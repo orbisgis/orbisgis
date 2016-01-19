@@ -58,14 +58,14 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
     private VerticalScrollablePanel contentPanel;
     private JLabel processRunning;
 
-    public LogEditor(ToolBox toolBox, LogEditableElement lee){
+    public LogEditor(LogEditableElement lee){
         this.setLayout(new MigLayout("fill, top"));
         this.lee = lee;
         this.lee.addPropertyChangeListener(this);
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("log"));
         dockingPanelParameters.setDefaultDockingLocation(
-                new DockingLocation(DockingLocation.Location.STACKED_ON, toolBox.getReference()));
+                new DockingLocation(DockingLocation.Location.STACKED_ON, ToolBox.TOOLBOX_REFERENCE));
         dockingPanelParameters.setTitle("WPS log");
         dockingPanelParameters.setName(NAME);
         dockingPanelParameters.setCloseable(false);

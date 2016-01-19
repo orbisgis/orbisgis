@@ -56,13 +56,13 @@ public class ProcessEditableElement implements EditableElement{
     private final String ID;
     private ProcessState state;
 
-    public ProcessEditableElement(Process process, String ID){
+    public ProcessEditableElement(Process process){
         this.process = process;
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
         this.logMap = new LinkedHashMap<>();
         this.propertyChangeListenerList = new ArrayList<>();
-        this.ID = ID+System.currentTimeMillis();
+        this.ID = process.getTitle()+System.currentTimeMillis();
     }
 
     @Override

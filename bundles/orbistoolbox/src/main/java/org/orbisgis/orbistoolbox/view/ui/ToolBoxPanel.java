@@ -227,34 +227,12 @@ public class ToolBoxPanel extends JPanel {
                     if (selectedNode.isValidNode()) {
                         //if the selected node is a PROCESS node, open a new instance.
                         if(selectedNode.getNodeType().equals(TreeNodeWps.NodeType.PROCESS)) {
-                            toolBox.openProcess(new File(selectedNode.getUri()), getNextIndex(selectedNode));
+                            toolBox.openProcess(new File(selectedNode.getUri()));
                         }
                     }
                 }
             }
         }
-    }
-
-    /**
-     * Returns the lower available index for a new instance node.
-     * @param node Process node to analyse.
-     * @return Lower available index.
-     */
-    private int getNextIndex(TreeNodeWps node){
-        if(node.getChildCount() == 0){
-            return 0;
-        }
-        int index = 0;
-        for(int i=0; i<node.getChildCount(); i++){
-            String nodeName = ((TreeNodeWps)node.getChildAt(i)).getUserObject().toString();
-            int j = nodeName.length()-1;
-            while(nodeName.charAt(j)<='9' && nodeName.charAt(j)>=0){
-                j--;
-            }
-            j++;
-            index = Math.max(Integer.parseInt(nodeName.substring(j)), index);
-        }
-        return index+1;
     }
 
     /**
