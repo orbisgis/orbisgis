@@ -45,7 +45,6 @@ import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
-import org.orbisgis.sif.edition.*;
 import org.osgi.framework.FrameworkUtil;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.osgi.service.component.annotations.Activate;
@@ -56,6 +55,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
@@ -176,7 +176,7 @@ public class ToolBox implements DockingPanel  {
             }
         }
         areScriptsCopied = true;
-        addLocalSource(wpsScriptFolder);
+        addLocalSource(wpsScriptFolder.toURI());
     }
 
     @Deactivate
@@ -239,26 +239,26 @@ public class ToolBox implements DockingPanel  {
         OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBox.AddSource", "Add a source");
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFolderPanel)){
-            addLocalSource(openFolderPanel.getSelectedFile());
+            addLocalSource(openFolderPanel.getSelectedFile().toURI());
         }
     }
 
     /**
      * Adds a folder as a local script source.
-     * @param file Folder where the script are located.
+     * @param uri Folder URI where the script are located.
      */
-    public void addLocalSource(File file){
-        processManager.addLocalSource(file.getAbsolutePath());
-        toolBoxPanel.addLocalSource(file, processManager);
+    public void addLocalSource(URI uri){
+        processManager.addLocalSource(uri);
+        toolBoxPanel.addLocalSource(uri, processManager);
     }
 
     /**
      * Open the process window for the selected process.
-     * @param scriptFile Script file to execute as a process.
+     * @param scriptUri Script URI to execute as a process.
      * @return The ProcessEditableElement which contains the running process information (log, state, ...).
      */
-    public ProcessEditableElement openProcess(File scriptFile){
-        Process process = processManager.getProcess(scriptFile);
+    public ProcessEditableElement openProcess(URI scriptUri){
+        Process process = processManager.getProcess(scriptUri);
         ProcessEditableElement pee = new ProcessEditableElement(process);
         ProcessEditor pe = new ProcessEditor(this, pee);
         //Find if there is already a ProcessEditor open with the same process.
@@ -299,23 +299,24 @@ public class ToolBox implements DockingPanel  {
 
     /**
      * Verify if the given file is a well formed script.
-     * @param f File to check.
+     * @param uri URI to check.
      * @return True if the file is well formed, false otherwise.
      */
-    public boolean checkProcess(File f){
-        Process process = processManager.getProcess(f);
+    public boolean checkProcess(URI uri){
+        Process process = processManager.getProcess(uri);
         if(process != null){
             processManager.removeProcess(process);
         }
-        return (processManager.addLocalScript(f) != null);
+        return (processManager.addLocalScript(uri) != null);
     }
 
     /**
      * Verify if the given file is a well formed script.
-     * @param f File to check.
+     * @param uri URI to check.
      * @return True if the file is well formed, false otherwise.
      */
-    public boolean checkFolder(File f){
+    public boolean checkFolder(URI uri){
+        File f = new File(uri);
         if(f.exists() && f.isDirectory()){
             for(File file : f.listFiles()){
                 if(file.getAbsolutePath().endsWith("."+GROOVY_EXTENSION)){
@@ -329,8 +330,8 @@ public class ToolBox implements DockingPanel  {
     /**
      * Remove the selected process in the tree.
      */
-    public void removeProcess(File file){
-        processManager.removeProcess(processManager.getProcess(file));
+    public void removeProcess(URI uri){
+        processManager.removeProcess(processManager.getProcess(uri));
     }
 
     /**
@@ -518,11 +519,12 @@ public class ToolBox implements DockingPanel  {
 
     /**
      * Loads the given file into the geocatalog and return its table name.
-     * @param f File to load.
+     * @param uri URI to load.
      * @return Table name of the loaded file. Returns null if the file can't be loaded.
      */
-    public String loadFile(File f) {
+    public String loadURI(URI uri) {
         try {
+            File f = new File(uri);
             //Get the table name of the file
             String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), true);
             String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
@@ -540,11 +542,12 @@ public class ToolBox implements DockingPanel  {
 
     /**
      * Save a geocatalog table into a file.
-     * @param f File where the table will be saved.
+     * @param uri URI where the table will be saved.
      * @param tableName Name of the table to save.
      */
-    public void saveFile(File f, String tableName){
+    public void saveURI(URI uri, String tableName){
         try {
+            File f = new File(uri);
             //Find the good driver and save the file.
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
             DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(

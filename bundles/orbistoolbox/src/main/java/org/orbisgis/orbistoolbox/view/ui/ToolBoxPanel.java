@@ -223,10 +223,10 @@ public class ToolBoxPanel extends JPanel {
                             break;
                         case FOLDER:
                             //Check if the folder exists and it it contains some scripts
-                            isValid = toolBox.checkFolder(new File(selectedNode.getUri()));
+                            isValid = toolBox.checkFolder(selectedNode.getUri());
                             break;
                         case PROCESS:
-                            isValid = toolBox.checkProcess(new File(selectedNode.getUri()));
+                            isValid = toolBox.checkProcess(selectedNode.getUri());
                             break;
                     }
                     selectedNode.setValidNode(isValid);
@@ -236,7 +236,7 @@ public class ToolBoxPanel extends JPanel {
                     if (selectedNode.isValidNode()) {
                         //if the selected node is a PROCESS node, open a new instance.
                         if(selectedNode.getNodeType().equals(TreeNodeWps.NodeType.PROCESS)) {
-                            toolBox.openProcess(new File(selectedNode.getUri()));
+                            toolBox.openProcess(selectedNode.getUri());
                         }
                     }
                 }
@@ -260,14 +260,14 @@ public class ToolBoxPanel extends JPanel {
     /**
      * Adds a process in the category model.
      * @param p Process to add.
-     * @param f Process file.
+     * @param uri Process URI.
      */
-    public void addScriptInCategoryModel(Process p, File f){
+    public void addScriptInCategoryModel(Process p, URI uri){
         String[] categories = decodeCategories(p);
 
         TreeNodeWps root = (TreeNodeWps) categoryModel.getRoot();
         TreeNodeWps script = new TreeNodeWps();
-        script.setUri(f.toURI());
+        script.setUri(uri);
         script.setNodeType(TreeNodeWps.NodeType.PROCESS);
         TreeNodeWps categoryNode = getSubNode(categories[0], root);
         if(categoryNode == null){
@@ -292,14 +292,14 @@ public class ToolBoxPanel extends JPanel {
                     categoryModel.insertNodeInto(subSubCategoryNode, subCategoryNode, 0);
                 }
                 if(!isNodeExisting(script.getUri(), subSubCategoryNode)) {
-                    script.setValidNode((toolBox.getProcessManager().getProcess(f) != null));
+                    script.setValidNode((toolBox.getProcessManager().getProcess(uri) != null));
                     categoryModel.insertNodeInto(script, subSubCategoryNode, 0);
                     tree.expandPath(new TreePath(subSubCategoryNode.getPath()));
                 }
             }
             else {
                 if(!isNodeExisting(script.getUri(), subCategoryNode)) {
-                    script.setValidNode((toolBox.getProcessManager().getProcess(f) != null));
+                    script.setValidNode((toolBox.getProcessManager().getProcess(uri) != null));
                     categoryModel.insertNodeInto(script, subCategoryNode, 0);
                     tree.expandPath(new TreePath(subCategoryNode.getPath()));
                 }
@@ -307,7 +307,7 @@ public class ToolBoxPanel extends JPanel {
         }
         else {
             if(!isNodeExisting(script.getUri(), categoryNode)) {
-                script.setValidNode((toolBox.getProcessManager().getProcess(f) != null));
+                script.setValidNode((toolBox.getProcessManager().getProcess(uri) != null));
                 categoryModel.insertNodeInto(script, categoryNode, 0);
                 tree.expandPath(new TreePath(categoryNode.getPath()));
             }
@@ -316,7 +316,7 @@ public class ToolBoxPanel extends JPanel {
 
     /**
      * Tests if the parent node contain a child representing the given file.
-     * @param uri File to test.
+     * @param uri URI to test.
      * @param parent Parent to test.
      * @return True if the parent contain the file.
      */
@@ -374,14 +374,15 @@ public class ToolBoxPanel extends JPanel {
 
     /**
      * Adds a local source. Open the given directory and find all the groovy script contained.
-     * @param directory Directory to analyse.
+     * @param directoryUri Directory URI to analyse.
      * @param processManager ProcessManager.
      */
-    public void addLocalSource(File directory, ProcessManager processManager) {
-        addLocalSourceInFileModel(directory, mapHostNode.get(LOCALHOST_URI));
+    public void addLocalSource(URI directoryUri, ProcessManager processManager) {
+        addLocalSourceInFileModel(directoryUri, mapHostNode.get(LOCALHOST_URI));
+        File directory = new File(directoryUri);
         for (File f : directory.listFiles()) {
             if (f.getName().endsWith(".groovy")) {
-                addScriptInCategoryModel(processManager.getProcess(f), f);
+                addScriptInCategoryModel(processManager.getProcess(f.toURI()), f.toURI());
             }
         }
         refresh();
@@ -391,34 +392,33 @@ public class ToolBoxPanel extends JPanel {
      * Adds a source in the file model.
      * @param directory Script file to add.
      */
-    private void addLocalSourceInFileModel(File directory, TreeNodeWps hostNode){
-        TreeNodeWps root = (TreeNodeWps) fileModel.getRoot();
-
-        TreeNodeWps source = null;
+    private void addLocalSourceInFileModel(URI directory, TreeNodeWps hostNode){
+        TreeNodeWps source = getChildWithUri(directory, hostNode);
         boolean isScript = false;
+        String folderName = new File(directory).getName();
 
-        for(int i=0; i<root.getChildCount(); i++){
-            if(((TreeNodeWps)root.getChildAt(i)).getUserObject().equals(directory.getName())){
-                source = (TreeNodeWps)root.getChildAt(i);
-                isScript = true;
-            }
-        }
         if(source == null) {
             source = new TreeNodeWps();
-            source.setValidNode(false);
-            source.setUserObject(directory.getName());
-            source.setUri(directory.toURI());
+            source.setValidNode(true);
+            source.setUserObject(folderName);
+            source.setUri(directory);
             source.setNodeType(TreeNodeWps.NodeType.FOLDER);
             fileModel.insertNodeInto(source, hostNode, 0);
         }
 
-        for(File f : getAllWpsScript(directory)){
-            if(getChildWithUri(f.toURI(), source) == null) {
+        for(URI uri : getAllWpsScript(directory)){
+            if(getChildWithUri(uri, source) == null) {
+                Process process = toolBox.getProcessManager().getProcess(uri);
                 TreeNodeWps script = new TreeNodeWps();
-                script.setUserObject(f.getName().replace(".groovy", ""));
-                script.setUri(f.toURI());
-                script.setValidNode(toolBox.getProcessManager().getProcess(f) != null);
+                script.setUri(uri);
+                script.setValidNode(process != null);
                 script.setNodeType(TreeNodeWps.NodeType.PROCESS);
+                if(process != null){
+                    script.setUserObject(process.getTitle());
+                }
+                else{
+                    script.setUserObject(new File(uri).getName().replace(".groovy", ""));
+                }
                 fileModel.insertNodeInto(script, source, 0);
                 isScript = true;
             }
@@ -429,16 +429,17 @@ public class ToolBoxPanel extends JPanel {
 
     /**
      * Returns all the WPS script file contained by the directory.
-     * @param directory Directory to analyse.
-     * @return The list of files.
+     * @param directory URI to analyse.
+     * @return The list of URI.
      */
-    private List<File> getAllWpsScript(File directory) {
-        List<File> scriptList = new ArrayList<>();
-        if (directory.exists() && directory.isDirectory()) {
-            for (File f : directory.listFiles()) {
-                if (f != null) {
-                    if (f.isFile() && f.getName().endsWith(".groovy")) {
-                        scriptList.add(f);
+    private List<URI> getAllWpsScript(URI directory) {
+        List<URI> scriptList = new ArrayList<>();
+        File f = new File(directory);
+        if (f.exists() && f.isDirectory()) {
+            for (File file : f.listFiles()) {
+                if (file != null) {
+                    if (file.isFile() && file.getName().endsWith(".groovy")) {
+                        scriptList.add(file.toURI());
                     }
                 }
             }
@@ -471,11 +472,10 @@ public class ToolBoxPanel extends JPanel {
                 switch(leaf.getNodeType()){
                     case FOLDER:
                     case PROCESS:
-                        File file = new File(leaf.getUri());
                         for(FileTreeModel model : modelList){
-                            cleanParentNode(getChildWithUri(file.toURI(), (TreeNodeWps) fileModel.getRoot()), model);
+                            cleanParentNode(getChildWithUri(leaf.getUri(), (TreeNodeWps) fileModel.getRoot()), model);
                         }
-                        toolBox.removeProcess(new File(leaf.getUri()));
+                        toolBox.removeProcess(leaf.getUri());
                         break;
                 }
             }
@@ -484,7 +484,7 @@ public class ToolBoxPanel extends JPanel {
 
     /**
      * Get the child node of a parent which represent the given file.
-     * @param uri File represented by the node.
+     * @param uri URI represented by the node.
      * @param parent Parent of the node.
      * @return The child node.
      */
@@ -553,11 +553,11 @@ public class ToolBoxPanel extends JPanel {
         TreeNodeWps node = (TreeNodeWps) tree.getLastSelectedPathComponent();
         if(node != null) {
             if (node.isLeaf()) {
-                node.setValidNode(toolBox.checkProcess(new File(node.getUri())));
+                node.setValidNode(toolBox.checkProcess(node.getUri()));
             } else {
                 //For each node, test if it is valid, and set the state of the corresponding node in the trees.
                 for (TreeNodeWps child : getAllLeaf(node)) {
-                    boolean isValid = toolBox.checkProcess(new File(child.getUri()));
+                    boolean isValid = toolBox.checkProcess(child.getUri());
                     TreeNodeWps updated;
                     updated = getChildWithUri(child.getUri(), (TreeNodeWps) categoryModel.getRoot());
                     updated.setValidNode(isValid);
@@ -567,7 +567,7 @@ public class ToolBoxPanel extends JPanel {
                     fileModel.nodeChanged(updated);
                 }
                 if (tree.getModel().equals(fileModel)) {
-                    toolBox.addLocalSource(new File(node.getUri()));
+                    toolBox.addLocalSource(node.getUri());
                 }
             }
         }

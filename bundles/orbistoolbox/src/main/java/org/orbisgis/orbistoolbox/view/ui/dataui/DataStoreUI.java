@@ -417,7 +417,7 @@ public class DataStoreUI implements DataUI{
             DataStore dataStore = (DataStore) source.getClientProperty("dataStore");
             URI selectedFileURI = openFilePanel.getSelectedFile().toURI();
             //Load the selected file an retrieve the table name.
-            String tableName = loadDataStore(selectedFileURI);
+            String tableName = toolBox.loadURI(selectedFileURI);
             if(tableName != null) {
                 //Saves the table name in the URI into the uri fragment
                 selectedFileURI = URI.create(selectedFileURI.toString()+"#"+tableName);
@@ -453,7 +453,7 @@ public class DataStoreUI implements DataUI{
             File file = new File(document.getText(0, document.getLength()));
             if(inputOrOutput instanceof Input) {
                 //Load the selected file an retrieve the table name.
-                String tableName = loadDataStore(file.toURI());
+                String tableName = toolBox.loadURI(file.toURI());
                 if (tableName != null) {
                     //Saves the table name in the URI into the uri fragment
                     URI selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
@@ -496,7 +496,7 @@ public class DataStoreUI implements DataUI{
             DataStore dataStore = (DataStore)document.getProperty("dataStore");
             URI dataBaseURI = URI.create(document.getText(0, document.getLength()));
             //Load the selected file an retrieve the table name.
-            String tableName = loadDataStore(dataBaseURI);
+            String tableName = toolBox.loadURI(dataBaseURI);
             if(tableName != null) {
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
@@ -516,18 +516,5 @@ public class DataStoreUI implements DataUI{
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
         }
-    }
-
-    /**
-     * Load the given data source.
-     * @param dataStoreURI Uri of the data source to load.
-     * @return The table name of the data source.
-     */
-    private String loadDataStore(URI dataStoreURI){
-        File f = new File(dataStoreURI);
-        if(f.isFile()) {
-            return toolBox.loadFile(f);
-        }
-        return null;
     }
 }

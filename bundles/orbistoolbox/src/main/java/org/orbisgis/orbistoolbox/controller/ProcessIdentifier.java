@@ -21,6 +21,8 @@ package org.orbisgis.orbistoolbox.controller;
 
 import org.orbisgis.orbistoolbox.model.Process;
 
+import java.net.URI;
+
 /**
  * @author Sylvain PALOMINOS
  **/
@@ -29,12 +31,12 @@ public class ProcessIdentifier {
 
     private Class clazz;
     private Process process;
-    private String absolutePath;
+    private URI uri;
 
-    public ProcessIdentifier(Class clazz, Process process, String absolutePath){
+    public ProcessIdentifier(Class clazz, Process process, URI uri){
         this.clazz = clazz;
         this.process = process;
-        this.absolutePath = absolutePath;
+        this.uri = uri;
     }
 
 
@@ -46,7 +48,7 @@ public class ProcessIdentifier {
         return process;
     }
 
-    public String getAbsolutePath() {
-        return absolutePath;
+    public URI getURI() {
+        return uri;
     }
 }

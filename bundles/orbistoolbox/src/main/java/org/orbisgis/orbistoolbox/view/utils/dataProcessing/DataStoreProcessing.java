@@ -57,7 +57,7 @@ public class DataStoreProcessing implements DataProcessing {
                 dataMap.put(uri, tableName);
             }
             else if(dataStoreURI.getScheme().equals("file")){
-                tableName = toolBox.loadFile(new File(dataStoreURI.getPath()));
+                tableName = toolBox.loadURI(dataStoreURI);
                 dataMap.put(uri, tableName);
             }
         }
@@ -85,7 +85,7 @@ public class DataStoreProcessing implements DataProcessing {
             URI uri = inputOrOutput.getIdentifier();
             URI dataStoreURI = (URI)stash.get(uri);
             if(dataStoreURI.getScheme().equals("file")){
-                toolBox.saveFile(new File(dataStoreURI.getSchemeSpecificPart()), dataMap.get(uri).toString().toUpperCase());
+                toolBox.saveURI(URI.create(dataStoreURI.getSchemeSpecificPart()), dataMap.get(uri).toString().toUpperCase());
             }
         }
         return null;
