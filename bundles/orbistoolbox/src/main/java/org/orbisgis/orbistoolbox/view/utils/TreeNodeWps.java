@@ -82,7 +82,7 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
                     }
                     //If the folder is a leaf, it mean that it doesn't contain any script, so it is invalid.
                 case FOLDER:
-                    return ToolBoxIcon.getIcon("folder_invalid");
+                    return ToolBoxIcon.getIcon("folder_closed");
                 //The the process is invalid if it can't be parsed..
                 case PROCESS:
                     if (isValid) {
@@ -123,9 +123,9 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
                     //The folder can be invalid if no valid script are found inside.
                 case FOLDER:
                     if (isValid) {
-                        return ToolBoxIcon.getIcon("folder");
+                        return ToolBoxIcon.getIcon("folder_closed");
                     } else {
-                        return ToolBoxIcon.getIcon("folder_invalid");
+                        return ToolBoxIcon.getIcon("folder_closed");
                     }
                     //The the process is invalid if it can't be parsed..
                 case PROCESS:
@@ -169,7 +169,7 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
                     if (isValid) {
                         return ToolBoxIcon.getIcon("folder_open");
                     } else {
-                        return ToolBoxIcon.getIcon("folder_invalid");
+                        return ToolBoxIcon.getIcon("folder_closed");
                     }
                     //The the process is invalid if it can't be parsed..
                 case PROCESS:

@@ -35,7 +35,6 @@ import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
 
 import javax.swing.*;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
@@ -394,7 +393,6 @@ public class ToolBoxPanel extends JPanel {
      */
     private void addLocalSourceInFileModel(URI directory, TreeNodeWps hostNode){
         TreeNodeWps source = getChildWithUri(directory, hostNode);
-        boolean isScript = false;
         String folderName = new File(directory).getName();
 
         if(source == null) {
@@ -420,10 +418,8 @@ public class ToolBoxPanel extends JPanel {
                     script.setUserObject(new File(uri).getName().replace(".groovy", ""));
                 }
                 fileModel.insertNodeInto(script, source, 0);
-                isScript = true;
             }
         }
-        source.setValidNode(isScript);
         tree.expandPath(new TreePath(source.getPath()));
     }
 
@@ -471,9 +467,16 @@ public class ToolBoxPanel extends JPanel {
             for(TreeNodeWps leaf : leafList){
                 switch(leaf.getNodeType()){
                     case FOLDER:
+                        cleanParentNode(getChildWithUri(leaf.getUri(),
+                                (TreeNodeWps)selectedModel.getRoot()),
+                                selectedModel);
+                        break;
                     case PROCESS:
                         for(FileTreeModel model : modelList){
-                            cleanParentNode(getChildWithUri(leaf.getUri(), (TreeNodeWps) fileModel.getRoot()), model);
+                            TreeNodeWps child = getChildWithUri(leaf.getUri(), (TreeNodeWps) model.getRoot());
+                            if(child != null) {
+                                cleanParentNode(child, model);
+                            }
                         }
                         toolBox.removeProcess(leaf.getUri());
                         break;
@@ -533,14 +536,15 @@ public class ToolBoxPanel extends JPanel {
      * @param model Model containing the node.
      */
     private void cleanParentNode(TreeNodeWps node, FileTreeModel model){
-        TreeNode[] treeNodeTab = model.getPathToRoot(node);
         model.removeNodeFromParent(node);
+        /* Piece of code to remove empty parents
+        TreeNode[] treeNodeTab = model.getPathToRoot(node);
         if(treeNodeTab.length>1) {
             TreeNodeWps parent = (TreeNodeWps) treeNodeTab[treeNodeTab.length - 2];
             if (parent != model.getRoot() && parent.isLeaf() && parent.getParent() != null) {
                 cleanParentNode(parent, model);
             }
-        }
+        }*/
     }
 
     /**
