@@ -29,20 +29,16 @@ import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.Timer;
-import javax.swing.plaf.LayerUI;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * UI for the configuration and the run of a WPS process.
@@ -52,19 +48,18 @@ import java.util.*;
  */
 public class LogEditor extends JPanel implements EditorDockable, PropertyChangeListener {
 
-    private static final int SCROLLBAR_UNIT_INCREMENT = 16;
     private static final String NAME = "LOG_EDITOR";
+    private static final String PROCESS_RUNNING_TEXT = "Process running : ";
 
     private LogEditableElement lee;
     private DockingPanelParameters dockingPanelParameters;
     private Map<String, LogPanel> componentMap;
     private LinkedList<String> endProcessFIFO;
-    private JPanel contentPanel;
-    //private LogLayerUI layerUI;
-    //private JLayer<JComponent> jlayer;
+    private VerticalScrollablePanel contentPanel;
+    private JLabel processRunning;
 
     public LogEditor(ToolBox toolBox, LogEditableElement lee){
-        this.setLayout(new MigLayout("fill"));
+        this.setLayout(new MigLayout("fill, top"));
         this.lee = lee;
         this.lee.addPropertyChangeListener(this);
         dockingPanelParameters = new DockingPanelParameters();
@@ -75,15 +70,15 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         dockingPanelParameters.setName(NAME);
         dockingPanelParameters.setCloseable(false);
 
-        contentPanel = new JPanel(new MigLayout("fill"));
-        //layerUI = new LogLayerUI();
-        //jlayer = new JLayer<>(contentPanel, layerUI);
-
-        //this.add(jlayer);
-        JScrollPane scrollPane = new JScrollPane(contentPanel);
-        scrollPane.setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        contentPanel = new VerticalScrollablePanel();
+        contentPanel.setLayout(new MigLayout("fill"));
+        JScrollPane scrollPane = new JScrollPane(contentPanel,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         this.add(scrollPane, "growx, growy");
+        processRunning = new JLabel(PROCESS_RUNNING_TEXT+0);
+        contentPanel.add(processRunning, "growx, wrap");
+        contentPanel.add(new JSeparator(), "growx, wrap");
 
         componentMap = new HashMap<>();
         endProcessFIFO = new LinkedList<>();
@@ -92,7 +87,8 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
     private void addNewLog(ProcessEditableElement pee){
         LogPanel panel = new LogPanel(pee.getProcess().getTitle());
         componentMap.put(pee.getId(), panel);
-        contentPanel.add(panel, "growx, wrap");
+        contentPanel.add(panel, "growx, span");
+        processRunning.setText(PROCESS_RUNNING_TEXT+componentMap.size());
     }
 
     private void removeLog(ProcessEditableElement pee, boolean successful){
@@ -113,20 +109,20 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         }
         LoggerFactory.getLogger(LogEditor.class).info(log);
         lp.stop();
+        lp.addLogText("(This window will be automatically closed in 5 seconds)\n" +
+                "(The process log will be printed in the OrbisGIS log)");
         endProcessFIFO.add(pee.getId());
-        Timer timer = new Timer(5000, EventHandler.create(ActionListener.class, this, "endInstance"));
-        timer.setRepeats(false);
-        timer.start();
+        Timer timer5S = new Timer(5000, EventHandler.create(ActionListener.class, this, "endInstance"));
+        timer5S.setRepeats(false);
+        timer5S.start();
     }
 
     public void endInstance(){
         String id = endProcessFIFO.removeFirst();
-        LogPanel logPanel= componentMap.get(id);
-        //layerUI.start();
-        //layerUI.setLogPanel(logPanel);
-        logPanel.setVisible(false);
         contentPanel.remove(componentMap.get(id));
         componentMap.remove(id);
+        processRunning.setText(PROCESS_RUNNING_TEXT+componentMap.size());
+        this.repaint();
     }
 
     @Override
@@ -177,6 +173,35 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
                     addNewLog(pee);
                     break;
             }
+        }
+    }
+
+    private class VerticalScrollablePanel extends JPanel implements Scrollable{
+        private static final int MAGIC_UNIT_INCREMENT = 16;
+        private static final int MAGIC_BLOCK_INCREMENT = 16;
+        @Override
+        public Dimension getPreferredScrollableViewportSize() {
+            return this.getPreferredSize();
+        }
+
+        @Override
+        public int getScrollableUnitIncrement(Rectangle rectangle, int i, int i1) {
+            return MAGIC_UNIT_INCREMENT;
+        }
+
+        @Override
+        public int getScrollableBlockIncrement(Rectangle rectangle, int i, int i1) {
+            return MAGIC_BLOCK_INCREMENT;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportWidth() {
+            return true;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportHeight() {
+            return false;
         }
     }
 }

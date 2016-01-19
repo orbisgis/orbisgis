@@ -24,16 +24,11 @@ import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
 
 import javax.swing.*;
-import javax.swing.text.AttributeSet;
 import javax.swing.text.DefaultCaret;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleContext;
-import javax.xml.crypto.Data;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 /**
  * @author Sylvain PALOMINOS
@@ -57,14 +52,16 @@ public class LogPanel extends JPanel {
         this.add(icon);
         JLabel processLabel = new JLabel(processName);
         this.add(processLabel);
-        this.add(new JLabel(), "growx");
         time = new JLabel();
-        this.add(time, "wrap");
+        this.add(time, "wrap, alignx right");
         setTime();
         logArea = new JTextArea();
         logArea.setRows(3);
         ((DefaultCaret)logArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        this.add(new JScrollPane(logArea), "growx, span");
+        JScrollPane scrollPane = new JScrollPane(logArea);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        this.add(scrollPane, "growx, span");
 
         timer = new Timer(1000, EventHandler.create(ActionListener.class, this, "setTime"));
         timer.start();
