@@ -145,16 +145,9 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         toolBox.validateInstance(pee, this);
         pee.setProcessState(ProcessEditableElement.ProcessState.RUNNING);
         //Run the process in a separated thread
-        ExecutionWorker thread = new ExecutionWorker(pee, toolBox, this);
+        ExecutionWorker thread = new ExecutionWorker(pee, toolBox);
         thread.execute();
         return false;
-    }
-
-    /**
-     * Indicated that the process has ended and register the outputs results.
-     * @param outputMap Map of the outputs results.
-     */
-    public void endProcess(Map<URI, Object> outputMap){
     }
 
     /**
