@@ -106,19 +106,32 @@ public class FieldValueUI implements DataUI{
         return ToolBoxIcon.getIcon("fieldvalue");
     }
 
+    /**
+     * When the jList is exited, reset the tooltipText delay.
+     * @param source JComboBox.
+     */
     public void onComboBoxExited(Object source){
         //Retrieve the client properties
         JList<String> list = (JList)source;
-        if(list.getSelectedIndices().length == 0) {
-            list.setToolTipText((String)list.getClientProperty("toolTipText"));
-            ToolTipManager.sharedInstance().setInitialDelay((int)list.getClientProperty("initialDelay"));
+        Object tooltipText = list.getClientProperty("toolTipText");
+        if(tooltipText != null) {
+            list.setToolTipText((String)tooltipText);
+        }
+        Object delay = list.getClientProperty("initialDelay");
+        if(delay != null){
+            ToolTipManager.sharedInstance().setInitialDelay((int)delay);
         }
     }
 
+    /**
+     * Update the JList according to if DataField parent.
+     * @param source the source JList.
+     */
     public void refreshList(Object source){
         JList list = (JList)source;
         FieldValue fieldValue = (FieldValue)list.getClientProperty("fieldValue");
         HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
+        //If the DataField related to the FieldValue has been modified, reload the dataField values
         if(fieldValue.isDataFieldModified()) {
             fieldValue.setDataFieldModified(false);
             String tableName = dataMap.get(fieldValue.getDataStoreIdentifier()).toString();
@@ -137,6 +150,8 @@ public class FieldValueUI implements DataUI{
             }
         }
 
+        //If the jList doesn't contains any values, it mean that the DataField hasn't been well selected.
+        //So show a tooltip text to warn the user.
         if(list.getSelectedIndices().length == 0) {
             list.putClientProperty("initialDelay", ToolTipManager.sharedInstance().getInitialDelay());
             list.putClientProperty("toolTipText", list.getToolTipText());

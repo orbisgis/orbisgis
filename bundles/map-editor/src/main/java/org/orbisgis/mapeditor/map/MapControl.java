@@ -43,7 +43,6 @@ import org.orbisgis.coremap.layerModel.SelectionEvent;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
 import org.orbisgis.coremap.renderer.ImageRenderer;
-import org.orbisgis.coremap.renderer.Renderer;
 import org.orbisgis.coremap.renderer.ResultSetProviderFactory;
 import org.orbisgis.mapeditor.map.tool.Automaton;
 import org.orbisgis.mapeditor.map.tool.ToolListener;
@@ -73,8 +72,6 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.nio.Buffer;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -249,6 +246,7 @@ public class MapControl extends JComponent implements ContainerListener {
 	 */
         @Override
         protected void paintComponent(Graphics g) {
+            mapTransform.updateRenderingHints();            
             BufferedImage mapTransformImage = mapTransform.getImage();
 
             // we always fill the Graphics with an opaque color
@@ -360,18 +358,25 @@ public class MapControl extends JComponent implements ContainerListener {
 		return mapTransform.getImage();
 	}
 
+        /**
+         * Return the background color
+         * @return 
+         */
 	public Color getBackColor() {
             String bColor = System.getProperty("map.editor.color.background");
-            if (!bColor.isEmpty()) {
-             try {
+            if (bColor == null) {
+                return defaultBackColor;
+            }
+            if (bColor.isEmpty()) {
+                return defaultBackColor;
+            }
+            try {
                 return Color.decode(bColor);
 
-             } catch (NumberFormatException e) {
-                 return defaultBackColor;
-             }
-             }
-            return defaultBackColor;
-         }
+            } catch (NumberFormatException e) {
+                return defaultBackColor;
+            }
+    }
 
 	public void setBackColor(Color backColor) {
 		this.defaultBackColor = backColor;

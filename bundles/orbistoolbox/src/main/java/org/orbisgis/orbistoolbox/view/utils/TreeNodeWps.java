@@ -20,214 +20,301 @@
 package org.orbisgis.orbistoolbox.view.utils;
 
 import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
-import org.orbisgis.sif.components.fstree.TreeNodePath;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
+import java.net.URI;
 
 /**
  * Node of the process tree displayed in the ToolBox.
  *
- * A node ha one of those three types : FOLDER, PROCESS, INSTANCE.
- * A node with a FOLDER type represent a folder containing processes (Simple interface)
+ * A node ha one of those three types : FOLDER, PROCESS, HOST.
+ *  - A node with a FOLDER type represent a folder containing processes (Simple interface)
  * or a category of processes (Advanced interface).
- * A node with a PROCESS type represent a process (the groovy script).
- * A node with a INSTANCE type represent a instance of a process (a running process).
- * A node with a HOST_* type represent a server hosting a WPS service.
+ *  - A node with a PROCESS type represent a process (the groovy script).
+ *  - A node with a HOST_* type represent a server hosting a WPS service.
  *
- * This class implements the PropertyChangeListener interface to be able to change dynamically the icon.
+ * The TreeNode icon depends on the node type (FOLDER, PROCESS, HOST) but custom icons can be defined thanks to
+ * the methods setCustomIcon(...).
  *
  * @author Sylvain PALOMINOS
  **/
 
-//TODO : Listen child node to change the icon to tell that a process instance has finished, crashed ... with a little number.
-
-public class TreeNodeWps
-        extends DefaultMutableTreeNode
-        implements TreeNodeCustomIcon, TreeNodePath, PropertyChangeListener {
-
-    /** HOST_LOCAL type static string. */
-    public static final String HOST_LOCAL = "HOST_LOCAL";
-    /** HOST_DISTANT type static string. */
-    public static final String HOST_DISTANT = "HOST_DISTANT";
-    /** FOLDER type static string. */
-    public static final String FOLDER = "FOLDER";
-    /** PROCESS type static string. */
-    public static final String PROCESS = "PROCESS";
-    /** INSTANCE type static string. */
-    public static final String INSTANCE = "INSTANCE";
+public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCustomIcon {
 
     /** Type of the node. */
-    private String nodeType = FOLDER;
+    private NodeType nodeType = NodeType.FOLDER;
     /** File or folder name associated to the node. */
-    private File file;
+    private URI uri;
     /** Indicates if the node is a valid folder, script, host ... or not. */
     private boolean isValid = true;
-    /** Name of the icon to use for the process instance. It can change according to the process state. */
-    private String instanceIconName = "script";
+    /** Name of the icon to use when the node is open. */
+    private String customOpenIconName = null;
+    /** Name of the icon to use when the node is closed. */
+    private String customClosedIconName = null;
+    /** Name of the icon to use when the node is a leaf. */
+    private String customLeafIconName = null;
+    /** Name of the icon to use when the node is a leaf. */
+    private String customInvalidIconName = null;
 
     @Override
     public ImageIcon getLeafIcon() {
-        switch(nodeType){
-            //The localHost is always avaliable and valid.
-            case HOST_LOCAL:
-                return ToolBoxIcon.getIcon("localhost");
-            //The distant host can be invalid if it can't be reached.
-            case HOST_DISTANT:
-                if(isValid) {
-                    return ToolBoxIcon.getIcon("distanthost");
-                }
-                else{
-                    return ToolBoxIcon.getIcon("distanthost_invalid");
-                }
-            //If the folder is a leaf, it mean that it doesn't contain any script, so it is invalid.
-            case FOLDER:
-                return ToolBoxIcon.getIcon("folder_invalid");
-            //The the process is invalid if it can't be parsed..
-            case PROCESS:
-                if(isValid) {
-                    return ToolBoxIcon.getIcon("script");
-                }
-                else{
-                    return ToolBoxIcon.getIcon("script_invalid");
-                }
-            //The sate of the instance is defined thanks to the property change listener.
-            case INSTANCE:
-                return ToolBoxIcon.getIcon(instanceIconName);
-            //Else return the error icon.
-            default:
-                return ToolBoxIcon.getIcon("error");
+        //If custom icon were specified, use them
+        if(isCustomIcon()){
+            if(isValid){
+                return ToolBoxIcon.getIcon(customLeafIconName);
+            }
+            else{
+                return ToolBoxIcon.getIcon(customInvalidIconName);
+            }
+        }
+        else {
+            switch (nodeType) {
+                //The localHost is always avaliable and valid.
+                case HOST_LOCAL:
+                    return ToolBoxIcon.getIcon("localhost");
+                //The distant host can be invalid if it can't be reached.
+                case HOST_DISTANT:
+                    if (isValid) {
+                        return ToolBoxIcon.getIcon("distanthost");
+                    } else {
+                        return ToolBoxIcon.getIcon("distanthost_invalid");
+                    }
+                    //If the folder is a leaf, it mean that it doesn't contain any script, so it is invalid.
+                case FOLDER:
+                    return ToolBoxIcon.getIcon("folder_invalid");
+                //The the process is invalid if it can't be parsed..
+                case PROCESS:
+                    if (isValid) {
+                        return ToolBoxIcon.getIcon("script");
+                    } else {
+                        return ToolBoxIcon.getIcon("script_invalid");
+                    }
+                    //Else return the error icon.
+                default:
+                    return ToolBoxIcon.getIcon("error");
+            }
         }
     }
 
     @Override
     public ImageIcon getClosedIcon() {
-        switch(nodeType){
-            //The localHost is always avaliable and valid.
-            case HOST_LOCAL:
-                return ToolBoxIcon.getIcon("localhost");
-            //The distant host can be invalid if it can't be reached.
-            case HOST_DISTANT:
-                if(isValid) {
-                    return ToolBoxIcon.getIcon("distanthost");
-                }
-                else{
-                    return ToolBoxIcon.getIcon("distanthost_invalid");
-                }
-            //The folder can be invalid if no valid script are found inside.
-            case FOLDER:
-                if(isValid) {
-                    return ToolBoxIcon.getIcon("folder");
-                }
-                else{
-                    return ToolBoxIcon.getIcon("folder_invalid");
-                }
-            //The the process is invalid if it can't be parsed..
-            case PROCESS:
-                if(isValid) {
-                    return ToolBoxIcon.getIcon("script");
-                }
-                else{
-                    return ToolBoxIcon.getIcon("script_invalid");
-                }
-            //Else return the error icon.
-            default:
-                return ToolBoxIcon.getIcon("error");
+        //If custom icon were specified, use them
+        if(isCustomIcon()){
+            if(isValid){
+                return ToolBoxIcon.getIcon(customClosedIconName);
+            }
+            else{
+                return ToolBoxIcon.getIcon(customInvalidIconName);
+            }
+        }
+        else {
+            switch (nodeType) {
+                //The localHost is always avaliable and valid.
+                case HOST_LOCAL:
+                    return ToolBoxIcon.getIcon("localhost");
+                //The distant host can be invalid if it can't be reached.
+                case HOST_DISTANT:
+                    if (isValid) {
+                        return ToolBoxIcon.getIcon("distanthost");
+                    } else {
+                        return ToolBoxIcon.getIcon("distanthost_invalid");
+                    }
+                    //The folder can be invalid if no valid script are found inside.
+                case FOLDER:
+                    if (isValid) {
+                        return ToolBoxIcon.getIcon("folder");
+                    } else {
+                        return ToolBoxIcon.getIcon("folder_invalid");
+                    }
+                    //The the process is invalid if it can't be parsed..
+                case PROCESS:
+                    if (isValid) {
+                        return ToolBoxIcon.getIcon("script");
+                    } else {
+                        return ToolBoxIcon.getIcon("script_invalid");
+                    }
+                    //Else return the error icon.
+                default:
+                    return ToolBoxIcon.getIcon("error");
+            }
         }
     }
 
     @Override
     public ImageIcon getOpenIcon() {
-        switch(nodeType){
-            //The localHost is always avaliable and valid.
-            case HOST_LOCAL:
-                return ToolBoxIcon.getIcon("localhost");
-            //The distant host can be invalid if it can't be reached.
-            case HOST_DISTANT:
-                if(isValid) {
-                    return ToolBoxIcon.getIcon("distanthost");
-                }
-                else{
-                    return ToolBoxIcon.getIcon("distanthost_invalid");
-                }
-            //The folder can be invalid if no valid script are found inside.
-            case FOLDER:
-                if(isValid) {
-                    return ToolBoxIcon.getIcon("folder_open");
-                }
-                else{
-                    return ToolBoxIcon.getIcon("folder_invalid");
-                }
-            //The the process is invalid if it can't be parsed..
-            case PROCESS:
-                if(isValid) {
-                    return ToolBoxIcon.getIcon("script");
-                }
-                else{
-                    return ToolBoxIcon.getIcon("script_invalid");
-                }
-            //Else return the error icon.
-            default:
-                return ToolBoxIcon.getIcon("error");
+        //If custom icon were specified, use them
+        if(isCustomIcon()){
+            if(isValid){
+                return ToolBoxIcon.getIcon(customOpenIconName);
+            }
+            else{
+                return ToolBoxIcon.getIcon(customInvalidIconName);
+            }
+        }
+        else {
+            switch (nodeType) {
+                //The localHost is always avaliable and valid.
+                case HOST_LOCAL:
+                    return ToolBoxIcon.getIcon("localhost");
+                //The distant host can be invalid if it can't be reached.
+                case HOST_DISTANT:
+                    if (isValid) {
+                        return ToolBoxIcon.getIcon("distanthost");
+                    } else {
+                        return ToolBoxIcon.getIcon("distanthost_invalid");
+                    }
+                    //The folder can be invalid if no valid script are found inside.
+                case FOLDER:
+                    if (isValid) {
+                        return ToolBoxIcon.getIcon("folder_open");
+                    } else {
+                        return ToolBoxIcon.getIcon("folder_invalid");
+                    }
+                    //The the process is invalid if it can't be parsed..
+                case PROCESS:
+                    if (isValid) {
+                        return ToolBoxIcon.getIcon("script");
+                    } else {
+                        return ToolBoxIcon.getIcon("script_invalid");
+                    }
+                    //Else return the error icon.
+                default:
+                    return ToolBoxIcon.getIcon("error");
+            }
         }
     }
 
-    @Override
-    public File getFilePath() {
-        return file;
+    /**
+     * Returns the URI represented by the node.
+     * The URI value has no impact on the node appearance.
+     * @return The URI represented by the node.
+     */
+    public URI getUri() {
+        return uri;
     }
 
-    public void setFilePath(File f){
-        file = f;
-        this.setUserObject(f.getName().replace(".groovy", ""));
+    /**
+     * Sets the URI represented by the node.
+     * @param uri The URI represented by the node.
+     */
+    public void setUri(URI uri){
+        this.uri = uri;
     }
 
-    public void setNodeType(String type){
-        nodeType = type;
+    /**
+     * Sets the node type.
+     * If no custom icon are defined, the node type will define the appearance of the node.
+     * @param type New NodeType.
+     */
+    public void setNodeType(NodeType type){
+        this.nodeType = type;
     }
 
-    public String getNodeType(){
+    /**
+     * Returns the NodeType.
+     * @return TheNodeType.
+     */
+    public NodeType getNodeType(){
         return nodeType;
     }
 
+    /**
+     * Sets the validity of the node.
+     * If the node is not valid the icon will be set to the invalid version.
+     * @param isValid
+     */
     public void setValidNode(boolean isValid) {
         this.isValid = isValid;
     }
 
+    /**
+     * Tells if the node is valid or not.
+     * @return If the node is valid.
+     */
     public boolean isValidNode(){
         return isValid;
     }
 
+    /**
+     * Gives to the node the customIcon it should use.
+     * The icon name should be the icon file name without the extension (image.png => image).
+     * The same icon will be used no matter if the node is open, closed or if it is a leaf.
+     * But if the node is not valid, it will use the default OrbisToolBox invalid icon.
+     * @param iconName Name of the icon to use for this node.
+     */
+    public void setCustomIcon(String iconName){
+        this.customClosedIconName = iconName;
+        this.customOpenIconName = iconName;
+        this.customLeafIconName = iconName;
+        this.customInvalidIconName = "error";
+    }
+
+    /**
+     * Gives to the node the customIcons it should use.
+     * The icon name should be the icon file name without the extension (image.png => image).
+     * Each icon has its usage :
+     * - customCloseIconName : icon when the node is closed
+     * - customOpenIconName : icon when the node is open
+     * - customLeafIconName : icon when the node is a leaf
+     * - customInvalidIconName : icon when the node is not valid.
+     * @param customCloseIconName Name of the icon to use for this node when it is closed.
+     * @param customOpenIconName Name of the icon to use for this node when it is open.
+     * @param customLeafIconName Name of the icon to use for this node when it is a leaf.
+     * @param customInvalidIconName Name of the icon to use for this node when it is not valid.
+     */
+    public void setCustomIcon(String customCloseIconName,
+                              String customOpenIconName,
+                              String customLeafIconName,
+                              String customInvalidIconName){
+        this.customClosedIconName = customCloseIconName;
+        this.customOpenIconName = customOpenIconName;
+        this.customLeafIconName = customLeafIconName;
+        this.customInvalidIconName = customInvalidIconName;
+    }
+
+    /**
+     * Removes all the custom icon.
+     * Once done, the node will use the default icons according to its NodeType.
+     */
+    public void unsetCusomIcon(){
+        this.customClosedIconName = null;
+        this.customOpenIconName = null;
+        this.customLeafIconName = null;
+        this.customInvalidIconName = null;
+    }
+
+    /**
+     * Tells if the custom icon should be use or not
+     * @return True if the custom should be used, false otherwise.
+     */
+    public boolean isCustomIcon(){
+        return this.customClosedIconName != null &&
+                this.customOpenIconName != null &&
+                this.customLeafIconName != null &&
+                this.customInvalidIconName != null;
+    }
+
+    /**
+     * Does a deep copy of a node.
+     * @return The node deep copy.
+     */
     public TreeNodeWps deepCopy(){
         TreeNodeWps copy = new TreeNodeWps();
-        copy.file = this.file;
+        copy.uri = this.uri;
         copy.isValid = this.isValid;
         copy.nodeType = this.nodeType;
         copy.userObject = this.userObject;
-        copy.instanceIconName = this.instanceIconName;
+        copy.customOpenIconName = this.customOpenIconName;
+        copy.customClosedIconName = this.customClosedIconName;
+        copy.customLeafIconName = this.customLeafIconName;
+        copy.customInvalidIconName = this.customInvalidIconName;
 
         return copy;
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        ProcessEditableElement.ProcessState state = (ProcessEditableElement.ProcessState) propertyChangeEvent.getNewValue();
-        switch(state){
-            case RUNNING:
-                instanceIconName = "script_running";
-                break;
-            case COMPLETED:
-                instanceIconName = "script_completed";
-                break;
-            case ERROR:
-                instanceIconName = "script_error";
-                break;
-            case IDLE:
-                instanceIconName = "script";
-                break;
-        }
-    }
+    /**
+     * Enumeration of the available node types.
+     */
+    public enum NodeType{HOST_LOCAL, HOST_DISTANT, FOLDER, PROCESS}
 }

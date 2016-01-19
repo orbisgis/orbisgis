@@ -48,7 +48,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Panel of the tool box containing the JTree of process.
+ * Main panel of the ToolBox.
+ * This panel contains the JTree of all the loaded scripts.
  *
  * @author Sylvain PALOMINOS
  **/
@@ -65,6 +66,9 @@ public class ToolBoxPanel extends JPanel {
     private final static String FILTERED_MODEL = "Filtered";
 
     private final static String UNDEFINED = "Undefined";
+
+    private static final String LOCALHOST_STRING = "localhost";
+    private static final URI LOCALHOST_URI = URI.create(LOCALHOST_STRING);
 
     /** ComboBox with the different model of the tree */
     private JComboBox<String> treeNodeBox;
@@ -90,10 +94,10 @@ public class ToolBoxPanel extends JPanel {
     /** Action available in the right click popup on selecting a process (leaf) */
     private ActionCommands popupLeafActions;
 
+    /** Map containing all the host (localhost ...) and the associated node. */
     private Map<URI, TreeNodeWps> mapHostNode;
-
-    private static final String LOCALHOST_STRING = "localhost";
-    private static final URI LOCALHOST_URI = URI.create(LOCALHOST_STRING);
+    /** List of existing tree model. */
+    private List<FileTreeModel> modelList;
 
     private FilterFactoryManager<IFilter,DefaultActiveFilter> filterFactoryManager;
 
@@ -102,9 +106,10 @@ public class ToolBoxPanel extends JPanel {
 
         this.toolBox = toolBox;
 
+        //By default add the localhost
         mapHostNode = new HashMap<>();
         TreeNodeWps localhostNode = new TreeNodeWps();
-        localhostNode.setNodeType(TreeNodeWps.HOST_LOCAL);
+        localhostNode.setNodeType(TreeNodeWps.NodeType.HOST_LOCAL);
         localhostNode.setUserObject(LOCALHOST_STRING);
         mapHostNode.put(LOCALHOST_URI, localhostNode);
 
@@ -158,6 +163,10 @@ public class ToolBoxPanel extends JPanel {
         filterFactoryManager.setUserCanRemoveFilter(false);
         filterFactoryManager.addFilter(new SearchFilter().getDefaultFilterValue());
 
+        modelList = new ArrayList<>();
+        modelList.add(categoryModel);
+        modelList.add(fileModel);
+        modelList.add(filteredModel);
         tree.setModel(categoryModel);
         onModelSelected();
     }
@@ -204,23 +213,20 @@ public class ToolBoxPanel extends JPanel {
                 if (event.getClickCount() == 1) {
                     boolean isValid = false;
                     switch(selectedNode.getNodeType()){
-                        case TreeNodeWps.HOST_DISTANT:
+                        case HOST_DISTANT:
                             //TODO : check if the host is reachable an if it contains a WPS service.
                             isValid = true;
                             break;
-                        case TreeNodeWps.HOST_LOCAL:
+                        case HOST_LOCAL:
                             //TODO : check if the OrbisGIS WPS script folder is available or not
                             isValid = true;
                             break;
-                        case TreeNodeWps.FOLDER:
+                        case FOLDER:
                             //Check if the folder exists and it it contains some scripts
-                            isValid = toolBox.checkFolder(selectedNode.getFilePath());
+                            isValid = toolBox.checkFolder(new File(selectedNode.getUri()));
                             break;
-                        case TreeNodeWps.PROCESS:
-                            isValid = toolBox.checkProcess(selectedNode.getFilePath());
-                            break;
-                        case TreeNodeWps.INSTANCE:
-                            isValid = true;
+                        case PROCESS:
+                            isValid = toolBox.checkProcess(new File(selectedNode.getUri()));
                             break;
                     }
                     selectedNode.setValidNode(isValid);
@@ -229,105 +235,13 @@ public class ToolBoxPanel extends JPanel {
                 if (event.getClickCount() == 2) {
                     if (selectedNode.isValidNode()) {
                         //if the selected node is a PROCESS node, open a new instance.
-                        if(selectedNode.getNodeType().equals(TreeNodeWps.PROCESS)) {
-                            ProcessEditableElement pee = toolBox.openProcess(selectedNode.getFilePath(), getNextIndex(selectedNode));
-                            TreeNodeWps instanceNode = new TreeNodeWps();
-                            instanceNode.setNodeType(TreeNodeWps.INSTANCE);
-                            instanceNode.setUserObject(pee.getId());
-                            addNodeToAllModels(instanceNode, selectedNode);
-                            pee.addAllNodes(getNodeInAllModels(instanceNode));
-                        }
-                        //if the selected node is an INSTANCE node, reopen it if closed.
-                        else if(selectedNode.getNodeType().equals(TreeNodeWps.INSTANCE)) {
-                            toolBox.openInstance(selectedNode.getUserObject().toString());
+                        if(selectedNode.getNodeType().equals(TreeNodeWps.NodeType.PROCESS)) {
+                            toolBox.openProcess(new File(selectedNode.getUri()));
                         }
                     }
                 }
             }
         }
-    }
-
-    /**
-     * Returns the lower available index for a new instance node.
-     * @param node Process node to analyse.
-     * @return Lower available index.
-     */
-    private int getNextIndex(TreeNodeWps node){
-        if(node.getChildCount() == 0){
-            return 0;
-        }
-        int index = 0;
-        for(int i=0; i<node.getChildCount(); i++){
-            String nodeName = ((TreeNodeWps)node.getChildAt(i)).getUserObject().toString();
-            int j = nodeName.length()-1;
-            while(nodeName.charAt(j)<='9' && nodeName.charAt(j)>=0){
-                j--;
-            }
-            j++;
-            index = Math.max(Integer.parseInt(nodeName.substring(j)), index);
-        }
-        return index+1;
-    }
-
-    /**
-     * Adds a node to a parent in all the model.
-     * For each model registered, add a copy of the node.
-     * @param node Node to add.
-     * @param parent Parent of the node
-     */
-    private void addNodeToAllModels(TreeNodeWps node, TreeNodeWps parent){
-        List<FileTreeModel> modelList = new ArrayList<>();
-        modelList.add(categoryModel);
-        modelList.add(fileModel);
-        modelList.add(filteredModel);
-
-        for(FileTreeModel model : modelList){
-            TreeNodeWps modelNode = node.deepCopy();
-            TreeNodeWps modelParent = getNodeInModel(parent, model);
-            if(modelParent != null) {
-                model.insertNodeInto(modelNode, modelParent, 0);
-                tree.expandPath(new TreePath(modelNode.getPath()));
-            }
-        }
-    }
-
-    /**
-     * Return the node of a model corresponding to the given node.
-     * If the node has a file set, it is used to find the copy.
-     * Else, uses the UserObject.
-     * @param node Original node which the copy is found.
-     * @param model Model where the copy is found.
-     * @return The copy of the node in the model.
-     */
-    private TreeNodeWps getNodeInModel(TreeNodeWps node, FileTreeModel model){
-        if(node.getFilePath()!= null && node.getFilePath().exists()){
-            return getChildWithFile(node.getFilePath(), (TreeNodeWps)model.getRoot());
-        }
-        else{
-            return getChildWithUserObject(node.getUserObject(), (TreeNodeWps)model.getRoot());
-        }
-    }
-
-    /**
-     * Return the node from all the models corresponding to the given node.
-     * If the node has a file set, it is used to find the copy.
-     * Else, uses the UserObject.
-     * @param node Original node which the copy is found.
-     * @return The copy of the node in all the models.
-     */
-    private List<TreeNodeWps> getNodeInAllModels(TreeNodeWps node){
-        List<TreeNodeWps> nodeList = new ArrayList<>();
-        List<FileTreeModel> modelList = new ArrayList<>();
-        modelList.add(categoryModel);
-        modelList.add(fileModel);
-        modelList.add(filteredModel);
-        for(FileTreeModel model : modelList) {
-            TreeNodeWps n = getNodeInModel(node, model);
-            if(n != null){
-                nodeList.add(n);
-            }
-        }
-        return nodeList;
     }
 
     /**
@@ -353,8 +267,8 @@ public class ToolBoxPanel extends JPanel {
 
         TreeNodeWps root = (TreeNodeWps) categoryModel.getRoot();
         TreeNodeWps script = new TreeNodeWps();
-        script.setFilePath(f);
-        script.setNodeType(TreeNodeWps.PROCESS);
+        script.setUri(f.toURI());
+        script.setNodeType(TreeNodeWps.NodeType.PROCESS);
         TreeNodeWps categoryNode = getSubNode(categories[0], root);
         if(categoryNode == null){
             categoryNode = new TreeNodeWps();
@@ -377,14 +291,14 @@ public class ToolBoxPanel extends JPanel {
                     subSubCategoryNode.setUserObject(categories[2]);
                     categoryModel.insertNodeInto(subSubCategoryNode, subCategoryNode, 0);
                 }
-                if(!isNodeExisting(script.getFilePath(), subSubCategoryNode)) {
+                if(!isNodeExisting(script.getUri(), subSubCategoryNode)) {
                     script.setValidNode((toolBox.getProcessManager().getProcess(f) != null));
                     categoryModel.insertNodeInto(script, subSubCategoryNode, 0);
                     tree.expandPath(new TreePath(subSubCategoryNode.getPath()));
                 }
             }
             else {
-                if(!isNodeExisting(script.getFilePath(), subCategoryNode)) {
+                if(!isNodeExisting(script.getUri(), subCategoryNode)) {
                     script.setValidNode((toolBox.getProcessManager().getProcess(f) != null));
                     categoryModel.insertNodeInto(script, subCategoryNode, 0);
                     tree.expandPath(new TreePath(subCategoryNode.getPath()));
@@ -392,7 +306,7 @@ public class ToolBoxPanel extends JPanel {
             }
         }
         else {
-            if(!isNodeExisting(script.getFilePath(), categoryNode)) {
+            if(!isNodeExisting(script.getUri(), categoryNode)) {
                 script.setValidNode((toolBox.getProcessManager().getProcess(f) != null));
                 categoryModel.insertNodeInto(script, categoryNode, 0);
                 tree.expandPath(new TreePath(categoryNode.getPath()));
@@ -402,14 +316,14 @@ public class ToolBoxPanel extends JPanel {
 
     /**
      * Tests if the parent node contain a child representing the given file.
-     * @param file File to test.
+     * @param uri File to test.
      * @param parent Parent to test.
      * @return True if the parent contain the file.
      */
-    private boolean isNodeExisting(File file, TreeNodeWps parent){
+    private boolean isNodeExisting(URI uri, TreeNodeWps parent){
         boolean exist = false;
         for(int l=0; l<parent.getChildCount(); l++){
-            if(((TreeNodeWps)parent.getChildAt(l)).getFilePath().equals(file)){
+            if(((TreeNodeWps)parent.getChildAt(l)).getUri().equals(uri)){
                 exist = true;
             }
         }
@@ -493,18 +407,18 @@ public class ToolBoxPanel extends JPanel {
             source = new TreeNodeWps();
             source.setValidNode(false);
             source.setUserObject(directory.getName());
-            source.setFilePath(directory);
-            source.setNodeType(TreeNodeWps.FOLDER);
+            source.setUri(directory.toURI());
+            source.setNodeType(TreeNodeWps.NodeType.FOLDER);
             fileModel.insertNodeInto(source, hostNode, 0);
         }
 
         for(File f : getAllWpsScript(directory)){
-            if(getChildWithFile(f, source) == null) {
+            if(getChildWithUri(f.toURI(), source) == null) {
                 TreeNodeWps script = new TreeNodeWps();
                 script.setUserObject(f.getName().replace(".groovy", ""));
-                script.setFilePath(f);
+                script.setUri(f.toURI());
                 script.setValidNode(toolBox.getProcessManager().getProcess(f) != null);
-                script.setNodeType(TreeNodeWps.PROCESS);
+                script.setNodeType(TreeNodeWps.NodeType.PROCESS);
                 fileModel.insertNodeInto(script, source, 0);
                 isScript = true;
             }
@@ -554,32 +468,14 @@ public class ToolBoxPanel extends JPanel {
                 leafList.addAll(getAllLeaf(node));
             }
             for(TreeNodeWps leaf : leafList){
-                TreeNodeWps fileModelRoot = (TreeNodeWps) fileModel.getRoot();
-                TreeNodeWps cateModelRoot = (TreeNodeWps) categoryModel.getRoot();
-                TreeNodeWps filtModelRoot = (TreeNodeWps) filteredModel.getRoot();
                 switch(leaf.getNodeType()){
-                    case TreeNodeWps.FOLDER:
-                    case TreeNodeWps.PROCESS:
-                        File file = leaf.getFilePath();
-                        cleanParentNode(getChildWithFile(file, fileModelRoot), fileModel);
-                        cleanParentNode(getChildWithFile(file, cateModelRoot), categoryModel);
-                        cleanParentNode(getChildWithFile(file, filtModelRoot), filteredModel);
-                        toolBox.removeProcess(leaf.getFilePath());
-                        break;
-                    case TreeNodeWps.INSTANCE:
-                        TreeNodeWps child = getChildWithUserObject(node.getUserObject(), fileModelRoot);
-                        if(child != null) {
-                            fileModel.removeNodeFromParent(child);
+                    case FOLDER:
+                    case PROCESS:
+                        File file = new File(leaf.getUri());
+                        for(FileTreeModel model : modelList){
+                            cleanParentNode(getChildWithUri(file.toURI(), (TreeNodeWps) fileModel.getRoot()), model);
                         }
-                        child = getChildWithUserObject(node.getUserObject(), cateModelRoot);
-                        if(child != null) {
-                            categoryModel.removeNodeFromParent(child);
-                        }
-                        child = getChildWithUserObject(node.getUserObject(), filtModelRoot);
-                        if(child != null) {
-                            filteredModel.removeNodeFromParent(child);
-                        }
-                        toolBox.closeInstance(leaf.getUserObject().toString());
+                        toolBox.removeProcess(new File(leaf.getUri()));
                         break;
                 }
             }
@@ -588,18 +484,18 @@ public class ToolBoxPanel extends JPanel {
 
     /**
      * Get the child node of a parent which represent the given file.
-     * @param file File represented by the node.
+     * @param uri File represented by the node.
      * @param parent Parent of the node.
      * @return The child node.
      */
-    private TreeNodeWps getChildWithFile(File file, TreeNodeWps parent){
+    private TreeNodeWps getChildWithUri(URI uri, TreeNodeWps parent){
         for(int i=0; i<parent.getChildCount(); i++){
             TreeNodeWps child = (TreeNodeWps)parent.getChildAt(i);
-            if(child.getFilePath() != null && child.getFilePath().equals(file)){
+            if(child.getUri() != null && child.getUri().equals(uri)){
                 return child;
             }
             else{
-                TreeNodeWps result = getChildWithFile(file, child);
+                TreeNodeWps result = getChildWithUri(uri, child);
                 if(result != null){
                     return result;
                 }
@@ -657,21 +553,21 @@ public class ToolBoxPanel extends JPanel {
         TreeNodeWps node = (TreeNodeWps) tree.getLastSelectedPathComponent();
         if(node != null) {
             if (node.isLeaf()) {
-                node.setValidNode(toolBox.checkProcess(node.getFilePath()));
+                node.setValidNode(toolBox.checkProcess(new File(node.getUri())));
             } else {
                 //For each node, test if it is valid, and set the state of the corresponding node in the trees.
                 for (TreeNodeWps child : getAllLeaf(node)) {
-                    boolean isValid = toolBox.checkProcess(child.getFilePath());
+                    boolean isValid = toolBox.checkProcess(new File(child.getUri()));
                     TreeNodeWps updated;
-                    updated = getChildWithFile(child.getFilePath(), (TreeNodeWps) categoryModel.getRoot());
+                    updated = getChildWithUri(child.getUri(), (TreeNodeWps) categoryModel.getRoot());
                     updated.setValidNode(isValid);
                     categoryModel.nodeChanged(updated);
-                    updated = getChildWithFile(child.getFilePath(), (TreeNodeWps) fileModel.getRoot());
+                    updated = getChildWithUri(child.getUri(), (TreeNodeWps) fileModel.getRoot());
                     updated.setValidNode(isValid);
                     fileModel.nodeChanged(updated);
                 }
                 if (tree.getModel().equals(fileModel)) {
-                    toolBox.addLocalSource(node.getFilePath());
+                    toolBox.addLocalSource(new File(node.getUri()));
                 }
             }
         }
@@ -702,7 +598,7 @@ public class ToolBoxPanel extends JPanel {
      * @param nodeType Type of the nodes.
      * @return List of child nodes.
      */
-    private List<TreeNodeWps> getAllChild(TreeNodeWps node, String nodeType){
+    private List<TreeNodeWps> getAllChild(TreeNodeWps node, TreeNodeWps.NodeType nodeType){
         List<TreeNodeWps> nodeList = new ArrayList<>();
         for(int i=0; i<node.getChildCount(); i++){
             TreeNodeWps child = (TreeNodeWps) node.getChildAt(i);
@@ -787,20 +683,18 @@ public class ToolBoxPanel extends JPanel {
             //Else, use the filteredModel
             else {
                 tree.setModel(filteredModel);
-                for (TreeNodeWps node : getAllChild((TreeNodeWps) fileModel.getRoot(), TreeNodeWps.PROCESS)) {
+                for (TreeNodeWps node : getAllChild((TreeNodeWps) fileModel.getRoot(), TreeNodeWps.NodeType.PROCESS)) {
                     //For all the leaf, tests if they are accepted by the filter or not.
                     TreeNodeWps filteredRoot = (TreeNodeWps) filteredModel.getRoot();
-                    TreeNodeWps filteredNode = getChildWithFile(node.getFilePath(), filteredRoot);
+                    TreeNodeWps filteredNode = getChildWithUri(node.getUri(), filteredRoot);
                     if (filteredNode == null) {
                         if (filter.accepts(node)) {
                             TreeNodeWps newNode = node.deepCopy();
                             filteredModel.insertNodeInto(newNode, filteredRoot, 0);
-                            for(int i=0; i<node.getChildCount(); i++){
-                                filteredModel.insertNodeInto(((TreeNodeWps)node.getChildAt(i)).deepCopy(), newNode, 0);
-                            }
                             tree.expandPath(new TreePath(newNode.getPath()));
                         }
-                    } else {
+                    }
+                    else {
                         if (!filter.accepts(filteredNode)) {
                             filteredModel.removeNodeFromParent(filteredNode);
                         }
@@ -816,17 +710,5 @@ public class ToolBoxPanel extends JPanel {
     public void dispose(){
         filterFactoryManager.getEventFilterChange().clearListeners();
         filterFactoryManager.getEventFilterFactoryChange().clearListeners();
-    }
-
-    public void updateAllNodes(ProcessEditableElement pee){
-        TreeNodeWps node = pee.getNodes().get(0);
-
-        List<FileTreeModel> modelList = new ArrayList<>();
-        modelList.add(categoryModel);
-        modelList.add(fileModel);
-        modelList.add(filteredModel);
-        for(FileTreeModel model : modelList) {
-            model.nodeChanged(getNodeInModel(node, model));
-        }
     }
 }

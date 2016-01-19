@@ -1,12 +1,12 @@
 /**
- * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information.
- *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is a GIS application dedicated to scientific spatial analysis.
+ * This cross-platform GIS is developed at the Lab-STICC laboratory by the DECIDE 
+ * team located in University of South Brittany, Vannes.
+ * 
+ * OrbisGIS is distributed under GPL 3 license.
  *
  * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2015-2016 CNRS (UMR CNRS 6285)
  *
  * This file is part of OrbisGIS.
  *
@@ -34,6 +34,7 @@ import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.commons.progress.ProgressMonitor;
 
 import java.sql.SQLException;
+import java.util.Set;
 
 /**
  * In order to split-up Data query and rendering. The renderer use this interface to query the database.
@@ -63,10 +64,11 @@ public interface ResultSetProviderFactory {
          * filtering.
          * @param pm ProgressMonitor allows to display the process and cancel it.
          * @param extent Filter entities by this envelope
+         * @param fields a list of column names to keep in the select... from
          * @return The content of the table
          * @throws java.sql.SQLException
          */
-        SpatialResultSet execute(ProgressMonitor pm, Envelope extent) throws SQLException;
+        SpatialResultSet execute(ProgressMonitor pm, Envelope extent, Set<String> fields) throws SQLException;
 
         /**
          * @return The primary key column name, empty if there is no such thing.
