@@ -135,7 +135,6 @@ public class EnumerationUI implements DataUI{
             panel.add(textField, "growx, wrap");
             list.putClientProperty("textField", textField);
         }
-        list.setSelectedIndices(new int[]{0});
         return panel;
     }
 
@@ -149,7 +148,12 @@ public class EnumerationUI implements DataUI{
         else if(inputOrOutput instanceof Output){
             enumeration = (Enumeration)((Output)inputOrOutput).getDataDescription();
         }
-        map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues());
+        if(enumeration.isMultiSelection()) {
+            map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues());
+        }
+        else{
+            map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues()[0]);
+        }
         return map;
     }
 
@@ -230,8 +234,8 @@ public class EnumerationUI implements DataUI{
                 for (int i : list.getSelectedIndices()) {
                     listValues.add(list.getModel().getElementAt(i).toString());
                 }
-                dataMap.put(uri, listValues);
             }
+            dataMap.put(uri, listValues);
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
         }
