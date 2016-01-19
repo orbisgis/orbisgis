@@ -127,9 +127,6 @@ public class DataFieldUI implements DataUI{
         //If the DataStore related to the DataField has been modified, reload the dataField values
         if(dataField.isSourceModified()) {
             dataField.setSourceModified(false);
-            System.out.println(dataField.getDataStoreIdentifier());
-            System.out.println(dataMap.get(dataField.getDataStoreIdentifier()));
-            System.out.println(dataMap.hashCode());
             String tableName = ((URI) dataMap.get(dataField.getDataStoreIdentifier())).getFragment();
             comboBox.removeAllItems();
             for (String field : ToolBox.getTableFieldList(tableName, dataField.getFieldTypeList())) {

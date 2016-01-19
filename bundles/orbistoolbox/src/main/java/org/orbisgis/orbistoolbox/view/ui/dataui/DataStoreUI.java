@@ -307,7 +307,6 @@ public class DataStoreUI implements DataUI{
      * @param source Source geocatalog JComboBox
      */
     public void onGeocatalogTableSelected(Object source){
-        System.out.println("geocatalog");
         JComboBox<String> comboBox = (JComboBox) source;
         //If the ComboBox is empty, don't do anything.
         //The process won't launch util the user sets the DataStore
@@ -331,10 +330,6 @@ public class DataStoreUI implements DataUI{
         for (DataField dataField : dataStore.getListDataField()) {
             dataField.setSourceModified(true);
         }
-        System.out.println(comboBox.getSelectedItem());
-        System.out.println(uri);
-        System.out.println(URI.create("geocatalog:"+comboBox.getSelectedItem()+"#"+comboBox.getSelectedItem()));
-        System.out.println(dataMap);
         dataMap.remove(uri);
         dataMap.put(uri, URI.create("geocatalog:"+comboBox.getSelectedItem()+"#"+comboBox.getSelectedItem()));
     }

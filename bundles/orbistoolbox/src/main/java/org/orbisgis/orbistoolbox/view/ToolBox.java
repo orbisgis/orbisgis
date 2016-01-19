@@ -525,6 +525,9 @@ public class ToolBox implements DockingPanel  {
     public String loadURI(URI uri) {
         try {
             File f = new File(uri);
+            if(f.isDirectory()){
+                return null;
+            }
             //Get the table name of the file
             String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), true);
             String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
