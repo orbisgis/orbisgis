@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view.utils;
+package org.orbisgis.orbistoolbox.view.utils.editor.process;
 
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.commons.progress.ProgressMonitor;
@@ -39,7 +39,6 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 public class ProcessEditableElement implements EditableElement{
-    public static final String ID = "WPSProcessEditableElement";
     public static final String STATE_PROPERTY = "STATE_PROPERTY";
     public static final String LOG_PROPERTY = "LOG_PROPERTY";
     private Process process;
@@ -49,43 +48,42 @@ public class ProcessEditableElement implements EditableElement{
     private Map<URI, Object> inputDataMap;
     /** Map of output data (URI of the corresponding output) */
     private Map<URI, Object> outputDataMap;
-    /**State of the process */
-    private ProcessState state;
     /** Map of the log message and their color.*/
     private Map<String, Color> logMap;
     /** List of listeners for the processState*/
     private List<PropertyChangeListener> propertyChangeListenerList;
-    private List<TreeNodeWps> listNode;
+    /** Unique identifier of this ProcessEditableElement. */
+    private final String ID;
+    private ProcessState state;
 
-    public ProcessEditableElement(Process process, List<TreeNodeWps> listNode){
+    public ProcessEditableElement(Process process){
         this.process = process;
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
         this.logMap = new LinkedHashMap<>();
         this.propertyChangeListenerList = new ArrayList<>();
-        this.listNode = listNode;
-        this.state = ProcessState.IDLE;
+        this.ID = process.getTitle()+System.currentTimeMillis();
     }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        if(!propertyChangeListenerList.contains(listener)){
-            propertyChangeListenerList.add(listener);
-        }
+        propertyChangeListenerList.add(listener);
     }
 
     @Override
-    public void addPropertyChangeListener(String prop, PropertyChangeListener listener) {}
+    public void addPropertyChangeListener(String prop, PropertyChangeListener listener) {
+        propertyChangeListenerList.add(listener);
+    }
 
     @Override
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        if(!propertyChangeListenerList.contains(listener)){
-            propertyChangeListenerList.remove(listener);
-        }
+        propertyChangeListenerList.remove(listener);
     }
 
     @Override
-    public void removePropertyChangeListener(String prop, PropertyChangeListener listener) {}
+    public void removePropertyChangeListener(String prop, PropertyChangeListener listener) {
+        propertyChangeListenerList.remove(listener);
+    }
 
     @Override
     public String getId() {
@@ -157,26 +155,8 @@ public class ProcessEditableElement implements EditableElement{
     public Process getProcess() {
         return process;
     }
-
-    public ProcessState getState() {
+    public ProcessState getProcessState() {
         return state;
-    }
-
-    public void setState(ProcessState state) {
-        ProcessState oldState = this.state;
-        this.state = state;
-        firePropertyChange(oldState, state);
-    }
-
-    public List<TreeNodeWps> getNodeList(){
-        return listNode;
-    }
-
-    public void firePropertyChange(ProcessState oldValue, ProcessState newValue){
-        PropertyChangeEvent event = new PropertyChangeEvent(process, STATE_PROPERTY, oldValue, newValue);
-        for(PropertyChangeListener pcl : propertyChangeListenerList){
-            pcl.propertyChange(event);
-        }
     }
 
     /**
@@ -202,15 +182,21 @@ public class ProcessEditableElement implements EditableElement{
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         String log = timeFormat.format(date) + " : " + logType.name() + " : " + message + "";
         logMap.put(log, color);
+        firePropertyChangeEvent(new PropertyChangeEvent(
+                this, LOG_PROPERTY, null, new AbstractMap.SimpleEntry<>(log, color)));
+    }
+
+    public void setProcessState(ProcessState processState){
+        this.state = processState;
+        firePropertyChangeEvent(new PropertyChangeEvent(
+                this, STATE_PROPERTY, null, processState));
+    }
+
+    public void firePropertyChangeEvent(PropertyChangeEvent event){
         for(PropertyChangeListener pcl : propertyChangeListenerList){
-            pcl.propertyChange(new PropertyChangeEvent(this, LOG_PROPERTY, null, new AbstractMap.SimpleEntry<>(log, color)));
+            pcl.propertyChange(event);
         }
     }
-
-    public void clearLog(){
-        logMap = new HashMap<>();
-    }
-
 
     public enum ProcessState{
         RUNNING("Running"),

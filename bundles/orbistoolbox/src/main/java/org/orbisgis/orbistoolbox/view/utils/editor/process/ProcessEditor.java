@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view.utils;
+package org.orbisgis.orbistoolbox.view.utils.editor.process;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionWorker;
@@ -27,17 +27,15 @@ import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
+import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -54,6 +52,8 @@ import java.util.Map;
 public class ProcessEditor extends JPanel implements EditorDockable, PropertyChangeListener {
 
     private static final int SCROLLBAR_UNIT_INCREMENT = 16;
+    /** Name of the EditorDockable. */
+    public static final String NAME = "PROCESS_EDITOR";
 
     private ProcessEditableElement pee;
     private ToolBox toolBox;
@@ -62,53 +62,43 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private JTabbedPane tabbedPane;
     /** DataUIManager used to create the UI corresponding the the data */
     private DataUIManager dataUIManager;
-    /** Label containing the state of the process (running, completed or idle) */
-    private JLabel stateLabel;
-    /**TextPane used to display the process execution log.*/
-    private JTextPane logPane;
-
-    private JPanel resultPanel;
+    /** Tells if the this editor has been open or not. */
+    private boolean alive;
 
     public ProcessEditor(ToolBox toolBox, ProcessEditableElement pee){
+        this.alive = true;
         this.toolBox = toolBox;
         this.pee = pee;
         this.pee.addPropertyChangeListener(this);
         dockingPanelParameters = new DockingPanelParameters();
+        dockingPanelParameters.setName(NAME+"_"+pee.getProcess().getTitle());
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("script"));
         dockingPanelParameters.setDefaultDockingLocation(
-                new DockingLocation(DockingLocation.Location.STACKED_ON, toolBox.getReference()));
+                new DockingLocation(DockingLocation.Location.STACKED_ON, ToolBox.TOOLBOX_REFERENCE));
         dockingPanelParameters.setTitle(pee.getProcessReference());
         this.setLayout(new BorderLayout());
         dataUIManager = toolBox.getDataUIManager();
-        stateLabel = new JLabel();
 
         buildUI();
-
-        //According to the process state, open the good tab
-        switch(pee.getState()){
-            case IDLE:
-                tabbedPane.setSelectedIndex(0);
-                break;
-            case RUNNING:
-                tabbedPane.setSelectedIndex(2);
-                break;
-            case COMPLETED:
-            case ERROR:
-                setOutputs(pee.getOutputDataMap());
-                tabbedPane.setSelectedIndex(2);
-                break;
-        }
-        //Print the process execution log.
-        for(Map.Entry<String, Color> entry : pee.getLogMap().entrySet()){
-            print(entry.getKey(), entry.getValue());
-        }
-
-        pee.setState(ProcessEditableElement.ProcessState.IDLE);
+        tabbedPane.setSelectedIndex(0);
         this.revalidate();
+    }
+
+    /**
+     * Sets if this editor has been open..
+     * @param alive True if this editor is open, false otherwise.
+     */
+    public void setAlive(boolean alive){
+        this.alive = alive;
     }
 
     @Override
     public DockingPanelParameters getDockingParameters() {
+        //if this editor is not visible but was open, close it.
+        if(!dockingPanelParameters.isVisible() && alive){
+            alive = false;
+            toolBox.killEditor(this);
+        }
         return dockingPanelParameters;
     }
 
@@ -119,7 +109,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
     @Override
     public boolean match(EditableElement editableElement) {
-        return editableElement instanceof ProcessEditableElement;
+        //Return true if the editable is the one contained by the Process editor
+        return editableElement instanceof ProcessEditableElement && editableElement.getId().equals(pee.getId());
     }
 
     @Override
@@ -136,12 +127,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.STATE_PROPERTY)){
-            stateLabel.setText(pee.getState().name());
-        }
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.LOG_PROPERTY)){
             AbstractMap.Entry<String, Color> entry = (AbstractMap.Entry)propertyChangeEvent.getNewValue();
-            print(entry.getKey(), entry.getValue());
         }
     }
 
@@ -153,7 +140,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Configuration", buildUIConf());
         tabbedPane.addTab("Information", buildUIInfo());
-        tabbedPane.addTab("Execution", buildUIExec());
         this.add(tabbedPane, BorderLayout.CENTER);
     }
 
@@ -162,33 +148,12 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      * @return True if the process has already been launch, false otherwise.
      */
     public boolean runProcess(){
-        if(pee.getState().equals(ProcessEditableElement.ProcessState.IDLE) ||
-                pee.getState().equals(ProcessEditableElement.ProcessState.ERROR) ||
-                pee.getState().equals(ProcessEditableElement.ProcessState.COMPLETED)) {
-            clearLogPanel();
-            //Check that all the data field were filled.
-            pee.clearLog();
-            pee.setState(ProcessEditableElement.ProcessState.RUNNING);
-            //Run the process in a separated thread
-            ExecutionWorker thread = new ExecutionWorker(pee, toolBox, this);
-            thread.execute();
-            //Select the execution tab
-            tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
-            return false;
-        }
-        else{
-            return true;
-        }
-    }
-
-    /**
-     * Indicated that the process has ended and register the outputs results.
-     * @param outputMap Map of the outputs results.
-     */
-    public void endProcess(Map<URI, Object> outputMap){
-        pee.setState(ProcessEditableElement.ProcessState.COMPLETED);
-        this.setOutputs(outputMap);
-        pee.setState(ProcessEditableElement.ProcessState.IDLE);
+        toolBox.validateInstance(this);
+        pee.setProcessState(ProcessEditableElement.ProcessState.RUNNING);
+        //Run the process in a separated thread
+        ExecutionWorker thread = new ExecutionWorker(pee, toolBox);
+        thread.execute();
+        return false;
     }
 
     /**
@@ -377,84 +342,5 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JScrollPane scrollPane = new JScrollPane(panel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
         return scrollPane;
-    }
-
-    /**
-     * Build the UI of the given process according to the given data.
-     * @return The UI for the configuration of the process.
-     */
-    private JComponent buildUIExec(){
-        JPanel panel = new JPanel(new MigLayout("fill"));
-
-        JPanel executorPanel = new JPanel(new MigLayout());
-        executorPanel.setBorder(BorderFactory.createTitledBorder("Executor :"));
-        executorPanel.add(new JLabel("localhost"));
-
-        JPanel statusPanel = new JPanel(new MigLayout());
-        statusPanel.setBorder(BorderFactory.createTitledBorder("Status :"));
-        statusPanel.add(stateLabel);
-
-        resultPanel = new JPanel(new MigLayout());
-        resultPanel.setBorder(BorderFactory.createTitledBorder("Result :"));
-
-        JPanel logPanel = new JPanel(new BorderLayout());
-        logPanel.setBorder(BorderFactory.createTitledBorder("Log :"));
-        logPane = new JTextPane();
-        logPane.setCaretPosition(0);
-        JScrollPane scrollPaneLog = new JScrollPane(logPane);
-        logPanel.add(scrollPaneLog, BorderLayout.CENTER);
-
-        panel.add(executorPanel, "growx, wrap");
-        panel.add(statusPanel, "growx, wrap");
-        panel.add(resultPanel, "growx, wrap");
-        panel.add(logPanel, "growx, growy, wrap");
-
-        JScrollPane scrollPane = new JScrollPane(panel);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
-        return scrollPane;
-    }
-
-    /**
-     * Sets the outputs label with the outputs results.
-     * @param outputs Outputs results.
-     */
-    public void setOutputs(Map<URI, Object> outputs) {
-        resultPanel.removeAll();
-        for(Output o : pee.getProcess().getOutput()) {
-            JLabel title = new JLabel(o.getTitle()+" : ");
-            JLabel result = new JLabel(outputs.get(o.getIdentifier()).toString());
-            resultPanel.add(title);
-            resultPanel.add(result, "wrap");
-        }
-    }
-
-    /**
-     * Add the provided text with the provided color to the GUI document
-     * @param text The text that will be added
-     * @param color The color used to show the text
-     */
-    public void print(String text, Color color) {
-        StyleContext sc = StyleContext.getDefaultStyleContext();
-        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY,
-                StyleConstants.Foreground, color);
-        int len = logPane.getDocument().getLength();
-        try {
-            logPane.setCaretPosition(len);
-            logPane.getDocument().insertString(len, text+"\n", aset);
-        } catch (BadLocationException e) {
-            LoggerFactory.getLogger(ProcessEditor.class).error("Cannot show the log message", e);
-        }
-        logPane.setCaretPosition(logPane.getDocument().getLength());
-    }
-
-    /**
-     * Clear the log panel.
-     */
-    public void clearLogPanel(){
-        try {
-            logPane.getDocument().remove(1, logPane.getDocument().getLength() - 1);
-        } catch (BadLocationException e) {
-            LoggerFactory.getLogger(ProcessEditor.class).error(e.getMessage());
-        }
     }
 }

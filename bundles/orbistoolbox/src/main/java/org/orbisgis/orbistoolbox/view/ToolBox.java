@@ -23,25 +23,27 @@ import org.apache.commons.io.FilenameUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.commons.utils.FileUtils;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
-import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
-import org.orbisgis.orbistoolbox.view.utils.ProcessEditorFactory;
-import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
+import org.orbisgis.orbistoolbox.view.utils.*;
 import org.orbisgis.orbistoolbox.view.utils.dataProcessing.DataProcessingManager;
+import org.orbisgis.orbistoolbox.view.utils.editor.log.LogEditableElement;
+import org.orbisgis.orbistoolbox.view.utils.editor.log.LogEditor;
+import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
+import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditor;
 import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
+import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
-import org.orbisgis.sif.edition.EditorManager;
+import org.orbisgis.sif.edition.EditorDockable;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Component;
@@ -58,32 +60,45 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Start point of the OrbisToolBox.
+ * This class instantiate all the tool and allow the different parts to communicates.
+ *
  * @author Sylvain PALOMINOS
  **/
 
 @Component(service = DockingPanel.class)
 public class ToolBox implements DockingPanel {
+    /** String of the Groovy file extension. */
+    public static final String GROOVY_EXTENSION = "groovy";
+    /** String reference of the ToolBox used for DockingFrame. */
+    public static final String TOOLBOX_REFERENCE = "orbistoolbox";
 
-    /** Docking parameters used by DockingFrames */
+    /** Docking parameters used by DockingFrames. */
     private DockingPanelParameters parameters;
-    /** Process manager */
+    /** Process manager which contains all the loaded scripts. */
     private ProcessManager processManager;
-    /** Displayed JPanel */
+    /** Displayed JPanel. */
     private ToolBoxPanel toolBoxPanel;
-    /** Object creating the UI corresponding to the data */
+    /** Object creating the UI corresponding to the data. */
     private DataUIManager dataUIManager;
-    /** DataManager */
-    private static DataManager dataManager;
-    private static DriverFunctionContainer driverFunctionContainer;
-
+    /** Map containing the properties to apply for the Grovvy script execution. */
     private Map<String, Object> properties;
-    /** OrbisGIS editorManager */
-    private EditorManager editorManager;
     /** Factory for the creation of the ProcessEditor (UI of a process instance) */
-    private ProcessEditorFactory pef;
     private DataProcessingManager dataProcessingManager;
 
-    private static final String TOOLBOX_REFERENCE = "orbistoolbox";
+    /** EditableElement associated to the logEditor. */
+    private LogEditableElement lee;
+    /** EditorDockable for the displaying of the running processes log. */
+    private LogEditor le;
+    /** List of open EditorDockable. Used to close them when the ToolBox is close (Not stopped, just not visible). */
+    private List<EditorDockable> openEditorList;
+
+    /** OrbigGIS DockingManager. */
+    private DockingManager dockingManager;
+    /** OrbisGIS DataManager. */
+    private static DataManager dataManager;
+    /** OrbisGIS DriverFunctionContainer. */
+    private static DriverFunctionContainer driverFunctionContainer;
 
     @Activate
     public void init(){
@@ -91,30 +106,30 @@ public class ToolBox implements DockingPanel {
         processManager = new ProcessManager();
         dataUIManager = new DataUIManager(this);
 
-        ActionCommands dockingActions = new ActionCommands();
-
         parameters = new DockingPanelParameters();
         parameters.setTitle("OrbisToolBox");
         parameters.setTitleIcon(ToolBoxIcon.getIcon("orbistoolbox"));
         parameters.setCloseable(true);
         parameters.setName(TOOLBOX_REFERENCE);
 
+        ActionCommands dockingActions = new ActionCommands();
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
 
-        pef = new ProcessEditorFactory(editorManager, this);
-        editorManager.addEditorFactory(pef);
         dataProcessingManager = new DataProcessingManager(this);
+        openEditorList = new ArrayList<>();
+        lee = new LogEditableElement();
+        le = null;
     }
 
     @Deactivate
     public void dispose(){
-        editorManager.removeEditorFactory(pef);
+        //Removes all the EditorDockable that were added
+        for(EditorDockable ed : openEditorList){
+            dockingManager.removeDockingPanel(ed.getDockingParameters().getName());
+        }
+        openEditorList = new ArrayList<>();
         toolBoxPanel.dispose();
-    }
-
-    public String getReference(){
-        return TOOLBOX_REFERENCE;
     }
 
     /**
@@ -127,7 +142,30 @@ public class ToolBox implements DockingPanel {
 
     @Override
     public DockingPanelParameters getDockingParameters() {
+        //when the toolBox is not visible, it mean that is was closed, so close all the toolbox editors
+        if(!parameters.isVisible()){
+            for(EditorDockable ed : openEditorList) {
+                if (ed instanceof ProcessEditor) {
+                    ((ProcessEditor)ed).setAlive(false);
+                }
+                dockingManager.removeDockingPanel(ed.getDockingParameters().getName());
+            }
+            openEditorList = new ArrayList<>();
+            lee.removePropertyChangeListener(le);
+            le = null;
+        }
         return parameters;
+    }
+
+    /**
+     * Close the given EditorDockable if it was add by the ToolBox (contained by openEditorList).
+     * @param ed EditorDockable to close.
+     */
+    public void killEditor(EditorDockable ed) {
+        if(openEditorList.contains(ed)){
+            dockingManager.removeDockingPanel(ed.getDockingParameters().getName());
+        }
+        openEditorList.remove(ed);
     }
 
     @Override
@@ -136,7 +174,8 @@ public class ToolBox implements DockingPanel {
     }
 
     /**
-     * Adds a local folder as a script source.
+     * Open a file browser to find a local script folder and add it.
+     * Used in an EvenHandler in view.ui.ToolBoxPanel
      */
     public void addNewLocalSource(){
         OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBox.AddSource", "Add a source");
@@ -146,17 +185,58 @@ public class ToolBox implements DockingPanel {
         }
     }
 
+    /**
+     * Adds a folder as a local script source.
+     * @param file Folder where the script are located.
+     */
     public void addLocalSource(File file){
         processManager.addLocalSource(file.getAbsolutePath());
         toolBoxPanel.addLocalSource(file, processManager);
     }
 
     /**
-     * Open the process window for the selected process
+     * Open the process window for the selected process.
+     * @param scriptFile Script file to execute as a process.
+     * @return The ProcessEditableElement which contains the running process information (log, state, ...).
      */
-    public void openProcess(){
-        Process process = processManager.getProcess(toolBoxPanel.getSelectedNode().getFilePath());
-        editorManager.openEditable(new ProcessEditableElement(process, toolBoxPanel.getNodesFromSelectedOne()));
+    public ProcessEditableElement openProcess(File scriptFile){
+        Process process = processManager.getProcess(scriptFile);
+        ProcessEditableElement pee = new ProcessEditableElement(process);
+        ProcessEditor pe = new ProcessEditor(this, pee);
+        //Find if there is already a ProcessEditor open with the same process.
+        //If not, add the new one.
+        boolean alreadyOpen = false;
+        for(EditorDockable ed : openEditorList){
+            if(ed.getDockingParameters().getName().equals(pe.getDockingParameters().getName())){
+                alreadyOpen = true;
+            }
+        }
+        if(!alreadyOpen) {
+            dockingManager.addDockingPanel(pe);
+            openEditorList.add(pe);
+        }
+        else{
+            LoggerFactory.getLogger(ToolBox.class).warn("The process '"+pee.getProcess().getTitle()+"' is already open.");
+        }
+        return pee;
+    }
+
+    /**
+     * Once the process is configured and run, add it to the LogEditor and removes the ProcessEditor (close it).
+     * @param pe ProcessEditor to close.
+     */
+    public void validateInstance(ProcessEditor pe){
+        ProcessEditableElement pee = (ProcessEditableElement) pe.getEditableElement();
+        //If the LogEditor is not displayed, just do it <°>.
+        if(le == null) {
+            le = new LogEditor(lee);
+            dockingManager.addDockingPanel(le);
+            openEditorList.add(le);
+        }
+
+        lee.addProcessEditableElement(pee);
+        dockingManager.removeDockingPanel(pe.getDockingParameters().getName());
+        openEditorList.remove(pe);
     }
 
     /**
@@ -170,6 +250,22 @@ public class ToolBox implements DockingPanel {
             processManager.removeProcess(process);
         }
         return (processManager.addLocalScript(f) != null);
+    }
+
+    /**
+     * Verify if the given file is a well formed script.
+     * @param f File to check.
+     * @return True if the file is well formed, false otherwise.
+     */
+    public boolean checkFolder(File f){
+        if(f.exists() && f.isDirectory()){
+            for(File file : f.listFiles()){
+                if(file.getAbsolutePath().endsWith("."+GROOVY_EXTENSION)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -218,37 +314,33 @@ public class ToolBox implements DockingPanel {
     }
 
     @Reference
+    public void setDockingManager(DockingManager dockingManager) {
+        this.dockingManager = dockingManager;
+    }
+
+    public void unsetDockingManager(DockingManager dockingManager) {
+        this.dockingManager = null;
+    }
+
+    @Reference
     public void setDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
-        this.driverFunctionContainer = driverFunctionContainer;
+        ToolBox.driverFunctionContainer = driverFunctionContainer;
     }
 
     public void unsetDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
-        this.driverFunctionContainer = null;
+        ToolBox.driverFunctionContainer = null;
     }
 
     public DriverFunctionContainer getDriverFunctionContainer(){
         return driverFunctionContainer;
     }
 
-    /**
-     * Sets the EditorManager to use.
-     * @param editorManager Editor windows manager
-     */
-    @Reference
-    public void setEditorManager(EditorManager editorManager) {
-        this.editorManager = editorManager;
-    }
-
-    /**
-     * Unset the ProcessEditor.
-     * @param editorManager Editor windows manager
-     */
-    public void unsetEditorManager(EditorManager editorManager) {
-        this.editorManager = editorManager;
-    }
-
     public DataProcessingManager getDataProcessingManager() {
         return dataProcessingManager;
+    }
+
+    public ToolBoxPanel getToolBoxPanel(){
+        return toolBoxPanel;
     }
 
     /**

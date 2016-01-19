@@ -19,13 +19,11 @@
 
 package org.orbisgis.orbistoolbox.controller.processexecution;
 
-import groovy.lang.GroovyObject;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.orbistoolbox.model.DescriptionType;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.view.utils.ProcessEditableElement;
-import org.orbisgis.orbistoolbox.view.utils.ProcessEditor;
+import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
@@ -33,7 +31,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Thread executing a process.
+ * Swing worker executing a process.
+ * This worker execute a WPS process in three steps:
+ *  - Pre-process the input/output : Some input/output need to be prepared before been used for the execution.
+ *  - Execute : execute the process by running the Groovy script.
+ *  - Post-process input/output : Some input/output need to be processed to be on the good form
+ *      (like exporting a DataStore in the CSV file format.)
+ * It uses the ProcessEditableElement to communicates the execution log and process state to the rest of the ToolBox.
  *
  * @author Sylvain PALOMINOS
  **/
@@ -48,40 +52,35 @@ public class ExecutionWorker extends SwingWorkerPM{
     private ToolBox toolBox;
     /** Process element containing all the information it */
     private ProcessEditableElement pee;
-    /** GroovyObject of the process execution */
-    private GroovyObject groovyObject;
-    /** Process UI */
-    private ProcessEditor processEditor;
 
     /**
      * Main constructor.
-     * @param pee ProcessEditableElement.
+     * @param pee ProcessEditableElement which will be used to communicate the state and the log of the process.
      * @param toolBox ToolBox.
      */
-    public ExecutionWorker(ProcessEditableElement pee,ToolBox toolBox, ProcessEditor processEditor){
+    public ExecutionWorker(ProcessEditableElement pee,ToolBox toolBox){
         this.pee = pee;
         this.process = pee.getProcess();
         this.dataMap = new HashMap<>();
         this.dataMap.putAll(pee.getInputDataMap());
         this.dataMap.putAll(pee.getOutputDataMap());
         this.toolBox = toolBox;
-        this.processEditor = processEditor;
     }
 
     @Override
     protected Object doInBackground() throws Exception {
         long startTime = System.currentTimeMillis();
-        //Catch all the Exception that can be get on executing the script.
+        //Catch all the Exception that can be thrown during the script execution.
         try {
             //Print in the log the process execution start
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
-                    "Start process : " + process.getTitle());
+                    "Start the process");
 
-            //pre process the data
+            //Pre-process the data
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
-                    "preProcess : " + process.getTitle());
+                    "Pre-processing");
             for(DescriptionType inputOrOutput : pee.getProcess().getOutput()){
                 toolBox.getDataProcessingManager().preProcessData(inputOrOutput, dataMap);
             }
@@ -90,13 +89,15 @@ public class ExecutionWorker extends SwingWorkerPM{
             }
 
             //Execute the process and retrieve the groovy object.
-            groovyObject = toolBox.getProcessManager().executeProcess(
-                    process, dataMap, toolBox.getProperties());
-
-            //post process the data
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
-                    "postProcess : " + process.getTitle());
+                    "Execute the script");
+            toolBox.getProcessManager().executeProcess(process, dataMap, toolBox.getProperties());
+
+            //Post-process the data
+            pee.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessEditableElement.LogType.INFO,
+                    "Post-processing");
             for(DescriptionType inputOrOutput : pee.getProcess().getOutput()){
                 toolBox.getDataProcessingManager().postProcessData(inputOrOutput, dataMap);
             }
@@ -107,10 +108,10 @@ public class ExecutionWorker extends SwingWorkerPM{
             //Print in the log the process execution end
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
-                    "End process : " + process.getTitle());
+                    "End of the process");
         }
         catch (Exception e) {
-            pee.setState(ProcessEditableElement.ProcessState.ERROR);
+            pee.setProcessState(ProcessEditableElement.ProcessState.ERROR);
             //Print in the log the process execution error
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.ERROR,
@@ -122,30 +123,6 @@ public class ExecutionWorker extends SwingWorkerPM{
 
     @Override
     protected void done(){
-        //Retrieve the executed process output data
-        Map<URI, Object> mapOutput = new HashMap<>();
-        for(Map.Entry<URI, Object> entry : dataMap.entrySet()){
-            if(entry.getKey().toString().contains("output")) {
-                mapOutput.put(entry.getKey(), entry.getValue());
-            }
-        }
-        //Print in the log the process end the process
-        processEditor.endProcess(mapOutput);
-    }
-
-    public ToolBox getToolBox(){
-        return toolBox;
-    }
-
-    public GroovyObject getGroovyObject(){
-        return groovyObject;
-    }
-
-    public Process getProcess(){
-        return process;
-    }
-
-    public Map<URI, Object> getDataMap(){
-        return dataMap;
+        pee.setProcessState(ProcessEditableElement.ProcessState.COMPLETED);
     }
 }
