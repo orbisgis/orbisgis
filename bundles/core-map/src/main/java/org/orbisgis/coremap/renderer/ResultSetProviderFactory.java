@@ -34,6 +34,7 @@ import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.commons.progress.ProgressMonitor;
 
 import java.sql.SQLException;
+import java.util.Set;
 
 /**
  * In order to split-up Data query and rendering. The renderer use this interface to query the database.
@@ -63,10 +64,11 @@ public interface ResultSetProviderFactory {
          * filtering.
          * @param pm ProgressMonitor allows to display the process and cancel it.
          * @param extent Filter entities by this envelope
+         * @param fields a list of column names to keep in the select... from
          * @return The content of the table
          * @throws java.sql.SQLException
          */
-        SpatialResultSet execute(ProgressMonitor pm, Envelope extent) throws SQLException;
+        SpatialResultSet execute(ProgressMonitor pm, Envelope extent, Set<String> fields) throws SQLException;
 
         /**
          * @return The primary key column name, empty if there is no such thing.
