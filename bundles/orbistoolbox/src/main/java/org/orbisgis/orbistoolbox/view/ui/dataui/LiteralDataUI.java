@@ -64,7 +64,6 @@ public class LiteralDataUI implements DataUI {
         List<DescriptionType> descriptionTypeList = new ArrayList<>();
         DataDescription dataDescription = null;
         URI identifier = inputOrOutput.getIdentifier();
-        boolean isOptional = false;
 
         //Gets the descriptionType list if the argument is an input
         if(inputOrOutput instanceof Input){
@@ -74,9 +73,6 @@ public class LiteralDataUI implements DataUI {
             }
             else{
                 descriptionTypeList.add(input);
-            }
-            if(input.getMinOccurs() == 0){
-                isOptional = true;
             }
             dataDescription = input.getDataDescription();
         }
@@ -170,6 +166,7 @@ public class LiteralDataUI implements DataUI {
             comboBox.putClientProperty("dataField", dataField);
             comboBox.putClientProperty("uri", input.getIdentifier());
             comboBox.putClientProperty("dataMap", dataMap);
+            comboBox.putClientProperty("isOptional", input.getMinOccurs()==0);
             comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onBoxChange", "source"));
             comboBox.setBackground(Color.WHITE);
 
@@ -382,6 +379,7 @@ public class LiteralDataUI implements DataUI {
         JPanel panel = (JPanel) comboBox.getClientProperty("dataField");
         panel.removeAll();
         panel.add(dataComponent, "growx, wrap");
+        dataMap.remove(uri);
     }
 
     /**

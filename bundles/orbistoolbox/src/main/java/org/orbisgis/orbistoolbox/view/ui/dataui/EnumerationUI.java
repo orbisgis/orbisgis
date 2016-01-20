@@ -142,17 +142,20 @@ public class EnumerationUI implements DataUI{
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         Map<URI, Object> map = new HashMap<>();
         Enumeration enumeration = null;
+        boolean isOptional = false;
         if(inputOrOutput instanceof Input){
             enumeration = (Enumeration)((Input)inputOrOutput).getDataDescription();
+            isOptional = ((Input)inputOrOutput).getMinOccurs()==0;
         }
         else if(inputOrOutput instanceof Output){
             enumeration = (Enumeration)((Output)inputOrOutput).getDataDescription();
         }
-        if(enumeration.isMultiSelection()) {
-            map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues());
-        }
-        else{
-            map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues()[0]);
+        if(!isOptional) {
+            if (enumeration.isMultiSelection()) {
+                map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues());
+            } else {
+                map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues()[0]);
+            }
         }
         return map;
     }

@@ -164,13 +164,12 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private JComponent buildUIConf(){
         JPanel panel = new JPanel(new MigLayout("fill"));
         JScrollPane scrollPane = new JScrollPane(panel);
+        // Put all the default values in the datamap
+        pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(pee.getProcess()));
         //For each input, display its title, its abstract and gets its UI from the dataUIManager
         for(Input i : pee.getProcess().getInput()){
 
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getClass());
-            //Merge all the Entry from the defaultValue map with the input map of the pee if
-            // the entry isn't already in the input map.
-            pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(pee.getProcess()));
 
             if(dataUI!=null) {
                 JComponent comp = dataUI.createUI(i, pee.getInputDataMap());
