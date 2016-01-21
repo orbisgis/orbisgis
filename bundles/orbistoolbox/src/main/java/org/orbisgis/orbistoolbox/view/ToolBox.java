@@ -47,6 +47,8 @@ import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.osgi.framework.FrameworkUtil;
 import org.orbisgis.sif.edition.EditorDockable;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Component;
@@ -74,6 +76,8 @@ public class ToolBox implements DockingPanel  {
     /** String reference of the ToolBox used for DockingFrame. */
     public static final String TOOLBOX_REFERENCE = "orbistoolbox";
     private static final String WPS_SCRIPT_FOLDER = "scripts";
+    private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
+    private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static boolean areScriptsCopied = false;
 
     /** Docking parameters used by DockingFrames. */
@@ -103,6 +107,9 @@ public class ToolBox implements DockingPanel  {
     /** OrbisGIS DriverFunctionContainer. */
     private static DriverFunctionContainer driverFunctionContainer;
 
+    /** ToolBox properties */
+    private Properties tbProperties;
+
     @Activate
     public void init(){
         toolBoxPanel = new ToolBoxPanel(this);
@@ -126,6 +133,26 @@ public class ToolBox implements DockingPanel  {
 
         if(!areScriptsCopied) {
             setScriptFolder();
+        }
+        // Try to load previous state of the toolBox.
+        tbProperties = new Properties();
+        File propertiesFile = new File(coreWorkspace.getApplicationFolder() + File.separator + TOOLBOX_PROPERTIES);
+        if (propertiesFile.exists()) {
+            try {
+                tbProperties.load(new FileInputStream(propertiesFile));
+            } catch (IOException e) {
+                LoggerFactory.getLogger(ToolBox.class).warn("Unable to restore previous configuration of the ToolBox");
+                tbProperties = null;
+            }
+        }
+        if(tbProperties != null){
+            Object prop = tbProperties.getProperty(PROPERTY_SOURCES);
+            if(prop != null){
+                String str = prop.toString();
+                for(String s : str.split(";")){
+                    addLocalSource(URI.create(s));
+                }
+            }
         }
     }
 
@@ -188,6 +215,19 @@ public class ToolBox implements DockingPanel  {
         openEditorList = new ArrayList<>();
         toolBoxPanel.dispose();
         areScriptsCopied = false;
+
+        //Try to save the local files loaded.
+        try {
+            if (tbProperties == null) {
+                tbProperties = new Properties();
+            }
+            tbProperties.setProperty(PROPERTY_SOURCES, toolBoxPanel.getListLocalSourcesAsString());
+            tbProperties.store(
+                    new FileOutputStream(coreWorkspace.getApplicationFolder() + File.separator + TOOLBOX_PROPERTIES),
+                    "Save of the OrbisGIS toolBox");
+        } catch (IOException e) {
+            LoggerFactory.getLogger(ToolBox.class).warn("Unable to save ToolBox state.");
+        }
     }
 
     /**

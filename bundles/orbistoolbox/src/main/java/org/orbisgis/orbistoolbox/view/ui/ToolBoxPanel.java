@@ -715,4 +715,33 @@ public class ToolBoxPanel extends JPanel {
         filterFactoryManager.getEventFilterChange().clearListeners();
         filterFactoryManager.getEventFilterFactoryChange().clearListeners();
     }
+
+    /**
+     * Returns the list of the URI of the local file loaded.
+     * @return List of the URI of the local files loaded.
+     */
+    public String getListLocalSourcesAsString() {
+        String uriStr = "";
+        TreeNodeWps root = (TreeNodeWps)fileModel.getRoot();
+        TreeNodeWps localhost = null;
+        for(int i=0; i<root.getChildCount(); i++){
+            localhost = ((TreeNodeWps)root.getChildAt(i));
+            if(localhost.getUserObject().equals(LOCALHOST_URI)){
+                break;
+            }
+        }
+        if(localhost == null){
+            return uriStr;
+        }
+        for(int i=0; i<localhost.getChildCount(); i++){
+            TreeNodeWps child = ((TreeNodeWps)localhost.getChildAt(i));
+            if(uriStr.isEmpty()){
+                uriStr = child.getUri().toString();
+            }
+            else {
+                uriStr += ";"+child.getUri().toString();
+            }
+        }
+        return uriStr;
+    }
 }
