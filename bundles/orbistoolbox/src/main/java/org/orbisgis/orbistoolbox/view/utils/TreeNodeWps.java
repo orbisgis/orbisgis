@@ -42,6 +42,9 @@ import java.net.URI;
 
 public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCustomIcon {
 
+    /** Max length in character of the user object. */
+    private static final int MAX_USEROBJECT_LENGTH = 30;
+
     /** Type of the node. */
     private NodeType nodeType = NodeType.FOLDER;
     /** File or folder name associated to the node. */
@@ -311,6 +314,15 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         copy.customInvalidIconName = this.customInvalidIconName;
 
         return copy;
+    }
+
+    @Override
+    public void setUserObject(Object userObject){
+        String str = userObject.toString();
+        if(str.length()>MAX_USEROBJECT_LENGTH){
+            str = str.substring(0, MAX_USEROBJECT_LENGTH)+"...";
+        }
+        super.setUserObject(str);
     }
 
     /**
