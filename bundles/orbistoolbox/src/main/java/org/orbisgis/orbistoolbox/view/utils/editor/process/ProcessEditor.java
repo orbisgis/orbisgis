@@ -166,70 +166,67 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JScrollPane scrollPane = new JScrollPane(panel);
         // Put all the default values in the datamap
         pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(pee.getProcess()));
-        //For each input, display its title, its abstract and gets its UI from the dataUIManager
-        for(Input i : pee.getProcess().getInput()){
+        //Creates the panel that will contains all the inputs.
+        JPanel inputPanel = new JPanel(new MigLayout("fill"));
+        inputPanel.setBorder(BorderFactory.createTitledBorder("Inputs"));
+        panel.add(inputPanel, "growx, span");
 
+        for(Input i : pee.getProcess().getInput()){
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getClass());
 
             if(dataUI!=null) {
-                JComponent comp = dataUI.createUI(i, pee.getInputDataMap());
-                if(comp != null) {
-                    comp.setVisible(false);
-                    JPanel inputPanel = new JPanel(new MigLayout("fill"));
-                    inputPanel.setBorder(BorderFactory.createTitledBorder(i.getTitle()));
-                    JPanel upPanel = new JPanel(new MigLayout());
-                    JButton showButton = new JButton(ToolBoxIcon.getIcon("btnright"));
-                    showButton.setBorderPainted(false);
-                    showButton.setMargin(new Insets(0, 0, 0, 0));
-                    showButton.setContentAreaFilled(false);
-                    showButton.setOpaque(false);
-                    showButton.setFocusable(false);
-                    showButton.putClientProperty("upPanel", upPanel);
-                    showButton.addMouseListener(EventHandler.create(MouseListener.class, this, "onClickButton", "source", "mouseClicked"));
-                    upPanel.add(showButton);
-                    JLabel inputAbstrac = new JLabel(i.getResume());
-                    inputAbstrac.setFont(inputAbstrac.getFont().deriveFont(Font.ITALIC));
-                    upPanel.add(inputAbstrac, "wrap");
-                    upPanel.putClientProperty("body", comp);
-                    upPanel.putClientProperty("parent", inputPanel);
-                    upPanel.putClientProperty("button", showButton);
-                    upPanel.putClientProperty("scrollPane", scrollPane);
-                    upPanel.addMouseListener(EventHandler.create(MouseListener.class, this, "onClickHeader", "source", "mouseClicked"));
-                    inputPanel.add(upPanel, "growx, span");
-                    panel.add(inputPanel, "growx, span");
+                //Retrieve the component containing all the UI components.
+                JComponent uiComponent = dataUI.createUI(i, pee.getInputDataMap());
+                if(uiComponent != null) {
+                    //If the input is optional, hide it
+                    if(i.getMinOccurs()==0) {
+                        uiComponent.setVisible(false);
+                        //This panel is the one which contains the header with the title of the input and
+                        // the hide/show button
+                        JPanel contentPanel = new JPanel(new MigLayout("fill"));
+                        JPanel hideShowPanel = new JPanel(new MigLayout());
+                        //Sets the button to make it shown as just an icon
+                        JButton showButton = new JButton(ToolBoxIcon.getIcon("btnright"));
+                        showButton.setBorderPainted(false);
+                        showButton.setMargin(new Insets(0, 0, 0, 0));
+                        showButton.setContentAreaFilled(false);
+                        showButton.setOpaque(false);
+                        showButton.setFocusable(false);
+                        showButton.putClientProperty("upPanel", hideShowPanel);
+                        showButton.addMouseListener(EventHandler.create(MouseListener.class,
+                                this, "onClickButton", "source", "mouseClicked"));
+                        hideShowPanel.add(showButton);
+                        JLabel inputAbstrac = new JLabel(i.getResume());
+                        inputAbstrac.setFont(inputAbstrac.getFont().deriveFont(Font.ITALIC));
+                        hideShowPanel.add(inputAbstrac, "wrap");
+                        hideShowPanel.putClientProperty("body", uiComponent);
+                        hideShowPanel.putClientProperty("parent", contentPanel);
+                        hideShowPanel.putClientProperty("button", showButton);
+                        hideShowPanel.putClientProperty("scrollPane", scrollPane);
+                        hideShowPanel.addMouseListener(EventHandler.create(MouseListener.class,
+                                this, "onClickHeader", "source", "mouseClicked"));
+                        contentPanel.add(hideShowPanel, "growx, span");
+                        inputPanel.add(contentPanel, "growx, span");
+                    }
+                    else{
+                        inputPanel.add(uiComponent, "growx, span");
+                    }
+                    inputPanel.add(new JSeparator(), "growx, span");
                 }
             }
         }
 
-        //For each output, display its title, its abstract and gets its UI from the dataUIManager
+        //Creates the panel that will contains all the inputs.
+        JPanel outputPanel = new JPanel(new MigLayout("fill"));
+        outputPanel.setBorder(BorderFactory.createTitledBorder("Outputs"));
+        panel.add(outputPanel, "growx, span");
+
         for(Output o : pee.getProcess().getOutput()){
             DataUI dataUI = dataUIManager.getDataUI(o.getDataDescription().getClass());
             if(dataUI!=null) {
                 JComponent component = dataUI.createUI(o, pee.getOutputDataMap());
                 if(component != null) {
-                    component.setVisible(false);
-                    JPanel outputPanel = new JPanel(new MigLayout("fill"));
-                    outputPanel.setBorder(BorderFactory.createTitledBorder(o.getTitle()));
-                    JPanel upPanel = new JPanel(new MigLayout());
-                    JButton showButton = new JButton(ToolBoxIcon.getIcon("btnright"));
-                    showButton.setBorderPainted(false);
-                    showButton.setMargin(new Insets(0, 0, 0, 0));
-                    showButton.setContentAreaFilled(false);
-                    showButton.setOpaque(false);
-                    showButton.setFocusable(false);
-                    showButton.putClientProperty("upPanel", upPanel);
-                    showButton.addMouseListener(EventHandler.create(MouseListener.class, this, "onClickButton", "source", "mouseClicked"));
-                    upPanel.add(showButton);
-                    JLabel outputAbstrac = new JLabel(o.getResume());
-                    outputAbstrac.setFont(outputAbstrac.getFont().deriveFont(Font.ITALIC));
-                    upPanel.add(outputAbstrac, "wrap");
-                    upPanel.putClientProperty("body", component);
-                    upPanel.putClientProperty("parent", outputPanel);
-                    upPanel.putClientProperty("button", showButton);
-                    upPanel.putClientProperty("scrollPane", scrollPane);
-                    upPanel.addMouseListener(EventHandler.create(MouseListener.class, this, "onClickHeader", "source", "mouseClicked"));
-                    outputPanel.add(upPanel, "growx, span");
-                    panel.add(outputPanel, "growx, span");
+                    outputPanel.add(component, "growx, span");
                 }
             }
         }
