@@ -125,6 +125,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     protected int fetchSize = DEFAULT_FETCH_SIZE;
     // Cache of last queried batch
     protected long currentBatchId = -1;
+    protected PreparedStatement currentBatchPreparedStatement = null;
+    protected String currentBatchQuery = "";
     private int fetchDirection = FETCH_UNKNOWN;
     // When close is called, in how many ms the result set is really closed
     private int closeDelay = 0;
@@ -294,8 +296,15 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             command.append(" OFFSET ");
             command.append(queryOffset);
         }
-        PreparedStatement st = connection.prepareStatement(command.toString(), ResultSet.TYPE_SCROLL_SENSITIVE,
-                ResultSet.CONCUR_READ_ONLY);
+        PreparedStatement st;
+        if(command.toString().equals(currentBatchQuery) && currentBatchPreparedStatement != null
+                && !currentBatchPreparedStatement.isClosed() && connection.equals(currentBatchPreparedStatement.getConnection())) {
+            st = currentBatchPreparedStatement;
+        } else {
+            st = connection.prepareStatement(command.toString(), ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            currentBatchPreparedStatement = st;
+            currentBatchQuery = command.toString();
+        }
         for(Map.Entry<Integer, Object> entry : parameters.entrySet()) {
             st.setObject(entry.getKey(), entry.getValue());
         }
@@ -642,7 +651,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public Object getObject(int i) throws SQLException {
         checkColumnIndex(i);
         checkCurrentRow();
-        Object cell = null;
+        Object cell;
         try(Resource res = resultSetHolder.getResource()) {
             ResultSet resultSet = res.getResultSet();
             resultSet.absolute(getBatchRow());

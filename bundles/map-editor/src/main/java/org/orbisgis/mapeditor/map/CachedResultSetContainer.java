@@ -59,11 +59,10 @@ import org.xnap.commons.i18n.I18nFactory;
 public class CachedResultSetContainer implements ResultSetProviderFactory {
     private final Map<String, ReadRowSet> cache = new HashMap<>();
     private static final int LOCK_TIMEOUT = 10;
-    private static final int FETCH_SIZE = 50;
+    private static final int FETCH_SIZE = 200;
     private static I18n I18N = I18nFactory.getI18n(CachedResultSetContainer.class);
     private static Logger LOGGER = LoggerFactory.getLogger(CachedResultSetContainer.class);
-    private static final int ROWSET_FREE_DELAY = 60000;
-    private static final long WAIT_FOR_INITIALISATION_TIMEOUT = 10000;
+    private static final int ROWSET_FREE_DELAY = 60000;    private static final long WAIT_FOR_INITIALISATION_TIMEOUT = 10000;
     // (0-1] Use spatial index query if the query envelope area rational number is smaller than this value.
     private static final double RATIONAL_USAGE_INDEX = 0.2;
     private final ReentrantLock lock = new ReentrantLock();
