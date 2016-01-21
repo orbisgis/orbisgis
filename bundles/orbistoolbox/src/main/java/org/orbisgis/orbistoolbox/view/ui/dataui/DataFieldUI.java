@@ -26,7 +26,9 @@ import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.common.ContainerItem;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuListener;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -73,12 +75,16 @@ public class DataFieldUI implements DataUI{
 
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setBackground(Color.WHITE);
+        String defaultItem = "Select a field";
+        comboBox.addItem(defaultItem);
         comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());
         comboBox.putClientProperty("dataField", dataField);
         comboBox.putClientProperty("dataMap", dataMap);
         comboBox.putClientProperty("isOptional", isOptional);
+        comboBox.putClientProperty("defaultItem", defaultItem);
         comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
-        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "refreshComboBox", "source", "mouseEntered"));
+        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
+        comboBox.addPopupMenuListener(EventHandler.create(PopupMenuListener.class, this, "onComboBoxEntered", "source"));
         comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
         comboBox.setToolTipText(inputOrOutput.getResume());
         panel.add(comboBox, "growx, wrap");
@@ -113,8 +119,10 @@ public class DataFieldUI implements DataUI{
      * Update the JComboBox according to if DataStore parent.
      * @param source the source JComboBox.
      */
-    public void refreshComboBox(Object source){
+    public void onComboBoxEntered(Object source){
         JComboBox<String> comboBox = (JComboBox)source;
+        String defaultItem = comboBox.getClientProperty("defaultItem").toString();
+        comboBox.removeItem(defaultItem);
         DataField dataField = (DataField)comboBox.getClientProperty("dataField");
         HashMap<URI, Object> dataMap = (HashMap)comboBox.getClientProperty("dataMap");
         boolean isOptional = (boolean)comboBox.getClientProperty("isOptional");
