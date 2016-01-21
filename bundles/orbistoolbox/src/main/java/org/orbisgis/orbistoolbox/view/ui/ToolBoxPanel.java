@@ -458,12 +458,7 @@ public class ToolBoxPanel extends JPanel {
     public void remove(TreeNodeWps node){
         if(!node.equals(fileModel.getRoot()) && !node.equals(categoryModel.getRoot())){
             List<TreeNodeWps> leafList = new ArrayList<>();
-            if(node.isLeaf()) {
-                leafList.add(node);
-            }
-            else{
-                leafList.addAll(getAllLeaf(node));
-            }
+            leafList.addAll(getAllChild(node));
             for(TreeNodeWps leaf : leafList){
                 switch(leaf.getNodeType()){
                     case FOLDER:
@@ -593,6 +588,26 @@ public class ToolBoxPanel extends JPanel {
                 nodeList.addAll(getAllLeaf(child));
             }
         }
+        return nodeList;
+    }
+
+    /**
+     * Returns all the child of a node.
+     * @param node Node to explore.
+     * @return List of child.
+     */
+    private List<TreeNodeWps> getAllChild(TreeNodeWps node){
+        List<TreeNodeWps> nodeList = new ArrayList<>();
+        for(int i=0; i<node.getChildCount(); i++){
+            TreeNodeWps child = (TreeNodeWps) node.getChildAt(i);
+            if(child.isLeaf()){
+                nodeList.add(child);
+            }
+            else{
+                nodeList.addAll(getAllChild(child));
+            }
+        }
+        nodeList.add(node);
         return nodeList;
     }
 
