@@ -273,7 +273,7 @@ public class DataStoreUI implements DataUI{
      */
     public void onComboBoxEntered(Object source){
         //Retrieve the client properties
-        JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
+        JComboBox<String> comboBox = (JComboBox)source;
         if(comboBox.getItemCount() == 0) {
             comboBox.putClientProperty("initialDelay", ToolTipManager.sharedInstance().getInitialDelay());
             comboBox.putClientProperty("toolTipText", comboBox.getToolTipText());
@@ -282,6 +282,19 @@ public class DataStoreUI implements DataUI{
             comboBox.setToolTipText("First add a table to the Geocatalog");
             ToolTipManager.sharedInstance().mouseMoved(
                     new MouseEvent(comboBox,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
+        }
+        DataStore dataStore = (DataStore)comboBox.getClientProperty("dataStore");
+        if(dataStore.isSpatial()) {
+            comboBox.removeAllItems();
+            for(String s : ToolBox.getGeocatalogTableList(true).toArray(new String[]{})){
+                comboBox.addItem(s);
+            }
+        }
+        else {
+            comboBox.removeAllItems();
+            for(String s : ToolBox.getGeocatalogTableList(false).toArray(new String[]{})){
+                comboBox.addItem(s);
+            }
         }
     }
 
