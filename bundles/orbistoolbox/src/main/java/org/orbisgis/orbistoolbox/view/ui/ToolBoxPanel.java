@@ -261,13 +261,18 @@ public class ToolBoxPanel extends JPanel {
      * @param p Process to add.
      * @param uri Process URI.
      */
-    public void addScriptInCategoryModel(Process p, URI uri){
+    public void addScriptInCategoryModel(Process p, URI uri, String customCloseIconName, String customOpenIconName,
+                                         String customLeafIconName, String customInvalidIconName){
         String[] categories = decodeCategories(p);
 
         TreeNodeWps root = (TreeNodeWps) categoryModel.getRoot();
         TreeNodeWps script = new TreeNodeWps();
         script.setUri(uri);
         script.setNodeType(TreeNodeWps.NodeType.PROCESS);
+        if(customCloseIconName != null && customOpenIconName != null &&
+                customLeafIconName != null && customInvalidIconName != null){
+            script.setCustomIcon(customCloseIconName, customOpenIconName, customLeafIconName, customInvalidIconName);
+        }
         TreeNodeWps categoryNode = getSubNode(categories[0], root);
         if(categoryNode == null){
             categoryNode = new TreeNodeWps();
@@ -377,11 +382,53 @@ public class ToolBoxPanel extends JPanel {
      * @param processManager ProcessManager.
      */
     public void addLocalSource(URI directoryUri, ProcessManager processManager) {
-        addLocalSourceInFileModel(directoryUri, mapHostNode.get(LOCALHOST_URI));
+        addLocalSourceInFileModel(directoryUri, mapHostNode.get(LOCALHOST_URI), null, null, null, null);
         File directory = new File(directoryUri);
         for (File f : directory.listFiles()) {
             if (f.getName().endsWith(".groovy")) {
-                addScriptInCategoryModel(processManager.getProcess(f.toURI()), f.toURI());
+                addScriptInCategoryModel(processManager.getProcess(f.toURI()), f.toURI(), null, null, null, null);
+            }
+        }
+        refresh();
+    }
+
+    /**
+     * Adds a local source. Open the given directory and find all the groovy script contained.
+     * @param directoryUri Directory URI to analyse.
+     * @param processManager ProcessManager.
+     * @param iconName Name of the icon to use for this node.
+     */
+    public void addLocalSource(URI directoryUri, ProcessManager processManager, String iconName) {
+        addLocalSourceInFileModel(directoryUri, mapHostNode.get(LOCALHOST_URI), iconName, iconName, iconName,
+                TreeNodeWps.ERROR_ICON_NAME);
+        File directory = new File(directoryUri);
+        for (File f : directory.listFiles()) {
+            if (f.getName().endsWith(".groovy")) {
+                addScriptInCategoryModel(processManager.getProcess(f.toURI()), f.toURI(), iconName, iconName, iconName,
+                        TreeNodeWps.ERROR_ICON_NAME);
+            }
+        }
+        refresh();
+    }
+
+    /**
+     * Adds a local source. Open the given directory and find all the groovy script contained.
+     * @param directoryUri Directory URI to analyse.
+     * @param processManager ProcessManager.
+     * @param customCloseIconName Name of the icon to use for this node when it is closed.
+     * @param customOpenIconName Name of the icon to use for this node when it is open.
+     * @param customLeafIconName Name of the icon to use for this node when it is a leaf.
+     * @param customInvalidIconName Name of the icon to use for this node when it is not valid.
+     */
+    public void addLocalSource(URI directoryUri, ProcessManager processManager, String customCloseIconName,
+                               String customOpenIconName, String customLeafIconName, String customInvalidIconName) {
+        addLocalSourceInFileModel(directoryUri, mapHostNode.get(LOCALHOST_URI), customCloseIconName,
+                customOpenIconName, customLeafIconName, customInvalidIconName);
+        File directory = new File(directoryUri);
+        for (File f : directory.listFiles()) {
+            if (f.getName().endsWith(".groovy")) {
+                addScriptInCategoryModel(processManager.getProcess(f.toURI()), f.toURI(), customCloseIconName,
+                        customOpenIconName, customLeafIconName, customInvalidIconName);
             }
         }
         refresh();
@@ -391,7 +438,8 @@ public class ToolBoxPanel extends JPanel {
      * Adds a source in the file model.
      * @param directory Script file to add.
      */
-    private void addLocalSourceInFileModel(URI directory, TreeNodeWps hostNode){
+    private void addLocalSourceInFileModel(URI directory, TreeNodeWps hostNode, String customCloseIconName,
+                                   String customOpenIconName, String customLeafIconName, String customInvalidIconName){
         TreeNodeWps source = getChildWithUri(directory, hostNode);
         String folderName = new File(directory).getName();
 
@@ -401,6 +449,10 @@ public class ToolBoxPanel extends JPanel {
             source.setUserObject(folderName);
             source.setUri(directory);
             source.setNodeType(TreeNodeWps.NodeType.FOLDER);
+            if(customCloseIconName != null && customOpenIconName != null &&
+                    customLeafIconName != null && customInvalidIconName != null){
+                source.setCustomIcon(customCloseIconName, customOpenIconName, customLeafIconName, customInvalidIconName);
+            }
             fileModel.insertNodeInto(source, hostNode, 0);
         }
 
@@ -411,6 +463,10 @@ public class ToolBoxPanel extends JPanel {
                 script.setUri(uri);
                 script.setValidNode(process != null);
                 script.setNodeType(TreeNodeWps.NodeType.PROCESS);
+                if(customCloseIconName != null && customOpenIconName != null &&
+                        customLeafIconName != null && customInvalidIconName != null){
+                    script.setCustomIcon(customCloseIconName, customOpenIconName, customLeafIconName, customInvalidIconName);
+                }
                 if(process != null){
                     script.setUserObject(process.getTitle());
                 }

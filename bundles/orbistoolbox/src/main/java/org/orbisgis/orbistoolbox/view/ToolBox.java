@@ -203,7 +203,7 @@ public class ToolBox implements DockingPanel  {
             }
         }
         areScriptsCopied = true;
-        addLocalSource(wpsScriptFolder.toURI());
+        addLocalSource(wpsScriptFolder.toURI(), "orbisgis");
     }
 
     @Deactivate
@@ -290,6 +290,31 @@ public class ToolBox implements DockingPanel  {
     public void addLocalSource(URI uri){
         processManager.addLocalSource(uri);
         toolBoxPanel.addLocalSource(uri, processManager);
+    }
+
+    /**
+     * Adds a folder as a local script source.
+     * @param uri Folder URI where the script are located.
+     * @param iconName Name of the icon to use for this node.
+     */
+    public void addLocalSource(URI uri, String iconName){
+        processManager.addLocalSource(uri);
+        toolBoxPanel.addLocalSource(uri, processManager, iconName);
+    }
+
+    /**
+     * Adds a folder as a local script source.
+     * @param uri Folder URI where the script are located.
+     * @param customCloseIconName Name of the icon to use for this node when it is closed.
+     * @param customOpenIconName Name of the icon to use for this node when it is open.
+     * @param customLeafIconName Name of the icon to use for this node when it is a leaf.
+     * @param customInvalidIconName Name of the icon to use for this node when it is not valid.
+     */
+    public void addLocalSource(URI uri, String customCloseIconName, String customOpenIconName, String customLeafIconName,
+                               String customInvalidIconName){
+        processManager.addLocalSource(uri);
+        toolBoxPanel.addLocalSource(uri, processManager, customCloseIconName, customOpenIconName, customLeafIconName,
+                customInvalidIconName);
     }
 
     /**

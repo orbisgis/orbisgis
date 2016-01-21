@@ -44,6 +44,8 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
 
     /** Max length in character of the user object. */
     private static final int MAX_USEROBJECT_LENGTH = 30;
+    /** Error icon name. */
+    public static final String ERROR_ICON_NAME = "error";
 
     /** Type of the node. */
     private NodeType nodeType = NodeType.FOLDER;
