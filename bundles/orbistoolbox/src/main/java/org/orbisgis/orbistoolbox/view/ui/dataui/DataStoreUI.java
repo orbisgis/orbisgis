@@ -96,7 +96,7 @@ public class DataStoreUI implements DataUI{
         if(dataStore == null || extensionMap == null){
             return panel;
         }
-        panel.add(new JLabel("Select "+inputOrOutput.getResume()), "span");
+        panel.add(new JLabel("Select"));
 
         ButtonGroup group;
         if(isOptional) {
@@ -397,6 +397,7 @@ public class DataStoreUI implements DataUI{
                 URI uri = (URI)radioButton.getClientProperty("uri");
                 dataMap.put(uri, null);
             }
+            dataField.revalidate();
         }
     }
 

@@ -70,13 +70,6 @@ public class EnumerationUI implements DataUI{
         if(enumeration == null){
             return panel;
         }
-        //Adds the text label to the panel
-        if(inputOrOutput.getResume().isEmpty()){
-            panel.add(new JLabel(inputOrOutput.getTitle()), "growx, wrap");
-        }
-        else {
-            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "growx, wrap");
-        }
         //Build the JList containing the data
         DefaultListModel<String> model = new DefaultListModel<>();
         for(String element : enumeration.getValues()){

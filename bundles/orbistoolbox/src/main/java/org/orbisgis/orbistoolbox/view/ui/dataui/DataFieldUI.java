@@ -71,13 +71,6 @@ public class DataFieldUI implements DataUI{
             return panel;
         }
 
-        if(inputOrOutput.getResume().isEmpty()){
-            panel.add(new JLabel(inputOrOutput.getTitle()), "growx, wrap");
-        }
-        else {
-            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "growx, wrap");
-        }
-
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setBackground(Color.WHITE);
         comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());

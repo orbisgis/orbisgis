@@ -196,9 +196,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                         showButton.addMouseListener(EventHandler.create(MouseListener.class,
                                 this, "onClickButton", "source", "mouseClicked"));
                         hideShowPanel.add(showButton);
-                        JLabel inputAbstrac = new JLabel(i.getResume());
-                        inputAbstrac.setFont(inputAbstrac.getFont().deriveFont(Font.ITALIC));
-                        hideShowPanel.add(inputAbstrac, "wrap");
+                        hideShowPanel.add(new JLabel(i.getTitle()), "growx, span");
                         hideShowPanel.putClientProperty("body", uiComponent);
                         hideShowPanel.putClientProperty("parent", contentPanel);
                         hideShowPanel.putClientProperty("button", showButton);
@@ -209,6 +207,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                         inputPanel.add(contentPanel, "growx, span");
                     }
                     else{
+                        inputPanel.add(new JLabel(i.getTitle()), "growx, span");
                         inputPanel.add(uiComponent, "growx, span");
                     }
                     inputPanel.add(new JSeparator(), "growx, span");

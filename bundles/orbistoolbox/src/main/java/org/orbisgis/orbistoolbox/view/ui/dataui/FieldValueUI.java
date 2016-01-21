@@ -67,13 +67,6 @@ public class FieldValueUI implements DataUI{
         if(fieldValue == null){
             return panel;
         }
-
-        if(inputOrOutput.getResume().isEmpty()){
-            panel.add(new JLabel(inputOrOutput.getTitle()), "growx, wrap");
-        }
-        else {
-            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "growx, wrap");
-        }
         JList list = new JList(new DefaultListModel());
         if(fieldValue.getMuliSelection()){
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

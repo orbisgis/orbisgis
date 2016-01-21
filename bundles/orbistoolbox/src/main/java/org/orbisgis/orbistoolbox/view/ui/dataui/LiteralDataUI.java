@@ -155,7 +155,6 @@ public class LiteralDataUI implements DataUI {
         // add a second JComponent to write the input value
         if(inputOrOutput instanceof Input){
             Input input = (Input)inputOrOutput;
-            panel.add(new JLabel(input.getTitle()), "growx, span");
             LiteralData literalData = (LiteralData)input.getDataDescription();
             //JComboBox with the input type
             JComboBox<String> comboBox = new JComboBox<>();
