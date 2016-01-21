@@ -114,8 +114,8 @@ public class ToolBoxPanel extends JPanel {
 
         TreeNodeWps fileRoot = new TreeNodeWps();
         fileRoot.setUserObject(FILE_MODEL);
-        fileModel = new FileTreeModel(fileRoot);
-        fileModel.insertNodeInto(localhostNode, fileRoot, 0);
+        fileModel = new FileTreeModel(localhostNode);
+        //fileModel.insertNodeInto(localhostNode, fileRoot, 0);
 
         TreeNodeWps categoryRoot = new TreeNodeWps();
         categoryRoot.setUserObject(CATEGORY_MODEL);
