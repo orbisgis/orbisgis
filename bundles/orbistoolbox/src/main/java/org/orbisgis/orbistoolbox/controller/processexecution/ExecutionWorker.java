@@ -118,11 +118,11 @@ public class ExecutionWorker extends SwingWorkerPM{
                     e.getMessage());
             LoggerFactory.getLogger(ExecutionWorker.class).error(e.getMessage());
         }
+        pee.setProcessState(ProcessEditableElement.ProcessState.COMPLETED);
         return null;
     }
 
     @Override
     protected void done(){
-        pee.setProcessState(ProcessEditableElement.ProcessState.COMPLETED);
     }
 }
