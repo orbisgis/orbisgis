@@ -89,6 +89,11 @@ public class DataFieldUI implements DataUI{
         comboBox.setToolTipText(inputOrOutput.getResume());
         panel.add(comboBox, "growx, wrap");
 
+        if(isOptional){
+            String nullItem = "";
+            comboBox.addItem(nullItem);
+        }
+
         return panel;
     }
 

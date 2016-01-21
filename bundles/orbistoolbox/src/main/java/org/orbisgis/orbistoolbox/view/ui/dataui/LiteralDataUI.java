@@ -405,9 +405,12 @@ public class LiteralDataUI implements DataUI {
 
         Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
         URI uri = (URI) document.getProperty("uri");
-        dataMap.remove(uri);
         try {
-            dataMap.put(uri, document.getText(0, document.getLength()));
+            String text = document.getText(0, document.getLength());
+            if(text.isEmpty()){
+                text = null;
+            }
+            dataMap.put(uri, text);
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(LiteralDataUI.class).error(e.getMessage());
             dataMap.put(uri, "");
