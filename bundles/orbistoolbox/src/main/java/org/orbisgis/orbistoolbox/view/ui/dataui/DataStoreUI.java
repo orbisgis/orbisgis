@@ -134,6 +134,7 @@ public class DataStoreUI implements DataUI{
         comboBox.putClientProperty("dataMap", dataMap);
         comboBox.putClientProperty("dataStore", dataStore);
         comboBox.setBackground(Color.WHITE);
+        comboBox.setToolTipText(inputOrOutput.getResume());
         JPanel tableSelection = new JPanel(new MigLayout("fill"));
         tableSelection.add(comboBox, "growx, span");
         if(inputOrOutput instanceof Output){
@@ -162,6 +163,7 @@ public class DataStoreUI implements DataUI{
                 this,
                 "saveDocumentTextFile",
                 "document"));
+        textField.setToolTipText(inputOrOutput.getResume());
 
         optionPanelFile.add(textField, BorderLayout.CENTER);
         JButton browseButton = new JButton("Browse");

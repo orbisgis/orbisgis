@@ -167,6 +167,7 @@ public class LiteralDataUI implements DataUI {
             comboBox.putClientProperty("uri", input.getIdentifier());
             comboBox.putClientProperty("dataMap", dataMap);
             comboBox.putClientProperty("isOptional", input.getMinOccurs()==0);
+            comboBox.putClientProperty("toolTipText", input.getResume());
             comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onBoxChange", "source"));
             comboBox.setBackground(Color.WHITE);
 
@@ -375,6 +376,7 @@ public class LiteralDataUI implements DataUI {
                 textArea.setText("");
                 break;
         }
+        dataComponent.setToolTipText(comboBox.getClientProperty("toolTipText").toString());
         //Adds to the dataField the dataComponent
         JPanel panel = (JPanel) comboBox.getClientProperty("dataField");
         panel.removeAll();

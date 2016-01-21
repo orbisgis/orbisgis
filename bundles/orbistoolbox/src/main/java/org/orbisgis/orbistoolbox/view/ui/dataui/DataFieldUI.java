@@ -80,6 +80,7 @@ public class DataFieldUI implements DataUI{
         comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
         comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "refreshComboBox", "source", "mouseEntered"));
         comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
+        comboBox.setToolTipText(inputOrOutput.getResume());
         panel.add(comboBox, "growx, wrap");
 
         return panel;

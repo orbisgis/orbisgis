@@ -110,6 +110,7 @@ public class EnumerationUI implements DataUI{
         list.putClientProperty("isOptional", isOptional);
         list.putClientProperty("isMultiSelection", enumeration.isMultiSelection());
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
+        list.setToolTipText(inputOrOutput.getResume());
 
         //case of the editable value
         if(enumeration.isEditable()){
@@ -124,6 +125,7 @@ public class EnumerationUI implements DataUI{
                     this,
                     "saveDocumentTextFile",
                     "document"));
+            textField.setToolTipText("Coma separated custom value(s)");
 
             panel.add(textField, "growx, wrap");
             list.putClientProperty("textField", textField);

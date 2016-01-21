@@ -85,6 +85,7 @@ public class FieldValueUI implements DataUI{
         list.addMouseListener(EventHandler.create(MouseListener.class, this, "refreshList", "source", "mouseEntered"));
         list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
+        list.setToolTipText(inputOrOutput.getResume());
 
         return panel;
     }
