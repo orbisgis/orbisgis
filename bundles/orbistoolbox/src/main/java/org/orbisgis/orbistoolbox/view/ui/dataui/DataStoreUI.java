@@ -138,13 +138,13 @@ public class DataStoreUI implements DataUI{
         JPanel tableSelection = new JPanel(new MigLayout("fill"));
         tableSelection.add(comboBox, "growx, span");
         if(inputOrOutput instanceof Output){
-            comboBox.addItem("");
-            JTextField newTableField = new JTextField();
-            tableSelection.add(newTableField, "growx, span");
-            comboBox.putClientProperty("textField", newTableField);
-            newTableField.getDocument().putProperty("comboBox", comboBox);
-            newTableField.getDocument().addDocumentListener(
-                    EventHandler.create(DocumentListener.class, this, "onNewTable", "document"));
+            String newTable = "New_Table";
+            comboBox.addItem(newTable);
+            comboBox.setEditable(true);
+            comboBox.setSelectedItem(newTable);
+            Document doc = ((JTextComponent)comboBox.getEditor().getEditorComponent()).getDocument();
+            doc.putProperty("comboBox", comboBox);
+            doc.addDocumentListener(EventHandler.create(DocumentListener.class, this, "onNewTable", "document"));
         }
         optionPanelGeocatalog.add(new JLabel("Geocatalog :"), BorderLayout.LINE_START);
         optionPanelGeocatalog.add(tableSelection, BorderLayout.CENTER);
@@ -260,7 +260,7 @@ public class DataStoreUI implements DataUI{
         dataField.setLayout(new MigLayout("fill"));
         dataField.add(optionPanelGeocatalog, "growx, span");
         if(comboBox.getItemCount() > 0){
-            comboBox.setSelectedIndex(0);
+            comboBox.setSelectedIndex(comboBox.getItemCount()-1);
         }
 
         return panel;
@@ -346,12 +346,7 @@ public class DataStoreUI implements DataUI{
             Map<URI, Object> dataMap = (Map<URI, Object>)comboBox.getClientProperty("dataMap");
             URI uri = (URI)comboBox.getClientProperty("uri");
             String text = document.getText(0, document.getLength());
-            if(text.isEmpty()){
-                comboBox.setSelectedIndex(0);
-                dataMap.put(uri, URI.create("geocatalog:"+comboBox.getSelectedItem()+"#"+comboBox.getSelectedItem()));
-            }
-            else{
-                comboBox.setSelectedIndex(comboBox.getItemCount()-1);
+            if(!text.isEmpty()){
                 dataMap.put(uri, URI.create("geocatalog:"+text.toUpperCase()+"#"+text.toUpperCase()));
             }
         } catch (BadLocationException e) {
