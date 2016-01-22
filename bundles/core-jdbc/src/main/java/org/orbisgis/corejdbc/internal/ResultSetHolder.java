@@ -71,14 +71,14 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
     @Override
     public void run() {
         lastUsage = System.currentTimeMillis();
-        status.set(STATUS.STARTED);
+        threadChangeStatus(STATUS.STARTED);
         try (Connection connection = dataSource.getConnection()) {
             // PostGreSQL use cursor only if auto commit is false
             long averageTimeMs =  System.currentTimeMillis();
             do {
                 try (ResultSet activeResultSet = resultSetProvider.getResultSet(connection)) {
                     resultSet = activeResultSet;
-                    status.set(STATUS.READY);
+                    threadChangeStatus(STATUS.READY);
                     while (status.get() != STATUS.REFRESH &&
                             (lastUsage + RESULT_SET_TIMEOUT > averageTimeMs  || openCount != 0)) {
                         Thread.sleep(SLEEP_TIME);
@@ -91,11 +91,19 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
         } catch (Exception ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
             this.ex = ex;
-            status.set(STATUS.EXCEPTION);
+            threadChangeStatus(STATUS.EXCEPTION);
         } finally {
             if (status.get() != STATUS.EXCEPTION) {
-                status.set(STATUS.CLOSED);
+                threadChangeStatus(STATUS.CLOSED);
             }
+        }
+    }
+
+    private void threadChangeStatus(STATUS newStatus) {
+        if(resultSetThread.equals(Thread.currentThread())) {
+            status.set(newStatus);
+        } else {
+            throw new IllegalStateException();
         }
     }
 
@@ -108,8 +116,7 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
 
     public boolean isRunning() {
         return !(resultSetThread == null || !resultSetThread.isAlive() ||
-                status.get() == ResultSetHolder.STATUS.CLOSED ||
-                status.get() == ResultSetHolder.STATUS.NEVER_STARTED);
+                status.get() == ResultSetHolder.STATUS.CLOSED);
     }
 
     @Override
@@ -149,6 +156,14 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
         while(status.get() != STATUS.READY) {
             // Reactivate result set if necessary
             if(!isRunning()) {
+                // Wait for other thread full termination
+                while(resultSetThread != null && resultSetThread.isAlive()) {
+                    try {
+                        Thread.sleep(WAITING_FOR_RESULTSET);
+                    } catch (InterruptedException e) {
+                        throw new SQLException(e);
+                    }
+                }
                 resultSetThread = new Thread(this, "ResultSet");
                 resultSetThread.start();
             }
