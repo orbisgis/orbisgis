@@ -99,8 +99,11 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
         }
     }
 
-    public void refresh() {
-        status.set(STATUS.REFRESH);
+    public void refresh() throws SQLException {
+        // Wait for ready status
+        try(Resource res = getResource()) {
+            status.set(STATUS.REFRESH);
+        }
     }
 
     public boolean isRunning() {

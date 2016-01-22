@@ -113,7 +113,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     /** Used to managed table without primary key (ResultSet are kept {@link ResultSetHolder#RESULT_SET_TIMEOUT} */
     protected final ResultSetHolder resultSetHolder;
     /** If the table contains a unique non null index then this variable contain the batch first row PK value */
-    protected List<Long> rowFetchFirstPk = new ArrayList<>(Arrays.asList(new Long[]{null}));
+    protected List<Long> rowFetchFirstPk = Collections.synchronizedList(new ArrayList<>(Arrays.asList(new Long[]{null})));
     protected String pk_name = "";
     protected String select_fields = "*";
     protected String select_where = "";
