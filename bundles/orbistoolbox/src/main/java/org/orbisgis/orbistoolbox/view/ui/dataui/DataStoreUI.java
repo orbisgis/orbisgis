@@ -237,11 +237,11 @@ public class DataStoreUI implements DataUI{
 
         group.add(geocatalog);
         group.add(file);
-        group.add(database);
+        //group.add(database);
         JPanel radioPanel = new JPanel(new MigLayout("fill"));
         radioPanel.add(geocatalog, "growx");
         radioPanel.add(file, "growx");
-        radioPanel.add(database, "growx, wrap");
+        //radioPanel.add(database, "growx, wrap");
         panel.add(radioPanel, "growx, wrap");
 
         JComponent dataField = new JPanel();
