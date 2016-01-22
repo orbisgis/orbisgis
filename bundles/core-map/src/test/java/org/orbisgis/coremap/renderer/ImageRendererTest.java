@@ -103,7 +103,7 @@ public class ImageRendererTest {
         // Draw in buffered image
         MapTransform mapTransform = new MapTransform();
         mapTransform.setExtent(mc.getBoundingBox());
-        BufferedImage outImage = new BufferedImage(200, 200, BufferedImage.TYPE_4BYTE_ABGR);
+        BufferedImage outImage = new BufferedImage(120, 120, BufferedImage.TYPE_4BYTE_ABGR);
         mapTransform.setImage(outImage);
         mc.draw(mapTransform, new NullProgressMonitor());
         ImageWriter imageWriter = ImageIO.getImageWritersBySuffix("png").next();
