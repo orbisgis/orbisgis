@@ -36,6 +36,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * This thread guaranty that the connection,ResultSet is released when no longer used.
@@ -49,7 +50,8 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
     private Exception ex;
     private ResultSet resultSet;
     private DataSource dataSource;
-    private STATUS status = STATUS.NEVER_STARTED;
+
+    private final AtomicReference<STATUS> status = new AtomicReference<>(STATUS.NEVER_STARTED);
     private long lastUsage = System.currentTimeMillis();
     private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetHolder.class);
     private int openCount = 0;
@@ -69,43 +71,49 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
     @Override
     public void run() {
         lastUsage = System.currentTimeMillis();
-        status = STATUS.STARTED;
+        status.set(STATUS.STARTED);
         try (Connection connection = dataSource.getConnection()) {
             // PostGreSQL use cursor only if auto commit is false
             long averageTimeMs =  System.currentTimeMillis();
             do {
                 try (ResultSet activeResultSet = resultSetProvider.getResultSet(connection)) {
                     resultSet = activeResultSet;
-                    status = STATUS.READY;
-                    while (status != STATUS.REFRESH &&
+                    status.set(STATUS.READY);
+                    while (status.get() != STATUS.REFRESH &&
                             (lastUsage + RESULT_SET_TIMEOUT > averageTimeMs  || openCount != 0)) {
                         Thread.sleep(SLEEP_TIME);
                         averageTimeMs += SLEEP_TIME;
                     }
                 }
-            } while (status == STATUS.REFRESH);
+            } while (status.get() == STATUS.REFRESH);
         } catch(InterruptedException ex) {
             // Ignore
         } catch (Exception ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
             this.ex = ex;
-            status = STATUS.EXCEPTION;
+            status.set(STATUS.EXCEPTION);
         } finally {
-            if (status != STATUS.EXCEPTION) {
-                status = STATUS.CLOSED;
+            if (status.get() != STATUS.EXCEPTION) {
+                status.set(STATUS.CLOSED);
             }
         }
     }
 
     public void refresh() {
-        status = STATUS.REFRESH;
+        status.set(STATUS.REFRESH);
+    }
+
+    public boolean isRunning() {
+        return !(resultSetThread == null || !resultSetThread.isAlive() ||
+                status.get() == ResultSetHolder.STATUS.CLOSED ||
+                status.get() == ResultSetHolder.STATUS.NEVER_STARTED);
     }
 
     @Override
     public void close() throws SQLException {
         lastUsage = 0;
         openCount = 0;
-        status = STATUS.CLOSING;
+        status.set(STATUS.CLOSING);
         resultSetThread.interrupt();
     }
 
@@ -129,21 +137,19 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
     /**
      * @return ResultSet status
      */
-    public STATUS getStatus() {
+    public AtomicReference<STATUS> getStatus() {
         return status;
     }
 
     public Resource getResource() throws SQLException {
         // Wait execution of request
-        while(getStatus() != STATUS.READY) {
+        while(status.get() != STATUS.READY) {
             // Reactivate result set if necessary
-            if(resultSetThread == null || !resultSetThread.isAlive() ||
-                    getStatus() == ResultSetHolder.STATUS.CLOSED ||
-                    getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
+            if(!isRunning()) {
                 resultSetThread = new Thread(this, "ResultSet");
                 resultSetThread.start();
             }
-            if(status == STATUS.EXCEPTION) {
+            if(status.get() == STATUS.EXCEPTION) {
                 if(ex instanceof SQLException) {
                     throw (SQLException)ex;
                 } else {

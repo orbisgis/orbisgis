@@ -541,7 +541,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             cachedRowCount = -1;
             getRowCount(pm);
         }
-        if(resultSetHolder.getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
+        if(resultSetHolder.getStatus().get() == ResultSetHolder.STATUS.NEVER_STARTED) {
             cacheColumnNames();
             columnOffset = cachedColumnNames.containsKey(pk_name) ? 0 : 1;
             PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
@@ -575,6 +575,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public void close() throws SQLException {
         try {
             resultSetHolder.delayedClose(closeDelay);
+            while(resultSetHolder.isRunning()) {
+                Thread.sleep(ResultSetHolder.WAITING_FOR_RESULTSET);
+            }
         } catch (Exception ex) {
             throw new SQLException(ex);
         }
