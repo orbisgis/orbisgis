@@ -35,6 +35,7 @@ import java.net.URISyntaxException;
 
 
 public enum DataType {
+    //LiteralData types
     STRING("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#string"),
     INTEGER("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#integer"),
     BOOLEAN("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#boolean"),
@@ -44,6 +45,11 @@ public enum DataType {
     BYTE("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#byte"),
     UNSIGNED_BYTE("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#unsignedByte"),
     LONG("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#long"),
+
+    //Other types
+    NUMBER("number"),
+    OTHER("other"),
+    GEOMETRY("geometry"),
     NONE("none");
 
     /** URI for the data type. */
@@ -67,5 +73,49 @@ public enum DataType {
      */
     public URI getUri() {
         return uri;
+    }
+
+    public static boolean testHDBype(DataType dataType, String dbTypeName){
+        switch(dataType) {
+            case INTEGER:
+                return (dbTypeName.equals("INT") || dbTypeName.equals("INTEGER") ||
+                        dbTypeName.equals("MEDIUMINT") || dbTypeName.equals("INT4") || dbTypeName.equals("SIGNED"));
+            case BOOLEAN:
+                return (dbTypeName.equals("BOOLEAN") || dbTypeName.equals("BIT") || dbTypeName.equals("BOOL"));
+            case BYTE:
+                return (dbTypeName.equals("TYNIINT"));
+            case SHORT:
+                return (dbTypeName.equals("SMALLINT") || dbTypeName.equals("INT2") || dbTypeName.equals("YEAR"));
+            case LONG:
+                return (dbTypeName.equals("BIGINT") || dbTypeName.equals("INT8") || dbTypeName.equals("IDENTITY") ||
+                        dbTypeName.equals("BIGSERIAL") || dbTypeName.equals("SERIAL8"));
+            case DOUBLE:
+                return (dbTypeName.equals("DOUBLE") || dbTypeName.equals("FLOAT") || dbTypeName.equals("FLOAT8"));
+            case FLOAT:
+                return (dbTypeName.equals("REAL") || dbTypeName.equals("FLOAT4"));
+            case STRING:
+                return (dbTypeName.equals("VARCHAR") || dbTypeName.equals("LONGVARCHAR") ||
+                        dbTypeName.equals("VARCHAR2") || dbTypeName.equals("NVARCHAR") ||
+                        dbTypeName.equals("NVARCHAR2") || dbTypeName.equals("VARCHAR_CASESENSITIVE") ||
+                        dbTypeName.equals("VARCHAR_IGNORECASE") || dbTypeName.equals("CHAR") ||
+                        dbTypeName.equals("CHARACTER") || dbTypeName.equals("NCHAR"));
+
+            case NUMBER:
+                return (dbTypeName.equals("INT") || dbTypeName.equals("INTEGER") || dbTypeName.equals("MEDIUMINT") ||
+                        dbTypeName.equals("INT4") || dbTypeName.equals("SIGNED") || dbTypeName.equals("TYNIINT") ||
+                        dbTypeName.equals("SMALLINT") || dbTypeName.equals("INT2") || dbTypeName.equals("YEAR") ||
+                        dbTypeName.equals("BIGINT") || dbTypeName.equals("INT8") || dbTypeName.equals("IDENTITY") ||
+                        dbTypeName.equals("DOUBLE") || dbTypeName.equals("FLOAT") || dbTypeName.equals("FLOAT8") ||
+                        dbTypeName.equals("REAL") || dbTypeName.equals("FLOAT4"));
+
+            case OTHER:
+                return (dbTypeName.equals("OTHER"));
+            case GEOMETRY:
+                return (dbTypeName.equals("POINT") || dbTypeName.equals("POLYGON") || dbTypeName.equals("LINESTRING") ||
+                        dbTypeName.equals("MULTIPOINT") || dbTypeName.equals("MULTILINESTRING") ||
+                        dbTypeName.equals("GEOMETRY") || dbTypeName.equals("MULTIPOLYGON") ||
+                        dbTypeName.equals("GEOMETRYCOLLECTION"));
+            default: return false;
+        }
     }
 }

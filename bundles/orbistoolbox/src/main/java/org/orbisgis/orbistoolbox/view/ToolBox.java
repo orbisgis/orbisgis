@@ -29,6 +29,7 @@ import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
+import org.orbisgis.orbistoolbox.model.DataType;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
@@ -596,20 +597,19 @@ public class ToolBox implements DockingPanel  {
     /**
      * Return the list of the field of a table.
      * @param tableName Name of the table.
-     * @param fieldTypes Type of the field accepted. If empty, accepts all the field.
+     * @param dataTypes Type of the field accepted. If empty, accepts all the field.
      * @return The list of the field name.
      */
-    public static List<String> getTableFieldList(String tableName, List<FieldType> fieldTypes){
+    public static List<String> getTableFieldList(String tableName, List<DataType> dataTypes){
         List<String> fieldList = new ArrayList<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();
             DatabaseMetaData dmd = connection.getMetaData();
             ResultSet result = dmd.getColumns(connection.getCatalog(), null, tableName, "%");
-            //TODO : replace the value 3, 4 ... with constants taking into account the database used (H2, postgres ...).
             while(result.next()){
-                if (!fieldTypes.isEmpty()) {
-                    for (FieldType fieldType : fieldTypes) {
-                        if (fieldType.name().equalsIgnoreCase(result.getObject(6).toString())) {
+                if (!dataTypes.isEmpty()) {
+                    for (DataType dataType : dataTypes) {
+                        if (DataType.testHDBype(dataType, result.getObject(6).toString())) {
                             fieldList.add(result.getObject(4).toString());
                         }
                     }

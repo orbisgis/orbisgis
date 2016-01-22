@@ -252,16 +252,16 @@ public class ObjectAnnotationConverter {
     public static DataField annotationToObject(DataFieldAttribute dataFieldAttribute, Format format, URI dataStoreUri) {
         try {
             format.setDefaultFormat(true);
-            List<FieldType> fieldTypeList = new ArrayList<>();
+            List<DataType> dataTypeList = new ArrayList<>();
             //For each fieldType value from the groovy annotation, test if it is contain in the FieldType enumeration.
             for(String str : Arrays.asList(dataFieldAttribute.fieldTypes())){
-                for(FieldType enumValue : FieldType.values()){
+                for(DataType enumValue : DataType.values()){
                     if(enumValue.name().equals(str.toUpperCase())){
-                        fieldTypeList.add(FieldType.valueOf(str.toUpperCase()));
+                        dataTypeList.add(DataType.valueOf(str.toUpperCase()));
                     }
                 }
             }
-            return new DataField(format, fieldTypeList, dataStoreUri);
+            return new DataField(format, dataTypeList, dataStoreUri);
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;
