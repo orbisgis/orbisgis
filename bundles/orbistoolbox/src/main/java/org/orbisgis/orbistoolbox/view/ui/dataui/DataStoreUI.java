@@ -231,37 +231,46 @@ public class DataStoreUI implements DataUI{
         database.putClientProperty("optionPanel", optionPanelDataBase);
         database.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
 
-        geocatalog.setEnabled(dataStore.isGeocatalog());
-        file.setEnabled(dataStore.isFile());
-        database.setEnabled(dataStore.isDataBase());
-
-        group.add(geocatalog);
-        group.add(file);
-        //group.add(database);
         JPanel radioPanel = new JPanel(new MigLayout("fill"));
-        radioPanel.add(geocatalog, "growx");
-        radioPanel.add(file, "growx");
-        //radioPanel.add(database, "growx, wrap");
-        panel.add(radioPanel, "growx, wrap");
+        JComponent dataField  = new JPanel(new MigLayout("fill"));
+        if(dataStore.isFile()){
+            group.add(file);
+            radioPanel.add(file, "growx");
+            file.putClientProperty("dataField", dataField);
+            file.putClientProperty("dataMap", dataMap);
+            file.putClientProperty("uri", inputOrOutput.getIdentifier());
 
-        JComponent dataField = new JPanel();
-        geocatalog.putClientProperty("dataField", dataField);
-        geocatalog.putClientProperty("dataMap", dataMap);
-        geocatalog.putClientProperty("uri", inputOrOutput.getIdentifier());
-        file.putClientProperty("dataField", dataField);
-        file.putClientProperty("dataMap", dataMap);
-        file.putClientProperty("uri", inputOrOutput.getIdentifier());
-        database.putClientProperty("dataField", dataField);
-        database.putClientProperty("dataMap", dataMap);
-        database.putClientProperty("uri", inputOrOutput.getIdentifier());
-        panel.add(dataField, "growx, span");
-
-        geocatalog.setSelected(true);
-        dataField.setLayout(new MigLayout("fill"));
-        dataField.add(optionPanelGeocatalog, "growx, span");
-        if(comboBox.getItemCount() > 0){
-            comboBox.setSelectedIndex(comboBox.getItemCount()-1);
+            file.setSelected(true);
+            dataField.removeAll();
+            dataField.add(optionPanelFile, "growx, span");
         }
+        /*if(dataStore.isDataBase()){
+            group.add(database);
+            radioPanel.add(database, "growx");
+            database.putClientProperty("dataField", dataField);
+            database.putClientProperty("dataMap", dataMap);
+            database.putClientProperty("uri", inputOrOutput.getIdentifier());
+
+            database.setSelected(true);
+            dataField.removeAll();
+            dataField.add(optionPanelDataBase, "growx, span");
+        }*/
+        if(dataStore.isGeocatalog()){
+            group.add(geocatalog);
+            radioPanel.add(geocatalog, "growx");
+            geocatalog.putClientProperty("dataField", dataField);
+            geocatalog.putClientProperty("dataMap", dataMap);
+            geocatalog.putClientProperty("uri", inputOrOutput.getIdentifier());
+
+            geocatalog.setSelected(true);
+            dataField.removeAll();
+            dataField.add(optionPanelGeocatalog, "growx, span");
+            if(comboBox.getItemCount() > 0){
+                comboBox.setSelectedIndex(0);
+            }
+        }
+        panel.add(radioPanel, "growx, wrap");
+        panel.add(dataField, "growx, span");
 
         return panel;
     }

@@ -227,6 +227,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 if(component != null) {
                     outputPanel.add(component, "growx, span");
                 }
+                outputPanel.add(new JSeparator(), "growx, span");
             }
         }
         JButton runButton = new JButton("Run");

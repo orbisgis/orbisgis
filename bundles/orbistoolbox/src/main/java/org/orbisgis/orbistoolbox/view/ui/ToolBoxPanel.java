@@ -63,8 +63,6 @@ public class ToolBoxPanel extends JPanel {
     private final static String FILE_MODEL = "Simple interface";
     private final static String FILTERED_MODEL = "Filtered";
 
-    private final static String UNDEFINED = "Undefined";
-
     private static final String LOCALHOST_STRING = "localhost";
     private static final URI LOCALHOST_URI = URI.create(LOCALHOST_STRING);
 
