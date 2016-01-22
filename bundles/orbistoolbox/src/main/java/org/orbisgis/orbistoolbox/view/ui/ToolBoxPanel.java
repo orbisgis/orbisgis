@@ -20,7 +20,6 @@
 package org.orbisgis.orbistoolbox.view.ui;
 
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
-import org.orbisgis.orbistoolbox.model.Metadata;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.*;
@@ -751,6 +750,7 @@ public class ToolBoxPanel extends JPanel {
                         if (filter.accepts(node)) {
                             TreeNodeWps newNode = node.deepCopy();
                             filteredModel.insertNodeInto(newNode, filteredRoot, 0);
+                            filteredModel.nodeStructureChanged(filteredRoot);
                             tree.expandPath(new TreePath(newNode.getPath()));
                         }
                     }
