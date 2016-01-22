@@ -215,10 +215,10 @@ public class RowSetTest {
     @Test
     public void testReversibleRowSet() throws SQLException {
         RowSetFactory factory = new DataManagerImpl(dataSource);
-        JdbcRowSet rs = factory.createJdbcRowSet();
         try (
                 Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = connection.createStatement();
+                JdbcRowSet rs = factory.createJdbcRowSet()) {
                 st.execute("drop table if exists test");
                 st.execute("create table test (id integer primary key, str varchar(30), flt float)");
                 st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
@@ -251,13 +251,13 @@ public class RowSetTest {
     @Test
     public void testBatch() throws SQLException {
         RowSetFactory factory = new DataManagerImpl(dataSource);
-        JdbcRowSet rs = factory.createJdbcRowSet();
         try (
                 Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = connection.createStatement();
+                JdbcRowSet rs = factory.createJdbcRowSet()) {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer primary key, y float) as select X, SQRT(X::float) SQ from SYSTEM_RANGE(1, 2000)");
-            rs.setCommand("SELECT * FROM TEST");
+            rs.setCommand("SELECT * FROM TEST ORDER BY ID");
             rs.execute();
             // Test forward access mode
             for(int i =0; i < 2000; i++) {
@@ -335,10 +335,10 @@ public class RowSetTest {
     public void testRowSetWhere() throws SQLException {
         DataManager factory = new DataManagerImpl(dataSource);
         try (Connection connection = dataSource.getConnection();
-             Statement st = connection.createStatement()) {
+             Statement st = connection.createStatement();
+             ReadRowSet rs = factory.createReadRowSet()) {
             st.execute("drop table if exists BV_SAP");
             st.execute("CALL FILE_TABLE('" + RowSetTest.class.getResource("bv_sap.shp").getPath() + "', 'BV_SAP');");
-            ReadRowSet rs = factory.createReadRowSet();
             Envelope env = new Envelope(new Coordinate(308614,2256839));
             env.expandBy(1200);
             GeometryFactory geometryFactory = new GeometryFactory();
@@ -385,10 +385,10 @@ public class RowSetTest {
     @Test(expected = SQLException.class)
     public void testRowSetEditionFail() throws SQLException {
         RowSetFactory factory = new DataManagerImpl(dataSource);
-        JdbcRowSet rs = factory.createJdbcRowSet();
         try (
                 Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = connection.createStatement();
+                JdbcRowSet rs = factory.createJdbcRowSet()) {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
@@ -402,10 +402,9 @@ public class RowSetTest {
     @Test
     public void testRowSetEdition() throws SQLException {
         RowSetFactory factory = new DataManagerImpl(dataSource);
-        JdbcRowSet rs = factory.createJdbcRowSet();
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement()) {
+        try (Connection connection = dataSource.getConnection();
+                Statement st = connection.createStatement();
+                JdbcRowSet rs = factory.createJdbcRowSet()) {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer primary key, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
@@ -431,10 +430,10 @@ public class RowSetTest {
     @Test
     public void testRowSetEditionPK() throws SQLException {
         RowSetFactory factory = new DataManagerImpl(dataSource);
-        JdbcRowSet rs = factory.createJdbcRowSet();
         try (
                 Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = connection.createStatement();
+                JdbcRowSet rs = factory.createJdbcRowSet()) {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer primary key, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
@@ -461,10 +460,10 @@ public class RowSetTest {
     @Test
     public void testRowSetMultipleEdition() throws SQLException {
         RowSetFactory factory = new DataManagerImpl(dataSource);
-        JdbcRowSet rs = factory.createJdbcRowSet();
         try (
                 Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = connection.createStatement();
+                JdbcRowSet rs = factory.createJdbcRowSet()) {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer primary key, str varchar(30), flt float)");
             st.execute("insert into test values (42, 'marvin', 10.1010), (666, 'satan', 1/3)");
@@ -494,10 +493,10 @@ public class RowSetTest {
     @Test
     public void testRowSetInsert() throws SQLException {
         RowSetFactory factory = new DataManagerImpl(dataSource);
-        JdbcRowSet rs = factory.createJdbcRowSet();
         try (
                 Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = connection.createStatement();
+                JdbcRowSet rs = factory.createJdbcRowSet()) {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer primary key, str varchar(30))");
             rs.setCommand("SELECT * FROM TEST");
@@ -515,10 +514,10 @@ public class RowSetTest {
     @Test
     public void testUndoRowSetInsert() throws SQLException {
         DataManager factory = new DataManagerImpl(dataSource);
-        JdbcRowSet rs = factory.createJdbcRowSet();
         try (
                 Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = connection.createStatement();
+                JdbcRowSet rs = factory.createJdbcRowSet()) {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer primary key, str varchar(30))");
             ListenerList listenerList = new ListenerList();
@@ -599,10 +598,10 @@ public class RowSetTest {
     @Test
     public void testRowSetRedoUndoEdition() throws SQLException {
         DataManager factory = new DataManagerImpl(dataSource);
-        JdbcRowSet rs = factory.createJdbcRowSet();
         try (
                 Connection connection = dataSource.getConnection();
-                Statement st = connection.createStatement()) {
+                Statement st = connection.createStatement();
+                JdbcRowSet rs = factory.createJdbcRowSet()) {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer primary key, str varchar(30), flt float)");
             ListenerList listenerList = new ListenerList();

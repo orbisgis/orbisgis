@@ -113,7 +113,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     /** Used to managed table without primary key (ResultSet are kept {@link ResultSetHolder#RESULT_SET_TIMEOUT} */
     protected final ResultSetHolder resultSetHolder;
     /** If the table contains a unique non null index then this variable contain the batch first row PK value */
-    protected List<Long> rowFetchFirstPk = new ArrayList<>(Arrays.asList(new Long[]{null}));
+    protected List<Long> rowFetchFirstPk = Collections.synchronizedList(new ArrayList<>(Arrays.asList(new Long[]{null})));
     protected String pk_name = "";
     protected String select_fields = "*";
     protected String select_where = "";
@@ -124,7 +124,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     protected final Lock readLock = rwl.writeLock(); // Read here is exclusive
     protected int fetchSize = DEFAULT_FETCH_SIZE;
     // Cache of last queried batch
-    protected long currentBatchId = -1;
     protected PreparedStatement currentBatchPreparedStatement = null;
     protected String currentBatchQuery = "";
     private int fetchDirection = FETCH_UNKNOWN;
@@ -240,9 +239,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         if(rowId < 1 || rowId > getRowCount()) {
             throw new SQLException("Not in a valid row "+rowId+"/"+getRowCount());
         }
-        if(currentBatchId == -1) {
-            syncRowBatch();
-        }
     }
 
     protected void cacheColumnNames() throws SQLException {
@@ -351,15 +347,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         return st.executeQuery();
     }
 
-    private void syncRowBatch() throws SQLException{
-        final int targetBatch = (int) (rowId - 1) / fetchSize;
-        if(currentBatchId != targetBatch && rowId > 0 && rowId <= getRowCount()) {
-            // Ask ResultSet holder to refresh in order to go to the requested batch
-            resultSetHolder.refresh();
-        }
-    }
-
-
     /**
      * Generate ResultSet for background thread
      * @param connection
@@ -403,7 +390,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 rowFetchFirstPk.add(firstPk);
             }
         }
-        currentBatchId = targetBatch;
         return resultSet;
     }
 
@@ -541,7 +527,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             cachedRowCount = -1;
             getRowCount(pm);
         }
-        if(resultSetHolder.getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
+        if(resultSetHolder.getStatus().get() == ResultSetHolder.STATUS.NEVER_STARTED) {
             cacheColumnNames();
             columnOffset = cachedColumnNames.containsKey(pk_name) ? 0 : 1;
             PropertyChangeListener listener = EventHandler.create(PropertyChangeListener.class, resultSetHolder, "cancel");
@@ -575,6 +561,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public void close() throws SQLException {
         try {
             resultSetHolder.delayedClose(closeDelay);
+            while(resultSetHolder.isRunning()) {
+                Thread.sleep(ResultSetHolder.WAITING_FOR_RESULTSET);
+            }
         } catch (Exception ex) {
             throw new SQLException(ex);
         }
@@ -729,15 +718,18 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         long oldRowId = rowId;
         rowId = i;
         boolean validRow = !(rowId == 0 || rowId > getRowCount());
-        if(validRow) {
-            syncRowBatch();
-        } else {
-            currentBatchId = -1;
-        }
         if(rowId != oldRowId) {
+            // Refresh batch if batch changed
+            if(getTargetBatchFromRowId(oldRowId) != getTargetBatchFromRowId(rowId)) {
+                resultSetHolder.refresh();
+            }
             notifyCursorMoved();
         }
         return validRow;
+    }
+
+    private int getTargetBatchFromRowId(long rowIdentifier) {
+        return (int) (rowIdentifier - 1) / fetchSize;
     }
 
     @Override
@@ -764,7 +756,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public void setFetchSize(int i) throws SQLException {
         fetchSize = i;
         rowFetchFirstPk = new ArrayList<>(Arrays.asList(new Long[]{null}));
-        currentBatchId = -1;
     }
 
     @Override
@@ -818,9 +809,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 if(batchId < rowFetchFirstPk.size() && batchId >= 0) {
                     rowFetchFirstPk.set(batchId, null);
                 }
-                if(batchId == currentBatchId) {
-                    currentBatchId = -1;
-                }
             }
         } catch (SQLException ex) {
             LOGGER.warn(ex.getLocalizedMessage(), ex);
@@ -829,8 +817,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public void refreshRow() throws SQLException {
-        currentBatchId = -1;
-        resultSetHolder.close();
+        resultSetHolder.refresh();
     }
 
     @Override

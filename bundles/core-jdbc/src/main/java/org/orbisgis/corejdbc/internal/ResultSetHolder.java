@@ -36,6 +36,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * This thread guaranty that the connection,ResultSet is released when no longer used.
@@ -49,7 +50,8 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
     private Exception ex;
     private ResultSet resultSet;
     private DataSource dataSource;
-    private STATUS status = STATUS.NEVER_STARTED;
+
+    private final AtomicReference<STATUS> status = new AtomicReference<>(STATUS.NEVER_STARTED);
     private long lastUsage = System.currentTimeMillis();
     private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetHolder.class);
     private int openCount = 0;
@@ -69,43 +71,59 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
     @Override
     public void run() {
         lastUsage = System.currentTimeMillis();
-        status = STATUS.STARTED;
+        threadChangeStatus(STATUS.STARTED);
         try (Connection connection = dataSource.getConnection()) {
             // PostGreSQL use cursor only if auto commit is false
             long averageTimeMs =  System.currentTimeMillis();
             do {
                 try (ResultSet activeResultSet = resultSetProvider.getResultSet(connection)) {
                     resultSet = activeResultSet;
-                    status = STATUS.READY;
-                    while (status != STATUS.REFRESH &&
+                    threadChangeStatus(STATUS.READY);
+                    while (status.get() != STATUS.REFRESH &&
                             (lastUsage + RESULT_SET_TIMEOUT > averageTimeMs  || openCount != 0)) {
                         Thread.sleep(SLEEP_TIME);
                         averageTimeMs += SLEEP_TIME;
                     }
                 }
-            } while (status == STATUS.REFRESH);
+            } while (status.get() == STATUS.REFRESH);
         } catch(InterruptedException ex) {
             // Ignore
         } catch (Exception ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
             this.ex = ex;
-            status = STATUS.EXCEPTION;
+            threadChangeStatus(STATUS.EXCEPTION);
         } finally {
-            if (status != STATUS.EXCEPTION) {
-                status = STATUS.CLOSED;
+            if (status.get() != STATUS.EXCEPTION) {
+                threadChangeStatus(STATUS.CLOSED);
             }
         }
     }
 
-    public void refresh() {
-        status = STATUS.REFRESH;
+    private void threadChangeStatus(STATUS newStatus) {
+        if(resultSetThread.equals(Thread.currentThread())) {
+            status.set(newStatus);
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    public void refresh() throws SQLException {
+        // Wait for ready status
+        try(Resource res = getResource()) {
+            status.set(STATUS.REFRESH);
+        }
+    }
+
+    public boolean isRunning() {
+        return !(resultSetThread == null || !resultSetThread.isAlive() ||
+                status.get() == ResultSetHolder.STATUS.CLOSED);
     }
 
     @Override
     public void close() throws SQLException {
         lastUsage = 0;
         openCount = 0;
-        status = STATUS.CLOSING;
+        status.set(STATUS.CLOSING);
         resultSetThread.interrupt();
     }
 
@@ -129,21 +147,27 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
     /**
      * @return ResultSet status
      */
-    public STATUS getStatus() {
+    public AtomicReference<STATUS> getStatus() {
         return status;
     }
 
     public Resource getResource() throws SQLException {
         // Wait execution of request
-        while(getStatus() != STATUS.READY) {
+        while(status.get() != STATUS.READY) {
             // Reactivate result set if necessary
-            if(resultSetThread == null || !resultSetThread.isAlive() ||
-                    getStatus() == ResultSetHolder.STATUS.CLOSED ||
-                    getStatus() == ResultSetHolder.STATUS.NEVER_STARTED) {
+            if(!isRunning()) {
+                // Wait for other thread full termination
+                while(resultSetThread != null && resultSetThread.isAlive()) {
+                    try {
+                        Thread.sleep(WAITING_FOR_RESULTSET);
+                    } catch (InterruptedException e) {
+                        throw new SQLException(e);
+                    }
+                }
                 resultSetThread = new Thread(this, "ResultSet");
                 resultSetThread.start();
             }
-            if(status == STATUS.EXCEPTION) {
+            if(status.get() == STATUS.EXCEPTION) {
                 if(ex instanceof SQLException) {
                     throw (SQLException)ex;
                 } else {

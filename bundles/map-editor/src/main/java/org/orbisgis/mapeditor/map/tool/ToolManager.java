@@ -249,6 +249,13 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 activeLayer.getDataSource().addDataSourceListener(layerListener);
                 */
             } else {
+                try {
+                    if(activeLayerRowSet != null) {
+                        activeLayerRowSet.close();
+                    }
+                } catch (SQLException ex ) {
+                    UILOGGER.error(ex.getLocalizedMessage(), ex);
+                }
                 activeLayerRowSet = null;
             }
             setTool(ToolManager.this.defaultTool);
