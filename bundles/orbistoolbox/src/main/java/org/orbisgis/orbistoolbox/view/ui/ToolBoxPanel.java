@@ -60,7 +60,7 @@ public class ToolBoxPanel extends JPanel {
     private static final String REFRESH_SOURCE = "REFRESH_SOURCE";
     private static final String REMOVE = "REMOVE";
 
-    private final static String CATEGORY_MODEL = "Advanced interface";
+    private final static String TAG_MODEL = "Advanced interface";
     private final static String FILE_MODEL = "Simple interface";
     private final static String FILTERED_MODEL = "Filtered";
 
@@ -80,7 +80,7 @@ public class ToolBoxPanel extends JPanel {
     /** Model of the JTree */
     private FileTreeModel fileModel;
     /** Model of the JTree */
-    private FileTreeModel categoryModel;
+    private FileTreeModel tagModel;
     /** Model of the JTree*/
     private FileTreeModel filteredModel;
     /** Model of the JTree*/
@@ -117,9 +117,9 @@ public class ToolBoxPanel extends JPanel {
         fileModel = new FileTreeModel(localhostNode);
         //fileModel.insertNodeInto(localhostNode, fileRoot, 0);
 
-        TreeNodeWps categoryRoot = new TreeNodeWps();
-        categoryRoot.setUserObject(CATEGORY_MODEL);
-        categoryModel = new FileTreeModel(categoryRoot);
+        TreeNodeWps tagRoot = new TreeNodeWps();
+        tagRoot.setUserObject(TAG_MODEL);
+        tagModel = new FileTreeModel(tagRoot);
 
         TreeNodeWps filteredRoot = new TreeNodeWps();
         filteredRoot.setUserObject(FILTERED_MODEL);
@@ -127,7 +127,7 @@ public class ToolBoxPanel extends JPanel {
 
         treeNodeBox = new JComboBox<>();
         treeNodeBox.addItem(FILE_MODEL);
-        treeNodeBox.addItem(CATEGORY_MODEL);
+        treeNodeBox.addItem(TAG_MODEL);
         treeNodeBox.setSelectedItem(FILE_MODEL);
         treeNodeBox.addActionListener(EventHandler.create(ActionListener.class, this, "onModelSelected"));
 
@@ -163,10 +163,10 @@ public class ToolBoxPanel extends JPanel {
         filterFactoryManager.addFilter(new SearchFilter().getDefaultFilterValue());
 
         modelList = new ArrayList<>();
-        modelList.add(categoryModel);
+        modelList.add(tagModel);
         modelList.add(fileModel);
         modelList.add(filteredModel);
-        tree.setModel(categoryModel);
+        tree.setModel(tagModel);
         onModelSelected();
     }
 
@@ -190,7 +190,7 @@ public class ToolBoxPanel extends JPanel {
             if(event.getSource().equals(tree)){
                 if(tree.getLastSelectedPathComponent() == null ||
                         tree.getLastSelectedPathComponent().equals(fileModel.getRoot()) ||
-                        tree.getLastSelectedPathComponent().equals(categoryModel.getRoot())){
+                        tree.getLastSelectedPathComponent().equals(tagModel.getRoot())){
                     popupGlobalActions.copyEnabledActions(popupMenu);
                 }
                 else {
@@ -222,7 +222,12 @@ public class ToolBoxPanel extends JPanel {
                             break;
                         case FOLDER:
                             //Check if the folder exists and it it contains some scripts
-                            isValid = toolBox.checkFolder(selectedNode.getUri());
+                            if(selectedModel == fileModel) {
+                                isValid = toolBox.checkFolder(selectedNode.getUri());
+                            }
+                            else{
+                                isValid = true;
+                            }
                             break;
                         case PROCESS:
                             isValid = toolBox.checkProcess(selectedNode.getUri());
@@ -250,70 +255,76 @@ public class ToolBoxPanel extends JPanel {
         if(treeNodeBox.getSelectedItem().equals(FILE_MODEL)){
             selectedModel = fileModel;
         }
-        else if(treeNodeBox.getSelectedItem().equals(CATEGORY_MODEL)){
-            selectedModel = categoryModel;
+        else if(treeNodeBox.getSelectedItem().equals(TAG_MODEL)){
+            selectedModel = tagModel;
         }
         tree.setModel(selectedModel);
     }
 
     /**
-     * Adds a process in the category model.
+     * Adds a process in the tag model.
      * @param p Process to add.
      * @param uri Process URI.
      */
-    public void addScriptInCategoryModel(Process p, URI uri, String customCloseIconName, String customOpenIconName,
-                                         String customLeafIconName, String customInvalidIconName){
-        String[] categories = decodeCategories(p);
-
-        TreeNodeWps root = (TreeNodeWps) categoryModel.getRoot();
+    public void addScriptInTagModel(Process p, URI uri, String customCloseIconName, String customOpenIconName,
+                                    String customLeafIconName, String customInvalidIconName){
+        TreeNodeWps root = (TreeNodeWps) tagModel.getRoot();
         TreeNodeWps script = new TreeNodeWps();
         script.setUri(uri);
         script.setNodeType(TreeNodeWps.NodeType.PROCESS);
+
+        script.setValidNode(p!=null);
         if(customCloseIconName != null && customOpenIconName != null &&
                 customLeafIconName != null && customInvalidIconName != null){
             script.setCustomIcon(customCloseIconName, customOpenIconName, customLeafIconName, customInvalidIconName);
         }
-        TreeNodeWps categoryNode = getSubNode(categories[0], root);
-        if(categoryNode == null){
-            categoryNode = new TreeNodeWps();
-            categoryNode.setUserObject(categories[0]);
-            categoryModel.insertNodeInto(categoryNode, root, 0);
+        if(p != null){
         }
-
-        if(categories[1] != null){
-            TreeNodeWps subCategoryNode = getSubNode(categories[1], categoryNode);
-            if(subCategoryNode == null){
-                subCategoryNode = new TreeNodeWps();
-                subCategoryNode.setUserObject(categories[1]);
-                categoryModel.insertNodeInto(subCategoryNode, categoryNode, 0);
-            }
-
-            if(categories[2] != null){
-                TreeNodeWps subSubCategoryNode = getSubNode(categories[2], subCategoryNode);
-                if(subSubCategoryNode == null){
-                    subSubCategoryNode = new TreeNodeWps();
-                    subSubCategoryNode.setUserObject(categories[2]);
-                    categoryModel.insertNodeInto(subSubCategoryNode, subCategoryNode, 0);
-                }
-                if(!isNodeExisting(script.getUri(), subSubCategoryNode)) {
-                    script.setValidNode((toolBox.getProcessManager().getProcess(uri) != null));
-                    categoryModel.insertNodeInto(script, subSubCategoryNode, 0);
-                    tree.expandPath(new TreePath(subSubCategoryNode.getPath()));
+        else{
+        }
+        if(p!=null){
+            script.setUserObject(p.getTitle());
+            if(p.getKeywords() != null) {
+                for (String tag : p.getKeywords()) {
+                    TreeNodeWps tagNode = getChildWithUserObject(tag, root);
+                    if (tagNode == null) {
+                        tagNode = new TreeNodeWps();
+                        tagNode.setNodeType(TreeNodeWps.NodeType.FOLDER);
+                        tagNode.setUserObject(tag);
+                        tagNode.setValidNode(true);
+                        tagModel.insertNodeInto(tagNode, root, 0);
+                    }
+                    if (getChildWithUri(uri, tagNode) == null) {
+                        tagModel.insertNodeInto(script.deepCopy(), tagNode, 0);
+                    }
                 }
             }
-            else {
-                if(!isNodeExisting(script.getUri(), subCategoryNode)) {
-                    script.setValidNode((toolBox.getProcessManager().getProcess(uri) != null));
-                    categoryModel.insertNodeInto(script, subCategoryNode, 0);
-                    tree.expandPath(new TreePath(subCategoryNode.getPath()));
+            else{
+                TreeNodeWps tagNode = getChildWithUserObject("no_tag", root);
+                if(tagNode == null){
+                    tagNode = new TreeNodeWps();
+                    tagNode.setNodeType(TreeNodeWps.NodeType.FOLDER);
+                    tagNode.setUserObject("no_tag");
+                    tagNode.setValidNode(true);
+                    tagModel.insertNodeInto(tagNode, root, 0);
+                }
+                if(getChildWithUri(uri, tagNode) == null){
+                    tagModel.insertNodeInto(script.deepCopy(), tagNode, 0);
                 }
             }
         }
-        else {
-            if(!isNodeExisting(script.getUri(), categoryNode)) {
-                script.setValidNode((toolBox.getProcessManager().getProcess(uri) != null));
-                categoryModel.insertNodeInto(script, categoryNode, 0);
-                tree.expandPath(new TreePath(categoryNode.getPath()));
+        else{
+            script.setUserObject(new File(uri).getName().replace(".groovy", ""));
+            TreeNodeWps tagNode = getChildWithUserObject("invalid", root);
+            if(tagNode == null){
+                tagNode = new TreeNodeWps();
+                tagNode.setNodeType(TreeNodeWps.NodeType.FOLDER);
+                tagNode.setUserObject("invalid");
+                tagNode.setValidNode(true);
+                tagModel.insertNodeInto(tagNode, root, 0);
+            }
+            if(getChildWithUri(uri, tagNode) == null){
+                tagModel.insertNodeInto(script.deepCopy(), tagNode, 0);
             }
         }
     }
@@ -351,32 +362,6 @@ public class ToolBoxPanel extends JPanel {
     }
 
     /**
-     * Returns the categories of a process.
-     * @param p Process to decode.
-     * @return List of categories.
-     */
-    private String[] decodeCategories(Process p){
-        String[] categories = new String[3];
-        categories[0] = UNDEFINED;
-        categories[1] = null;
-        categories[2] = null;
-        if(p != null && p.getMetadata() != null) {
-            for (Metadata m : p.getMetadata()) {
-                if (m.getRole().equals(URI.create("utils:category"))) {
-                    categories[0] = m.getTitle();
-                }
-                if (m.getRole().equals(URI.create("utils:subCategory"))) {
-                    categories[1] = m.getTitle();
-                }
-                if (m.getRole().equals(URI.create("utils:subSubCategory"))) {
-                    categories[2] = m.getTitle();
-                }
-            }
-        }
-        return categories;
-    }
-
-    /**
      * Adds a local source. Open the given directory and find all the groovy script contained.
      * @param directoryUri Directory URI to analyse.
      * @param processManager ProcessManager.
@@ -386,7 +371,7 @@ public class ToolBoxPanel extends JPanel {
         File directory = new File(directoryUri);
         for (File f : directory.listFiles()) {
             if (f.getName().endsWith(".groovy")) {
-                addScriptInCategoryModel(processManager.getProcess(f.toURI()), f.toURI(), null, null, null, null);
+                addScriptInTagModel(processManager.getProcess(f.toURI()), f.toURI(), null, null, null, null);
             }
         }
         refresh();
@@ -404,7 +389,7 @@ public class ToolBoxPanel extends JPanel {
         File directory = new File(directoryUri);
         for (File f : directory.listFiles()) {
             if (f.getName().endsWith(".groovy")) {
-                addScriptInCategoryModel(processManager.getProcess(f.toURI()), f.toURI(), iconName, iconName, iconName,
+                addScriptInTagModel(processManager.getProcess(f.toURI()), f.toURI(), iconName, iconName, iconName,
                         TreeNodeWps.ERROR_ICON_NAME);
             }
         }
@@ -427,7 +412,7 @@ public class ToolBoxPanel extends JPanel {
         File directory = new File(directoryUri);
         for (File f : directory.listFiles()) {
             if (f.getName().endsWith(".groovy")) {
-                addScriptInCategoryModel(processManager.getProcess(f.toURI()), f.toURI(), customCloseIconName,
+                addScriptInTagModel(processManager.getProcess(f.toURI()), f.toURI(), customCloseIconName,
                         customOpenIconName, customLeafIconName, customInvalidIconName);
             }
         }
@@ -512,7 +497,7 @@ public class ToolBoxPanel extends JPanel {
      * @param node
      */
     public void remove(TreeNodeWps node){
-        if(!node.equals(fileModel.getRoot()) && !node.equals(categoryModel.getRoot())){
+        if(!node.equals(fileModel.getRoot()) && !node.equals(tagModel.getRoot())){
             List<TreeNodeWps> leafList = new ArrayList<>();
             leafList.addAll(getAllChild(node));
             for(TreeNodeWps leaf : leafList){
@@ -614,9 +599,9 @@ public class ToolBoxPanel extends JPanel {
                 for (TreeNodeWps child : getAllLeaf(node)) {
                     boolean isValid = toolBox.checkProcess(child.getUri());
                     TreeNodeWps updated;
-                    updated = getChildWithUri(child.getUri(), (TreeNodeWps) categoryModel.getRoot());
+                    updated = getChildWithUri(child.getUri(), (TreeNodeWps) tagModel.getRoot());
                     updated.setValidNode(isValid);
-                    categoryModel.nodeChanged(updated);
+                    tagModel.nodeChanged(updated);
                     updated = getChildWithUri(child.getUri(), (TreeNodeWps) fileModel.getRoot());
                     updated.setValidNode(isValid);
                     fileModel.nodeChanged(updated);
