@@ -204,22 +204,6 @@ public class ProcessEditableElement implements EditableElement{
         }
     }
 
-    public enum ProcessState{
-        RUNNING("Running"),
-        COMPLETED("Completed"),
-        ERROR("Error"),
-        IDLE("Idle");
-
-        private String value;
-
-        ProcessState(String value){
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
-
+    public enum ProcessState{RUNNING, COMPLETED, ERROR, IDLE, WAITING}
     public enum LogType{INFO, WARN, ERROR}
 }

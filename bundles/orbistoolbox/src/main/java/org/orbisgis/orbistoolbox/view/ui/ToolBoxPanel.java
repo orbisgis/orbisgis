@@ -793,14 +793,7 @@ public class ToolBoxPanel extends JPanel {
      */
     public String getListLocalSourcesAsString() {
         String uriStr = "";
-        TreeNodeWps root = (TreeNodeWps)fileModel.getRoot();
-        TreeNodeWps localhost = null;
-        for(int i=0; i<root.getChildCount(); i++){
-            localhost = ((TreeNodeWps)root.getChildAt(i));
-            if(localhost.getUserObject().equals(LOCALHOST_URI)){
-                break;
-            }
-        }
+        TreeNodeWps localhost = mapHostNode.get(LOCALHOST_URI);
         if(localhost == null){
             return uriStr;
         }

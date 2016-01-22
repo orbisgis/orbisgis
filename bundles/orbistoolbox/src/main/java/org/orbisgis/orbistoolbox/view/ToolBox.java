@@ -23,6 +23,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
@@ -47,8 +48,6 @@ import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.osgi.framework.FrameworkUtil;
 import org.orbisgis.sif.edition.EditorDockable;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Component;
@@ -78,6 +77,7 @@ public class ToolBox implements DockingPanel  {
     private static final String WPS_SCRIPT_FOLDER = "scripts";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
+    private static final String SETTINGS_TABLE = "SETTINGS";
     private static boolean areScriptsCopied = false;
 
     /** Docking parameters used by DockingFrames. */
@@ -109,6 +109,9 @@ public class ToolBox implements DockingPanel  {
 
     /** ToolBox properties */
     private Properties tbProperties;
+    /** List of process ended, waiting the 5 seconds before beeing removed.*/
+    boolean multiThreaded = true;
+    private Boolean isH2;
 
     @Activate
     public void init(){
@@ -147,13 +150,51 @@ public class ToolBox implements DockingPanel  {
         }
         if(tbProperties != null){
             Object prop = tbProperties.getProperty(PROPERTY_SOURCES);
-            if(prop != null){
+            if(prop != null && !prop.toString().isEmpty()){
                 String str = prop.toString();
                 for(String s : str.split(";")){
                     addLocalSource(URI.create(s));
                 }
             }
         }
+        //Find if the database used is H2 or not.
+        //If yes, make all the processes wait for the previous one.
+        try {
+            if(dataManager != null && isH2()){
+                Connection connection = dataManager.getDataSource().getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MVCC';");
+                result.next();
+                if(!result.getString(1).equals("TRUE")){
+                    multiThreaded = false;
+                }
+                result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MULTI_THREADED';");
+                result.next();
+                if(!result.getString(1).equals("1")){
+                    multiThreaded = false;
+                }
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+            multiThreaded = false;
+        }
+        if(!multiThreaded){
+            LoggerFactory.getLogger(ToolBox.class).warn("Warning, because of the H2 configuration," +
+                    " the toolbox won't be able to run more than one process at the same time.\n" +
+                    "Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000; MULTI_THREADED=TRUE'");
+        }
+    }
+
+    private boolean isH2() {
+        if(isH2 == null) {
+            try(Connection connection = dataManager.getDataSource().getConnection()) {
+                isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            } catch (SQLException ex) {
+                LoggerFactory.getLogger(ToolBox.class).error(ex.getLocalizedMessage(), ex);
+                return false;
+            }
+        }
+        return isH2;
     }
 
     /**
