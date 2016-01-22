@@ -257,7 +257,7 @@ public class RowSetTest {
                 Statement st = connection.createStatement()) {
             st.execute("drop table if exists test");
             st.execute("create table test (id integer primary key, y float) as select X, SQRT(X::float) SQ from SYSTEM_RANGE(1, 2000)");
-            rs.setCommand("SELECT * FROM TEST");
+            rs.setCommand("SELECT * FROM TEST ORDER BY ID");
             rs.execute();
             // Test forward access mode
             for(int i =0; i < 2000; i++) {

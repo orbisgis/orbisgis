@@ -353,15 +353,14 @@ public class ReversibleRowSetImpl extends ReadRowSetImpl implements ReversibleRo
             if(updateRow[pkColumnId] != null) {
                 TableUndoableUpdate update = updateRow[pkColumnId];
                 update.redo(false);
-                refreshRow();
                 updateRow = null;
                 manager.fireTableEditHappened(new TableEditEvent(location.toString(isH2), update, pkColumnId, getPk() ,
                         getPk() , TableModelEvent.DELETE));
             } else {
                 updateRow = null;
-                currentBatchId = -1;
             }
         }
+        refreshRow();
     }
 
     @Override
