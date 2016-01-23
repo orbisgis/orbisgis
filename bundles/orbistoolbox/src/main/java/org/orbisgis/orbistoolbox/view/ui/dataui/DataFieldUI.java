@@ -82,6 +82,7 @@ public class DataFieldUI implements DataUI{
         comboBox.putClientProperty("dataMap", dataMap);
         comboBox.putClientProperty("isOptional", isOptional);
         comboBox.putClientProperty("defaultItem", defaultItem);
+        comboBox.putClientProperty("fieldTitle", inputOrOutput.getTitle());
         comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
         comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
         comboBox.addPopupMenuListener(EventHandler.create(PopupMenuListener.class, this, "onComboBoxEntered", "source"));
@@ -156,6 +157,16 @@ public class DataFieldUI implements DataUI{
                     dataFieldStr.substring(dataFieldStr.lastIndexOf(":")+1));
             ToolTipManager.sharedInstance().mouseMoved(
                     new MouseEvent(comboBox,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
+        }
+        //Else try to select the good field
+        else{
+            String title = comboBox.getClientProperty("fieldTitle").toString().toUpperCase();
+            for(int i = 0; i < comboBox.getItemCount(); i++) {
+                if(title.contains(comboBox.getItemAt(i))){
+                    comboBox.setSelectedIndex(i);
+                    break;
+                }
+            }
         }
 
         comboBox.revalidate();
