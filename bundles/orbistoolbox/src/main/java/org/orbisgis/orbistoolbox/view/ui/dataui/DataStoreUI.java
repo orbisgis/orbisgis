@@ -139,7 +139,7 @@ public class DataStoreUI implements DataUI{
         tableSelection.add(comboBox, "growx, span");
         if(inputOrOutput instanceof Output){
             String newTable = "New_Table";
-            comboBox.addItem(newTable);
+            comboBox.insertItemAt(newTable, 0);
             comboBox.setEditable(true);
             comboBox.setSelectedItem(newTable);
             Document doc = ((JTextComponent)comboBox.getEditor().getEditorComponent()).getDocument();
