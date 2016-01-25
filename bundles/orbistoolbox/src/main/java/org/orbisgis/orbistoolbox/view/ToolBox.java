@@ -637,11 +637,19 @@ public class ToolBox implements DockingPanel  {
             //Get the table name of the file
             String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), true);
             String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
+            System.out.println(tableName);
             //Find the corresponding driver and load the file
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
-            DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
-                    extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-            driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+            if(extension.equalsIgnoreCase("csv")){
+                Connection connection = dataManager.getDataSource().getConnection();
+                Statement statement = connection.createStatement();
+                statement.execute("CREATE TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
+            }
+            else {
+                DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
+                        extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+                driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+            }
             return tableName;
         } catch (SQLException|IOException e) {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());

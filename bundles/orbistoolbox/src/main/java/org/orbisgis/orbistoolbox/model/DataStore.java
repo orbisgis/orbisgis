@@ -39,6 +39,8 @@ public class DataStore extends ComplexData{
     private boolean isDataBase;
     /** List of DataField liked to the DataStore */
     private List<DataField> listDataField;
+    /** True if the toolBox should load the file or just give the file path. */
+    private boolean autoImport;
 
     /**
      * Main constructor
@@ -48,6 +50,14 @@ public class DataStore extends ComplexData{
     public DataStore(List<Format> formatList) throws MalformedScriptException {
         super(formatList);
         listDataField = new ArrayList<>();
+    }
+
+    public void setAutoImport(boolean autoImport){
+        this.autoImport = autoImport;
+    }
+
+    public boolean isAutoImport(){
+        return autoImport;
     }
 
     /**

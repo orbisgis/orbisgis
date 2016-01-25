@@ -197,19 +197,41 @@ public class LiteralDataUI implements DataUI {
         switch(DataType.valueOf(s.toUpperCase())){
             case BOOLEAN:
                 //Instantiate the component
-                dataComponent = new JComboBox<Boolean>();
-                ((JComboBox)dataComponent).addItem(Boolean.TRUE);
-                ((JComboBox)dataComponent).addItem(Boolean.FALSE);
-                dataComponent.setBackground(Color.WHITE);
+                dataComponent = new JPanel(new MigLayout());
+                JRadioButton falseButton = new JRadioButton("FALSE");
+                JRadioButton trueButton = new JRadioButton("TRUE");
+                ButtonGroup group = new ButtonGroup();
+                group.add(falseButton);
+                group.add(trueButton);
+                dataComponent.add(trueButton);
+                dataComponent.add(falseButton);
                 //Put the data type, the dataMap and the uri as properties
+                falseButton.putClientProperty("type", DataType.BOOLEAN);
+                falseButton.putClientProperty("dataMap",dataMap);
+                falseButton.putClientProperty("uri", uri);
+                falseButton.putClientProperty("boolean", false);
+                trueButton.putClientProperty("type", DataType.BOOLEAN);
+                trueButton.putClientProperty("dataMap",dataMap);
+                trueButton.putClientProperty("uri", uri);
+                trueButton.putClientProperty("boolean", true);
                 dataComponent.putClientProperty("type", DataType.BOOLEAN);
                 dataComponent.putClientProperty("dataMap",dataMap);
                 dataComponent.putClientProperty("uri", uri);
                 //Set the default value and adds the listener for saving the value set by the user
-                if(dataMap.get(uri).equals(Boolean.TRUE) || dataMap.get(uri).equals(Boolean.FALSE)){
-                    ((JComboBox)dataComponent).setSelectedItem(dataMap.get(uri));
+                if(dataMap.get(uri) != null){
+                    if((Boolean)dataMap.get(uri)){
+                        trueButton.setSelected(true);
+                    }
+                    else{
+                        falseButton.setSelected(true);
+                    }
                 }
-                ((JComboBox)dataComponent).addActionListener(EventHandler.create(
+                falseButton.addActionListener(EventHandler.create(
+                        ActionListener.class,
+                        this,
+                        "onDataChanged",
+                        "source"));
+                trueButton.addActionListener(EventHandler.create(
                         ActionListener.class,
                         this,
                         "onDataChanged",
@@ -427,9 +449,7 @@ public class LiteralDataUI implements DataUI {
 
         switch((DataType)((JComponent)source).getClientProperty("type")){
             case BOOLEAN:
-                JComboBox<Boolean> comboBox = (JComboBox<Boolean>)source;
-                dataMap.remove(uri);
-                dataMap.put(uri, comboBox.getSelectedItem());
+                dataMap.put(uri, ((JComponent)source).getClientProperty("boolean"));
                 break;
             case BYTE:
             case INTEGER:
@@ -439,7 +459,6 @@ public class LiteralDataUI implements DataUI {
             case DOUBLE:
             case FLOAT:
                 JSpinner spinner = (JSpinner)source;
-                dataMap.remove(uri);
                 dataMap.put(uri, spinner.getValue());
                 break;
         }

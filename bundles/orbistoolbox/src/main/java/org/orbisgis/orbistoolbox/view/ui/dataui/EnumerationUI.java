@@ -146,10 +146,17 @@ public class EnumerationUI implements DataUI{
             enumeration = (Enumeration)((Output)inputOrOutput).getDataDescription();
         }
         if(!isOptional) {
-            if (enumeration.isMultiSelection()) {
-                map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues());
-            } else {
-                map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues()[0]);
+            if(enumeration.getDefaultValues().length != 0) {
+                if (enumeration.isMultiSelection()) {
+                    map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues());
+                } else {
+                    map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues()[0]);
+                }
+            }
+            else{
+                if(enumeration.getValues().length != 0) {
+                    map.put(inputOrOutput.getIdentifier(), enumeration.getValues()[0]);
+                }
             }
         }
         return map;

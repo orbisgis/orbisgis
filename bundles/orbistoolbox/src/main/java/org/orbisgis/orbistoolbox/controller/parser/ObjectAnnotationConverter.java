@@ -242,7 +242,10 @@ public class ObjectAnnotationConverter {
 
     public static DataStore annotationToObject(DataStoreAttribute dataStoreAttribute, List<Format> formatList) {
         try {
-            return new DataStore(formatList);
+            DataStore dataStore = new DataStore(formatList);
+            dataStore.setAutoImport(dataStoreAttribute.isAutoImport());
+            dataStore.setIsSpatial(dataStoreAttribute.isSpatial());
+            return dataStore;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;

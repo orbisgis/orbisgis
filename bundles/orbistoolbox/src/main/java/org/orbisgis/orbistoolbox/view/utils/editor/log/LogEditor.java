@@ -146,7 +146,9 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
      */
     public void endInstance(){
         String id = endProcessFIFO.removeFirst();
-        contentPanel.remove(componentMap.get(id));
+        if(componentMap.get(id) != null) {
+            contentPanel.remove(componentMap.get(id));
+        }
         componentMap.remove(id);
         processRunning.setText("Process running : "+componentMap.size());
         this.repaint();

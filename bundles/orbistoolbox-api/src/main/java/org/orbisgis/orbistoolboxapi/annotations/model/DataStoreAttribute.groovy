@@ -45,4 +45,9 @@ import java.lang.annotation.RetentionPolicy
      * Indicates if the data represented is spatial or not.
      */
     boolean isSpatial() default false
+
+    /**
+     * Indicates if the toolbox should load the file and give the table name or just give the file name.
+     */
+    boolean isAutoImport() default true
 }

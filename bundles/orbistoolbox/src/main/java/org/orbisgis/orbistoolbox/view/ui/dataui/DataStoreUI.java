@@ -429,31 +429,8 @@ public class DataStoreUI implements DataUI{
         JButton source = (JButton)event.getSource();
         OpenFilePanel openFilePanel = (OpenFilePanel)source.getClientProperty("filePanel");
         if (UIFactory.showDialog(openFilePanel, true, true)) {
-            DataStore dataStore = (DataStore) source.getClientProperty("dataStore");
-            URI selectedFileURI = openFilePanel.getSelectedFile().toURI();
-            //Load the selected file an retrieve the table name.
-            String tableName = toolBox.loadURI(selectedFileURI);
-            if(tableName != null) {
-                //Saves the table name in the URI into the uri fragment
-                selectedFileURI = URI.create(selectedFileURI.toString()+"#"+tableName);
-                //Set the UI with the selected value
-                JTextField textField = (JTextField) source.getClientProperty("JTextField");
-                textField.setText(openFilePanel.getSelectedFile().getName());
-                Map<URI, Object> dataMap = (Map<URI, Object>) source.getClientProperty("dataMap");
-                //Store the selection
-                URI uri = (URI) source.getClientProperty("uri");
-                dataMap.remove(uri);
-                dataMap.put(uri, selectedFileURI);
-                //tells the dataField they should revalidate
-                for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModified(true);
-                }
-            }
-            else{
-                for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModified(false);
-                }
-            }
+            JTextField textField = (JTextField) source.getClientProperty("JTextField");
+            textField.setText(openFilePanel.getSelectedFile().getAbsolutePath());
         }
     }
 
