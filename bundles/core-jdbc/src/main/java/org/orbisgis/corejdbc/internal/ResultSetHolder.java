@@ -46,7 +46,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ResultSetHolder implements Runnable,AutoCloseable {
     public static final int WAITING_FOR_RESULTSET = 1;
     private static final int SLEEP_TIME = 1;
-    private static final int RESULT_SET_TIMEOUT = 60000;
+    private static final int DEFAULT_RESULT_SET_TIMEOUT = 60000;
+    private int resultSetTimeOut = DEFAULT_RESULT_SET_TIMEOUT;
     public enum STATUS { NEVER_STARTED, STARTED , READY, REFRESH,CLOSING, CLOSED, EXCEPTION}
     private Exception ex;
     private ResultSet resultSet;
@@ -66,6 +67,13 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
         this.resultSetProvider = resultSetProvider;
     }
 
+    /**
+     * @param resultSetTimeOut Close the resultset after this delay
+     */
+    public void setResultSetTimeOut(int resultSetTimeOut) {
+        this.resultSetTimeOut = resultSetTimeOut;
+    }
+
     public void setCancelStatement(Statement cancelStatement) {
         this.cancelStatement = cancelStatement;
     }
@@ -82,7 +90,7 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
                     resultSet = activeResultSet;
                     threadChangeStatus(STATUS.READY);
                     while (status.get() != STATUS.REFRESH &&
-                            (lastUsage.get() + RESULT_SET_TIMEOUT > averageTimeMs  || openCount != 0)) {
+                            (lastUsage.get() + resultSetTimeOut > averageTimeMs  || openCount != 0)) {
                         Thread.sleep(SLEEP_TIME);
                         averageTimeMs += SLEEP_TIME;
                     }
@@ -130,7 +138,7 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
     }
 
     public void delayedClose(int milliSec) {
-        lastUsage.set(averageTimeMs - RESULT_SET_TIMEOUT + milliSec);
+        lastUsage.set(averageTimeMs - resultSetTimeOut + milliSec);
         openCount = 0;
     }
 
