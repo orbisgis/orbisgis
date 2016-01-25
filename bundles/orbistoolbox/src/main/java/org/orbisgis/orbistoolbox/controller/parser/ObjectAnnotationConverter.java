@@ -287,6 +287,7 @@ public class ObjectAnnotationConverter {
             Enumeration enumeration = new Enumeration(format, enumAttribute.values(), enumAttribute.defaultValues());
             enumeration.setEditable(enumAttribute.isEditable());
             enumeration.setMultiSelection(enumAttribute.multiSelection());
+            enumeration.setValuesNames(enumAttribute.names());
             return enumeration;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());

@@ -110,7 +110,7 @@ public class ToolBox implements DockingPanel  {
 
     /** ToolBox properties */
     private Properties tbProperties;
-    /** List of process ended, waiting the 5 seconds before beeing removed.*/
+    /** List of process ended, waiting the 5 seconds before being removed.*/
     boolean multiThreaded = true;
     private Boolean isH2;
 
