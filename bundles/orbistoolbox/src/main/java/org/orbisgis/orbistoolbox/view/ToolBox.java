@@ -75,7 +75,7 @@ public class ToolBox implements DockingPanel  {
     public static final String GROOVY_EXTENSION = "groovy";
     /** String reference of the ToolBox used for DockingFrame. */
     public static final String TOOLBOX_REFERENCE = "orbistoolbox";
-    private static final String WPS_SCRIPT_FOLDER = "scripts";
+    private static final String WPS_SCRIPT_FOLDER = "Scripts";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String SETTINGS_TABLE = "SETTINGS";
@@ -121,7 +121,7 @@ public class ToolBox implements DockingPanel  {
         dataUIManager = new DataUIManager(this);
 
         parameters = new DockingPanelParameters();
-        parameters.setTitle("OrbisToolBox");
+        parameters.setTitle("ToolBox");
         parameters.setTitleIcon(ToolBoxIcon.getIcon("orbistoolbox"));
         parameters.setCloseable(true);
         parameters.setName(TOOLBOX_REFERENCE);
@@ -637,7 +637,6 @@ public class ToolBox implements DockingPanel  {
             //Get the table name of the file
             String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), true);
             String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
-            System.out.println(tableName);
             //Find the corresponding driver and load the file
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
             if(extension.equalsIgnoreCase("csv")){
