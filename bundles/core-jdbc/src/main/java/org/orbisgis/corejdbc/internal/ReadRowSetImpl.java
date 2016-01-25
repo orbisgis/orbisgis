@@ -127,8 +127,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     protected PreparedStatement currentBatchPreparedStatement = null;
     protected String currentBatchQuery = "";
     private int fetchDirection = FETCH_UNKNOWN;
-    // When close is called, in how many ms the result set is really closed
-    private int closeDelay = 0;
     protected boolean isH2;
     // The primary key may be not required by user but included in batch query
     private int columnOffset = 0;
@@ -560,7 +558,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     @Override
     public void close() throws SQLException {
         try {
-            resultSetHolder.delayedClose(closeDelay);
+            resultSetHolder.delayedClose(0);
             while(resultSetHolder.isRunning()) {
                 Thread.sleep(ResultSetHolder.WAITING_FOR_RESULTSET);
             }
@@ -571,7 +569,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public void setCloseDelay(int milliseconds) {
-        closeDelay = milliseconds;
+        resultSetHolder.setResultSetTimeOut(milliseconds);
     }
 
     public long getRowCount(ProgressMonitor pm) throws SQLException {

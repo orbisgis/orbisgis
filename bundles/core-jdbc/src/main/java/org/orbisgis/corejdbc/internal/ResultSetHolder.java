@@ -36,6 +36,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -45,23 +46,32 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ResultSetHolder implements Runnable,AutoCloseable {
     public static final int WAITING_FOR_RESULTSET = 1;
     private static final int SLEEP_TIME = 1;
-    private static final int RESULT_SET_TIMEOUT = 60000;
+    private static final int DEFAULT_RESULT_SET_TIMEOUT = 60000;
+    private int resultSetTimeOut = DEFAULT_RESULT_SET_TIMEOUT;
     public enum STATUS { NEVER_STARTED, STARTED , READY, REFRESH,CLOSING, CLOSED, EXCEPTION}
     private Exception ex;
     private ResultSet resultSet;
     private DataSource dataSource;
 
     private final AtomicReference<STATUS> status = new AtomicReference<>(STATUS.NEVER_STARTED);
-    private long lastUsage = System.currentTimeMillis();
+    private AtomicLong lastUsage;
     private static final Logger LOGGER = LoggerFactory.getLogger(ResultSetHolder.class);
     private int openCount = 0;
     private Statement cancelStatement;
     private ResultSetProvider resultSetProvider;
     private Thread resultSetThread;
+    private long averageTimeMs;
 
     public ResultSetHolder(DataSource dataSource, ResultSetProvider resultSetProvider) {
         this.dataSource = dataSource;
         this.resultSetProvider = resultSetProvider;
+    }
+
+    /**
+     * @param resultSetTimeOut Close the resultset after this delay
+     */
+    public void setResultSetTimeOut(int resultSetTimeOut) {
+        this.resultSetTimeOut = resultSetTimeOut;
     }
 
     public void setCancelStatement(Statement cancelStatement) {
@@ -70,17 +80,17 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
 
     @Override
     public void run() {
-        lastUsage = System.currentTimeMillis();
+        lastUsage = new AtomicLong(System.currentTimeMillis());
         threadChangeStatus(STATUS.STARTED);
         try (Connection connection = dataSource.getConnection()) {
             // PostGreSQL use cursor only if auto commit is false
-            long averageTimeMs =  System.currentTimeMillis();
+            averageTimeMs =  System.currentTimeMillis();
             do {
                 try (ResultSet activeResultSet = resultSetProvider.getResultSet(connection)) {
                     resultSet = activeResultSet;
                     threadChangeStatus(STATUS.READY);
                     while (status.get() != STATUS.REFRESH &&
-                            (lastUsage + RESULT_SET_TIMEOUT > averageTimeMs  || openCount != 0)) {
+                            (lastUsage.get() + resultSetTimeOut > averageTimeMs  || openCount != 0)) {
                         Thread.sleep(SLEEP_TIME);
                         averageTimeMs += SLEEP_TIME;
                     }
@@ -121,14 +131,14 @@ public class ResultSetHolder implements Runnable,AutoCloseable {
 
     @Override
     public void close() throws SQLException {
-        lastUsage = 0;
+        lastUsage.set(0);
         openCount = 0;
         status.set(STATUS.CLOSING);
         resultSetThread.interrupt();
     }
 
     public void delayedClose(int milliSec) {
-        lastUsage = System.currentTimeMillis() - RESULT_SET_TIMEOUT + milliSec;
+        lastUsage.set(averageTimeMs - resultSetTimeOut + milliSec);
         openCount = 0;
     }
 
