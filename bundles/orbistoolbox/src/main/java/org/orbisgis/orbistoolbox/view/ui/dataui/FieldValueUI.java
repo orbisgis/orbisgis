@@ -125,6 +125,7 @@ public class FieldValueUI implements DataUI{
         JList list = (JList)source;
         FieldValue fieldValue = (FieldValue)list.getClientProperty("fieldValue");
         HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
+        boolean isOptional = (boolean)list.getClientProperty("isOptional");
         //If the DataField related to the FieldValue has been modified, reload the dataField values
         if(fieldValue.isDataFieldModified()) {
             fieldValue.setDataFieldModified(false);
@@ -143,6 +144,9 @@ public class FieldValueUI implements DataUI{
             else{
                 list.setVisibleRowCount(MAX_JLIST_ROW_COUNT);
             }
+            if(!isOptional && list.getModel().getSize() > 0){
+                list.setSelectedIndex(0);
+            }
         }
 
         //If the jList doesn't contains any values, it mean that the DataField hasn't been well selected.
@@ -156,9 +160,6 @@ public class FieldValueUI implements DataUI{
             list.setToolTipText("First configure the DataField : " + fieldValueStr.substring(fieldValueStr.lastIndexOf(":")+1));
             ToolTipManager.sharedInstance().mouseMoved(
                     new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
-        }
-        else{
-            list.setSelectedIndices(new int[]{0});
         }
         list.revalidate();
     }

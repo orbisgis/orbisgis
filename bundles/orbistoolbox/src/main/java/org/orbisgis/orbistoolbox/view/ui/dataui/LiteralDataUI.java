@@ -192,6 +192,7 @@ public class LiteralDataUI implements DataUI {
         JComboBox comboBox = (JComboBox) source;
         Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty("dataMap");
         URI uri = (URI) comboBox.getClientProperty("uri");
+        boolean isOptional = (boolean)comboBox.getClientProperty("isOptional");
         String s = (String) comboBox.getSelectedItem();
         JComponent dataComponent;
         switch(DataType.valueOf(s.toUpperCase())){
@@ -403,7 +404,9 @@ public class LiteralDataUI implements DataUI {
         JPanel panel = (JPanel) comboBox.getClientProperty("dataField");
         panel.removeAll();
         panel.add(dataComponent, "growx, wrap");
-        dataMap.remove(uri);
+        if(isOptional) {
+            dataMap.remove(uri);
+        }
     }
 
     /**

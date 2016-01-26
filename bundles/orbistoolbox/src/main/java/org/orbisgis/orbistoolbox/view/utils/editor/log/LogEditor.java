@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
@@ -100,11 +101,20 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
      * @param pee ProcessEditableElement of the running process to add.
      */
     private void addNewLog(ProcessEditableElement pee){
-        LogPanel panel = new LogPanel(pee.getProcess().getTitle());
+        LogPanel panel = new LogPanel(pee.getProcess().getTitle(), this);
         panel.setState(ProcessEditableElement.ProcessState.RUNNING);
         componentMap.put(pee.getId(), panel);
         contentPanel.add(panel, "growx, span");
         processRunning.setText("Process running : "+componentMap.size());
+    }
+
+    public void cancelProcess(ActionEvent ae){
+        Object logPanelSource = ((JButton)ae.getSource()).getClientProperty("logPanel");
+        for(Map.Entry<String, LogPanel> entry : componentMap.entrySet()){
+            if(entry.getValue().equals(logPanelSource)){
+                lee.cancelProcess(entry.getKey());
+            }
+        }
     }
 
     /**

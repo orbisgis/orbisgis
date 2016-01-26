@@ -65,6 +65,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private DataUIManager dataUIManager;
     /** Tells if the this editor has been open or not. */
     private boolean alive;
+    private ExecutionWorker thread;
 
     public ProcessEditor(ToolBox toolBox, ProcessEditableElement pee){
         this.alive = true;
@@ -131,6 +132,11 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.LOG_PROPERTY)){
             AbstractMap.Entry<String, Color> entry = (AbstractMap.Entry)propertyChangeEvent.getNewValue();
         }
+        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.CANCEL)){
+            if(thread != null){
+                thread.cancel(true);
+            }
+        }
     }
 
     /**
@@ -152,8 +158,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         toolBox.validateInstance(this);
         pee.setProcessState(ProcessEditableElement.ProcessState.RUNNING);
         //Run the process in a separated thread
-        ExecutionWorker thread = new ExecutionWorker(pee, toolBox);
-        thread.execute();
+        thread = new ExecutionWorker(pee, toolBox);
+        toolBox.getExecutorService().execute(thread);
         return false;
     }
 

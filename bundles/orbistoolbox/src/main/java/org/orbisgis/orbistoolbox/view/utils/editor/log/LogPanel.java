@@ -43,6 +43,7 @@ public class LogPanel extends JPanel {
     private JLabel icon;
     /** Running time of the process. */
     private JLabel time;
+    private JButton stopButton;
     /** Time in milliseconds when the process has started. */
     private long startTime;
     /** Timer of 1 second used to refresh the process running time. */
@@ -56,7 +57,7 @@ public class LogPanel extends JPanel {
      * Main Constructor.
      * @param processName Name of the running process.
      */
-    public LogPanel(String processName){
+    public LogPanel(String processName, LogEditor logEditor){
         startTime = System.currentTimeMillis();
         running = true;
         //Build the UI
@@ -66,7 +67,11 @@ public class LogPanel extends JPanel {
         JLabel processLabel = new JLabel(processName);
         this.add(processLabel);
         time = new JLabel();
-        this.add(time, "wrap, alignx right");
+        this.add(time, "alignx right");
+        stopButton = new JButton("cancel");
+        stopButton.putClientProperty("logPanel", this);
+        stopButton.addActionListener(EventHandler.create(ActionListener.class, logEditor, "cancelProcess", ""));
+        this.add(stopButton, "wrap, alignx right");
         setTime();
         logArea = new JTextArea();
         logArea.setRows(3);

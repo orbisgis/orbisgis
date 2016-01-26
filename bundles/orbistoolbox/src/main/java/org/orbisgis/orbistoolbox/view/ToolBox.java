@@ -39,7 +39,6 @@ import org.orbisgis.orbistoolbox.view.utils.editor.log.LogEditableElement;
 import org.orbisgis.orbistoolbox.view.utils.editor.log.LogEditor;
 import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditor;
-import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
@@ -61,6 +60,7 @@ import java.net.URI;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Start point of the OrbisToolBox.
@@ -103,6 +103,8 @@ public class ToolBox implements DockingPanel  {
 
     /** OrbigGIS DockingManager. */
     private DockingManager dockingManager;
+    /** OrbigGIS ExecutorService. */
+    private ExecutorService executorService;
     /** OrbisGIS DataManager. */
     private static DataManager dataManager;
     /** OrbisGIS DriverFunctionContainer. */
@@ -494,6 +496,19 @@ public class ToolBox implements DockingPanel  {
 
     public DataManager getDataManager(){
         return dataManager;
+    }
+
+    @Reference
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
+    public void unsetExecutorService(ExecutorService executorService) {
+        this.executorService = null;
+    }
+
+    public ExecutorService getExecutorService(){
+        return executorService;
     }
 
     @Reference

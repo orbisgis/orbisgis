@@ -41,6 +41,7 @@ import java.util.List;
 public class ProcessEditableElement implements EditableElement{
     public static final String STATE_PROPERTY = "STATE_PROPERTY";
     public static final String LOG_PROPERTY = "LOG_PROPERTY";
+    public static final String CANCEL = "CANCEL";
     private Process process;
     private boolean isOpen;
 

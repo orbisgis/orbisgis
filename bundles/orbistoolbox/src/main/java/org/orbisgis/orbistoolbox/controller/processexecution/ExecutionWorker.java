@@ -125,4 +125,12 @@ public class ExecutionWorker extends SwingWorkerPM{
     @Override
     protected void done(){
     }
+
+    @Override
+    public void cancel(){
+        super.cancel();
+        System.out.println("cancel");
+        this.getProgressMonitor().endTask();
+    }
+
 }
