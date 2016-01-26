@@ -275,10 +275,6 @@ public class ToolBoxPanel extends JPanel {
                 customLeafIconName != null && customInvalidIconName != null){
             script.setCustomIcon(customCloseIconName, customOpenIconName, customLeafIconName, customInvalidIconName);
         }
-        if(p != null){
-        }
-        else{
-        }
         if(p!=null){
             script.setUserObject(p.getTitle());
             if(p.getKeywords() != null) {
