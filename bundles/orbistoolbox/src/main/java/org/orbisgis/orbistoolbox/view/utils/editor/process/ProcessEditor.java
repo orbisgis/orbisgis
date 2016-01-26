@@ -74,7 +74,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         this.pee.addPropertyChangeListener(this);
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName(NAME+"_"+pee.getProcess().getTitle());
-        dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("script"));
+        dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("process"));
         dockingPanelParameters.setDefaultDockingLocation(
                 new DockingLocation(DockingLocation.Location.STACKED_ON, ToolBox.TOOLBOX_REFERENCE));
         dockingPanelParameters.setTitle(pee.getProcessReference());

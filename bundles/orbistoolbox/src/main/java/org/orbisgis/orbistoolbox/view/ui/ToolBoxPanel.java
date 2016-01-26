@@ -386,8 +386,7 @@ public class ToolBoxPanel extends JPanel {
         File directory = new File(directoryUri);
         for (File f : directory.listFiles()) {
             if (f.getName().endsWith(".groovy")) {
-                addScriptInTagModel(processManager.getProcess(f.toURI()), f.toURI(), iconName, iconName, iconName,
-                        TreeNodeWps.ERROR_ICON_NAME);
+                addScriptInTagModel(processManager.getProcess(f.toURI()), f.toURI(), null, null, null, null);
             }
         }
         refresh();
@@ -409,8 +408,7 @@ public class ToolBoxPanel extends JPanel {
         File directory = new File(directoryUri);
         for (File f : directory.listFiles()) {
             if (f.getName().endsWith(".groovy")) {
-                addScriptInTagModel(processManager.getProcess(f.toURI()), f.toURI(), customCloseIconName,
-                        customOpenIconName, customLeafIconName, customInvalidIconName);
+                addScriptInTagModel(processManager.getProcess(f.toURI()), f.toURI(), null, null, null, null);
             }
         }
         refresh();
@@ -445,10 +443,6 @@ public class ToolBoxPanel extends JPanel {
                 script.setUri(uri);
                 script.setValidNode(process != null);
                 script.setNodeType(TreeNodeWps.NodeType.PROCESS);
-                if(customCloseIconName != null && customOpenIconName != null &&
-                        customLeafIconName != null && customInvalidIconName != null){
-                    script.setCustomIcon(customCloseIconName, customOpenIconName, customLeafIconName, customInvalidIconName);
-                }
                 if(process != null){
                     script.setUserObject(process.getTitle());
                 }

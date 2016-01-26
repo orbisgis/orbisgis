@@ -91,9 +91,9 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
                 //The the process is invalid if it can't be parsed..
                 case PROCESS:
                     if (isValid) {
-                        return ToolBoxIcon.getIcon("script");
+                        return ToolBoxIcon.getIcon("process");
                     } else {
-                        return ToolBoxIcon.getIcon("script_invalid");
+                        return ToolBoxIcon.getIcon("process_invalid");
                     }
                     //Else return the error icon.
                 default:
@@ -135,9 +135,9 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
                     //The the process is invalid if it can't be parsed..
                 case PROCESS:
                     if (isValid) {
-                        return ToolBoxIcon.getIcon("script");
+                        return ToolBoxIcon.getIcon("process");
                     } else {
-                        return ToolBoxIcon.getIcon("script_invalid");
+                        return ToolBoxIcon.getIcon("process_invalid");
                     }
                     //Else return the error icon.
                 default:
@@ -179,9 +179,9 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
                     //The the process is invalid if it can't be parsed..
                 case PROCESS:
                     if (isValid) {
-                        return ToolBoxIcon.getIcon("script");
+                        return ToolBoxIcon.getIcon("process");
                     } else {
-                        return ToolBoxIcon.getIcon("script_invalid");
+                        return ToolBoxIcon.getIcon("process_invalid");
                     }
                     //Else return the error icon.
                 default:
