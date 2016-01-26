@@ -40,7 +40,7 @@ public interface Parser {
      * @param processId The process identifier.
      * @return Parsed DataDescription.
      */
-    Input parseInput(Field f, String processId);
+    Input parseInput(Field f, Object defaultValue, String processId);
 
     /**
      * Parse the given field as an output and returns the corresponding DataDescription.

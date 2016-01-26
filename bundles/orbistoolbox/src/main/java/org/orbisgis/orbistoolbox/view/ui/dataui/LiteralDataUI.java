@@ -63,7 +63,7 @@ public class LiteralDataUI implements DataUI {
         Map<URI, Object> uriDefaultValueMap = new HashMap<>();
         List<DescriptionType> descriptionTypeList = new ArrayList<>();
         DataDescription dataDescription = null;
-        URI identifier;
+        URI identifier = inputOrOutput.getIdentifier();
 
         //Gets the descriptionType list if the argument is an input
         if(inputOrOutput instanceof Input){
@@ -74,6 +74,7 @@ public class LiteralDataUI implements DataUI {
             else{
                 descriptionTypeList.add(input);
             }
+            dataDescription = input.getDataDescription();
         }
 
         //Gets the descriptionType list if the argument is an output
@@ -85,19 +86,17 @@ public class LiteralDataUI implements DataUI {
             else{
                 descriptionTypeList.add(output);
             }
+            dataDescription = output.getDataDescription();
         }
 
-        //Fill the map
-        for(DescriptionType dt : descriptionTypeList){
-            identifier = dt.getIdentifier();
-            if(dt instanceof Input){
-                dataDescription = ((Input) dt).getDataDescription();
+        if (dataDescription instanceof LiteralData) {
+            LiteralData literalData = (LiteralData)dataDescription;
+            //If the LiteralData already contains a Value, uses it, else, uses one of the LiteralDataDomain.
+            if(literalData.getValue().getData() instanceof Value){
+                uriDefaultValueMap.put(identifier, ((Value)literalData.getValue().getData()).getValue());
             }
-            else if(dt instanceof  Output){
-                dataDescription = ((Output) dt).getDataDescription();
-            }
-            //Find in the dataDescription the default LiteralDataDomain an retrieve its default value
-            if (dataDescription instanceof LiteralData) {
+            else{
+                //Find in the dataDescription the default LiteralDataDomain an retrieve its default value
                 for (LiteralDataDomain ldda : ((LiteralData) dataDescription).getLiteralDomainType()) {
                     if (ldda.isDefaultDomain()) {
                         //If the default value is a Range, get the minimum as default value
@@ -167,6 +166,8 @@ public class LiteralDataUI implements DataUI {
             comboBox.putClientProperty("dataField", dataField);
             comboBox.putClientProperty("uri", input.getIdentifier());
             comboBox.putClientProperty("dataMap", dataMap);
+            comboBox.putClientProperty("isOptional", input.getMinOccurs()==0);
+            comboBox.putClientProperty("toolTipText", input.getResume());
             comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onBoxChange", "source"));
             comboBox.setBackground(Color.WHITE);
 
@@ -191,24 +192,47 @@ public class LiteralDataUI implements DataUI {
         JComboBox comboBox = (JComboBox) source;
         Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty("dataMap");
         URI uri = (URI) comboBox.getClientProperty("uri");
+        boolean isOptional = (boolean)comboBox.getClientProperty("isOptional");
         String s = (String) comboBox.getSelectedItem();
         JComponent dataComponent;
         switch(DataType.valueOf(s.toUpperCase())){
             case BOOLEAN:
                 //Instantiate the component
-                dataComponent = new JComboBox<Boolean>();
-                ((JComboBox)dataComponent).addItem(Boolean.TRUE);
-                ((JComboBox)dataComponent).addItem(Boolean.FALSE);
-                dataComponent.setBackground(Color.WHITE);
+                dataComponent = new JPanel(new MigLayout());
+                JRadioButton falseButton = new JRadioButton("FALSE");
+                JRadioButton trueButton = new JRadioButton("TRUE");
+                ButtonGroup group = new ButtonGroup();
+                group.add(falseButton);
+                group.add(trueButton);
+                dataComponent.add(trueButton);
+                dataComponent.add(falseButton);
                 //Put the data type, the dataMap and the uri as properties
+                falseButton.putClientProperty("type", DataType.BOOLEAN);
+                falseButton.putClientProperty("dataMap",dataMap);
+                falseButton.putClientProperty("uri", uri);
+                falseButton.putClientProperty("boolean", false);
+                trueButton.putClientProperty("type", DataType.BOOLEAN);
+                trueButton.putClientProperty("dataMap",dataMap);
+                trueButton.putClientProperty("uri", uri);
+                trueButton.putClientProperty("boolean", true);
                 dataComponent.putClientProperty("type", DataType.BOOLEAN);
                 dataComponent.putClientProperty("dataMap",dataMap);
                 dataComponent.putClientProperty("uri", uri);
                 //Set the default value and adds the listener for saving the value set by the user
-                if(dataMap.get(uri).equals(Boolean.TRUE) || dataMap.get(uri).equals(Boolean.FALSE)){
-                    ((JComboBox)dataComponent).setSelectedItem(dataMap.get(uri));
+                if(dataMap.get(uri) != null){
+                    if((Boolean)dataMap.get(uri)){
+                        trueButton.setSelected(true);
+                    }
+                    else{
+                        falseButton.setSelected(true);
+                    }
                 }
-                ((JComboBox)dataComponent).addActionListener(EventHandler.create(
+                falseButton.addActionListener(EventHandler.create(
+                        ActionListener.class,
+                        this,
+                        "onDataChanged",
+                        "source"));
+                trueButton.addActionListener(EventHandler.create(
                         ActionListener.class,
                         this,
                         "onDataChanged",
@@ -375,10 +399,14 @@ public class LiteralDataUI implements DataUI {
                 textArea.setText("");
                 break;
         }
+        dataComponent.setToolTipText(comboBox.getClientProperty("toolTipText").toString());
         //Adds to the dataField the dataComponent
         JPanel panel = (JPanel) comboBox.getClientProperty("dataField");
         panel.removeAll();
         panel.add(dataComponent, "growx, wrap");
+        if(isOptional) {
+            dataMap.remove(uri);
+        }
     }
 
     /**
@@ -402,9 +430,12 @@ public class LiteralDataUI implements DataUI {
 
         Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
         URI uri = (URI) document.getProperty("uri");
-        dataMap.remove(uri);
         try {
-            dataMap.put(uri, document.getText(0, document.getLength()));
+            String text = document.getText(0, document.getLength());
+            if(text.isEmpty()){
+                text = null;
+            }
+            dataMap.put(uri, text);
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(LiteralDataUI.class).error(e.getMessage());
             dataMap.put(uri, "");
@@ -421,9 +452,7 @@ public class LiteralDataUI implements DataUI {
 
         switch((DataType)((JComponent)source).getClientProperty("type")){
             case BOOLEAN:
-                JComboBox<Boolean> comboBox = (JComboBox<Boolean>)source;
-                dataMap.remove(uri);
-                dataMap.put(uri, comboBox.getSelectedItem());
+                dataMap.put(uri, ((JComponent)source).getClientProperty("boolean"));
                 break;
             case BYTE:
             case INTEGER:
@@ -433,7 +462,6 @@ public class LiteralDataUI implements DataUI {
             case DOUBLE:
             case FLOAT:
                 JSpinner spinner = (JSpinner)source;
-                dataMap.remove(uri);
                 dataMap.put(uri, spinner.getValue());
                 break;
         }

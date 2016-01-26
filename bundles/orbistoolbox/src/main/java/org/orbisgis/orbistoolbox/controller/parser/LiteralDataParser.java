@@ -19,6 +19,7 @@
 
 package org.orbisgis.orbistoolbox.controller.parser;
 
+import org.orbisgis.commons.collections.twoqueue.DoubleQueueValue;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolboxapi.annotations.model.*;
 import org.slf4j.LoggerFactory;
@@ -32,8 +33,8 @@ import java.net.URI;
 
 public class LiteralDataParser implements Parser {
     @Override
-    public Input parseInput(Field f, String processId) {
-        DataDescription data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
+    public Input parseInput(Field f, Object defaultValue, String processId) {
+        LiteralData data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
 
         try {
             //Instantiate the returned input
@@ -46,31 +47,58 @@ public class LiteralDataParser implements Parser {
 
             //Get the type of the field to use it as the input type
             if(f.getType().equals(Integer.class)){
-                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.INTEGER);
+                if(defaultValue != null && data != null) {
+                    data.setValue(new LiteralValue(new Value<>((Integer) defaultValue)));
+                }
+                data.getValue().setDataType(DataType.INTEGER);
             }
             else if(f.getType().equals(Double.class)){
-                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.DOUBLE);
+                if(defaultValue != null && data != null) {
+                    data.setValue(new LiteralValue(new Value<>((Double) defaultValue)));
+                }
+                data.getValue().setDataType(DataType.DOUBLE);
             }
             else if(f.getType().equals(String.class)){
-                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.STRING);
+                if(defaultValue != null && data != null) {
+                    data.setValue(new LiteralValue(new Value<>((String) defaultValue)));
+                }
+                data.getValue().setDataType(DataType.STRING);
             }
             else if(f.getType().equals(Boolean.class)){
-                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.BOOLEAN);
+                if(defaultValue != null && data != null) {
+                    data.setValue(new LiteralValue(new Value<>((Boolean) defaultValue)));
+                }
+                data.getValue().setDataType(DataType.BOOLEAN);
             }
             else if(f.getType().equals(Byte.class)){
-                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.BYTE);
+                if(defaultValue != null && data != null) {
+                    data.setValue(new LiteralValue(new Value<>((Byte) defaultValue)));
+                }
+                data.getValue().setDataType(DataType.BYTE);
             }
             else if(f.getType().equals(Float.class)){
-                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.FLOAT);
+                if(defaultValue != null && data != null) {
+                    data.setValue(new LiteralValue(new Value<>((Float) defaultValue)));
+                }
+                data.getValue().setDataType(DataType.FLOAT);
             }
             else if(f.getType().equals(Long.class)){
-                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.LONG);
+                if(defaultValue != null && data != null) {
+                    data.setValue(new LiteralValue(new Value<>((Long) defaultValue)));
+                }
+                data.getValue().setDataType(DataType.LONG);
             }
             else if(f.getType().equals(Short.class)){
-                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.SHORT);
+                if(defaultValue != null && data != null) {
+                    data.setValue(new LiteralValue(new Value<>((Short) defaultValue)));
+                }
+                data.getValue().setDataType(DataType.SHORT);
             }
             else if(f.getType().equals(Character.class)){
-                ((LiteralData)input.getDataDescription()).getValue().setDataType(DataType.UNSIGNED_BYTE);
+                if(defaultValue != null && data != null) {
+                    data.setValue(new LiteralValue(new Value<>((Character) defaultValue)));
+                }
+                data.getValue().setDataType(DataType.UNSIGNED_BYTE);
             }
 
             return input;

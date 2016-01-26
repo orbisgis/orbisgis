@@ -35,6 +35,8 @@ import java.lang.annotation.RetentionPolicy
     boolean isEditable() default false
     /** List of possible values.*/
     String[] values()
+    /** Displayable name of the values. If not specified, use the values as name. */
+    String[] names() default []
     /** Default selected values, can be empty.*/
     String[] defaultValues() default []
 }

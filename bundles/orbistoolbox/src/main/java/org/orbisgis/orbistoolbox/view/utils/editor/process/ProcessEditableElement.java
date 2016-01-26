@@ -41,6 +41,7 @@ import java.util.List;
 public class ProcessEditableElement implements EditableElement{
     public static final String STATE_PROPERTY = "STATE_PROPERTY";
     public static final String LOG_PROPERTY = "LOG_PROPERTY";
+    public static final String CANCEL = "CANCEL";
     private Process process;
     private boolean isOpen;
 
@@ -198,22 +199,12 @@ public class ProcessEditableElement implements EditableElement{
         }
     }
 
-    public enum ProcessState{
-        RUNNING("Running"),
-        COMPLETED("Completed"),
-        ERROR("Error"),
-        IDLE("Idle");
-
-        private String value;
-
-        ProcessState(String value){
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
+    public void setDefaultInputValues(Map<URI,Object> defaultInputValues) {
+        for(Map.Entry<URI, Object> entry : defaultInputValues.entrySet()){
+            inputDataMap.put(entry.getKey(), entry.getValue());
         }
     }
 
+    public enum ProcessState{RUNNING, COMPLETED, ERROR, IDLE, WAITING}
     public enum LogType{INFO, WARN, ERROR}
 }
