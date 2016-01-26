@@ -128,11 +128,12 @@ public class FieldValueUI implements DataUI{
         //If the DataField related to the FieldValue has been modified, reload the dataField values
         if(fieldValue.isDataFieldModified()) {
             fieldValue.setDataFieldModified(false);
-            String tableName = dataMap.get(fieldValue.getDataStoreIdentifier()).toString();
+            String tableName = ((URI)dataMap.get(fieldValue.getDataStoreIdentifier())).getSchemeSpecificPart();
             String fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
             DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
             model.removeAllElements();
             List<String> listFields = ToolBox.getFieldValueList(tableName, fieldName);
+            Collections.sort(listFields);
             for (String field : listFields) {
                 model.addElement(field);
             }
@@ -164,18 +165,20 @@ public class FieldValueUI implements DataUI{
 
     public void onListSelection(Object source){
         JList list = (JList)source;
+        URI uri = (URI)list.getClientProperty("uri");
+        HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
         List<String> listValues = new ArrayList<>();
 
         if(list.getSelectedIndices().length == 0){
             listValues = null;
+            dataMap.put(uri, null);
+            return;
         }
         else {
             for (int i : list.getSelectedIndices()) {
                 listValues.add(list.getModel().getElementAt(i).toString());
             }
         }
-        URI uri = (URI)list.getClientProperty("uri");
-        HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
-        dataMap.put(uri, listValues);
+        dataMap.put(uri, listValues.toArray(new String[listValues.size()]));
     }
 }

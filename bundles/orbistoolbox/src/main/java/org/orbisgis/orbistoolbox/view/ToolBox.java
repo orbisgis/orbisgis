@@ -204,7 +204,15 @@ public class ToolBox implements DockingPanel  {
     private void setScriptFolder(){
         //Sets the WPS script folder
         File wpsScriptFolder = new File(coreWorkspace.getApplicationFolder(), WPS_SCRIPT_FOLDER);
-        if(!wpsScriptFolder.exists()){
+        //Empty the script folder or create it
+        if(wpsScriptFolder.exists()){
+            if(wpsScriptFolder.listFiles() != null) {
+                for (File f : wpsScriptFolder.listFiles()) {
+                    f.delete();
+                }
+            }
+        }
+        else{
             if(!wpsScriptFolder.mkdir()){
                 LoggerFactory.getLogger(ToolBox.class).warn("Unable to find or create a script folder.\n" +
                         "No basic script will be available.");

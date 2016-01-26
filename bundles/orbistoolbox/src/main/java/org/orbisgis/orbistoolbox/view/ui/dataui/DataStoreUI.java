@@ -293,6 +293,7 @@ public class DataStoreUI implements DataUI{
                     new MouseEvent(comboBox,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
         }
         DataStore dataStore = (DataStore)comboBox.getClientProperty("dataStore");
+        Object selectedItem = comboBox.getSelectedItem();
         if(dataStore.isSpatial()) {
             comboBox.removeAllItems();
             for(String s : ToolBox.getGeocatalogTableList(true).toArray(new String[]{})){
@@ -304,6 +305,9 @@ public class DataStoreUI implements DataUI{
             for(String s : ToolBox.getGeocatalogTableList(false).toArray(new String[]{})){
                 comboBox.addItem(s);
             }
+        }
+        if(selectedItem != null){
+            comboBox.setSelectedItem(selectedItem);
         }
     }
 
