@@ -41,7 +41,7 @@ import java.util.List;
 public class DataStoreParser implements Parser{
 
     @Override
-    public Input parseInput(Field f, String processId) {
+    public Input parseInput(Field f, Object defaultValue, String processId) {
         //Instantiate the DataStore and its formats
         DataStoreAttribute dataStoreAttribute = f.getAnnotation(DataStoreAttribute.class);
         List<Format> formatList;

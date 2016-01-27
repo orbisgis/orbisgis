@@ -36,7 +36,7 @@ import java.net.URI;
 public class FieldValueParser implements Parser {
 
     @Override
-    public Input parseInput(Field f, String processId) {
+    public Input parseInput(Field f, Object defaultValue, String processId) {
         //Instantiate the FieldValue object
         FieldValueAttribute fieldValueAttribute = f.getAnnotation(FieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);

@@ -20,12 +20,16 @@
 package org.orbisgis.orbistoolbox.view;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
+import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.orbistoolbox.controller.ProcessManager;
+import org.orbisgis.orbistoolbox.model.DataType;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
@@ -35,7 +39,6 @@ import org.orbisgis.orbistoolbox.view.utils.editor.log.LogEditableElement;
 import org.orbisgis.orbistoolbox.view.utils.editor.log.LogEditor;
 import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditor;
-import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
@@ -43,6 +46,7 @@ import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.osgi.framework.FrameworkUtil;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
@@ -51,13 +55,12 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Start point of the OrbisToolBox.
@@ -66,12 +69,17 @@ import java.util.Map;
  * @author Sylvain PALOMINOS
  **/
 
-@Component(service = DockingPanel.class)
-public class ToolBox implements DockingPanel {
+@Component
+public class ToolBox implements DockingPanel  {
     /** String of the Groovy file extension. */
     public static final String GROOVY_EXTENSION = "groovy";
     /** String reference of the ToolBox used for DockingFrame. */
     public static final String TOOLBOX_REFERENCE = "orbistoolbox";
+    private static final String WPS_SCRIPT_FOLDER = "Scripts";
+    private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
+    private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
+    private static final String SETTINGS_TABLE = "SETTINGS";
+    private static boolean areScriptsCopied = false;
 
     /** Docking parameters used by DockingFrames. */
     private DockingPanelParameters parameters;
@@ -83,8 +91,8 @@ public class ToolBox implements DockingPanel {
     private DataUIManager dataUIManager;
     /** Map containing the properties to apply for the Grovvy script execution. */
     private Map<String, Object> properties;
-    /** Factory for the creation of the ProcessEditor (UI of a process instance) */
     private DataProcessingManager dataProcessingManager;
+    private CoreWorkspace coreWorkspace;
 
     /** EditableElement associated to the logEditor. */
     private LogEditableElement lee;
@@ -95,10 +103,18 @@ public class ToolBox implements DockingPanel {
 
     /** OrbigGIS DockingManager. */
     private DockingManager dockingManager;
+    /** OrbigGIS ExecutorService. */
+    private ExecutorService executorService;
     /** OrbisGIS DataManager. */
     private static DataManager dataManager;
     /** OrbisGIS DriverFunctionContainer. */
     private static DriverFunctionContainer driverFunctionContainer;
+
+    /** ToolBox properties */
+    private Properties tbProperties;
+    /** List of process ended, waiting the 5 seconds before being removed.*/
+    boolean multiThreaded = true;
+    private Boolean isH2;
 
     @Activate
     public void init(){
@@ -107,7 +123,7 @@ public class ToolBox implements DockingPanel {
         dataUIManager = new DataUIManager(this);
 
         parameters = new DockingPanelParameters();
-        parameters.setTitle("OrbisToolBox");
+        parameters.setTitle("ToolBox");
         parameters.setTitleIcon(ToolBoxIcon.getIcon("orbistoolbox"));
         parameters.setCloseable(true);
         parameters.setName(TOOLBOX_REFERENCE);
@@ -120,6 +136,126 @@ public class ToolBox implements DockingPanel {
         openEditorList = new ArrayList<>();
         lee = new LogEditableElement();
         le = null;
+
+        if(!areScriptsCopied) {
+            setScriptFolder();
+        }
+        // Try to load previous state of the toolBox.
+        tbProperties = new Properties();
+        File propertiesFile = new File(coreWorkspace.getApplicationFolder() + File.separator + TOOLBOX_PROPERTIES);
+        if (propertiesFile.exists()) {
+            try {
+                tbProperties.load(new FileInputStream(propertiesFile));
+            } catch (IOException e) {
+                LoggerFactory.getLogger(ToolBox.class).warn("Unable to restore previous configuration of the ToolBox");
+                tbProperties = null;
+            }
+        }
+        if(tbProperties != null){
+            Object prop = tbProperties.getProperty(PROPERTY_SOURCES);
+            if(prop != null && !prop.toString().isEmpty()){
+                String str = prop.toString();
+                for(String s : str.split(";")){
+                    addLocalSource(URI.create(s));
+                }
+            }
+        }
+        //Find if the database used is H2 or not.
+        //If yes, make all the processes wait for the previous one.
+        try {
+            if(dataManager != null && isH2()){
+                Connection connection = dataManager.getDataSource().getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MVCC';");
+                result.next();
+                if(!result.getString(1).equals("TRUE")){
+                    multiThreaded = false;
+                }
+                result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MULTI_THREADED';");
+                result.next();
+                if(!result.getString(1).equals("1")){
+                    multiThreaded = false;
+                }
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+            multiThreaded = false;
+        }
+        if(!multiThreaded){
+            LoggerFactory.getLogger(ToolBox.class).warn("Warning, because of the H2 configuration," +
+                    " the toolbox won't be able to run more than one process at the same time.\n" +
+                    "Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000; MULTI_THREADED=TRUE'");
+        }
+    }
+
+    private boolean isH2() {
+        if(isH2 == null) {
+            try(Connection connection = dataManager.getDataSource().getConnection()) {
+                isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            } catch (SQLException ex) {
+                LoggerFactory.getLogger(ToolBox.class).error(ex.getLocalizedMessage(), ex);
+                return false;
+            }
+        }
+        return isH2;
+    }
+
+    /**
+     * Sets all the default OrbisGIS WPS script into the script folder of the .OrbisGIS folder.
+     */
+    private void setScriptFolder(){
+        //Sets the WPS script folder
+        File wpsScriptFolder = new File(coreWorkspace.getApplicationFolder(), WPS_SCRIPT_FOLDER);
+        //Empty the script folder or create it
+        if(wpsScriptFolder.exists()){
+            if(wpsScriptFolder.listFiles() != null) {
+                for (File f : wpsScriptFolder.listFiles()) {
+                    f.delete();
+                }
+            }
+        }
+        else{
+            if(!wpsScriptFolder.mkdir()){
+                LoggerFactory.getLogger(ToolBox.class).warn("Unable to find or create a script folder.\n" +
+                        "No basic script will be available.");
+            }
+        }
+        if(wpsScriptFolder.exists() && wpsScriptFolder.isDirectory()){
+            try {
+                //Retrieve all the scripts url
+                String folderPath = ToolBox.class.getResource("scripts").getFile();
+                Enumeration<URL> enumUrl = FrameworkUtil.getBundle(ToolBox.class).findEntries(folderPath, "*", false);
+                //For each url
+                while(enumUrl.hasMoreElements()){
+                    URL scriptUrl = enumUrl.nextElement();
+                    String scriptPath = scriptUrl.getFile();
+                    //Test if it's a groovy file
+                    if(scriptPath.endsWith("."+GROOVY_EXTENSION)){
+                        //If the script is already in the .OrbisGIS folder, remove it.
+                        for(File existingFile : wpsScriptFolder.listFiles()){
+                            if(existingFile.getName().endsWith(scriptPath) && existingFile.delete()){
+                                LoggerFactory.getLogger(ToolBox.class).
+                                        warn("Replacing script "+existingFile.getName()+" by the default one");
+                            }
+                        }
+                        //Copy the script into the .OrbisGIS folder.
+                        OutputStream out = new FileOutputStream(
+                                new File(wpsScriptFolder.getAbsolutePath(),
+                                        new File(scriptPath).getName()));
+                        InputStream in = scriptUrl.openStream();
+                        IOUtils.copy(in, out);
+                        out.close();
+                        in.close();
+                    }
+                }
+            } catch (IOException e) {
+                LoggerFactory.getLogger(ToolBox.class).warn("Unable to copy the scripts. \n" +
+                        "No basic script will be available. \n" +
+                        "Error : "+e.getMessage());
+            }
+        }
+        areScriptsCopied = true;
+        addLocalSource(wpsScriptFolder.toURI(), "orbisgis");
     }
 
     @Deactivate
@@ -130,6 +266,20 @@ public class ToolBox implements DockingPanel {
         }
         openEditorList = new ArrayList<>();
         toolBoxPanel.dispose();
+        areScriptsCopied = false;
+
+        //Try to save the local files loaded.
+        try {
+            if (tbProperties == null) {
+                tbProperties = new Properties();
+            }
+            tbProperties.setProperty(PROPERTY_SOURCES, toolBoxPanel.getListLocalSourcesAsString());
+            tbProperties.store(
+                    new FileOutputStream(coreWorkspace.getApplicationFolder() + File.separator + TOOLBOX_PROPERTIES),
+                    "Save of the OrbisGIS toolBox");
+        } catch (IOException e) {
+            LoggerFactory.getLogger(ToolBox.class).warn("Unable to save ToolBox state.");
+        }
     }
 
     /**
@@ -181,26 +331,51 @@ public class ToolBox implements DockingPanel {
         OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBox.AddSource", "Add a source");
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFolderPanel)){
-            addLocalSource(openFolderPanel.getSelectedFile());
+            addLocalSource(openFolderPanel.getSelectedFile().toURI());
         }
     }
 
     /**
      * Adds a folder as a local script source.
-     * @param file Folder where the script are located.
+     * @param uri Folder URI where the script are located.
      */
-    public void addLocalSource(File file){
-        processManager.addLocalSource(file.getAbsolutePath());
-        toolBoxPanel.addLocalSource(file, processManager);
+    public void addLocalSource(URI uri){
+        processManager.addLocalSource(uri);
+        toolBoxPanel.addLocalSource(uri, processManager);
+    }
+
+    /**
+     * Adds a folder as a local script source.
+     * @param uri Folder URI where the script are located.
+     * @param iconName Name of the icon to use for this node.
+     */
+    public void addLocalSource(URI uri, String iconName){
+        processManager.addLocalSource(uri);
+        toolBoxPanel.addLocalSource(uri, processManager, iconName);
+    }
+
+    /**
+     * Adds a folder as a local script source.
+     * @param uri Folder URI where the script are located.
+     * @param customCloseIconName Name of the icon to use for this node when it is closed.
+     * @param customOpenIconName Name of the icon to use for this node when it is open.
+     * @param customLeafIconName Name of the icon to use for this node when it is a leaf.
+     * @param customInvalidIconName Name of the icon to use for this node when it is not valid.
+     */
+    public void addLocalSource(URI uri, String customCloseIconName, String customOpenIconName, String customLeafIconName,
+                               String customInvalidIconName){
+        processManager.addLocalSource(uri);
+        toolBoxPanel.addLocalSource(uri, processManager, customCloseIconName, customOpenIconName, customLeafIconName,
+                customInvalidIconName);
     }
 
     /**
      * Open the process window for the selected process.
-     * @param scriptFile Script file to execute as a process.
+     * @param scriptUri Script URI to execute as a process.
      * @return The ProcessEditableElement which contains the running process information (log, state, ...).
      */
-    public ProcessEditableElement openProcess(File scriptFile){
-        Process process = processManager.getProcess(scriptFile);
+    public ProcessEditableElement openProcess(URI scriptUri){
+        Process process = processManager.getProcess(scriptUri);
         ProcessEditableElement pee = new ProcessEditableElement(process);
         ProcessEditor pe = new ProcessEditor(this, pee);
         //Find if there is already a ProcessEditor open with the same process.
@@ -241,23 +416,24 @@ public class ToolBox implements DockingPanel {
 
     /**
      * Verify if the given file is a well formed script.
-     * @param f File to check.
+     * @param uri URI to check.
      * @return True if the file is well formed, false otherwise.
      */
-    public boolean checkProcess(File f){
-        Process process = processManager.getProcess(f);
+    public boolean checkProcess(URI uri){
+        Process process = processManager.getProcess(uri);
         if(process != null){
             processManager.removeProcess(process);
         }
-        return (processManager.addLocalScript(f) != null);
+        return (processManager.addLocalScript(uri) != null);
     }
 
     /**
      * Verify if the given file is a well formed script.
-     * @param f File to check.
+     * @param uri URI to check.
      * @return True if the file is well formed, false otherwise.
      */
-    public boolean checkFolder(File f){
+    public boolean checkFolder(URI uri){
+        File f = new File(uri);
         if(f.exists() && f.isDirectory()){
             for(File file : f.listFiles()){
                 if(file.getAbsolutePath().endsWith("."+GROOVY_EXTENSION)){
@@ -271,8 +447,8 @@ public class ToolBox implements DockingPanel {
     /**
      * Remove the selected process in the tree.
      */
-    public void removeProcess(File file){
-        processManager.removeProcess(processManager.getProcess(file));
+    public void removeProcess(URI uri){
+        processManager.removeProcess(processManager.getProcess(uri));
     }
 
     /**
@@ -301,6 +477,15 @@ public class ToolBox implements DockingPanel {
     }
 
     @Reference
+    public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
+        this.coreWorkspace = coreWorkspace;
+    }
+
+    public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
+        this.coreWorkspace = null;
+    }
+
+    @Reference
     public void setDataManager(DataManager dataManager) {
         ToolBox.dataManager = dataManager;
     }
@@ -311,6 +496,19 @@ public class ToolBox implements DockingPanel {
 
     public DataManager getDataManager(){
         return dataManager;
+    }
+
+    @Reference
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
+    public void unsetExecutorService(ExecutorService executorService) {
+        this.executorService = null;
+    }
+
+    public ExecutorService getExecutorService(){
+        return executorService;
     }
 
     @Reference
@@ -422,20 +620,19 @@ public class ToolBox implements DockingPanel {
     /**
      * Return the list of the field of a table.
      * @param tableName Name of the table.
-     * @param fieldTypes Type of the field accepted. If empty, accepts all the field.
+     * @param dataTypes Type of the field accepted. If empty, accepts all the field.
      * @return The list of the field name.
      */
-    public static List<String> getTableFieldList(String tableName, List<FieldType> fieldTypes){
+    public static List<String> getTableFieldList(String tableName, List<DataType> dataTypes){
         List<String> fieldList = new ArrayList<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();
             DatabaseMetaData dmd = connection.getMetaData();
             ResultSet result = dmd.getColumns(connection.getCatalog(), null, tableName, "%");
-            //TODO : replace the value 3, 4 ... with constants taking into account the database used (H2, postgres ...).
             while(result.next()){
-                if (!fieldTypes.isEmpty()) {
-                    for (FieldType fieldType : fieldTypes) {
-                        if (fieldType.name().equalsIgnoreCase(result.getObject(6).toString())) {
+                if (!dataTypes.isEmpty()) {
+                    for (DataType dataType : dataTypes) {
+                        if (DataType.testHDBype(dataType, result.getObject(6).toString())) {
                             fieldList.add(result.getObject(4).toString());
                         }
                     }
@@ -451,19 +648,30 @@ public class ToolBox implements DockingPanel {
 
     /**
      * Loads the given file into the geocatalog and return its table name.
-     * @param f File to load.
+     * @param uri URI to load.
      * @return Table name of the loaded file. Returns null if the file can't be loaded.
      */
-    public String loadFile(File f) {
+    public String loadURI(URI uri) {
         try {
+            File f = new File(uri);
+            if(f.isDirectory()){
+                return null;
+            }
             //Get the table name of the file
             String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), true);
             String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
             //Find the corresponding driver and load the file
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
-            DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
-                    extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-            driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+            if(extension.equalsIgnoreCase("csv")){
+                Connection connection = dataManager.getDataSource().getConnection();
+                Statement statement = connection.createStatement();
+                statement.execute("CREATE TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
+            }
+            else {
+                DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
+                        extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+                driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+            }
             return tableName;
         } catch (SQLException|IOException e) {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
@@ -473,11 +681,12 @@ public class ToolBox implements DockingPanel {
 
     /**
      * Save a geocatalog table into a file.
-     * @param f File where the table will be saved.
+     * @param uri URI where the table will be saved.
      * @param tableName Name of the table to save.
      */
-    public void saveFile(File f, String tableName){
+    public void saveURI(URI uri, String tableName){
         try {
+            File f = new File(uri);
             //Find the good driver and save the file.
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
             DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(

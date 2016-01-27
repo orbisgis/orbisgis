@@ -36,7 +36,7 @@ public class DataField extends ComplexData{
     /** Indicates if the DataField should be reloaded because of a modification of the parent DataStore.*/
     private boolean isSourceModified = false;
     /** List of type accepted for the field.*/
-    private List<FieldType> fieldTypeList;
+    private List<DataType> fieldTypeList;
     /** List of FieldValue liked to the DataField */
     private List<FieldValue> listFieldValue;
 
@@ -47,7 +47,7 @@ public class DataField extends ComplexData{
      * @param dataStoreURI Identifier of the parent dataStore.
      * @throws MalformedScriptException
      */
-    public DataField(Format format, List<FieldType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
+    public DataField(Format format, List<DataType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
         super(format);
         listFieldValue = new ArrayList<>();
         this.fieldTypeList = fieldTypeList;
@@ -85,7 +85,7 @@ public class DataField extends ComplexData{
      * Returns the list of valid type for the field.
      * @return List of valie FieldType.
      */
-    public List<FieldType> getFieldTypeList() {
+    public List<DataType> getFieldTypeList() {
         return fieldTypeList;
     }
 

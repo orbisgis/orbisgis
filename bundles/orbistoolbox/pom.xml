@@ -96,6 +96,11 @@
             <artifactId>dbjobs</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>wkgui-api</artifactId>
+            <version>5.1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <properties>

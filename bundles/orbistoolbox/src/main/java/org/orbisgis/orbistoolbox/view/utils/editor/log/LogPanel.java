@@ -43,6 +43,7 @@ public class LogPanel extends JPanel {
     private JLabel icon;
     /** Running time of the process. */
     private JLabel time;
+    private JButton stopButton;
     /** Time in milliseconds when the process has started. */
     private long startTime;
     /** Timer of 1 second used to refresh the process running time. */
@@ -56,17 +57,27 @@ public class LogPanel extends JPanel {
      * Main Constructor.
      * @param processName Name of the running process.
      */
-    public LogPanel(String processName){
+    public LogPanel(String processName, LogEditor logEditor){
         startTime = System.currentTimeMillis();
         running = true;
         //Build the UI
         this.setLayout(new MigLayout("fill"));
+        JPanel rightPanel = new JPanel(new MigLayout("fill"));
         icon = new JLabel();
-        this.add(icon);
+        rightPanel.add(icon);
         JLabel processLabel = new JLabel(processName);
-        this.add(processLabel);
+        rightPanel.add(processLabel);
+        this.add(rightPanel, "alignx left");
+        JPanel leftPanel = new JPanel(new MigLayout("fill"));
         time = new JLabel();
-        this.add(time, "wrap, alignx right");
+        leftPanel.add(time);
+        stopButton = new JButton(ToolBoxIcon.getIcon("stop"));
+        stopButton.setBorderPainted(false);
+        stopButton.setContentAreaFilled(false);
+        stopButton.putClientProperty("logPanel", this);
+        stopButton.addActionListener(EventHandler.create(ActionListener.class, logEditor, "cancelProcess", ""));
+        leftPanel.add(stopButton);
+        this.add(leftPanel, "wrap, alignx right");
         setTime();
         logArea = new JTextArea();
         logArea.setRows(3);
@@ -106,13 +117,13 @@ public class LogPanel extends JPanel {
     public void setState(ProcessEditableElement.ProcessState state){
         switch(state){
             case COMPLETED:
-                icon = new JLabel(ToolBoxIcon.getIcon("process_completed"));
+                icon.setIcon(ToolBoxIcon.getIcon("process"));
                 break;
             case ERROR:
-                icon = new JLabel(ToolBoxIcon.getIcon("process_error"));
+                icon.setIcon(ToolBoxIcon.getIcon("process_error"));
                 break;
             case RUNNING:
-                icon = new JLabel(ToolBoxIcon.getIcon("process_running"));
+                icon.setIcon(ToolBoxIcon.getIcon("process_running"));
                 break;
         }
     }

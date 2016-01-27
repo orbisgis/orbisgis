@@ -24,6 +24,7 @@ import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Enumeration;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
+import org.orbisgis.sif.common.ContainerItem;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
@@ -70,19 +71,20 @@ public class EnumerationUI implements DataUI{
         if(enumeration == null){
             return panel;
         }
-        //Adds the text label to the panel
-        if(inputOrOutput.getResume().isEmpty()){
-            panel.add(new JLabel(inputOrOutput.getTitle()), "growx, wrap");
-        }
-        else {
-            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "growx, wrap");
-        }
         //Build the JList containing the data
-        DefaultListModel<String> model = new DefaultListModel<>();
-        for(String element : enumeration.getValues()){
-            model.addElement(element);
+        DefaultListModel<ContainerItem<String>> model = new DefaultListModel<>();
+        if(enumeration.getValuesNames().length > 0 &&
+                enumeration.getValuesNames().length == enumeration.getValues().length){
+            for(int i=0; i<enumeration.getValues().length; i++){
+                model.addElement(new ContainerItem<>(enumeration.getValues()[i], enumeration.getValuesNames()[i]));
+            }
         }
-        JList<String> list = new JList<>(model);
+        else{
+            for(String element : enumeration.getValues()){
+                model.addElement(new ContainerItem<>(element, element));
+            }
+        }
+        JList<ContainerItem<String>> list = new JList<>(model);
         if(enumeration.isMultiSelection()){
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         }
@@ -93,7 +95,11 @@ public class EnumerationUI implements DataUI{
         List<Integer> selectedIndex = new ArrayList<>();
         if(!isOptional) {
             for (String defaultValue : enumeration.getDefaultValues()) {
-                selectedIndex.add(model.indexOf(defaultValue));
+                for(int i=0; i<model.getSize(); i++){
+                    if(model.get(i).getKey().equals(defaultValue)){
+                        selectedIndex.add(i);
+                    }
+                }
             }
         }
         int[] array = new int[selectedIndex.size()];
@@ -117,6 +123,7 @@ public class EnumerationUI implements DataUI{
         list.putClientProperty("isOptional", isOptional);
         list.putClientProperty("isMultiSelection", enumeration.isMultiSelection());
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
+        list.setToolTipText(inputOrOutput.getResume());
 
         //case of the editable value
         if(enumeration.isEditable()){
@@ -131,11 +138,11 @@ public class EnumerationUI implements DataUI{
                     this,
                     "saveDocumentTextFile",
                     "document"));
+            textField.setToolTipText("Coma separated custom value(s)");
 
             panel.add(textField, "growx, wrap");
             list.putClientProperty("textField", textField);
         }
-        list.setSelectedIndices(new int[]{0});
         return panel;
     }
 
@@ -143,13 +150,28 @@ public class EnumerationUI implements DataUI{
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         Map<URI, Object> map = new HashMap<>();
         Enumeration enumeration = null;
+        boolean isOptional = false;
         if(inputOrOutput instanceof Input){
             enumeration = (Enumeration)((Input)inputOrOutput).getDataDescription();
+            isOptional = ((Input)inputOrOutput).getMinOccurs()==0;
         }
         else if(inputOrOutput instanceof Output){
             enumeration = (Enumeration)((Output)inputOrOutput).getDataDescription();
         }
-        map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues());
+        if(!isOptional) {
+            if(enumeration.getDefaultValues().length != 0) {
+                if (enumeration.isMultiSelection()) {
+                    map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues());
+                } else {
+                    map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues()[0]);
+                }
+            }
+            else{
+                if(enumeration.getValues().length != 0) {
+                    map.put(inputOrOutput.getIdentifier(), enumeration.getValues()[0]);
+                }
+            }
+        }
         return map;
     }
 
@@ -159,7 +181,7 @@ public class EnumerationUI implements DataUI{
     }
 
     public void onListSelection(Object source){
-        JList list = (JList)source;
+        JList<ContainerItem<String>> list = (JList<ContainerItem<String>>)source;
         List<String> listValues = new ArrayList<>();
         URI uri = (URI) list.getClientProperty("uri");
         HashMap<URI, Object> dataMap = (HashMap) list.getClientProperty("dataMap");
@@ -179,7 +201,7 @@ public class EnumerationUI implements DataUI{
         }
         //Add the selected JList values
         for (int i : list.getSelectedIndices()) {
-            listValues.add(list.getModel().getElementAt(i).toString());
+            listValues.add(list.getModel().getElementAt(i).getKey());
         }
         //if no values are selected, put null is isOptional, or select the first value if not
         if(listValues.isEmpty()){
@@ -204,7 +226,7 @@ public class EnumerationUI implements DataUI{
         try {
             Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
             URI uri = (URI)document.getProperty("uri");
-            JList list = (JList<String>) document.getProperty("list");
+            JList<ContainerItem<String>> list = (JList<ContainerItem<String>>) document.getProperty("list");
             boolean isMultiSelection = (boolean)document.getProperty("isMultiSelection");
             boolean isOptional = (boolean)document.getProperty("isOptional");
             String text = document.getText(0, document.getLength());
@@ -228,10 +250,10 @@ public class EnumerationUI implements DataUI{
                     Collections.addAll(listValues, text.split(","));
                 }
                 for (int i : list.getSelectedIndices()) {
-                    listValues.add(list.getModel().getElementAt(i).toString());
+                    listValues.add(list.getModel().getElementAt(i).getKey());
                 }
-                dataMap.put(uri, listValues);
             }
+            dataMap.put(uri, listValues);
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
         }

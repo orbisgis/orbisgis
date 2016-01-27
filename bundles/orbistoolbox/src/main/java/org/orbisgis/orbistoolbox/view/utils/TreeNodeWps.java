@@ -42,6 +42,11 @@ import java.net.URI;
 
 public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCustomIcon {
 
+    /** Max length in character of the user object. */
+    private static final int MAX_USEROBJECT_LENGTH = 30;
+    /** Error icon name. */
+    public static final String ERROR_ICON_NAME = "error";
+
     /** Type of the node. */
     private NodeType nodeType = NodeType.FOLDER;
     /** File or folder name associated to the node. */
@@ -82,13 +87,13 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
                     }
                     //If the folder is a leaf, it mean that it doesn't contain any script, so it is invalid.
                 case FOLDER:
-                    return ToolBoxIcon.getIcon("folder_invalid");
+                    return ToolBoxIcon.getIcon("folder_closed");
                 //The the process is invalid if it can't be parsed..
                 case PROCESS:
                     if (isValid) {
-                        return ToolBoxIcon.getIcon("script");
+                        return ToolBoxIcon.getIcon("process");
                     } else {
-                        return ToolBoxIcon.getIcon("script_invalid");
+                        return ToolBoxIcon.getIcon("process_invalid");
                     }
                     //Else return the error icon.
                 default:
@@ -123,16 +128,16 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
                     //The folder can be invalid if no valid script are found inside.
                 case FOLDER:
                     if (isValid) {
-                        return ToolBoxIcon.getIcon("folder");
+                        return ToolBoxIcon.getIcon("folder_closed");
                     } else {
-                        return ToolBoxIcon.getIcon("folder_invalid");
+                        return ToolBoxIcon.getIcon("folder_closed");
                     }
                     //The the process is invalid if it can't be parsed..
                 case PROCESS:
                     if (isValid) {
-                        return ToolBoxIcon.getIcon("script");
+                        return ToolBoxIcon.getIcon("process");
                     } else {
-                        return ToolBoxIcon.getIcon("script_invalid");
+                        return ToolBoxIcon.getIcon("process_invalid");
                     }
                     //Else return the error icon.
                 default:
@@ -169,14 +174,14 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
                     if (isValid) {
                         return ToolBoxIcon.getIcon("folder_open");
                     } else {
-                        return ToolBoxIcon.getIcon("folder_invalid");
+                        return ToolBoxIcon.getIcon("folder_closed");
                     }
                     //The the process is invalid if it can't be parsed..
                 case PROCESS:
                     if (isValid) {
-                        return ToolBoxIcon.getIcon("script");
+                        return ToolBoxIcon.getIcon("process");
                     } else {
-                        return ToolBoxIcon.getIcon("script_invalid");
+                        return ToolBoxIcon.getIcon("process_invalid");
                     }
                     //Else return the error icon.
                 default:
@@ -311,6 +316,15 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         copy.customInvalidIconName = this.customInvalidIconName;
 
         return copy;
+    }
+
+    @Override
+    public void setUserObject(Object userObject){
+        String str = userObject.toString();
+        if(str.length()>MAX_USEROBJECT_LENGTH){
+            str = str.substring(0, MAX_USEROBJECT_LENGTH)+"...";
+        }
+        super.setUserObject(str);
     }
 
     /**
