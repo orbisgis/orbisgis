@@ -48,8 +48,8 @@ public class FieldAggregatorVisitor implements RecodedParameterVisitor, Categori
      */
     @Override
     public void visit(RecodedLegend legend) {
-        if(legend.field() !=null && !legend.field().isEmpty()){
-            fields.add(legend.field());
+        if(legend.getField() !=null && !legend.getField().isEmpty()){
+            fields.add(legend.getField());
         }
     }
     @Override
