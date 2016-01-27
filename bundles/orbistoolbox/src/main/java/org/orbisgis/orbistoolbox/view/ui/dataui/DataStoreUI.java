@@ -119,7 +119,7 @@ public class DataStoreUI implements DataUI{
 
         /**Instantiate the geocatalog radioButton and its optionPanel**/
         JRadioButton geocatalog = new JRadioButton("Geocatalog");
-        JPanel optionPanelGeocatalog = new JPanel(new BorderLayout());
+        JPanel optionPanelGeocatalog = new JPanel(new MigLayout("fill"));
         JComboBox<String> comboBox;
         if(dataStore.isSpatial()) {
             comboBox = new JComboBox<>(ToolBox.getGeocatalogTableList(true).toArray(new String[]{}));
@@ -146,15 +146,15 @@ public class DataStoreUI implements DataUI{
             doc.putProperty("comboBox", comboBox);
             doc.addDocumentListener(EventHandler.create(DocumentListener.class, this, "onNewTable", "document"));
         }
-        optionPanelGeocatalog.add(new JLabel("Geocatalog :"), BorderLayout.LINE_START);
-        optionPanelGeocatalog.add(tableSelection, BorderLayout.CENTER);
+        optionPanelGeocatalog.add(new JLabel("Geocatalog :"), "dock west");
+        optionPanelGeocatalog.add(tableSelection, "span, growx");
         geocatalog.putClientProperty("optionPanel", optionPanelGeocatalog);
         geocatalog.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
 
         /**Instantiate the file radioButton and its optionPanel**/
         JRadioButton file = new JRadioButton("File");
-        JPanel optionPanelFile = new JPanel(new BorderLayout());
-        optionPanelFile.add(new JLabel("file :"), BorderLayout.LINE_START);
+        JPanel optionPanelFile = new JPanel(new MigLayout("fill"));
+        optionPanelFile.add(new JLabel("File : "), "dock west");
         JTextField textField = new JTextField();
         textField.getDocument().putProperty("dataMap", dataMap);
         textField.getDocument().putProperty("inputOrOutput", inputOrOutput);
@@ -165,8 +165,11 @@ public class DataStoreUI implements DataUI{
                 "document"));
         textField.setToolTipText(inputOrOutput.getResume());
 
-        optionPanelFile.add(textField, BorderLayout.CENTER);
-        JButton browseButton = new JButton("Browse");
+        optionPanelFile.add(textField, "span, growx");
+        JButton browseButton = new JButton(ToolBoxIcon.getIcon("browse"));
+        browseButton.setBorderPainted(false);
+        browseButton.setContentAreaFilled(false);
+        browseButton.setMargin(new Insets(0, 0, 0, 0));
         browseButton.addActionListener(EventHandler.create(ActionListener.class, this, "onBrowse", ""));
         browseButton.putClientProperty("uri", inputOrOutput.getIdentifier());
         browseButton.putClientProperty("dataMap", dataMap);
@@ -206,7 +209,7 @@ public class DataStoreUI implements DataUI{
         textField.setText(filePanel.getCurrentDirectory().getAbsolutePath());
         browseButton.putClientProperty("filePanel", filePanel);
 
-        optionPanelFile.add(browseButton, BorderLayout.LINE_END);
+        optionPanelFile.add(browseButton, "dock east");
         file.putClientProperty("optionPanel", optionPanelFile);
         file.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
 
