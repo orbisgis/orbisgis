@@ -255,7 +255,7 @@ public class ToolBox implements DockingPanel  {
             }
         }
         areScriptsCopied = true;
-        addLocalSource(wpsScriptFolder.toURI(), "orbisgis");
+        addLocalSource(wpsScriptFolder.toURI(), "orbisgis", true);
     }
 
     @Deactivate
@@ -349,9 +349,14 @@ public class ToolBox implements DockingPanel  {
      * @param uri Folder URI where the script are located.
      * @param iconName Name of the icon to use for this node.
      */
-    public void addLocalSource(URI uri, String iconName){
+    public void addLocalSource(URI uri, String iconName, boolean isDefaultScript){
         processManager.addLocalSource(uri);
-        toolBoxPanel.addLocalSource(uri, processManager, iconName);
+        if(isDefaultScript){
+            toolBoxPanel.addDefaultLocalSource(uri, processManager, iconName);
+        }
+        else {
+            toolBoxPanel.addLocalSource(uri, processManager, iconName);
+        }
     }
 
     /**
@@ -394,6 +399,10 @@ public class ToolBox implements DockingPanel  {
             LoggerFactory.getLogger(ToolBox.class).warn("The process '"+pee.getProcess().getTitle()+"' is already open.");
         }
         return pee;
+    }
+
+    public void openProcess(){
+        openProcess(toolBoxPanel.getSelectedNode().getUri());
     }
 
     /**

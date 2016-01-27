@@ -53,6 +53,8 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
     private URI uri;
     /** Indicates if the node is a valid folder, script, host ... or not. */
     private boolean isValid = true;
+    /** Indicates if the node is a default process from OrbisGIS. */
+    private boolean isDefaultOrbisGIS = false;
     /** Name of the icon to use when the node is open. */
     private String customOpenIconName = null;
     /** Name of the icon to use when the node is closed. */
@@ -314,6 +316,7 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         copy.customClosedIconName = this.customClosedIconName;
         copy.customLeafIconName = this.customLeafIconName;
         copy.customInvalidIconName = this.customInvalidIconName;
+        copy.isDefaultOrbisGIS = this.isDefaultOrbisGIS;
 
         return copy;
     }
@@ -325,6 +328,22 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
             str = str.substring(0, MAX_USEROBJECT_LENGTH)+"...";
         }
         super.setUserObject(str);
+    }
+
+    /**
+     * Tells if this node is a default node from OrbisGIS
+     * @return True if the node is a default node from OrbisGIS, false otherwise.
+     */
+    public boolean isDefaultOrbisGIS() {
+        return isDefaultOrbisGIS;
+    }
+
+    /**
+     * Sets if the node is a default node from OrbisGIS or not.
+     * @param defaultOrbisGIS True if the node is a default node from OrbisGIS, false otherwise.
+     */
+    public void setDefaultOrbisGIS(boolean defaultOrbisGIS) {
+        isDefaultOrbisGIS = defaultOrbisGIS;
     }
 
     /**
