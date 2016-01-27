@@ -37,15 +37,5 @@ import org.orbisgis.legend.LookupFieldName;
  */
 public interface AbstractAttributeLegend extends LookupFieldName {
 
-        public abstract ValueReference getValueReference();
-
-        /*@Override
-        public String getLookupFieldName(){
-                return getValueReference().getColumnName();
-        }
-
-        @Override
-        public void setLookupFieldName(String name){
-                getValueReference().setColumnName(name);
-        }*/
+        ValueReference getValueReference();
 }
