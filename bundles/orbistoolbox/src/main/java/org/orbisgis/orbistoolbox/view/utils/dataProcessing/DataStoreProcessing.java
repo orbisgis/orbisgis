@@ -59,15 +59,20 @@ public class DataStoreProcessing implements DataProcessing {
             }
             else if(dataStoreURI.getScheme().equals("file")){
                 DataStore dataStore = (DataStore) ((Input) inputOrOutput).getDataDescription();
+                String path = dataStoreURI.getSchemeSpecificPart();
+                if(path.endsWith("$")){
+                    path = path.replace("$", "");
+                }
+                else{
+                    stash.put(uri, "file");
+                }
                 if(dataStore.isAutoImport()) {
                     dataMap.put(uri, dataStoreURI.getFragment());
                 }
                 else{
-                    String filePath = dataStoreURI.getSchemeSpecificPart();
-                    dataMap.put(uri, filePath);
+                    dataMap.put(uri, path);
                     ToolBox.freeTempTable(dataStoreURI.getFragment());
                 }
-                stash.put(uri, "file");
             }
         }
         if(inputOrOutput instanceof Output){

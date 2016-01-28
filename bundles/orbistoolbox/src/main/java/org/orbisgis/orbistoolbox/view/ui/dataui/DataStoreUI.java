@@ -21,6 +21,7 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.io.FilenameUtils;
+import org.omg.PortableInterceptor.INACTIVE;
 import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
@@ -166,6 +167,7 @@ public class DataStoreUI implements DataUI{
         textField.setToolTipText(inputOrOutput.getResume());
 
         optionPanelFile.add(textField, "span, growx");
+        JPanel buttonPanel = new JPanel(new MigLayout());
         JButton browseButton = new JButton(ToolBoxIcon.getIcon("browse"));
         browseButton.setBorderPainted(false);
         browseButton.setContentAreaFilled(false);
@@ -208,8 +210,17 @@ public class DataStoreUI implements DataUI{
         filePanel.loadState();
         textField.setText(filePanel.getCurrentDirectory().getAbsolutePath());
         browseButton.putClientProperty("filePanel", filePanel);
+        buttonPanel.add(browseButton);
+        if(inputOrOutput instanceof Input) {
+            JLabel fileOptions = new JLabel("options");
+            fileOptions.putClientProperty("keepSource", false);
+            fileOptions.putClientProperty("loadSource", false);
+            fileOptions.addMouseListener(EventHandler.create(MouseListener.class, this, "onFileOption", ""));
+            textField.getDocument().putProperty("fileOptions", fileOptions);
+            buttonPanel.add(fileOptions);
+        }
 
-        optionPanelFile.add(browseButton, "dock east");
+        optionPanelFile.add(buttonPanel, "dock east");
         file.putClientProperty("optionPanel", optionPanelFile);
         file.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
 
@@ -454,14 +465,25 @@ public class DataStoreUI implements DataUI{
     public void saveDocumentTextFile(Document document){
         try {
             DataStore dataStore = (DataStore)document.getProperty("dataStore");
+            JComponent fileOptions = (JComponent) document.getProperty("fileOptions");
             DescriptionType inputOrOutput = (DescriptionType)document.getProperty("inputOrOutput");
             File file = new File(document.getText(0, document.getLength()));
             if(inputOrOutput instanceof Input) {
+                boolean loadSource = false;
+                boolean keepSource = false;
+                if(fileOptions != null){
+                    loadSource = (boolean)fileOptions.getClientProperty("loadSource");
+                    keepSource = (boolean)fileOptions.getClientProperty("keepSource");
+                }
                 //Load the selected file an retrieve the table name.
-                String tableName = toolBox.loadURI(file.toURI(), false);
+                String tableName = toolBox.loadURI(file.toURI(), loadSource);
                 if (tableName != null) {
+                    String fileStr = file.toURI().toString();
+                    if(keepSource){
+                        fileStr += "$";
+                    }
                     //Saves the table name in the URI into the uri fragment
-                    URI selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
+                    URI selectedFileURI = URI.create(fileStr + "#" + tableName);
                     //Store the selection
                     Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
                     URI uri = inputOrOutput.getIdentifier();
@@ -533,5 +555,41 @@ public class DataStoreUI implements DataUI{
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
         }
+    }
+
+    public void onFileOption(MouseEvent me){
+        JComponent source = (JComponent)me.getSource();
+        boolean keepSource = (boolean)source.getClientProperty("keepSource");
+        boolean loadSource = (boolean)source.getClientProperty("loadSource");
+        JPopupMenu popupMenu = new JPopupMenu();
+        JCheckBoxMenuItem keepItem = new JCheckBoxMenuItem("Keep data source", null, keepSource){
+            @Override
+            protected void processMouseEvent(MouseEvent evt) {
+                if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
+                    doClick();
+                    setArmed(true);
+                    ((JComponent)this.getClientProperty("fileOption")).putClientProperty("keepSource", this.getState());
+                } else {
+                    super.processMouseEvent(evt);
+                }
+            }
+        };
+        keepItem.putClientProperty("fileOption", source);
+        JCheckBoxMenuItem loadItem = new JCheckBoxMenuItem("Load source in base", null, loadSource) {
+            @Override
+            protected void processMouseEvent(MouseEvent evt) {
+                if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
+                    doClick();
+                    setArmed(true);
+                    ((JComponent)this.getClientProperty("fileOption")).putClientProperty("loadSource", this.getState());
+                } else {
+                    super.processMouseEvent(evt);
+                }
+            }
+        };
+        loadItem.putClientProperty("fileOption", source);
+        popupMenu.add(keepItem);
+        popupMenu.add(loadItem);
+        popupMenu.show(source, me.getX(), me.getY());
     }
 }
