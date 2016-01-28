@@ -361,7 +361,13 @@ public class DataStoreUI implements DataUI{
         for (DataField dataField : dataStore.getListDataField()) {
             dataField.setSourceModified(true);
         }
-        dataMap.remove(uri);
+        Object oldValue = dataMap.get(uri);
+        if(oldValue != null && oldValue instanceof URI){
+            URI oldUri = ((URI)oldValue);
+            if(oldUri.getScheme().equals("file")){
+                ToolBox.freeTempTable(oldUri.getFragment());
+            }
+        }
         dataMap.put(uri, URI.create("geocatalog:"+comboBox.getSelectedItem()+"#"+comboBox.getSelectedItem()));
     }
 
@@ -459,7 +465,13 @@ public class DataStoreUI implements DataUI{
                     //Store the selection
                     Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
                     URI uri = inputOrOutput.getIdentifier();
-                    dataMap.remove(uri);
+                    Object oldValue = dataMap.get(uri);
+                    if(oldValue != null && oldValue instanceof URI){
+                        URI oldUri = ((URI)oldValue);
+                        if(oldUri.getScheme().equals("file")){
+                            ToolBox.freeTempTable(oldUri.getFragment());
+                        }
+                    }
                     dataMap.put(uri, selectedFileURI);
                     //tells the dataField they should revalidate
                     for (DataField dataField : dataStore.getListDataField()) {
@@ -500,7 +512,13 @@ public class DataStoreUI implements DataUI{
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
                 URI uri = (URI)document.getProperty("uri");
-                dataMap.remove(uri);
+                Object oldValue = dataMap.get(uri);
+                if(oldValue != null && oldValue instanceof URI){
+                    URI oldUri = ((URI)oldValue);
+                    if(oldUri.getScheme().equals("file")){
+                        ToolBox.freeTempTable(oldUri.getFragment());
+                    }
+                }
                 dataMap.put(uri, tableName);
                 //tells the dataField they should revalidate
                 for (DataField dataField : dataStore.getListDataField()) {
