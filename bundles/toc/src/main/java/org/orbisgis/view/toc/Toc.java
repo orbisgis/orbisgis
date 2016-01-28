@@ -459,6 +459,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
         }
         /**
          * The Map Element has been updated
+         * @param evt
          */
         public void onMapModified(PropertyChangeEvent evt) {
                 if(mapElement!=null && MapElement.PROP_MODIFIED.equals(evt.getPropertyName())) {
@@ -971,9 +972,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
             if(styles.length == 1){
                 Style base = styles[0];
                 BeanLayer l = (BeanLayer) base.getLayer();
-                MapTransform mt = new MapTransform();
                 LegendWizard lw = new LegendWizard();
-                SIFWizard wizard = lw.getSIFWizard(l, mt);
+                SIFWizard wizard = lw.getSIFWizard(l, mapEditorExtension.getMapTransform());
                 //Show a wizard to add new thematic map in a Layer
                 if(UIFactory.showWizard(wizard)){
                     Symbolizer sym = lw.getSymbolizer();
@@ -997,8 +997,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                 LegendWizard lw = new LegendWizard();
                 ILayer layer = layers[0];
                 if (isStyleAllowed(layer)) {
-                    MapTransform mt = new MapTransform();
-                    SIFWizard wizard = lw.getSIFWizard(layer, mt);
+                    SIFWizard wizard = lw.getSIFWizard(layer, mapEditorExtension.getMapTransform());
                     if(UIFactory.showWizard(wizard)){
                         Style s = lw.getStyle();
                         layer.addStyle(s);
