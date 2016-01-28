@@ -163,18 +163,21 @@ public class ToolBox implements DockingPanel  {
         //Find if the database used is H2 or not.
         //If yes, make all the processes wait for the previous one.
         try {
-            if(dataManager != null && isH2()){
+            if(dataManager != null){
                 Connection connection = dataManager.getDataSource().getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MVCC';");
-                result.next();
-                if(!result.getString(1).equals("TRUE")){
-                    multiThreaded = false;
-                }
-                result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MULTI_THREADED';");
-                result.next();
-                if(!result.getString(1).equals("1")){
-                    multiThreaded = false;
+                isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                if(isH2) {
+                    Statement statement = connection.createStatement();
+                    ResultSet result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MVCC';");
+                    result.next();
+                    if (!result.getString(1).equals("TRUE")) {
+                        multiThreaded = false;
+                    }
+                    result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MULTI_THREADED';");
+                    result.next();
+                    if (!result.getString(1).equals("1")) {
+                        multiThreaded = false;
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -186,18 +189,6 @@ public class ToolBox implements DockingPanel  {
                     " the toolbox won't be able to run more than one process at the same time.\n" +
                     "Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000; MULTI_THREADED=TRUE'");
         }
-    }
-
-    private boolean isH2() {
-        if(isH2 == null) {
-            try(Connection connection = dataManager.getDataSource().getConnection()) {
-                isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-            } catch (SQLException ex) {
-                LoggerFactory.getLogger(ToolBox.class).error(ex.getLocalizedMessage(), ex);
-                return false;
-            }
-        }
-        return isH2;
     }
 
     /**
@@ -660,7 +651,7 @@ public class ToolBox implements DockingPanel  {
      * @param uri URI to load.
      * @return Table name of the loaded file. Returns null if the file can't be loaded.
      */
-    public String loadURI(URI uri) {
+    public String loadURI(URI uri, boolean copyInBase) {
         try {
             File f = new File(uri);
             if(f.isDirectory()){
@@ -671,15 +662,22 @@ public class ToolBox implements DockingPanel  {
             String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
             //Find the corresponding driver and load the file
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
+            Connection connection = dataManager.getDataSource().getConnection();
+            Statement statement = connection.createStatement();
             if(extension.equalsIgnoreCase("csv")){
-                Connection connection = dataManager.getDataSource().getConnection();
-                Statement statement = connection.createStatement();
-                statement.execute("CREATE TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
+                statement.execute("CREATE TEMPORARY TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
             }
             else {
-                DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
-                        extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-                driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+                if(copyInBase){
+                    DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
+                            extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+                }
+                else {
+                    DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
+                            extension, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
+                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+                }
             }
             return tableName;
         } catch (SQLException|IOException e) {
@@ -725,5 +723,17 @@ public class ToolBox implements DockingPanel  {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return fieldValues;
+    }
+
+    public static void freeTempTable(String tableName){
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            if(JDBCUtilities.tableExists(connection, tableName)) {
+                Statement statement = connection.createStatement();
+                statement.execute("DROP TABLE " + tableName);
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+        }
     }
 }

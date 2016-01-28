@@ -452,7 +452,7 @@ public class DataStoreUI implements DataUI{
             File file = new File(document.getText(0, document.getLength()));
             if(inputOrOutput instanceof Input) {
                 //Load the selected file an retrieve the table name.
-                String tableName = toolBox.loadURI(file.toURI());
+                String tableName = toolBox.loadURI(file.toURI(), false);
                 if (tableName != null) {
                     //Saves the table name in the URI into the uri fragment
                     URI selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
@@ -495,7 +495,7 @@ public class DataStoreUI implements DataUI{
             DataStore dataStore = (DataStore)document.getProperty("dataStore");
             URI dataBaseURI = URI.create(document.getText(0, document.getLength()));
             //Load the selected file an retrieve the table name.
-            String tableName = toolBox.loadURI(dataBaseURI);
+            String tableName = toolBox.loadURI(dataBaseURI, false);
             if(tableName != null) {
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
