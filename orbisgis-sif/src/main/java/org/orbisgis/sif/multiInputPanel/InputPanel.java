@@ -49,7 +49,7 @@ public class InputPanel extends JPanel {
          * @param inputs
          */
         public InputPanel(List<Input> inputs) {
-                super(new MigLayout("wrap 2", "[align r][align l]"));
+                 super(new MigLayout("wrap 2", "[] [grow] ", "[grow][grow]"));
                 for (Input input : inputs) {
 
                         // If we have an init value, we set it.
@@ -63,7 +63,7 @@ public class InputPanel extends JPanel {
                         // We retrieve the component where the user will set his inputs.
                         Component comp = input.getType().getComponent();
                         if (comp != null) {
-                            add(comp, "width 125!");
+                            add(comp, "grow");
                         } else {
                             add(Box.createGlue());
                         }
