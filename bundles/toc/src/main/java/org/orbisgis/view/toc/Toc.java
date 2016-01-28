@@ -1,12 +1,12 @@
 /**
- * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information.
- *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is a GIS application dedicated to scientific spatial analysis.
+ * This cross-platform GIS is developed at the Lab-STICC laboratory by the DECIDE 
+ * team located in University of South Brittany, Vannes.
+ * 
+ * OrbisGIS is distributed under GPL 3 license.
  *
  * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2015-2016 CNRS (UMR CNRS 6285)
  *
  * This file is part of OrbisGIS.
  *
@@ -90,7 +90,6 @@ import javax.swing.SwingWorker;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -110,7 +109,6 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.TableEditListener;
-import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.BeanLayer;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.Layer;
@@ -129,6 +127,7 @@ import org.orbisgis.coremap.renderer.se.SeExceptions;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.renderer.se.Symbolizer;
 import org.orbisgis.commons.progress.ProgressMonitor;
+import org.orbisgis.mapeditorapi.MapEditorExtension;
 import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
@@ -180,6 +179,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
         private EditorManager editorManager;
         private ExecutorService executorService;
         private CoreWorkspace coreWorkspace;
+        private MapEditorExtension mapEditorExtension;
         /**
          * Constructor
          */
@@ -222,7 +222,18 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
         public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
             this.coreWorkspace = null;
         }
-    @Activate
+        
+        @Reference
+        public void setMapEditorExtension(MapEditorExtension mapEditorExtension){
+            this.mapEditorExtension=mapEditorExtension;
+            
+        }
+        
+        public void unsetMapEditorExtension(MapEditorExtension mapEditorExtension) {
+            this.mapEditorExtension = null;
+        }
+        
+        @Activate
         public void activate() {
                 //Set docking parameters
                 dockingPanelParameters = new DockingPanelParameters();
@@ -1045,8 +1056,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         //In order to be able to cancel all of our modifications,
                         //we produce a copy of our style.
                         JAXBElement<StyleType> jest = style.getJAXBElement();
-
-                        MapTransform mt = new MapTransform();
+                        
                         int geometryType;
                         TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
                         try(Connection connection = mapContext.getDataManager().getDataSource().getConnection()) {
@@ -1054,7 +1064,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         }
                         Style copy = new Style(jest, layer);
 
-                        final SimpleStyleEditor pan = new SimpleStyleEditor(mt, geometryType, layer, copy);
+                        final SimpleStyleEditor pan = new SimpleStyleEditor(mapEditorExtension.getMapTransform(), geometryType, layer, copy);
                         ActionListener apply = new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent actionEvent) {
