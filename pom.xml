@@ -8,8 +8,8 @@
         <name>platform</name>
         <description>Main Orbisgis project</description>
         <organization>
-                <name>IRSTV CNRS-FR-2488</name>
-                <url>http://www.irstv.fr/</url>
+                <name>Lab-STICC - UMR CNRS 6285</name>
+                <url>http://www.labsticc.fr/</url>
         </organization>
         <url>http://www.orbisgis.org</url>
         <parent>
