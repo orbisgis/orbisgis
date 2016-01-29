@@ -567,26 +567,26 @@ public class DataStoreUI implements DataUI{
         boolean keepSource = (boolean)source.getClientProperty("keepSource");
         boolean loadSource = (boolean)source.getClientProperty("loadSource");
         JPopupMenu popupMenu = new JPopupMenu();
-        JCheckBoxMenuItem keepItem = new JCheckBoxMenuItem("Keep data source", null, keepSource){
+        JCheckBoxMenuItem keepItem = new JCheckBoxMenuItem("Delete input", null, !keepSource){
             @Override
             protected void processMouseEvent(MouseEvent evt) {
                 if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
                     doClick();
                     setArmed(true);
-                    ((JComponent)this.getClientProperty("fileOption")).putClientProperty("keepSource", this.getState());
+                    ((JComponent)this.getClientProperty("fileOption")).putClientProperty("keepSource", !this.getState());
                 } else {
                     super.processMouseEvent(evt);
                 }
             }
         };
         keepItem.putClientProperty("fileOption", source);
-        JCheckBoxMenuItem loadItem = new JCheckBoxMenuItem("Load source in base", null, loadSource) {
+        JCheckBoxMenuItem loadItem = new JCheckBoxMenuItem("Linked table", null, !loadSource) {
             @Override
             protected void processMouseEvent(MouseEvent evt) {
                 if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
                     doClick();
                     setArmed(true);
-                    ((JComponent)this.getClientProperty("fileOption")).putClientProperty("loadSource", this.getState());
+                    ((JComponent)this.getClientProperty("fileOption")).putClientProperty("loadSource", !this.getState());
                 } else {
                     super.processMouseEvent(evt);
                 }

@@ -47,7 +47,7 @@ import java.lang.annotation.RetentionPolicy
     boolean isSpatial() default false
 
     /**
-     * Indicates if the toolbox should load the file and give the table name or just give the file name.
+     * Indicates if the toolbox should load the file (create table) and give the table name or just give the file name.
      */
-    boolean isAutoImport() default true
+    boolean isCreateTable() default true
 }

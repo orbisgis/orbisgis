@@ -65,7 +65,7 @@ def processing() {
         resume="The input CSV file containing the point data.",
         extensions = "csv",
         isSpatial = false,
-        isAutoImport = false)
+        isCreateTable = false)
 String csvDataInput
 
 
