@@ -307,6 +307,13 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                         this.wholeWord = false;                        
                 }
 
+                /**
+                 * Build filter
+                 * @param columnId Column identifier 0-based
+                 * @param searchedChars Char to search
+                 * @param matchCase Should match character case
+                 * @param wholeWord No additional characters
+                 */
                 public FilterParameters(int columnId, String searchedChars, boolean matchCase, boolean wholeWord) {
                         super(FieldsContainsFilterFactory.FACTORY_ID,searchedChars);
                         this.columnId = columnId;

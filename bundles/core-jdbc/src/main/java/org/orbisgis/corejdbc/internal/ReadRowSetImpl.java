@@ -110,7 +110,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     private int cachedColumnCount = -1;
     protected BidiMap<String, Integer> cachedColumnNames;
     private boolean wasNull = true;
-    /** Used to managed table without primary key (ResultSet are kept {@link ResultSetHolder#RESULT_SET_TIMEOUT} */
+    /** Used to managed table without primary key (ResultSet are kept {@link ResultSetHolder#setResultSetTimeOut(int)} */
     protected final ResultSetHolder resultSetHolder;
     /** If the table contains a unique non null index then this variable contain the batch first row PK value */
     protected List<Long> rowFetchFirstPk = Collections.synchronizedList(new ArrayList<>(Arrays.asList(new Long[]{null})));
@@ -182,36 +182,39 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             Iterator<Long> fetchPkIt = pkSet.iterator();
             int batchIterId = -1;
             List<Long> batchPK = new ArrayList<>(fetchSize);
+            final int batchCount = getBatchCount();
             try(Connection connection = dataSource.getConnection()) {
                 while (fetchPkIt.hasNext()) {
                     Long fetchPk = fetchPkIt.next();
+                    // Looking for the batch that contain the primary key fetchPk
                     if (fetchPk != null) {
                         if (batchIterId == -1 || fetchPk > batchPK.get(batchPK.size() - 1)) {
                             batchPK.clear();
                             // Iterate through batch until next PK is superior than search pk.
                             // For optimisation sake, a binary search could be faster than serial search
-                            Long nextPk;
-                            final int batchCount = getBatchCount();
+                            Long nextPk = null;
                             do {
                                 batchIterId++;
                                 if (batchIterId + 1 >= rowFetchFirstPk.size() || rowFetchFirstPk.get(batchIterId + 1) == null) {
                                     fetchBatchPk(connection, batchIterId + 1);
                                 }
-                                nextPk = rowFetchFirstPk.get(batchIterId + 1);
-                            } while (nextPk < fetchPk && batchIterId + 1 < batchCount - 1);
-                            if (nextPk <= fetchPk) {
+                                if((batchIterId + 1) < rowFetchFirstPk.size()) {
+                                    nextPk = rowFetchFirstPk.get(batchIterId + 1);
+                                }
+                            } while (nextPk != null && nextPk < fetchPk && batchIterId + 1 < batchCount - 1);
+                            if (nextPk != null && nextPk <= fetchPk) {
                                 batchIterId++;
                             }
-                        }
-                        fetchBatchPk(connection, batchIterId);
-                        Long batchFirstPk = rowFetchFirstPk.get(batchIterId);
-                        // We are in good batch
-                        // Query only PK for this batch
-                        if (batchPK.isEmpty()) {
-                            try (PreparedStatement st = createBatchQuery(connection, batchFirstPk, false, 0, fetchSize, true)) {
-                                try (ResultSet rs = st.executeQuery()) {
-                                    while (rs.next()) {
-                                        batchPK.add(rs.getLong(1));
+                            fetchBatchPk(connection, batchIterId);
+                            Long batchFirstPk = rowFetchFirstPk.get(batchIterId);
+                            // We are in good batch
+                            // Query only PK for this batch
+                            if (batchPK.isEmpty()) {
+                                try (PreparedStatement st = createBatchQuery(connection, batchFirstPk, false, 0, fetchSize, true)) {
+                                    try (ResultSet rs = st.executeQuery()) {
+                                        while (rs.next()) {
+                                            batchPK.add(rs.getLong(1));
+                                        }
                                     }
                                 }
                             }
@@ -418,13 +421,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             try(ResultSet resultSet = fetchBatch(connection, firstPk, false, (targetBatch - lastNullBatchPK) * fetchSize)) {
                 firstPk = getNextBatchPk(resultSet, false);
             }
-            if(firstPk == null) {
-                throw new SQLException("Algo error");
-            }
-            if(targetBatch >= rowFetchFirstPk.size()) {
-                rowFetchFirstPk.add(firstPk);
-            } else {
-                rowFetchFirstPk.set(targetBatch, firstPk);
+            if(firstPk != null) {
+                if (targetBatch >= rowFetchFirstPk.size()) {
+                    rowFetchFirstPk.add(firstPk);
+                } else {
+                    rowFetchFirstPk.set(targetBatch, firstPk);
+                }
             }
         }
     }
