@@ -29,7 +29,6 @@ import org.orbisgis.orbistoolboxapi.annotations.model.*
         resume = "Intersection of a vegetation with a city.",
         keywords = "OrbisGIS,ST_Intersects,example,layerIntersection")
 def processing() {
-    sql = Sql.newInstance(grv_ds)
     sql.execute("DROP TABLE IF EXISTS " + dataStoreOutput + ";")
     //Build the query
     String condition = ""

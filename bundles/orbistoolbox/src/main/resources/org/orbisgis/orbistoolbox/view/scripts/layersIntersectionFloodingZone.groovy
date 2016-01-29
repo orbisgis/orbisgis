@@ -36,7 +36,6 @@ import org.orbisgis.orbistoolboxapi.annotations.model.*
         resume = "Intersection of building with a flooding zone.",
         keywords = "OrbisGIS,ST_Intersects,ST_Buffer,ST_Accum,example,layerIntersection")
 def processing() {
-    sql = Sql.newInstance(grv_ds)
     sql.execute("DROP TABLE IF EXISTS " + dataStoreOutput + ";")
 
     String condition = ""

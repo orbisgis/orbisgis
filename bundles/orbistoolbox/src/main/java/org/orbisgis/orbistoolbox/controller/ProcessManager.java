@@ -20,6 +20,8 @@
 package org.orbisgis.orbistoolbox.controller;
 
 import groovy.lang.GroovyObject;
+import groovy.sql.Sql;
+import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.orbistoolbox.controller.parser.ParserController;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
@@ -108,7 +110,7 @@ public class ProcessManager {
                                        Map<String, Object> properties){
         GroovyObject groovyObject = createProcess(process, dataMap);
         for(Map.Entry<String, Object> variable : properties.entrySet()) {
-            groovyObject.setProperty("grv_" + variable.getKey(), variable.getValue());
+            groovyObject.setProperty("sql", new Sql((DataSourceService)variable.getValue()));
         }
         groovyObject.invokeMethod("processing", null);
         return groovyObject;

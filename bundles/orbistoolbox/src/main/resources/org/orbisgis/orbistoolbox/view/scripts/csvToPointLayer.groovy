@@ -40,7 +40,6 @@ def processing() {
     String csvRead = "CSVRead('"+csvFile.absolutePath+"', NULL, 'fieldSeparator="+separator+"')";
     String create = "CREATE TABLE "+outputTableName+"(ID INT PRIMARY KEY, THE_GEOM GEOMETRY)";
     //Execute the SQL query
-    sql = Sql.newInstance(grv_ds)
     sql.execute("DROP TABLE IF EXISTS " + outputTableName + ";")
     if(inputEPSG != null && outputEPSG != null){
         sql.execute(create+" AS SELECT "+idField+", " +
