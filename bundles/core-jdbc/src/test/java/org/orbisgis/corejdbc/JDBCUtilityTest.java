@@ -298,8 +298,12 @@ public class JDBCUtilityTest {
             st.execute("CREATE VIEW VIEW_TEST as SELECT * FROM TABLE_TEST");
             assertEquals(MetaData.getTableType(connection, "VIEW_TEST"), MetaData.TableType.VIEW);
             st.execute("drop table if exists EXTERNAL_TABLE");
-            st.execute("CALL FILE_TABLE('"+JDBCUtilityTest.class.getResource("bv_sap.shp").getPath()+"', 'EXTERNAL_TABLE');");
-            assertEquals(MetaData.getTableType(connection, "EXTERNAL_TABLE"), MetaData.TableType.EXTERNAL);
+            try {
+                st.execute("CALL FILE_TABLE('" + JDBCUtilityTest.class.getResource("bv_sap.shp").getPath() + "', 'EXTERNAL_TABLE');");
+                assertEquals(MetaData.getTableType(connection, "EXTERNAL_TABLE"), MetaData.TableType.EXTERNAL);
+            } finally {
+                st.execute("drop table if exists EXTERNAL_TABLE");
+            }
          }
     }
 
