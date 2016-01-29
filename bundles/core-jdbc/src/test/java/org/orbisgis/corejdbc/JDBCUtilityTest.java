@@ -331,9 +331,9 @@ public class JDBCUtilityTest {
         try(Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS BV_SAP, BV_SAP_1, BV_SAP2");
             DataManager dataManager = new DataManagerImpl(dataSource);
+            String tableIdentifier = dataManager.registerDataSource(JDBCUtilityTest.class.getResource("bv_sap.shp").toURI());
             dataManager.registerDataSource(JDBCUtilityTest.class.getResource("bv_sap.shp").toURI());
-            dataManager.registerDataSource(JDBCUtilityTest.class.getResource("bv_sap.shp").toURI());
-            assertTrue(JDBCUtilities.tableExists(connection, "BV_SAP"));
+            assertTrue("BV_SAP does not exist, created "+tableIdentifier,JDBCUtilities.tableExists(connection, "BV_SAP"));
             assertFalse(JDBCUtilities.tableExists(connection, "BV_SAP_1"));
             assertFalse(JDBCUtilities.tableExists(connection, "BV_SAP_2"));
         }
