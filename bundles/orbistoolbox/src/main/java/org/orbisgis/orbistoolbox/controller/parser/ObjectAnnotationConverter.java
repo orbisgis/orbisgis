@@ -242,7 +242,10 @@ public class ObjectAnnotationConverter {
 
     public static DataStore annotationToObject(DataStoreAttribute dataStoreAttribute, List<Format> formatList) {
         try {
-            return new DataStore(formatList);
+            DataStore dataStore = new DataStore(formatList);
+            dataStore.setAutoImport(dataStoreAttribute.isAutoImport());
+            dataStore.setIsSpatial(dataStoreAttribute.isSpatial());
+            return dataStore;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;
@@ -252,16 +255,16 @@ public class ObjectAnnotationConverter {
     public static DataField annotationToObject(DataFieldAttribute dataFieldAttribute, Format format, URI dataStoreUri) {
         try {
             format.setDefaultFormat(true);
-            List<FieldType> fieldTypeList = new ArrayList<>();
+            List<DataType> dataTypeList = new ArrayList<>();
             //For each fieldType value from the groovy annotation, test if it is contain in the FieldType enumeration.
             for(String str : Arrays.asList(dataFieldAttribute.fieldTypes())){
-                for(FieldType enumValue : FieldType.values()){
+                for(DataType enumValue : DataType.values()){
                     if(enumValue.name().equals(str.toUpperCase())){
-                        fieldTypeList.add(FieldType.valueOf(str.toUpperCase()));
+                        dataTypeList.add(DataType.valueOf(str.toUpperCase()));
                     }
                 }
             }
-            return new DataField(format, fieldTypeList, dataStoreUri);
+            return new DataField(format, dataTypeList, dataStoreUri);
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;
@@ -284,6 +287,7 @@ public class ObjectAnnotationConverter {
             Enumeration enumeration = new Enumeration(format, enumAttribute.values(), enumAttribute.defaultValues());
             enumeration.setEditable(enumAttribute.isEditable());
             enumeration.setMultiSelection(enumAttribute.multiSelection());
+            enumeration.setValuesNames(enumAttribute.names());
             return enumeration;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());

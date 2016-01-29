@@ -33,7 +33,7 @@ import java.lang.reflect.Field;
 
 public class BoundingBoxParser implements Parser {
     @Override
-    public Input parseInput(Field f, String processId) {
+    public Input parseInput(Field f, Object defaultValue, String processId) {
         return null;
     }
 

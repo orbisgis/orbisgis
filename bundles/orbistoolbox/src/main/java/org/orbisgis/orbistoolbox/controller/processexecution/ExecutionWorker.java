@@ -109,6 +109,7 @@ public class ExecutionWorker extends SwingWorkerPM{
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
                     "End of the process");
+            pee.setProcessState(ProcessEditableElement.ProcessState.COMPLETED);
         }
         catch (Exception e) {
             pee.setProcessState(ProcessEditableElement.ProcessState.ERROR);
@@ -123,6 +124,6 @@ public class ExecutionWorker extends SwingWorkerPM{
 
     @Override
     protected void done(){
-        pee.setProcessState(ProcessEditableElement.ProcessState.COMPLETED);
     }
+
 }

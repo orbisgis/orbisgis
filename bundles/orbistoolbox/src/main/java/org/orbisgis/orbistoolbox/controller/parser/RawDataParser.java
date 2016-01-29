@@ -35,7 +35,7 @@ import java.net.URI;
 public class RawDataParser implements Parser {
 
     @Override
-    public Input parseInput(Field f, String processId) {
+    public Input parseInput(Field f, Object defaultValue, String processId) {
         //Instantiate the RawData
         RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class));
 

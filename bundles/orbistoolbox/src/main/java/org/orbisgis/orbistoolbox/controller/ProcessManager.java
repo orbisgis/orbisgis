@@ -56,28 +56,29 @@ public class ProcessManager {
 
     /**
      * Adds a local source to the toolbox and get all the groovy script.
-     * @param path Path to the local source.
+     * @param uri URI to the local source.
      */
-    public void addLocalSource(String path){
-        File folder = new File(path);
+    public void addLocalSource(URI uri){
+        File folder = new File(uri);
         if(!folder.exists() || !folder.isDirectory()){
             return;
         }
         for(File f : folder.listFiles()){
-            addLocalScript(f);
+            addLocalScript(f.toURI());
         }
     }
 
     /**
      * Add a local script.
-     * @param f File of the local script.
+     * @param uri URI of the local script.
      * @return The process corresponding to the script.
      */
-    public Process addLocalScript(File f){
+    public Process addLocalScript(URI uri){
+        File f = new File(uri);
         //Test that the script name is not only '.groovy'
         if (f.getName().endsWith(".groovy") && f.getName().length()>7) {
             //Ensure that the process does not already exists.
-            if(getProcess(f) == null) {
+            if(getProcess(uri) == null) {
                 //Parse the process
                 AbstractMap.SimpleEntry<Process, Class> entry = parserController.parseProcess(f.getAbsolutePath());
                 //Check if the process has been well parsed
@@ -86,7 +87,7 @@ public class ProcessManager {
                     processIdList.add(new ProcessIdentifier(
                             entry.getValue(),
                             entry.getKey(),
-                            f.getAbsolutePath()
+                            uri
                     ));
                     //return the process
                     return entry.getKey();
@@ -161,16 +162,7 @@ public class ProcessManager {
      */
     public Process getProcess(URI identifier){
         for(ProcessIdentifier pi : processIdList){
-            if(pi.getProcess().getIdentifier().equals(identifier)){
-                return pi.getProcess();
-            }
-        }
-        return null;
-    }
-
-    public Process getProcess(File f){
-        for(ProcessIdentifier pi : processIdList){
-            if(pi.getAbsolutePath().equals(f.getAbsolutePath())){
+            if(pi.getURI().equals(identifier)){
                 return pi.getProcess();
             }
         }

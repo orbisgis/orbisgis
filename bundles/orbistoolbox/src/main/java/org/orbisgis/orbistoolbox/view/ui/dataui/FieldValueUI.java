@@ -26,7 +26,6 @@ import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
@@ -68,13 +67,6 @@ public class FieldValueUI implements DataUI{
         if(fieldValue == null){
             return panel;
         }
-
-        if(inputOrOutput.getResume().isEmpty()){
-            panel.add(new JLabel(inputOrOutput.getTitle()), "growx, wrap");
-        }
-        else {
-            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "growx, wrap");
-        }
         JList list = new JList(new DefaultListModel());
         if(fieldValue.getMuliSelection()){
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -93,6 +85,7 @@ public class FieldValueUI implements DataUI{
         list.addMouseListener(EventHandler.create(MouseListener.class, this, "refreshList", "source", "mouseEntered"));
         list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
+        list.setToolTipText(inputOrOutput.getResume());
 
         return panel;
     }
@@ -132,14 +125,16 @@ public class FieldValueUI implements DataUI{
         JList list = (JList)source;
         FieldValue fieldValue = (FieldValue)list.getClientProperty("fieldValue");
         HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
+        boolean isOptional = (boolean)list.getClientProperty("isOptional");
         //If the DataField related to the FieldValue has been modified, reload the dataField values
         if(fieldValue.isDataFieldModified()) {
             fieldValue.setDataFieldModified(false);
-            String tableName = dataMap.get(fieldValue.getDataStoreIdentifier()).toString();
+            String tableName = ((URI)dataMap.get(fieldValue.getDataStoreIdentifier())).getSchemeSpecificPart();
             String fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
             DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
             model.removeAllElements();
             List<String> listFields = ToolBox.getFieldValueList(tableName, fieldName);
+            Collections.sort(listFields);
             for (String field : listFields) {
                 model.addElement(field);
             }
@@ -148,6 +143,9 @@ public class FieldValueUI implements DataUI{
             }
             else{
                 list.setVisibleRowCount(MAX_JLIST_ROW_COUNT);
+            }
+            if(!isOptional && list.getModel().getSize() > 0){
+                list.setSelectedIndex(0);
             }
         }
 
@@ -163,26 +161,25 @@ public class FieldValueUI implements DataUI{
             ToolTipManager.sharedInstance().mouseMoved(
                     new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
         }
-        else{
-            list.setSelectedIndices(new int[]{0});
-        }
         list.revalidate();
     }
 
     public void onListSelection(Object source){
         JList list = (JList)source;
+        URI uri = (URI)list.getClientProperty("uri");
+        HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
         List<String> listValues = new ArrayList<>();
 
         if(list.getSelectedIndices().length == 0){
             listValues = null;
+            dataMap.put(uri, null);
+            return;
         }
         else {
             for (int i : list.getSelectedIndices()) {
                 listValues.add(list.getModel().getElementAt(i).toString());
             }
         }
-        URI uri = (URI)list.getClientProperty("uri");
-        HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
-        dataMap.put(uri, listValues);
+        dataMap.put(uri, listValues.toArray(new String[listValues.size()]));
     }
 }

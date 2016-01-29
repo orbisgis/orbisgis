@@ -19,18 +19,14 @@
 
 package org.orbisgis.orbistoolbox.view.utils.dataProcessing;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.orbisgis.orbistoolbox.model.DescriptionType;
 import org.orbisgis.orbistoolbox.model.DataStore;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.view.ToolBox;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,8 +57,15 @@ public class DataStoreProcessing implements DataProcessing {
                 dataMap.put(uri, tableName);
             }
             else if(dataStoreURI.getScheme().equals("file")){
-                tableName = toolBox.loadFile(new File(dataStoreURI.getPath()));
-                dataMap.put(uri, tableName);
+                DataStore dataStore = (DataStore) ((Input) inputOrOutput).getDataDescription();
+                if(dataStore.isAutoImport()) {
+                    tableName = toolBox.loadURI(URI.create(dataStoreURI.getScheme() + ":" + dataStoreURI.getSchemeSpecificPart()));
+                    dataMap.put(uri, tableName);
+                }
+                else{
+                    String filePath = dataStoreURI.getSchemeSpecificPart();
+                    dataMap.put(uri, filePath);
+                }
             }
         }
         if(inputOrOutput instanceof Output){
@@ -89,7 +92,7 @@ public class DataStoreProcessing implements DataProcessing {
             URI uri = inputOrOutput.getIdentifier();
             URI dataStoreURI = (URI)stash.get(uri);
             if(dataStoreURI.getScheme().equals("file")){
-                toolBox.saveFile(new File(dataStoreURI.getSchemeSpecificPart()), dataMap.get(uri).toString().toUpperCase());
+                toolBox.saveURI(URI.create(dataStoreURI.getScheme()+":"+dataStoreURI.getSchemeSpecificPart()), dataMap.get(uri).toString().toUpperCase());
             }
         }
         return null;

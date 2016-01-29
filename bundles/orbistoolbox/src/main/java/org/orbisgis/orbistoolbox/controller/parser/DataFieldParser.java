@@ -36,7 +36,7 @@ import java.net.URI;
 public class DataFieldParser implements Parser {
 
     @Override
-    public Input parseInput(Field f, String processId) {
+    public Input parseInput(Field f, Object defaultValue, String processId) {
         //Instantiate the DataField object
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);

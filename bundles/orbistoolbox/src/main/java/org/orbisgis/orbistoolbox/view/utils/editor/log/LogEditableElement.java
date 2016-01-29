@@ -124,4 +124,12 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
             listener.propertyChange(event);
         }
     }
+
+    public void cancelProcess(String id) {
+        for(ProcessEditableElement pee : listPee){
+            if(pee.getId().equals(id)){
+                pee.firePropertyChangeEvent(new PropertyChangeEvent(this, ProcessEditableElement.CANCEL, null, null));
+            }
+        }
+    }
 }

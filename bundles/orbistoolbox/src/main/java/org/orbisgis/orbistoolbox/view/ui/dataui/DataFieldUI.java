@@ -26,8 +26,9 @@ import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.common.ContainerItem;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuListener;
 import java.awt.*;
-import java.awt.event.FocusListener;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -72,23 +73,27 @@ public class DataFieldUI implements DataUI{
             return panel;
         }
 
-        if(inputOrOutput.getResume().isEmpty()){
-            panel.add(new JLabel(inputOrOutput.getTitle()), "growx, wrap");
-        }
-        else {
-            panel.add(new JLabel("Select " + inputOrOutput.getResume()), "growx, wrap");
-        }
-
         JComboBox<String> comboBox = new JComboBox<>();
         comboBox.setBackground(Color.WHITE);
+        String defaultItem = "Select a field";
+        comboBox.addItem(defaultItem);
         comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());
         comboBox.putClientProperty("dataField", dataField);
         comboBox.putClientProperty("dataMap", dataMap);
         comboBox.putClientProperty("isOptional", isOptional);
+        comboBox.putClientProperty("defaultItem", defaultItem);
+        comboBox.putClientProperty("fieldTitle", inputOrOutput.getTitle());
         comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
-        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "refreshComboBox", "source", "mouseEntered"));
+        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
+        comboBox.addPopupMenuListener(EventHandler.create(PopupMenuListener.class, this, "onComboBoxEntered", "source"));
         comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
+        comboBox.setToolTipText(inputOrOutput.getResume());
         panel.add(comboBox, "growx, wrap");
+
+        if(isOptional){
+            String nullItem = "";
+            comboBox.addItem(nullItem);
+        }
 
         return panel;
     }
@@ -120,8 +125,10 @@ public class DataFieldUI implements DataUI{
      * Update the JComboBox according to if DataStore parent.
      * @param source the source JComboBox.
      */
-    public void refreshComboBox(Object source){
+    public void onComboBoxEntered(Object source){
         JComboBox<String> comboBox = (JComboBox)source;
+        String defaultItem = comboBox.getClientProperty("defaultItem").toString();
+        comboBox.removeItem(defaultItem);
         DataField dataField = (DataField)comboBox.getClientProperty("dataField");
         HashMap<URI, Object> dataMap = (HashMap)comboBox.getClientProperty("dataMap");
         boolean isOptional = (boolean)comboBox.getClientProperty("isOptional");
@@ -150,6 +157,16 @@ public class DataFieldUI implements DataUI{
                     dataFieldStr.substring(dataFieldStr.lastIndexOf(":")+1));
             ToolTipManager.sharedInstance().mouseMoved(
                     new MouseEvent(comboBox,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
+        }
+        //Else try to select the good field
+        else{
+            String title = comboBox.getClientProperty("fieldTitle").toString().toUpperCase();
+            for(int i = 0; i < comboBox.getItemCount(); i++) {
+                if(title.contains(comboBox.getItemAt(i))){
+                    comboBox.setSelectedIndex(i);
+                    break;
+                }
+            }
         }
 
         comboBox.revalidate();

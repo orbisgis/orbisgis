@@ -28,6 +28,8 @@ public class Enumeration extends ComplexData{
 
     /** List of values.*/
     private String[] values;
+    /** List of values names.*/
+    private String[] names;
     /** Default values.*/
     private String[] defaultValues;
     /** Enable or not the selection of more than one value.*/
@@ -94,5 +96,13 @@ public class Enumeration extends ComplexData{
      */
     public void setEditable(boolean editable) {
         isEditable = editable;
+    }
+
+    public void setValuesNames(String[] names){
+        this.names = names;
+    }
+
+    public String[] getValuesNames(){
+        return names;
     }
 }
