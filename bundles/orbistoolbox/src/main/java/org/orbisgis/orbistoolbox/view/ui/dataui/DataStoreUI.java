@@ -97,7 +97,6 @@ public class DataStoreUI implements DataUI{
         if(dataStore == null || extensionMap == null){
             return panel;
         }
-        panel.add(new JLabel("Select"));
 
         ButtonGroup group;
         if(isOptional) {
@@ -212,7 +211,7 @@ public class DataStoreUI implements DataUI{
         browseButton.putClientProperty("filePanel", filePanel);
         buttonPanel.add(browseButton);
         if(inputOrOutput instanceof Input) {
-            JLabel fileOptions = new JLabel("options");
+            JLabel fileOptions = new JLabel(ToolBoxIcon.getIcon("options"));
             fileOptions.putClientProperty("keepSource", false);
             fileOptions.putClientProperty("loadSource", false);
             fileOptions.addMouseListener(EventHandler.create(MouseListener.class, this, "onFileOption", ""));
@@ -247,7 +246,14 @@ public class DataStoreUI implements DataUI{
 
         JPanel radioPanel = new JPanel(new MigLayout("fill"));
         JComponent dataField  = new JPanel(new MigLayout("fill"));
-        if(dataStore.isFile()){
+        //If just an option is avaliable (geocatalog or datbase or file), don't show the ratdio buttons.
+        if(dataStore.isDataBase() && dataStore.isFile() ||
+                dataStore.isDataBase() && dataStore.isGeocatalog() ||
+                dataStore.isGeocatalog() && dataStore.isFile()) {
+            panel.add(new JLabel("Select"));
+            panel.add(radioPanel, "growx, wrap");
+        }
+        if (dataStore.isFile()) {
             group.add(file);
             radioPanel.add(file, "growx");
             file.putClientProperty("dataField", dataField);
@@ -258,18 +264,18 @@ public class DataStoreUI implements DataUI{
             dataField.removeAll();
             dataField.add(optionPanelFile, "growx, span");
         }
-        /*if(dataStore.isDataBase()){
-            group.add(database);
-            radioPanel.add(database, "growx");
-            database.putClientProperty("dataField", dataField);
-            database.putClientProperty("dataMap", dataMap);
-            database.putClientProperty("uri", inputOrOutput.getIdentifier());
+    /*if(dataStore.isDataBase()){
+        group.add(database);
+        radioPanel.add(database, "growx");
+        database.putClientProperty("dataField", dataField);
+        database.putClientProperty("dataMap", dataMap);
+        database.putClientProperty("uri", inputOrOutput.getIdentifier());
 
-            database.setSelected(true);
-            dataField.removeAll();
-            dataField.add(optionPanelDataBase, "growx, span");
-        }*/
-        if(dataStore.isGeocatalog()){
+        database.setSelected(true);
+        dataField.removeAll();
+        dataField.add(optionPanelDataBase, "growx, span");
+    }*/
+        if (dataStore.isGeocatalog()) {
             group.add(geocatalog);
             radioPanel.add(geocatalog, "growx");
             geocatalog.putClientProperty("dataField", dataField);
@@ -279,11 +285,10 @@ public class DataStoreUI implements DataUI{
             geocatalog.setSelected(true);
             dataField.removeAll();
             dataField.add(optionPanelGeocatalog, "growx, span");
-            if(comboBox.getItemCount() > 0){
+            if (comboBox.getItemCount() > 0) {
                 comboBox.setSelectedIndex(0);
             }
         }
-        panel.add(radioPanel, "growx, wrap");
         panel.add(dataField, "growx, span");
 
         return panel;
