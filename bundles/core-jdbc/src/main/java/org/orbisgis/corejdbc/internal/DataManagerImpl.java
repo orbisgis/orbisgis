@@ -17,11 +17,22 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.rowset.*;
 import javax.sql.DataSource;
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.FilteredRowSet;
+import javax.sql.rowset.JdbcRowSet;
+import javax.sql.rowset.JoinRowSet;
+import javax.sql.rowset.RowSetFactory;
+import javax.sql.rowset.WebRowSet;
 import java.io.File;
 import java.net.URI;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -126,10 +137,10 @@ public class DataManagerImpl implements DataManager {
                 try(ResultSet tablesRs = meta.getTables(null,null,null,null)) {
                     while(tablesRs.next()) {
                         String remarks = tablesRs.getString("REMARKS");
-                        if(remarks!= null && remarks.toLowerCase().startsWith("file:")) {
+                        if(remarks!= null && !remarks.isEmpty()) {
+                            File filePath = URIUtility.fileFromString(remarks);
                             try {
-                                URI filePath = URI.create(remarks);
-                                if(filePath.equals(path.toURI())) {
+                                if(filePath.equals(path) && filePath.exists()) {
                                     return new TableLocation(tablesRs.getString("TABLE_CAT"), tablesRs.getString("TABLE_SCHEM"), tablesRs.getString("TABLE_NAME")).toString();
                                 }
                             } catch (Exception ex) {
