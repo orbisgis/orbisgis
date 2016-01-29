@@ -7,8 +7,8 @@ import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
-import org.orbisgis.view.table.TableEditableElementImpl;
-import org.orbisgis.viewapi.table.TableEditableElement;
+import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tablegui.impl.TableEditableElementImpl;
 
 import java.sql.Connection;
 import java.sql.SQLException;
