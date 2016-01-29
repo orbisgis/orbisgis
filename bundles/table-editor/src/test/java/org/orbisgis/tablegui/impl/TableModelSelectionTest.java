@@ -62,8 +62,8 @@ public class TableModelSelectionTest {
             Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS TEST");
             st.execute("CREATE TABLE TEST(the_geom POINT, id integer primary key, searchval VARCHAR(50))");
-            st.execute("INSERT INTO TEST VALUES ('POINT(1 1)', 1, 'test'), ('POINT(2 2)', 2, 'hello')," +
-                    " ('POINT(3 3)', 3, 'hello home')");
+            st.execute("INSERT INTO TEST VALUES ('POINT(1 1)', 1, 'test'), ('POINT(2 2)', 5, 'hello')," +
+                    " ('POINT(3 3)', 10, 'hello home')");
             EditableSource editableSource = new TableEditableElementImpl("TEST", dataManager);
             DataSourceTableModel dataSourceTableModel = new DataSourceTableModel(editableSource);
             assertEquals("POINT (1 1)", dataSourceTableModel.getValueAt(0, 0).toString());
@@ -74,8 +74,8 @@ public class TableModelSelectionTest {
         TableSelectionFilter tableSelectionFilter = fieldsContainsFilterFactory.getFilter(filter);
         TableEditableElement editableElement = new TableEditableElementImpl("TEST", dataManager);
         tableSelectionFilter.initialize(new NullProgressMonitor(), editableElement);
+        assertFalse(tableSelectionFilter.isSelected(0, editableElement));
         assertTrue(tableSelectionFilter.isSelected(1, editableElement));
-        assertFalse(tableSelectionFilter.isSelected(2, editableElement));
-        assertTrue(tableSelectionFilter.isSelected(3, editableElement));
+        assertTrue(tableSelectionFilter.isSelected(2, editableElement));
     }
 }
