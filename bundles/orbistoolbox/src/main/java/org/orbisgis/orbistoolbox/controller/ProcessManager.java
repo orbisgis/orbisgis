@@ -168,6 +168,18 @@ public class ProcessManager {
                 return pi.getProcess();
             }
         }
+        for(ProcessIdentifier pi : processIdList){
+            for(Input input : pi.getProcess().getInput()) {
+                if (input.getIdentifier().equals(identifier)) {
+                    return pi.getProcess();
+                }
+            }
+            for(Output output : pi.getProcess().getOutput()) {
+                if (output.getIdentifier().equals(identifier)) {
+                    return pi.getProcess();
+                }
+            }
+        }
         return null;
     }
 

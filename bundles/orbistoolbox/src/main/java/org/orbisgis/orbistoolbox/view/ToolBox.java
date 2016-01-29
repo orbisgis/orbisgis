@@ -25,6 +25,7 @@ import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
@@ -651,11 +652,23 @@ public class ToolBox implements DockingPanel  {
      * @param uri URI to load.
      * @return Table name of the loaded file. Returns null if the file can't be loaded.
      */
-    public String loadURI(URI uri, boolean copyInBase) {
+    public String loadURI(URI uri, boolean copyInBase, Process p) {
         try {
+            ProcessEditor processEditor = null;
+            for(EditorDockable ed : openEditorList){
+                if(ed instanceof ProcessEditor){
+                    ProcessEditor pe = (ProcessEditor)ed;
+                    if(pe.getEditableElement().getObject().equals(p)){
+                        processEditor = pe;
+                    }
+                }
+            }
             File f = new File(uri);
             if(f.isDirectory()){
                 return null;
+            }
+            if(processEditor != null && copyInBase) {
+                processEditor.startWaiting();
             }
             //Get the table name of the file
             String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), true);
@@ -678,6 +691,9 @@ public class ToolBox implements DockingPanel  {
                             extension, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
                     driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
                 }
+            }
+            if(processEditor != null && copyInBase) {
+                processEditor.endWaiting();
             }
             return tableName;
         } catch (SQLException|IOException e) {

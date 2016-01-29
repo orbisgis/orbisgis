@@ -21,7 +21,11 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.io.FilenameUtils;
+import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.utilities.TableLocation;
 import org.omg.PortableInterceptor.INACTIVE;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
@@ -43,7 +47,9 @@ import java.awt.event.*;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 /**
@@ -58,6 +64,8 @@ public class DataStoreUI implements DataUI{
     private static final int TEXTFIELD_WIDTH = 25;
 
     private ToolBox toolBox;
+
+    private ImportWorker importWorker = new ImportWorker();
 
     public void setToolBox(ToolBox toolBox){
         this.toolBox = toolBox;
@@ -161,7 +169,7 @@ public class DataStoreUI implements DataUI{
         textField.getDocument().putProperty("dataStore", dataStore);
         textField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
                 this,
-                "saveDocumentTextFile",
+                "onDocumentSet",
                 "document"));
         textField.setToolTipText(inputOrOutput.getResume());
 
@@ -206,6 +214,7 @@ public class DataStoreUI implements DataUI{
                 filePanel.addFilter(ext, description);
             }
         }
+        file.putClientProperty("textField", textField);
         filePanel.loadState();
         textField.setText(filePanel.getCurrentDirectory().getAbsolutePath());
         browseButton.putClientProperty("filePanel", filePanel);
@@ -292,6 +301,11 @@ public class DataStoreUI implements DataUI{
         panel.add(dataField, "growx, span");
 
         return panel;
+    }
+
+    public void onDocumentSet(Document document){
+        importWorker = new ImportWorker();
+        importWorker.setDocument(document);
     }
 
     /**
@@ -439,6 +453,9 @@ public class DataStoreUI implements DataUI{
                 JPanel optionPanel = (JPanel) radioButton.getClientProperty("optionPanel");
                 dataField.add(optionPanel, "growx, span");
                 dataField.repaint();
+                if(radioButton.getClientProperty("textField") != null){
+                    ((JTextField) radioButton.getClientProperty("textField")).setText("");
+                }
             }
             else{
                 HashMap<URI, Object> dataMap = (HashMap<URI, Object>)radioButton.getClientProperty("dataMap");
@@ -481,7 +498,9 @@ public class DataStoreUI implements DataUI{
                     keepSource = (boolean)fileOptions.getClientProperty("keepSource");
                 }
                 //Load the selected file an retrieve the table name.
-                String tableName = toolBox.loadURI(file.toURI(), loadSource);
+                String tableName = toolBox.loadURI(file.toURI(),
+                        loadSource,
+                        toolBox.getProcessManager().getProcess(inputOrOutput.getIdentifier()));
                 if (tableName != null) {
                     String fileStr = file.toURI().toString();
                     if(keepSource){
@@ -532,13 +551,13 @@ public class DataStoreUI implements DataUI{
     public void saveDocumentTextDataBase(Document document){
         try {
             DataStore dataStore = (DataStore)document.getProperty("dataStore");
+            URI uri = (URI)document.getProperty("uri");
             URI dataBaseURI = URI.create(document.getText(0, document.getLength()));
             //Load the selected file an retrieve the table name.
-            String tableName = toolBox.loadURI(dataBaseURI, false);
+            String tableName = toolBox.loadURI(dataBaseURI, false, toolBox.getProcessManager().getProcess(uri));
             if(tableName != null) {
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
-                URI uri = (URI)document.getProperty("uri");
                 Object oldValue = dataMap.get(uri);
                 if(oldValue != null && oldValue instanceof URI){
                     URI oldUri = ((URI)oldValue);
@@ -596,5 +615,21 @@ public class DataStoreUI implements DataUI{
         popupMenu.add(keepItem);
         popupMenu.add(loadItem);
         popupMenu.show(source, me.getX(), me.getY());
+    }
+
+    public class ImportWorker extends SwingWorkerPM {
+
+        private Document document;
+
+        public void setDocument(Document document){
+            this.document = document;
+            this.execute();
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            saveDocumentTextFile(document);
+            return null;
+        }
     }
 }
