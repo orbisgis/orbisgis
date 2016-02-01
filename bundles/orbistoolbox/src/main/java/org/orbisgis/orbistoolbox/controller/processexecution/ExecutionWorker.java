@@ -81,11 +81,12 @@ public class ExecutionWorker extends SwingWorkerPM{
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
                     "Pre-processing");
+            Map<URI, Object> stash = new HashMap<>();
             for(DescriptionType inputOrOutput : pee.getProcess().getOutput()){
-                toolBox.getDataProcessingManager().preProcessData(inputOrOutput, dataMap);
+                stash.putAll(toolBox.getDataProcessingManager().preProcessData(inputOrOutput, dataMap));
             }
             for(DescriptionType inputOrOutput : pee.getProcess().getInput()){
-                toolBox.getDataProcessingManager().preProcessData(inputOrOutput, dataMap);
+                stash.putAll(toolBox.getDataProcessingManager().preProcessData(inputOrOutput, dataMap));
             }
 
             //Execute the process and retrieve the groovy object.
@@ -99,10 +100,10 @@ public class ExecutionWorker extends SwingWorkerPM{
                     ProcessEditableElement.LogType.INFO,
                     "Post-processing");
             for(DescriptionType inputOrOutput : pee.getProcess().getOutput()){
-                toolBox.getDataProcessingManager().postProcessData(inputOrOutput, dataMap);
+                toolBox.getDataProcessingManager().postProcessData(inputOrOutput, dataMap, stash);
             }
             for(DescriptionType inputOrOutput : pee.getProcess().getInput()){
-                toolBox.getDataProcessingManager().postProcessData(inputOrOutput, dataMap);
+                toolBox.getDataProcessingManager().postProcessData(inputOrOutput, dataMap, stash);
             }
 
             //Print in the log the process execution end

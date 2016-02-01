@@ -20,6 +20,8 @@
 package org.orbisgis.orbistoolbox.controller;
 
 import groovy.lang.GroovyObject;
+import groovy.sql.Sql;
+import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.orbistoolbox.controller.parser.ParserController;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
@@ -108,7 +110,7 @@ public class ProcessManager {
                                        Map<String, Object> properties){
         GroovyObject groovyObject = createProcess(process, dataMap);
         for(Map.Entry<String, Object> variable : properties.entrySet()) {
-            groovyObject.setProperty("grv_" + variable.getKey(), variable.getValue());
+            groovyObject.setProperty("sql", new Sql((DataSourceService)variable.getValue()));
         }
         groovyObject.invokeMethod("processing", null);
         return groovyObject;
@@ -157,6 +159,7 @@ public class ProcessManager {
 
     /**
      * Return the process corresponding to the given identifier.
+     * The identifier can the the one of the process or an input or an output.
      * @param identifier Identifier of the desired process.
      * @return The process.
      */
@@ -164,6 +167,18 @@ public class ProcessManager {
         for(ProcessIdentifier pi : processIdList){
             if(pi.getURI().equals(identifier)){
                 return pi.getProcess();
+            }
+        }
+        for(ProcessIdentifier pi : processIdList){
+            for(Input input : pi.getProcess().getInput()) {
+                if (input.getIdentifier().equals(identifier)) {
+                    return pi.getProcess();
+                }
+            }
+            for(Output output : pi.getProcess().getOutput()) {
+                if (output.getIdentifier().equals(identifier)) {
+                    return pi.getProcess();
+                }
             }
         }
         return null;

@@ -33,6 +33,6 @@ import java.util.Map;
 public interface DataProcessing {
 
     Class getDataClass();
-    Object preProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap);
-    Object postProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap);
+    Map<URI, Object> preProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap);
+    void postProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash);
 }

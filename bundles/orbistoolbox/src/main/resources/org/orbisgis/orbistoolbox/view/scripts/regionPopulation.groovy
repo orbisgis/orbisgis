@@ -30,7 +30,6 @@ import org.orbisgis.orbistoolboxapi.annotations.model.*
         resume = "Union of municipality by their region, summing the population and doing the union of the geometry ",
         keywords = "OrbisGIS,ST_Union,ST_Accum,example")
 def processing() {
-    sql = Sql.newInstance(grv_ds)
     sql.execute("DROP TABLE IF EXISTS " + dataStoreOutput + ";")
     sql.execute("DROP TABLE IF EXISTS " + csvDataOutput + ";")
     //Build the query

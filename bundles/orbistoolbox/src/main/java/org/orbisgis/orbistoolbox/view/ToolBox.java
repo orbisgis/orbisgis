@@ -25,6 +25,7 @@ import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
@@ -114,7 +115,8 @@ public class ToolBox implements DockingPanel  {
     private Properties tbProperties;
     /** List of process ended, waiting the 5 seconds before being removed.*/
     boolean multiThreaded = true;
-    private Boolean isH2;
+    /** True if the database is H2, false otherwise. */
+    private boolean isH2;
 
     @Activate
     public void init(){
@@ -163,18 +165,21 @@ public class ToolBox implements DockingPanel  {
         //Find if the database used is H2 or not.
         //If yes, make all the processes wait for the previous one.
         try {
-            if(dataManager != null && isH2()){
+            if(dataManager != null){
                 Connection connection = dataManager.getDataSource().getConnection();
-                Statement statement = connection.createStatement();
-                ResultSet result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MVCC';");
-                result.next();
-                if(!result.getString(1).equals("TRUE")){
-                    multiThreaded = false;
-                }
-                result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MULTI_THREADED';");
-                result.next();
-                if(!result.getString(1).equals("1")){
-                    multiThreaded = false;
+                isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                if(isH2) {
+                    Statement statement = connection.createStatement();
+                    ResultSet result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MVCC';");
+                    result.next();
+                    if (!result.getString(1).equals("TRUE")) {
+                        multiThreaded = false;
+                    }
+                    result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MULTI_THREADED';");
+                    result.next();
+                    if (!result.getString(1).equals("1")) {
+                        multiThreaded = false;
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -186,18 +191,6 @@ public class ToolBox implements DockingPanel  {
                     " the toolbox won't be able to run more than one process at the same time.\n" +
                     "Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000; MULTI_THREADED=TRUE'");
         }
-    }
-
-    private boolean isH2() {
-        if(isH2 == null) {
-            try(Connection connection = dataManager.getDataSource().getConnection()) {
-                isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-            } catch (SQLException ex) {
-                LoggerFactory.getLogger(ToolBox.class).error(ex.getLocalizedMessage(), ex);
-                return false;
-            }
-        }
-        return isH2;
     }
 
     /**
@@ -255,7 +248,7 @@ public class ToolBox implements DockingPanel  {
             }
         }
         areScriptsCopied = true;
-        addLocalSource(wpsScriptFolder.toURI(), "orbisgis");
+        addLocalSource(wpsScriptFolder.toURI(), "orbisgis", true);
     }
 
     @Deactivate
@@ -349,9 +342,14 @@ public class ToolBox implements DockingPanel  {
      * @param uri Folder URI where the script are located.
      * @param iconName Name of the icon to use for this node.
      */
-    public void addLocalSource(URI uri, String iconName){
+    public void addLocalSource(URI uri, String iconName, boolean isDefaultScript){
         processManager.addLocalSource(uri);
-        toolBoxPanel.addLocalSource(uri, processManager, iconName);
+        if(isDefaultScript){
+            toolBoxPanel.addDefaultLocalSource(uri, processManager, iconName);
+        }
+        else {
+            toolBoxPanel.addLocalSource(uri, processManager, iconName);
+        }
     }
 
     /**
@@ -394,6 +392,10 @@ public class ToolBox implements DockingPanel  {
             LoggerFactory.getLogger(ToolBox.class).warn("The process '"+pee.getProcess().getTitle()+"' is already open.");
         }
         return pee;
+    }
+
+    public void openProcess(){
+        openProcess(toolBoxPanel.getSelectedNode().getUri());
     }
 
     /**
@@ -651,26 +653,48 @@ public class ToolBox implements DockingPanel  {
      * @param uri URI to load.
      * @return Table name of the loaded file. Returns null if the file can't be loaded.
      */
-    public String loadURI(URI uri) {
+    public String loadURI(URI uri, boolean copyInBase, Process p) {
         try {
+            ProcessEditor processEditor = null;
+            for(EditorDockable ed : openEditorList){
+                if(ed instanceof ProcessEditor){
+                    ProcessEditor pe = (ProcessEditor)ed;
+                    if(pe.getEditableElement().getObject().equals(p)){
+                        processEditor = pe;
+                    }
+                }
+            }
             File f = new File(uri);
             if(f.isDirectory()){
                 return null;
             }
+            if(processEditor != null && (copyInBase || !isH2)) {
+                processEditor.startWaiting();
+            }
             //Get the table name of the file
-            String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), true);
+            String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), isH2);
             String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
             //Find the corresponding driver and load the file
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
+            Connection connection = dataManager.getDataSource().getConnection();
+            Statement statement = connection.createStatement();
             if(extension.equalsIgnoreCase("csv")){
-                Connection connection = dataManager.getDataSource().getConnection();
-                Statement statement = connection.createStatement();
-                statement.execute("CREATE TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
+                statement.execute("CREATE TEMPORARY TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
             }
             else {
-                DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
-                        extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-                driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+                if(copyInBase || !isH2){
+                    DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
+                            extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+                }
+                else {
+                    DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
+                            extension, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
+                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+                }
+            }
+            if(processEditor != null && (copyInBase || !isH2)) {
+                processEditor.endWaiting();
             }
             return tableName;
         } catch (SQLException|IOException e) {
@@ -716,5 +740,21 @@ public class ToolBox implements DockingPanel  {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
         return fieldValues;
+    }
+
+    /**
+     * Removes a table from the database.
+     * @param tableName Table to remove from the dataBase.
+     */
+    public static void removeTempTable(String tableName){
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            if(JDBCUtilities.tableExists(connection, tableName)) {
+                Statement statement = connection.createStatement();
+                statement.execute("DROP TABLE " + tableName);
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+        }
     }
 }

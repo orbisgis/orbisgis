@@ -33,8 +33,6 @@ import org.orbisgis.orbistoolboxapi.annotations.model.*
         resume = "Execute a buffer on a geometric field.",
         keywords = "OrbisGIS,ST_Buffer,example")
 def processing() {
-    //Get the SQL instance
-    sql = Sql.newInstance(grv_ds)
     //Drop the output DataStore
     sql.execute("DROP TABLE IF EXISTS " + dataStoreOutput + ";")
 

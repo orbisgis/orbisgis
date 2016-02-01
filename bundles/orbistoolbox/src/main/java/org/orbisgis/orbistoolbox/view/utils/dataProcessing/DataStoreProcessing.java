@@ -35,36 +35,41 @@ import java.util.Map;
  */
 public class DataStoreProcessing implements DataProcessing {
 
-    private Map<URI, Object> stash;
-
-    public DataStoreProcessing(){
-        stash = new HashMap<>();
-    }
-
     @Override
     public Class getDataClass() {
         return DataStore.class;
     }
 
     @Override
-    public Object preProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public Map<URI, Object> preProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+        Map<URI, Object> stash = new HashMap<>();
         URI uri = inputOrOutput.getIdentifier();
         URI dataStoreURI = (URI)dataMap.get(uri);
-        String tableName = null;
+        String tableName;
         if(inputOrOutput instanceof Input){
             if(dataStoreURI.getScheme().equals("geocatalog")){
                 tableName = dataStoreURI.getSchemeSpecificPart();
                 dataMap.put(uri, tableName);
+                stash.put(uri, "geocatalog");
             }
             else if(dataStoreURI.getScheme().equals("file")){
                 DataStore dataStore = (DataStore) ((Input) inputOrOutput).getDataDescription();
+                String path = dataStoreURI.getSchemeSpecificPart();
+                boolean keep = path.endsWith("$");
                 if(dataStore.isAutoImport()) {
-                    tableName = toolBox.loadURI(URI.create(dataStoreURI.getScheme() + ":" + dataStoreURI.getSchemeSpecificPart()));
-                    dataMap.put(uri, tableName);
+                    dataMap.put(uri, dataStoreURI.getFragment());
+                    if(!keep) {
+                        stash.put(uri, "file");
+                    }
                 }
                 else{
-                    String filePath = dataStoreURI.getSchemeSpecificPart();
-                    dataMap.put(uri, filePath);
+                    if(!keep) {
+                        ToolBox.removeTempTable(dataStoreURI.getFragment());
+                    }
+                    else{
+                        path = path.replace("$", "");
+                    }
+                    dataMap.put(uri, path);
                 }
             }
         }
@@ -80,13 +85,17 @@ public class DataStoreProcessing implements DataProcessing {
                 dataMap.put(uri, tableName);
             }
         }
-        return tableName;
+        return stash;
     }
 
     @Override
-    public Object postProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public void postProcessData(ToolBox toolBox, DescriptionType inputOrOutput,
+                                  Map<URI, Object> dataMap, Map<URI, Object> stash) {
         if(inputOrOutput instanceof Input){
-
+            URI uri = inputOrOutput.getIdentifier();
+            if(stash.get(uri) != null && stash.get(uri).equals("file")){
+                ToolBox.removeTempTable(dataMap.get(uri).toString());
+            }
         }
         if(inputOrOutput instanceof Output){
             URI uri = inputOrOutput.getIdentifier();
@@ -95,6 +104,5 @@ public class DataStoreProcessing implements DataProcessing {
                 toolBox.saveURI(URI.create(dataStoreURI.getScheme()+":"+dataStoreURI.getSchemeSpecificPart()), dataMap.get(uri).toString().toUpperCase());
             }
         }
-        return null;
     }
 }

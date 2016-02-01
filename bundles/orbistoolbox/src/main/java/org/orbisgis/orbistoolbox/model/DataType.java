@@ -76,6 +76,7 @@ public enum DataType {
     }
 
     public static boolean testHDBype(DataType dataType, String dbTypeName){
+        dbTypeName = dbTypeName.toUpperCase();
         switch(dataType) {
             case INTEGER:
                 return (dbTypeName.equals("INT") || dbTypeName.equals("INTEGER") ||
@@ -83,7 +84,7 @@ public enum DataType {
             case BOOLEAN:
                 return (dbTypeName.equals("BOOLEAN") || dbTypeName.equals("BIT") || dbTypeName.equals("BOOL"));
             case BYTE:
-                return (dbTypeName.equals("TYNIINT"));
+                return (dbTypeName.equals("TINYINT"));
             case SHORT:
                 return (dbTypeName.equals("SMALLINT") || dbTypeName.equals("INT2") || dbTypeName.equals("YEAR"));
             case LONG:
@@ -102,7 +103,7 @@ public enum DataType {
 
             case NUMBER:
                 return (dbTypeName.equals("INT") || dbTypeName.equals("INTEGER") || dbTypeName.equals("MEDIUMINT") ||
-                        dbTypeName.equals("INT4") || dbTypeName.equals("SIGNED") || dbTypeName.equals("TYNIINT") ||
+                        dbTypeName.equals("INT4") || dbTypeName.equals("SIGNED") || dbTypeName.equals("TINYINT") ||
                         dbTypeName.equals("SMALLINT") || dbTypeName.equals("INT2") || dbTypeName.equals("YEAR") ||
                         dbTypeName.equals("BIGINT") || dbTypeName.equals("INT8") || dbTypeName.equals("IDENTITY") ||
                         dbTypeName.equals("DOUBLE") || dbTypeName.equals("FLOAT") || dbTypeName.equals("FLOAT8") ||

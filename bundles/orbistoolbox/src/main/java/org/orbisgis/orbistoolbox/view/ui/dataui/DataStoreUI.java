@@ -21,6 +21,11 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.io.FilenameUtils;
+import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.utilities.TableLocation;
+import org.omg.PortableInterceptor.INACTIVE;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
@@ -42,7 +47,9 @@ import java.awt.event.*;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 /**
@@ -57,6 +64,8 @@ public class DataStoreUI implements DataUI{
     private static final int TEXTFIELD_WIDTH = 25;
 
     private ToolBox toolBox;
+
+    private ImportWorker importWorker = new ImportWorker();
 
     public void setToolBox(ToolBox toolBox){
         this.toolBox = toolBox;
@@ -96,7 +105,6 @@ public class DataStoreUI implements DataUI{
         if(dataStore == null || extensionMap == null){
             return panel;
         }
-        panel.add(new JLabel("Select"));
 
         ButtonGroup group;
         if(isOptional) {
@@ -119,7 +127,7 @@ public class DataStoreUI implements DataUI{
 
         /**Instantiate the geocatalog radioButton and its optionPanel**/
         JRadioButton geocatalog = new JRadioButton("Geocatalog");
-        JPanel optionPanelGeocatalog = new JPanel(new BorderLayout());
+        JPanel optionPanelGeocatalog = new JPanel(new MigLayout("fill"));
         JComboBox<String> comboBox;
         if(dataStore.isSpatial()) {
             comboBox = new JComboBox<>(ToolBox.getGeocatalogTableList(true).toArray(new String[]{}));
@@ -146,27 +154,31 @@ public class DataStoreUI implements DataUI{
             doc.putProperty("comboBox", comboBox);
             doc.addDocumentListener(EventHandler.create(DocumentListener.class, this, "onNewTable", "document"));
         }
-        optionPanelGeocatalog.add(new JLabel("Geocatalog :"), BorderLayout.LINE_START);
-        optionPanelGeocatalog.add(tableSelection, BorderLayout.CENTER);
+        optionPanelGeocatalog.add(new JLabel("Geocatalog :"), "dock west");
+        optionPanelGeocatalog.add(tableSelection, "span, growx");
         geocatalog.putClientProperty("optionPanel", optionPanelGeocatalog);
         geocatalog.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
 
         /**Instantiate the file radioButton and its optionPanel**/
         JRadioButton file = new JRadioButton("File");
-        JPanel optionPanelFile = new JPanel(new BorderLayout());
-        optionPanelFile.add(new JLabel("file :"), BorderLayout.LINE_START);
+        JPanel optionPanelFile = new JPanel(new MigLayout("fill"));
+        optionPanelFile.add(new JLabel("File : "), "dock west");
         JTextField textField = new JTextField();
         textField.getDocument().putProperty("dataMap", dataMap);
         textField.getDocument().putProperty("inputOrOutput", inputOrOutput);
         textField.getDocument().putProperty("dataStore", dataStore);
         textField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
                 this,
-                "saveDocumentTextFile",
+                "onDocumentSet",
                 "document"));
         textField.setToolTipText(inputOrOutput.getResume());
 
-        optionPanelFile.add(textField, BorderLayout.CENTER);
-        JButton browseButton = new JButton("Browse");
+        optionPanelFile.add(textField, "span, growx");
+        JPanel buttonPanel = new JPanel(new MigLayout());
+        JButton browseButton = new JButton(ToolBoxIcon.getIcon("browse"));
+        browseButton.setBorderPainted(false);
+        browseButton.setContentAreaFilled(false);
+        browseButton.setMargin(new Insets(0, 0, 0, 0));
         browseButton.addActionListener(EventHandler.create(ActionListener.class, this, "onBrowse", ""));
         browseButton.putClientProperty("uri", inputOrOutput.getIdentifier());
         browseButton.putClientProperty("dataMap", dataMap);
@@ -202,11 +214,21 @@ public class DataStoreUI implements DataUI{
                 filePanel.addFilter(ext, description);
             }
         }
+        file.putClientProperty("textField", textField);
         filePanel.loadState();
         textField.setText(filePanel.getCurrentDirectory().getAbsolutePath());
         browseButton.putClientProperty("filePanel", filePanel);
+        buttonPanel.add(browseButton);
+        if(inputOrOutput instanceof Input) {
+            JLabel fileOptions = new JLabel(ToolBoxIcon.getIcon("options"));
+            fileOptions.putClientProperty("keepSource", false);
+            fileOptions.putClientProperty("loadSource", false);
+            fileOptions.addMouseListener(EventHandler.create(MouseListener.class, this, "onFileOption", ""));
+            textField.getDocument().putProperty("fileOptions", fileOptions);
+            buttonPanel.add(fileOptions);
+        }
 
-        optionPanelFile.add(browseButton, BorderLayout.LINE_END);
+        optionPanelFile.add(buttonPanel, "dock east");
         file.putClientProperty("optionPanel", optionPanelFile);
         file.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
 
@@ -233,7 +255,14 @@ public class DataStoreUI implements DataUI{
 
         JPanel radioPanel = new JPanel(new MigLayout("fill"));
         JComponent dataField  = new JPanel(new MigLayout("fill"));
-        if(dataStore.isFile()){
+        //If just an option is avaliable (geocatalog or datbase or file), don't show the ratdio buttons.
+        if(dataStore.isDataBase() && dataStore.isFile() ||
+                dataStore.isDataBase() && dataStore.isGeocatalog() ||
+                dataStore.isGeocatalog() && dataStore.isFile()) {
+            panel.add(new JLabel("Select"));
+            panel.add(radioPanel, "growx, wrap");
+        }
+        if (dataStore.isFile()) {
             group.add(file);
             radioPanel.add(file, "growx");
             file.putClientProperty("dataField", dataField);
@@ -244,18 +273,18 @@ public class DataStoreUI implements DataUI{
             dataField.removeAll();
             dataField.add(optionPanelFile, "growx, span");
         }
-        /*if(dataStore.isDataBase()){
-            group.add(database);
-            radioPanel.add(database, "growx");
-            database.putClientProperty("dataField", dataField);
-            database.putClientProperty("dataMap", dataMap);
-            database.putClientProperty("uri", inputOrOutput.getIdentifier());
+    /*if(dataStore.isDataBase()){
+        group.add(database);
+        radioPanel.add(database, "growx");
+        database.putClientProperty("dataField", dataField);
+        database.putClientProperty("dataMap", dataMap);
+        database.putClientProperty("uri", inputOrOutput.getIdentifier());
 
-            database.setSelected(true);
-            dataField.removeAll();
-            dataField.add(optionPanelDataBase, "growx, span");
-        }*/
-        if(dataStore.isGeocatalog()){
+        database.setSelected(true);
+        dataField.removeAll();
+        dataField.add(optionPanelDataBase, "growx, span");
+    }*/
+        if (dataStore.isGeocatalog()) {
             group.add(geocatalog);
             radioPanel.add(geocatalog, "growx");
             geocatalog.putClientProperty("dataField", dataField);
@@ -265,14 +294,18 @@ public class DataStoreUI implements DataUI{
             geocatalog.setSelected(true);
             dataField.removeAll();
             dataField.add(optionPanelGeocatalog, "growx, span");
-            if(comboBox.getItemCount() > 0){
+            if (comboBox.getItemCount() > 0) {
                 comboBox.setSelectedIndex(0);
             }
         }
-        panel.add(radioPanel, "growx, wrap");
         panel.add(dataField, "growx, span");
 
         return panel;
+    }
+
+    public void onDocumentSet(Document document){
+        importWorker = new ImportWorker();
+        importWorker.setDocument(document);
     }
 
     /**
@@ -358,7 +391,13 @@ public class DataStoreUI implements DataUI{
         for (DataField dataField : dataStore.getListDataField()) {
             dataField.setSourceModified(true);
         }
-        dataMap.remove(uri);
+        Object oldValue = dataMap.get(uri);
+        if(oldValue != null && oldValue instanceof URI){
+            URI oldUri = ((URI)oldValue);
+            if(oldUri.getScheme().equals("file")){
+                ToolBox.removeTempTable(oldUri.getFragment());
+            }
+        }
         dataMap.put(uri, URI.create("geocatalog:"+comboBox.getSelectedItem()+"#"+comboBox.getSelectedItem()));
     }
 
@@ -414,6 +453,9 @@ public class DataStoreUI implements DataUI{
                 JPanel optionPanel = (JPanel) radioButton.getClientProperty("optionPanel");
                 dataField.add(optionPanel, "growx, span");
                 dataField.repaint();
+                if(radioButton.getClientProperty("textField") != null){
+                    ((JTextField) radioButton.getClientProperty("textField")).setText("");
+                }
             }
             else{
                 HashMap<URI, Object> dataMap = (HashMap<URI, Object>)radioButton.getClientProperty("dataMap");
@@ -443,20 +485,43 @@ public class DataStoreUI implements DataUI{
      * @param document
      */
     public void saveDocumentTextFile(Document document){
+        URI selectedFileURI = null;
         try {
             DataStore dataStore = (DataStore)document.getProperty("dataStore");
+            JComponent fileOptions = (JComponent) document.getProperty("fileOptions");
             DescriptionType inputOrOutput = (DescriptionType)document.getProperty("inputOrOutput");
             File file = new File(document.getText(0, document.getLength()));
+            if(file.isDirectory()){
+                return;
+            }
             if(inputOrOutput instanceof Input) {
+                boolean loadSource = false;
+                boolean keepSource = false;
+                if(fileOptions != null){
+                    loadSource = (boolean)fileOptions.getClientProperty("loadSource");
+                    keepSource = (boolean)fileOptions.getClientProperty("keepSource");
+                }
                 //Load the selected file an retrieve the table name.
-                String tableName = toolBox.loadURI(file.toURI());
+                String tableName = toolBox.loadURI(file.toURI(),
+                        loadSource,
+                        toolBox.getProcessManager().getProcess(inputOrOutput.getIdentifier()));
                 if (tableName != null) {
+                    String fileStr = file.toURI().toString();
+                    if(keepSource){
+                        fileStr += "$";
+                    }
                     //Saves the table name in the URI into the uri fragment
-                    URI selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
+                    selectedFileURI = URI.create(fileStr + "#" + tableName);
                     //Store the selection
                     Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
                     URI uri = inputOrOutput.getIdentifier();
-                    dataMap.remove(uri);
+                    Object oldValue = dataMap.get(uri);
+                    if(oldValue != null && oldValue instanceof URI){
+                        URI oldUri = ((URI)oldValue);
+                        if(oldUri.getScheme().equals("file")){
+                            ToolBox.removeTempTable(oldUri.getFragment());
+                        }
+                    }
                     dataMap.put(uri, selectedFileURI);
                     //tells the dataField they should revalidate
                     for (DataField dataField : dataStore.getListDataField()) {
@@ -471,7 +536,7 @@ public class DataStoreUI implements DataUI{
             }
             if(inputOrOutput instanceof Output){
                 String tableName = toolBox.getDataManager().findUniqueTableName(FilenameUtils.getBaseName(file.getName()));
-                URI selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
+                selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
                 URI uri = inputOrOutput.getIdentifier();
@@ -490,14 +555,20 @@ public class DataStoreUI implements DataUI{
     public void saveDocumentTextDataBase(Document document){
         try {
             DataStore dataStore = (DataStore)document.getProperty("dataStore");
+            URI uri = (URI)document.getProperty("uri");
             URI dataBaseURI = URI.create(document.getText(0, document.getLength()));
             //Load the selected file an retrieve the table name.
-            String tableName = toolBox.loadURI(dataBaseURI);
+            String tableName = toolBox.loadURI(dataBaseURI, false, toolBox.getProcessManager().getProcess(uri));
             if(tableName != null) {
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
-                URI uri = (URI)document.getProperty("uri");
-                dataMap.remove(uri);
+                Object oldValue = dataMap.get(uri);
+                if(oldValue != null && oldValue instanceof URI){
+                    URI oldUri = ((URI)oldValue);
+                    if(oldUri.getScheme().equals("file")){
+                        ToolBox.removeTempTable(oldUri.getFragment());
+                    }
+                }
                 dataMap.put(uri, tableName);
                 //tells the dataField they should revalidate
                 for (DataField dataField : dataStore.getListDataField()) {
@@ -511,6 +582,65 @@ public class DataStoreUI implements DataUI{
             }
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
+        }
+    }
+
+    /**
+     * When the file option icon is hovered, display a popup menu with the options.
+     * @param me
+     */
+    public void onFileOption(MouseEvent me){
+        JComponent source = (JComponent)me.getSource();
+        boolean keepSource = (boolean)source.getClientProperty("keepSource");
+        boolean loadSource = (boolean)source.getClientProperty("loadSource");
+        JPopupMenu popupMenu = new JPopupMenu();
+        JCheckBoxMenuItem keepItem = new JCheckBoxMenuItem("Delete input", null, !keepSource){
+            @Override
+            protected void processMouseEvent(MouseEvent evt) {
+                if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
+                    doClick();
+                    setArmed(true);
+                    ((JComponent)this.getClientProperty("fileOption")).putClientProperty("keepSource", !this.getState());
+                } else {
+                    super.processMouseEvent(evt);
+                }
+            }
+        };
+        keepItem.putClientProperty("fileOption", source);
+        JCheckBoxMenuItem loadItem = new JCheckBoxMenuItem("Linked table", null, !loadSource) {
+            @Override
+            protected void processMouseEvent(MouseEvent evt) {
+                if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
+                    doClick();
+                    setArmed(true);
+                    ((JComponent)this.getClientProperty("fileOption")).putClientProperty("loadSource", !this.getState());
+                } else {
+                    super.processMouseEvent(evt);
+                }
+            }
+        };
+        loadItem.putClientProperty("fileOption", source);
+        popupMenu.add(keepItem);
+        popupMenu.add(loadItem);
+        popupMenu.show(source, me.getX(), me.getY());
+    }
+
+    /**
+     * SwingWorker extension which will load the the selected datasource.
+     */
+    public class ImportWorker extends SwingWorkerPM {
+
+        private Document document;
+
+        public void setDocument(Document document){
+            this.document = document;
+            this.execute();
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            saveDocumentTextFile(document);
+            return null;
         }
     }
 }

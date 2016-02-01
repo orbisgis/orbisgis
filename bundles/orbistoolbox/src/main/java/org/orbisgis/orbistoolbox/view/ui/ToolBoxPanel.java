@@ -89,6 +89,10 @@ public class ToolBoxPanel extends JPanel {
     private ActionCommands popupNodeActions;
     /** Action available in the right click popup on selecting a process (leaf) */
     private ActionCommands popupLeafActions;
+    /** Action available in the right click popup on selecting a default OrbisGIS process (leaf) */
+    private ActionCommands popupOrbisGISLeafActions;
+    /** Action available in the right click popup on selecting a default OrbisGIS node (folder) */
+    private ActionCommands popupOrbisGISNodeActions;
 
     /** Map containing all the host (localhost ...) and the associated node. */
     private Map<URI, TreeNodeWps> mapHostNode;
@@ -191,10 +195,21 @@ public class ToolBoxPanel extends JPanel {
                     popupGlobalActions.copyEnabledActions(popupMenu);
                 }
                 else {
-                    if (((TreeNodeWps) tree.getLastSelectedPathComponent()).isLeaf()) {
-                        popupLeafActions.copyEnabledActions(popupMenu);
+                    TreeNodeWps node = (TreeNodeWps) tree.getLastSelectedPathComponent();
+                    if (node.isLeaf()) {
+                        if(node.isDefaultOrbisGIS()){
+                            popupOrbisGISLeafActions.copyEnabledActions(popupMenu);
+                        }
+                        else {
+                            popupLeafActions.copyEnabledActions(popupMenu);
+                        }
                     } else {
-                        popupNodeActions.copyEnabledActions(popupMenu);
+                        if(node.isDefaultOrbisGIS()){
+                            popupOrbisGISNodeActions.copyEnabledActions(popupMenu);
+                        }
+                        else {
+                            popupNodeActions.copyEnabledActions(popupMenu);
+                        }
                     }
                 }
             }
@@ -287,7 +302,7 @@ public class ToolBoxPanel extends JPanel {
                         tagNode.setValidNode(true);
                         tagModel.insertNodeInto(tagNode, root, 0);
                     }
-                    if (getChildWithUri(uri, tagNode) == null) {
+                    if (getChildWithUri(uri, tagNode).isEmpty()) {
                         tagModel.insertNodeInto(script.deepCopy(), tagNode, 0);
                     }
                 }
@@ -301,7 +316,7 @@ public class ToolBoxPanel extends JPanel {
                     tagNode.setValidNode(true);
                     tagModel.insertNodeInto(tagNode, root, 0);
                 }
-                if(getChildWithUri(uri, tagNode) == null){
+                if(getChildWithUri(uri, tagNode).isEmpty()){
                     tagModel.insertNodeInto(script.deepCopy(), tagNode, 0);
                 }
             }
@@ -316,7 +331,7 @@ public class ToolBoxPanel extends JPanel {
                 tagNode.setValidNode(true);
                 tagModel.insertNodeInto(tagNode, root, 0);
             }
-            if(getChildWithUri(uri, tagNode) == null){
+            if(getChildWithUri(uri, tagNode).isEmpty()){
                 tagModel.insertNodeInto(script.deepCopy(), tagNode, 0);
             }
         }
@@ -352,6 +367,34 @@ public class ToolBoxPanel extends JPanel {
             }
         }
         return child;
+    }
+
+    /**
+     * Adds a local source of default scripts. Open the given directory and find all the groovy script contained.
+     * @param directoryUri Directory URI to analyse.
+     * @param processManager ProcessManager.
+     * @param iconName Name of the icon to use for this node.
+     */
+    public void addDefaultLocalSource(URI directoryUri, ProcessManager processManager, String iconName) {
+        addLocalSourceInFileModel(directoryUri, mapHostNode.get(LOCALHOST_URI), iconName, iconName, iconName,
+                TreeNodeWps.ERROR_ICON_NAME);
+        File directory = new File(directoryUri);
+        for (File f : directory.listFiles()) {
+            if (f.getName().endsWith(".groovy")) {
+                addScriptInTagModel(processManager.getProcess(f.toURI()), f.toURI(), null, null, null, null);
+            }
+        }
+        TreeNodeWps scriptFileModel = getChildWithUri(directoryUri, (TreeNodeWps)fileModel.getRoot()).get(0);
+        scriptFileModel.setDefaultOrbisGIS(true);
+        for(TreeNodeWps node : getAllChild(scriptFileModel)){
+            node.setDefaultOrbisGIS(true);
+            List<TreeNodeWps> tagNodeList = getChildWithUri(node.getUri(), (TreeNodeWps)tagModel.getRoot());
+            for(TreeNodeWps tagNode : tagNodeList){
+                tagNode.setDefaultOrbisGIS(true);
+            }
+        }
+
+        refresh();
     }
 
     /**
@@ -416,7 +459,14 @@ public class ToolBoxPanel extends JPanel {
      */
     private void addLocalSourceInFileModel(URI directory, TreeNodeWps hostNode, String customCloseIconName,
                                    String customOpenIconName, String customLeafIconName, String customInvalidIconName){
-        TreeNodeWps source = getChildWithUri(directory, hostNode);
+        List<TreeNodeWps> sourceList = getChildWithUri(directory, hostNode);
+        TreeNodeWps source;
+        if(sourceList.isEmpty()){
+            source = null;
+        }
+        else{
+            source = sourceList.get(0);
+        }
         String folderName = new File(directory).getName();
 
         if(source == null) {
@@ -433,7 +483,7 @@ public class ToolBoxPanel extends JPanel {
         }
 
         for(URI uri : getAllWpsScript(directory)){
-            if(getChildWithUri(uri, source) == null) {
+            if(getChildWithUri(uri, source).isEmpty()) {
                 Process process = toolBox.getProcessManager().getProcess(uri);
                 TreeNodeWps script = new TreeNodeWps();
                 script.setUri(uri);
@@ -488,21 +538,27 @@ public class ToolBoxPanel extends JPanel {
             List<TreeNodeWps> leafList = new ArrayList<>();
             leafList.addAll(getAllChild(node));
             for(TreeNodeWps leaf : leafList){
-                switch(leaf.getNodeType()){
-                    case FOLDER:
-                        cleanParentNode(getChildWithUri(leaf.getUri(),
-                                (TreeNodeWps)selectedModel.getRoot()),
-                                selectedModel);
-                        break;
-                    case PROCESS:
-                        for(FileTreeModel model : modelList){
-                            TreeNodeWps child = getChildWithUri(leaf.getUri(), (TreeNodeWps) model.getRoot());
-                            if(child != null) {
-                                cleanParentNode(child, model);
+                if(!node.isDefaultOrbisGIS()) {
+                    switch(leaf.getNodeType()){
+                        case FOLDER:
+                            for (TreeNodeWps child : getChildWithUri(leaf.getUri(), (TreeNodeWps) selectedModel.getRoot())) {
+                                if (!child.isDefaultOrbisGIS()) {
+                                    System.out.println(child);
+                                    cleanParentNode(child, selectedModel);
+                                }
                             }
-                        }
-                        toolBox.removeProcess(leaf.getUri());
-                        break;
+                            break;
+                        case PROCESS:
+                            for (FileTreeModel model : modelList) {
+                                for (TreeNodeWps child : getChildWithUri(leaf.getUri(), (TreeNodeWps) model.getRoot())) {
+                                    if (child != null && !child.isDefaultOrbisGIS()) {
+                                        cleanParentNode(child, model);
+                                    }
+                                }
+                            }
+                            toolBox.removeProcess(leaf.getUri());
+                            break;
+                    }
                 }
             }
         }
@@ -514,20 +570,18 @@ public class ToolBoxPanel extends JPanel {
      * @param parent Parent of the node.
      * @return The child node.
      */
-    private TreeNodeWps getChildWithUri(URI uri, TreeNodeWps parent){
+    private List<TreeNodeWps> getChildWithUri(URI uri, TreeNodeWps parent){
+        List<TreeNodeWps> nodeList = new ArrayList<>();
         for(int i=0; i<parent.getChildCount(); i++){
             TreeNodeWps child = (TreeNodeWps)parent.getChildAt(i);
             if(child.getUri() != null && child.getUri().equals(uri)){
-                return child;
+                nodeList.add(child);
             }
             else{
-                TreeNodeWps result = getChildWithUri(uri, child);
-                if(result != null){
-                    return result;
-                }
+                nodeList.addAll(getChildWithUri(uri, child));
             }
         }
-        return null;
+        return nodeList;
     }
 
     /**
@@ -585,13 +639,17 @@ public class ToolBoxPanel extends JPanel {
                 //For each node, test if it is valid, and set the state of the corresponding node in the trees.
                 for (TreeNodeWps child : getAllLeaf(node)) {
                     boolean isValid = toolBox.checkProcess(child.getUri());
-                    TreeNodeWps updated;
-                    updated = getChildWithUri(child.getUri(), (TreeNodeWps) tagModel.getRoot());
-                    updated.setValidNode(isValid);
-                    tagModel.nodeChanged(updated);
-                    updated = getChildWithUri(child.getUri(), (TreeNodeWps) fileModel.getRoot());
-                    updated.setValidNode(isValid);
-                    fileModel.nodeChanged(updated);
+                    List<TreeNodeWps> updatedList;
+                    updatedList = getChildWithUri(child.getUri(), (TreeNodeWps) tagModel.getRoot());
+                    for(TreeNodeWps updated : updatedList) {
+                        updated.setValidNode(isValid);
+                        tagModel.nodeChanged(updated);
+                    }
+                    updatedList = getChildWithUri(child.getUri(), (TreeNodeWps) fileModel.getRoot());
+                    for(TreeNodeWps updated : updatedList) {
+                        updated.setValidNode(isValid);
+                        fileModel.nodeChanged(updated);
+                    }
                 }
                 if (tree.getModel().equals(fileModel)) {
                     toolBox.addLocalSource(node.getUri());
@@ -700,8 +758,11 @@ public class ToolBoxPanel extends JPanel {
         popupGlobalActions = new ActionCommands();
         popupGlobalActions.addAction(addSource);
 
+        popupOrbisGISLeafActions = new ActionCommands();
+        popupOrbisGISLeafActions.addAction(runScript);
+
+
         popupLeafActions = new ActionCommands();
-        popupLeafActions.addAction(addSource);
         popupLeafActions.addAction(runScript);
         popupLeafActions.addAction(refresh_source);
         popupLeafActions.addAction(remove);
@@ -710,6 +771,9 @@ public class ToolBoxPanel extends JPanel {
         popupNodeActions.addAction(addSource);
         popupNodeActions.addAction(refresh_source);
         popupNodeActions.addAction(remove);
+
+        popupOrbisGISNodeActions = new ActionCommands();
+        popupOrbisGISNodeActions.addAction(addSource);
     }
 
     /**
@@ -733,8 +797,8 @@ public class ToolBoxPanel extends JPanel {
                 for (TreeNodeWps node : getAllChild((TreeNodeWps) fileModel.getRoot(), TreeNodeWps.NodeType.PROCESS)) {
                     //For all the leaf, tests if they are accepted by the filter or not.
                     TreeNodeWps filteredRoot = (TreeNodeWps) filteredModel.getRoot();
-                    TreeNodeWps filteredNode = getChildWithUri(node.getUri(), filteredRoot);
-                    if (filteredNode == null) {
+                    List<TreeNodeWps> filteredNode = getChildWithUri(node.getUri(), filteredRoot);
+                    if (filteredNode.get(0) == null) {
                         if (filter.accepts(node)) {
                             TreeNodeWps newNode = node.deepCopy();
                             filteredModel.insertNodeInto(newNode, filteredRoot, 0);
@@ -743,11 +807,11 @@ public class ToolBoxPanel extends JPanel {
                         }
                     }
                     else {
-                        if (!filter.accepts(filteredNode)) {
-                            filteredModel.removeNodeFromParent(filteredNode);
+                        if (!filter.accepts(filteredNode.get(0))) {
+                            filteredModel.removeNodeFromParent(filteredNode.get(0));
                         }
                         else{
-                            tree.expandPath(new TreePath(filteredNode.getPath()));
+                            tree.expandPath(new TreePath(filteredNode.get(0).getPath()));
                         }
                     }
                 }
