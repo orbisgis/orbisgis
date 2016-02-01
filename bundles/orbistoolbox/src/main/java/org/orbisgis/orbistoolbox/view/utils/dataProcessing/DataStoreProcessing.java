@@ -64,7 +64,7 @@ public class DataStoreProcessing implements DataProcessing {
                 }
                 else{
                     if(!keep) {
-                        ToolBox.freeTempTable(dataStoreURI.getFragment());
+                        ToolBox.removeTempTable(dataStoreURI.getFragment());
                     }
                     else{
                         path = path.replace("$", "");
@@ -94,7 +94,7 @@ public class DataStoreProcessing implements DataProcessing {
         if(inputOrOutput instanceof Input){
             URI uri = inputOrOutput.getIdentifier();
             if(stash.get(uri) != null && stash.get(uri).equals("file")){
-                ToolBox.freeTempTable(dataMap.get(uri).toString());
+                ToolBox.removeTempTable(dataMap.get(uri).toString());
             }
         }
         if(inputOrOutput instanceof Output){
