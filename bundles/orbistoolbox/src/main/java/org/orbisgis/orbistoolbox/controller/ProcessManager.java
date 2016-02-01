@@ -159,6 +159,7 @@ public class ProcessManager {
 
     /**
      * Return the process corresponding to the given identifier.
+     * The identifier can the the one of the process or an input or an output.
      * @param identifier Identifier of the desired process.
      * @return The process.
      */

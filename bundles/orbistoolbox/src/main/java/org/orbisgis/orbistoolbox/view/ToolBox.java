@@ -115,7 +115,8 @@ public class ToolBox implements DockingPanel  {
     private Properties tbProperties;
     /** List of process ended, waiting the 5 seconds before being removed.*/
     boolean multiThreaded = true;
-    private Boolean isH2;
+    /** True if the database is H2, false otherwise. */
+    private boolean isH2;
 
     @Activate
     public void init(){
@@ -741,7 +742,11 @@ public class ToolBox implements DockingPanel  {
         return fieldValues;
     }
 
-    public static void freeTempTable(String tableName){
+    /**
+     * Removes a table from the database.
+     * @param tableName Table to remove from the dataBase.
+     */
+    public static void removeTempTable(String tableName){
         try {
             Connection connection = dataManager.getDataSource().getConnection();
             if(JDBCUtilities.tableExists(connection, tableName)) {

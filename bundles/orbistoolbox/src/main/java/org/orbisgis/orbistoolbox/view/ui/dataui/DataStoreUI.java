@@ -395,7 +395,7 @@ public class DataStoreUI implements DataUI{
         if(oldValue != null && oldValue instanceof URI){
             URI oldUri = ((URI)oldValue);
             if(oldUri.getScheme().equals("file")){
-                ToolBox.freeTempTable(oldUri.getFragment());
+                ToolBox.removeTempTable(oldUri.getFragment());
             }
         }
         dataMap.put(uri, URI.create("geocatalog:"+comboBox.getSelectedItem()+"#"+comboBox.getSelectedItem()));
@@ -519,7 +519,7 @@ public class DataStoreUI implements DataUI{
                     if(oldValue != null && oldValue instanceof URI){
                         URI oldUri = ((URI)oldValue);
                         if(oldUri.getScheme().equals("file")){
-                            ToolBox.freeTempTable(oldUri.getFragment());
+                            ToolBox.removeTempTable(oldUri.getFragment());
                         }
                     }
                     dataMap.put(uri, selectedFileURI);
@@ -566,7 +566,7 @@ public class DataStoreUI implements DataUI{
                 if(oldValue != null && oldValue instanceof URI){
                     URI oldUri = ((URI)oldValue);
                     if(oldUri.getScheme().equals("file")){
-                        ToolBox.freeTempTable(oldUri.getFragment());
+                        ToolBox.removeTempTable(oldUri.getFragment());
                     }
                 }
                 dataMap.put(uri, tableName);
@@ -585,6 +585,10 @@ public class DataStoreUI implements DataUI{
         }
     }
 
+    /**
+     * When the file option icon is hovered, display a popup menu with the options.
+     * @param me
+     */
     public void onFileOption(MouseEvent me){
         JComponent source = (JComponent)me.getSource();
         boolean keepSource = (boolean)source.getClientProperty("keepSource");
@@ -621,6 +625,9 @@ public class DataStoreUI implements DataUI{
         popupMenu.show(source, me.getX(), me.getY());
     }
 
+    /**
+     * SwingWorker extension which will load the the selected datasource.
+     */
     public class ImportWorker extends SwingWorkerPM {
 
         private Document document;
