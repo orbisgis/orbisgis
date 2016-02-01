@@ -33,11 +33,6 @@
                         <version>${project.version}</version>
                 </dependency>
                 <dependency>
-                    <groupId>org.scala-lang</groupId>
-                    <artifactId>scala-library</artifactId>
-                    <version>2.11.1</version>
-                </dependency>
-                <dependency>
                         <groupId>log4j</groupId>
                         <artifactId>log4j</artifactId>
                         <version>1.2.17</version>
@@ -59,54 +54,26 @@
                             </instructions>
                         </configuration>
                     </plugin>
-                        <plugin>
-                                <groupId>com.googlecode.gettext-commons</groupId>
-                                <artifactId>gettext-maven-plugin</artifactId>
-                                <version>${gettext-maven-plugin-version}</version>
-                                <executions>
-                                        <execution>
-                                                <id>convert-po-class</id>
-                                                <phase>compile</phase>
-                                                <goals>
-                                                        <goal>dist</goal>
-                                                </goals>
-                                        </execution>
-                                </executions>
-                                <configuration>
-                                        <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/legend/translation/language/</poDirectory>
-                                        <targetBundle>org.orbisgis.legend.translation.Messages</targetBundle>
-                                        <keywords>-ktr -kmarktr</keywords>
-                                        <outputFormat>properties</outputFormat>
-                                </configuration>
-                        </plugin>
-                        <plugin>
-                                <groupId>net.alchim31.maven</groupId>
-                                <artifactId>scala-maven-plugin</artifactId>
-                                <version>3.1.0</version>
-                                <executions>
-                                        <execution>
-                                                <id>scala-compile-first</id>
-                                                <phase>process-resources</phase>
-                                                <goals>
-                                                        <goal>add-source</goal>
-                                                        <goal>compile</goal>
-                                                </goals>
-                                        </execution>
-                                        <execution>
-                                                <id>scala-test-compile</id>
-                                                <phase>process-test-resources</phase>
-                                                <goals>
-                                                        <goal>testCompile</goal>
-                                                </goals>
-                                        </execution>
-                                </executions>
-                                <configuration>
-                                        <args>
-                                                <arg>-unchecked</arg>
-                                                <arg>-Xlint</arg>
-                                        </args>
-                                </configuration>
-                        </plugin>
+                    <plugin>
+                            <groupId>com.googlecode.gettext-commons</groupId>
+                            <artifactId>gettext-maven-plugin</artifactId>
+                            <version>${gettext-maven-plugin-version}</version>
+                            <executions>
+                                    <execution>
+                                            <id>convert-po-class</id>
+                                            <phase>compile</phase>
+                                            <goals>
+                                                    <goal>dist</goal>
+                                            </goals>
+                                    </execution>
+                            </executions>
+                            <configuration>
+                                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/legend/translation/language/</poDirectory>
+                                    <targetBundle>org.orbisgis.legend.translation.Messages</targetBundle>
+                                    <keywords>-ktr -kmarktr</keywords>
+                                    <outputFormat>properties</outputFormat>
+                            </configuration>
+                    </plugin>
                 </plugins>
         </build>
 </project>

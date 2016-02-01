@@ -101,7 +101,7 @@ public class RecodedLineTest extends AnalyzerTest {
         rl.setLookupFieldName(field);
         List<RecodedLegend> legs= rl.getRecodedLegends();
         for(RecodedLegend rec : legs){
-            assertTrue(rec.field().equals(field));
+            assertTrue(rec.getField().equals(field));
         }
 
     }
@@ -318,7 +318,7 @@ public class RecodedLineTest extends AnalyzerTest {
 
         @Override
         public void visit(RecodedLegend legend) {
-            assertTrue(legend.field() != null);
+            assertTrue(legend.getField() != null);
         }
     }
 }

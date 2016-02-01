@@ -30,6 +30,8 @@ package org.orbisgis.corejdbc;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
+
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,6 +40,7 @@ import java.util.*;
 import javax.sql.DataSource;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
 
@@ -295,8 +298,12 @@ public class JDBCUtilityTest {
             st.execute("CREATE VIEW VIEW_TEST as SELECT * FROM TABLE_TEST");
             assertEquals(MetaData.getTableType(connection, "VIEW_TEST"), MetaData.TableType.VIEW);
             st.execute("drop table if exists EXTERNAL_TABLE");
-            st.execute("CALL FILE_TABLE('"+JDBCUtilityTest.class.getResource("bv_sap.shp").getPath()+"', 'EXTERNAL_TABLE');");
-            assertEquals(MetaData.getTableType(connection, "EXTERNAL_TABLE"), MetaData.TableType.EXTERNAL);
+            try {
+                st.execute("CALL FILE_TABLE('" + JDBCUtilityTest.class.getResource("bv_sap.shp").getPath() + "', 'EXTERNAL_TABLE');");
+                assertEquals(MetaData.getTableType(connection, "EXTERNAL_TABLE"), MetaData.TableType.EXTERNAL);
+            } finally {
+                st.execute("drop table if exists EXTERNAL_TABLE");
+            }
          }
     }
 
@@ -316,6 +323,23 @@ public class JDBCUtilityTest {
                 assertTrue(rs.next());
                 assertEquals(1, rs.getInt(1));
             }
+        }
+    }
+
+    /**
+     * Given a file path, test if table is not linked multiple times
+     */
+    @Test
+    public void testFindTablePath() throws SQLException, URISyntaxException {
+
+        try(Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS BV_SAP, BV_SAP_1, BV_SAP2");
+            DataManager dataManager = new DataManagerImpl(dataSource);
+            String tableIdentifier = dataManager.registerDataSource(JDBCUtilityTest.class.getResource("bv_sap.shp").toURI());
+            dataManager.registerDataSource(JDBCUtilityTest.class.getResource("bv_sap.shp").toURI());
+            assertTrue("BV_SAP does not exist, created "+tableIdentifier,JDBCUtilities.tableExists(connection, "BV_SAP"));
+            assertFalse(JDBCUtilities.tableExists(connection, "BV_SAP_1"));
+            assertFalse(JDBCUtilities.tableExists(connection, "BV_SAP_2"));
         }
     }
 }
