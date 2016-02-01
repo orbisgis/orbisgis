@@ -27,6 +27,7 @@ import org.orbisgis.orbistoolbox.view.ToolBox;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,35 +48,37 @@ public class DataProcessingManager {
         listDataProcessing.add(new DataStoreProcessing());
     }
 
-    public void preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap){
+    public Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap){
+        Map stash = new HashMap<>();
         for(DataProcessing dp : listDataProcessing){
             if(inputOrOutput instanceof Input) {
                 DataDescription dataDescription = ((Input)inputOrOutput).getDataDescription();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    dp.preProcessData(toolBox, inputOrOutput, dataMap);
+                    stash.putAll(dp.preProcessData(toolBox, inputOrOutput, dataMap));
                 }
             }
             if(inputOrOutput instanceof Output) {
                 DataDescription dataDescription = ((Output)inputOrOutput).getDataDescription();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    dp.preProcessData(toolBox, inputOrOutput, dataMap);
+                    stash.putAll(dp.preProcessData(toolBox, inputOrOutput, dataMap));
                 }
             }
         }
+        return stash;
     }
 
-    public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap){
+    public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash){
         for(DataProcessing dp : listDataProcessing){
             if(inputOrOutput instanceof Input) {
                 DataDescription dataDescription = ((Input) inputOrOutput).getDataDescription();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    dp.postProcessData(toolBox, inputOrOutput, dataMap);
+                    dp.postProcessData(toolBox, inputOrOutput, dataMap, stash);
                 }
             }
             if(inputOrOutput instanceof Output) {
                 DataDescription dataDescription = ((Output) inputOrOutput).getDataDescription();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    dp.postProcessData(toolBox, inputOrOutput, dataMap);
+                    dp.postProcessData(toolBox, inputOrOutput, dataMap, stash);
                 }
             }
         }

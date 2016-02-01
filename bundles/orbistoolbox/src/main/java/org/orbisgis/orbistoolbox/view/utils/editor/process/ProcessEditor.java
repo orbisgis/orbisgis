@@ -360,32 +360,23 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         return scrollPane;
     }
 
-    private void disableChildComponent(JComponent component){
+    private void enableChildComponent(JComponent component, boolean enable){
         for(Component comp : component.getComponents()){
-            comp.setEnabled(false);
+            comp.setEnabled(enable);
             if(comp instanceof JComponent){
-                disableChildComponent((JComponent)comp);
-            }
-        }
-    }
-
-    private void enableChildComponent(JComponent component){
-        for(Component comp : component.getComponents()){
-            comp.setEnabled(true);
-            if(comp instanceof JComponent){
-                disableChildComponent((JComponent)comp);
+                enableChildComponent((JComponent)comp, enable);
             }
         }
     }
 
     public void startWaiting(){
-        disableChildComponent(contentPanel);
+        enableChildComponent(contentPanel, false);
         layerUI.start();
     }
 
     public void endWaiting(){
         layerUI.stop();
-        enableChildComponent(contentPanel);
+        enableChildComponent(contentPanel, true);
     }
 
     class WaitLayerUI extends LayerUI<JPanel> implements ActionListener {

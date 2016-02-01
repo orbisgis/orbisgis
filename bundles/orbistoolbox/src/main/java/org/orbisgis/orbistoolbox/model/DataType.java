@@ -76,6 +76,7 @@ public enum DataType {
     }
 
     public static boolean testHDBype(DataType dataType, String dbTypeName){
+        dbTypeName = dbTypeName.toUpperCase();
         switch(dataType) {
             case INTEGER:
                 return (dbTypeName.equals("INT") || dbTypeName.equals("INTEGER") ||

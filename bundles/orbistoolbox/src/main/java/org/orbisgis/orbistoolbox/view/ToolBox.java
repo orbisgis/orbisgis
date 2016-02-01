@@ -667,11 +667,11 @@ public class ToolBox implements DockingPanel  {
             if(f.isDirectory()){
                 return null;
             }
-            if(processEditor != null && copyInBase) {
+            if(processEditor != null && (copyInBase || !isH2)) {
                 processEditor.startWaiting();
             }
             //Get the table name of the file
-            String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), true);
+            String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), isH2);
             String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
             //Find the corresponding driver and load the file
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
@@ -681,7 +681,7 @@ public class ToolBox implements DockingPanel  {
                 statement.execute("CREATE TEMPORARY TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
             }
             else {
-                if(copyInBase){
+                if(copyInBase || !isH2){
                     DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
                             extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
                     driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
@@ -692,7 +692,7 @@ public class ToolBox implements DockingPanel  {
                     driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
                 }
             }
-            if(processEditor != null && copyInBase) {
+            if(processEditor != null && (copyInBase || !isH2)) {
                 processEditor.endWaiting();
             }
             return tableName;

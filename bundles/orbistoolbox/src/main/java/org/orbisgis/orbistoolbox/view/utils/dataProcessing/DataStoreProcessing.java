@@ -35,22 +35,17 @@ import java.util.Map;
  */
 public class DataStoreProcessing implements DataProcessing {
 
-    private Map<URI, Object> stash;
-
-    public DataStoreProcessing(){
-        stash = new HashMap<>();
-    }
-
     @Override
     public Class getDataClass() {
         return DataStore.class;
     }
 
     @Override
-    public Object preProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public Map<URI, Object> preProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+        Map<URI, Object> stash = new HashMap<>();
         URI uri = inputOrOutput.getIdentifier();
         URI dataStoreURI = (URI)dataMap.get(uri);
-        String tableName = null;
+        String tableName;
         if(inputOrOutput instanceof Input){
             if(dataStoreURI.getScheme().equals("geocatalog")){
                 tableName = dataStoreURI.getSchemeSpecificPart();
@@ -90,11 +85,12 @@ public class DataStoreProcessing implements DataProcessing {
                 dataMap.put(uri, tableName);
             }
         }
-        return tableName;
+        return stash;
     }
 
     @Override
-    public Object postProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public void postProcessData(ToolBox toolBox, DescriptionType inputOrOutput,
+                                  Map<URI, Object> dataMap, Map<URI, Object> stash) {
         if(inputOrOutput instanceof Input){
             URI uri = inputOrOutput.getIdentifier();
             if(stash.get(uri) != null && stash.get(uri).equals("file")){
@@ -108,6 +104,5 @@ public class DataStoreProcessing implements DataProcessing {
                 toolBox.saveURI(URI.create(dataStoreURI.getScheme()+":"+dataStoreURI.getSchemeSpecificPart()), dataMap.get(uri).toString().toUpperCase());
             }
         }
-        return null;
     }
 }

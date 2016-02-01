@@ -485,11 +485,15 @@ public class DataStoreUI implements DataUI{
      * @param document
      */
     public void saveDocumentTextFile(Document document){
+        URI selectedFileURI = null;
         try {
             DataStore dataStore = (DataStore)document.getProperty("dataStore");
             JComponent fileOptions = (JComponent) document.getProperty("fileOptions");
             DescriptionType inputOrOutput = (DescriptionType)document.getProperty("inputOrOutput");
             File file = new File(document.getText(0, document.getLength()));
+            if(file.isDirectory()){
+                return;
+            }
             if(inputOrOutput instanceof Input) {
                 boolean loadSource = false;
                 boolean keepSource = false;
@@ -507,7 +511,7 @@ public class DataStoreUI implements DataUI{
                         fileStr += "$";
                     }
                     //Saves the table name in the URI into the uri fragment
-                    URI selectedFileURI = URI.create(fileStr + "#" + tableName);
+                    selectedFileURI = URI.create(fileStr + "#" + tableName);
                     //Store the selection
                     Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
                     URI uri = inputOrOutput.getIdentifier();
@@ -532,7 +536,7 @@ public class DataStoreUI implements DataUI{
             }
             if(inputOrOutput instanceof Output){
                 String tableName = toolBox.getDataManager().findUniqueTableName(FilenameUtils.getBaseName(file.getName()));
-                URI selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
+                selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
                 URI uri = inputOrOutput.getIdentifier();
