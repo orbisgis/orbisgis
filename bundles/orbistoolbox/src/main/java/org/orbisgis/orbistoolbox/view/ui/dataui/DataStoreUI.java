@@ -494,7 +494,7 @@ public class DataStoreUI implements DataUI{
             JComponent fileOptions = (JComponent) document.getProperty("fileOptions");
             DescriptionType inputOrOutput = (DescriptionType)document.getProperty("inputOrOutput");
             File file = new File(document.getText(0, document.getLength()));
-            if(file.isDirectory()){
+            if(file.getName().isEmpty() || file.isDirectory()){
                 return;
             }
             if(inputOrOutput instanceof Input) {
@@ -544,6 +544,7 @@ public class DataStoreUI implements DataUI{
             }
             if(inputOrOutput instanceof Output){
                 String tableName = toolBox.getDataManager().findUniqueTableName(FilenameUtils.getBaseName(file.getName()));
+                tableName = tableName.replace("\"", "");
                 selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");

@@ -711,6 +711,9 @@ public class ToolBox implements DockingPanel  {
     public void saveURI(URI uri, String tableName){
         try {
             File f = new File(uri);
+            if(!f.exists()){
+                f.createNewFile();
+            }
             //Find the good driver and save the file.
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
             DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
