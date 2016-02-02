@@ -26,6 +26,7 @@ import org.orbisgis.orbistoolbox.controller.parser.ParserController;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
+import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
 import org.slf4j.LoggerFactory;
 
@@ -111,6 +112,7 @@ public class ProcessManager {
         GroovyObject groovyObject = createProcess(process, dataMap);
         for(Map.Entry<String, Object> variable : properties.entrySet()) {
             groovyObject.setProperty("sql", new Sql((DataSourceService)variable.getValue()));
+            groovyObject.setProperty("logger", LoggerFactory.getLogger(ToolBox.class));
         }
         groovyObject.invokeMethod("processing", null);
         return groovyObject;
