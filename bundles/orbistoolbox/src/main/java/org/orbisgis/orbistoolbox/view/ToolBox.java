@@ -757,4 +757,8 @@ public class ToolBox implements DockingPanel  {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
     }
+
+    public boolean isH2(){
+        return isH2;
+    }
 }
