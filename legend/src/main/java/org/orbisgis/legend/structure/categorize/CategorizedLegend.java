@@ -44,7 +44,7 @@ import java.util.TreeSet;
 /**
  * @author alexis
  */
-public abstract class CategorizedLegend<U> extends AbstractAttributeLegend implements ParameterLegend {
+public abstract class CategorizedLegend<U> implements AbstractAttributeLegend, ParameterLegend {
 
     protected String field = "";
     private List<TypeListener> listeners = new ArrayList<TypeListener>();

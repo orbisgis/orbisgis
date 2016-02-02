@@ -35,17 +35,7 @@ import org.orbisgis.legend.LookupFieldName;
  * Basic methods for parameters that are dependent upon a parameter.
  * @author Alexis Guéganno
  */
-public abstract class AbstractAttributeLegend implements LookupFieldName {
+public interface AbstractAttributeLegend extends LookupFieldName {
 
-        public abstract ValueReference getValueReference();
-
-        @Override
-        public String getLookupFieldName(){
-                return getValueReference().getColumnName();
-        }
-
-        @Override
-        public void setLookupFieldName(String name){
-                getValueReference().setColumnName(name);
-        }
+        ValueReference getValueReference();
 }

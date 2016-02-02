@@ -1,12 +1,12 @@
 /**
- * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information.
- *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is a GIS application dedicated to scientific spatial analysis.
+ * This cross-platform GIS is developed at the Lab-STICC laboratory by the DECIDE 
+ * team located in University of South Brittany, Vannes.
+ * 
+ * OrbisGIS is distributed under GPL 3 license.
  *
  * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2015-2016 CNRS (UMR CNRS 6285)
  *
  * This file is part of OrbisGIS.
  *
@@ -49,7 +49,7 @@ public class InputPanel extends JPanel {
          * @param inputs
          */
         public InputPanel(List<Input> inputs) {
-                super(new MigLayout("wrap 2", "[align r][align l]"));
+                 super(new MigLayout("wrap 2", "[] [grow] ", "[grow][grow]"));
                 for (Input input : inputs) {
 
                         // If we have an init value, we set it.
@@ -63,7 +63,7 @@ public class InputPanel extends JPanel {
                         // We retrieve the component where the user will set his inputs.
                         Component comp = input.getType().getComponent();
                         if (comp != null) {
-                            add(comp, "width 125!");
+                            add(comp, "grow");
                         } else {
                             add(Box.createGlue());
                         }

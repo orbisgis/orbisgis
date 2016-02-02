@@ -52,7 +52,6 @@ import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 import org.orbisgis.legend.thematic.EnablesStroke;
 import org.orbisgis.legend.thematic.OnVertexOnInterior;
 import org.orbisgis.legend.thematic.PointParameters;
-import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.legend.thematic.uom.SymbolUom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -461,7 +460,7 @@ public class RecodedPoint extends AbstractRecodedLegend<PointParameters>
             PenStroke stroke = new PenStroke();
             mg.setStroke(stroke);
             ps = new RecodedPenStroke(stroke);
-            String lfn = fill.getRecodedLegends().get(0).field();
+            String lfn = fill.getRecodedLegends().get(0).getField();
             for( RecodedLegend rl : ps.getRecodedLegends()){
                 rl.setField(lfn);
             }

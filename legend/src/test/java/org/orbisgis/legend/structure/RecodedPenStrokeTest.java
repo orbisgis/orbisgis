@@ -89,7 +89,7 @@ public class RecodedPenStrokeTest extends AnalyzerTest {
         assertTrue(rps.getWidthLegend().getParameter() instanceof RealLiteral);
         assertTrue(ps.getWidth() instanceof RealLiteral);
         assertTrue(ps.getWidth() == widthLegend.getParameter());
-        widthLegend.addItem("bonjour", 50);
+        widthLegend.addItem("bonjour", 50.0);
         assertTrue(rps.getWidthLegend().getParameter() instanceof Recode2Real);
         assertTrue(ps.getWidth() instanceof Recode2Real);
         assertTrue(ps.getWidth() == widthLegend.getParameter());
@@ -103,7 +103,7 @@ public class RecodedPenStrokeTest extends AnalyzerTest {
         assertTrue(rps.getWidthLegend().getParameter() instanceof RealLiteral);
         assertTrue(ps.getWidth() instanceof RealLiteral);
         assertTrue(ps.getWidth() == widthLegend.getParameter());
-        widthLegend.addItem("bonjour", 50);
+        widthLegend.addItem("bonjour", 50.0);
         assertTrue(rps.getWidthLegend().getParameter() instanceof Recode2Real);
         assertTrue(ps.getWidth() instanceof Recode2Real);
         assertTrue(ps.getWidth() == widthLegend.getParameter());
