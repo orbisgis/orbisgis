@@ -1,20 +1,30 @@
 /**
- * OrbisToolBox is an OrbisGIS plugin dedicated to create and manage processing.
+ * OrbisGIS is a GIS application dedicated to scientific spatial analysis.
+ * This cross-platform GIS is developed at the Lab-STICC laboratory by the DECIDE
+ * team located in University of South Brittany, Vannes.
  *
- * OrbisToolBox is distributed under GPL 3 license. It is produced by CNRS <http://www.cnrs.fr/> as part of the
- * MApUCE project, funded by the French Agence Nationale de la Recherche (ANR) under contract ANR-13-VBDU-0004.
+ * OrbisGIS is distributed under GPL 3 license.
  *
- * OrbisToolBox is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2015-2016 CNRS (UMR CNRS 6285)
  *
- * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This file is part of OrbisGIS.
  *
- * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
- * <http://www.gnu.org/licenses/>.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
 
 package org.orbisgis.wpsgroovyapi.model
@@ -22,7 +32,27 @@ package org.orbisgis.wpsgroovyapi.model
 import groovy.transform.AnnotationCollector
 
 /**
- * Groovy annotation that can be used in a groovy script to declare the process information.
+ * Groovy Process annotation.
+ * This annotation is placed just before the 'processing' groovy method to declare the process information and
+ * its main method
+ *
+ * The following fields must be defined (mandatory) :
+ *  - title : String
+ *      Process title.
+ *
+ * The following fields can be defined (optional) :
+ *  - resume : String
+ *      Process abstract.
+ *  - keywords : String
+ *      Coma separated keywords associated to the process.
+ *  - identifier : String
+ *      Unique identifier of the process. It should be a valid URI.
+ *  - metadata : MetaData[]
+ *      Array of metadata associated to the process.
+ *  - language : String
+ *      Language of the process title and abstract.
+ *
+ * You can find usage example at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
  */
