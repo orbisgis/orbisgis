@@ -1,20 +1,30 @@
 /**
- * OrbisToolBox is an OrbisGIS plugin dedicated to create and manage processing.
+ * OrbisGIS is a GIS application dedicated to scientific spatial analysis.
+ * This cross-platform GIS is developed at the Lab-STICC laboratory by the DECIDE
+ * team located in University of South Brittany, Vannes.
  *
- * OrbisToolBox is distributed under GPL 3 license. It is produced by CNRS <http://www.cnrs.fr/> as part of the
- * MApUCE project, funded by the French Agence Nationale de la Recherche (ANR) under contract ANR-13-VBDU-0004.
+ * OrbisGIS is distributed under GPL 3 license.
  *
- * OrbisToolBox is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
- * later version.
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2015-2016 CNRS (UMR CNRS 6285)
  *
- * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This file is part of OrbisGIS.
  *
- * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
- * <http://www.gnu.org/licenses/>.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
 
 package org.orbisgis.wpsgroovyapi.model
@@ -23,8 +33,16 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * The DataStore represent any data source (file, geocatalog table, external database table).
+ * Attributes for the DataStore complex data.
+ * The DataStore complex data represents any data source (database, file ...).
  *
+ * The following fields can be defined (optional) :
+ *  - extensions : String[]
+ *      File extension accepted. If no extension are specified, all the format are accepted.
+ *  - isSpatial : boolean
+ *      Indicates if the data represented is spatial or not.
+ *  - isCreateTable : boolean
+ *      Indicates if the toolbox should load the file and give back the table name or just give the file name.
  *
  * @author Sylvain PALOMINOS
  */
@@ -41,13 +59,9 @@ import java.lang.annotation.RetentionPolicy
      **/
     String[] extensions() default []
 
-    /**
-     * Indicates if the data represented is spatial or not.
-     */
+    /** Indicates if the data represented is spatial or not.*/
     boolean isSpatial() default false
 
-    /**
-     * Indicates if the toolbox should load the file (create table) and give the table name or just give the file name.
-     */
+    /** Indicates if the toolbox should load the file and give back the table name or just give the file name.*/
     boolean isCreateTable() default true
 }

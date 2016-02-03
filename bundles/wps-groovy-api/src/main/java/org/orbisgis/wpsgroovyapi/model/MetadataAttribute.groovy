@@ -23,17 +23,24 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Annotation for the Metadata declaration.
+ * Attribute for the additional metadata.
+ *
+ * The following fields must be defined (mandatory) :
+ *  - title : String
+ *       Title of the documentation. Normally available for display to a human.
+ *  - role : String
+ *      Role identifier, indicating the role of the linked document.
+ *  - href : String
+ *      Reference to a documentation site for a process, input, or output.
+ *
+ * The following fields can be defined (optional) :
+ *  - linkType : String
+ *      Role identifier, indicating the role of the linked document.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface MetadataAttribute {
-
-    /** Default value for the linkType attribute */
-    String defaultLinkType = "simple"
-
-
     /** Title of the documentation. Normally available for display to a human. */
     String title()
     /** Type of the xlink, fixed to simple. */

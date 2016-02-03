@@ -23,22 +23,28 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Annotation for the DescriptionType declaration.
+ * Attributes of the descriptive elements of processes, inputs and outputs.
+ * Other descriptive information shall be recorded in the Metadata element in the form of simple links with an
+ * appropriate role identifier.
+ *
+ * The following fields must be defined (mandatory) :
+ *  - title : String
+ *       Title of a process, input, and output. Normally available for display to a human.
+ *
+ * The following fields can be defined (optional) :
+ *  - resume : String
+ *      Brief narrative description of a process, input, and output. Normally available for display to a human..
+ *  - keywords : String
+ *      Coma separated keywords that characterize a process, its inputs, and outputs.
+ *  - identifier : String
+ *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
+ *  - metadata : MetaData[]
+ *      Reference to additional metadata about this item.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface DescriptionTypeAttribute {
-    /** Default value for the resume attribute */
-    String defaultResume = ""
-    /** Default value for the keywords attribute */
-    String defaultKeywords = ""
-    /** Default value for the identifier attribute */
-    String defaultIdentifier = ""
-    /** Default value for the metadata attribute */
-    MetadataAttribute[] defaultMetadata = []
-
-
     /** Title of a process, input, and output. Normally available for display to a human. */
     String title()
     /** Brief narrative description of a process, input, and output. Normally available for display to a human. */

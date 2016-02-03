@@ -27,9 +27,11 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.process
 
 import groovy.transform.AnnotationCollector
+import org.orbisgis.wpsgroovyapi.model.DescriptionTypeAttribute
+import org.orbisgis.wpsgroovyapi.model.ProcessAttribute
 
 /**
  * Groovy Process annotation.
@@ -38,21 +40,21 @@ import groovy.transform.AnnotationCollector
  *
  * The following fields must be defined (mandatory) :
  *  - title : String
- *      Process title.
+ *       Title of the process. Normally available for display to a human.
  *
  * The following fields can be defined (optional) :
  *  - resume : String
- *      Process abstract.
+ *      Brief narrative description of the process. Normally available for display to a human..
  *  - keywords : String
- *      Coma separated keywords associated to the process.
+ *      Coma separated keywords that characterize the process.
  *  - identifier : String
- *      Unique identifier of the process. It should be a valid URI.
+ *      Unambiguous identifier of the process. It should be a valid URI.
  *  - metadata : MetaData[]
- *      Array of metadata associated to the process.
+ *      Reference to additional metadata about this item.
  *  - language : String
  *      Language of the process title and abstract.
  *
- * You can find usage example at https://github.com/orbisgis/orbisgis/wiki/
+ * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
  */
