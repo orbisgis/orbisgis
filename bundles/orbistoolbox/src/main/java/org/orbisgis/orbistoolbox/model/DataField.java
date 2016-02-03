@@ -19,8 +19,6 @@
 
 package org.orbisgis.orbistoolbox.model;
 
-import org.orbisgis.orbistoolboxapi.annotations.model.FieldType;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;

@@ -349,7 +349,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>orbistoolbox-api</artifactId>
+            <artifactId>wps-groovy-api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

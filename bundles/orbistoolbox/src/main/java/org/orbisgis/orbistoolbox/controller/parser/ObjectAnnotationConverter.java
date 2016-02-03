@@ -21,7 +21,7 @@ package org.orbisgis.orbistoolbox.controller.parser;
 
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolboxapi.annotations.model.*;
+import org.orbisgis.wpsgroovyapi.model.*;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.IncompleteAnnotationException;

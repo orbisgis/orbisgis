@@ -24,8 +24,8 @@ import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute;
-import org.orbisgis.orbistoolboxapi.annotations.model.OutputAttribute;
+import org.orbisgis.wpsgroovyapi.model.InputAttribute;
+import org.orbisgis.wpsgroovyapi.model.OutputAttribute;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;

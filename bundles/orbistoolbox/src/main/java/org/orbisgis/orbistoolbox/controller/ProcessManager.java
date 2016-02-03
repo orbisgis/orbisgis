@@ -27,7 +27,7 @@ import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
-import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
+import org.orbisgis.wpsgroovyapi.model.DescriptionTypeAttribute;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
