@@ -245,7 +245,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 outputPanel.add(new JSeparator(), "growx, span");
             }
         }
-        JButton runButton = new JButton("Run");
+        JButton runButton = new JButton("Run", ToolBoxIcon.getIcon("execute"));
+        runButton.setBorderPainted(false);
         runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
         panel.add(runButton, "growx, wrap");
         scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);

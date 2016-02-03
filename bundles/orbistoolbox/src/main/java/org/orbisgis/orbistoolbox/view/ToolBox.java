@@ -711,6 +711,9 @@ public class ToolBox implements DockingPanel  {
     public void saveURI(URI uri, String tableName){
         try {
             File f = new File(uri);
+            if(!f.exists()){
+                f.createNewFile();
+            }
             //Find the good driver and save the file.
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
             DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
@@ -756,5 +759,9 @@ public class ToolBox implements DockingPanel  {
         } catch (SQLException e) {
             LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
+    }
+
+    public boolean isH2(){
+        return isH2;
     }
 }

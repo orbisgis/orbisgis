@@ -23,6 +23,7 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.io.FilenameUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.omg.PortableInterceptor.INACTIVE;
 import org.orbisgis.commons.progress.SwingWorkerPM;
@@ -222,7 +223,9 @@ public class DataStoreUI implements DataUI{
         if(inputOrOutput instanceof Input) {
             JLabel fileOptions = new JLabel(ToolBoxIcon.getIcon("options"));
             fileOptions.putClientProperty("keepSource", false);
-            fileOptions.putClientProperty("loadSource", false);
+            if(toolBox.isH2()) {
+                fileOptions.putClientProperty("loadSource", false);
+            }
             fileOptions.addMouseListener(EventHandler.create(MouseListener.class, this, "onFileOption", ""));
             textField.getDocument().putProperty("fileOptions", fileOptions);
             buttonPanel.add(fileOptions);
@@ -491,14 +494,19 @@ public class DataStoreUI implements DataUI{
             JComponent fileOptions = (JComponent) document.getProperty("fileOptions");
             DescriptionType inputOrOutput = (DescriptionType)document.getProperty("inputOrOutput");
             File file = new File(document.getText(0, document.getLength()));
-            if(file.isDirectory()){
+            if(file.getName().isEmpty() || file.isDirectory()){
                 return;
             }
             if(inputOrOutput instanceof Input) {
                 boolean loadSource = false;
                 boolean keepSource = false;
                 if(fileOptions != null){
-                    loadSource = (boolean)fileOptions.getClientProperty("loadSource");
+                    if(fileOptions.getClientProperty("loadSource") != null) {
+                        loadSource = (boolean) fileOptions.getClientProperty("loadSource");
+                    }
+                    else{
+                        loadSource = false;
+                    }
                     keepSource = (boolean)fileOptions.getClientProperty("keepSource");
                 }
                 //Load the selected file an retrieve the table name.
@@ -536,6 +544,7 @@ public class DataStoreUI implements DataUI{
             }
             if(inputOrOutput instanceof Output){
                 String tableName = toolBox.getDataManager().findUniqueTableName(FilenameUtils.getBaseName(file.getName()));
+                tableName = tableName.replace("\"", "");
                 selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
@@ -591,37 +600,41 @@ public class DataStoreUI implements DataUI{
      */
     public void onFileOption(MouseEvent me){
         JComponent source = (JComponent)me.getSource();
-        boolean keepSource = (boolean)source.getClientProperty("keepSource");
-        boolean loadSource = (boolean)source.getClientProperty("loadSource");
         JPopupMenu popupMenu = new JPopupMenu();
-        JCheckBoxMenuItem keepItem = new JCheckBoxMenuItem("Delete input", null, !keepSource){
-            @Override
-            protected void processMouseEvent(MouseEvent evt) {
-                if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
-                    doClick();
-                    setArmed(true);
-                    ((JComponent)this.getClientProperty("fileOption")).putClientProperty("keepSource", !this.getState());
-                } else {
-                    super.processMouseEvent(evt);
+        if(source.getClientProperty("loadSource") != null) {
+            boolean loadSource = (boolean) source.getClientProperty("loadSource");
+            JCheckBoxMenuItem loadItem = new JCheckBoxMenuItem("Linked table", null, !loadSource) {
+                @Override
+                protected void processMouseEvent(MouseEvent evt) {
+                    if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
+                        doClick();
+                        setArmed(true);
+                        ((JComponent)this.getClientProperty("fileOption")).putClientProperty("loadSource", !this.getState());
+                    } else {
+                        super.processMouseEvent(evt);
+                    }
                 }
-            }
-        };
-        keepItem.putClientProperty("fileOption", source);
-        JCheckBoxMenuItem loadItem = new JCheckBoxMenuItem("Linked table", null, !loadSource) {
-            @Override
-            protected void processMouseEvent(MouseEvent evt) {
-                if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
-                    doClick();
-                    setArmed(true);
-                    ((JComponent)this.getClientProperty("fileOption")).putClientProperty("loadSource", !this.getState());
-                } else {
-                    super.processMouseEvent(evt);
+            };
+            loadItem.putClientProperty("fileOption", source);
+            popupMenu.add(loadItem);
+        }
+        if(source.getClientProperty("keepSource") != null) {
+            boolean keepSource = (boolean) source.getClientProperty("keepSource");
+            JCheckBoxMenuItem keepItem = new JCheckBoxMenuItem("Keep file in base", null, keepSource) {
+                @Override
+                protected void processMouseEvent(MouseEvent evt) {
+                    if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
+                        doClick();
+                        setArmed(true);
+                        ((JComponent) this.getClientProperty("fileOption")).putClientProperty("keepSource", !this.getState());
+                    } else {
+                        super.processMouseEvent(evt);
+                    }
                 }
-            }
-        };
-        loadItem.putClientProperty("fileOption", source);
-        popupMenu.add(keepItem);
-        popupMenu.add(loadItem);
+            };
+            keepItem.putClientProperty("fileOption", source);
+            popupMenu.add(keepItem);
+        }
         popupMenu.show(source, me.getX(), me.getY());
     }
 
