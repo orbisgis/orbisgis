@@ -27,32 +27,24 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.attributes
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the DataField complex data.
- * The DataField is a complex data that represents a DataSource field (i.e. a column of a table).
- * It is linked to a DataStore and its allowed types can be specified.
- *
- * The following fields must be defined (mandatory) :
- *  - dataStore : String
- *      The variable name that contains the DataStore.
+ * Attributes for the Process.
+ * The ProcessAttribute contains the process language (title and abstract language).
  *
  * The following fields can be defined (optional) :
- *  - fieldTypes : String[]
- *      Array of the type of the data contained in the column. If no types are specified, accept all.
+ *  - language : String
+ *      Language of the process.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface DataFieldAttribute {
+@interface ProcessAttribute {
 
-    /** The variable name that contains the DataStore.*/
-    String dataStore()
-
-    /** Array of the type of the data contained in the column. If no types are specified, accept all.*/
-    String[] fieldTypes() default []
+    /** Language of the process. */
+    String language() default "en"
 }

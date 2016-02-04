@@ -23,8 +23,8 @@ import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.MalformedScriptException;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.wpsgroovyapi.model.DescriptionTypeAttribute;
-import org.orbisgis.wpsgroovyapi.model.ProcessAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.ProcessAttribute;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;

@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.attributes
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy

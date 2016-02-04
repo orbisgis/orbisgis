@@ -27,34 +27,31 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.attributes
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the Input.
- * The input is the process argument.
+ * Attributes for the FieldValue complex data.
+ * The FieldValue complex data represents a list of values contained by a DataField.
+ *
+ * The following fields must be defined (mandatory) :
+ *  - dataField : String
+ *      Name of the variable which is the dataStore.
  *
  * The following fields can be defined (optional) :
- *  - minOccurs : int
- *      Minimum number of times that values for this parameter are required. 0 means the input is optional.
- *  - maxOccurs : int
- *      Maximum number of times that this parameter may be present.
- *  - input : InputAttribute[]
- *      Nested Input.
+ *  - multiSelection : boolean
+ *      Indicates if more than one value can be selected.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface InputAttribute {
+@interface FieldValueAttribute {
 
-    /** Minimum number of times that values for this parameter are required. 0 means the input is optional. */
-    int minOccurs() default 1
+    /** Name of the variable which is the dataStore.*/
+    String dataField()
 
-    /** Maximum number of times that this parameter may be present. */
-    int maxOccurs() default 1
-
-    /** Nested Input. */
-    InputAttribute[] input() default []
+    /** Indicates if more than one value can be selected.*/
+    boolean multiSelection() default false
 }

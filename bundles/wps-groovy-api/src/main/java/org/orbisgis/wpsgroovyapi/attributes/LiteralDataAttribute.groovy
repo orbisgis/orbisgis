@@ -27,7 +27,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.attributes
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
@@ -35,6 +35,7 @@ import java.lang.annotation.RetentionPolicy
 /**
  * Attributes for the literal data.
  * This annotation contains the needed attributes for a literal data.
+ *
  *
  * The following fields must be defined (mandatory) :
  *  - valueAttribute : LiteralValueAttribute

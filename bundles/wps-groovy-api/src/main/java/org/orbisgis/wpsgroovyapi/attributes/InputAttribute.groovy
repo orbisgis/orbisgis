@@ -27,46 +27,34 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.attributes
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the format of a data.
- * This annotation contains the needed attributes for a format.
- *
- * The following fields must be defined (mandatory) :
- *  - mimeType : String
- *      Media type of the data.
- *  - schema : String
- *      Identification of the data schema. Should be a valid URI.
+ * Attributes for the Input.
+ * The input is the process argument.
  *
  * The following fields can be defined (optional) :
- *  - encoding : String
- *      Encoding procedure or character set of the data. Fixed to simple.
- *  - maximumMegaBytes : int
- *      The maximum size of the input data, in megabytes.
- *  - isDefaultFormat : boolean
- *      Indicates that this format is the default format. One of the FormatAttribute shall be the default one.
+ *  - minOccurs : int
+ *      Minimum number of times that values for this parameter are required. 0 means the input is optional.
+ *  - maxOccurs : int
+ *      Maximum number of times that this parameter may be present.
+ *  - input : InputAttribute[]
+ *      Nested Input.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface FormatAttribute {
+@interface InputAttribute {
 
-    /** Media type of the data. */
-    String mimeType()
+    /** Minimum number of times that values for this parameter are required. 0 means the input is optional. */
+    int minOccurs() default 1
 
-    /** Encoding procedure or character set of the data. Fixed to simple.*/
-    String encoding() default "simple"
+    /** Maximum number of times that this parameter may be present. */
+    int maxOccurs() default 1
 
-    /** Identification of the data schema.*/
-    String schema()
-
-    /** The maximum size of the input data, in megabytes.*/
-    int maximumMegaBytes() default 0
-
-    /** Indicates that this format is the default format. One of the FormatAttribute shall be the default one.*/
-    boolean isDefaultFormat() default false
+    /** Nested Input. */
+    InputAttribute[] input() default []
 }

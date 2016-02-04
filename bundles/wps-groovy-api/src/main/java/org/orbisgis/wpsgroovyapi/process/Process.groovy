@@ -30,8 +30,8 @@
 package org.orbisgis.wpsgroovyapi.process
 
 import groovy.transform.AnnotationCollector
-import org.orbisgis.wpsgroovyapi.model.DescriptionTypeAttribute
-import org.orbisgis.wpsgroovyapi.model.ProcessAttribute
+import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
+import org.orbisgis.wpsgroovyapi.attributes.ProcessAttribute
 
 /**
  * Groovy Process annotation.

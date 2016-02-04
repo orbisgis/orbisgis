@@ -21,7 +21,7 @@ package org.orbisgis.orbistoolbox.controller.parser;
 
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
-import org.orbisgis.wpsgroovyapi.model.BoundingBoxAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.BoundingBoxAttribute;
 
 import java.lang.reflect.Field;
 

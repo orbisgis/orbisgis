@@ -21,9 +21,9 @@ package org.orbisgis.wpsgroovyapi.output
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
-import org.orbisgis.wpsgroovyapi.model.DescriptionTypeAttribute
-import org.orbisgis.wpsgroovyapi.model.FieldValueAttribute
-import org.orbisgis.wpsgroovyapi.model.OutputAttribute
+import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
+import org.orbisgis.wpsgroovyapi.attributes.FieldValueAttribute
+import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
 
 /**
  * The FieldValue output allows the user to specify a value from a table column.

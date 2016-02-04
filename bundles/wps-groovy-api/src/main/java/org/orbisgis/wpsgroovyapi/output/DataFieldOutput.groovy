@@ -21,9 +21,9 @@ package org.orbisgis.wpsgroovyapi.output
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
-import org.orbisgis.wpsgroovyapi.model.OutputAttribute
-import org.orbisgis.wpsgroovyapi.model.DataFieldAttribute
-import org.orbisgis.wpsgroovyapi.model.DescriptionTypeAttribute
+import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
+import org.orbisgis.wpsgroovyapi.attributes.DataFieldAttribute
+import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 
 /**
  * The DataField input allows the user to specify a table column.

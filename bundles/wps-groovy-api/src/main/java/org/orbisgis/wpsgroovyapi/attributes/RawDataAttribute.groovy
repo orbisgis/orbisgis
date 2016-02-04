@@ -27,31 +27,31 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.attributes
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the FieldValue complex data.
- * The FieldValue complex data represents a list of values contained by a DataField.
- *
- * The following fields must be defined (mandatory) :
- *  - dataField : String
- *      Name of the variable which is the dataStore.
+ * Attributes for the RawData complex data.
+ * The RawData is a complex data that represents a file or directory.
  *
  * The following fields can be defined (optional) :
- *  - multiSelection : boolean
- *      Indicates if more than one value can be selected.
+ *  - formats : FormatAttribute[]
+ *      List of supported formats.
+ *  - isDirectory : boolean
+ *      Indicates that the RawData can be a directory.
+ *  - isFile : boolean
+ *      Indicates that the RawData can be a file.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface FieldValueAttribute {
-
-    /** Name of the variable which is the dataStore.*/
-    String dataField()
-
-    /** Indicates if more than one value can be selected.*/
-    boolean multiSelection() default false
+@interface RawDataAttribute {
+    /** List of supported formats. */
+    FormatAttribute[] formats() default []
+    /** Indicates that the RawData can be a directory. */
+    boolean isDirectory() default true
+    /** Indicates that the RawData can be a file. */
+    boolean isFile() default true
 }

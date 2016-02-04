@@ -27,42 +27,34 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.attributes
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the DataStore complex data.
- * The DataStore complex data represents any data source (database, file ...).
+ * Attributes for the PossibleLiteralValuesChoice.
+ * The PossibleLiteralValuesChoice identifies a valid format for an input or output.
  *
- * The following fields can be defined (optional) :
- *  - extensions : String[]
- *      File extension accepted. If no extension are specified, all the format are accepted.
- *  - isSpatial : boolean
- *      Indicates if the data represented is spatial or not.
- *  - isCreateTable : boolean
- *      Indicates if the toolbox should load the file and give back the table name or just give the file name.
+ * Only one of the fields should be defined (mandatory) :
+ *  - allowedValues : ValuesAttribute[]
+ *      List of all valid values and/or ranges of values for this quantity.
+ *  - reference : String
+ *      Reference to list of all valid values and/or ranges of values for this quantity.
+ *  - anyValues : boolean
+ *      Specifies that any value is allowed for this quantity.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface DataStoreAttribute {
+@interface PossibleLiteralValuesChoiceAttribute {
 
-    /**
-     * Files extension accepted. If no extension are specified, all the format are accepted.
-     *
-     * - geocatalog : accepts the geocatalog table
-     * - dbTable : accepts external database table
-     * - shp : accepts shapeFiles
-     * - csv
-     * - ...
-     **/
-    String[] extensions() default []
+    /** List of all valid values and/or ranges of values for this quantity. */
+    ValuesAttribute[] allowedValues() default []
 
-    /** Indicates if the data represented is spatial or not.*/
-    boolean isSpatial() default false
+    /** Reference to list of all valid values and/or ranges of values for this quantity. */
+    String reference() default ""
 
-    /** Indicates if the toolbox should load the file and give back the table name or just give the file name.*/
-    boolean isCreateTable() default true
+    /** Specifies that any value is allowed for this quantity. */
+    boolean anyValues() default false
 }

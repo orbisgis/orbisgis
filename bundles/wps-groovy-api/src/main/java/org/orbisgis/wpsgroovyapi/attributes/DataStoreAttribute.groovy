@@ -27,24 +27,43 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.attributes
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the Process.
- * The ProcessAttribute contains the process language (title and abstract language).
+ * Attributes for the DataStore complex data.
+ * The DataStore complex data represents any data source (database, file ...).
+ * The LiteralData represents a number or a string.
  *
  * The following fields can be defined (optional) :
- *  - language : String
- *      Language of the process.
+ *  - extensions : String[]
+ *      File extension accepted. If no extension are specified, all the format are accepted.
+ *  - isSpatial : boolean
+ *      Indicates if the data represented is spatial or not.
+ *  - isCreateTable : boolean
+ *      Indicates if the toolbox should load the file and give back the table name or just give the file name.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface ProcessAttribute {
+@interface DataStoreAttribute {
 
-    /** Language of the process. */
-    String language() default "en"
+    /**
+     * Files extension accepted. If no extension are specified, all the format are accepted.
+     *
+     * - geocatalog : accepts the geocatalog table
+     * - dbTable : accepts external database table
+     * - shp : accepts shapeFiles
+     * - csv
+     * - ...
+     **/
+    String[] extensions() default []
+
+    /** Indicates if the data represented is spatial or not.*/
+    boolean isSpatial() default false
+
+    /** Indicates if the toolbox should load the file and give back the table name or just give the file name.*/
+    boolean isCreateTable() default true
 }

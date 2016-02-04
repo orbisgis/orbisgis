@@ -21,9 +21,9 @@ package org.orbisgis.wpsgroovyapi.output
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
-import org.orbisgis.wpsgroovyapi.model.DataStoreAttribute
-import org.orbisgis.wpsgroovyapi.model.DescriptionTypeAttribute
-import org.orbisgis.wpsgroovyapi.model.OutputAttribute
+import org.orbisgis.wpsgroovyapi.attributes.DataStoreAttribute
+import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
+import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
 
 /**
  * The DataStore input allows the user to specify an input data (like files, external databases or an OrbisGIS SQL table).

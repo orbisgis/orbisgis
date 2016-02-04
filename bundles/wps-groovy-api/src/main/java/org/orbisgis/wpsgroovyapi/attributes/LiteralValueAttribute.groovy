@@ -27,34 +27,29 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.attributes
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the PossibleLiteralValuesChoice.
- * The PossibleLiteralValuesChoice identifies a valid format for an input or output.
+ * Annotation for the literal value.
+ * This annotation contains the needed attributes for the literal value.
  *
- * Only one of the fields should be defined (mandatory) :
- *  - allowedValues : ValuesAttribute[]
- *      List of all valid values and/or ranges of values for this quantity.
- *  - reference : String
- *      Reference to list of all valid values and/or ranges of values for this quantity.
- *  - anyValues : boolean
- *      Specifies that any value is allowed for this quantity.
+ * The following fields can be defined (optional) :
+ *  - dataType : String
+ *      The literal value type.
+ *  - uom : String
+ *      URI to the unit of the literal value.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface PossibleLiteralValuesChoiceAttribute {
+@interface LiteralValueAttribute {
 
-    /** List of all valid values and/or ranges of values for this quantity. */
-    ValuesAttribute[] allowedValues() default []
+    /** DataType of the data */
+    String dataType() default "NONE"
 
-    /** Reference to list of all valid values and/or ranges of values for this quantity. */
-    String reference() default ""
-
-    /** Specifies that any value is allowed for this quantity. */
-    boolean anyValues() default false
+    /** URI to the unit of the data */
+    String uom() default ""
 }

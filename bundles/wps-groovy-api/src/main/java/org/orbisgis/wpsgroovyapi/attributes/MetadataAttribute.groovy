@@ -17,14 +17,40 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.attributes
+
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
 
 /**
- * Enumeration to define if the value is a simple value or a range.
+ * Attribute for the additional metadata.
+ *
+ * The following fields must be defined (mandatory) :
+ *  - title : String
+ *       Title of the documentation. Normally available for display to a human.
+ *  - role : String
+ *      Role identifier, indicating the role of the linked document.
+ *  - href : String
+ *      Reference to a documentation site for a process, input, or output.
+ *
+ * The following fields can be defined (optional) :
+ *  - linkType : String
+ *      Role identifier, indicating the role of the linked document.
  *
  * @author Sylvain PALOMINOS
  */
-enum ValuesType{
-    RANGE,
-    VALUE
+@Retention(RetentionPolicy.RUNTIME)
+@interface MetadataAttribute {
+
+    /** Title of the documentation. Normally available for display to a human. */
+    String title()
+
+    /** Type of the xlink, fixed to simple. */
+    String linkType() default "simple"
+
+    /** Role identifier, indicating the role of the linked document. */
+    String role()
+
+    /** Reference to a documentation site for a process, input, or output. */
+    String href()
 }

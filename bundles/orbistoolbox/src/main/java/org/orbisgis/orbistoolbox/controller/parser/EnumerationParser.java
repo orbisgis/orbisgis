@@ -21,9 +21,9 @@ package org.orbisgis.orbistoolbox.controller.parser;
 
 import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.wpsgroovyapi.model.DescriptionTypeAttribute;
-import org.orbisgis.wpsgroovyapi.model.EnumerationAttribute;
-import org.orbisgis.wpsgroovyapi.model.InputAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.EnumerationAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;

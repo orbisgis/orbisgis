@@ -27,46 +27,46 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.attributes
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the Enumeration complex data.
- * The Enumeration complex data represents a selection of values from a predefined list.
+ * Attributes for the format of a data.
+ * This annotation contains the needed attributes for a format.
  *
  * The following fields must be defined (mandatory) :
- *  - values : String[]
- *      List of possible values.
+ *  - mimeType : String
+ *      Media type of the data.
+ *  - schema : String
+ *      Identification of the data schema. Should be a valid URI.
  *
  * The following fields can be defined (optional) :
- *  - multiSelection : boolean
- *      Allow or not to select more than one value.
- *  - isEditable : boolean
- *      Enable or not the user to use its own value.
- *  - names : String[]
- *      Displayable name of the values. If not specified, use the values as name.
- *  - defaultValues : String[]
- *      Default selected values, can be empty.
+ *  - encoding : String
+ *      Encoding procedure or character set of the data. Fixed to simple.
+ *  - maximumMegaBytes : int
+ *      The maximum size of the input data, in megabytes.
+ *  - isDefaultFormat : boolean
+ *      Indicates that this format is the default format. One of the FormatAttribute shall be the default one.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface EnumerationAttribute {
+@interface FormatAttribute {
 
-    /** Allow or not to select more than one value.*/
-    boolean multiSelection() default false
+    /** Media type of the data. */
+    String mimeType()
 
-    /** Enable or not the user to use its own value.*/
-    boolean isEditable() default false
+    /** Encoding procedure or character set of the data. Fixed to simple.*/
+    String encoding() default "simple"
 
-    /** List of possible values.*/
-    String[] values()
+    /** Identification of the data schema.*/
+    String schema()
 
-    /** Displayable name of the values. If not specified, use the values as name. */
-    String[] names() default []
+    /** The maximum size of the input data, in megabytes.*/
+    int maximumMegaBytes() default 0
 
-    /** Default selected values, can be empty.*/
-    String[] defaultValues() default []
+    /** Indicates that this format is the default format. One of the FormatAttribute shall be the default one.*/
+    boolean isDefaultFormat() default false
 }

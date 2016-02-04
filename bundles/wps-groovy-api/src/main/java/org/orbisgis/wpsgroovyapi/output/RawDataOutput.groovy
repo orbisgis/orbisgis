@@ -21,9 +21,9 @@ package org.orbisgis.wpsgroovyapi.output
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
-import org.orbisgis.wpsgroovyapi.model.DescriptionTypeAttribute
-import org.orbisgis.wpsgroovyapi.model.OutputAttribute
-import org.orbisgis.wpsgroovyapi.model.RawDataAttribute
+import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
+import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
+import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute
 
 /**
  * Groovy annotation that can be used in a groovy script to declare a raw output field.

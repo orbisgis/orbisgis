@@ -21,9 +21,9 @@ package org.orbisgis.wpsgroovyapi.output
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
-import org.orbisgis.wpsgroovyapi.model.EnumerationAttribute
-import org.orbisgis.wpsgroovyapi.model.OutputAttribute
-import org.orbisgis.wpsgroovyapi.model.DescriptionTypeAttribute
+import org.orbisgis.wpsgroovyapi.attributes.EnumerationAttribute
+import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
+import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 
 /**
  * The Enumeration output allow the user to select one or more value from a predefined list.

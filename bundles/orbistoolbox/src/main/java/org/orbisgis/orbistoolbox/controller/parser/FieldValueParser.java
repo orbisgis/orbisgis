@@ -21,7 +21,7 @@ package org.orbisgis.orbistoolbox.controller.parser;
 
 import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.wpsgroovyapi.model.*;
+import org.orbisgis.wpsgroovyapi.attributes.*;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;

@@ -27,29 +27,46 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.attributes
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Annotation for the literal value.
- * This annotation contains the needed attributes for the literal value.
+ * Attributes for the Enumeration complex data.
+ * The Enumeration complex data represents a selection of values from a predefined list.
+ *
+ * The following fields must be defined (mandatory) :
+ *  - values : String[]
+ *      List of possible values.
  *
  * The following fields can be defined (optional) :
- *  - dataType : String
- *      The literal value type.
- *  - uom : String
- *      URI to the unit of the literal value.
+ *  - multiSelection : boolean
+ *      Allow or not to select more than one value.
+ *  - isEditable : boolean
+ *      Enable or not the user to use its own value.
+ *  - names : String[]
+ *      Displayable name of the values. If not specified, use the values as name.
+ *  - defaultValues : String[]
+ *      Default selected values, can be empty.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface LiteralValueAttribute {
+@interface EnumerationAttribute {
 
-    /** DataType of the data */
-    String dataType() default "NONE"
+    /** Allow or not to select more than one value.*/
+    boolean multiSelection() default false
 
-    /** URI to the unit of the data */
-    String uom() default ""
+    /** Enable or not the user to use its own value.*/
+    boolean isEditable() default false
+
+    /** List of possible values.*/
+    String[] values()
+
+    /** Displayable name of the values. If not specified, use the values as name. */
+    String[] names() default []
+
+    /** Default selected values, can be empty.*/
+    String[] defaultValues() default []
 }

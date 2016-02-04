@@ -27,31 +27,33 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.model
+package org.orbisgis.wpsgroovyapi.attributes
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the RawData complex data.
- * The RawData is a complex data that represents a file or directory.
+ * Attributes for the BoundingBox.
+ * Bounding box data serves a variety of purposes in spatial data processing.
+ * Some simple applications are the definition of extents for a clipping operation or the definition of an
+ * analysis region.
+ *
+ * The following fields must be defined (mandatory) :
+ *  - format : FormatAttribute[]
+ *      Identifies a valid format for an input or output.
  *
  * The following fields can be defined (optional) :
- *  - formats : FormatAttribute[]
- *      List of supported formats.
- *  - isDirectory : boolean
- *      Indicates that the RawData can be a directory.
- *  - isFile : boolean
- *      Indicates that the RawData can be a file.
+ *  - supportedCRSList : SupportedCRSAttribute[]
+ *      List of CRS supported by the BoundingBox data.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface RawDataAttribute {
-    /** List of supported formats. */
-    FormatAttribute[] formats() default []
-    /** Indicates that the RawData can be a directory. */
-    boolean isDirectory() default true
-    /** Indicates that the RawData can be a file. */
-    boolean isFile() default true
+@interface BoundingBoxAttribute {
+
+    /** Identifies a valid format for an input or output. */
+    FormatAttribute[] format()
+
+    /** List of CRS supported by the BoundingBox data. */
+    SupportedCRSAttribute[] supportedCRSList()
 }
