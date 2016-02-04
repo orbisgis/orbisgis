@@ -45,8 +45,6 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
  *      Unambiguous identifier of the output. It should be a valid URI.
  *  - metadata : MetaData[]
  *      Reference to additional metadata about this item.
- *  - output : OutputAttribute[]
- *      Nested Output.
  *  - multiSelection : boolean
  *      Allow or not to select more than one value.
  *  - isEditable : boolean

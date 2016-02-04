@@ -43,8 +43,6 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
  *      Unambiguous identifier of the output. It should be a valid URI.
  *  - metadata : MetaData[]
  *      Reference to additional metadata about this item.
- *  - output : OutputAttribute[]
- *      Nested Output.
  *  - extensions : String[]
  *      File extension accepted. If no extension are specified, all the format are accepted.
  *  - isSpatial : boolean

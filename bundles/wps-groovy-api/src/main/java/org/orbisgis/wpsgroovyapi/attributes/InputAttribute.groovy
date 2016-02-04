@@ -41,8 +41,6 @@ import java.lang.annotation.RetentionPolicy
  *      Minimum number of times that values for this parameter are required. 0 means the input is optional.
  *  - maxOccurs : int
  *      Maximum number of times that this parameter may be present.
- *  - input : InputAttribute[]
- *      Nested Input.
  *
  * @author Sylvain PALOMINOS
  */
@@ -54,7 +52,4 @@ import java.lang.annotation.RetentionPolicy
 
     /** Maximum number of times that this parameter may be present. */
     int maxOccurs() default 1
-
-    /** Nested Input. */
-    InputAttribute[] input() default []
 }

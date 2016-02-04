@@ -45,8 +45,6 @@ import org.orbisgis.wpsgroovyapi.attributes.LiteralDataAttribute
  *      Unambiguous identifier of the output. It should be a valid URI.
  *  - metadata : MetaData[]
  *      Reference to additional metadata about this item.
- *  - output : OutputAttribute[]
- *      Nested Output.
  *  - formats : FormatAttribute[]
  *      List of supported formats.
  *  - validDomains : LiteralDataDomains[]

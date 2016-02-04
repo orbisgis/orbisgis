@@ -36,15 +36,7 @@ import java.lang.annotation.RetentionPolicy
  * Attributes for the Output.
  * The output is the process return value.
  *
- * The following fields can be defined (optional) :
- *  - output : OutputAttribute[]
- *      Nested Output.
- *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface OutputAttribute {
-
-    /** Nested Output. */
-    OutputAttribute[] output() default []
-}
+@interface OutputAttribute {}

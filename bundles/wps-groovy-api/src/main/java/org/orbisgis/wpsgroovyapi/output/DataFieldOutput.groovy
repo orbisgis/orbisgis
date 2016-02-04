@@ -45,8 +45,6 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
  *      Unambiguous identifier of the output. It should be a valid URI.
  *  - metadata : MetaData[]
  *      Reference to additional metadata about this item.
- *  - output : OutputAttribute[]
- *      Nested Output.
  *  - fieldTypes : String[]
  *      Array of the type of the data contained in the column. If no types are specified, accept all.
  *
