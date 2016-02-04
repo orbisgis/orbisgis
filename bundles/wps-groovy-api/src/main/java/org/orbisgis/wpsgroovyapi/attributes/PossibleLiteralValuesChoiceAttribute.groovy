@@ -57,4 +57,13 @@ import java.lang.annotation.RetentionPolicy
 
     /** Specifies that any value is allowed for this quantity. */
     boolean anyValues() default false
+
+
+
+    /********************/
+    /** default values **/
+    /********************/
+    public static final ValuesAttribute[] defaultAllowedValues = []
+    public static final String defaultReference = ""
+    public static final boolean defaultAnyValues = false
 }

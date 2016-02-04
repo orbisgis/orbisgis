@@ -61,4 +61,12 @@ import java.lang.annotation.RetentionPolicy
 
     /** The literal value information */
     LiteralValueAttribute valueAttribute()
+
+
+
+    /********************/
+    /** default values **/
+    /********************/
+    public static final FormatAttribute[] defaultFormats = []
+    public static final LiteralDataDomainAttribute[] defaultValidDomains = []
 }

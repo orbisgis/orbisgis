@@ -54,4 +54,13 @@ import java.lang.annotation.RetentionPolicy
     boolean isDirectory() default true
     /** Indicates that the RawData can be a file. */
     boolean isFile() default true
+
+
+
+    /********************/
+    /** default values **/
+    /********************/
+    public static final FormatAttribute[] defaultFormats = []
+    public static final boolean defaultIsDirectory = true
+    public static final boolean defaultIsFile = true
 }

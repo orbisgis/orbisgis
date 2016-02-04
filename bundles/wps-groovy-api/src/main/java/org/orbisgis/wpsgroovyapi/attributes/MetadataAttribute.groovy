@@ -53,4 +53,11 @@ import java.lang.annotation.RetentionPolicy
 
     /** Reference to a documentation site for a process, input, or output. */
     String href()
+
+
+
+    /********************/
+    /** default values **/
+    /********************/
+    public static final String defaultLinkType = "simple"
 }

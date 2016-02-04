@@ -55,4 +55,11 @@ import java.lang.annotation.RetentionPolicy
 
     /** Array of the type of the data contained in the column. If no types are specified, accept all.*/
     String[] fieldTypes() default []
+
+
+
+    /********************/
+    /** default values **/
+    /********************/
+    public static final String[] defaultFieldType = []
 }

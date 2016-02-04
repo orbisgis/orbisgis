@@ -60,4 +60,14 @@ import java.lang.annotation.RetentionPolicy
 
     /** Reference to additional metadata about this item. */
     MetadataAttribute[] metadata() default []
+
+
+
+    /********************/
+    /** default values **/
+    /********************/
+    public static final String defaultResume = ""
+    public static final String defaultKeywords = ""
+    public static final String defaultIdentifier = ""
+    public static final MetadataAttribute[] defaultMetadata = []
 }

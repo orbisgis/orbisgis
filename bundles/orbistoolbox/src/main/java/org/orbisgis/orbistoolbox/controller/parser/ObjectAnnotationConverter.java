@@ -200,7 +200,7 @@ public class ObjectAnnotationConverter {
 
     public static LiteralValue annotationToObject(LiteralValueAttribute literalValueAttribute){
         LiteralValue literalValue = new LiteralValue();
-        if(!literalValueAttribute.uom().equals(LiteralValueAttribute.defaultUom)) {
+        if(!literalValueAttribute.uom().equals(LiteralValueAttribute.defaultUOM)) {
             literalValue.setUom(URI.create(literalValueAttribute.uom()));
         }
         if(!literalValueAttribute.dataType().equals(LiteralValueAttribute.defaultDataType)) {

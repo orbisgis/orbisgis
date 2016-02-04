@@ -54,4 +54,11 @@ import java.lang.annotation.RetentionPolicy
 
     /** Indicates if more than one value can be selected.*/
     boolean multiSelection() default false
+
+
+
+    /********************/
+    /** default values **/
+    /********************/
+    public static final boolean defaultMultiSelection = false
 }

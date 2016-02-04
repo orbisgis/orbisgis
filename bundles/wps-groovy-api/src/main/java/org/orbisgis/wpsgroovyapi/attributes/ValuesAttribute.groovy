@@ -66,4 +66,15 @@ import java.lang.annotation.RetentionPolicy
      * If not defined, there is no spacing.
      */
     String spacing() default ""
+
+
+
+    /********************/
+    /** default values **/
+    /********************/
+    public static final String defaultValue = ""
+    public static final ValuesType defaultType = ValuesType.VALUE
+    public static final String defaultMaximum = ""
+    public static final String defaultMinimum = ""
+    public static final String defaultSpacing = ""
 }

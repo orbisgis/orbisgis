@@ -52,4 +52,12 @@ import java.lang.annotation.RetentionPolicy
 
     /** Maximum number of times that this parameter may be present. */
     int maxOccurs() default 1
+
+
+
+    /********************/
+    /** default values **/
+    /********************/
+    public static final int defaultMinOccurs = 1
+    public static final int defaultMaxOccurs = 1
 }

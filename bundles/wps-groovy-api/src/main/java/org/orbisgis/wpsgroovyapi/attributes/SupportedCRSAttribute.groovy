@@ -55,4 +55,11 @@ import java.lang.annotation.RetentionPolicy
      * One of the formats included in the BoundingBox structure shall have the attribute “isDefault” set to “true”.
      */
     boolean isDefault() default false
+
+
+
+    /********************/
+    /** default values **/
+    /********************/
+    public static final boolean defaultIsDefault = false
 }
