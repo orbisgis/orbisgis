@@ -1,9 +1,8 @@
 package org.orbisgis.orbistoolbox.view.utils.scripts
 
-import groovy.sql.Sql
-import org.orbisgis.orbistoolboxapi.annotations.input.*
-import org.orbisgis.orbistoolboxapi.annotations.output.*
-import org.orbisgis.orbistoolboxapi.annotations.model.*
+import org.orbisgis.wpsgroovyapi.input.*
+import org.orbisgis.wpsgroovyapi.output.*
+import org.orbisgis.wpsgroovyapi.process.*
 
 
 /********************/

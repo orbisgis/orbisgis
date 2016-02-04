@@ -21,7 +21,7 @@ package org.orbisgis.orbistoolbox.controller.parser;
 
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolboxapi.annotations.model.*;
+import org.orbisgis.wpsgroovyapi.attributes.*;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.IncompleteAnnotationException;
@@ -124,7 +124,7 @@ public class ObjectAnnotationConverter {
     public static LiteralDataDomain annotationToObject(LiteralDataDomainAttribute literalDataDomainAttribute){
         try {
             PossibleLiteralValuesChoice possibleLiteralValuesChoice = ObjectAnnotationConverter.annotationToObject(
-                    literalDataDomainAttribute.plvc());
+                    literalDataDomainAttribute.possibleLiteralValues());
 
             DataType dataType = DataType.valueOf(literalDataDomainAttribute.dataType());
 
@@ -136,7 +136,7 @@ public class ObjectAnnotationConverter {
                     defaultValue
             );
 
-            literalDataDomain.setDefaultDomain(literalDataDomainAttribute.isDefaultDomain());
+            literalDataDomain.setDefaultDomain(literalDataDomainAttribute.isDefault());
 
             return literalDataDomain;
         } catch (MalformedScriptException e) {
@@ -200,7 +200,7 @@ public class ObjectAnnotationConverter {
 
     public static LiteralValue annotationToObject(LiteralValueAttribute literalValueAttribute){
         LiteralValue literalValue = new LiteralValue();
-        if(!literalValueAttribute.uom().equals(LiteralValueAttribute.defaultUom)) {
+        if(!literalValueAttribute.uom().equals(LiteralValueAttribute.defaultUOM)) {
             literalValue.setUom(URI.create(literalValueAttribute.uom()));
         }
         if(!literalValueAttribute.dataType().equals(LiteralValueAttribute.defaultDataType)) {

@@ -22,9 +22,9 @@ package org.orbisgis.orbistoolbox.controller.parser;
 import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
-import org.orbisgis.orbistoolboxapi.annotations.model.DataStoreAttribute;
-import org.orbisgis.orbistoolboxapi.annotations.model.DescriptionTypeAttribute;
-import org.orbisgis.orbistoolboxapi.annotations.model.InputAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.DataStoreAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;

@@ -19,9 +19,8 @@
 
 package org.orbisgis.orbistoolbox.controller.parser;
 
-import org.orbisgis.commons.collections.twoqueue.DoubleQueueValue;
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolboxapi.annotations.model.*;
+import org.orbisgis.wpsgroovyapi.attributes.*;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
