@@ -19,6 +19,7 @@
 
 package org.orbisgis.orbistoolbox.controller.parser;
 
+import org.orbisgis.orbistoolbox.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.MalformedScriptException;
 import org.orbisgis.orbistoolbox.model.Output;

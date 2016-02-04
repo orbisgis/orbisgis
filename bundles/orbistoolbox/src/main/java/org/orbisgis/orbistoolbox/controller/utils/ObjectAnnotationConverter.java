@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.controller.parser;
+package org.orbisgis.orbistoolbox.controller.utils;
 
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Process;

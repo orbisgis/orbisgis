@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.controller;
+package org.orbisgis.orbistoolbox.controller.process;
 
 import groovy.lang.GroovyObject;
 import groovy.sql.Sql;

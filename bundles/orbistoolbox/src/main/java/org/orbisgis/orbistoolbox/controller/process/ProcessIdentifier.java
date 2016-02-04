@@ -17,22 +17,38 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view.utils.dataProcessing;
+package org.orbisgis.orbistoolbox.controller.process;
 
-import org.orbisgis.orbistoolbox.model.DescriptionType;
-import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.model.Process;
 
 import java.net.URI;
-import java.util.Map;
 
 /**
- * Interface to define the DataProcessing classes.
- *
  * @author Sylvain PALOMINOS
- */
-public interface DataProcessing {
+ **/
 
-    Class getDataClass();
-    Map<URI, Object> preProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap);
-    void postProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash);
+public class ProcessIdentifier {
+
+    private Class clazz;
+    private Process process;
+    private URI uri;
+
+    public ProcessIdentifier(Class clazz, Process process, URI uri){
+        this.clazz = clazz;
+        this.process = process;
+        this.uri = uri;
+    }
+
+
+    public Class getClazz() {
+        return clazz;
+    }
+
+    public Process getProcess() {
+        return process;
+    }
+
+    public URI getURI() {
+        return uri;
+    }
 }

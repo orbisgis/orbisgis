@@ -19,7 +19,7 @@
 
 package org.orbisgis.orbistoolbox.view.ui;
 
-import org.orbisgis.orbistoolbox.controller.ProcessManager;
+import org.orbisgis.orbistoolbox.controller.process.ProcessManager;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.*;

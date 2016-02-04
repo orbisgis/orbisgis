@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.controller.processexecution;
+package org.orbisgis.orbistoolbox.controller.execution;
 
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.orbistoolbox.model.DescriptionType;

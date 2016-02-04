@@ -21,13 +21,8 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.io.FilenameUtils;
-import org.h2gis.h2spatialapi.DriverFunction;
-import org.h2gis.h2spatialapi.EmptyProgressVisitor;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
-import org.omg.PortableInterceptor.INACTIVE;
 import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.orbistoolbox.controller.processexecution.utils.FormatFactory;
+import org.orbisgis.orbistoolbox.controller.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
@@ -48,9 +43,7 @@ import java.awt.event.*;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 
 /**

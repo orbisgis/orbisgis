@@ -20,7 +20,7 @@
 package org.orbisgis.orbistoolbox.view.utils.editor.process;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.orbistoolbox.controller.processexecution.ExecutionWorker;
+import org.orbisgis.orbistoolbox.controller.execution.ExecutionWorker;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
@@ -40,10 +40,7 @@ import java.awt.event.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.net.URI;
 import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * UI for the configuration and the run of a WPS process.

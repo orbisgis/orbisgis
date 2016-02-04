@@ -17,7 +17,7 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view.utils.dataProcessing;
+package org.orbisgis.orbistoolbox.controller.execution;
 
 import org.orbisgis.orbistoolbox.model.DescriptionType;
 import org.orbisgis.orbistoolbox.model.DataStore;
@@ -25,7 +25,6 @@ import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.view.ToolBox;
 
-import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
