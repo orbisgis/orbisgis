@@ -48,6 +48,7 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface DataStoreAttribute {
+
     /**
      * Files extension accepted. If no extension are specified, all the format are accepted.
      *

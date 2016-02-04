@@ -20,7 +20,7 @@
 package org.orbisgis.wpsgroovyapi.output
 
 import groovy.transform.AnnotationCollector
-import org.orbisgis.wpsgroovyapi.model.BoundingBoxDataAttribute
+import org.orbisgis.wpsgroovyapi.model.BoundingBoxAttribute
 import org.orbisgis.wpsgroovyapi.model.OutputAttribute
 
 /**
@@ -28,5 +28,5 @@ import org.orbisgis.wpsgroovyapi.model.OutputAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([BoundingBoxDataAttribute, Output, OutputAttribute])
+@AnnotationCollector([BoundingBoxAttribute, Output, OutputAttribute])
 @interface BoundingBoxOutput {}

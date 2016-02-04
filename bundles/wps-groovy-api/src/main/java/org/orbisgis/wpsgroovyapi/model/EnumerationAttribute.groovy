@@ -54,14 +54,19 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface EnumerationAttribute {
+
     /** Allow or not to select more than one value.*/
     boolean multiSelection() default false
+
     /** Enable or not the user to use its own value.*/
     boolean isEditable() default false
+
     /** List of possible values.*/
     String[] values()
+
     /** Displayable name of the values. If not specified, use the values as name. */
     String[] names() default []
+
     /** Default selected values, can be empty.*/
     String[] defaultValues() default []
 }

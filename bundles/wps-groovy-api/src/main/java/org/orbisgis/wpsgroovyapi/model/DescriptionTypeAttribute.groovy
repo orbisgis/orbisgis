@@ -45,14 +45,19 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface DescriptionTypeAttribute {
+
     /** Title of a process, input, and output. Normally available for display to a human. */
     String title()
+
     /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
     String resume() default ""
+
     /** Coma separated keywords that characterize a process, its inputs, and outputs. */
     String keywords() default ""
+
     /** Unambiguous identifier of a process, input, and output. */
     String identifier() default ""
+
     /** Reference to additional metadata about this item. */
     MetadataAttribute[] metadata() default []
 }

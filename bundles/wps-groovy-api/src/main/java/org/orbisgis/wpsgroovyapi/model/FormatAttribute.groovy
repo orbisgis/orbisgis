@@ -54,14 +54,19 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface FormatAttribute {
+
     /** Media type of the data. */
     String mimeType()
+
     /** Encoding procedure or character set of the data. Fixed to simple.*/
     String encoding() default "simple"
+
     /** Identification of the data schema.*/
     String schema()
+
     /** The maximum size of the input data, in megabytes.*/
     int maximumMegaBytes() default 0
+
     /** Indicates that this format is the default format. One of the FormatAttribute shall be the default one.*/
     boolean isDefaultFormat() default false
 }

@@ -49,8 +49,10 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface DataFieldAttribute {
+
     /** The variable name that contains the DataStore.*/
     String dataStore()
+
     /** Array of the type of the data contained in the column. If no types are specified, accept all.*/
     String[] fieldTypes() default []
 }

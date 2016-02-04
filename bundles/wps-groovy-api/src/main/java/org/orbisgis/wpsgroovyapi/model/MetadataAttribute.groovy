@@ -41,12 +41,16 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface MetadataAttribute {
+
     /** Title of the documentation. Normally available for display to a human. */
     String title()
+
     /** Type of the xlink, fixed to simple. */
     String linkType() default "simple"
+
     /** Role identifier, indicating the role of the linked document. */
     String role()
+
     /** Reference to a documentation site for a process, input, or output. */
     String href()
 }

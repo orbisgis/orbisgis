@@ -46,8 +46,10 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface LiteralValueAttribute {
+
     /** DataType of the data */
     String dataType() default "NONE"
+
     /** URI to the unit of the data */
     String uom() default ""
 }

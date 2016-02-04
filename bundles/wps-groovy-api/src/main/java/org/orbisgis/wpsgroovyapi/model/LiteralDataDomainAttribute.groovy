@@ -34,25 +34,38 @@ import java.lang.annotation.RetentionPolicy
 
 /**
  * Attributes for the valid domain of literal data.
- * Groovy annotation that can be used in a groovy script to declare a literal data domain.
+ *
+ * The following fields must be defined (mandatory) :
+ *  - possibleLiteralValues : PossibleLiteralValuesChoiceAttribute
+ *      Identifies a valid format for an input or output.
+ *  - dataType : String
+ *      Reference to the data type of this set of values.
+ *
+ * The following fields can be defined (optional) :
+ *  - uom : String
+ *      Indicates that this quantity has units and provides the unit of measurement.
+ *  - defaultValue : ValuesAttribute
+ *      Default value for this quantity.
+ *  - isDefault : boolean
+ *      Indicates that this is the default/native domain.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface LiteralDataDomainAttribute {
 
-    /** Default value for the uom attribute */
-    String defaultUom = ""
-
-
     /** Identifies a valid format for an input or output. */
-    PossibleLiteralValuesChoiceAttribute plvc()
+    PossibleLiteralValuesChoiceAttribute possibleLiteralValues()
+
     /** Reference to the data type of this set of values. */
     String dataType()
+
     /** Indicates that this quantity has units and provides the unit of measurement. */
     String uom() default ""
+
     /** Default value for this quantity. */
     ValuesAttribute defaultValue()
+
     /** Indicates that this is the default/native domain. */
-    boolean isDefaultDomain()
+    boolean isDefault() default false
 }

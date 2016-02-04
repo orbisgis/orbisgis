@@ -50,10 +50,13 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface LiteralDataAttribute {
+
     /** List of supported formats */
     FormatAttribute[] formats() default []
+
     /** The valid domain for literal data */
     LiteralDataDomainAttribute[] validDomains() default []
+
     /** The literal value information */
     LiteralValueAttribute valueAttribute()
 }

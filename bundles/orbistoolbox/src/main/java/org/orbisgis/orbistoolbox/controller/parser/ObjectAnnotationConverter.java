@@ -124,7 +124,7 @@ public class ObjectAnnotationConverter {
     public static LiteralDataDomain annotationToObject(LiteralDataDomainAttribute literalDataDomainAttribute){
         try {
             PossibleLiteralValuesChoice possibleLiteralValuesChoice = ObjectAnnotationConverter.annotationToObject(
-                    literalDataDomainAttribute.plvc());
+                    literalDataDomainAttribute.possibleLiteralValues());
 
             DataType dataType = DataType.valueOf(literalDataDomainAttribute.dataType());
 
@@ -136,7 +136,7 @@ public class ObjectAnnotationConverter {
                     defaultValue
             );
 
-            literalDataDomain.setDefaultDomain(literalDataDomainAttribute.isDefaultDomain());
+            literalDataDomain.setDefaultDomain(literalDataDomainAttribute.isDefault());
 
             return literalDataDomain;
         } catch (MalformedScriptException e) {

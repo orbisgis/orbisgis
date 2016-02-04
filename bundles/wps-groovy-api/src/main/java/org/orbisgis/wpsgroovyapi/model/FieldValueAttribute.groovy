@@ -48,8 +48,10 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface FieldValueAttribute {
+
     /** Name of the variable which is the dataStore.*/
     String dataField()
+
     /** Indicates if more than one value can be selected.*/
     boolean multiSelection() default false
 }
