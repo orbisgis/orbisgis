@@ -35,6 +35,7 @@ import java.lang.annotation.RetentionPolicy
 /**
  * Attributes for the literal data.
  * This annotation contains the needed attributes for a literal data.
+ * The LiteralData represents a number or a string.
  *
  *
  * The following fields must be defined (mandatory) :

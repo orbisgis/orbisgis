@@ -26,9 +26,33 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 import org.orbisgis.wpsgroovyapi.attributes.LiteralDataAttribute
 
 /**
- * Groovy annotation that can be used in a groovy script to declare a literal data output field.
- * This annotation define a field as a literal data.
- * It is used for basic type (boolean, char, String, int double ...)
+ * DataField output annotation.
+ * The LiteralData represents a number or a string.
+ * As an output, this annotation should be placed just before the variable.
+ *
+ * The following fields must be defined (mandatory) :
+ *  - title : String
+ *       Title of the output. Normally available for display to a human.
+ *  - valueAttribute : LiteralValueAttribute
+ *      Information about the literal value.
+ *
+ * The following fields can be defined (optional) :
+ *  - resume : String
+ *      Brief narrative description of the output. Normally available for display to a human..
+ *  - keywords : String
+ *      Coma separated keywords that characterize the output.
+ *  - identifier : String
+ *      Unambiguous identifier of the output. It should be a valid URI.
+ *  - metadata : MetaData[]
+ *      Reference to additional metadata about this item.
+ *  - output : OutputAttribute[]
+ *      Nested Output.
+ *  - formats : FormatAttribute[]
+ *      List of supported formats.
+ *  - validDomains : LiteralDataDomains[]
+ *      Valid domain for the literal data.
+ *
+ * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
  */

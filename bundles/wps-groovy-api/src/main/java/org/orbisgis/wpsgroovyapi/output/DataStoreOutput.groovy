@@ -26,17 +26,33 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
 
 /**
- * The DataStore input allows the user to specify an input data (like files, external databases or an OrbisGIS SQL table).
+ * DataField output annotation.
+ * The DataStore complex data represents any data source (database, file ...).
+ * As an output, this annotation should be placed just before the variable.
  *
- * Usage :
+ * The following fields must be defined (mandatory) :
+ *  - title : String
+ *       Title of the output. Normally available for display to a human.
  *
- * @DataStoreOutput(
- *          title="inputTitle"
- *          )
- * String data
+ * The following fields can be defined (optional) :
+ *  - resume : String
+ *      Brief narrative description of the output. Normally available for display to a human..
+ *  - keywords : String
+ *      Coma separated keywords that characterize the output.
+ *  - identifier : String
+ *      Unambiguous identifier of the output. It should be a valid URI.
+ *  - metadata : MetaData[]
+ *      Reference to additional metadata about this item.
+ *  - output : OutputAttribute[]
+ *      Nested Output.
+ *  - extensions : String[]
+ *      File extension accepted. If no extension are specified, all the format are accepted.
+ *  - isSpatial : boolean
+ *      Indicates if the data represented is spatial or not.
+ *  - isCreateTable : boolean
+ *      Indicates if the toolbox should load the file and give back the table name or just give the file name.
  *
- * where the string data contains the name of the SQL table which contain the output data.
- *
+ * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
  */

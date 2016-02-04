@@ -26,7 +26,37 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 
 /**
- * The Enumeration output allow the user to select one or more value from a predefined list.
+ * DataField output annotation.
+ * The Enumeration complex data represents a selection of values from a predefined list.
+ * As an output, this annotation should be placed just before the variable.
+ *
+ * The following fields must be defined (mandatory) :
+ *  - title : String
+ *       Title of the output. Normally available for display to a human.
+ *  - values : String[]
+ *      List of possible values.
+ *
+ * The following fields can be defined (optional) :
+ *  - resume : String
+ *      Brief narrative description of the output. Normally available for display to a human..
+ *  - keywords : String
+ *      Coma separated keywords that characterize the output.
+ *  - identifier : String
+ *      Unambiguous identifier of the output. It should be a valid URI.
+ *  - metadata : MetaData[]
+ *      Reference to additional metadata about this item.
+ *  - output : OutputAttribute[]
+ *      Nested Output.
+ *  - multiSelection : boolean
+ *      Allow or not to select more than one value.
+ *  - isEditable : boolean
+ *      Enable or not the user to use its own value.
+ *  - names : String[]
+ *      Displayable name of the values. If not specified, use the values as name.
+ *  - defaultValues : String[]
+ *      Default selected values, can be empty.
+ *
+ * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
  */

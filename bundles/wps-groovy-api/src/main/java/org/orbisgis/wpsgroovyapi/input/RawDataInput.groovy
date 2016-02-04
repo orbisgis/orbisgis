@@ -42,15 +42,15 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *
  * The following fields must be defined (mandatory) :
  *  - title : String
- *       Title of a process, input, and output. Normally available for display to a human.
+ *       Title of the input. Normally available for display to a human.
  *
  * The following fields can be defined (optional) :
  *  - resume : String
- *      Brief narrative description of a process, input, and output. Normally available for display to a human..
+ *      Brief narrative description of the input. Normally available for display to a human.
  *  - keywords : String
- *      Coma separated keywords that characterize a process, its inputs, and outputs.
+ *      Coma separated keywords that characterize the input.
  *  - identifier : String
- *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
+ *      Unambiguous identifier of the input. It should be a valid URI.
  *  - metadata : MetaData[]
  *      Reference to additional metadata about this item.
  *  - minOccurs : int

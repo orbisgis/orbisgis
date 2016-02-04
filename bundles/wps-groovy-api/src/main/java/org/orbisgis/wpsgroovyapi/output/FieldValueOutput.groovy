@@ -26,7 +26,31 @@ import org.orbisgis.wpsgroovyapi.attributes.FieldValueAttribute
 import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
 
 /**
- * The FieldValue output allows the user to specify a value from a table column.
+ * DataField output annotation.
+ * The FieldValue complex data represents a list of values contained by a DataField.
+ * As an output, this annotation should be placed just before the variable.
+ *
+ * The following fields must be defined (mandatory) :
+ *  - title : String
+ *       Title of the output. Normally available for display to a human.
+ *  - dataField : String
+ *      Name of the variable which is the dataStore.
+ *
+ * The following fields can be defined (optional) :
+ *  - resume : String
+ *      Brief narrative description of the output. Normally available for display to a human..
+ *  - keywords : String
+ *      Coma separated keywords that characterize the output.
+ *  - identifier : String
+ *      Unambiguous identifier of the output. It should be a valid URI.
+ *  - metadata : MetaData[]
+ *      Reference to additional metadata about this item.
+ *  - output : OutputAttribute[]
+ *      Nested Output.
+ *  - multiSelection : boolean
+ *      Indicates if more than one value can be selected.
+ *
+ * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
  */

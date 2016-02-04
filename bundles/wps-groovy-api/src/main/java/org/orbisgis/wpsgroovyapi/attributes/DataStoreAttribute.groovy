@@ -35,7 +35,6 @@ import java.lang.annotation.RetentionPolicy
 /**
  * Attributes for the DataStore complex data.
  * The DataStore complex data represents any data source (database, file ...).
- * The LiteralData represents a number or a string.
  *
  * The following fields can be defined (optional) :
  *  - extensions : String[]

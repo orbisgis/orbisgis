@@ -26,7 +26,31 @@ import org.orbisgis.wpsgroovyapi.attributes.DataFieldAttribute
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 
 /**
- * The DataField input allows the user to specify a table column.
+ * DataField output annotation.
+ * The DataField is a complex data that represents a DataSource field (i.e. a column of a table).
+ * As an output, this annotation should be placed just before the variable.
+ *
+ * The following fields must be defined (mandatory) :
+ *  - title : String
+ *       Title of the output. Normally available for display to a human.
+ *  - dataStore : String
+ *      The variable name that contains the DataStore.
+ *
+ * The following fields can be defined (optional) :
+ *  - resume : String
+ *      Brief narrative description of the output. Normally available for display to a human..
+ *  - keywords : String
+ *      Coma separated keywords that characterize the output.
+ *  - identifier : String
+ *      Unambiguous identifier of the output. It should be a valid URI.
+ *  - metadata : MetaData[]
+ *      Reference to additional metadata about this item.
+ *  - output : OutputAttribute[]
+ *      Nested Output.
+ *  - fieldTypes : String[]
+ *      Array of the type of the data contained in the column. If no types are specified, accept all.
+ *
+ * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
  */
