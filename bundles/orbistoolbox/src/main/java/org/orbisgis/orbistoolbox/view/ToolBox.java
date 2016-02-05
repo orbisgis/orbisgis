@@ -19,7 +19,6 @@
 
 package org.orbisgis.orbistoolbox.view;
 
-import org.apache.commons.collections.ArrayStack;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
@@ -29,8 +28,8 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.orbisgis.orbistoolbox.WpsService;
 import org.orbisgis.orbistoolbox.controller.process.ProcessIdentifier;
-import org.orbisgis.orbistoolbox.controller.process.ProcessManager;
 import org.orbisgis.orbistoolbox.model.DataType;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
@@ -85,8 +84,6 @@ public class ToolBox implements DockingPanel  {
 
     /** Docking parameters used by DockingFrames. */
     private DockingPanelParameters parameters;
-    /** Process manager which contains all the loaded scripts. */
-    private ProcessManager processManager;
     /** Displayed JPanel. */
     private ToolBoxPanel toolBoxPanel;
     /** Object creating the UI corresponding to the data. */
@@ -118,11 +115,12 @@ public class ToolBox implements DockingPanel  {
     boolean multiThreaded = true;
     /** True if the database is H2, false otherwise. */
     private boolean isH2;
+    private WpsService wpsService;
 
     @Activate
     public void init(){
+        wpsService = new WpsService();
         toolBoxPanel = new ToolBoxPanel(this);
-        processManager = new ProcessManager();
         dataUIManager = new DataUIManager(this);
 
         parameters = new DockingPanelParameters();
@@ -192,6 +190,10 @@ public class ToolBox implements DockingPanel  {
                     " the toolbox won't be able to run more than one process at the same time.\n" +
                     "Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000; MULTI_THREADED=TRUE'");
         }
+    }
+
+    public WpsService getWpsService(){
+        return wpsService;
     }
 
     /**
@@ -276,14 +278,6 @@ public class ToolBox implements DockingPanel  {
         }
     }
 
-    /**
-     * Returns the process manager.
-     * @return The process manager.
-     */
-    public ProcessManager getProcessManager(){
-        return processManager;
-    }
-
     @Override
     public DockingPanelParameters getDockingParameters() {
         //when the toolBox is not visible, it mean that is was closed, so close all the toolbox editors
@@ -352,12 +346,9 @@ public class ToolBox implements DockingPanel  {
             Collections.addAll(fileList, file.listFiles());
         }
         for(File f : fileList) {
-            if(f.getName().endsWith(GROOVY_EXTENSION)) {
-                processManager.addLocalScript(f.toURI(), iconName, isDefaultScript);
-                ProcessIdentifier pi = processManager.getProcessIdentifier(f.toURI());
-                if(pi != null) {
-                    toolBoxPanel.addLocalSource(pi);
-                }
+            ProcessIdentifier pi = wpsService.addLocalScript(f, iconName, isDefaultScript);
+            if(pi != null) {
+                toolBoxPanel.addLocalSource(pi);
             }
         }
     }
@@ -368,7 +359,7 @@ public class ToolBox implements DockingPanel  {
      * @return The ProcessEditableElement which contains the running process information (log, state, ...).
      */
     public ProcessEditableElement openProcess(URI scriptUri){
-        Process process = processManager.getProcess(scriptUri);
+        Process process = wpsService.getProcess(scriptUri);
         ProcessEditableElement pee = new ProcessEditableElement(process);
         ProcessEditor pe = new ProcessEditor(this, pee);
         //Find if there is already a ProcessEditor open with the same process.
@@ -417,11 +408,7 @@ public class ToolBox implements DockingPanel  {
      * @return True if the file is well formed, false otherwise.
      */
     public boolean checkProcess(URI uri){
-        ProcessIdentifier pi = processManager.getProcessIdentifier(uri);
-        if(pi != null){
-            processManager.removeProcess(pi.getProcess());
-        }
-        return (processManager.addLocalScript(uri, pi.getCategory(), pi.isDefault()) != null);
+        return wpsService.checkProcess(uri);
     }
 
     /**
@@ -445,7 +432,7 @@ public class ToolBox implements DockingPanel  {
      * Remove the selected process in the tree.
      */
     public void removeProcess(URI uri){
-        processManager.removeProcess(processManager.getProcess(uri));
+        wpsService.removeProcess(uri);
     }
 
     /**

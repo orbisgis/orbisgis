@@ -93,7 +93,7 @@ public class ExecutionWorker extends SwingWorkerPM{
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
                     "Execute the script");
-            toolBox.getProcessManager().executeProcess(process, dataMap, toolBox.getProperties());
+            toolBox.getWpsService().executeProcess(process, dataMap, toolBox.getProperties());
 
             //Post-process the data
             pee.appendLog(System.currentTimeMillis() - startTime,

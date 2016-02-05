@@ -505,7 +505,7 @@ public class DataStoreUI implements DataUI{
                 //Load the selected file an retrieve the table name.
                 String tableName = toolBox.loadURI(file.toURI(),
                         loadSource,
-                        toolBox.getProcessManager().getProcess(inputOrOutput.getIdentifier()));
+                        toolBox.getWpsService().getProcess(inputOrOutput.getIdentifier()));
                 if (tableName != null) {
                     String fileStr = file.toURI().toString();
                     if(keepSource){
@@ -560,7 +560,7 @@ public class DataStoreUI implements DataUI{
             URI uri = (URI)document.getProperty("uri");
             URI dataBaseURI = URI.create(document.getText(0, document.getLength()));
             //Load the selected file an retrieve the table name.
-            String tableName = toolBox.loadURI(dataBaseURI, false, toolBox.getProcessManager().getProcess(uri));
+            String tableName = toolBox.loadURI(dataBaseURI, false, toolBox.getWpsService().getProcess(uri));
             if(tableName != null) {
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
