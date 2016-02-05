@@ -67,7 +67,8 @@
                     <module>external/itextpdf</module>
                     <module>external/jai</module>
                     <module>bundles/wps-groovy-api</module>
-		            <module>bundles/orbistoolbox</module>
+                    <module>bundles/wps-service</module>
+                    <module>bundles/wps-client</module>
                     <module>orbisgis-dist</module>
                 </modules>
             </profile>

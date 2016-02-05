@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>wps-client</artifactId>
+    <name>WPS Client</name>
+    <description>WPS Client</description>
+    <dependencies>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>core-jdbc</artifactId>
+            <version>5.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>dbjobs</artifactId>
+            <version>5.1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+    <packaging>bundle</packaging>
+
+    <parent>
+        <artifactId>orbisgis</artifactId>
+        <groupId>org.orbisgis</groupId>
+        <version>5.1.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+                <version>${maven-scr-plugin-version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-scr-scrdescriptor</id>
+                        <goals>
+                            <goal>scr</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Private-Package>org.orbisgis.wpsclient.*</Private-Package>
+                        <Bundle-Category>orbisgis</Bundle-Category>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>IRSTV</id>
+            <name>IRSTV repository</name>
+            <url>http://repo.orbisgis.org</url>
+        </repository>
+        <repository>
+            <id>repo2.maven.org</id>
+            <name>Maven2 repository 2</name>
+            <url>http://repo2.maven.org/maven2</url>
+        </repository>
+    </repositories>
+
+</project>
