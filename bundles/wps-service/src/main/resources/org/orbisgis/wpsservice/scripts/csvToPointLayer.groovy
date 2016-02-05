@@ -1,8 +1,10 @@
-package org.orbisgis.orbistoolbox.view.utils.scripts
+package org.orbisgis.wpsservice.scripts
 
-import org.orbisgis.wpsgroovyapi.input.*
-import org.orbisgis.wpsgroovyapi.output.*
-import org.orbisgis.wpsgroovyapi.process.*
+import org.orbisgis.wpsgroovyapi.input.DataFieldInput
+import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.EnumerationInput
+import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
+import org.orbisgis.wpsgroovyapi.process.Process
 
 /********************/
 /** Process method **/

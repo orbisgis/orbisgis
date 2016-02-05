@@ -19,10 +19,9 @@
 
 package org.orbisgis.wpsservice.controller.utils;
 
-import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.wpsservice.model.Process;
 import org.orbisgis.wpsgroovyapi.attributes.*;
 import org.orbisgis.wpsservice.model.*;
+import org.orbisgis.wpsservice.model.Process;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.IncompleteAnnotationException;

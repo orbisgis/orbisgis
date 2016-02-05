@@ -20,10 +20,8 @@
 package org.orbisgis.wpsservice.controller.execution;
 
 import org.orbisgis.wpsservice.WpsService;
-import org.orbisgis.wpsservice.model.DescriptionType;
-import org.orbisgis.wpsservice.model.DataStore;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.Output;
+import org.orbisgis.wpsservice.model.*;
+import sun.security.krb5.internal.crypto.Des;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -35,7 +33,7 @@ import java.util.Map;
 public class DataStoreProcessing implements DataProcessing {
 
     @Override
-    public Class getDataClass() {
+    public Class<? extends DataDescription> getDataClass() {
         return DataStore.class;
     }
 

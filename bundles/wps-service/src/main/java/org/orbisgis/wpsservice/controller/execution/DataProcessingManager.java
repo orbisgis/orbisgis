@@ -49,7 +49,7 @@ public class DataProcessingManager {
     }
 
     public Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap){
-        Map stash = new HashMap<>();
+        Map<URI, Object> stash = new HashMap<>();
         for(DataProcessing dp : listDataProcessing){
             if(inputOrOutput instanceof Input) {
                 DataDescription dataDescription = ((Input)inputOrOutput).getDataDescription();

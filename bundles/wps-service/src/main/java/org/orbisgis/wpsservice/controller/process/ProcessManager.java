@@ -22,18 +22,21 @@ package org.orbisgis.wpsservice.controller.process;
 import groovy.lang.GroovyObject;
 import groovy.sql.Sql;
 import org.orbisgis.corejdbc.DataSourceService;
+import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
 import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.Output;
 import org.orbisgis.wpsservice.model.Process;
-import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class used to manage process.
@@ -112,7 +115,7 @@ public class ProcessManager {
                                        Map<String, Object> properties){
         GroovyObject groovyObject = createProcess(process, dataMap);
         groovyObject.setProperty("sql", new Sql(dataSourceService));
-        groovyObject.setProperty("logger", LoggerFactory.getLogger(WpsClient.class));
+        groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
         groovyObject.invokeMethod("processing", null);
         return groovyObject;
     }

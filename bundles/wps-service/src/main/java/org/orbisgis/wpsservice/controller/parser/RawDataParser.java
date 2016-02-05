@@ -19,9 +19,10 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
+import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
-import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.wpsgroovyapi.attributes.*;
 import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.orbisgis.wpsservice.model.Output;

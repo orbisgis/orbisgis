@@ -12,12 +12,11 @@ import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
+import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.model.DataType;
 import org.orbisgis.wpsservice.model.DescriptionType;
 import org.orbisgis.wpsservice.model.Process;
-import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
-import org.orbisgis.wpsservice.controller.process.ProcessManager;
-import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -76,7 +75,7 @@ public class WpsService {
             try {
                 tbProperties.load(new FileInputStream(propertiesFile));
             } catch (IOException e) {
-                LoggerFactory.getLogger(WpsClient.class).warn("Unable to restore previous configuration of the ToolBox");
+                LoggerFactory.getLogger(WpsService.class).warn("Unable to restore previous configuration of the ToolBox");
                 tbProperties = null;
             }
         }
@@ -110,11 +109,11 @@ public class WpsService {
                 }
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
+            LoggerFactory.getLogger(WpsService.class).error(e.getMessage());
             multiThreaded = false;
         }
         if(!multiThreaded){
-            LoggerFactory.getLogger(WpsClient.class).warn("Warning, because of the H2 configuration," +
+            LoggerFactory.getLogger(WpsService.class).warn("Warning, because of the H2 configuration," +
                     " the toolbox won't be able to run more than one process at the same time.\n" +
                     "Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000; MULTI_THREADED=TRUE'");
         }
@@ -139,7 +138,7 @@ public class WpsService {
                     new FileOutputStream(coreWorkspace.getApplicationFolder() + File.separator + TOOLBOX_PROPERTIES),
                     "Save of the OrbisGIS toolBox");
         } catch (IOException e) {
-            LoggerFactory.getLogger(WpsClient.class).warn("Unable to save ToolBox state.");
+            LoggerFactory.getLogger(WpsService.class).warn("Unable to save ToolBox state.");
         }
         areScriptsCopied = false;
     }
@@ -196,7 +195,7 @@ public class WpsService {
         if(wpsScriptFolder.exists() && wpsScriptFolder.isDirectory()){
             try {
                 //Retrieve all the scripts url
-                String folderPath = WpsClient.class.getResource("scripts").getFile();
+                String folderPath = WpsService.class.getResource("scripts").getFile();
                 Enumeration<URL> enumUrl = FrameworkUtil.getBundle(WpsService.class).findEntries(folderPath, "*", false);
                 //For each url
                 while(enumUrl.hasMoreElements()){
@@ -355,7 +354,7 @@ public class WpsService {
                     extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
             driver.exportTable(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
         } catch (SQLException|IOException e) {
-            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
+            LoggerFactory.getLogger(WpsService.class).error(e.getMessage());
         }
     }
 
@@ -449,7 +448,7 @@ public class WpsService {
                 }
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
+            LoggerFactory.getLogger(WpsService.class).error(e.getMessage());
         }
         return list;
     }
@@ -478,7 +477,7 @@ public class WpsService {
                 }
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
+            LoggerFactory.getLogger(WpsService.class).error(e.getMessage());
         }
         return fieldList;
     }
@@ -500,7 +499,7 @@ public class WpsService {
                 fieldValues.add(result.getString(1));
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
+            LoggerFactory.getLogger(WpsService.class).error(e.getMessage());
         }
         return fieldValues;
     }
@@ -517,7 +516,7 @@ public class WpsService {
                 statement.execute("DROP TABLE " + tableName);
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
+            LoggerFactory.getLogger(WpsService.class).error(e.getMessage());
         }
     }
 
@@ -553,7 +552,7 @@ public class WpsService {
             }
             return tableName;
         } catch (SQLException|IOException e) {
-            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
+            LoggerFactory.getLogger(WpsService.class).error(e.getMessage());
         }
         return null;
     }

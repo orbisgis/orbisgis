@@ -19,13 +19,13 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
+import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.ProcessAttribute;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.orbisgis.wpsservice.model.Output;
 import org.orbisgis.wpsservice.model.Process;
-import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
-import org.orbisgis.wpsgroovyapi.attributes.ProcessAttribute;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;

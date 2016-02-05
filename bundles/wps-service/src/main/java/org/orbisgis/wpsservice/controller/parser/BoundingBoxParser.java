@@ -19,9 +19,9 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
+import org.orbisgis.wpsgroovyapi.attributes.BoundingBoxAttribute;
 import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.Output;
-import org.orbisgis.wpsgroovyapi.attributes.BoundingBoxAttribute;
 
 import java.lang.reflect.Field;
 

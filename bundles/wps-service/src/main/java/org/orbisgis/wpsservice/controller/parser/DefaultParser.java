@@ -19,7 +19,6 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
-import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;

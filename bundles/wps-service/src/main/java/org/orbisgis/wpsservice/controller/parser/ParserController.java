@@ -22,10 +22,9 @@ package org.orbisgis.wpsservice.controller.parser;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
-import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute;
+import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsservice.model.Process;
 import org.slf4j.LoggerFactory;
 
