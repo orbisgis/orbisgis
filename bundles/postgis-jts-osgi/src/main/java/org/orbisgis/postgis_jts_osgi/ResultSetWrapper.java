@@ -29,7 +29,9 @@
 package org.orbisgis.postgis_jts_osgi;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.WKBWriter;
 import org.postgis.PGboxbase;
 import org.postgis.Point;
 import org.postgis.jts.JtsGeometry;
@@ -73,7 +75,7 @@ public class ResultSetWrapper implements ResultSet {
     public static final Set<String> GEOMETRY_COLUMNS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList("geometry", "box2d", "box3d")));
     private Set<Integer> spatialFields = new HashSet<Integer>();
     private Set<Integer> tidFields = new HashSet<>();
-    private GeometryFactory geometryFactory = new GeometryFactory();
+    private static GeometryFactory geometryFactory = new GeometryFactory();
 
     public ResultSetWrapper(Statement statementWrapper, ResultSet rs) {
         this.statementWrapper = statementWrapper;
@@ -968,7 +970,21 @@ public class ResultSetWrapper implements ResultSet {
 
     @Override
     public byte[] getBytes(int columnIndex) throws SQLException {
-        return rs.getBytes(columnIndex);
+        if(spatialFields.contains(columnIndex)) {
+            // Spatial field, return WKB
+            Object object = getObject(columnIndex);
+            if(object instanceof Geometry) {
+                // WKBWriter object hold a byte array so we need to construct a new one
+                WKBWriter wkbWriter = new WKBWriter(3);
+                return wkbWriter.write((Geometry)object);
+            } else {
+                // Non-spatial field
+                return rs.getBytes(columnIndex);
+            }
+        } else {
+            // Non-spatial field
+            return rs.getBytes(columnIndex);
+        }
     }
 
     @Override
@@ -1048,7 +1064,7 @@ public class ResultSetWrapper implements ResultSet {
 
     @Override
     public byte[] getBytes(String columnLabel) throws SQLException {
-        return rs.getBytes(columnLabel);
+        return getBytes(findColumn(columnLabel));
     }
 
     @Override
