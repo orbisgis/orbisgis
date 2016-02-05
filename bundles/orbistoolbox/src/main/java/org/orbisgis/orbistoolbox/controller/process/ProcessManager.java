@@ -61,13 +61,13 @@ public class ProcessManager {
      * Adds a local source to the toolbox and get all the groovy script.
      * @param uri URI to the local source.
      */
-    public void addLocalSource(URI uri){
+    public void addLocalSource(URI uri, String category, boolean isDefault){
         File folder = new File(uri);
         if(!folder.exists() || !folder.isDirectory()){
             return;
         }
         for(File f : folder.listFiles()){
-            addLocalScript(f.toURI());
+            addLocalScript(f.toURI(), category, isDefault);
         }
     }
 
@@ -76,7 +76,7 @@ public class ProcessManager {
      * @param uri URI of the local script.
      * @return The process corresponding to the script.
      */
-    public Process addLocalScript(URI uri){
+    public Process addLocalScript(URI uri, String category, boolean isDefault){
         File f = new File(uri);
         //Test that the script name is not only '.groovy'
         if (f.getName().endsWith(".groovy") && f.getName().length()>7) {
@@ -87,11 +87,11 @@ public class ProcessManager {
                 //Check if the process has been well parsed
                 if (entry != null && entry.getKey() != null && entry.getValue() != null) {
                     //Save the process in a ProcessIdentifier
-                    processIdList.add(new ProcessIdentifier(
-                            entry.getValue(),
-                            entry.getKey(),
-                            uri
-                    ));
+                    ProcessIdentifier pi = new ProcessIdentifier(entry.getValue(),entry.getKey(),uri,f.getParentFile().toURI()
+                    );
+                    pi.setCategory(category);
+                    pi.setDefault(isDefault);
+                    processIdList.add(pi);
                     //return the process
                     return entry.getKey();
                 }
@@ -222,5 +222,14 @@ public class ProcessManager {
         if(toRemove != null){
             processIdList.remove(toRemove);
         }
+    }
+
+    public ProcessIdentifier getProcessIdentifier(URI processURI){
+        for(ProcessIdentifier pi : processIdList){
+            if(pi.getURI().equals(processURI)){
+                return pi;
+            }
+        }
+        return null;
     }
 }

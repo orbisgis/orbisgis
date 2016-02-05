@@ -19,6 +19,7 @@
 
 package org.orbisgis.orbistoolbox.view.ui;
 
+import org.orbisgis.orbistoolbox.controller.process.ProcessIdentifier;
 import org.orbisgis.orbistoolbox.controller.process.ProcessManager;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ToolBox;
@@ -278,17 +279,15 @@ public class ToolBoxPanel extends JPanel {
      * @param p Process to add.
      * @param uri Process URI.
      */
-    public void addScriptInTagModel(Process p, URI uri, String customCloseIconName, String customOpenIconName,
-                                    String customLeafIconName, String customInvalidIconName){
+    public void addScriptInTagModel(Process p, URI uri, String iconName){
         TreeNodeWps root = (TreeNodeWps) tagModel.getRoot();
         TreeNodeWps script = new TreeNodeWps();
         script.setUri(uri);
         script.setNodeType(TreeNodeWps.NodeType.PROCESS);
 
         script.setValidNode(p!=null);
-        if(customCloseIconName != null && customOpenIconName != null &&
-                customLeafIconName != null && customInvalidIconName != null){
-            script.setCustomIcon(customCloseIconName, customOpenIconName, customLeafIconName, customInvalidIconName);
+        if(iconName != null){
+            script.setCustomIcon(iconName);
         }
         if(p!=null){
             script.setUserObject(p.getTitle());
@@ -371,95 +370,28 @@ public class ToolBoxPanel extends JPanel {
 
     /**
      * Adds a local source of default scripts. Open the given directory and find all the groovy script contained.
-     * @param directoryUri Directory URI to analyse.
-     * @param processManager ProcessManager.
-     * @param iconName Name of the icon to use for this node.
      */
-    public void addDefaultLocalSource(URI directoryUri, ProcessManager processManager, String iconName) {
-        addLocalSourceInFileModel(directoryUri, mapHostNode.get(LOCALHOST_URI), iconName, iconName, iconName,
-                TreeNodeWps.ERROR_ICON_NAME);
-        File directory = new File(directoryUri);
-        for (File f : directory.listFiles()) {
-            if (f.getName().endsWith(".groovy")) {
-                addScriptInTagModel(processManager.getProcess(f.toURI()), f.toURI(), null, null, null, null);
-            }
-        }
-        TreeNodeWps scriptFileModel = getChildWithUri(directoryUri, (TreeNodeWps)fileModel.getRoot()).get(0);
-        scriptFileModel.setDefaultOrbisGIS(true);
+    public void addLocalSource(ProcessIdentifier pi) {
+        addLocalSourceInFileModel(pi.getParent(), mapHostNode.get(LOCALHOST_URI), pi.getCategory());
+        addScriptInTagModel(pi.getProcess(), pi.getURI(), pi.getCategory());
+        TreeNodeWps scriptFileModel = getChildWithUri(pi.getParent(), (TreeNodeWps)fileModel.getRoot()).get(0);
+        scriptFileModel.setDefaultOrbisGIS(pi.isDefault());
         for(TreeNodeWps node : getAllChild(scriptFileModel)){
-            node.setDefaultOrbisGIS(true);
+            node.setDefaultOrbisGIS(pi.isDefault());
             List<TreeNodeWps> tagNodeList = getChildWithUri(node.getUri(), (TreeNodeWps)tagModel.getRoot());
             for(TreeNodeWps tagNode : tagNodeList){
-                tagNode.setDefaultOrbisGIS(true);
+                tagNode.setDefaultOrbisGIS(pi.isDefault());
             }
         }
 
-        refresh();
-    }
-
-    /**
-     * Adds a local source. Open the given directory and find all the groovy script contained.
-     * @param directoryUri Directory URI to analyse.
-     * @param processManager ProcessManager.
-     */
-    public void addLocalSource(URI directoryUri, ProcessManager processManager) {
-        addLocalSourceInFileModel(directoryUri, mapHostNode.get(LOCALHOST_URI), null, null, null, null);
-        File directory = new File(directoryUri);
-        for (File f : directory.listFiles()) {
-            if (f.getName().endsWith(".groovy")) {
-                addScriptInTagModel(processManager.getProcess(f.toURI()), f.toURI(), null, null, null, null);
-            }
-        }
-        refresh();
-    }
-
-    /**
-     * Adds a local source. Open the given directory and find all the groovy script contained.
-     * @param directoryUri Directory URI to analyse.
-     * @param processManager ProcessManager.
-     * @param iconName Name of the icon to use for this node.
-     */
-    public void addLocalSource(URI directoryUri, ProcessManager processManager, String iconName) {
-        addLocalSourceInFileModel(directoryUri, mapHostNode.get(LOCALHOST_URI), iconName, iconName, iconName,
-                TreeNodeWps.ERROR_ICON_NAME);
-        File directory = new File(directoryUri);
-        for (File f : directory.listFiles()) {
-            if (f.getName().endsWith(".groovy")) {
-                addScriptInTagModel(processManager.getProcess(f.toURI()), f.toURI(), null, null, null, null);
-            }
-        }
-        refresh();
-    }
-
-    /**
-     * Adds a local source. Open the given directory and find all the groovy script contained.
-     * @param directoryUri Directory URI to analyse.
-     * @param processManager ProcessManager.
-     * @param customCloseIconName Name of the icon to use for this node when it is closed.
-     * @param customOpenIconName Name of the icon to use for this node when it is open.
-     * @param customLeafIconName Name of the icon to use for this node when it is a leaf.
-     * @param customInvalidIconName Name of the icon to use for this node when it is not valid.
-     */
-    public void addLocalSource(URI directoryUri, ProcessManager processManager, String customCloseIconName,
-                               String customOpenIconName, String customLeafIconName, String customInvalidIconName) {
-        addLocalSourceInFileModel(directoryUri, mapHostNode.get(LOCALHOST_URI), customCloseIconName,
-                customOpenIconName, customLeafIconName, customInvalidIconName);
-        File directory = new File(directoryUri);
-        for (File f : directory.listFiles()) {
-            if (f.getName().endsWith(".groovy")) {
-                addScriptInTagModel(processManager.getProcess(f.toURI()), f.toURI(), null, null, null, null);
-            }
-        }
         refresh();
     }
 
     /**
      * Adds a source in the file model.
-     * @param directory Script file to add.
      */
-    private void addLocalSourceInFileModel(URI directory, TreeNodeWps hostNode, String customCloseIconName,
-                                   String customOpenIconName, String customLeafIconName, String customInvalidIconName){
-        List<TreeNodeWps> sourceList = getChildWithUri(directory, hostNode);
+    private void addLocalSourceInFileModel(URI parent, TreeNodeWps hostNode, String iconName){
+        List<TreeNodeWps> sourceList = getChildWithUri(parent, hostNode);
         TreeNodeWps source;
         if(sourceList.isEmpty()){
             source = null;
@@ -467,22 +399,21 @@ public class ToolBoxPanel extends JPanel {
         else{
             source = sourceList.get(0);
         }
-        String folderName = new File(directory).getName();
+        String folderName = new File(parent).getName();
 
         if(source == null) {
             source = new TreeNodeWps();
             source.setValidNode(true);
             source.setUserObject(folderName);
-            source.setUri(directory);
+            source.setUri(parent);
             source.setNodeType(TreeNodeWps.NodeType.FOLDER);
-            if(customCloseIconName != null && customOpenIconName != null &&
-                    customLeafIconName != null && customInvalidIconName != null){
-                source.setCustomIcon(customCloseIconName, customOpenIconName, customLeafIconName, customInvalidIconName);
+            if(iconName != null){
+                source.setCustomIcon(iconName);
             }
             fileModel.insertNodeInto(source, hostNode, 0);
         }
 
-        for(URI uri : getAllWpsScript(directory)){
+        for(URI uri : getAllWpsScript(parent)){
             if(getChildWithUri(uri, source).isEmpty()) {
                 Process process = toolBox.getProcessManager().getProcess(uri);
                 TreeNodeWps script = new TreeNodeWps();

@@ -19,6 +19,7 @@
 
 package org.orbisgis.orbistoolbox.view;
 
+import org.apache.commons.collections.ArrayStack;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
@@ -28,6 +29,7 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.orbisgis.orbistoolbox.controller.process.ProcessIdentifier;
 import org.orbisgis.orbistoolbox.controller.process.ProcessManager;
 import org.orbisgis.orbistoolbox.model.DataType;
 import org.orbisgis.orbistoolbox.model.Process;
@@ -332,8 +334,7 @@ public class ToolBox implements DockingPanel  {
      * @param uri Folder URI where the script are located.
      */
     public void addLocalSource(URI uri){
-        processManager.addLocalSource(uri);
-        toolBoxPanel.addLocalSource(uri, processManager);
+        addLocalSource(uri, null, false);
     }
 
     /**
@@ -342,28 +343,23 @@ public class ToolBox implements DockingPanel  {
      * @param iconName Name of the icon to use for this node.
      */
     public void addLocalSource(URI uri, String iconName, boolean isDefaultScript){
-        processManager.addLocalSource(uri);
-        if(isDefaultScript){
-            toolBoxPanel.addDefaultLocalSource(uri, processManager, iconName);
+        File file = new File(uri);
+        List<File> fileList = new ArrayList<>();
+        if(file.isFile()){
+            fileList.add(file);
         }
-        else {
-            toolBoxPanel.addLocalSource(uri, processManager, iconName);
+        else{
+            Collections.addAll(fileList, file.listFiles());
         }
-    }
-
-    /**
-     * Adds a folder as a local script source.
-     * @param uri Folder URI where the script are located.
-     * @param customCloseIconName Name of the icon to use for this node when it is closed.
-     * @param customOpenIconName Name of the icon to use for this node when it is open.
-     * @param customLeafIconName Name of the icon to use for this node when it is a leaf.
-     * @param customInvalidIconName Name of the icon to use for this node when it is not valid.
-     */
-    public void addLocalSource(URI uri, String customCloseIconName, String customOpenIconName, String customLeafIconName,
-                               String customInvalidIconName){
-        processManager.addLocalSource(uri);
-        toolBoxPanel.addLocalSource(uri, processManager, customCloseIconName, customOpenIconName, customLeafIconName,
-                customInvalidIconName);
+        for(File f : fileList) {
+            if(f.getName().endsWith(GROOVY_EXTENSION)) {
+                processManager.addLocalScript(f.toURI(), iconName, isDefaultScript);
+                ProcessIdentifier pi = processManager.getProcessIdentifier(f.toURI());
+                if(pi != null) {
+                    toolBoxPanel.addLocalSource(pi);
+                }
+            }
+        }
     }
 
     /**
@@ -421,11 +417,11 @@ public class ToolBox implements DockingPanel  {
      * @return True if the file is well formed, false otherwise.
      */
     public boolean checkProcess(URI uri){
-        Process process = processManager.getProcess(uri);
-        if(process != null){
-            processManager.removeProcess(process);
+        ProcessIdentifier pi = processManager.getProcessIdentifier(uri);
+        if(pi != null){
+            processManager.removeProcess(pi.getProcess());
         }
-        return (processManager.addLocalScript(uri) != null);
+        return (processManager.addLocalScript(uri, pi.getCategory(), pi.isDefault()) != null);
     }
 
     /**
