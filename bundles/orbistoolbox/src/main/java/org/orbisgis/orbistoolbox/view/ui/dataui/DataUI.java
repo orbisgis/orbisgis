@@ -20,7 +20,7 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import org.orbisgis.orbistoolbox.model.DescriptionType;
-import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.WpsClient;
 
 import javax.swing.*;
 import java.net.URI;
@@ -59,7 +59,7 @@ public interface DataUI {
 
     /**
      * Sets the ToolBox associated to the DataUI.
-     * @param toolBox ToolBox
+     * @param wpsClient ToolBox
      */
-    public void setToolBox(ToolBox toolBox);
+    public void setWpsClient(WpsClient wpsClient);
 }

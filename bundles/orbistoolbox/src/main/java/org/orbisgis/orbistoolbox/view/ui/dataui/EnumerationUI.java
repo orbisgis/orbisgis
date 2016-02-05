@@ -22,7 +22,7 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.Enumeration;
-import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.WpsClient;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.common.ContainerItem;
 import org.slf4j.LoggerFactory;
@@ -46,10 +46,10 @@ import java.util.List;
 public class EnumerationUI implements DataUI{
     private static final int JLIST_MAX_ROW_COUNT = 10;
 
-    private ToolBox toolBox;
+    private WpsClient wpsClient;
 
-    public void setToolBox(ToolBox toolBox){
-        this.toolBox = toolBox;
+    public void setWpsClient(WpsClient wpsClient){
+        this.wpsClient = wpsClient;
     }
 
     @Override

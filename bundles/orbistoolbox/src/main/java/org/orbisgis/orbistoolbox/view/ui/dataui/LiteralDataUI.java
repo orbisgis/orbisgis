@@ -22,7 +22,7 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.orbistoolbox.model.*;
 import org.orbisgis.orbistoolbox.model.LiteralDataDomain;
-import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.WpsClient;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.slf4j.LoggerFactory;
 
@@ -52,10 +52,10 @@ public class LiteralDataUI implements DataUI {
     private static final int MAX_ROW_NUMBER = 10;
     private static final int MIN_ROW_NUMBER = 3;
 
-    private ToolBox toolBox;
+    private WpsClient wpsClient;
 
-    public void setToolBox(ToolBox toolBox){
-        this.toolBox = toolBox;
+    public void setWpsClient(WpsClient wpsClient){
+        this.wpsClient = wpsClient;
     }
 
     @Override

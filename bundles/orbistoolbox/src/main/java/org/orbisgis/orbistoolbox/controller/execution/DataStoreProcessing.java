@@ -24,7 +24,6 @@ import org.orbisgis.orbistoolbox.model.DescriptionType;
 import org.orbisgis.orbistoolbox.model.DataStore;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
-import org.orbisgis.orbistoolbox.view.ToolBox;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -64,7 +63,7 @@ public class DataStoreProcessing implements DataProcessing {
                 }
                 else{
                     if(!keep) {
-                        ToolBox.removeTempTable(dataStoreURI.getFragment());
+                        WpsService.removeTempTable(dataStoreURI.getFragment());
                     }
                     else{
                         path = path.replace("$", "");
@@ -94,7 +93,7 @@ public class DataStoreProcessing implements DataProcessing {
         if(inputOrOutput instanceof Input){
             URI uri = inputOrOutput.getIdentifier();
             if(stash.get(uri) != null && stash.get(uri).equals("file")){
-                ToolBox.removeTempTable(dataMap.get(uri).toString());
+                WpsService.removeTempTable(dataMap.get(uri).toString());
             }
         }
         if(inputOrOutput instanceof Output){

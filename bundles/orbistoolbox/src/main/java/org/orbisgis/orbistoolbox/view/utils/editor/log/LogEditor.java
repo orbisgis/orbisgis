@@ -20,7 +20,7 @@
 package org.orbisgis.orbistoolbox.view.utils.editor.log;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.WpsClient;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.sif.docking.DockingLocation;
@@ -76,7 +76,7 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("log"));
         dockingPanelParameters.setDefaultDockingLocation(
-                new DockingLocation(DockingLocation.Location.STACKED_ON, ToolBox.TOOLBOX_REFERENCE));
+                new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClient.TOOLBOX_REFERENCE));
         dockingPanelParameters.setTitle("WPS log");
         dockingPanelParameters.setName(NAME);
         dockingPanelParameters.setCloseable(false);

@@ -24,7 +24,7 @@ import org.orbisgis.orbistoolbox.controller.execution.ExecutionWorker;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.WpsClient;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
@@ -55,7 +55,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     public static final String NAME = "PROCESS_EDITOR";
 
     private ProcessEditableElement pee;
-    private ToolBox toolBox;
+    private WpsClient wpsClient;
     private DockingPanelParameters dockingPanelParameters;
     /** TabbedPane containing the configuration panel, the info panel and the execution panel */
     private JTabbedPane tabbedPane;
@@ -68,19 +68,19 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private WaitLayerUI layerUI;
     private JLayer<JPanel> layer;
 
-    public ProcessEditor(ToolBox toolBox, ProcessEditableElement pee){
+    public ProcessEditor(WpsClient wpsClient, ProcessEditableElement pee){
         this.alive = true;
-        this.toolBox = toolBox;
+        this.wpsClient = wpsClient;
         this.pee = pee;
         this.pee.addPropertyChangeListener(this);
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName(NAME+"_"+pee.getProcess().getTitle());
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("process"));
         dockingPanelParameters.setDefaultDockingLocation(
-                new DockingLocation(DockingLocation.Location.STACKED_ON, ToolBox.TOOLBOX_REFERENCE));
+                new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClient.TOOLBOX_REFERENCE));
         dockingPanelParameters.setTitle(pee.getProcessReference());
         this.setLayout(new BorderLayout());
-        dataUIManager = toolBox.getDataUIManager();
+        dataUIManager = wpsClient.getDataUIManager();
 
         contentPanel = new JPanel(new BorderLayout());
         layerUI = new WaitLayerUI();
@@ -105,7 +105,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         //if this editor is not visible but was open, close it.
         if(!dockingPanelParameters.isVisible() && alive){
             alive = false;
-            toolBox.killEditor(this);
+            wpsClient.killEditor(this);
         }
         return dockingPanelParameters;
     }
@@ -161,11 +161,11 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      * @return True if the process has already been launch, false otherwise.
      */
     public boolean runProcess(){
-        toolBox.validateInstance(this);
+        wpsClient.validateInstance(this);
         pee.setProcessState(ProcessEditableElement.ProcessState.RUNNING);
         //Run the process in a separated thread
-        thread = new ExecutionWorker(pee, toolBox);
-        toolBox.getExecutorService().execute(thread);
+        thread = new ExecutionWorker(pee, wpsClient);
+        wpsClient.getExecutorService().execute(thread);
         return false;
     }
 

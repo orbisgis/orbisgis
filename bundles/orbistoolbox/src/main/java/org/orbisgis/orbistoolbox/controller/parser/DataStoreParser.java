@@ -19,10 +19,10 @@
 
 package org.orbisgis.orbistoolbox.controller.parser;
 
+import org.orbisgis.orbistoolbox.WpsService;
 import org.orbisgis.orbistoolbox.controller.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.orbisgis.wpsgroovyapi.attributes.DataStoreAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
@@ -52,10 +52,10 @@ public class DataStoreParser implements Parser{
         boolean isDataBase = false;
 
         if(dataStoreAttribute.isSpatial()){
-            importableFormat = new ArrayList<>(ToolBox.getImportableFormat(true).keySet());
+            importableFormat = new ArrayList<>(WpsService.getImportableFormat(true).keySet());
         }
         else{
-            importableFormat = new ArrayList<>(ToolBox.getImportableFormat(false).keySet());
+            importableFormat = new ArrayList<>(WpsService.getImportableFormat(false).keySet());
         }
         //If there is extension, test if it is recognized by OrbisGIS and register it.
         if(dataStoreAttribute.extensions().length!=0) {
@@ -125,10 +125,10 @@ public class DataStoreParser implements Parser{
         boolean isDataBase = false;
 
         if(dataStoreAttribute.isSpatial()){
-            exportableGeoFormat = new ArrayList<>(ToolBox.getExportableFormat(true).keySet());
+            exportableGeoFormat = new ArrayList<>(WpsService.getExportableFormat(true).keySet());
         }
         else{
-            exportableGeoFormat = new ArrayList<>(ToolBox.getExportableFormat(false).keySet());
+            exportableGeoFormat = new ArrayList<>(WpsService.getExportableFormat(false).keySet());
         }
 
         //If there is extension, test if it is recognized by OrbisGIS and register it.

@@ -5,14 +5,15 @@ import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.orbistoolbox.controller.execution.DataProcessingManager;
+import org.orbisgis.orbistoolbox.model.DataType;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.controller.process.ProcessIdentifier;
 import org.orbisgis.orbistoolbox.controller.process.ProcessManager;
-import org.orbisgis.orbistoolbox.view.ToolBox;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
@@ -20,10 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 public class WpsService {
@@ -50,7 +48,8 @@ public class WpsService {
     private ProcessManager processManager;
     private static boolean areScriptsCopied = false;
 
-    public WpsService(CoreWorkspace coreWorkspace, DataManager dataManager){
+    public WpsService(CoreWorkspace coreWorkspace, DataManager dataManager, DriverFunctionContainer driverFunctionContainer){
+        this.driverFunctionContainer = driverFunctionContainer;
         this.dataManager = dataManager;
         this.coreWorkspace = coreWorkspace;
         processManager = new ProcessManager();
@@ -65,7 +64,7 @@ public class WpsService {
             try {
                 tbProperties.load(new FileInputStream(propertiesFile));
             } catch (IOException e) {
-                LoggerFactory.getLogger(ToolBox.class).warn("Unable to restore previous configuration of the ToolBox");
+                LoggerFactory.getLogger(WpsClient.class).warn("Unable to restore previous configuration of the ToolBox");
                 tbProperties = null;
             }
         }
@@ -99,11 +98,11 @@ public class WpsService {
                 }
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
             multiThreaded = false;
         }
         if(!multiThreaded){
-            LoggerFactory.getLogger(ToolBox.class).warn("Warning, because of the H2 configuration," +
+            LoggerFactory.getLogger(WpsClient.class).warn("Warning, because of the H2 configuration," +
                     " the toolbox won't be able to run more than one process at the same time.\n" +
                     "Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000; MULTI_THREADED=TRUE'");
         }
@@ -124,7 +123,7 @@ public class WpsService {
                     new FileOutputStream(coreWorkspace.getApplicationFolder() + File.separator + TOOLBOX_PROPERTIES),
                     "Save of the OrbisGIS toolBox");
         } catch (IOException e) {
-            LoggerFactory.getLogger(ToolBox.class).warn("Unable to save ToolBox state.");
+            LoggerFactory.getLogger(WpsClient.class).warn("Unable to save ToolBox state.");
         }
         areScriptsCopied = false;
     }
@@ -172,7 +171,7 @@ public class WpsService {
         if(wpsScriptFolder.exists() && wpsScriptFolder.isDirectory()){
             try {
                 //Retrieve all the scripts url
-                String folderPath = ToolBox.class.getResource("scripts").getFile();
+                String folderPath = WpsClient.class.getResource("scripts").getFile();
                 Enumeration<URL> enumUrl = FrameworkUtil.getBundle(WpsService.class).findEntries(folderPath, "*", false);
                 //For each url
                 while(enumUrl.hasMoreElements()){
@@ -280,7 +279,210 @@ public class WpsService {
                     extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
             driver.exportTable(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
         } catch (SQLException|IOException e) {
-            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
         }
+    }
+
+
+    /**
+     * Verify if the given file is a well formed script.
+     * @param uri URI to check.
+     * @return True if the file is well formed, false otherwise.
+     */
+    public boolean checkFolder(URI uri){
+        File f = new File(uri);
+        if(f.exists() && f.isDirectory()){
+            for(File file : f.listFiles()){
+                if(file.getAbsolutePath().endsWith("."+GROOVY_EXTENSION)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Returns a map of the importable format.
+     * The map key is the format extension and the value is the format description.
+     * @param onlySpatial If true, returns only the spatial table.
+     * @return a map of the importable  format.
+     */
+    public static Map<String, String> getImportableFormat(boolean onlySpatial){
+        Map<String, String> formatMap = new HashMap<>();
+        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
+            for(String ext : df.getImportFormats()){
+                if(df.isSpatialFormat(ext) || !onlySpatial) {
+                    formatMap.put(ext, df.getFormatDescription(ext));
+                }
+            }
+        }
+        return formatMap;
+    }
+
+    /**
+     * Returns a map of the exportable spatial format.
+     * The map key is the format extension and the value is the format description.
+     * @param onlySpatial If true, returns only the spatial table.
+     * @return a map of the exportable spatial format.
+     */
+    public static Map<String, String> getExportableFormat(boolean onlySpatial){
+        Map<String, String> formatMap = new HashMap<>();
+        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
+            for(String ext : df.getExportFormats()){
+                if(df.isSpatialFormat(ext) || !onlySpatial) {
+                    formatMap.put(ext, df.getFormatDescription(ext));
+                }
+            }
+        }
+        return formatMap;
+    }
+
+    /**
+     * Returns the list of sql table from OrbisGIS.
+     * @param onlySpatial If true, returns only the spatial table.
+     * @return The list of geo sql table from OrbisGIS.
+     */
+    public static List<String> getGeocatalogTableList(boolean onlySpatial) {
+        List<String> list = new ArrayList<>();
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            String defaultSchema = "PUBLIC";
+            try {
+                if (connection.getSchema() != null) {
+                    defaultSchema = connection.getSchema();
+                }
+            } catch (AbstractMethodError | Exception ex) {
+                // Driver has been compiled with JAVA 6, or is not implemented
+            }
+            if(!onlySpatial) {
+                DatabaseMetaData md = connection.getMetaData();
+                ResultSet rs = md.getTables(null, defaultSchema, "%", null);
+                while (rs.next()) {
+                    String tableName = rs.getString(3);
+                    if (!tableName.equalsIgnoreCase("SPATIAL_REF_SYS") && !tableName.equalsIgnoreCase("GEOMETRY_COLUMNS")) {
+                        list.add(tableName);
+                    }
+                }
+            }
+            else{
+                Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery("SELECT * FROM "+defaultSchema+".geometry_columns");
+                while(rs.next()) {
+                    list.add(rs.getString("F_TABLE_NAME"));
+                }
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
+        }
+        return list;
+    }
+
+    /**
+     * Return the list of the field of a table.
+     * @param tableName Name of the table.
+     * @param dataTypes Type of the field accepted. If empty, accepts all the field.
+     * @return The list of the field name.
+     */
+    public static List<String> getTableFieldList(String tableName, List<DataType> dataTypes){
+        List<String> fieldList = new ArrayList<>();
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            DatabaseMetaData dmd = connection.getMetaData();
+            ResultSet result = dmd.getColumns(connection.getCatalog(), null, tableName, "%");
+            while(result.next()){
+                if (!dataTypes.isEmpty()) {
+                    for (DataType dataType : dataTypes) {
+                        if (DataType.testHDBype(dataType, result.getObject(6).toString())) {
+                            fieldList.add(result.getObject(4).toString());
+                        }
+                    }
+                } else{
+                    fieldList.add(result.getObject(4).toString());
+                }
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
+        }
+        return fieldList;
+    }
+
+
+    /**
+     * Returns the list of distinct values contained by a field from a table from the database
+     * @param tableName Name of the table containing the field.
+     * @param fieldName Name of the field containing the values.
+     * @return The list of distinct values of the field.
+     */
+    public static List<String> getFieldValueList(String tableName, String fieldName) {
+        List<String> fieldValues = new ArrayList<>();
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet result = statement.executeQuery("SELECT DISTINCT "+fieldName+" FROM "+tableName);
+            while(result.next()){
+                fieldValues.add(result.getString(1));
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
+        }
+        return fieldValues;
+    }
+
+    /**
+     * Removes a table from the database.
+     * @param tableName Table to remove from the dataBase.
+     */
+    public static void removeTempTable(String tableName){
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            if(JDBCUtilities.tableExists(connection, tableName)) {
+                Statement statement = connection.createStatement();
+                statement.execute("DROP TABLE " + tableName);
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
+        }
+    }
+
+    /**
+     * Loads the given file into the geocatalog and return its table name.
+     * @param uri URI to load.
+     * @return Table name of the loaded file. Returns null if the file can't be loaded.
+     */
+    public String loadURI(URI uri, boolean copyInBase, Process p) {
+        try {
+            File f = new File(uri);
+            //Get the table name of the file
+            String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), isH2);
+            String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
+            //Find the corresponding driver and load the file
+            String extension = FilenameUtils.getExtension(f.getAbsolutePath());
+            Connection connection = dataManager.getDataSource().getConnection();
+            Statement statement = connection.createStatement();
+            if(extension.equalsIgnoreCase("csv")){
+                statement.execute("CREATE TEMPORARY TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
+            }
+            else {
+                if(copyInBase || !isH2){
+                    DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
+                            extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+                }
+                else {
+                    DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
+                            extension, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
+                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+                }
+            }
+            return tableName;
+        } catch (SQLException|IOException e) {
+            LoggerFactory.getLogger(WpsClient.class).error(e.getMessage());
+        }
+        return null;
+    }
+
+    public boolean isH2(){
+        return isH2;
     }
 }

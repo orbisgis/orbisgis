@@ -20,9 +20,8 @@
 package org.orbisgis.orbistoolbox.view.ui;
 
 import org.orbisgis.orbistoolbox.controller.process.ProcessIdentifier;
-import org.orbisgis.orbistoolbox.controller.process.ProcessManager;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.WpsClient;
 import org.orbisgis.orbistoolbox.view.utils.*;
 import org.orbisgis.orbistoolbox.view.utils.Filter.IFilter;
 import org.orbisgis.orbistoolbox.view.utils.Filter.SearchFilter;
@@ -71,7 +70,7 @@ public class ToolBoxPanel extends JPanel {
     private JComboBox<String> treeNodeBox;
 
     /** Reference to the toolbox.*/
-    private ToolBox toolBox;
+    private WpsClient wpsClient;
 
     /** JTree */
     private JTree tree;
@@ -102,10 +101,10 @@ public class ToolBoxPanel extends JPanel {
 
     private FilterFactoryManager<IFilter,DefaultActiveFilter> filterFactoryManager;
 
-    public ToolBoxPanel(ToolBox toolBox){
+    public ToolBoxPanel(WpsClient wpsClient){
         super(new BorderLayout());
 
-        this.toolBox = toolBox;
+        this.wpsClient = wpsClient;
 
         //By default add the localhost
         mapHostNode = new HashMap<>();
@@ -147,7 +146,7 @@ public class ToolBoxPanel extends JPanel {
         popupGlobalActions = new ActionCommands();
         popupGlobalActions.setAccelerators(this, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        createPopupActions(toolBox);
+        createPopupActions(wpsClient);
 
         //Sets the filter
         filterFactoryManager = new FilterFactoryManager<>();
@@ -236,14 +235,14 @@ public class ToolBoxPanel extends JPanel {
                         case FOLDER:
                             //Check if the folder exists and it it contains some scripts
                             if(selectedModel == fileModel) {
-                                isValid = toolBox.checkFolder(selectedNode.getUri());
+                                isValid = wpsClient.checkFolder(selectedNode.getUri());
                             }
                             else{
                                 isValid = true;
                             }
                             break;
                         case PROCESS:
-                            isValid = toolBox.checkProcess(selectedNode.getUri());
+                            isValid = wpsClient.checkProcess(selectedNode.getUri());
                             break;
                     }
                     selectedNode.setValidNode(isValid);
@@ -253,7 +252,7 @@ public class ToolBoxPanel extends JPanel {
                     if (selectedNode.isValidNode()) {
                         //if the selected node is a PROCESS node, open a new instance.
                         if(selectedNode.getNodeType().equals(TreeNodeWps.NodeType.PROCESS)) {
-                            toolBox.openProcess(selectedNode.getUri());
+                            wpsClient.openProcess(selectedNode.getUri());
                         }
                     }
                 }
@@ -415,7 +414,7 @@ public class ToolBoxPanel extends JPanel {
 
         for(URI uri : getAllWpsScript(parent)){
             if(getChildWithUri(uri, source).isEmpty()) {
-                Process process = toolBox.getWpsService().getProcess(uri);
+                Process process = wpsClient.getWpsService().getProcess(uri);
                 TreeNodeWps script = new TreeNodeWps();
                 script.setUri(uri);
                 script.setValidNode(process != null);
@@ -487,7 +486,7 @@ public class ToolBoxPanel extends JPanel {
                                     }
                                 }
                             }
-                            toolBox.removeProcess(leaf.getUri());
+                            wpsClient.removeProcess(leaf.getUri());
                             break;
                     }
                 }
@@ -565,11 +564,11 @@ public class ToolBoxPanel extends JPanel {
         TreeNodeWps node = (TreeNodeWps) tree.getLastSelectedPathComponent();
         if(node != null) {
             if (node.isLeaf()) {
-                node.setValidNode(toolBox.checkProcess(node.getUri()));
+                node.setValidNode(wpsClient.checkProcess(node.getUri()));
             } else {
                 //For each node, test if it is valid, and set the state of the corresponding node in the trees.
                 for (TreeNodeWps child : getAllLeaf(node)) {
-                    boolean isValid = toolBox.checkProcess(child.getUri());
+                    boolean isValid = wpsClient.checkProcess(child.getUri());
                     List<TreeNodeWps> updatedList;
                     updatedList = getChildWithUri(child.getUri(), (TreeNodeWps) tagModel.getRoot());
                     for(TreeNodeWps updated : updatedList) {
@@ -583,7 +582,7 @@ public class ToolBoxPanel extends JPanel {
                     }
                 }
                 if (tree.getModel().equals(fileModel)) {
-                    toolBox.addLocalSource(node.getUri());
+                    wpsClient.addLocalSource(node.getUri());
                 }
             }
         }
@@ -650,15 +649,15 @@ public class ToolBoxPanel extends JPanel {
 
     /**
      * Creates the action for the popup.
-     * @param toolBox ToolBox.
+     * @param wpsClient ToolBox.
      */
-    private void createPopupActions(ToolBox toolBox) {
+    private void createPopupActions(WpsClient wpsClient) {
         DefaultAction addSource = new DefaultAction(
                 ADD_SOURCE,
                 "Add",
                 "Add a local source",
                 ToolBoxIcon.getIcon("folder_add"),
-                EventHandler.create(ActionListener.class, toolBox, "addNewLocalSource"),
+                EventHandler.create(ActionListener.class, wpsClient, "addNewLocalSource"),
                 null
         );
         DefaultAction runScript = new DefaultAction(
@@ -666,7 +665,7 @@ public class ToolBoxPanel extends JPanel {
                 "Run",
                 "Run a script",
                 ToolBoxIcon.getIcon("execute"),
-                EventHandler.create(ActionListener.class, toolBox, "openProcess"),
+                EventHandler.create(ActionListener.class, wpsClient, "openProcess"),
                 null
         );
         DefaultAction refresh_source = new DefaultAction(

@@ -20,8 +20,9 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import org.orbisgis.orbistoolbox.WpsService;
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.WpsClient;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 
 import javax.swing.*;
@@ -43,10 +44,10 @@ public class FieldValueUI implements DataUI{
     private static final int MAX_JLIST_ROW_COUNT = 10;
     private static final int MIN_JLIST_ROW_COUNT = 1;
 
-    private ToolBox toolBox;
+    private WpsClient wpsClient;
 
-    public void setToolBox(ToolBox toolBox){
-        this.toolBox = toolBox;
+    public void setWpsClient(WpsClient wpsClient){
+        this.wpsClient = wpsClient;
     }
 
     @Override
@@ -133,7 +134,7 @@ public class FieldValueUI implements DataUI{
             String fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
             DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
             model.removeAllElements();
-            List<String> listFields = ToolBox.getFieldValueList(tableName, fieldName);
+            List<String> listFields = WpsService.getFieldValueList(tableName, fieldName);
             Collections.sort(listFields);
             for (String field : listFields) {
                 model.addElement(field);

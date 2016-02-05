@@ -20,15 +20,15 @@
 package org.orbisgis.orbistoolbox.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import org.orbisgis.orbistoolbox.WpsService;
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.WpsClient;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.common.ContainerItem;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuListener;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -45,11 +45,10 @@ import java.util.Map;
 
 public class DataFieldUI implements DataUI{
 
-    private ToolBox toolBox;
+    private WpsClient wpsClient;
 
-    @Override
-    public void setToolBox(ToolBox toolBox){
-        this.toolBox = toolBox;
+    public void setWpsClient(WpsClient wpsClient){
+        this.wpsClient = wpsClient;
     }
 
     @Override
@@ -137,7 +136,7 @@ public class DataFieldUI implements DataUI{
             dataField.setSourceModified(false);
             String tableName = ((URI) dataMap.get(dataField.getDataStoreIdentifier())).getFragment();
             comboBox.removeAllItems();
-            for (String field : ToolBox.getTableFieldList(tableName, dataField.getFieldTypeList())) {
+            for (String field : WpsService.getTableFieldList(tableName, dataField.getFieldTypeList())) {
                 comboBox.addItem(field);
             }
             if(isOptional) {

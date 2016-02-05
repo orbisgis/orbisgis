@@ -17,25 +17,16 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.view;
+package org.orbisgis.orbistoolbox;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.h2gis.h2spatialapi.DriverFunction;
-import org.h2gis.h2spatialapi.EmptyProgressVisitor;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.orbisgis.orbistoolbox.WpsService;
 import org.orbisgis.orbistoolbox.controller.process.ProcessIdentifier;
-import org.orbisgis.orbistoolbox.model.DataType;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.ui.ToolBoxPanel;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
 import org.orbisgis.orbistoolbox.view.utils.*;
-import org.orbisgis.orbistoolbox.controller.execution.DataProcessingManager;
 import org.orbisgis.orbistoolbox.view.utils.editor.log.LogEditableElement;
 import org.orbisgis.orbistoolbox.view.utils.editor.log.LogEditor;
 import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
@@ -47,7 +38,6 @@ import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
-import org.osgi.framework.FrameworkUtil;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Deactivate;
@@ -58,8 +48,6 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.io.*;
 import java.net.URI;
-import java.net.URL;
-import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 
@@ -71,14 +59,9 @@ import java.util.concurrent.ExecutorService;
  **/
 
 @Component
-public class ToolBox implements DockingPanel  {
-    /** String of the Groovy file extension. */
-    public static final String GROOVY_EXTENSION = "groovy";
+public class WpsClient implements DockingPanel  {
     /** String reference of the ToolBox used for DockingFrame. */
     public static final String TOOLBOX_REFERENCE = "orbistoolbox";
-    private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
-    private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
-    private static final String SETTINGS_TABLE = "SETTINGS";
 
     /** Docking parameters used by DockingFrames. */
     private DockingPanelParameters parameters;
@@ -105,13 +88,11 @@ public class ToolBox implements DockingPanel  {
     private static DataManager dataManager;
     /** OrbisGIS DriverFunctionContainer. */
     private static DriverFunctionContainer driverFunctionContainer;
-    /** True if the database is H2, false otherwise. */
-    private boolean isH2;
     private WpsService wpsService;
 
     @Activate
     public void init(){
-        wpsService = new WpsService(coreWorkspace, dataManager);
+        wpsService = new WpsService(coreWorkspace, dataManager, driverFunctionContainer);
         toolBoxPanel = new ToolBoxPanel(this);
         dataUIManager = new DataUIManager(this);
 
@@ -128,12 +109,6 @@ public class ToolBox implements DockingPanel  {
         openEditorList = new ArrayList<>();
         lee = new LogEditableElement();
         le = null;
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
-            isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        } catch (SQLException e) {
-            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
-        }
 
         for(ProcessIdentifier pi : wpsService.getAllProcessIdentifier()) {
             toolBoxPanel.addLocalSource(pi);
@@ -254,7 +229,7 @@ public class ToolBox implements DockingPanel  {
             openEditorList.add(pe);
         }
         else{
-            LoggerFactory.getLogger(ToolBox.class).warn("The process '"+pee.getProcess().getTitle()+"' is already open.");
+            LoggerFactory.getLogger(WpsClient.class).warn("The process '"+pee.getProcess().getTitle()+"' is already open.");
         }
         return pee;
     }
@@ -296,15 +271,7 @@ public class ToolBox implements DockingPanel  {
      * @return True if the file is well formed, false otherwise.
      */
     public boolean checkFolder(URI uri){
-        File f = new File(uri);
-        if(f.exists() && f.isDirectory()){
-            for(File file : f.listFiles()){
-                if(file.getAbsolutePath().endsWith("."+GROOVY_EXTENSION)){
-                    return true;
-                }
-            }
-        }
-        return false;
+        return wpsService.checkFolder(uri);
     }
 
     /**
@@ -326,7 +293,7 @@ public class ToolBox implements DockingPanel  {
         return properties;
     }
 
-    public ToolBox(){
+    public WpsClient(){
         properties = new HashMap<>();
     }
 
@@ -342,11 +309,11 @@ public class ToolBox implements DockingPanel  {
 
     @Reference
     public void setDataManager(DataManager dataManager) {
-        ToolBox.dataManager = dataManager;
+        WpsClient.dataManager = dataManager;
     }
 
     public void unsetDataManager(DataManager dataManager) {
-        ToolBox.dataManager = null;
+        WpsClient.dataManager = null;
     }
 
     public DataManager getDataManager(){
@@ -377,11 +344,11 @@ public class ToolBox implements DockingPanel  {
 
     @Reference
     public void setDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
-        ToolBox.driverFunctionContainer = driverFunctionContainer;
+        WpsClient.driverFunctionContainer = driverFunctionContainer;
     }
 
     public void unsetDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
-        ToolBox.driverFunctionContainer = null;
+        WpsClient.driverFunctionContainer = null;
     }
 
     @Reference
@@ -402,203 +369,31 @@ public class ToolBox implements DockingPanel  {
     }
 
     /**
-     * Returns a map of the importable format.
-     * The map key is the format extension and the value is the format description.
-     * @param onlySpatial If true, returns only the spatial table.
-     * @return a map of the importable  format.
-     */
-    public static Map<String, String> getImportableFormat(boolean onlySpatial){
-        Map<String, String> formatMap = new HashMap<>();
-        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
-            for(String ext : df.getImportFormats()){
-                if(df.isSpatialFormat(ext) || !onlySpatial) {
-                    formatMap.put(ext, df.getFormatDescription(ext));
-                }
-            }
-        }
-        return formatMap;
-    }
-
-    /**
-     * Returns a map of the exportable spatial format.
-     * The map key is the format extension and the value is the format description.
-     * @param onlySpatial If true, returns only the spatial table.
-     * @return a map of the exportable spatial format.
-     */
-    public static Map<String, String> getExportableFormat(boolean onlySpatial){
-        Map<String, String> formatMap = new HashMap<>();
-        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
-            for(String ext : df.getExportFormats()){
-                if(df.isSpatialFormat(ext) || !onlySpatial) {
-                    formatMap.put(ext, df.getFormatDescription(ext));
-                }
-            }
-        }
-        return formatMap;
-    }
-
-    /**
-     * Returns the list of sql table from OrbisGIS.
-     * @param onlySpatial If true, returns only the spatial table.
-     * @return The list of geo sql table from OrbisGIS.
-     */
-    public static List<String> getGeocatalogTableList(boolean onlySpatial) {
-        List<String> list = new ArrayList<>();
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
-            String defaultSchema = "PUBLIC";
-            try {
-                if (connection.getSchema() != null) {
-                    defaultSchema = connection.getSchema();
-                }
-            } catch (AbstractMethodError | Exception ex) {
-                // Driver has been compiled with JAVA 6, or is not implemented
-            }
-            if(!onlySpatial) {
-                DatabaseMetaData md = connection.getMetaData();
-                ResultSet rs = md.getTables(null, defaultSchema, "%", null);
-                while (rs.next()) {
-                    String tableName = rs.getString(3);
-                    if (!tableName.equalsIgnoreCase("SPATIAL_REF_SYS") && !tableName.equalsIgnoreCase("GEOMETRY_COLUMNS")) {
-                        list.add(tableName);
-                    }
-                }
-            }
-            else{
-                Statement st = connection.createStatement();
-                ResultSet rs = st.executeQuery("SELECT * FROM "+defaultSchema+".geometry_columns");
-                while(rs.next()) {
-                    list.add(rs.getString("F_TABLE_NAME"));
-                }
-            }
-        } catch (SQLException e) {
-            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
-        }
-        return list;
-    }
-
-    /**
-     * Return the list of the field of a table.
-     * @param tableName Name of the table.
-     * @param dataTypes Type of the field accepted. If empty, accepts all the field.
-     * @return The list of the field name.
-     */
-    public static List<String> getTableFieldList(String tableName, List<DataType> dataTypes){
-        List<String> fieldList = new ArrayList<>();
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
-            DatabaseMetaData dmd = connection.getMetaData();
-            ResultSet result = dmd.getColumns(connection.getCatalog(), null, tableName, "%");
-            while(result.next()){
-                if (!dataTypes.isEmpty()) {
-                    for (DataType dataType : dataTypes) {
-                        if (DataType.testHDBype(dataType, result.getObject(6).toString())) {
-                            fieldList.add(result.getObject(4).toString());
-                        }
-                    }
-                } else{
-                    fieldList.add(result.getObject(4).toString());
-                }
-            }
-        } catch (SQLException e) {
-            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
-        }
-        return fieldList;
-    }
-
-    /**
      * Loads the given file into the geocatalog and return its table name.
      * @param uri URI to load.
      * @return Table name of the loaded file. Returns null if the file can't be loaded.
      */
     public String loadURI(URI uri, boolean copyInBase, Process p) {
-        try {
-            ProcessEditor processEditor = null;
-            for(EditorDockable ed : openEditorList){
-                if(ed instanceof ProcessEditor){
-                    ProcessEditor pe = (ProcessEditor)ed;
-                    if(pe.getEditableElement().getObject().equals(p)){
-                        processEditor = pe;
-                    }
+        ProcessEditor processEditor = null;
+        for(EditorDockable ed : openEditorList){
+            if(ed instanceof ProcessEditor){
+                ProcessEditor pe = (ProcessEditor)ed;
+                if(pe.getEditableElement().getObject().equals(p)){
+                    processEditor = pe;
                 }
             }
-            File f = new File(uri);
-            if(f.isDirectory()){
-                return null;
-            }
-            if(processEditor != null && (copyInBase || !isH2)) {
-                processEditor.startWaiting();
-            }
-            //Get the table name of the file
-            String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), isH2);
-            String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
-            //Find the corresponding driver and load the file
-            String extension = FilenameUtils.getExtension(f.getAbsolutePath());
-            Connection connection = dataManager.getDataSource().getConnection();
-            Statement statement = connection.createStatement();
-            if(extension.equalsIgnoreCase("csv")){
-                statement.execute("CREATE TEMPORARY TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
-            }
-            else {
-                if(copyInBase || !isH2){
-                    DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
-                            extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
-                }
-                else {
-                    DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
-                            extension, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
-                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
-                }
-            }
-            if(processEditor != null && (copyInBase || !isH2)) {
-                processEditor.endWaiting();
-            }
-            return tableName;
-        } catch (SQLException|IOException e) {
-            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
         }
-        return null;
-    }
-
-    /**
-     * Returns the list of distinct values contained by a field from a table from the database
-     * @param tableName Name of the table containing the field.
-     * @param fieldName Name of the field containing the values.
-     * @return The list of distinct values of the field.
-     */
-    public static List<String> getFieldValueList(String tableName, String fieldName) {
-        List<String> fieldValues = new ArrayList<>();
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT DISTINCT "+fieldName+" FROM "+tableName);
-            while(result.next()){
-                fieldValues.add(result.getString(1));
-            }
-        } catch (SQLException e) {
-            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+        File f = new File(uri);
+        if(f.isDirectory()){
+            return null;
         }
-        return fieldValues;
-    }
-
-    /**
-     * Removes a table from the database.
-     * @param tableName Table to remove from the dataBase.
-     */
-    public static void removeTempTable(String tableName){
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
-            if(JDBCUtilities.tableExists(connection, tableName)) {
-                Statement statement = connection.createStatement();
-                statement.execute("DROP TABLE " + tableName);
-            }
-        } catch (SQLException e) {
-            LoggerFactory.getLogger(ToolBox.class).error(e.getMessage());
+        if(processEditor != null && (copyInBase || !wpsService.isH2())) {
+            processEditor.startWaiting();
         }
-    }
-
-    public boolean isH2(){
-        return isH2;
+        String tableName = wpsService.loadURI(uri, copyInBase, p);
+        if(processEditor != null && (copyInBase || !wpsService.isH2())) {
+            processEditor.endWaiting();
+        }
+        return tableName;
     }
 }

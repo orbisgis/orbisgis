@@ -26,7 +26,7 @@ import org.orbisgis.orbistoolbox.controller.parser.ParserController;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.WpsClient;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +112,7 @@ public class ProcessManager {
         GroovyObject groovyObject = createProcess(process, dataMap);
         for(Map.Entry<String, Object> variable : properties.entrySet()) {
             groovyObject.setProperty("sql", new Sql((DataSourceService)variable.getValue()));
-            groovyObject.setProperty("logger", LoggerFactory.getLogger(ToolBox.class));
+            groovyObject.setProperty("logger", LoggerFactory.getLogger(WpsClient.class));
         }
         groovyObject.invokeMethod("processing", null);
         return groovyObject;
@@ -250,8 +250,8 @@ public class ProcessManager {
     public String getListSourcesAsString(){
         List<String> sourceList = new ArrayList<>();
         for(ProcessIdentifier pi : processIdList){
-            if(!sourceList.contains(new File(pi.getParent()).getAbsolutePath())){
-                sourceList.add(new File(pi.getParent()).getAbsolutePath());
+            if(!sourceList.contains(new File(pi.getParent()).toURI().toString())){
+                sourceList.add(new File(pi.getParent()).toURI().toString());
             }
         }
         String str = "";

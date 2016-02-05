@@ -21,7 +21,7 @@ package org.orbisgis.orbistoolbox.controller.execution;
 
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.orbistoolbox.model.DescriptionType;
-import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.WpsClient;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
 import org.slf4j.LoggerFactory;
@@ -49,22 +49,22 @@ public class ExecutionWorker extends SwingWorkerPM{
     /** Input and output data map */
     private Map<URI, Object> dataMap;
     /** ToolBox */
-    private ToolBox toolBox;
+    private WpsClient wpsClient;
     /** Process element containing all the information it */
     private ProcessEditableElement pee;
 
     /**
      * Main constructor.
      * @param pee ProcessEditableElement which will be used to communicate the state and the log of the process.
-     * @param toolBox ToolBox.
+     * @param wpsClient ToolBox.
      */
-    public ExecutionWorker(ProcessEditableElement pee,ToolBox toolBox){
+    public ExecutionWorker(ProcessEditableElement pee,WpsClient wpsClient){
         this.pee = pee;
         this.process = pee.getProcess();
         this.dataMap = new HashMap<>();
         this.dataMap.putAll(pee.getInputDataMap());
         this.dataMap.putAll(pee.getOutputDataMap());
-        this.toolBox = toolBox;
+        this.wpsClient = wpsClient;
     }
 
     @Override
@@ -83,27 +83,27 @@ public class ExecutionWorker extends SwingWorkerPM{
                     "Pre-processing");
             Map<URI, Object> stash = new HashMap<>();
             for(DescriptionType inputOrOutput : pee.getProcess().getOutput()){
-                stash.putAll(toolBox.getWpsService().getDataProcessingManager().preProcessData(inputOrOutput, dataMap));
+                stash.putAll(wpsClient.getWpsService().getDataProcessingManager().preProcessData(inputOrOutput, dataMap));
             }
             for(DescriptionType inputOrOutput : pee.getProcess().getInput()){
-                stash.putAll(toolBox.getWpsService().getDataProcessingManager().preProcessData(inputOrOutput, dataMap));
+                stash.putAll(wpsClient.getWpsService().getDataProcessingManager().preProcessData(inputOrOutput, dataMap));
             }
 
             //Execute the process and retrieve the groovy object.
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
                     "Execute the script");
-            toolBox.getWpsService().executeProcess(process, dataMap, toolBox.getProperties());
+            wpsClient.getWpsService().executeProcess(process, dataMap, wpsClient.getProperties());
 
             //Post-process the data
             pee.appendLog(System.currentTimeMillis() - startTime,
                     ProcessEditableElement.LogType.INFO,
                     "Post-processing");
             for(DescriptionType inputOrOutput : pee.getProcess().getOutput()){
-                toolBox.getWpsService().getDataProcessingManager().postProcessData(inputOrOutput, dataMap, stash);
+                wpsClient.getWpsService().getDataProcessingManager().postProcessData(inputOrOutput, dataMap, stash);
             }
             for(DescriptionType inputOrOutput : pee.getProcess().getInput()){
-                toolBox.getWpsService().getDataProcessingManager().postProcessData(inputOrOutput, dataMap, stash);
+                wpsClient.getWpsService().getDataProcessingManager().postProcessData(inputOrOutput, dataMap, stash);
             }
 
             //Print in the log the process execution end

@@ -22,9 +22,10 @@ package org.orbisgis.orbistoolbox.view.ui.dataui;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.io.FilenameUtils;
 import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.orbisgis.orbistoolbox.WpsService;
 import org.orbisgis.orbistoolbox.controller.utils.FormatFactory;
 import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.view.ToolBox;
+import org.orbisgis.orbistoolbox.WpsClient;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItem;
@@ -57,12 +58,12 @@ public class DataStoreUI implements DataUI{
     /** constant size of the text fields **/
     private static final int TEXTFIELD_WIDTH = 25;
 
-    private ToolBox toolBox;
+    private WpsClient wpsClient;
 
     private ImportWorker importWorker = new ImportWorker();
 
-    public void setToolBox(ToolBox toolBox){
-        this.toolBox = toolBox;
+    public void setWpsClient(WpsClient wpsClient){
+        this.wpsClient = wpsClient;
     }
 
     @Override
@@ -86,7 +87,7 @@ public class DataStoreUI implements DataUI{
         if(inputOrOutput instanceof Input){
             Input input = (Input)inputOrOutput;
             dataStore = (DataStore)input.getDataDescription();
-            extensionMap = ToolBox.getImportableFormat(true);
+            extensionMap = WpsService.getImportableFormat(true);
             if(input.getMinOccurs() == 0){
                 isOptional = true;
             }
@@ -94,7 +95,7 @@ public class DataStoreUI implements DataUI{
         if(inputOrOutput instanceof Output){
             Output output = (Output)inputOrOutput;
             dataStore = (DataStore)output.getDataDescription();
-            extensionMap = ToolBox.getExportableFormat(true);
+            extensionMap = WpsService.getExportableFormat(true);
         }
         if(dataStore == null || extensionMap == null){
             return panel;
@@ -124,10 +125,10 @@ public class DataStoreUI implements DataUI{
         JPanel optionPanelGeocatalog = new JPanel(new MigLayout("fill"));
         JComboBox<String> comboBox;
         if(dataStore.isSpatial()) {
-            comboBox = new JComboBox<>(ToolBox.getGeocatalogTableList(true).toArray(new String[]{}));
+            comboBox = new JComboBox<>(WpsService.getGeocatalogTableList(true).toArray(new String[]{}));
         }
         else {
-            comboBox = new JComboBox<>(ToolBox.getGeocatalogTableList(false).toArray(new String[]{}));
+            comboBox = new JComboBox<>(WpsService.getGeocatalogTableList(false).toArray(new String[]{}));
         }
         comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onGeocatalogTableSelected", "source"));
         comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
@@ -186,7 +187,7 @@ public class DataStoreUI implements DataUI{
             for(Format format : dataStore.getFormats()){
                 String ext = FormatFactory.getFormatExtension(format);
                 String description = "";
-                for(Map.Entry<String, String> entry : ToolBox.getImportableFormat(false).entrySet()){
+                for(Map.Entry<String, String> entry : WpsService.getImportableFormat(false).entrySet()){
                     if(entry.getKey().equalsIgnoreCase(ext)){
                         description = entry.getValue();
                     }
@@ -200,7 +201,7 @@ public class DataStoreUI implements DataUI{
             for(Format format : dataStore.getFormats()){
                 String ext = FormatFactory.getFormatExtension(format);
                 String description = "";
-                for(Map.Entry<String, String> entry : ToolBox.getExportableFormat(false).entrySet()){
+                for(Map.Entry<String, String> entry : WpsService.getExportableFormat(false).entrySet()){
                     if(entry.getKey().equalsIgnoreCase(ext)){
                         description = entry.getValue();
                     }
@@ -216,7 +217,7 @@ public class DataStoreUI implements DataUI{
         if(inputOrOutput instanceof Input) {
             JLabel fileOptions = new JLabel(ToolBoxIcon.getIcon("options"));
             fileOptions.putClientProperty("keepSource", false);
-            if(toolBox.isH2()) {
+            if(wpsClient.getWpsService().isH2()) {
                 fileOptions.putClientProperty("loadSource", false);
             }
             fileOptions.addMouseListener(EventHandler.create(MouseListener.class, this, "onFileOption", ""));
@@ -325,13 +326,13 @@ public class DataStoreUI implements DataUI{
         Object selectedItem = comboBox.getSelectedItem();
         if(dataStore.isSpatial()) {
             comboBox.removeAllItems();
-            for(String s : ToolBox.getGeocatalogTableList(true).toArray(new String[]{})){
+            for(String s : WpsService.getGeocatalogTableList(true).toArray(new String[]{})){
                 comboBox.addItem(s);
             }
         }
         else {
             comboBox.removeAllItems();
-            for(String s : ToolBox.getGeocatalogTableList(false).toArray(new String[]{})){
+            for(String s : WpsService.getGeocatalogTableList(false).toArray(new String[]{})){
                 comboBox.addItem(s);
             }
         }
@@ -391,7 +392,7 @@ public class DataStoreUI implements DataUI{
         if(oldValue != null && oldValue instanceof URI){
             URI oldUri = ((URI)oldValue);
             if(oldUri.getScheme().equals("file")){
-                ToolBox.removeTempTable(oldUri.getFragment());
+                WpsService.removeTempTable(oldUri.getFragment());
             }
         }
         dataMap.put(uri, URI.create("geocatalog:"+comboBox.getSelectedItem()+"#"+comboBox.getSelectedItem()));
@@ -503,9 +504,9 @@ public class DataStoreUI implements DataUI{
                     keepSource = (boolean)fileOptions.getClientProperty("keepSource");
                 }
                 //Load the selected file an retrieve the table name.
-                String tableName = toolBox.loadURI(file.toURI(),
+                String tableName = wpsClient.loadURI(file.toURI(),
                         loadSource,
-                        toolBox.getWpsService().getProcess(inputOrOutput.getIdentifier()));
+                        wpsClient.getWpsService().getProcess(inputOrOutput.getIdentifier()));
                 if (tableName != null) {
                     String fileStr = file.toURI().toString();
                     if(keepSource){
@@ -520,7 +521,7 @@ public class DataStoreUI implements DataUI{
                     if(oldValue != null && oldValue instanceof URI){
                         URI oldUri = ((URI)oldValue);
                         if(oldUri.getScheme().equals("file")){
-                            ToolBox.removeTempTable(oldUri.getFragment());
+                            WpsService.removeTempTable(oldUri.getFragment());
                         }
                     }
                     dataMap.put(uri, selectedFileURI);
@@ -536,7 +537,7 @@ public class DataStoreUI implements DataUI{
                 }
             }
             if(inputOrOutput instanceof Output){
-                String tableName = toolBox.getDataManager().findUniqueTableName(FilenameUtils.getBaseName(file.getName()));
+                String tableName = wpsClient.getDataManager().findUniqueTableName(FilenameUtils.getBaseName(file.getName()));
                 tableName = tableName.replace("\"", "");
                 selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
                 //Store the selection
@@ -560,7 +561,7 @@ public class DataStoreUI implements DataUI{
             URI uri = (URI)document.getProperty("uri");
             URI dataBaseURI = URI.create(document.getText(0, document.getLength()));
             //Load the selected file an retrieve the table name.
-            String tableName = toolBox.loadURI(dataBaseURI, false, toolBox.getWpsService().getProcess(uri));
+            String tableName = wpsClient.loadURI(dataBaseURI, false, wpsClient.getWpsService().getProcess(uri));
             if(tableName != null) {
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
@@ -568,7 +569,7 @@ public class DataStoreUI implements DataUI{
                 if(oldValue != null && oldValue instanceof URI){
                     URI oldUri = ((URI)oldValue);
                     if(oldUri.getScheme().equals("file")){
-                        ToolBox.removeTempTable(oldUri.getFragment());
+                        WpsService.removeTempTable(oldUri.getFragment());
                     }
                 }
                 dataMap.put(uri, tableName);
