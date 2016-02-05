@@ -20,13 +20,13 @@
 package org.orbisgis.orbistoolbox.view.utils.editor.process;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.orbistoolbox.controller.execution.ExecutionWorker;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.WpsClient;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUI;
 import org.orbisgis.orbistoolbox.view.ui.dataui.DataUIManager;
+import org.orbisgis.orbistoolbox.view.utils.ExecutionWorker;
 import org.orbisgis.orbistoolbox.view.utils.ToolBoxIcon;
 import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
@@ -164,7 +164,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         wpsClient.validateInstance(this);
         pee.setProcessState(ProcessEditableElement.ProcessState.RUNNING);
         //Run the process in a separated thread
-        thread = new ExecutionWorker(pee, wpsClient);
+        thread = new ExecutionWorker(pee, wpsClient.getWpsService());
         wpsClient.getExecutorService().execute(thread);
         return false;
     }

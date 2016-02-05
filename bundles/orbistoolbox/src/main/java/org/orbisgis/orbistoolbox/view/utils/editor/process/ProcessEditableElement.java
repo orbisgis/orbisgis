@@ -19,6 +19,7 @@
 
 package org.orbisgis.orbistoolbox.view.utils.editor.process;
 
+import org.orbisgis.orbistoolbox.controller.execution.ProcessExecutionListener;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
@@ -38,7 +39,7 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  */
-public class ProcessEditableElement implements EditableElement{
+public class ProcessEditableElement implements EditableElement, ProcessExecutionListener{
     public static final String STATE_PROPERTY = "STATE_PROPERTY";
     public static final String LOG_PROPERTY = "LOG_PROPERTY";
     public static final String CANCEL = "CANCEL";
@@ -55,7 +56,7 @@ public class ProcessEditableElement implements EditableElement{
     private List<PropertyChangeListener> propertyChangeListenerList;
     /** Unique identifier of this ProcessEditableElement. */
     private final String ID;
-    private ProcessState state;
+    private ProcessExecutionListener.ProcessState state;
 
     public ProcessEditableElement(Process process){
         this.process = process;
@@ -156,7 +157,7 @@ public class ProcessEditableElement implements EditableElement{
     public Process getProcess() {
         return process;
     }
-    public ProcessState getProcessState() {
+    public ProcessExecutionListener.ProcessState getProcessState() {
         return state;
     }
 
@@ -166,7 +167,7 @@ public class ProcessEditableElement implements EditableElement{
      * @param logType Type of the message (INFO, WARN, ERROR ...).
      * @param message Message.
      */
-    public void appendLog(long time, LogType logType, String message){
+    public void appendLog(long time, ProcessExecutionListener.LogType logType, String message){
         Color color;
         switch(logType){
             case ERROR:
@@ -187,7 +188,7 @@ public class ProcessEditableElement implements EditableElement{
                 this, LOG_PROPERTY, null, new AbstractMap.SimpleEntry<>(log, color)));
     }
 
-    public void setProcessState(ProcessState processState){
+    public void setProcessState(ProcessExecutionListener.ProcessState processState){
         this.state = processState;
         firePropertyChangeEvent(new PropertyChangeEvent(
                 this, STATE_PROPERTY, null, processState));
@@ -204,7 +205,4 @@ public class ProcessEditableElement implements EditableElement{
             inputDataMap.put(entry.getKey(), entry.getValue());
         }
     }
-
-    public enum ProcessState{RUNNING, COMPLETED, ERROR, IDLE, WAITING}
-    public enum LogType{INFO, WARN, ERROR}
 }

@@ -20,6 +20,7 @@
 package org.orbisgis.orbistoolbox;
 
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.orbistoolbox.controller.process.ProcessIdentifier;
@@ -69,8 +70,6 @@ public class WpsClient implements DockingPanel  {
     private ToolBoxPanel toolBoxPanel;
     /** Object creating the UI corresponding to the data. */
     private DataUIManager dataUIManager;
-    /** Map containing the properties to apply for the Grovvy script execution. */
-    private Map<String, Object> properties;
     private CoreWorkspace coreWorkspace;
 
     /** EditableElement associated to the logEditor. */
@@ -89,10 +88,11 @@ public class WpsClient implements DockingPanel  {
     /** OrbisGIS DriverFunctionContainer. */
     private static DriverFunctionContainer driverFunctionContainer;
     private WpsService wpsService;
+    private DataSourceService dataSourceService;
 
     @Activate
     public void init(){
-        wpsService = new WpsService(coreWorkspace, dataManager, driverFunctionContainer);
+        wpsService = new WpsService(coreWorkspace, dataManager, driverFunctionContainer, dataSourceService);
         toolBoxPanel = new ToolBoxPanel(this);
         dataUIManager = new DataUIManager(this);
 
@@ -289,23 +289,6 @@ public class WpsClient implements DockingPanel  {
         return dataUIManager;
     }
 
-    public Map<String, Object> getProperties(){
-        return properties;
-    }
-
-    public WpsClient(){
-        properties = new HashMap<>();
-    }
-
-    @Reference
-    public void setDataSource(javax.sql.DataSource ds) {
-        properties.put("ds", ds);
-    }
-
-    public void unsetDataSource(javax.sql.DataSource ds) {
-        properties.remove("ds");
-    }
-
 
     @Reference
     public void setDataManager(DataManager dataManager) {
@@ -318,6 +301,15 @@ public class WpsClient implements DockingPanel  {
 
     public DataManager getDataManager(){
         return dataManager;
+    }
+
+    @Reference
+    public void setDataSource(javax.sql.DataSource ds) {
+        dataSourceService = (DataSourceService)ds;
+    }
+
+    public void unsetDataSource(javax.sql.DataSource ds) {
+        dataSourceService = null;
     }
 
     @Reference

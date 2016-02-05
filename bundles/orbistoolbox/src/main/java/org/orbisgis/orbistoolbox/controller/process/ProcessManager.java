@@ -48,13 +48,15 @@ public class ProcessManager {
     private List<ProcessIdentifier> processIdList;
     /** Controller used to parse process */
     private ParserController parserController;
+    private DataSourceService dataSourceService;
 
     /**
      * Main constructor.
      */
-    public ProcessManager(){
+    public ProcessManager(DataSourceService dataSourceService){
         processIdList = new ArrayList<>();
         parserController = new ParserController();
+        this.dataSourceService = dataSourceService;
     }
 
     /**
@@ -110,10 +112,8 @@ public class ProcessManager {
                                        Map<URI, Object> dataMap,
                                        Map<String, Object> properties){
         GroovyObject groovyObject = createProcess(process, dataMap);
-        for(Map.Entry<String, Object> variable : properties.entrySet()) {
-            groovyObject.setProperty("sql", new Sql((DataSourceService)variable.getValue()));
-            groovyObject.setProperty("logger", LoggerFactory.getLogger(WpsClient.class));
-        }
+        groovyObject.setProperty("sql", new Sql(dataSourceService));
+        groovyObject.setProperty("logger", LoggerFactory.getLogger(WpsClient.class));
         groovyObject.invokeMethod("processing", null);
         return groovyObject;
     }

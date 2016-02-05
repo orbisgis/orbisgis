@@ -7,13 +7,17 @@ import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.orbistoolbox.controller.execution.DataProcessingManager;
+import org.orbisgis.orbistoolbox.controller.execution.ProcessExecutionListener;
 import org.orbisgis.orbistoolbox.model.DataType;
+import org.orbisgis.orbistoolbox.model.DescriptionType;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.controller.process.ProcessIdentifier;
 import org.orbisgis.orbistoolbox.controller.process.ProcessManager;
+import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
@@ -47,12 +51,18 @@ public class WpsService {
     /** Process manager which contains all the loaded scripts. */
     private ProcessManager processManager;
     private static boolean areScriptsCopied = false;
+    /** Map containing the properties to apply for the Grovvy script execution. */
+    private Map<String, Object> properties;
+    private DataSourceService dataSourceService;
 
-    public WpsService(CoreWorkspace coreWorkspace, DataManager dataManager, DriverFunctionContainer driverFunctionContainer){
+    public WpsService(CoreWorkspace coreWorkspace, DataManager dataManager,
+                      DriverFunctionContainer driverFunctionContainer, DataSourceService dataSourceService){
         this.driverFunctionContainer = driverFunctionContainer;
         this.dataManager = dataManager;
         this.coreWorkspace = coreWorkspace;
-        processManager = new ProcessManager();
+        this.dataSourceService = dataSourceService;
+        properties = new HashMap<>();
+        processManager = new ProcessManager(dataSourceService);
         dataProcessingManager = new DataProcessingManager(this);
         if(!areScriptsCopied) {
             setScriptFolder();
@@ -108,6 +118,10 @@ public class WpsService {
         }
     }
 
+
+    public Map<String, Object> getProperties(){
+        return properties;
+    }
     public DataProcessingManager getDataProcessingManager() {
         return dataProcessingManager;
     }
@@ -145,6 +159,15 @@ public class WpsService {
 
     public void unsetDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
         this.driverFunctionContainer = null;
+    }
+
+    @Reference
+    public void setDataSource(javax.sql.DataSource ds) {
+        dataSourceService = (DataSourceService)ds;
+    }
+
+    public void unsetDataSource(javax.sql.DataSource ds) {
+        dataSourceService = null;
     }
 
 
@@ -258,8 +281,59 @@ public class WpsService {
         return (processManager.addLocalScript(uri, pi.getCategory(), pi.isDefault()) != null);
     }
 
-    public void executeProcess(Process process, Map<URI, Object> dataMap, Map<String, Object> properties){
-        processManager.executeProcess(process, dataMap, properties);
+    public void executeProcess(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){
+
+        long startTime = System.currentTimeMillis();
+        //Catch all the Exception that can be thrown during the script execution.
+        try {
+            //Print in the log the process execution start
+            pel.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessExecutionListener.LogType.INFO,
+                    "Start the process");
+
+            //Pre-process the data
+            pel.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessExecutionListener.LogType.INFO,
+                    "Pre-processing");
+            Map<URI, Object> stash = new HashMap<>();
+            for(DescriptionType inputOrOutput : process.getOutput()){
+                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap));
+            }
+            for(DescriptionType inputOrOutput : process.getInput()){
+                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap));
+            }
+
+            //Execute the process and retrieve the groovy object.
+            pel.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessExecutionListener.LogType.INFO,
+                    "Execute the script");
+            processManager.executeProcess(process, dataMap, properties);
+
+            //Post-process the data
+            pel.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessExecutionListener.LogType.INFO,
+                    "Post-processing");
+            for(DescriptionType inputOrOutput : process.getOutput()){
+                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash);
+            }
+            for(DescriptionType inputOrOutput : process.getInput()){
+                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash);
+            }
+
+            //Print in the log the process execution end
+            pel.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessExecutionListener.LogType.INFO,
+                    "End of the process");
+            pel.setProcessState(ProcessExecutionListener.ProcessState.COMPLETED);
+        }
+        catch (Exception e) {
+            pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
+            //Print in the log the process execution error
+            pel.appendLog(System.currentTimeMillis() - startTime,
+                    ProcessExecutionListener.LogType.ERROR,
+                    e.getMessage());
+            LoggerFactory.getLogger(WpsService.class).error(e.getMessage());
+        }
     }
 
     /**

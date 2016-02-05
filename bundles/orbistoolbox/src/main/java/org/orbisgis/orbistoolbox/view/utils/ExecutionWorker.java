@@ -17,12 +17,11 @@
  * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.orbistoolbox.controller.execution;
+package org.orbisgis.orbistoolbox.view.utils;
 
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.orbistoolbox.WpsService;
 import org.orbisgis.orbistoolbox.model.DescriptionType;
-import org.orbisgis.orbistoolbox.WpsClient;
 import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
 import org.slf4j.LoggerFactory;
@@ -69,11 +68,7 @@ public class ExecutionWorker extends SwingWorkerPM{
 
     @Override
     protected Object doInBackground() throws Exception {
+        wpsService.executeProcess(process, dataMap, pee);
         return null;
     }
-
-    @Override
-    protected void done(){
-    }
-
 }
