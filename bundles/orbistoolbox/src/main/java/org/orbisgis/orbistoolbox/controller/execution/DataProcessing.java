@@ -19,8 +19,8 @@
 
 package org.orbisgis.orbistoolbox.controller.execution;
 
+import org.orbisgis.orbistoolbox.WpsService;
 import org.orbisgis.orbistoolbox.model.DescriptionType;
-import org.orbisgis.orbistoolbox.view.ToolBox;
 
 import java.net.URI;
 import java.util.Map;
@@ -33,6 +33,6 @@ import java.util.Map;
 public interface DataProcessing {
 
     Class getDataClass();
-    Map<URI, Object> preProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap);
-    void postProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash);
+    Map<URI, Object> preProcessData(WpsService wpsService, DescriptionType inputOrOutput, Map<URI, Object> dataMap);
+    void postProcessData(WpsService wpsService, DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash);
 }

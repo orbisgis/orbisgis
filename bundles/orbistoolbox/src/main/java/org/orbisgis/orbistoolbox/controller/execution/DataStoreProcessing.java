@@ -19,6 +19,7 @@
 
 package org.orbisgis.orbistoolbox.controller.execution;
 
+import org.orbisgis.orbistoolbox.WpsService;
 import org.orbisgis.orbistoolbox.model.DescriptionType;
 import org.orbisgis.orbistoolbox.model.DataStore;
 import org.orbisgis.orbistoolbox.model.Input;
@@ -40,7 +41,7 @@ public class DataStoreProcessing implements DataProcessing {
     }
 
     @Override
-    public Map<URI, Object> preProcessData(ToolBox toolBox, DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public Map<URI, Object> preProcessData(WpsService wpsService, DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         Map<URI, Object> stash = new HashMap<>();
         URI uri = inputOrOutput.getIdentifier();
         URI dataStoreURI = (URI)dataMap.get(uri);
@@ -88,7 +89,7 @@ public class DataStoreProcessing implements DataProcessing {
     }
 
     @Override
-    public void postProcessData(ToolBox toolBox, DescriptionType inputOrOutput,
+    public void postProcessData(WpsService wpsService, DescriptionType inputOrOutput,
                                   Map<URI, Object> dataMap, Map<URI, Object> stash) {
         if(inputOrOutput instanceof Input){
             URI uri = inputOrOutput.getIdentifier();
@@ -100,7 +101,7 @@ public class DataStoreProcessing implements DataProcessing {
             URI uri = inputOrOutput.getIdentifier();
             URI dataStoreURI = (URI)stash.get(uri);
             if(dataStoreURI.getScheme().equals("file")){
-                toolBox.saveURI(URI.create(dataStoreURI.getScheme()+":"+dataStoreURI.getSchemeSpecificPart()), dataMap.get(uri).toString());
+                wpsService.saveURI(URI.create(dataStoreURI.getScheme()+":"+dataStoreURI.getSchemeSpecificPart()), dataMap.get(uri).toString());
             }
         }
     }

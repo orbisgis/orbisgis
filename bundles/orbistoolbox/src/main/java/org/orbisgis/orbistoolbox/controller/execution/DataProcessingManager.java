@@ -19,11 +19,11 @@
 
 package org.orbisgis.orbistoolbox.controller.execution;
 
+import org.orbisgis.orbistoolbox.WpsService;
 import org.orbisgis.orbistoolbox.model.DataDescription;
 import org.orbisgis.orbistoolbox.model.DescriptionType;
 import org.orbisgis.orbistoolbox.model.Input;
 import org.orbisgis.orbistoolbox.model.Output;
-import org.orbisgis.orbistoolbox.view.ToolBox;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -40,10 +40,10 @@ public class DataProcessingManager {
 
     private List<DataProcessing> listDataProcessing;
 
-    private ToolBox toolBox;
+    private WpsService wpsService;
 
-    public DataProcessingManager(ToolBox toolBox){
-        this.toolBox = toolBox;
+    public DataProcessingManager(WpsService wpsService){
+        this.wpsService = wpsService;
         listDataProcessing = new ArrayList<>();
         listDataProcessing.add(new DataStoreProcessing());
     }
@@ -54,13 +54,13 @@ public class DataProcessingManager {
             if(inputOrOutput instanceof Input) {
                 DataDescription dataDescription = ((Input)inputOrOutput).getDataDescription();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    stash.putAll(dp.preProcessData(toolBox, inputOrOutput, dataMap));
+                    stash.putAll(dp.preProcessData(wpsService, inputOrOutput, dataMap));
                 }
             }
             if(inputOrOutput instanceof Output) {
                 DataDescription dataDescription = ((Output)inputOrOutput).getDataDescription();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    stash.putAll(dp.preProcessData(toolBox, inputOrOutput, dataMap));
+                    stash.putAll(dp.preProcessData(wpsService, inputOrOutput, dataMap));
                 }
             }
         }
@@ -72,13 +72,13 @@ public class DataProcessingManager {
             if(inputOrOutput instanceof Input) {
                 DataDescription dataDescription = ((Input) inputOrOutput).getDataDescription();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    dp.postProcessData(toolBox, inputOrOutput, dataMap, stash);
+                    dp.postProcessData(wpsService, inputOrOutput, dataMap, stash);
                 }
             }
             if(inputOrOutput instanceof Output) {
                 DataDescription dataDescription = ((Output) inputOrOutput).getDataDescription();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    dp.postProcessData(toolBox, inputOrOutput, dataMap, stash);
+                    dp.postProcessData(wpsService, inputOrOutput, dataMap, stash);
                 }
             }
         }

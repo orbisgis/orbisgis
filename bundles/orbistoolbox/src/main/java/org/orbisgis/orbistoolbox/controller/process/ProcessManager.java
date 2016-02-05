@@ -232,4 +232,37 @@ public class ProcessManager {
         }
         return null;
     }
+
+    public List<ProcessIdentifier> getAllProcessIdentifier(){
+        return processIdList;
+    }
+
+    public List<ProcessIdentifier> getProcessIdentifierFromParent(URI parent){
+        List<ProcessIdentifier> piList = new ArrayList<>();
+        for(ProcessIdentifier pi : processIdList){
+            if(pi.getParent().equals(parent)){
+                piList.add(pi);
+            }
+        }
+        return piList;
+    }
+
+    public String getListSourcesAsString(){
+        List<String> sourceList = new ArrayList<>();
+        for(ProcessIdentifier pi : processIdList){
+            if(!sourceList.contains(new File(pi.getParent()).getAbsolutePath())){
+                sourceList.add(new File(pi.getParent()).getAbsolutePath());
+            }
+        }
+        String str = "";
+        for(String source : sourceList){
+            if(str.isEmpty()){
+                str+=source;
+            }
+            else{
+                str+=";"+source;
+            }
+        }
+        return str;
+    }
 }
