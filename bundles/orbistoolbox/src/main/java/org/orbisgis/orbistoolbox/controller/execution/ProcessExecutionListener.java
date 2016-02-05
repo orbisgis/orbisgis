@@ -1,9 +1,7 @@
 package org.orbisgis.orbistoolbox.controller.execution;
 
-import org.orbisgis.orbistoolbox.view.utils.editor.process.ProcessEditableElement;
-
 /**
- * Created by sylvain on 05/02/16.
+ * @author Sylvain PALOMINOS
  */
 public interface ProcessExecutionListener {
 
