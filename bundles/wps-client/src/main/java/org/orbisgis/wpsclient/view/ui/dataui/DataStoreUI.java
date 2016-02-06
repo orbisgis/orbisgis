@@ -22,10 +22,9 @@ package org.orbisgis.wpsclient.view.ui.dataui;
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.io.FilenameUtils;
 import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.orbistoolbox.controller.utils.FormatFactory;
-import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.wpsclient.WpsClient;
-import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
+import org.orbisgis.wpsservice.WpsService;
+import org.orbisgis.wpsservice.controller.utils.FormatFactory;
+import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.sif.components.OpenFilePanel;
@@ -33,18 +32,26 @@ import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
+import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * DataUI for DataStore

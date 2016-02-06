@@ -7,18 +7,6 @@
     <artifactId>wps-client</artifactId>
     <name>WPS Client</name>
     <description>WPS Client</description>
-    <dependencies>
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>core-jdbc</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>dbjobs</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
     <packaging>bundle</packaging>
 
     <parent>
@@ -57,6 +45,24 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>core-jdbc</artifactId>
+            <version>5.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>wps-service</artifactId>
+            <version>5.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>dbjobs</artifactId>
+            <version>5.1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

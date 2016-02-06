@@ -19,11 +19,6 @@
 
 package org.orbisgis.wpsclient.view.ui;
 
-import org.orbisgis.orbistoolbox.controller.process.ProcessIdentifier;
-import org.orbisgis.orbistoolbox.model.Process;
-import org.orbisgis.wpsclient.WpsClient;
-import org.orbisgis.wpsclient.view.utils.Filter.IFilter;
-import org.orbisgis.wpsclient.view.utils.Filter.SearchFilter;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
@@ -31,13 +26,20 @@ import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
+import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.view.utils.Filter.IFilter;
+import org.orbisgis.wpsclient.view.utils.Filter.SearchFilter;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.TreeNodeWps;
+import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
+import org.orbisgis.wpsservice.model.Process;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;

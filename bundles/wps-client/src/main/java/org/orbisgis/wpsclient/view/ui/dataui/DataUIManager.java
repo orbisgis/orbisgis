@@ -19,11 +19,10 @@
 
 package org.orbisgis.wpsclient.view.ui.dataui;
 
-import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.model.RawData;
-import org.orbisgis.orbistoolbox.model.Process;
+import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
+import org.orbisgis.wpsservice.model.Process;
 
 import javax.swing.*;
 import java.net.URI;

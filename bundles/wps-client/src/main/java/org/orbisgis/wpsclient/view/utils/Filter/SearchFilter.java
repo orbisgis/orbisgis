@@ -19,10 +19,10 @@
 
 package org.orbisgis.wpsclient.view.utils.Filter;
 
-import org.orbisgis.wpsclient.view.utils.TreeNodeWps;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactory;
 import org.orbisgis.sif.components.filter.TextFieldDocumentListener;
+import org.orbisgis.wpsclient.view.utils.TreeNodeWps;
 
 import javax.swing.*;
 import java.awt.*;

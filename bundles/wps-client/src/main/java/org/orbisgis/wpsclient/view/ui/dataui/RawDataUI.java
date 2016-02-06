@@ -19,13 +19,13 @@
 
 package org.orbisgis.wpsclient.view.ui.dataui;
 
-import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.wpsclient.WpsClient;
-import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.orbistoolbox.model.RawData;
+import org.orbisgis.wpsservice.model.*;
+import org.orbisgis.wpsservice.model.RawData;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
+import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;

@@ -38,7 +38,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Private-Package>org.orbisgis.orbistoolbox.*</Private-Package>
+                        <Private-Package>org.orbisgis.wpsservice.*</Private-Package>
                         <Bundle-Category>orbisgis</Bundle-Category>
                     </instructions>
                 </configuration>

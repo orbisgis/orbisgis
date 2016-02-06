@@ -20,7 +20,8 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.orbistoolbox.model.*;
+import org.orbisgis.wpsservice.WpsService;
+import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 
@@ -31,7 +32,6 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.net.URI;
 import java.util.*;
-import java.util.List;
 
 /**
  * UI generator associated to the FieldValue

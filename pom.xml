@@ -51,6 +51,9 @@
                 <module>bundles/toc</module>
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
+                <module>bundles/wps-groovy-api</module>
+                <module>bundles/wps-service</module>
+                <module>bundles/wps-client</module>
         </modules>
         <profiles>
             <profile>
@@ -66,9 +69,6 @@
                     <module>external/svg-salamander</module>
                     <module>external/itextpdf</module>
                     <module>external/jai</module>
-                    <module>bundles/wps-groovy-api</module>
-                    <module>bundles/wps-service</module>
-                    <module>bundles/wps-client</module>
                     <module>orbisgis-dist</module>
                 </modules>
             </profile>

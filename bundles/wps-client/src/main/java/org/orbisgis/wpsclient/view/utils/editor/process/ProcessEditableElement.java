@@ -19,11 +19,11 @@
 
 package org.orbisgis.wpsclient.view.utils.editor.process;
 
-import org.orbisgis.orbistoolbox.controller.execution.ProcessExecutionListener;
-import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
+import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.orbisgis.wpsservice.model.Process;
 
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
@@ -39,7 +39,7 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  */
-public class ProcessEditableElement implements EditableElement, ProcessExecutionListener{
+public class ProcessEditableElement implements EditableElement, ProcessExecutionListener {
     public static final String STATE_PROPERTY = "STATE_PROPERTY";
     public static final String LOG_PROPERTY = "LOG_PROPERTY";
     public static final String CANCEL = "CANCEL";

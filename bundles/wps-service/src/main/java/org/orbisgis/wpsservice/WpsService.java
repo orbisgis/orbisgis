@@ -1,3 +1,22 @@
+/**
+ * OrbisToolBox is an OrbisGIS plugin dedicated to create and manage processing.
+ * <p/>
+ * OrbisToolBox is distributed under GPL 3 license. It is produced by CNRS <http://www.cnrs.fr/> as part of the
+ * MApUCE project, funded by the French Agence Nationale de la Recherche (ANR) under contract ANR-13-VBDU-0004.
+ * <p/>
+ * OrbisToolBox is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p/>
+ * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p/>
+ * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
+ * <http://www.gnu.org/licenses/>.
+ * <p/>
+ * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
+ */
+
 package org.orbisgis.wpsservice;
 
 import org.apache.commons.io.FilenameUtils;
@@ -18,7 +37,9 @@ import org.orbisgis.wpsservice.model.DataType;
 import org.orbisgis.wpsservice.model.DescriptionType;
 import org.orbisgis.wpsservice.model.Process;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +49,7 @@ import java.net.URL;
 import java.sql.*;
 import java.util.*;
 
-@Component
+@Component(service = {WpsService.class})
 public class WpsService {
     /** String of the Groovy file extension. */
     public static final String GROOVY_EXTENSION = "groovy";
@@ -56,12 +77,8 @@ public class WpsService {
     private Map<String, Object> properties;
     private DataSourceService dataSourceService;
 
-    public WpsService(CoreWorkspace coreWorkspace, DataManager dataManager,
-                      DriverFunctionContainer driverFunctionContainer, DataSourceService dataSourceService){
-        this.driverFunctionContainer = driverFunctionContainer;
-        this.dataManager = dataManager;
-        this.coreWorkspace = coreWorkspace;
-        this.dataSourceService = dataSourceService;
+    @Activate
+    public void init(){
         properties = new HashMap<>();
         processManager = new ProcessManager(dataSourceService);
         dataProcessingManager = new DataProcessingManager(this);
@@ -127,6 +144,7 @@ public class WpsService {
         return dataProcessingManager;
     }
 
+    @Deactivate
     public void dispose(){
         //Try to save the local files loaded.
         try {
@@ -171,6 +189,14 @@ public class WpsService {
         dataSourceService = null;
     }
 
+    @Reference
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
+    }
+
+    public void unsetDataManager(DataManager dataManager) {
+        this.dataManager = null;
+    }
 
     /**
      * Sets all the default OrbisGIS WPS script into the script folder of the .OrbisGIS folder.

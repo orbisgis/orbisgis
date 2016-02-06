@@ -20,9 +20,9 @@
 package org.orbisgis.wpsclient.view.utils.editor.log;
 
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
+import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

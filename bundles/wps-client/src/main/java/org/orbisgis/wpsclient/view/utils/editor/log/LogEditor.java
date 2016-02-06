@@ -20,13 +20,13 @@
 package org.orbisgis.wpsclient.view.utils.editor.log;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.wpsclient.WpsClient;
-import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
+import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;

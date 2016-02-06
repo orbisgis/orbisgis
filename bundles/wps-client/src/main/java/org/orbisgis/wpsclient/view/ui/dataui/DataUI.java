@@ -19,7 +19,7 @@
 
 package org.orbisgis.wpsclient.view.ui.dataui;
 
-import org.orbisgis.orbistoolbox.model.DescriptionType;
+import org.orbisgis.wpsservice.model.DescriptionType;
 import org.orbisgis.wpsclient.WpsClient;
 
 import javax.swing.*;

@@ -20,11 +20,11 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.orbistoolbox.model.*;
-import org.orbisgis.orbistoolbox.model.Enumeration;
+import org.orbisgis.wpsservice.model.*;
+import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.sif.common.ContainerItem;
+import org.orbisgis.wpsservice.model.Enumeration;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
@@ -35,7 +35,6 @@ import javax.swing.text.Document;
 import java.beans.EventHandler;
 import java.net.URI;
 import java.util.*;
-import java.util.List;
 
 /**
  * UI generator associated to the Enumeration

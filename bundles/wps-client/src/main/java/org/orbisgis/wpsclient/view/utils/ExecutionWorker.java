@@ -20,10 +20,9 @@
 package org.orbisgis.wpsclient.view.utils;
 
 import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.orbistoolbox.model.DescriptionType;
-import org.orbisgis.orbistoolbox.model.Process;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
-import org.slf4j.LoggerFactory;
+import org.orbisgis.wpsservice.WpsService;
+import org.orbisgis.wpsservice.model.Process;
 
 import java.net.URI;
 import java.util.HashMap;
