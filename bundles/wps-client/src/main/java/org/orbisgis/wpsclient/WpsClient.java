@@ -112,12 +112,12 @@ public class WpsClient implements DockingPanel {
         lee = new LogEditableElement();
         le = null;
 
-        for(ProcessIdentifier pi : wpsService.getAllProcessIdentifier()) {
+        for(ProcessIdentifier pi : wpsService.getCapabilities()) {
             toolBoxPanel.addLocalSource(pi);
         }
     }
 
-    public WpsService getWpsService(){
+    public WpsService getWpsServiceImplementation(){
         return wpsService;
     }
 
@@ -214,7 +214,7 @@ public class WpsClient implements DockingPanel {
      * @return The ProcessEditableElement which contains the running process information (log, state, ...).
      */
     public ProcessEditableElement openProcess(URI scriptUri){
-        Process process = wpsService.getProcess(scriptUri);
+        Process process = wpsService.describeProcess(scriptUri);
         ProcessEditableElement pee = new ProcessEditableElement(process);
         ProcessEditor pe = new ProcessEditor(this, pee);
         //Find if there is already a ProcessEditor open with the same process.
@@ -292,8 +292,8 @@ public class WpsClient implements DockingPanel {
 
 
     @Reference
-    public void setWpsService(WpsService wpsService) {
-        this.wpsService = wpsService;
+    public void setWpsServiceImplementation(WpsService wpsServiceImplementation) {
+        this.wpsService = wpsServiceImplementation;
     }
 
     public void unsetWpsService(WpsService wpsService) {

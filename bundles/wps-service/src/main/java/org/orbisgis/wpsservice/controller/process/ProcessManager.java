@@ -111,8 +111,7 @@ public class ProcessManager {
      * @return The groovy object on which the 'processing' method will be called.
      */
     public GroovyObject executeProcess(Process process,
-                                       Map<URI, Object> dataMap,
-                                       Map<String, Object> properties){
+                                       Map<URI, Object> dataMap){
         GroovyObject groovyObject = createProcess(process, dataMap);
         groovyObject.setProperty("sql", new Sql(dataSourceService));
         groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));

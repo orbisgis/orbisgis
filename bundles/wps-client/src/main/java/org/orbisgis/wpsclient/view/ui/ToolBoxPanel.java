@@ -417,7 +417,7 @@ public class ToolBoxPanel extends JPanel {
 
         for(URI uri : getAllWpsScript(parent)){
             if(getChildWithUri(uri, source).isEmpty()) {
-                Process process = wpsClient.getWpsService().getProcess(uri);
+                Process process = wpsClient.getWpsServiceImplementation().describeProcess(uri);
                 TreeNodeWps script = new TreeNodeWps();
                 script.setUri(uri);
                 script.setValidNode(process != null);
