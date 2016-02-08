@@ -22,7 +22,7 @@ package org.orbisgis.wpsservice.controller.parser;
 import org.orbisgis.wpsgroovyapi.attributes.DataStoreAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
-import org.orbisgis.wpsservice.WpsServiceImplementation;
+import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.*;
@@ -52,10 +52,10 @@ public class DataStoreParser implements Parser{
         boolean isDataBase = false;
 
         if(dataStoreAttribute.isSpatial()){
-            importableFormat = new ArrayList<>(WpsServiceImplementation.getImportableFormat(true).keySet());
+            importableFormat = new ArrayList<>(LocalWpsServiceImplementation.getImportableFormat(true).keySet());
         }
         else{
-            importableFormat = new ArrayList<>(WpsServiceImplementation.getImportableFormat(false).keySet());
+            importableFormat = new ArrayList<>(LocalWpsServiceImplementation.getImportableFormat(false).keySet());
         }
         //If there is extension, test if it is recognized by OrbisGIS and register it.
         if(dataStoreAttribute.extensions().length!=0) {
@@ -125,10 +125,10 @@ public class DataStoreParser implements Parser{
         boolean isDataBase = false;
 
         if(dataStoreAttribute.isSpatial()){
-            exportableGeoFormat = new ArrayList<>(WpsServiceImplementation.getExportableFormat(true).keySet());
+            exportableGeoFormat = new ArrayList<>(LocalWpsServiceImplementation.getExportableFormat(true).keySet());
         }
         else{
-            exportableGeoFormat = new ArrayList<>(WpsServiceImplementation.getExportableFormat(false).keySet());
+            exportableGeoFormat = new ArrayList<>(LocalWpsServiceImplementation.getExportableFormat(false).keySet());
         }
 
         //If there is extension, test if it is recognized by OrbisGIS and register it.

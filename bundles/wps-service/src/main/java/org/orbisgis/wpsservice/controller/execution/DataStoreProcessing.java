@@ -19,7 +19,7 @@
 
 package org.orbisgis.wpsservice.controller.execution;
 
-import org.orbisgis.wpsservice.WpsServiceImplementation;
+import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
 import org.orbisgis.wpsservice.model.*;
 
 import java.net.URI;
@@ -37,7 +37,7 @@ public class DataStoreProcessing implements DataProcessing {
     }
 
     @Override
-    public Map<URI, Object> preProcessData(WpsServiceImplementation wpsServiceImplementation, DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public Map<URI, Object> preProcessData(LocalWpsServiceImplementation localWpsServiceImplementation, DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         Map<URI, Object> stash = new HashMap<>();
         URI uri = inputOrOutput.getIdentifier();
         URI dataStoreURI = (URI)dataMap.get(uri);
@@ -60,7 +60,7 @@ public class DataStoreProcessing implements DataProcessing {
                 }
                 else{
                     if(!keep) {
-                        WpsServiceImplementation.removeTempTable(dataStoreURI.getFragment());
+                        LocalWpsServiceImplementation.removeTempTable(dataStoreURI.getFragment());
                     }
                     else{
                         path = path.replace("$", "");
@@ -85,19 +85,19 @@ public class DataStoreProcessing implements DataProcessing {
     }
 
     @Override
-    public void postProcessData(WpsServiceImplementation wpsServiceImplementation, DescriptionType inputOrOutput,
+    public void postProcessData(LocalWpsServiceImplementation localWpsServiceImplementation, DescriptionType inputOrOutput,
                                 Map<URI, Object> dataMap, Map<URI, Object> stash) {
         if(inputOrOutput instanceof Input){
             URI uri = inputOrOutput.getIdentifier();
             if(stash.get(uri) != null && stash.get(uri).equals("file")){
-                WpsServiceImplementation.removeTempTable(dataMap.get(uri).toString());
+                LocalWpsServiceImplementation.removeTempTable(dataMap.get(uri).toString());
             }
         }
         if(inputOrOutput instanceof Output){
             URI uri = inputOrOutput.getIdentifier();
             URI dataStoreURI = (URI)stash.get(uri);
             if(dataStoreURI.getScheme().equals("file")){
-                wpsServiceImplementation.saveURI(URI.create(dataStoreURI.getScheme()+":"+dataStoreURI.getSchemeSpecificPart()), dataMap.get(uri).toString());
+                localWpsServiceImplementation.saveURI(URI.create(dataStoreURI.getScheme()+":"+dataStoreURI.getSchemeSpecificPart()), dataMap.get(uri).toString());
             }
         }
     }

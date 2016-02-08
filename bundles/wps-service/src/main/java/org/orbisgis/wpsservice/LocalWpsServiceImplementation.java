@@ -49,8 +49,8 @@ import java.net.URL;
 import java.sql.*;
 import java.util.*;
 
-@Component(service = {WpsServiceImplementation.class})
-public class WpsServiceImplementation implements WpsService {
+@Component(service = {LocalWpsService.class})
+public class LocalWpsServiceImplementation implements LocalWpsService {
     /** String of the Groovy file extension. */
     public static final String GROOVY_EXTENSION = "groovy";
     private static final String WPS_SCRIPT_FOLDER = "Scripts";
@@ -83,13 +83,13 @@ public class WpsServiceImplementation implements WpsService {
         multiThreaded = testDBForMultiProcess();
         if(!multiThreaded){
             if(isH2) {
-                LoggerFactory.getLogger(WpsServiceImplementation.class).warn("Warning, because of the H2 configuration," +
+                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, because of the H2 configuration," +
                         " the toolbox won't be able to run more than one process at the same time.\n" +
                         "Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000;" +
                         " MULTI_THREADED=TRUE'");
             }
             else{
-                LoggerFactory.getLogger(WpsServiceImplementation.class).warn("Warning, because of the database configuration," +
+                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, because of the database configuration," +
                         " the toolbox won't be able to run more than one process at the same time.");
             }
         }
@@ -102,7 +102,7 @@ public class WpsServiceImplementation implements WpsService {
             try {
                 tbProperties.load(new FileInputStream(propertiesFile));
             } catch (IOException e) {
-                LoggerFactory.getLogger(WpsServiceImplementation.class).warn("Unable to restore previous configuration of the ToolBox");
+                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to restore previous configuration of the ToolBox");
                 tbProperties = null;
             }
         }
@@ -138,7 +138,7 @@ public class WpsServiceImplementation implements WpsService {
                 return true;
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(WpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
         return false;
     }
@@ -153,7 +153,7 @@ public class WpsServiceImplementation implements WpsService {
                     new FileOutputStream(coreWorkspace.getWorkspaceFolder() + File.separator + TOOLBOX_PROPERTIES),
                     "Save of the OrbisGIS toolBox");
         } catch (IOException e) {
-            LoggerFactory.getLogger(WpsServiceImplementation.class).warn("Unable to save ToolBox state.");
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to save ToolBox state.");
         }
     }
 
@@ -206,15 +206,15 @@ public class WpsServiceImplementation implements WpsService {
         }
         else{
             if(!wpsScriptFolder.mkdir()){
-                LoggerFactory.getLogger(WpsServiceImplementation.class).warn("Unable to find or create a script folder.\n" +
+                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to find or create a script folder.\n" +
                         "No basic script will be available.");
             }
         }
         if(wpsScriptFolder.exists() && wpsScriptFolder.isDirectory()){
             try {
                 //Retrieve all the scripts url
-                String folderPath = WpsServiceImplementation.class.getResource("scripts").getFile();
-                Enumeration<URL> enumUrl = FrameworkUtil.getBundle(WpsServiceImplementation.class).findEntries(folderPath, "*", false);
+                String folderPath = LocalWpsServiceImplementation.class.getResource("scripts").getFile();
+                Enumeration<URL> enumUrl = FrameworkUtil.getBundle(LocalWpsServiceImplementation.class).findEntries(folderPath, "*", false);
                 //For each url
                 while(enumUrl.hasMoreElements()){
                     URL scriptUrl = enumUrl.nextElement();
@@ -224,7 +224,7 @@ public class WpsServiceImplementation implements WpsService {
                         //If the script is already in the .OrbisGIS folder, remove it.
                         for(File existingFile : wpsScriptFolder.listFiles()){
                             if(existingFile.getName().endsWith(scriptPath) && existingFile.delete()){
-                                LoggerFactory.getLogger(WpsServiceImplementation.class).
+                                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).
                                         warn("Replacing script "+existingFile.getName()+" by the default one");
                             }
                         }
@@ -239,7 +239,7 @@ public class WpsServiceImplementation implements WpsService {
                     }
                 }
             } catch (IOException e) {
-                LoggerFactory.getLogger(WpsServiceImplementation.class).warn("Unable to copy the scripts. \n" +
+                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to copy the scripts. \n" +
                         "No basic script will be available. \n" +
                         "Error : "+e.getMessage());
             }
@@ -343,7 +343,7 @@ public class WpsServiceImplementation implements WpsService {
             pel.appendLog(System.currentTimeMillis() - startTime,
                     ProcessExecutionListener.LogType.ERROR,
                     e.getMessage());
-            LoggerFactory.getLogger(WpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
     }
 
@@ -364,7 +364,7 @@ public class WpsServiceImplementation implements WpsService {
                     extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
             driver.exportTable(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
         } catch (SQLException|IOException e) {
-            LoggerFactory.getLogger(WpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
     }
 
@@ -458,7 +458,7 @@ public class WpsServiceImplementation implements WpsService {
                 }
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(WpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
         return list;
     }
@@ -487,7 +487,7 @@ public class WpsServiceImplementation implements WpsService {
                 }
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(WpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
         return fieldList;
     }
@@ -509,7 +509,7 @@ public class WpsServiceImplementation implements WpsService {
                 fieldValues.add(result.getString(1));
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(WpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
         return fieldValues;
     }
@@ -526,7 +526,7 @@ public class WpsServiceImplementation implements WpsService {
                 statement.execute("DROP TABLE " + tableName);
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(WpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
     }
 
@@ -562,7 +562,7 @@ public class WpsServiceImplementation implements WpsService {
             }
             return tableName;
         } catch (SQLException|IOException e) {
-            LoggerFactory.getLogger(WpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
         return null;
     }
