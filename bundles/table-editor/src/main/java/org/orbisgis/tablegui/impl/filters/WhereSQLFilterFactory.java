@@ -57,6 +57,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -145,7 +146,10 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
                                 selectionPk.add(rs.getLong(1));
                             }
                         }
-                        filteredRows = rowSet.getRowNumberFromRowPk(selectionPk);
+                        filteredRows = new HashSet<>();
+                        for(int oneBasedRowId : rowSet.getRowNumberFromRowPk(selectionPk)) {
+                            filteredRows.add(oneBasedRowId - 1);
+                        }
                     }
                 } finally {
                     progress.removePropertyChangeListener(cancelListener);
