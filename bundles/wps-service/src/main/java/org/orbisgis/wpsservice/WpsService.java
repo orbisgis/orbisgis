@@ -13,9 +13,9 @@ import java.util.Map;
  */
 public interface WpsService {
 
-    public List<ProcessIdentifier> getCapabilities();
+    List<ProcessIdentifier> getCapabilities();
 
-    public Process describeProcess(URI uri);
+    Process describeProcess(URI uri);
 
-    public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel);
+    void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel);
 }

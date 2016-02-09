@@ -19,12 +19,12 @@
 
 package org.orbisgis.wpsservice;
 
-import org.apache.commons.collections.ArrayStack;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DataSourceService;
@@ -44,6 +44,7 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
@@ -55,7 +56,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     /** String of the Groovy file extension. */
     public static final String GROOVY_EXTENSION = "groovy";
     private static final String WPS_SCRIPT_FOLDER = "Scripts";
-    public static final String TOOLBOX_REFERENCE = "orbistoolbox";
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
 
@@ -64,10 +64,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     /** True if the database is H2, false otherwise. */
     private boolean isH2;
     /** OrbisGIS DataManager. */
-    private static DataManager dataManager;
+    private DataManager dataManager;
     private DataProcessingManager dataProcessingManager;
     /** OrbisGIS DriverFunctionContainer. */
-    private static DriverFunctionContainer driverFunctionContainer;
+    private DriverFunctionContainer driverFunctionContainer;
     /** Process manager which contains all the loaded scripts. */
     private ProcessManager processManager;
     private DataSourceService dataSourceService;
@@ -94,54 +94,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
                         " the toolbox won't be able to run more than one process at the same time.");
             }
         }
-    }
-
-    private void loadPreviousState(){
-        Properties tbProperties = new Properties();
-        File propertiesFile = new File(coreWorkspace.getWorkspaceFolder() + File.separator + TOOLBOX_PROPERTIES);
-        if (propertiesFile.exists()) {
-            try {
-                tbProperties.load(new FileInputStream(propertiesFile));
-            } catch (IOException e) {
-                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to restore previous configuration of the ToolBox");
-                tbProperties = null;
-            }
-        }
-        if(tbProperties != null){
-            Object prop = tbProperties.getProperty(PROPERTY_SOURCES);
-            if(prop != null && !prop.toString().isEmpty()){
-                String str = prop.toString();
-                for(String s : str.split(";")){
-                    addLocalSource(URI.create(s), null, false);
-                }
-            }
-        }
-    }
-
-    private boolean testDBForMultiProcess(){
-        try {
-            if(dataManager != null){
-                Connection connection = dataManager.getDataSource().getConnection();
-                isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-                if(isH2) {
-                    Statement statement = connection.createStatement();
-                    ResultSet result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MVCC';");
-                    result.next();
-                    if (!result.getString(1).equals("TRUE")) {
-                        return false;
-                    }
-                    result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MULTI_THREADED';");
-                    result.next();
-                    if (!result.getString(1).equals("1")) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
-        }
-        return false;
     }
 
     @Deactivate
@@ -176,10 +128,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     }
 
     @Reference
-    public void setDataSource(javax.sql.DataSource ds) {
+    public void setDataSource(DataSource ds) {
         dataSourceService = (DataSourceService)ds;
     }
-    public void unsetDataSource(javax.sql.DataSource ds) {
+    public void unsetDataSource(DataSource ds) {
         dataSourceService = null;
     }
 
@@ -350,28 +302,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     }
 
     /**
-     * Save a geocatalog table into a file.
-     * @param uri URI where the table will be saved.
-     * @param tableName Name of the table to save.
-     */
-    public void saveURI(URI uri, String tableName){
-        try {
-            File f = new File(uri);
-            if(!f.exists()){
-                f.createNewFile();
-            }
-            //Find the good driver and save the file.
-            String extension = FilenameUtils.getExtension(f.getAbsolutePath());
-            DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
-                    extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-            driver.exportTable(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
-        } catch (SQLException|IOException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
-        }
-    }
-
-
-    /**
      * Verify if the given file is a well formed script.
      * @param uri URI to check.
      * @return True if the file is well formed, false otherwise.
@@ -435,28 +365,12 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         try {
             Connection connection = dataManager.getDataSource().getConnection();
             String defaultSchema = "PUBLIC";
-            try {
-                if (connection.getSchema() != null) {
-                    defaultSchema = connection.getSchema();
-                }
-            } catch (AbstractMethodError | Exception ex) {
-                // Driver has been compiled with JAVA 6, or is not implemented
-            }
-            if(!onlySpatial) {
-                DatabaseMetaData md = connection.getMetaData();
-                ResultSet rs = md.getTables(null, defaultSchema, "%", null);
-                while (rs.next()) {
-                    String tableName = rs.getString(3);
-                    if (!tableName.equalsIgnoreCase("SPATIAL_REF_SYS") && !tableName.equalsIgnoreCase("GEOMETRY_COLUMNS")) {
-                        list.add(tableName);
+            List<String> tableList = JDBCUtilities.getTableNames(connection.getMetaData(), null, defaultSchema, "%", null);
+            if(onlySpatial){
+                for(String table : tableList){
+                    if(!SFSUtilities.getGeometryFields(connection, new TableLocation(table)).isEmpty()){
+                        list.add(table);
                     }
-                }
-            }
-            else{
-                Statement st = connection.createStatement();
-                ResultSet rs = st.executeQuery("SELECT * FROM "+defaultSchema+".geometry_columns");
-                while(rs.next()) {
-                    list.add(rs.getString("F_TABLE_NAME"));
                 }
             }
         } catch (SQLException e) {
@@ -505,11 +419,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         List<String> fieldValues = new ArrayList<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT DISTINCT "+fieldName+" FROM "+tableName);
-            while(result.next()){
-                fieldValues.add(result.getString(1));
-            }
+            fieldValues.addAll(JDBCUtilities.getUniqueFieldValues(connection, tableName, fieldName));
         } catch (SQLException e) {
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
@@ -528,6 +438,27 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
                 statement.execute("DROP TABLE " + tableName);
             }
         } catch (SQLException e) {
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+        }
+    }
+
+    /**
+     * Save a geocatalog table into a file.
+     * @param uri URI where the table will be saved.
+     * @param tableName Name of the table to save.
+     */
+    public void saveURI(URI uri, String tableName){
+        try {
+            File f = new File(uri);
+            if(!f.exists()){
+                f.createNewFile();
+            }
+            //Find the good driver and save the file.
+            String extension = FilenameUtils.getExtension(f.getAbsolutePath());
+            DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
+                    extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
+            driver.exportTable(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+        } catch (SQLException|IOException e) {
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
     }
@@ -571,5 +502,54 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
 
     public boolean isH2(){
         return isH2;
+    }
+
+
+    private void loadPreviousState(){
+        Properties tbProperties = new Properties();
+        File propertiesFile = new File(coreWorkspace.getWorkspaceFolder() + File.separator + TOOLBOX_PROPERTIES);
+        if (propertiesFile.exists()) {
+            try {
+                tbProperties.load(new FileInputStream(propertiesFile));
+            } catch (IOException e) {
+                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to restore previous configuration of the ToolBox");
+                tbProperties = null;
+            }
+        }
+        if(tbProperties != null){
+            Object prop = tbProperties.getProperty(PROPERTY_SOURCES);
+            if(prop != null && !prop.toString().isEmpty()){
+                String str = prop.toString();
+                for(String s : str.split(";")){
+                    addLocalSource(URI.create(s), null, false);
+                }
+            }
+        }
+    }
+
+    private boolean testDBForMultiProcess(){
+        try {
+            if(dataManager != null){
+                Connection connection = dataManager.getDataSource().getConnection();
+                isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                if(isH2) {
+                    Statement statement = connection.createStatement();
+                    ResultSet result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MVCC';");
+                    result.next();
+                    if (!result.getString(1).equals("TRUE")) {
+                        return false;
+                    }
+                    result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MULTI_THREADED';");
+                    result.next();
+                    if (!result.getString(1).equals("1")) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+        }
+        return false;
     }
 }
