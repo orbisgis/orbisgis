@@ -20,11 +20,12 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
-import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
+import org.orbisgis.wpsservice.model.DescriptionType;
+import org.orbisgis.wpsservice.model.FieldValue;
+import org.orbisgis.wpsservice.model.Input;
+import org.orbisgis.wpsservice.model.Output;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;

@@ -20,8 +20,6 @@
 package org.orbisgis.wpsclient.view.utils.editor.process;
 
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.Output;
 import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
@@ -31,6 +29,8 @@ import org.orbisgis.wpsclient.view.ui.dataui.DataUI;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUIManager;
 import org.orbisgis.wpsclient.view.utils.ExecutionWorker;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
+import org.orbisgis.wpsservice.model.Input;
+import org.orbisgis.wpsservice.model.Output;
 import org.orbisgis.wpsservice.model.Process;
 
 import javax.swing.*;

@@ -20,9 +20,6 @@
 package org.orbisgis.wpsclient;
 
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.corejdbc.DataSourceService;
-import org.orbisgis.dbjobs.api.DriverFunctionContainer;
-import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
@@ -39,8 +36,6 @@ import org.orbisgis.wpsclient.view.utils.editor.log.LogEditor;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
 import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
-import org.orbisgis.wpsservice.WpsService;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.Process;
 import org.osgi.service.component.annotations.Activate;
@@ -64,7 +59,7 @@ import java.util.concurrent.ExecutorService;
  * @author Sylvain PALOMINOS
  **/
 
-@Component
+@Component(immediate = true)
 public class WpsClient implements DockingPanel {
     /** String reference of the ToolBox used for DockingFrame. */
     public static final String TOOLBOX_REFERENCE = "orbistoolbox";
@@ -75,7 +70,6 @@ public class WpsClient implements DockingPanel {
     private ToolBoxPanel toolBoxPanel;
     /** Object creating the UI corresponding to the data. */
     private DataUIManager dataUIManager;
-    private CoreWorkspace coreWorkspace;
 
     /** EditableElement associated to the logEditor. */
     private LogEditableElement lee;
@@ -90,10 +84,7 @@ public class WpsClient implements DockingPanel {
     private ExecutorService executorService;
     /** OrbisGIS DataManager. */
     private static DataManager dataManager;
-    /** OrbisGIS DriverFunctionContainer. */
-    private static DriverFunctionContainer driverFunctionContainer;
     private LocalWpsService wpsService;
-    private DataSourceService dataSourceService;
 
     @Activate
     public void init(){
@@ -297,7 +288,6 @@ public class WpsClient implements DockingPanel {
     public void setLocalWpsService(LocalWpsService wpsService) {
         this.wpsService = wpsService;
     }
-
     public void unsetLocalWpsService(LocalWpsService wpsService) {
         this.wpsService = null;
     }
@@ -306,33 +296,20 @@ public class WpsClient implements DockingPanel {
     public void setDataManager(DataManager dataManager) {
         WpsClient.dataManager = dataManager;
     }
-
     public void unsetDataManager(DataManager dataManager) {
         WpsClient.dataManager = null;
     }
-
     public DataManager getDataManager(){
         return dataManager;
-    }
-
-    @Reference
-    public void setDataSource(javax.sql.DataSource ds) {
-        dataSourceService = (DataSourceService)ds;
-    }
-
-    public void unsetDataSource(javax.sql.DataSource ds) {
-        dataSourceService = null;
     }
 
     @Reference
     public void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
     }
-
     public void unsetExecutorService(ExecutorService executorService) {
         this.executorService = null;
     }
-
     public ExecutorService getExecutorService(){
         return executorService;
     }
@@ -341,34 +318,8 @@ public class WpsClient implements DockingPanel {
     public void setDockingManager(DockingManager dockingManager) {
         this.dockingManager = dockingManager;
     }
-
     public void unsetDockingManager(DockingManager dockingManager) {
         this.dockingManager = null;
     }
 
-    @Reference
-    public void setDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
-        WpsClient.driverFunctionContainer = driverFunctionContainer;
-    }
-
-    public void unsetDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
-        WpsClient.driverFunctionContainer = null;
-    }
-
-    @Reference
-    public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
-        this.coreWorkspace = coreWorkspace;
-    }
-
-    public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
-        this.coreWorkspace = null;
-    }
-
-    public DriverFunctionContainer getDriverFunctionContainer(){
-        return driverFunctionContainer;
-    }
-
-    public ToolBoxPanel getToolBoxPanel(){
-        return toolBoxPanel;
-    }
 }

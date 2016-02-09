@@ -22,7 +22,6 @@ package org.orbisgis.wpsclient.view.utils;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
 import org.orbisgis.wpsservice.model.Process;
 
 import java.net.URI;

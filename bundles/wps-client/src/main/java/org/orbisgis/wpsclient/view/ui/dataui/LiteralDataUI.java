@@ -22,7 +22,6 @@ package org.orbisgis.wpsclient.view.ui.dataui;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +37,8 @@ import java.beans.EventHandler;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 /**
  * UI for the definition of the LiteralData inputs.

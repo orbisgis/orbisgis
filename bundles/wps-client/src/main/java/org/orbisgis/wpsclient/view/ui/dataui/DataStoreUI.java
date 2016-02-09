@@ -21,12 +21,7 @@ package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
 import org.apache.commons.io.FilenameUtils;
-import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
-import org.orbisgis.wpsservice.controller.utils.FormatFactory;
-import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.sif.components.OpenFilePanel;
@@ -36,6 +31,8 @@ import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
+import org.orbisgis.wpsservice.controller.utils.FormatFactory;
+import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
