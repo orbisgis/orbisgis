@@ -355,7 +355,13 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>orbistoolbox</artifactId>
+            <artifactId>wps-service</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wps-client</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
