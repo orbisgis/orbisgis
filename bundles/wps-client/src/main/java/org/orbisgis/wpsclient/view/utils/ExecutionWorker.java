@@ -21,6 +21,7 @@ package org.orbisgis.wpsclient.view.utils;
 
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
 import org.orbisgis.wpsservice.model.Process;
 
@@ -47,7 +48,7 @@ public class ExecutionWorker extends SwingWorkerPM{
     /** Input and output data map */
     private Map<URI, Object> dataMap;
     /** ToolBox */
-    private LocalWpsServiceImplementation localWpsServiceImplementation;
+    private LocalWpsService wpsService;
     /** Process element containing all the information it */
     private ProcessEditableElement pee;
 
@@ -55,18 +56,18 @@ public class ExecutionWorker extends SwingWorkerPM{
      * Main constructor.
      * @param pee ProcessEditableElement which will be used to communicate the state and the log of the process.
      */
-    public ExecutionWorker(ProcessEditableElement pee, LocalWpsServiceImplementation localWpsServiceImplementation){
+    public ExecutionWorker(ProcessEditableElement pee, LocalWpsService wpsService){
         this.pee = pee;
         this.process = pee.getProcess();
         this.dataMap = new HashMap<>();
         this.dataMap.putAll(pee.getInputDataMap());
         this.dataMap.putAll(pee.getOutputDataMap());
-        this.localWpsServiceImplementation = localWpsServiceImplementation;
+        this.wpsService = wpsService;
     }
 
     @Override
     protected Object doInBackground() throws Exception {
-        localWpsServiceImplementation.execute(process, dataMap, pee);
+        wpsService.execute(process, dataMap, pee);
         return null;
     }
 }

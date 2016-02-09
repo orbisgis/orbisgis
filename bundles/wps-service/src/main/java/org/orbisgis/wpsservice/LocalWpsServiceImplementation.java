@@ -19,6 +19,7 @@
 
 package org.orbisgis.wpsservice;
 
+import org.apache.commons.collections.ArrayStack;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
@@ -73,7 +74,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
 
     @Activate
     public void init(){
-        processManager = new ProcessManager(dataSourceService);
+        processManager = new ProcessManager(dataSourceService, this);
         dataProcessingManager = new DataProcessingManager(this);
         setScriptFolder();
         loadPreviousState();
@@ -199,7 +200,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         //Empty the script folder or create it
         if(wpsScriptFolder.exists()){
             if(wpsScriptFolder.listFiles() != null) {
-                for (File f : wpsScriptFolder.listFiles()) {
+                List<File> toDelete = Arrays.asList(wpsScriptFolder.listFiles());
+                for(File f : toDelete){
                     f.delete();
                 }
             }
@@ -393,7 +395,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      * @param onlySpatial If true, returns only the spatial table.
      * @return a map of the importable  format.
      */
-    public static Map<String, String> getImportableFormat(boolean onlySpatial){
+    public Map<String, String> getImportableFormat(boolean onlySpatial){
         Map<String, String> formatMap = new HashMap<>();
         for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
             for(String ext : df.getImportFormats()){
@@ -411,7 +413,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      * @param onlySpatial If true, returns only the spatial table.
      * @return a map of the exportable spatial format.
      */
-    public static Map<String, String> getExportableFormat(boolean onlySpatial){
+    public Map<String, String> getExportableFormat(boolean onlySpatial){
         Map<String, String> formatMap = new HashMap<>();
         for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
             for(String ext : df.getExportFormats()){
@@ -428,7 +430,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      * @param onlySpatial If true, returns only the spatial table.
      * @return The list of geo sql table from OrbisGIS.
      */
-    public static List<String> getGeocatalogTableList(boolean onlySpatial) {
+    public List<String> getGeocatalogTableList(boolean onlySpatial) {
         List<String> list = new ArrayList<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();
@@ -469,7 +471,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      * @param dataTypes Type of the field accepted. If empty, accepts all the field.
      * @return The list of the field name.
      */
-    public static List<String> getTableFieldList(String tableName, List<DataType> dataTypes){
+    public List<String> getTableFieldList(String tableName, List<DataType> dataTypes){
         List<String> fieldList = new ArrayList<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();
@@ -499,7 +501,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      * @param fieldName Name of the field containing the values.
      * @return The list of distinct values of the field.
      */
-    public static List<String> getFieldValueList(String tableName, String fieldName) {
+    public List<String> getFieldValueList(String tableName, String fieldName) {
         List<String> fieldValues = new ArrayList<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();
@@ -518,7 +520,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      * Removes a table from the database.
      * @param tableName Table to remove from the dataBase.
      */
-    public static void removeTempTable(String tableName){
+    public void removeTempTable(String tableName){
         try {
             Connection connection = dataManager.getDataSource().getConnection();
             if(JDBCUtilities.tableExists(connection, tableName)) {
@@ -535,7 +537,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      * @param uri URI to load.
      * @return Table name of the loaded file. Returns null if the file can't be loaded.
      */
-    public String loadURI(URI uri, boolean copyInBase, Process p) {
+    public String loadURI(URI uri, boolean copyInBase) {
         try {
             File f = new File(uri);
             //Get the table name of the file

@@ -22,6 +22,7 @@ package org.orbisgis.wpsservice.controller.parser;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute;
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.MalformedScriptException;
@@ -39,6 +40,12 @@ import java.net.URI;
  **/
 
 public class RawDataParser implements Parser {
+
+    private LocalWpsService wpsService;
+
+    public void setLocalWpsService(LocalWpsService wpsService){
+        this.wpsService = wpsService;
+    }
 
     @Override
     public Input parseInput(Field f, Object defaultValue, String processId) {

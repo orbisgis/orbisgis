@@ -20,6 +20,7 @@
 package org.orbisgis.wpsservice.controller.parser;
 
 import org.orbisgis.wpsgroovyapi.attributes.BoundingBoxAttribute;
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.Output;
 
@@ -32,6 +33,13 @@ import java.lang.reflect.Field;
  **/
 
 public class BoundingBoxParser implements Parser {
+
+    private LocalWpsService wpsService;
+
+    public void setLocalWpsService(LocalWpsService wpsService){
+        this.wpsService = wpsService;
+    }
+
     @Override
     public Input parseInput(Field f, Object defaultValue, String processId) {
         return null;

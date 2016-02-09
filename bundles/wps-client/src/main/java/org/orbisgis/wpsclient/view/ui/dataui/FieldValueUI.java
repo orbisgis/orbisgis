@@ -20,6 +20,7 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
 import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsclient.WpsClient;
@@ -133,7 +134,7 @@ public class FieldValueUI implements DataUI{
             String fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
             DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
             model.removeAllElements();
-            List<String> listFields = LocalWpsServiceImplementation.getFieldValueList(tableName, fieldName);
+            List<String> listFields = wpsClient.getWpsService().getFieldValueList(tableName, fieldName);
             Collections.sort(listFields);
             for (String field : listFields) {
                 model.addElement(field);

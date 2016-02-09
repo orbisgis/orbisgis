@@ -20,6 +20,7 @@
 package org.orbisgis.wpsservice.controller.parser;
 
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,13 @@ import java.util.List;
  **/
 
 public class DefaultParser implements Parser {
+
+    private LocalWpsService wpsService;
+
+    public void setLocalWpsService(LocalWpsService wpsService){
+        this.wpsService = wpsService;
+    }
+
     @Override
     public Input parseInput(Field f, Object defaultValue, String processId) {
         DataDescription data;

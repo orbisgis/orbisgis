@@ -19,6 +19,7 @@
 
 package org.orbisgis.wpsclient.view.ui.dataui;
 
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
@@ -40,20 +41,17 @@ public class DataUIManager {
     /** Map linking the data class and its UI*/
     private Map<Class<? extends DataDescription>, DataUI> dataUIMap;
 
-    WpsClient wpsClient;
-
     /**
      * Main constructor.
      */
     public DataUIManager(WpsClient wpsClient){
-        this.wpsClient = wpsClient;
         dataUIMap = new HashMap<>();
-        linkClassUI(LiteralData.class, new LiteralDataUI());
-        linkClassUI(RawData.class, new RawDataUI());
-        linkClassUI(DataStore.class, new DataStoreUI());
-        linkClassUI(DataField.class, new DataFieldUI());
-        linkClassUI(FieldValue.class, new FieldValueUI());
-        linkClassUI(Enumeration.class, new EnumerationUI());
+        linkClassUI(LiteralData.class, new LiteralDataUI(), wpsClient);
+        linkClassUI(RawData.class, new RawDataUI(), wpsClient);
+        linkClassUI(DataStore.class, new DataStoreUI(), wpsClient);
+        linkClassUI(DataField.class, new DataFieldUI(), wpsClient);
+        linkClassUI(FieldValue.class, new FieldValueUI(), wpsClient);
+        linkClassUI(Enumeration.class, new EnumerationUI(), wpsClient);
     }
 
     /**
@@ -61,7 +59,7 @@ public class DataUIManager {
      * @param clazz Class to link.
      * @param dataUI UI corresponding to the class.
      */
-    public void linkClassUI(Class<? extends DataDescription> clazz, DataUI dataUI){
+    public void linkClassUI(Class<? extends DataDescription> clazz, DataUI dataUI, WpsClient wpsClient){
         dataUI.setWpsClient(wpsClient);
         dataUIMap.put(clazz, dataUI);
     }

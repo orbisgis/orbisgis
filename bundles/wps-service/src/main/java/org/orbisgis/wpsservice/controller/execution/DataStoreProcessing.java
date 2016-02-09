@@ -19,6 +19,7 @@
 
 package org.orbisgis.wpsservice.controller.execution;
 
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
 import org.orbisgis.wpsservice.model.*;
 
@@ -30,6 +31,12 @@ import java.util.Map;
  * @author Sylvain PALOMINOS
  */
 public class DataStoreProcessing implements DataProcessing {
+
+    private LocalWpsService wpsService;
+
+    public void setLocalWpsService(LocalWpsService wpsService){
+        this.wpsService = wpsService;
+    }
 
     @Override
     public Class<? extends DataDescription> getDataClass() {
@@ -60,7 +67,7 @@ public class DataStoreProcessing implements DataProcessing {
                 }
                 else{
                     if(!keep) {
-                        LocalWpsServiceImplementation.removeTempTable(dataStoreURI.getFragment());
+                        wpsService.removeTempTable(dataStoreURI.getFragment());
                     }
                     else{
                         path = path.replace("$", "");
@@ -90,7 +97,7 @@ public class DataStoreProcessing implements DataProcessing {
         if(inputOrOutput instanceof Input){
             URI uri = inputOrOutput.getIdentifier();
             if(stash.get(uri) != null && stash.get(uri).equals("file")){
-                LocalWpsServiceImplementation.removeTempTable(dataMap.get(uri).toString());
+                wpsService.removeTempTable(dataMap.get(uri).toString());
             }
         }
         if(inputOrOutput instanceof Output){

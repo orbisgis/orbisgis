@@ -24,6 +24,7 @@ import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute;
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsservice.model.Process;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ public class ParserController {
     private ProcessParser processParser;
     private GroovyClassLoader groovyClassLoader;
 
-    public ParserController(){
+    public ParserController(LocalWpsService wpsService){
         //Instantiate the parser list
         parserList = new ArrayList<>();
         parserList.add(new RawDataParser());
@@ -60,6 +61,9 @@ public class ParserController {
         parserList.add(new DataFieldParser());
         parserList.add(new FieldValueParser());
         parserList.add(new EnumerationParser());
+        for(Parser parser : parserList){
+            parser.setLocalWpsService(wpsService);
+        }
         defaultParser = new DefaultParser();
         processParser = new ProcessParser();
         groovyClassLoader = new GroovyShell().getClassLoader();

@@ -301,6 +301,7 @@ public class WpsClient implements DockingPanel {
     public void unsetLocalWpsService(LocalWpsService wpsService) {
         this.wpsService = null;
     }
+
     @Reference
     public void setDataManager(DataManager dataManager) {
         WpsClient.dataManager = dataManager;
@@ -369,34 +370,5 @@ public class WpsClient implements DockingPanel {
 
     public ToolBoxPanel getToolBoxPanel(){
         return toolBoxPanel;
-    }
-
-    /**
-     * Loads the given file into the geocatalog and return its table name.
-     * @param uri URI to load.
-     * @return Table name of the loaded file. Returns null if the file can't be loaded.
-     */
-    public String loadURI(URI uri, boolean copyInBase, Process p) {
-        ProcessEditor processEditor = null;
-        for(EditorDockable ed : openEditorList){
-            if(ed instanceof ProcessEditor){
-                ProcessEditor pe = (ProcessEditor)ed;
-                if(pe.getEditableElement().getObject().equals(p)){
-                    processEditor = pe;
-                }
-            }
-        }
-        File f = new File(uri);
-        if(f.isDirectory()){
-            return null;
-        }
-        if(processEditor != null && (copyInBase || !wpsService.isH2())) {
-            processEditor.startWaiting();
-        }
-        String tableName = wpsService.loadURI(uri, copyInBase, p);
-        if(processEditor != null && (copyInBase || !wpsService.isH2())) {
-            processEditor.endWaiting();
-        }
-        return tableName;
     }
 }

@@ -22,6 +22,7 @@ package org.orbisgis.wpsservice.controller.parser;
 import org.orbisgis.wpsgroovyapi.attributes.DataStoreAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
@@ -41,6 +42,12 @@ import java.util.List;
 
 public class DataStoreParser implements Parser{
 
+    private LocalWpsService wpsService;
+
+    public void setLocalWpsService(LocalWpsService wpsService){
+        this.wpsService = wpsService;
+    }
+
     @Override
     public Input parseInput(Field f, Object defaultValue, String processId) {
         //Instantiate the DataStore and its formats
@@ -52,10 +59,10 @@ public class DataStoreParser implements Parser{
         boolean isDataBase = false;
 
         if(dataStoreAttribute.isSpatial()){
-            importableFormat = new ArrayList<>(LocalWpsServiceImplementation.getImportableFormat(true).keySet());
+            importableFormat = new ArrayList<>(wpsService.getImportableFormat(true).keySet());
         }
         else{
-            importableFormat = new ArrayList<>(LocalWpsServiceImplementation.getImportableFormat(false).keySet());
+            importableFormat = new ArrayList<>(wpsService.getImportableFormat(false).keySet());
         }
         //If there is extension, test if it is recognized by OrbisGIS and register it.
         if(dataStoreAttribute.extensions().length!=0) {
@@ -125,10 +132,10 @@ public class DataStoreParser implements Parser{
         boolean isDataBase = false;
 
         if(dataStoreAttribute.isSpatial()){
-            exportableGeoFormat = new ArrayList<>(LocalWpsServiceImplementation.getExportableFormat(true).keySet());
+            exportableGeoFormat = new ArrayList<>(wpsService.getExportableFormat(true).keySet());
         }
         else{
-            exportableGeoFormat = new ArrayList<>(LocalWpsServiceImplementation.getExportableFormat(false).keySet());
+            exportableGeoFormat = new ArrayList<>(wpsService.getExportableFormat(false).keySet());
         }
 
         //If there is extension, test if it is recognized by OrbisGIS and register it.

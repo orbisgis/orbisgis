@@ -19,6 +19,7 @@
 
 package org.orbisgis.wpsclient.view.ui.dataui;
 
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsservice.model.RawData;
 import org.orbisgis.sif.UIFactory;

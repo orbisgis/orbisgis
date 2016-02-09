@@ -19,6 +19,7 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.Output;
 
@@ -33,6 +34,8 @@ import java.lang.reflect.Field;
  **/
 
 public interface Parser {
+
+    void setLocalWpsService(LocalWpsService wpsService);
 
     /**
      * Parse the given field as an input and returns the corresponding DataDescription.

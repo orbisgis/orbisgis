@@ -23,6 +23,7 @@ import groovy.lang.GroovyObject;
 import groovy.sql.Sql;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
 import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.Output;
@@ -55,9 +56,9 @@ public class ProcessManager {
     /**
      * Main constructor.
      */
-    public ProcessManager(DataSourceService dataSourceService){
+    public ProcessManager(DataSourceService dataSourceService, LocalWpsService wpsService){
         processIdList = new ArrayList<>();
-        parserController = new ParserController();
+        parserController = new ParserController(wpsService);
         this.dataSourceService = dataSourceService;
     }
 

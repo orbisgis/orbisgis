@@ -23,6 +23,7 @@ import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
 import org.orbisgis.wpsservice.model.*;
 
@@ -136,7 +137,7 @@ public class DataFieldUI implements DataUI{
             dataField.setSourceModified(false);
             String tableName = ((URI) dataMap.get(dataField.getDataStoreIdentifier())).getFragment();
             comboBox.removeAllItems();
-            for (String field : LocalWpsServiceImplementation.getTableFieldList(tableName, dataField.getFieldTypeList())) {
+            for (String field : wpsClient.getWpsService().getTableFieldList(tableName, dataField.getFieldTypeList())) {
                 comboBox.addItem(field);
             }
             if(isOptional) {
