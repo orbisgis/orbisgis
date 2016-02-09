@@ -211,6 +211,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                                 this, "onClickButton", "source", "mouseClicked"));
                         hideShowPanel.add(showButton);
                         hideShowPanel.add(new JLabel(i.getTitle()), "growx, span");
+                        hideShowPanel.setToolTipText("Hide/Show option");
                         hideShowPanel.putClientProperty("body", uiComponent);
                         hideShowPanel.putClientProperty("parent", contentPanel);
                         hideShowPanel.putClientProperty("button", showButton);
