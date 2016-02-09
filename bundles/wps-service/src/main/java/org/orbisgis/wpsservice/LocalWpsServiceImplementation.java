@@ -383,9 +383,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      * Return the list of the field of a table.
      * @param tableName Name of the table.
      * @param dataTypes Type of the field accepted. If empty, accepts all the field.
+     * @param excludedTypes Type of the type not allowed for the data field..
      * @return The list of the field name.
      */
-    public List<String> getTableFieldList(String tableName, List<DataType> dataTypes){
+    public List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
         List<String> fieldList = new ArrayList<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();
@@ -394,12 +395,16 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             while(result.next()){
                 if (!dataTypes.isEmpty()) {
                     for (DataType dataType : dataTypes) {
-                        if (DataType.testHDBype(dataType, result.getObject(6).toString())) {
+                        if (DataType.testDBType(dataType, result.getObject(6).toString())) {
                             fieldList.add(result.getObject(4).toString());
                         }
                     }
                 } else{
-                    fieldList.add(result.getObject(4).toString());
+                    for (DataType dataType : excludedTypes) {
+                        if (!DataType.testDBType(dataType, result.getObject(6).toString())) {
+                            fieldList.add(result.getObject(4).toString());
+                        }
+                    }
                 }
             }
         } catch (SQLException e) {

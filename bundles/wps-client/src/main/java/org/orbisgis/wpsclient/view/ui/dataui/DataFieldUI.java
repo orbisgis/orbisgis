@@ -135,7 +135,8 @@ public class DataFieldUI implements DataUI{
             dataField.setSourceModified(false);
             String tableName = ((URI) dataMap.get(dataField.getDataStoreIdentifier())).getFragment();
             comboBox.removeAllItems();
-            for (String field : wpsClient.getWpsService().getTableFieldList(tableName, dataField.getFieldTypeList())) {
+            for (String field : wpsClient.getWpsService().getTableFieldList(tableName, dataField.getFieldTypeList(),
+                    dataField.getExcludedTypeList())) {
                 comboBox.addItem(field);
             }
             if(isOptional) {

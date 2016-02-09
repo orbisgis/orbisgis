@@ -73,7 +73,7 @@ public interface LocalWpsService extends WpsService {
      * @param dataTypes Type of the field accepted. If empty, accepts all the field.
      * @return The list of the field name.
      */
-    List<String> getTableFieldList(String tableName, List<DataType> dataTypes);
+    List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes);
 
 
     /**

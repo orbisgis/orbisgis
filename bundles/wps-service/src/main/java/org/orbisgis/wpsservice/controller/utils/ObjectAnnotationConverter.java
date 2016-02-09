@@ -256,7 +256,7 @@ public class ObjectAnnotationConverter {
         try {
             format.setDefaultFormat(true);
             List<DataType> dataTypeList = new ArrayList<>();
-            //For each fieldType value from the groovy annotation, test if it is contain in the FieldType enumeration.
+            //For each field type value from the groovy annotation, test if it is contain in the FieldType enumeration.
             for(String str : Arrays.asList(dataFieldAttribute.fieldTypes())){
                 for(DataType enumValue : DataType.values()){
                     if(enumValue.name().equals(str.toUpperCase())){
@@ -264,7 +264,18 @@ public class ObjectAnnotationConverter {
                     }
                 }
             }
-            return new DataField(format, dataTypeList, dataStoreUri);
+            List<DataType> excludedTypeList = new ArrayList<>();
+            //For each excluded type value from the groovy annotation, test if it is contain in the FieldType enumeration.
+            for(String str : Arrays.asList(dataFieldAttribute.excludedTypes())){
+                for(DataType enumValue : DataType.values()){
+                    if(enumValue.name().equals(str.toUpperCase())){
+                        excludedTypeList.add(DataType.valueOf(str.toUpperCase()));
+                    }
+                }
+            }
+            DataField dataField = new DataField(format, dataTypeList, dataStoreUri);
+            dataField.setExcludedTypeList(excludedTypeList);
+            return dataField;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;
