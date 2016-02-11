@@ -19,7 +19,9 @@
 
 package org.orbisgis.wpsservice.controller.execution;
 
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
+import org.orbisgis.wpsservice.WpsService;
 import org.orbisgis.wpsservice.model.DataDescription;
 import org.orbisgis.wpsservice.model.DescriptionType;
 import org.orbisgis.wpsservice.model.Input;
@@ -40,45 +42,44 @@ public class DataProcessingManager {
 
     private List<DataProcessing> listDataProcessing;
 
-    private LocalWpsServiceImplementation localWpsServiceImplementation;
-
-    public DataProcessingManager(LocalWpsServiceImplementation localWpsServiceImplementation){
-        this.localWpsServiceImplementation = localWpsServiceImplementation;
+    public DataProcessingManager(LocalWpsService wpsService){
         listDataProcessing = new ArrayList<>();
-        listDataProcessing.add(new DataStoreProcessing());
+        listDataProcessing.add(new DataStoreProcessing(wpsService));
     }
 
-    public Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap){
+    public Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap,
+                                           ProcessExecutionListener pel){
         Map<URI, Object> stash = new HashMap<>();
         for(DataProcessing dp : listDataProcessing){
             if(inputOrOutput instanceof Input) {
                 DataDescription dataDescription = ((Input)inputOrOutput).getDataDescription();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    stash.putAll(dp.preProcessData(localWpsServiceImplementation, inputOrOutput, dataMap));
+                    stash.putAll(dp.preProcessData(inputOrOutput, dataMap, pel));
                 }
             }
             if(inputOrOutput instanceof Output) {
                 DataDescription dataDescription = ((Output)inputOrOutput).getDataDescription();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    stash.putAll(dp.preProcessData(localWpsServiceImplementation, inputOrOutput, dataMap));
+                    stash.putAll(dp.preProcessData(inputOrOutput, dataMap, pel));
                 }
             }
         }
         return stash;
     }
 
-    public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash){
+    public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
+                                ProcessExecutionListener pel){
         for(DataProcessing dp : listDataProcessing){
             if(inputOrOutput instanceof Input) {
                 DataDescription dataDescription = ((Input) inputOrOutput).getDataDescription();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    dp.postProcessData(localWpsServiceImplementation, inputOrOutput, dataMap, stash);
+                    dp.postProcessData(inputOrOutput, dataMap, stash, pel);
                 }
             }
             if(inputOrOutput instanceof Output) {
                 DataDescription dataDescription = ((Output) inputOrOutput).getDataDescription();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    dp.postProcessData(localWpsServiceImplementation, inputOrOutput, dataMap, stash);
+                    dp.postProcessData(inputOrOutput, dataMap, stash, pel);
                 }
             }
         }

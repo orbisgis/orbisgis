@@ -493,10 +493,13 @@ public class DataStoreUI implements DataUI{
             JComponent fileOptions = (JComponent) document.getProperty("fileOptions");
             DescriptionType inputOrOutput = (DescriptionType)document.getProperty("inputOrOutput");
             File file = new File(document.getText(0, document.getLength()));
-            if(!file.exists() || file.getName().isEmpty() || file.isDirectory()){
+            if(file.getName().isEmpty() || file.isDirectory()){
                 return;
             }
             if(inputOrOutput instanceof Input) {
+                if(!file.exists()){
+                    return;
+                }
                 boolean loadSource = false;
                 boolean keepSource = false;
                 if(fileOptions != null){

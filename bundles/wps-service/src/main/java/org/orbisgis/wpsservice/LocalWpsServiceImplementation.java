@@ -248,55 +248,43 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
 
     public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){
 
-        long startTime = System.currentTimeMillis();
+        pel.setStartTime(System.currentTimeMillis());
         //Catch all the Exception that can be thrown during the script execution.
         try {
             //Print in the log the process execution start
-            pel.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionListener.LogType.INFO,
-                    "Start the process");
+            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Start the process");
 
             //Pre-process the data
-            pel.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionListener.LogType.INFO,
-                    "Pre-processing");
+            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Pre-processing");
             Map<URI, Object> stash = new HashMap<>();
             for(DescriptionType inputOrOutput : process.getOutput()){
-                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap));
+                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
             }
             for(DescriptionType inputOrOutput : process.getInput()){
-                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap));
+                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
             }
 
             //Execute the process and retrieve the groovy object.
-            pel.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionListener.LogType.INFO,
-                    "Execute the script");
+            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Execute the script");
             processManager.executeProcess(process, dataMap);
 
             //Post-process the data
-            pel.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionListener.LogType.INFO,
-                    "Post-processing");
+            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
             for(DescriptionType inputOrOutput : process.getOutput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash);
+                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
             }
             for(DescriptionType inputOrOutput : process.getInput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash);
+                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
             }
 
             //Print in the log the process execution end
-            pel.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionListener.LogType.INFO,
-                    "End of the process");
+            pel.appendLog(ProcessExecutionListener.LogType.INFO, "End of the process");
             pel.setProcessState(ProcessExecutionListener.ProcessState.COMPLETED);
         }
         catch (Exception e) {
             pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
             //Print in the log the process execution error
-            pel.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionListener.LogType.ERROR,
-                    e.getMessage());
+            pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
     }
@@ -462,7 +450,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
             DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
                     extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-            driver.exportTable(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+            driver.exportTable(dataManager.getDataSource().getConnection(), TableLocation.parse(tableName).getTable(),
+                    f, new EmptyProgressVisitor());
         } catch (SQLException|IOException e) {
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
