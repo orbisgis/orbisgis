@@ -257,21 +257,13 @@ public class ObjectAnnotationConverter {
             format.setDefaultFormat(true);
             List<DataType> dataTypeList = new ArrayList<>();
             //For each field type value from the groovy annotation, test if it is contain in the FieldType enumeration.
-            for(String str : Arrays.asList(dataFieldAttribute.fieldTypes())){
-                for(DataType enumValue : DataType.values()){
-                    if(enumValue.name().equals(str.toUpperCase())){
-                        dataTypeList.add(DataType.valueOf(str.toUpperCase()));
-                    }
-                }
+            for(String type : Arrays.asList(dataFieldAttribute.fieldTypes())){
+                dataTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
             List<DataType> excludedTypeList = new ArrayList<>();
             //For each excluded type value from the groovy annotation, test if it is contain in the FieldType enumeration.
-            for(String str : Arrays.asList(dataFieldAttribute.excludedTypes())){
-                for(DataType enumValue : DataType.values()){
-                    if(enumValue.name().equals(str.toUpperCase())){
-                        excludedTypeList.add(DataType.valueOf(str.toUpperCase()));
-                    }
-                }
+            for(String type : Arrays.asList(dataFieldAttribute.excludedTypes())){
+                excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
             DataField dataField = new DataField(format, dataTypeList, dataStoreUri);
             dataField.setExcludedTypeList(excludedTypeList);

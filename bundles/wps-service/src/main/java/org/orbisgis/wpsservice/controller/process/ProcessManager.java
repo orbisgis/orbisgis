@@ -94,8 +94,8 @@ public class ProcessManager {
                 //Check if the process has been well parsed
                 if (entry != null && entry.getKey() != null && entry.getValue() != null) {
                     //Save the process in a ProcessIdentifier
-                    ProcessIdentifier pi = new ProcessIdentifier(entry.getValue(),entry.getKey(),uri,f.getParentFile().toURI()
-                    );
+                    ProcessIdentifier pi = new ProcessIdentifier(entry.getValue(), entry.getKey(), uri,
+                            f.getParentFile().toURI());
                     pi.setCategory(category);
                     pi.setDefault(isDefault);
                     processIdList.add(pi);

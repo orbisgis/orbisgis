@@ -65,4 +65,5 @@ import java.lang.annotation.RetentionPolicy
     /** default values **/
     /********************/
     public static final String[] defaultFieldType = []
+    public static final String[] defaultExcludedType = []
 }
