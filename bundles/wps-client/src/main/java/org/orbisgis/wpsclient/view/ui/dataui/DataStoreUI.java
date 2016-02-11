@@ -487,13 +487,13 @@ public class DataStoreUI implements DataUI{
      * @param document
      */
     public void saveDocumentTextFile(Document document){
-        URI selectedFileURI = null;
+        URI selectedFileURI;
         try {
             DataStore dataStore = (DataStore)document.getProperty("dataStore");
             JComponent fileOptions = (JComponent) document.getProperty("fileOptions");
             DescriptionType inputOrOutput = (DescriptionType)document.getProperty("inputOrOutput");
             File file = new File(document.getText(0, document.getLength()));
-            if(file.getName().isEmpty() || file.isDirectory()){
+            if(!file.exists() || file.getName().isEmpty() || file.isDirectory()){
                 return;
             }
             if(inputOrOutput instanceof Input) {
