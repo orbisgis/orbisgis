@@ -509,7 +509,7 @@ public class DataStoreUI implements DataUI{
                     keepSource = (boolean)fileOptions.getClientProperty("keepSource");
                 }
                 //Load the selected file an retrieve the table name.
-                String tableName = wpsClient.getWpsService().loadURI(file.toURI(), loadSource);
+                String tableName = wpsClient.loadURI(file.toURI(), loadSource);
                 if (tableName != null) {
                     String fileStr = file.toURI().toString();
                     if(keepSource){
