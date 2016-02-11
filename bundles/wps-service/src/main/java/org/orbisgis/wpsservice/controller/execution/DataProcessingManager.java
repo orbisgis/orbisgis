@@ -45,6 +45,7 @@ public class DataProcessingManager {
     public DataProcessingManager(LocalWpsService wpsService){
         listDataProcessing = new ArrayList<>();
         listDataProcessing.add(new DataStoreProcessing(wpsService));
+        listDataProcessing.add(new LiteralDataProcessing());
     }
 
     public Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap,
