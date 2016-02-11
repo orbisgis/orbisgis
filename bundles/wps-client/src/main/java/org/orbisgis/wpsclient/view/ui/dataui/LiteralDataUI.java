@@ -30,10 +30,17 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Document;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -394,7 +401,15 @@ public class LiteralDataUI implements DataUI {
                 scrollPane.getViewport().putClientProperty("textArea", textArea);
                 scrollPane.getViewport().putClientProperty("verticalBar", scrollPane.getVerticalScrollBar());
                 scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-                dataComponent = scrollPane;
+                JPanel panel = new JPanel(new BorderLayout());
+                panel.add(scrollPane, BorderLayout.CENTER);
+                JButton paste = new JButton(ToolBoxIcon.getIcon("paste"));
+                paste.putClientProperty("textArea", textArea);
+                paste.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
+                paste.setBorderPainted(false);
+                paste.setContentAreaFilled(false);
+                panel.add(paste, BorderLayout.LINE_END);
+                dataComponent = panel;
                 textArea.setText("");
                 break;
         }
@@ -405,6 +420,21 @@ public class LiteralDataUI implements DataUI {
         panel.add(dataComponent, "growx, wrap");
         if(isOptional) {
             dataMap.remove(uri);
+        }
+    }
+
+    public void onPaste(ActionEvent ae){
+        JTextArea textArea = ((JTextArea)((JButton)ae.getSource()).getClientProperty("textArea"));
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        //odd: the Object param of getContents is not currently used
+        Transferable contents = clipboard.getContents(null);
+        boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+        if (hasTransferableText) {
+            try {
+                textArea.setText((String)contents.getTransferData(DataFlavor.stringFlavor));
+            }
+            catch (UnsupportedFlavorException | IOException ignored){
+            }
         }
     }
 

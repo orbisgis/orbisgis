@@ -304,51 +304,53 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         Process p  = pee.getProcess();
         //Process info
         JLabel titleContentLabel = new JLabel(p.getTitle());
-        JLabel abstracContentLabel = new JLabel();
+        JTextArea resumeContentLabel;
         if(p.getResume() != null) {
-            abstracContentLabel.setText(p.getResume());
+            resumeContentLabel = createResumeLabel(p.getResume());
         }
         else{
-            abstracContentLabel.setText("-");
-            abstracContentLabel.setFont(abstracContentLabel.getFont().deriveFont(Font.ITALIC));
+            resumeContentLabel = createResumeLabel("-");
         }
+        resumeContentLabel.setFont(resumeContentLabel.getFont().deriveFont(Font.ITALIC));
 
-        JPanel processPanel = new JPanel(new MigLayout());
+        JPanel processPanel = new JPanel(new MigLayout("fill"));
         processPanel.setBorder(BorderFactory.createTitledBorder("Process :"));
         processPanel.add(titleContentLabel, "wrap, align left");
-        processPanel.add(abstracContentLabel, "wrap, align left");
+        processPanel.add(resumeContentLabel, "growx, wrap, align left");
 
         //Input info
-        JPanel inputPanel = new JPanel(new MigLayout());
+        JPanel inputPanel = new JPanel(new MigLayout("fill"));
         inputPanel.setBorder(BorderFactory.createTitledBorder("Inputs :"));
 
         for(Input i : p.getInput()){
-            inputPanel.add(new JLabel(dataUIManager.getIconFromData(i)));
-            inputPanel.add(new JLabel(i.getTitle()), "align left, wrap");
+            JPanel title = new JPanel(new BorderLayout());
+            title.add(new JLabel(dataUIManager.getIconFromData(i)), BorderLayout.LINE_START);
+            title.add(new JLabel(i.getTitle()), BorderLayout.CENTER);
+            inputPanel.add(title, "align left, growx, wrap");
             if(i.getResume() != null) {
-                JLabel abstrac = new JLabel(i.getResume());
-                abstrac.setFont(abstrac.getFont().deriveFont(Font.ITALIC));
-                inputPanel.add(abstrac, "span 2, wrap");
+                JTextArea resume = createResumeLabel(i.getResume());
+                inputPanel.add(resume, "growx, wrap");
             }
             else {
-                inputPanel.add(new JLabel("-"), "span 2, wrap");
+                inputPanel.add(new JLabel("-"), "growx, wrap");
             }
         }
 
         //Output info
-        JPanel outputPanel = new JPanel(new MigLayout());
+        JPanel outputPanel = new JPanel(new MigLayout("fill"));
         outputPanel.setBorder(BorderFactory.createTitledBorder("Outputs :"));
 
         for(Output o : p.getOutput()){
-            outputPanel.add(new JLabel(dataUIManager.getIconFromData(o)));
-            outputPanel.add(new JLabel(o.getTitle()), "align left, wrap");
+            JPanel title = new JPanel(new BorderLayout());
+            title.add(new JLabel(dataUIManager.getIconFromData(o)), BorderLayout.LINE_START);
+            title.add(new JLabel(o.getTitle()), BorderLayout.CENTER);
+            outputPanel.add(title, "align left, growx, wrap");
             if(o.getResume() != null) {
-                JLabel abstrac = new JLabel(o.getResume());
-                abstrac.setFont(abstrac.getFont().deriveFont(Font.ITALIC));
-                outputPanel.add(abstrac, "span 2, wrap");
+                JTextArea resume = createResumeLabel(o.getResume());
+                outputPanel.add(resume, "growx, wrap");
             }
             else {
-                outputPanel.add(new JLabel("-"), "align center, span 2, wrap");
+                outputPanel.add(new JLabel("-"), "growx, wrap");
             }
         }
 
@@ -359,6 +361,18 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JScrollPane scrollPane = new JScrollPane(panel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
         return scrollPane;
+    }
+
+    private JTextArea createResumeLabel(String text){
+        JTextArea label = new JTextArea(text);
+        label.setEditable(false);
+        label.setCursor(null);
+        label.setOpaque(false);
+        label.setFocusable(false);
+        label.setWrapStyleWord(true);
+        label.setLineWrap(true);
+        label.setFont(UIManager.getFont("Label.font").deriveFont(Font.ITALIC));
+        return label;
     }
 
     private void enableChildComponent(JComponent component, boolean enable){
