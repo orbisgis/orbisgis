@@ -31,6 +31,11 @@ import java.awt.*;
  **/
 
 public class ToolBoxIcon {
+
+    public static final String DATA_STORE = "datastore";
+    public static final String FLAT_FILE = "flatfile";
+    public static final String GEO_FILE = "geofile";
+
     private static BaseIcon iconManager = new BaseIcon(LoggerFactory.getLogger(ToolBoxIcon.class));
 
     /**

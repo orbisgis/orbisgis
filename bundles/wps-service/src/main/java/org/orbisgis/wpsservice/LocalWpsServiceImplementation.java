@@ -354,17 +354,53 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             Connection connection = dataManager.getDataSource().getConnection();
             String defaultSchema = "PUBLIC";
             List<String> tableList = JDBCUtilities.getTableNames(connection.getMetaData(), null, defaultSchema, "%", null);
-            if(onlySpatial){
-                for(String table : tableList){
+            for(String table : tableList){
+                if(onlySpatial){
                     if(!SFSUtilities.getGeometryFields(connection, new TableLocation(table)).isEmpty()){
                         list.add(table);
                     }
+                }
+                else{
+                    list.add(table);
                 }
             }
         } catch (SQLException e) {
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
         return list;
+    }
+
+    /**
+     * Returns a map containing table information (table type, SRID, ...)
+     * @param tableName Name of the table.
+     * @return Map containing the table informations.
+     */
+    public Map<String, Object> getTableInformations(String tableName){
+        Map<String, Object> map = new HashMap<>();
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            TableLocation tableLocation = new TableLocation(tableName);
+            boolean isSpatial = !SFSUtilities.getGeometryFields(connection, tableLocation).isEmpty();
+            int srid = SFSUtilities.getSRID(connection, tableLocation);
+            //TODO : move this statement to SFSUtilities or JDBCUtilities to request the table dimension.
+            Statement statement = connection.createStatement();
+            String query = "SELECT COORD_DIMENSION FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '"+
+                    TableLocation.parse(tableName).getTable()+"';";
+            ResultSet rs = statement.executeQuery(query);
+            int dimension;
+            if(rs.next()){
+                dimension = rs.getInt(1);
+            }
+            else{
+                dimension=0;
+            }
+            map.put(TABLE_IS_SPATIAL, isSpatial);
+            map.put(TABLE_SRID, srid);
+            map.put(TABLE_DIMENSION, dimension);
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+        }
+        return map;
     }
 
     /**
