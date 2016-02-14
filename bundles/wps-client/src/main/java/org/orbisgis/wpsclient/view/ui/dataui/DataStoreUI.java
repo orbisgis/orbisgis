@@ -33,7 +33,6 @@ import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
-import sun.security.krb5.internal.crypto.Des;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
@@ -116,16 +115,20 @@ public class DataStoreUI implements DataUI{
         }
 
         /** Build the ComboBox which contains all the DataStore available types. **/
-        JComboBox<ContainerItem> dataStoreTypeBox = new JComboBox<>();
+        JComboBox<ContainerItem<Object>> dataStoreTypeBox = new JComboBox<>();
+        dataStoreTypeBox.setRenderer(new JPanelComboBoxRenderer());
         //Adds all the available type to the comboBox
         if(dataStore.isGeocatalog()) {
-            dataStoreTypeBox.addItem(new ContainerItem<>(GEOCATALOG, "Geocatalog"));
+            dataStoreTypeBox.addItem(new ContainerItem<Object>(
+                    new JLabel("Geocatalog", ToolBoxIcon.getIcon(ToolBoxIcon.GEOCATALOG), SwingConstants.LEFT), GEOCATALOG));
         }
         if(dataStore.isFile()) {
-            dataStoreTypeBox.addItem(new ContainerItem<>(FILE, "File"));
+            dataStoreTypeBox.addItem(new ContainerItem<Object>(
+                    new JLabel("File", ToolBoxIcon.getIcon(ToolBoxIcon.FLAT_FILE), SwingConstants.LEFT), FILE));
         }
         if(isOptional) {
-            dataStoreTypeBox.addItem(new ContainerItem<>(NONE, ""));
+            dataStoreTypeBox.addItem(new ContainerItem<Object>(
+                    new JLabel(""), NONE));
         }
         //Adds all the properties used on the type selection
         dataStoreTypeBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
@@ -139,20 +142,18 @@ public class DataStoreUI implements DataUI{
         //Adds the comboBox to the main panel
         panel.add(dataStoreTypeBox, "dock west");
         //Add the component panel to the main panel
-        panel.add(component, "growx");
-        JComboBox geocatalogComboBox;
+        panel.add(component, "grow");
+        JComboBox<ContainerItem<Object>> geocatalogComboBox = new JComboBox<>();
         /**Instantiate the geocatalog optionPanel. **/
         JPanel geocatalogComponent = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         if(inputOrOutput instanceof Input) {
-            geocatalogComboBox = new JComboBox<Map.Entry<String, Component>>();
             geocatalogComboBox.setRenderer(new JPanelComboBoxRenderer());
         }
         else {
-            geocatalogComboBox = new JComboBox<String>();
             String newTable = "New table";
-            geocatalogComboBox.insertItemAt(newTable, 0);
+            geocatalogComboBox.insertItemAt(new ContainerItem<Object>(newTable, newTable), 0);
+            geocatalogComboBox.setSelectedIndex(0);
             geocatalogComboBox.setEditable(true);
-            geocatalogComboBox.setSelectedItem(newTable);
             Document doc = ((JTextComponent)geocatalogComboBox.getEditor().getEditorComponent()).getDocument();
             doc.putProperty("comboBox", geocatalogComboBox);
             doc.addDocumentListener(EventHandler.create(DocumentListener.class, this, "onNewTable", "document"));
@@ -173,8 +174,8 @@ public class DataStoreUI implements DataUI{
         geocatalogComboBox.setBackground(Color.WHITE);
         geocatalogComboBox.setToolTipText(inputOrOutput.getResume());
         JPanel tableSelection = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-        tableSelection.add(geocatalogComboBox, "growx, span");
-        geocatalogComponent.add(tableSelection, "span, growx");
+        tableSelection.add(geocatalogComboBox, "grow, span");
+        geocatalogComponent.add(tableSelection, "span, grow");
         dataStoreTypeBox.putClientProperty(GEOCATALOG_COMPONENT_PROPERTY, geocatalogComponent);
 
         /**Instantiate the file optionPanel. **/
@@ -254,7 +255,7 @@ public class DataStoreUI implements DataUI{
         return panel;
     }
 
-    private void populateWithTable(JComboBox geocatalogComboBox, boolean isSpatialDataStore,
+    private void populateWithTable(JComboBox<ContainerItem<Object>> geocatalogComboBox, boolean isSpatialDataStore,
                                    DescriptionType inputOrOutput){
         //Retrieve the table name list
         List<String> tableNameList;
@@ -266,42 +267,31 @@ public class DataStoreUI implements DataUI{
         }
         //If there is tables, retrieve their information to format the display in the comboBox
         if(tableNameList != null && !tableNameList.isEmpty()){
-            if(inputOrOutput instanceof Input){
-                Map<String, Component> mapTablePanel = new HashMap<>();
-                for (String tableName : tableNameList) {
-                    //Retrieve the table information
-                    Map<String, Object> informationMap = wpsClient.getWpsService().getTableInformations(tableName);
-                    //If there is information, use it to improve the table display in the comboBox
-                    JPanel tablePanel = new JPanel(new MigLayout("ins 0, gap 0"));
-                    if (!informationMap.isEmpty()) {
-                        boolean isSpatial = (boolean) informationMap.get(LocalWpsService.TABLE_IS_SPATIAL);
-                        if (isSpatial) {
-                            tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.GEO_FILE)));
-                        } else {
-                            tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.FLAT_FILE)));
-                        }
-                        tablePanel.add(new JLabel(tableName));
-                        int srid = (int) informationMap.get(LocalWpsService.TABLE_SRID);
-                        if (srid != 0) {
-                            tablePanel.add(new JLabel("[EPSG:" + srid + "]"));
-                        }
-                        int dimension = (int) informationMap.get(LocalWpsService.TABLE_DIMENSION);
-                        if (dimension != 2 && dimension != 0) {
-                            tablePanel.add(new JLabel(dimension + "D"));
-                        }
+            for (String tableName : tableNameList) {
+                //Retrieve the table information
+                Map<String, Object> informationMap = wpsClient.getWpsService().getTableInformations(tableName);
+                //If there is information, use it to improve the table display in the comboBox
+                JPanel tablePanel = new JPanel(new MigLayout("ins 0, gap 0"));
+                if (!informationMap.isEmpty()) {
+                    boolean isSpatial = (boolean) informationMap.get(LocalWpsService.TABLE_IS_SPATIAL);
+                    if (isSpatial) {
+                        tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.GEO_FILE)));
                     } else {
-                        tablePanel.add(new JLabel(tableName));
+                        tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.FLAT_FILE)));
                     }
-                    mapTablePanel.put(tableName, tablePanel);
+                    tablePanel.add(new JLabel(tableName));
+                    int srid = (int) informationMap.get(LocalWpsService.TABLE_SRID);
+                    if (srid != 0) {
+                        tablePanel.add(new JLabel("[EPSG:" + srid + "]"));
+                    }
+                    int dimension = (int) informationMap.get(LocalWpsService.TABLE_DIMENSION);
+                    if (dimension != 2 && dimension != 0) {
+                        tablePanel.add(new JLabel(dimension + "D"));
+                    }
+                } else {
+                    tablePanel.add(new JLabel(tableName));
                 }
-                for (Map.Entry<String, Component> entry : mapTablePanel.entrySet()) {
-                    geocatalogComboBox.addItem(entry);
-                }
-            }
-            else{
-                for(String s : tableNameList){
-                    geocatalogComboBox.addItem(s);
-                }
+                geocatalogComboBox.addItem(new ContainerItem<Object>(tablePanel, tableName));
             }
         }
     }
@@ -318,7 +308,7 @@ public class DataStoreUI implements DataUI{
      */
     public void onComboBoxEntered(Object source){
         //Retrieve the client properties
-        JComboBox<Map.Entry<String, Component>> comboBox = (JComboBox)source;
+        JComboBox<ContainerItem<Object>> comboBox = (JComboBox)source;
         if(comboBox.getItemCount() == 0) {
             comboBox.putClientProperty("initialDelay", ToolTipManager.sharedInstance().getInitialDelay());
             comboBox.putClientProperty("toolTipText", comboBox.getToolTipText());
@@ -361,15 +351,8 @@ public class DataStoreUI implements DataUI{
      * @param source Source geocatalog JComboBox
      */
     public void onGeocatalogTableSelected(Object source){
-        JComboBox comboBox = (JComboBox) source;
-        DescriptionType descriptionType = (DescriptionType) comboBox.getClientProperty(DESCRIPTION_TYPE_PROPERTY);
-        String tableName0;
-        if(descriptionType instanceof Input){
-            tableName0 = ((Map.Entry<String, Component>)comboBox.getItemAt(0)).getKey();
-        }
-        else{
-            tableName0 = (String)comboBox.getItemAt(0);
-        }
+        JComboBox<ContainerItem<Object>> comboBox = (JComboBox<ContainerItem<Object>>) source;
+        String tableName0 = comboBox.getItemAt(0).getLabel();
         //If the ComboBox is empty, don't do anything.
         //The process won't launch util the user sets the DataStore
         if(comboBox.getItemCount()>0 && tableName0.isEmpty()){
@@ -388,13 +371,7 @@ public class DataStoreUI implements DataUI{
         Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
         URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
         DataStore dataStore = (DataStore) comboBox.getClientProperty(DATA_STORE_PROPERTY);
-        String tableName;
-        if(descriptionType instanceof Input){
-            tableName = ((Map.Entry<String, Component>)comboBox.getSelectedItem()).getKey();
-        }
-        else{
-            tableName = (String)comboBox.getSelectedItem();
-        }
+        String tableName = ((ContainerItem)comboBox.getSelectedItem()).getLabel();
         //Tells all the dataField linked that the data source is loaded
         for (DataField dataField : dataStore.getListDataField()) {
             dataField.setSourceModified(true);
@@ -433,14 +410,14 @@ public class DataStoreUI implements DataUI{
         JComboBox<ContainerItem> comboBox = (JComboBox<ContainerItem>)source;
         JPanel component = (JPanel) comboBox.getClientProperty(COMPONENT_PROPERTY);
         component.removeAll();
-        ContainerItem<String> container = (ContainerItem)comboBox.getSelectedItem();
+        ContainerItem<Object> container = (ContainerItem)comboBox.getSelectedItem();
 
-        if(container.getKey().equals(GEOCATALOG)) {
+        if(container.getLabel().equals(GEOCATALOG)) {
             JPanel optionPanel = (JPanel) comboBox.getClientProperty(GEOCATALOG_COMPONENT_PROPERTY);
-            component.add(optionPanel, "growx");
+            component.add(optionPanel, "grow");
             component.repaint();
         }
-        else if(container.getKey().equals(FILE)) {
+        else if(container.getLabel().equals(FILE)) {
             HashMap<URI, Object> dataMap = (HashMap<URI, Object>)comboBox.getClientProperty(DATA_MAP_PROPERTY);
             URI uri = (URI)comboBox.getClientProperty(URI_PROPERTY);
             dataMap.put(uri, null);

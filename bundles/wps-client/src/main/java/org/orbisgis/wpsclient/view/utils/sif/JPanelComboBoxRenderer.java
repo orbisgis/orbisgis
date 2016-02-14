@@ -29,23 +29,37 @@
 
 package org.orbisgis.wpsclient.view.utils.sif;
 
+import net.miginfocom.swing.MigLayout;
+import org.orbisgis.sif.common.ContainerItem;
+
 import javax.swing.*;
 import java.awt.*;
-import java.util.Map;
 
 /**
  * @author Sylvain PALOMINOS
  */
-public class JPanelComboBoxRenderer extends JPanel implements ListCellRenderer<Map.Entry<String, Component>>{
+public class JPanelComboBoxRenderer extends JPanel implements ListCellRenderer<ContainerItem<Object>>{
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends Map.Entry<String, Component>> panelList,
-                                                  Map.Entry<String, Component> entry,
+    public Component getListCellRendererComponent(JList<? extends ContainerItem<Object>> panelList,
+                                                  ContainerItem<Object> container,
                                                   int index, boolean isSelected, boolean cellHasFocus){
-        if(entry == null || entry.getValue() == null){
+        if(container == null){
             return new JPanel();
         }
-            Component panel = entry.getValue();
+        JComponent panel;
+        if(container.getKey() instanceof JPanel) {
+            panel = (JPanel)container.getKey();
+        }
+        else if(container.getKey() instanceof JComponent){
+            panel = new JPanel(new MigLayout("ins 0, gap 0"));
+            panel.add((JComponent)container.getKey());
+        }
+        else{
+            panel = new JPanel();
+            panel.add(new JLabel(container.getKey().toString()));
+        }
+
         if (isSelected) {
             panel.setBackground(panelList.getSelectionBackground());
             panel.setForeground(panelList.getSelectionForeground());
