@@ -52,7 +52,7 @@ public class DataFieldUI implements DataUI{
 
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
-        JPanel panel = new JPanel(new MigLayout("fill"));
+        JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         DataField dataField = null;
         boolean isOptional = false;
         //Retrieve the DataField

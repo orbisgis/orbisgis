@@ -53,7 +53,7 @@ public class EnumerationUI implements DataUI{
 
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
-        JPanel panel = new JPanel(new MigLayout("fill"));
+        JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         //Get the enumeration object
         Enumeration enumeration = null;
         boolean isOptional = false;

@@ -197,8 +197,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                         uiComponent.setVisible(false);
                         //This panel is the one which contains the header with the title of the input and
                         // the hide/show button
-                        JPanel contentPanel = new JPanel(new MigLayout("fill"));
-                        JPanel hideShowPanel = new JPanel(new MigLayout());
+                        JPanel contentPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+                        JPanel hideShowPanel = new JPanel(new MigLayout("ins 0, gap 0"));
                         //Sets the button to make it shown as just an icon
                         JButton showButton = new JButton(ToolBoxIcon.getIcon("btnright"));
                         showButton.setBorderPainted(false);

@@ -30,7 +30,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -155,7 +154,7 @@ public class LiteralDataUI implements DataUI {
 
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
-        JPanel panel = new JPanel(new MigLayout("fill"));
+        JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
 
         //If the descriptionType is an input, add a comboBox to select the input type and according to the type,
         // add a second JComponent to write the input value
@@ -167,7 +166,7 @@ public class LiteralDataUI implements DataUI {
             comboBox.addItem(literalData.getValue().getDataType().name());
 
             //JPanel containing the component to set the input value
-            JComponent dataField = new JPanel(new MigLayout("fill"));
+            JComponent dataField = new JPanel(new MigLayout("fill, ins 0, gap 0"));
 
             comboBox.putClientProperty("dataField", dataField);
             comboBox.putClientProperty("uri", input.getIdentifier());
@@ -204,7 +203,7 @@ public class LiteralDataUI implements DataUI {
         switch(DataType.valueOf(s.toUpperCase())){
             case BOOLEAN:
                 //Instantiate the component
-                dataComponent = new JPanel(new MigLayout());
+                dataComponent = new JPanel(new MigLayout("ins 0, gap 0"));
                 JRadioButton falseButton = new JRadioButton("FALSE");
                 JRadioButton trueButton = new JRadioButton("TRUE");
                 ButtonGroup group = new ButtonGroup();
