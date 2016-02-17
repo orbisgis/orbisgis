@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
 
@@ -45,6 +44,7 @@ import org.orbisgis.coremap.renderer.se.parameter.real.RealParameter;
  * Some methods used for classification...
  * @author Maxence Laurent
  * @author Alexis Guéganno
+ * @author Erwan Bocher
  */
 public class ClassificationUtils {
 
@@ -66,7 +66,7 @@ public class ClassificationUtils {
             throws SQLException, ParameterException {
         List<Double> values = new ArrayList<>();
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery("SELECT " + TableLocation.quoteIdentifier(value.toString()) + " fieldName FROM " + table + " ORDER BY fieldName")) {
+             ResultSet rs = st.executeQuery("SELECT " + TableLocation.quoteIdentifier(value.toString()) + " as fieldName FROM " + table + " ORDER BY fieldName")) {
             while (rs.next()) {
                 values.add(rs.getDouble(1));
             }
@@ -79,7 +79,7 @@ public class ClassificationUtils {
      *
      * @param connection SQL Connection
      * @param table      Table identifier
-     * @param value      Field
+     * @param field      Name of the column
      * @return [Min, Max] value
      * @throws java.sql.SQLException
      * @throws ParameterException
@@ -88,8 +88,8 @@ public class ClassificationUtils {
             throws SQLException, ParameterException {
         double[] minAndMax = new double[]{Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery("SELECT MIN(" + TableLocation.quoteIdentifier(field) + ") minValue," +
-                     " MAX(" + TableLocation.quoteIdentifier(field) + ") maxValue FROM " + table)) {
+             ResultSet rs = st.executeQuery("SELECT MIN(" + TableLocation.quoteIdentifier(field) + ") as minValue," +
+                     " MAX(" + TableLocation.quoteIdentifier(field) + ") as maxValue FROM " + table)) {
             if (rs.next()) {
                 minAndMax[0] = rs.getDouble(1);
                 minAndMax[1] = rs.getDouble(2);
