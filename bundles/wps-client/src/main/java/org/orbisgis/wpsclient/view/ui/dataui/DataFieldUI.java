@@ -133,14 +133,16 @@ public class DataFieldUI implements DataUI{
         //If the DataStore related to the DataField has been modified, reload the dataField values
         if(dataField.isSourceModified()) {
             dataField.setSourceModified(false);
-            String tableName = ((URI) dataMap.get(dataField.getDataStoreIdentifier())).getFragment();
             comboBox.removeAllItems();
-            for (String field : wpsClient.getWpsService().getTableFieldList(tableName, dataField.getFieldTypeList(),
-                    dataField.getExcludedTypeList())) {
-                comboBox.addItem(field);
-            }
-            if(isOptional) {
-                comboBox.addItem("");
+            if (dataMap.get(dataField.getDataStoreIdentifier()) != null) {
+                String tableName = ((URI) dataMap.get(dataField.getDataStoreIdentifier())).getFragment();
+                for (String field : wpsClient.getWpsService().getTableFieldList(tableName, dataField.getFieldTypeList(),
+                        dataField.getExcludedTypeList())) {
+                    comboBox.addItem(field);
+                }
+                if (isOptional) {
+                    comboBox.addItem("");
+                }
             }
         }
 
