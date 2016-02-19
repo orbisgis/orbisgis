@@ -4,6 +4,7 @@ import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.DataDescription;
 import org.orbisgis.wpsservice.model.DescriptionType;
 import org.orbisgis.wpsservice.model.LiteralData;
+import org.orbisgis.wpsservice.model.Output;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -30,7 +31,9 @@ public class LiteralDataProcessing implements DataProcessing {
 
     @Override
     public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash, ProcessExecutionListener pel) {
-        pel.appendLog(ProcessExecutionListener.LogType.INFO, "Literal output : '"+
-                dataMap.get(inputOrOutput.getIdentifier())+"'");
+        if(inputOrOutput instanceof Output) {
+            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Literal output : '" +
+                    dataMap.get(inputOrOutput.getIdentifier()) + "'");
+        }
     }
 }
