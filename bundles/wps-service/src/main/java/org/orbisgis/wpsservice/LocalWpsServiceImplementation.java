@@ -370,12 +370,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return list;
     }
 
-    /**
-     * Returns a map containing table information (table type, SRID, ...)
-     * @param tableName Name of the table.
-     * @return Map containing the table informations.
-     */
-    public Map<String, Object> getTableInformations(String tableName){
+    @Override
+    public Map<String, Object> getTableInformation(String tableName){
         Map<String, Object> map = new HashMap<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();
@@ -395,6 +391,39 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
                 dimension=0;
             }
             map.put(TABLE_IS_SPATIAL, isSpatial);
+            map.put(TABLE_SRID, srid);
+            map.put(TABLE_DIMENSION, dimension);
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> getFieldInformation(String tableName, String fieldName){
+        Map<String, Object> map = new HashMap<>();
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            TableLocation tableLocation = new TableLocation(tableName);
+            boolean isSpatial = !SFSUtilities.getGeometryFields(connection, tableLocation).isEmpty();
+            int geometryId = SFSUtilities.getGeometryType(connection, tableLocation, fieldName);
+            String geometryType = SFSUtilities.getGeometryTypeNameFromCode(geometryId);
+            int srid = SFSUtilities.getSRID(connection, tableLocation);
+            //TODO : move this statement to SFSUtilities or JDBCUtilities to request the table dimension.
+            Statement statement = connection.createStatement();
+            String query = "SELECT COORD_DIMENSION FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '"+
+                    TableLocation.parse(tableName).getTable()+"' AND F_GEOMETRY_COLUMN LIKE '"+
+                    TableLocation.quoteIdentifier(fieldName)+"';";
+            ResultSet rs = statement.executeQuery(query);
+            int dimension;
+            if(rs.next()){
+                dimension = rs.getInt(1);
+            }
+            else{
+                dimension=0;
+            }
+            map.put(TABLE_IS_SPATIAL, isSpatial);
+            map.put(GEOMETRY_TYPE, geometryType);
             map.put(TABLE_SRID, srid);
             map.put(TABLE_DIMENSION, dimension);
         } catch (SQLException e) {

@@ -44,6 +44,7 @@ public interface LocalWpsService extends WpsService {
     String TABLE_SRID = "TABLE_SRID";
     String TABLE_IS_SPATIAL = "TABLE_IS_SPATIAL";
     String TABLE_DIMENSION = "TABLE_DIMENSION";
+    String GEOMETRY_TYPE = "GEOMETRY_TYPE";
 
     void addLocalSource(URI uri, String iconName, boolean isDefaultScript);
 
@@ -103,9 +104,17 @@ public interface LocalWpsService extends WpsService {
     /**
      * Returns a map containing table information (table type, SRID, ...)
      * @param tableName Name of the table.
-     * @return Map containing the table informations.
+     * @return Map containing the table information.
      */
-    Map<String, Object> getTableInformations(String tableName);
+    Map<String, Object> getTableInformation(String tableName);
+
+    /**
+     * Returns a map containing field information (table type, SRID, ...)
+     * @param tableName Name of the table.
+     * @param fieldName Name of the field.
+     * @return Map containing the field information.
+     */
+    Map<String, Object> getFieldInformation(String tableName, String fieldName);
 
     /**
      * Return the list of the field of a table.
