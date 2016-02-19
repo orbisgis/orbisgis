@@ -405,27 +405,33 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         try {
             Connection connection = dataManager.getDataSource().getConnection();
             TableLocation tableLocation = new TableLocation(tableName);
-            boolean isSpatial = !SFSUtilities.getGeometryFields(connection, tableLocation).isEmpty();
-            int geometryId = SFSUtilities.getGeometryType(connection, tableLocation, fieldName);
-            String geometryType = SFSUtilities.getGeometryTypeNameFromCode(geometryId);
-            int srid = SFSUtilities.getSRID(connection, tableLocation);
-            //TODO : move this statement to SFSUtilities or JDBCUtilities to request the table dimension.
-            Statement statement = connection.createStatement();
-            String query = "SELECT COORD_DIMENSION FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '"+
-                    TableLocation.parse(tableName).getTable()+"' AND F_GEOMETRY_COLUMN LIKE '"+
-                    TableLocation.quoteIdentifier(fieldName)+"';";
-            ResultSet rs = statement.executeQuery(query);
-            int dimension;
-            if(rs.next()){
-                dimension = rs.getInt(1);
+            List<String> geometricFields = SFSUtilities.getGeometryFields(connection, tableLocation);
+            boolean isGeometric = false;
+            for(String field : geometricFields){
+                if(field.equals(fieldName)){
+                    isGeometric = true;
+                }
             }
-            else{
-                dimension=0;
+            if(isGeometric) {
+                int geometryId = SFSUtilities.getGeometryType(connection, tableLocation, fieldName);
+                String geometryType = SFSUtilities.getGeometryTypeNameFromCode(geometryId);
+                int srid = SFSUtilities.getSRID(connection, tableLocation);
+                //TODO : move this statement to SFSUtilities or JDBCUtilities to request the table dimension.
+                Statement statement = connection.createStatement();
+                String query = "SELECT COORD_DIMENSION FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '" +
+                        TableLocation.parse(tableName).getTable() + "' AND F_GEOMETRY_COLUMN LIKE '" +
+                        TableLocation.quoteIdentifier(fieldName) + "';";
+                ResultSet rs = statement.executeQuery(query);
+                int dimension;
+                if (rs.next()) {
+                    dimension = rs.getInt(1);
+                } else {
+                    dimension = 0;
+                }
+                map.put(GEOMETRY_TYPE, geometryType);
+                map.put(TABLE_SRID, srid);
+                map.put(TABLE_DIMENSION, dimension);
             }
-            map.put(TABLE_IS_SPATIAL, isSpatial);
-            map.put(GEOMETRY_TYPE, geometryType);
-            map.put(TABLE_SRID, srid);
-            map.put(TABLE_DIMENSION, dimension);
         } catch (SQLException e) {
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }

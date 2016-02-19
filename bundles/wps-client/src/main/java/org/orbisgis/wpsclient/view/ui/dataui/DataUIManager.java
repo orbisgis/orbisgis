@@ -89,21 +89,6 @@ public class DataUIManager {
     }
 
     /**
-     * Returns a Map of the defaults input values of a process and their identifier URI.
-     * @param process Process to analyse
-     * @return Map of the default input values and their URI.
-     */
-    public Map<URI, Object> getOutputDefaultValues(Process process){
-        Map<URI, Object> map = new HashMap<>();
-        for(Output output : process.getOutput()) {
-            map.putAll(getDataUI(output.getDataDescription().getClass()).getDefaultValue(output));
-        }
-        return map;
-    }
-
-
-
-    /**
      * Return the Icon associated to the data represented by the given input or output.
      * @param inputOrOutput Input or Output to analyse.
      * @return An ImageIcon corresponding to the data type.
