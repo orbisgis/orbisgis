@@ -194,7 +194,9 @@ public class DataStoreUI implements DataUI{
         geocatalogComponent.add(geocatalogComboBox, "span, grow");
         //Register the geocatalog combo box as a property in the DataStore type box
         dataStoreTypeBox.putClientProperty(GEOCATALOG_COMPONENT_PROPERTY, geocatalogComponent);
-        geocatalogComboBox.setSelectedIndex(0);
+        if(geocatalogComboBox.getItemCount() > 0) {
+            geocatalogComboBox.setSelectedIndex(0);
+        }
 
         /**Instantiate the file optionPanel. **/
         //Panel containing the path text field, the browse button and the option icon

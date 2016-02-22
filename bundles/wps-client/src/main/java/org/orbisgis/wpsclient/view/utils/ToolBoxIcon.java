@@ -40,6 +40,7 @@ public class ToolBoxIcon {
     public static final String OPTIONS = "options";
     public static final String DATA_FIELD = "datafield";
     public static final String ENUMERATION = "enumeration";
+    public static final String FIELD_VALUE = "fieldvalue";
 
     private static BaseIcon iconManager = new BaseIcon(LoggerFactory.getLogger(ToolBoxIcon.class));
 
