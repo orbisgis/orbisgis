@@ -35,14 +35,10 @@ package org.gdms.sql.function.spatial.raster.hydrology;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
-import org.grap.model.GeoRaster;
-import org.grap.processing.Operation;
-import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.D8OpAllOutlets;
-import org.grap.processing.operation.hydrology.D8OpAllWatersheds;
-import org.grap.processing.operation.hydrology.D8OpWatershedFromOutletIndex;
-import org.grap.processing.operation.hydrology.D8OpWatershedsWithThreshold;
-
+import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -51,6 +47,13 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.raster.AbstractScalarRasterFunction;
+import org.grap.model.GeoRaster;
+import org.grap.processing.Operation;
+import org.grap.processing.OperationException;
+import org.grap.processing.operation.hydrology.D8OpAllOutlets;
+import org.grap.processing.operation.hydrology.D8OpAllWatersheds;
+import org.grap.processing.operation.hydrology.D8OpWatershedFromOutletIndex;
+import org.grap.processing.operation.hydrology.D8OpWatershedsWithThreshold;
 
 /**
  * Compute all watersheds or using a threshold integer accumulation value
@@ -76,11 +79,12 @@ public final class ST_D8Watershed extends AbstractScalarRasterFunction {
                                         // Point): GeomFromText('POINT(x y)')
                                         Geometry geom = args[1].getAsGeometry();
                                         if (geom instanceof Point) {
-                                                Point point = (Point) geom;
-                                                double x = point.getX();
-                                                double y = point.getY();
-                                                int outletIndex = (int) x + (int) y
-                                                        * grD8Direction.getMetadata().getNCols();
+                                            Point point = (Point) geom;
+
+                                            Point2D pixelGridCoord = grD8Direction.fromRealWorldToPixel(point.getX(), point.getY());
+                                            int pixelX = (int) pixelGridCoord.getX();
+                                            int pixelY = (int) pixelGridCoord.getY();
+                                            int outletIndex = pixelY * grD8Direction.getWidth() + pixelX;
                                                 final Operation watershedFromOutletIndex = new D8OpWatershedFromOutletIndex(
                                                         outletIndex);
                                                 return ValueFactory.createValue(grD8Direction.doOperation(watershedFromOutletIndex));
@@ -104,7 +108,9 @@ public final class ST_D8Watershed extends AbstractScalarRasterFunction {
                         }
                 } catch (OperationException e) {
                         throw new FunctionException("Cannot do the operation", e);
-                }
+                } catch (IOException ex) {
+                        throw new FunctionException("Cannot read the input raster", ex);
+            }
         }
 
         @Override
