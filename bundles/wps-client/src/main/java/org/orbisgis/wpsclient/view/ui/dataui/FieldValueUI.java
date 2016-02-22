@@ -45,16 +45,27 @@ public class FieldValueUI implements DataUI{
     private static final int MAX_JLIST_ROW_COUNT = 10;
     private static final int MIN_JLIST_ROW_COUNT = 1;
 
+    /** Constant used to pass object as client property throw JComponents **/
+    private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
+    private static final String URI_PROPERTY = "URI_PROPERTY";
+    private static final String FIELD_VALUE_PROPERTY = "FIELD_VALUE_PROPERTY";
+    private static final String IS_OPTIONAL_PROPERTY = "IS_OPTIONAL_PROPERTY";
+    private static final String INITIAL_DELAY_PROPERTY = "INITIAL_DELAY_PROPERTY";
+    private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
+
+    /** WpsClient using the generated UI. */
     private WpsClient wpsClient;
 
+    @Override
     public void setWpsClient(WpsClient wpsClient){
         this.wpsClient = wpsClient;
     }
 
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
-        JPanel panel = new JPanel(new MigLayout("fill"));
+        JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         FieldValue fieldValue = null;
+        //Retrieve the FieldValue and if it is optional
         boolean isOptional = false;
         if(inputOrOutput instanceof Input){
             fieldValue = (FieldValue)((Input)inputOrOutput).getDataDescription();
@@ -69,7 +80,8 @@ public class FieldValueUI implements DataUI{
         if(fieldValue == null){
             return panel;
         }
-        JList list = new JList(new DefaultListModel());
+        //Build and set the JList containing all the field values
+        JList<String> list = new JList<>(new DefaultListModel<String>());
         if(fieldValue.getMuliSelection()){
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         }
@@ -80,10 +92,10 @@ public class FieldValueUI implements DataUI{
         list.setVisibleRowCount(MIN_JLIST_ROW_COUNT);
         JScrollPane listScroller = new JScrollPane(list);
         panel.add(listScroller, "growx, wrap");
-        list.putClientProperty("uri", inputOrOutput.getIdentifier());
-        list.putClientProperty("fieldValue", fieldValue);
-        list.putClientProperty("dataMap", dataMap);
-        list.putClientProperty("isOptional", isOptional);
+        list.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        list.putClientProperty(FIELD_VALUE_PROPERTY, fieldValue);
+        list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
+        list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
         list.addMouseListener(EventHandler.create(MouseListener.class, this, "refreshList", "source", "mouseEntered"));
         list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
@@ -99,7 +111,7 @@ public class FieldValueUI implements DataUI{
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon("fieldvalue");
+        return ToolBoxIcon.getIcon(ToolBoxIcon.FIELD_VALUE);
     }
 
     /**
@@ -109,11 +121,11 @@ public class FieldValueUI implements DataUI{
     public void onComboBoxExited(Object source){
         //Retrieve the client properties
         JList<String> list = (JList)source;
-        Object tooltipText = list.getClientProperty("toolTipText");
+        Object tooltipText = list.getClientProperty(TOOLTIP_TEXT_PROPERTY);
         if(tooltipText != null) {
             list.setToolTipText((String)tooltipText);
         }
-        Object delay = list.getClientProperty("initialDelay");
+        Object delay = list.getClientProperty(INITIAL_DELAY_PROPERTY);
         if(delay != null){
             ToolTipManager.sharedInstance().setInitialDelay((int)delay);
         }
@@ -124,10 +136,10 @@ public class FieldValueUI implements DataUI{
      * @param source the source JList.
      */
     public void refreshList(Object source){
-        JList list = (JList)source;
-        FieldValue fieldValue = (FieldValue)list.getClientProperty("fieldValue");
-        HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
-        boolean isOptional = (boolean)list.getClientProperty("isOptional");
+        JList<String> list = (JList<String>)source;
+        FieldValue fieldValue = (FieldValue)list.getClientProperty(FIELD_VALUE_PROPERTY);
+        HashMap<URI, Object> dataMap = (HashMap<URI, Object>)list.getClientProperty(DATA_MAP_PROPERTY);
+        boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
         //If the DataField related to the FieldValue has been modified, reload the dataField values
         if(fieldValue.isDataFieldModified()) {
             fieldValue.setDataFieldModified(false);
@@ -154,8 +166,8 @@ public class FieldValueUI implements DataUI{
         //If the jList doesn't contains any values, it mean that the DataField hasn't been well selected.
         //So show a tooltip text to warn the user.
         if(list.getSelectedIndices().length == 0) {
-            list.putClientProperty("initialDelay", ToolTipManager.sharedInstance().getInitialDelay());
-            list.putClientProperty("toolTipText", list.getToolTipText());
+            list.putClientProperty(INITIAL_DELAY_PROPERTY, ToolTipManager.sharedInstance().getInitialDelay());
+            list.putClientProperty(TOOLTIP_TEXT_PROPERTY, list.getToolTipText());
             ToolTipManager.sharedInstance().setInitialDelay(0);
             ToolTipManager.sharedInstance().setDismissDelay(2500);
             String fieldValueStr = fieldValue.getDataFieldIdentifier().toString();
@@ -168,18 +180,17 @@ public class FieldValueUI implements DataUI{
 
     public void onListSelection(Object source){
         JList list = (JList)source;
-        URI uri = (URI)list.getClientProperty("uri");
-        HashMap<URI, Object> dataMap = (HashMap)list.getClientProperty("dataMap");
+        URI uri = (URI)list.getClientProperty(URI_PROPERTY);
+        HashMap<URI, Object> dataMap = (HashMap<URI, Object>)list.getClientProperty(DATA_MAP_PROPERTY);
         List<String> listValues = new ArrayList<>();
 
         if(list.getSelectedIndices().length == 0){
-            listValues = null;
             dataMap.put(uri, null);
             return;
         }
         else {
             for (int i : list.getSelectedIndices()) {
-                listValues.add(list.getModel().getElementAt(i).toString());
+                listValues.add(list.getModel().getElementAt(i).toString().replaceAll("'", "''"));
             }
         }
         dataMap.put(uri, listValues.toArray(new String[listValues.size()]));

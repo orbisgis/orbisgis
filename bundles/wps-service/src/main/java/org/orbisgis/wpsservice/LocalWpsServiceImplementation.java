@@ -248,56 +248,45 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
 
     public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){
 
-        long startTime = System.currentTimeMillis();
+        pel.setStartTime(System.currentTimeMillis());
         //Catch all the Exception that can be thrown during the script execution.
         try {
             //Print in the log the process execution start
-            pel.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionListener.LogType.INFO,
-                    "Start the process");
+            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Start the process");
 
             //Pre-process the data
-            pel.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionListener.LogType.INFO,
-                    "Pre-processing");
+            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Pre-processing");
             Map<URI, Object> stash = new HashMap<>();
             for(DescriptionType inputOrOutput : process.getOutput()){
-                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap));
+                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
             }
             for(DescriptionType inputOrOutput : process.getInput()){
-                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap));
+                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
             }
 
             //Execute the process and retrieve the groovy object.
-            pel.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionListener.LogType.INFO,
-                    "Execute the script");
+            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Execute the script");
             processManager.executeProcess(process, dataMap);
 
             //Post-process the data
-            pel.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionListener.LogType.INFO,
-                    "Post-processing");
+            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
             for(DescriptionType inputOrOutput : process.getOutput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash);
+                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
             }
             for(DescriptionType inputOrOutput : process.getInput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash);
+                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
             }
 
             //Print in the log the process execution end
-            pel.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionListener.LogType.INFO,
-                    "End of the process");
+            pel.appendLog(ProcessExecutionListener.LogType.INFO, "End of the process");
             pel.setProcessState(ProcessExecutionListener.ProcessState.COMPLETED);
         }
         catch (Exception e) {
             pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
             //Print in the log the process execution error
-            pel.appendLog(System.currentTimeMillis() - startTime,
-                    ProcessExecutionListener.LogType.ERROR,
-                    e.getMessage());
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Error during the execution of the " +
+                    "process '"+process.getTitle()+"'\n"+e.getMessage());
         }
     }
 
@@ -366,26 +355,102 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             Connection connection = dataManager.getDataSource().getConnection();
             String defaultSchema = "PUBLIC";
             List<String> tableList = JDBCUtilities.getTableNames(connection.getMetaData(), null, defaultSchema, "%", null);
-            if(onlySpatial){
-                for(String table : tableList){
+            for(String table : tableList){
+                if(onlySpatial){
                     if(!SFSUtilities.getGeometryFields(connection, new TableLocation(table)).isEmpty()){
                         list.add(table);
                     }
                 }
+                else{
+                    list.add(table);
+                }
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the geocatalog table " +
+                    "list.\n"+e.getMessage());
         }
         return list;
+    }
+
+    @Override
+    public Map<String, Object> getTableInformation(String tableName){
+        Map<String, Object> map = new HashMap<>();
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            tableName = TableLocation.parse(tableName, isH2).getTable();
+            TableLocation tableLocation = new TableLocation(tableName);
+            boolean isSpatial = !SFSUtilities.getGeometryFields(connection, tableLocation).isEmpty();
+            int srid = SFSUtilities.getSRID(connection, tableLocation);
+            //TODO : move this statement to SFSUtilities or JDBCUtilities to request the table dimension.
+            Statement statement = connection.createStatement();
+            String query = "SELECT COORD_DIMENSION FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '"+
+                    TableLocation.parse(tableName).getTable()+"';";
+            ResultSet rs = statement.executeQuery(query);
+            int dimension;
+            if(rs.next()){
+                dimension = rs.getInt(1);
+            }
+            else{
+                dimension=0;
+            }
+            map.put(TABLE_IS_SPATIAL, isSpatial);
+            map.put(TABLE_SRID, srid);
+            map.put(TABLE_DIMENSION, dimension);
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the table '"+tableName+
+                    "' information.\n"+e.getMessage());
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> getFieldInformation(String tableName, String fieldName){
+        Map<String, Object> map = new HashMap<>();
+        try {
+            Connection connection = dataManager.getDataSource().getConnection();
+            TableLocation tableLocation = new TableLocation(tableName);
+            List<String> geometricFields = SFSUtilities.getGeometryFields(connection, tableLocation);
+            boolean isGeometric = false;
+            for(String field : geometricFields){
+                if(field.equals(fieldName)){
+                    isGeometric = true;
+                }
+            }
+            if(isGeometric) {
+                int geometryId = SFSUtilities.getGeometryType(connection, tableLocation, fieldName);
+                String geometryType = SFSUtilities.getGeometryTypeNameFromCode(geometryId);
+                int srid = SFSUtilities.getSRID(connection, tableLocation);
+                //TODO : move this statement to SFSUtilities or JDBCUtilities to request the table dimension.
+                Statement statement = connection.createStatement();
+                String query = "SELECT COORD_DIMENSION FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '" +
+                        TableLocation.parse(tableName).getTable() + "' AND F_GEOMETRY_COLUMN LIKE '" +
+                        TableLocation.quoteIdentifier(fieldName) + "';";
+                ResultSet rs = statement.executeQuery(query);
+                int dimension;
+                if (rs.next()) {
+                    dimension = rs.getInt(1);
+                } else {
+                    dimension = 0;
+                }
+                map.put(GEOMETRY_TYPE, geometryType);
+                map.put(TABLE_SRID, srid);
+                map.put(TABLE_DIMENSION, dimension);
+            }
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to the the field '"+
+                    tableName+"."+fieldName+"' information.\n"+ e.getMessage());
+        }
+        return map;
     }
 
     /**
      * Return the list of the field of a table.
      * @param tableName Name of the table.
      * @param dataTypes Type of the field accepted. If empty, accepts all the field.
+     * @param excludedTypes Type of the type not allowed for the data field..
      * @return The list of the field name.
      */
-    public List<String> getTableFieldList(String tableName, List<DataType> dataTypes){
+    public List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
         List<String> fieldList = new ArrayList<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();
@@ -394,16 +459,21 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             while(result.next()){
                 if (!dataTypes.isEmpty()) {
                     for (DataType dataType : dataTypes) {
-                        if (DataType.testHDBype(dataType, result.getObject(6).toString())) {
+                        if (DataType.testDBType(dataType, result.getObject(6).toString())) {
                             fieldList.add(result.getObject(4).toString());
                         }
                     }
                 } else{
-                    fieldList.add(result.getObject(4).toString());
+                    for (DataType dataType : excludedTypes) {
+                        if (!DataType.testDBType(dataType, result.getObject(6).toString())) {
+                            fieldList.add(result.getObject(4).toString());
+                        }
+                    }
                 }
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the table '"+tableName+
+                    "' field list.\n"+e.getMessage());
         }
         return fieldList;
     }
@@ -421,7 +491,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             Connection connection = dataManager.getDataSource().getConnection();
             fieldValues.addAll(JDBCUtilities.getUniqueFieldValues(connection, tableName, fieldName));
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the field '"+tableName+
+                    "."+fieldName+"' value list.\n"+e.getMessage());
         }
         return fieldValues;
     }
@@ -432,13 +503,14 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      */
     public void removeTempTable(String tableName){
         try {
+            tableName = TableLocation.parse(tableName, isH2).getTable();
             Connection connection = dataManager.getDataSource().getConnection();
-            if(JDBCUtilities.tableExists(connection, tableName)) {
-                Statement statement = connection.createStatement();
-                statement.execute("DROP TABLE " + tableName);
-            }
+            tableName = TableLocation.parse(tableName, isH2).getTable();
+            Statement statement = connection.createStatement();
+            statement.execute("DROP TABLE IF EXISTS " + tableName);
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Cannot remove the table '"+tableName+
+                    "'.\n"+e.getMessage());
         }
     }
 
@@ -449,6 +521,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      */
     public void saveURI(URI uri, String tableName){
         try {
+            tableName = TableLocation.parse(tableName, isH2).getTable();
             File f = new File(uri);
             if(!f.exists()){
                 f.createNewFile();
@@ -457,9 +530,11 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
             DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
                     extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-            driver.exportTable(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+            driver.exportTable(dataManager.getDataSource().getConnection(), tableName,
+                    f, new EmptyProgressVisitor());
         } catch (SQLException|IOException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Cannot save the table '"+tableName+
+                    "'\n"+e.getMessage());
         }
     }
 

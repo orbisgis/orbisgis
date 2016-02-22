@@ -37,7 +37,9 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * UI generator associated to the Enumeration
+ * DataUI implementation for Enumeration.
+ * This class generate an interactive UI dedicated to the configuration of a Enumeration.
+ * The interface generated will be used in the ProcessEditor.
  *
  * @author Sylvain PALOMINOS
  **/
@@ -45,15 +47,26 @@ import java.util.*;
 public class EnumerationUI implements DataUI{
     private static final int JLIST_MAX_ROW_COUNT = 10;
 
+    /** Constant used to pass object as client property throw JComponents **/
+    private static final String IS_OPTIONAL_PROPERTY = "IS_OPTIONAL_PROPERTY";
+    private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
+    private static final String URI_PROPERTY = "URI_PROPERTY";
+    private static final String ENUMERATION_PROPERTY = "ENUMERATION_PROPERTY";
+    private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
+    private static final String IS_MULTISELECTION_PROPERTY = "IS_MULTISELECTION_PROPERTY";
+    private static final String LIST_PROPERTY = "LIST_PROPERTY";
+
+    /** WpsClient using the generated UI. */
     private WpsClient wpsClient;
 
+    @Override
     public void setWpsClient(WpsClient wpsClient){
         this.wpsClient = wpsClient;
     }
 
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
-        JPanel panel = new JPanel(new MigLayout("fill"));
+        JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         //Get the enumeration object
         Enumeration enumeration = null;
         boolean isOptional = false;
@@ -116,23 +129,25 @@ public class EnumerationUI implements DataUI{
         }
         JScrollPane listScroller = new JScrollPane(list);
         panel.add(listScroller, "growx, wrap");
-        list.putClientProperty("uri", inputOrOutput.getIdentifier());
-        list.putClientProperty("enumeration", enumeration);
-        list.putClientProperty("dataMap", dataMap);
-        list.putClientProperty("isOptional", isOptional);
-        list.putClientProperty("isMultiSelection", enumeration.isMultiSelection());
+        //Sets the List properties
+        list.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        list.putClientProperty(ENUMERATION_PROPERTY, enumeration);
+        list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
+        list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
+        list.putClientProperty(IS_MULTISELECTION_PROPERTY, enumeration.isMultiSelection());
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
         list.setToolTipText(inputOrOutput.getResume());
 
         //case of the editable value
         if(enumeration.isEditable()){
+            //Sets the text field
             JTextField textField = new JTextField();
-            textField.getDocument().putProperty("dataMap", dataMap);
-            textField.getDocument().putProperty("uri", inputOrOutput.getIdentifier());
-            textField.getDocument().putProperty("enumeration", enumeration);
-            textField.getDocument().putProperty("list", list);
-            textField.getDocument().putProperty("isMultiSelection", enumeration.isMultiSelection());
-            textField.getDocument().putProperty("isOptional", isOptional);
+            textField.getDocument().putProperty(DATA_MAP_PROPERTY, dataMap);
+            textField.getDocument().putProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+            textField.getDocument().putProperty(ENUMERATION_PROPERTY, enumeration);
+            textField.getDocument().putProperty(LIST_PROPERTY, list);
+            textField.getDocument().putProperty(IS_MULTISELECTION_PROPERTY, enumeration.isMultiSelection());
+            textField.getDocument().putProperty(IS_MULTISELECTION_PROPERTY, isOptional);
             textField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
                     this,
                     "saveDocumentTextFile",
@@ -140,7 +155,7 @@ public class EnumerationUI implements DataUI{
             textField.setToolTipText("Coma separated custom value(s)");
 
             panel.add(textField, "growx, wrap");
-            list.putClientProperty("textField", textField);
+            list.putClientProperty(TEXT_FIELD_PROPERTY, textField);
         }
         return panel;
     }
@@ -176,19 +191,23 @@ public class EnumerationUI implements DataUI{
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon("enumeration");
+        return ToolBoxIcon.getIcon(ToolBoxIcon.ENUMERATION);
     }
 
+    /**
+     * When an item from the JList is selected, register it in the data map.
+     * @param source Source JList.
+     */
     public void onListSelection(Object source){
         JList<ContainerItem<String>> list = (JList<ContainerItem<String>>)source;
         List<String> listValues = new ArrayList<>();
-        URI uri = (URI) list.getClientProperty("uri");
-        HashMap<URI, Object> dataMap = (HashMap) list.getClientProperty("dataMap");
-        boolean isMultiSelection = (boolean)list.getClientProperty("isMultiSelection");
-        boolean isOptional = (boolean)list.getClientProperty("isOptional");
+        URI uri = (URI) list.getClientProperty(URI_PROPERTY);
+        HashMap<URI, Object> dataMap = (HashMap) list.getClientProperty(DATA_MAP_PROPERTY);
+        boolean isMultiSelection = (boolean)list.getClientProperty(IS_MULTISELECTION_PROPERTY);
+        boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
         //If there is a textfield and if it contain a text, add the coma separated values
-        if (list.getClientProperty("textField") != null) {
-            JTextField textField = (JTextField) list.getClientProperty("textField");
+        if (list.getClientProperty(TEXT_FIELD_PROPERTY) != null) {
+            JTextField textField = (JTextField) list.getClientProperty(TEXT_FIELD_PROPERTY);
             if (!textField.getText().isEmpty()) {
                 if(!isMultiSelection && list.getSelectedIndices().length != 0){
                     textField.setText("");
@@ -221,13 +240,17 @@ public class EnumerationUI implements DataUI{
         }
     }
 
+    /**
+     * Saves the enumeration value set in the text field (available if the enumeration is editable).
+     * @param document Document of the JTextField
+     */
     public void saveDocumentTextFile(Document document){
         try {
-            Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
-            URI uri = (URI)document.getProperty("uri");
-            JList<ContainerItem<String>> list = (JList<ContainerItem<String>>) document.getProperty("list");
-            boolean isMultiSelection = (boolean)document.getProperty("isMultiSelection");
-            boolean isOptional = (boolean)document.getProperty("isOptional");
+            Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty(DATA_MAP_PROPERTY);
+            URI uri = (URI)document.getProperty(URI_PROPERTY);
+            JList<ContainerItem<String>> list = (JList<ContainerItem<String>>) document.getProperty(LIST_PROPERTY);
+            boolean isMultiSelection = (boolean)document.getProperty(IS_MULTISELECTION_PROPERTY);
+            boolean isOptional = (boolean)document.getProperty(IS_OPTIONAL_PROPERTY);
             String text = document.getText(0, document.getLength());
             //If not optional and there is no text and no element select, then, select the first element.
             if(!isOptional){

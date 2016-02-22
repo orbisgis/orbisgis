@@ -35,6 +35,8 @@ public class DataField extends ComplexData{
     private boolean isSourceModified = false;
     /** List of type accepted for the field.*/
     private List<DataType> fieldTypeList;
+    /** List of type excluded for the field.*/
+    private List<DataType> excludedTypeList;
     /** List of FieldValue liked to the DataField */
     private List<FieldValue> listFieldValue;
 
@@ -81,7 +83,7 @@ public class DataField extends ComplexData{
 
     /**
      * Returns the list of valid type for the field.
-     * @return List of valie FieldType.
+     * @return List of accepted DataType.
      */
     public List<DataType> getFieldTypeList() {
         return fieldTypeList;
@@ -101,5 +103,29 @@ public class DataField extends ComplexData{
      */
     public List<FieldValue> getListFieldValue(){
         return listFieldValue;
+    }
+
+    /**
+     * Sets the list of excluded type for the field.
+     * @param excludedTypeList List of excluded DataType.
+     */
+    public void setExcludedTypeList(List<DataType> excludedTypeList) throws MalformedScriptException {
+        for(DataType excludedType : excludedTypeList){
+            for(DataType dataType : fieldTypeList){
+                if(excludedType.equals(dataType)){
+                    throw new MalformedScriptException(DataField.class, "excludedTypeList", "A same DataType is" +
+                            " accepted and excluded");
+                }
+            }
+        }
+        this.excludedTypeList = excludedTypeList;
+    }
+
+    /**
+     * Returns the list of excluded type for the field.
+     * @return List of excluded DataType.
+     */
+    public List<DataType> getExcludedTypeList() {
+        return excludedTypeList;
     }
 }

@@ -57,6 +57,7 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
     /** Unique identifier of this ProcessEditableElement. */
     private final String ID;
     private ProcessExecutionListener.ProcessState state;
+    private long startTime;
 
     public ProcessEditableElement(Process process){
         this.process = process;
@@ -161,13 +162,16 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
         return state;
     }
 
+    public void setStartTime(long time){
+        startTime = time + 3600000;
+    }
+
     /**
      * Append to the log a new entry.
-     * @param time Time since the beginning when it appends.
      * @param logType Type of the message (INFO, WARN, ERROR ...).
      * @param message Message.
      */
-    public void appendLog(long time, ProcessExecutionListener.LogType logType, String message){
+    public void appendLog(ProcessExecutionListener.LogType logType, String message){
         Color color;
         switch(logType){
             case ERROR:
@@ -180,7 +184,7 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
             default:
                 color = Color.BLACK;
         }
-        Date date = new Date(time - 3600000);
+        Date date = new Date(System.currentTimeMillis() - startTime);
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         String log = timeFormat.format(date) + " : " + logType.name() + " : " + message + "";
         logMap.put(log, color);

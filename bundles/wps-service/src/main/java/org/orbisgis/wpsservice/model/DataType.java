@@ -36,20 +36,26 @@ import java.net.URISyntaxException;
 
 public enum DataType {
     //LiteralData types
-    STRING("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#string"),
+    NUMBER("number"),
     INTEGER("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#integer"),
-    BOOLEAN("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#boolean"),
     DOUBLE("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#double"),
     FLOAT("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#float"),
     SHORT("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#short"),
     BYTE("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#byte"),
     UNSIGNED_BYTE("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#unsignedByte"),
     LONG("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#long"),
+    STRING("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#string"),
+    BOOLEAN("http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#boolean"),
 
     //Other types
-    NUMBER("number"),
     OTHER("other"),
     GEOMETRY("geometry"),
+    POINT("point"),
+    LINESTRING("linestring"),
+    POLYGON("polygon"),
+    MULTIPOINT("multipolygon"),
+    MULTILINESTRING("multilinestring"),
+    MULTIPOLYGON("multipolygon"),
     NONE("none");
 
     /** URI for the data type. */
@@ -67,6 +73,10 @@ public enum DataType {
         }
     }
 
+    public static DataType getDataTypeFromFieldType(String fieldType){
+        return DataType.valueOf(fieldType);
+    }
+
     /**
      * Returns the URI of the type.
      * @return The URI of the type.
@@ -75,7 +85,7 @@ public enum DataType {
         return uri;
     }
 
-    public static boolean testHDBype(DataType dataType, String dbTypeName){
+    public static boolean testDBType(DataType dataType, String dbTypeName){
         dbTypeName = dbTypeName.toUpperCase();
         switch(dataType) {
             case INTEGER:
@@ -116,6 +126,18 @@ public enum DataType {
                         dbTypeName.equals("MULTIPOINT") || dbTypeName.equals("MULTILINESTRING") ||
                         dbTypeName.equals("GEOMETRY") || dbTypeName.equals("MULTIPOLYGON") ||
                         dbTypeName.equals("GEOMETRYCOLLECTION"));
+            case POINT:
+                return (dbTypeName.equalsIgnoreCase(POINT.name()));
+            case LINESTRING:
+                return (dbTypeName.equalsIgnoreCase(LINESTRING.name()));
+            case POLYGON:
+                return (dbTypeName.equalsIgnoreCase(POLYGON.name()));
+            case MULTIPOINT:
+                return (dbTypeName.equalsIgnoreCase(MULTIPOINT.name()));
+            case MULTILINESTRING:
+                return (dbTypeName.equalsIgnoreCase(MULTILINESTRING.name()));
+            case MULTIPOLYGON:
+                return (dbTypeName.equalsIgnoreCase(MULTIPOLYGON.name()));
             default: return false;
         }
     }

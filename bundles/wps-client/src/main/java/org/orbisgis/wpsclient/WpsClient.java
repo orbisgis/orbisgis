@@ -85,6 +85,7 @@ public class WpsClient implements DockingPanel {
     /** OrbisGIS DataManager. */
     private static DataManager dataManager;
     private LocalWpsService wpsService;
+    private ProcessEditor pe;
 
     @Activate
     public void init(){
@@ -209,7 +210,7 @@ public class WpsClient implements DockingPanel {
     public ProcessEditableElement openProcess(URI scriptUri){
         Process process = wpsService.describeProcess(scriptUri);
         ProcessEditableElement pee = new ProcessEditableElement(process);
-        ProcessEditor pe = new ProcessEditor(this, pee);
+        pe = new ProcessEditor(this, pee);
         //Find if there is already a ProcessEditor open with the same process.
         //If not, add the new one.
         boolean alreadyOpen = false;
@@ -322,4 +323,15 @@ public class WpsClient implements DockingPanel {
         this.dockingManager = null;
     }
 
+    public ProcessEditor getProcessEditor() {
+        return pe;
+    }
+
+    public String loadURI(URI uri, boolean loadSource) {
+        String tableName;
+        pe.startWaiting();
+        tableName = getWpsService().loadURI(uri, loadSource);
+        pe.endWaiting();
+        return tableName;
+    }
 }

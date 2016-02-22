@@ -41,25 +41,25 @@ public interface DataUI {
      * @param dataMap Map that will contain the data once the input or output configured.
      * @return JComponent containing the UI.
      */
-    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap);
+    JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap);
 
     /**
      * Returns the map of default input value if it exists.
      * @param inputOrOutput Input or Output to analyse.
      * @return The default input or output value map.
      */
-    public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput);
+    Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput);
 
     /**
      * Return an image icon representing the data or null if there is no image associated.
      * @param inputOrOutput Input or output to analyse.
      * @return The icon associated to the given data.
      */
-    public ImageIcon getIconFromData(DescriptionType inputOrOutput);
+    ImageIcon getIconFromData(DescriptionType inputOrOutput);
 
     /**
      * Sets the ToolBox associated to the DataUI.
      * @param wpsClient ToolBox
      */
-    public void setWpsClient(WpsClient wpsClient);
+    void setWpsClient(WpsClient wpsClient);
 }

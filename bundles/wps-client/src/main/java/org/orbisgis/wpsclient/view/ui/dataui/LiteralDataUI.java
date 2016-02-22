@@ -32,8 +32,14 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -148,7 +154,7 @@ public class LiteralDataUI implements DataUI {
 
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
-        JPanel panel = new JPanel(new MigLayout("fill"));
+        JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
 
         //If the descriptionType is an input, add a comboBox to select the input type and according to the type,
         // add a second JComponent to write the input value
@@ -160,7 +166,7 @@ public class LiteralDataUI implements DataUI {
             comboBox.addItem(literalData.getValue().getDataType().name());
 
             //JPanel containing the component to set the input value
-            JComponent dataField = new JPanel(new MigLayout("fill"));
+            JComponent dataField = new JPanel(new MigLayout("fill, ins 0, gap 0"));
 
             comboBox.putClientProperty("dataField", dataField);
             comboBox.putClientProperty("uri", input.getIdentifier());
@@ -197,7 +203,7 @@ public class LiteralDataUI implements DataUI {
         switch(DataType.valueOf(s.toUpperCase())){
             case BOOLEAN:
                 //Instantiate the component
-                dataComponent = new JPanel(new MigLayout());
+                dataComponent = new JPanel(new MigLayout("ins 0, gap 0"));
                 JRadioButton falseButton = new JRadioButton("FALSE");
                 JRadioButton trueButton = new JRadioButton("TRUE");
                 ButtonGroup group = new ButtonGroup();
@@ -394,7 +400,15 @@ public class LiteralDataUI implements DataUI {
                 scrollPane.getViewport().putClientProperty("textArea", textArea);
                 scrollPane.getViewport().putClientProperty("verticalBar", scrollPane.getVerticalScrollBar());
                 scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-                dataComponent = scrollPane;
+                JPanel panel = new JPanel(new BorderLayout());
+                panel.add(scrollPane, BorderLayout.CENTER);
+                JButton paste = new JButton(ToolBoxIcon.getIcon("paste"));
+                paste.putClientProperty("textArea", textArea);
+                paste.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
+                paste.setBorderPainted(false);
+                paste.setContentAreaFilled(false);
+                panel.add(paste, BorderLayout.LINE_END);
+                dataComponent = panel;
                 textArea.setText("");
                 break;
         }
@@ -405,6 +419,21 @@ public class LiteralDataUI implements DataUI {
         panel.add(dataComponent, "growx, wrap");
         if(isOptional) {
             dataMap.remove(uri);
+        }
+    }
+
+    public void onPaste(ActionEvent ae){
+        JTextArea textArea = ((JTextArea)((JButton)ae.getSource()).getClientProperty("textArea"));
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        //odd: the Object param of getContents is not currently used
+        Transferable contents = clipboard.getContents(null);
+        boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+        if (hasTransferableText) {
+            try {
+                textArea.setText((String)contents.getTransferData(DataFlavor.stringFlavor));
+            }
+            catch (UnsupportedFlavorException | IOException ignored){
+            }
         }
     }
 

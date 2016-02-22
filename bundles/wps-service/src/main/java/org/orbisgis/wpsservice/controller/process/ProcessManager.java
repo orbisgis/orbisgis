@@ -52,6 +52,7 @@ public class ProcessManager {
     /** Controller used to parse process */
     private ParserController parserController;
     private DataSourceService dataSourceService;
+    private LocalWpsService wpsService;
 
     /**
      * Main constructor.
@@ -60,6 +61,7 @@ public class ProcessManager {
         processIdList = new ArrayList<>();
         parserController = new ParserController(wpsService);
         this.dataSourceService = dataSourceService;
+        this.wpsService = wpsService;
     }
 
     /**
@@ -92,8 +94,8 @@ public class ProcessManager {
                 //Check if the process has been well parsed
                 if (entry != null && entry.getKey() != null && entry.getValue() != null) {
                     //Save the process in a ProcessIdentifier
-                    ProcessIdentifier pi = new ProcessIdentifier(entry.getValue(),entry.getKey(),uri,f.getParentFile().toURI()
-                    );
+                    ProcessIdentifier pi = new ProcessIdentifier(entry.getValue(), entry.getKey(), uri,
+                            f.getParentFile().toURI());
                     pi.setCategory(category);
                     pi.setDefault(isDefault);
                     processIdList.add(pi);
@@ -116,6 +118,7 @@ public class ProcessManager {
         GroovyObject groovyObject = createProcess(process, dataMap);
         groovyObject.setProperty("sql", new Sql(dataSourceService));
         groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
+        groovyObject.setProperty("isH2", wpsService.isH2());
         groovyObject.invokeMethod("processing", null);
         return groovyObject;
     }

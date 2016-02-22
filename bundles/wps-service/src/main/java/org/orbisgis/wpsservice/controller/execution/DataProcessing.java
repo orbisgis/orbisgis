@@ -36,6 +36,8 @@ public interface DataProcessing {
 
     void setLocalWpsService(LocalWpsService wpsService);
     Class<? extends DataDescription> getDataClass();
-    Map<URI, Object> preProcessData(LocalWpsServiceImplementation localWpsServiceImplementation, DescriptionType inputOrOutput, Map<URI, Object> dataMap);
-    void postProcessData(LocalWpsServiceImplementation localWpsServiceImplementation, DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash);
+    Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap,
+                                    ProcessExecutionListener pel);
+    void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
+                         ProcessExecutionListener pel);
 }

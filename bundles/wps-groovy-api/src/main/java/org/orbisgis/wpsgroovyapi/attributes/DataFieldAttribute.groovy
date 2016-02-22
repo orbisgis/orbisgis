@@ -53,8 +53,11 @@ import java.lang.annotation.RetentionPolicy
     /** The variable name that contains the DataStore.*/
     String dataStore()
 
-    /** Array of the type of the data contained in the column. If no types are specified, accept all.*/
+    /** Array of the type allowed for the data field. If no types are specified, accept all.*/
     String[] fieldTypes() default []
+
+    /** Array of the type not allowed for the data field.*/
+    String[] excludedTypes() default []
 
 
 
@@ -62,4 +65,5 @@ import java.lang.annotation.RetentionPolicy
     /** default values **/
     /********************/
     public static final String[] defaultFieldType = []
+    public static final String[] defaultExcludedType = []
 }

@@ -26,11 +26,10 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
-import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
-import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
-import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
+import org.orbisgis.wpsclient.view.utils.sif.JPanelComboBoxRenderer;
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
@@ -41,32 +40,51 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * DataUI for DataStore
+ * DataUI implementation for DataStore.
+ * This class generate an interactive UI dedicated to the configuration of a DataStore.
+ * The interface generated will be used in the ProcessEditor.
  *
  * @author Sylvain PALOMINOS
  **/
 
 public class DataStoreUI implements DataUI{
 
-    /** constant size of the text fields **/
-    private static final int TEXTFIELD_WIDTH = 25;
+    /** Constant used to pass object as client property throw JComponents **/
+    private static final String GEOCATALOG = "GEOCATALOG";
+    private static final String FILE = "FILE";
+    private static final String NONE = "NONE";
+    private static final String COMPONENT_PROPERTY = "COMPONENT_PROPERTY";
+    private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
+    private static final String URI_PROPERTY = "URI_PROPERTY";
+    private static final String DATA_STORE_PROPERTY = "DATA_STORE_PROPERTY";
+    private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
+    private static final String GEOCATALOG_COMPONENT_PROPERTY = "GEOCATALOG_COMPONENT_PROPERTY";
+    private static final String INITIAL_DELAY_PROPERTY = "INITIAL_DELAY_PROPERTY";
+    private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
+    private static final String FILE_COMPONENT_PROPERTY = "FILE_COMPONENT_PROPERTY";
+    private static final String KEEP_SOURCE_PROPERTY = "KEEP_SOURCE_PROPERTY";
+    private static final String LOAD_SOURCE_PROPERTY = "LOAD_SOURCE_PROPERTY";
+    private static final String FILE_OPTIONS_PROPERTY = "FILE_OPTIONS_PROPERTY";
+    private static final String DESCRIPTION_TYPE_PROPERTY = "DESCRIPTION_TYPE_PROPERTY";
+    private static final String GEOCATALOG_COMBO_BOX_PROPERTY = "GEOCATALOG_COMBO_BOX_PROPERTY";
+    private static final String FILE_PANEL_PROPERTY = "FILE_PANEL_PROPERTY";
+    private static final String IS_OUTPUT_PROPERTY = "IS_OUTPUT_PROPERTY";
+    private static final String POPUP_MENU_PROPERTY = "POPUP_MENU_PROPERTY";
 
+    /** WpsClient using the generated UI. */
     private WpsClient wpsClient;
 
-    private ImportWorker importWorker = new ImportWorker();
-
+    @Override
     public void setWpsClient(WpsClient wpsClient){
         this.wpsClient = wpsClient;
     }
@@ -78,117 +96,143 @@ public class DataStoreUI implements DataUI{
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon("datastore");
+        return ToolBoxIcon.getIcon(ToolBoxIcon.DATA_STORE);
     }
 
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
-        JPanel panel = new JPanel(new MigLayout("fill"));
-        DataStore dataStore = null;
-        Map<String, String> extensionMap = null;
+        //Main panel which contains all the UI
+        JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+        DataStore dataStore;
         boolean isOptional = false;
-        //If the descriptionType is an input, add a comboBox to select the input type and according to the type,
-        // add a second JComponent to write the input value
+        /** Retrieve the DataStore from the DescriptionType. **/
         if(inputOrOutput instanceof Input){
             Input input = (Input)inputOrOutput;
             dataStore = (DataStore)input.getDataDescription();
-            extensionMap = wpsClient.getWpsService().getImportableFormat(true);
+            //As an input, the DataStore can be optional.
             if(input.getMinOccurs() == 0){
                 isOptional = true;
             }
         }
-        if(inputOrOutput instanceof Output){
+        else if(inputOrOutput instanceof Output){
             Output output = (Output)inputOrOutput;
             dataStore = (DataStore)output.getDataDescription();
-            extensionMap = wpsClient.getWpsService().getExportableFormat(true);
         }
-        if(dataStore == null || extensionMap == null){
+        else {
+            //If inputOrOutput is not a input and not an output, exit
             return panel;
         }
 
-        ButtonGroup group;
+        /** Build the ComboBox which contains all the DataStore available types. **/
+        //The combo box will contains ContainerItems linking a JPanel with a table name
+        JComboBox<ContainerItem<Object>> dataStoreTypeBox = new JComboBox<>();
+        //This custom renderer will display in the comboBox a JLabel containing the type icon and the type name.
+        dataStoreTypeBox.setRenderer(new JPanelComboBoxRenderer());
+        //Adds all the available type to the comboBox
+        if(dataStore.isGeocatalog()) {
+            dataStoreTypeBox.addItem(new ContainerItem<Object>(
+                    new JLabel("Geocatalog", ToolBoxIcon.getIcon(ToolBoxIcon.GEOCATALOG), SwingConstants.LEFT),
+                    GEOCATALOG));
+        }
+        if(dataStore.isFile()) {
+            dataStoreTypeBox.addItem(new ContainerItem<Object>(
+                    new JLabel("File", ToolBoxIcon.getIcon(ToolBoxIcon.FLAT_FILE), SwingConstants.LEFT),
+                    FILE));
+        }
         if(isOptional) {
-            //Override the setSelected method to allow to unselect buttons
-            group = new ButtonGroup(){
-                @Override
-                public void setSelected(ButtonModel m, boolean b) {
-                    if(b && m != null && m != getSelection()){
-                        super.setSelected(m, b);
-                    }
-                    else if (!b && m == getSelection()){
-                        clearSelection();
-                    }
-                }
-            };
+            dataStoreTypeBox.addItem(new ContainerItem<Object>(
+                    new JLabel(""), NONE));
         }
-        else{
-            group = new ButtonGroup();
-        }
+        //Adds all the properties used on the type selection
+        dataStoreTypeBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
+        dataStoreTypeBox.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        //Panel that will contain the JComponent belonging to the selected type (geocatalog, file ...)
+        JComponent component  = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+        dataStoreTypeBox.putClientProperty(COMPONENT_PROPERTY, component);
+        //Adds the item selection listener to the comboBox
+        dataStoreTypeBox.addItemListener(
+                EventHandler.create(ItemListener.class, this, "onDataStoreTypeSelected", "source"));
+        //Adds the comboBox to the main panel
+        panel.add(dataStoreTypeBox, "dock west");
+        //Add the component panel to the main panel
+        panel.add(component, "grow");
 
-        /**Instantiate the geocatalog radioButton and its optionPanel**/
-        JRadioButton geocatalog = new JRadioButton("Geocatalog");
-        JPanel optionPanelGeocatalog = new JPanel(new MigLayout("fill"));
-        JComboBox<String> comboBox;
-        if(dataStore.isSpatial()) {
-            comboBox = new JComboBox<>(wpsClient.getWpsService().getGeocatalogTableList(true).toArray(new String[]{}));
+        /**Instantiate the geocatalog optionPanel. **/
+        //Instantiate the comboBox containing the table list
+        JComboBox<ContainerItem<Object>> geocatalogComboBox = new JComboBox<>();
+        JPanel geocatalogComponent = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+        //If the DataStore is an input, uses a custom comboBox renderer to show an icon, the table name, the SRID ...
+        if(inputOrOutput instanceof Input) {
+            geocatalogComboBox.setRenderer(new JPanelComboBoxRenderer());
         }
+        //If it is an output, just show the table names, and add the 'new table' item.
         else {
-            comboBox = new JComboBox<>(wpsClient.getWpsService().getGeocatalogTableList(false).toArray(new String[]{}));
-        }
-        comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onGeocatalogTableSelected", "source"));
-        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
-        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
-        comboBox.putClientProperty("uri", inputOrOutput.getIdentifier());
-        comboBox.putClientProperty("dataMap", dataMap);
-        comboBox.putClientProperty("dataStore", dataStore);
-        comboBox.setBackground(Color.WHITE);
-        comboBox.setToolTipText(inputOrOutput.getResume());
-        JPanel tableSelection = new JPanel(new MigLayout("fill"));
-        tableSelection.add(comboBox, "growx, span");
-        if(inputOrOutput instanceof Output){
-            String newTable = "New_Table";
-            comboBox.insertItemAt(newTable, 0);
-            comboBox.setEditable(true);
-            comboBox.setSelectedItem(newTable);
-            Document doc = ((JTextComponent)comboBox.getEditor().getEditorComponent()).getDocument();
-            doc.putProperty("comboBox", comboBox);
+            geocatalogComboBox.insertItemAt(new ContainerItem<Object>("New table", "New table"), 0);
+            geocatalogComboBox.setEditable(true);
+            //Adds the listener for the comboBox edition
+            Document doc = ((JTextComponent)geocatalogComboBox.getEditor().getEditorComponent()).getDocument();
+            doc.putProperty(GEOCATALOG_COMBO_BOX_PROPERTY, geocatalogComboBox);
+            doc.putProperty(DATA_MAP_PROPERTY, dataMap);
+            doc.putProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
             doc.addDocumentListener(EventHandler.create(DocumentListener.class, this, "onNewTable", "document"));
         }
-        optionPanelGeocatalog.add(new JLabel("Geocatalog :"), "dock west");
-        optionPanelGeocatalog.add(tableSelection, "span, growx");
-        geocatalog.putClientProperty("optionPanel", optionPanelGeocatalog);
-        geocatalog.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
+        //Populate the comboBox with the available tables.
+        populateWithTable(geocatalogComboBox, dataStore.isSpatial(), inputOrOutput instanceof Output);
+        //Adds the listener on combo box item selection
+        geocatalogComboBox.addActionListener(
+                EventHandler.create(ActionListener.class, this, "onGeocatalogTableSelected", "source"));
+        //Adds the listener to refresh the table list.
+        geocatalogComboBox.addMouseListener(
+                EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
+        geocatalogComboBox.addMouseListener(
+                EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
+        geocatalogComboBox.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        geocatalogComboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
+        geocatalogComboBox.putClientProperty(DATA_STORE_PROPERTY, dataStore);
+        geocatalogComboBox.putClientProperty(IS_OUTPUT_PROPERTY, inputOrOutput instanceof Output);
+        geocatalogComboBox.setBackground(Color.WHITE);
+        geocatalogComboBox.setToolTipText(inputOrOutput.getResume());
+        geocatalogComponent.add(geocatalogComboBox, "span, grow");
+        //Register the geocatalog combo box as a property in the DataStore type box
+        dataStoreTypeBox.putClientProperty(GEOCATALOG_COMPONENT_PROPERTY, geocatalogComponent);
+        if(geocatalogComboBox.getItemCount() > 0) {
+            geocatalogComboBox.setSelectedIndex(0);
+        }
 
-        /**Instantiate the file radioButton and its optionPanel**/
-        JRadioButton file = new JRadioButton("File");
-        JPanel optionPanelFile = new JPanel(new MigLayout("fill"));
-        optionPanelFile.add(new JLabel("File : "), "dock west");
+        /**Instantiate the file optionPanel. **/
+        //Panel containing the path text field, the browse button and the option icon
+        JPanel optionPanelFile = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+        //JTextField containing the file path.
         JTextField textField = new JTextField();
-        textField.getDocument().putProperty("dataMap", dataMap);
-        textField.getDocument().putProperty("inputOrOutput", inputOrOutput);
-        textField.getDocument().putProperty("dataStore", dataStore);
+        textField.getDocument().putProperty(DATA_MAP_PROPERTY, dataMap);
+        textField.getDocument().putProperty(DATA_STORE_PROPERTY, dataStore);
+        textField.getDocument().putProperty(DESCRIPTION_TYPE_PROPERTY, inputOrOutput);
+        //Listen the text field modification
         textField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
                 this,
                 "onDocumentSet",
                 "document"));
         textField.setToolTipText(inputOrOutput.getResume());
 
-        optionPanelFile.add(textField, "span, growx");
-        JPanel buttonPanel = new JPanel(new MigLayout());
-        JButton browseButton = new JButton(ToolBoxIcon.getIcon("browse"));
+        optionPanelFile.add(textField, "span, grow");
+        JPanel buttonPanel = new JPanel(new MigLayout("ins 0, gap 0"));
+        //Sets the browse button look and feel
+        JButton browseButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.BROWSE));
         browseButton.setBorderPainted(false);
         browseButton.setContentAreaFilled(false);
         browseButton.setMargin(new Insets(0, 0, 0, 0));
         browseButton.addActionListener(EventHandler.create(ActionListener.class, this, "onBrowse", ""));
-        browseButton.putClientProperty("uri", inputOrOutput.getIdentifier());
-        browseButton.putClientProperty("dataMap", dataMap);
-        browseButton.putClientProperty("JTextField", textField);
-        browseButton.putClientProperty("dataStore", dataStore);
+        browseButton.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        browseButton.putClientProperty(DATA_MAP_PROPERTY, dataMap);
+        browseButton.putClientProperty(TEXT_FIELD_PROPERTY, textField);
+        browseButton.putClientProperty(DATA_STORE_PROPERTY, dataStore);
+        //Instantiate the file panel (OpenFilePanel or SaveFilePanel)
         OpenFilePanel filePanel;
         //If it is an input, the file panel is an Open one
         if(inputOrOutput instanceof Input){
             filePanel = new OpenFilePanel("DataStoreUI.File."+inputOrOutput.getIdentifier(), "Select File");
             filePanel.setAcceptAllFileFilterUsed(false);
+            //Adds the format filters to the file panel
             for(Format format : dataStore.getFormats()){
                 String ext = FormatFactory.getFormatExtension(format);
                 String description = "";
@@ -203,6 +247,7 @@ public class DataStoreUI implements DataUI{
         //If it is an output, the file panel is an Save one
         else {
             filePanel = new SaveFilePanel("DataStoreUI.File."+inputOrOutput.getIdentifier(), "Save File");
+            //Adds the format filters to the file panel
             for(Format format : dataStore.getFormats()){
                 String ext = FormatFactory.getFormatExtension(format);
                 String description = "";
@@ -214,150 +259,147 @@ public class DataStoreUI implements DataUI{
                 filePanel.addFilter(ext, description);
             }
         }
-        file.putClientProperty("textField", textField);
+        dataStoreTypeBox.putClientProperty(TEXT_FIELD_PROPERTY, textField);
         filePanel.loadState();
         textField.setText(filePanel.getCurrentDirectory().getAbsolutePath());
-        browseButton.putClientProperty("filePanel", filePanel);
+        browseButton.putClientProperty(FILE_PANEL_PROPERTY, filePanel);
         buttonPanel.add(browseButton);
+        //Sets the DataStore file option
+        JLabel fileOptions = new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.OPTIONS));
+        //If the DataStore is an input adds the load option.
         if(inputOrOutput instanceof Input) {
-            JLabel fileOptions = new JLabel(ToolBoxIcon.getIcon("options"));
-            fileOptions.putClientProperty("keepSource", false);
+            fileOptions.putClientProperty(KEEP_SOURCE_PROPERTY, false);
             if(wpsClient.getWpsService().isH2()) {
-                fileOptions.putClientProperty("loadSource", false);
+                fileOptions.putClientProperty(LOAD_SOURCE_PROPERTY, false);
             }
-            fileOptions.addMouseListener(EventHandler.create(MouseListener.class, this, "onFileOption", ""));
-            textField.getDocument().putProperty("fileOptions", fileOptions);
-            buttonPanel.add(fileOptions);
         }
-
+        else{
+            fileOptions.putClientProperty(KEEP_SOURCE_PROPERTY, false);
+        }
+        fileOptions.addMouseListener(
+                EventHandler.create(MouseListener.class, this, "onFileOptionEntered", "", "mouseEntered"));
+        fileOptions.putClientProperty(POPUP_MENU_PROPERTY, buildPopupMenu(fileOptions));
+        textField.getDocument().putProperty(FILE_OPTIONS_PROPERTY, fileOptions);
+        buttonPanel.add(fileOptions);
         optionPanelFile.add(buttonPanel, "dock east");
-        file.putClientProperty("optionPanel", optionPanelFile);
-        file.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
+        dataStoreTypeBox.putClientProperty(FILE_COMPONENT_PROPERTY, optionPanelFile);
 
-        /**Instantiate the dataBase radioButton and its optionPanel**/
-        JRadioButton database = new JRadioButton("Database");
-        JPanel optionPanelDataBase = new JPanel(new BorderLayout());
-        JLabel label = new JLabel("database :");
-        optionPanelDataBase.add(label, BorderLayout.LINE_START);
-        JTextField parametersTextField = new JTextField();
-        parametersTextField.getDocument().putProperty("dataMap", dataMap);
-        parametersTextField.getDocument().putProperty("uri", inputOrOutput.getIdentifier());
-        parametersTextField.getDocument().putProperty("dataStore", dataStore);
-        parametersTextField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
-                this,
-                "saveDocumentTextDataBase",
-                "document"));
-        optionPanelDataBase.add(parametersTextField, BorderLayout.CENTER);
-        JButton parametersButton = new JButton("Parameters");
-        parametersButton.putClientProperty("textField", parametersTextField);
-        parametersButton.addActionListener(EventHandler.create(ActionListener.class, this, "onParameters", "source"));
-        optionPanelDataBase.add(parametersButton, BorderLayout.LINE_END);
-        database.putClientProperty("optionPanel", optionPanelDataBase);
-        database.addActionListener(EventHandler.create(ActionListener.class, this, "onRadioSelected", "source"));
-
-        JPanel radioPanel = new JPanel(new MigLayout("fill"));
-        JComponent dataField  = new JPanel(new MigLayout("fill"));
-        //If just an option is avaliable (geocatalog or datbase or file), don't show the ratdio buttons.
-        if(dataStore.isDataBase() && dataStore.isFile() ||
-                dataStore.isDataBase() && dataStore.isGeocatalog() ||
-                dataStore.isGeocatalog() && dataStore.isFile()) {
-            panel.add(new JLabel("Select"));
-            panel.add(radioPanel, "growx, wrap");
-        }
-        if (dataStore.isFile()) {
-            group.add(file);
-            radioPanel.add(file, "growx");
-            file.putClientProperty("dataField", dataField);
-            file.putClientProperty("dataMap", dataMap);
-            file.putClientProperty("uri", inputOrOutput.getIdentifier());
-
-            file.setSelected(true);
-            dataField.removeAll();
-            dataField.add(optionPanelFile, "growx, span");
-        }
-    /*if(dataStore.isDataBase()){
-        group.add(database);
-        radioPanel.add(database, "growx");
-        database.putClientProperty("dataField", dataField);
-        database.putClientProperty("dataMap", dataMap);
-        database.putClientProperty("uri", inputOrOutput.getIdentifier());
-
-        database.setSelected(true);
-        dataField.removeAll();
-        dataField.add(optionPanelDataBase, "growx, span");
-    }*/
-        if (dataStore.isGeocatalog()) {
-            group.add(geocatalog);
-            radioPanel.add(geocatalog, "growx");
-            geocatalog.putClientProperty("dataField", dataField);
-            geocatalog.putClientProperty("dataMap", dataMap);
-            geocatalog.putClientProperty("uri", inputOrOutput.getIdentifier());
-
-            geocatalog.setSelected(true);
-            dataField.removeAll();
-            dataField.add(optionPanelGeocatalog, "growx, span");
-            if (comboBox.getItemCount() > 0) {
-                comboBox.setSelectedIndex(0);
-            }
-        }
-        panel.add(dataField, "growx, span");
-
+        /** Return the UI panel. **/
+        onDataStoreTypeSelected(dataStoreTypeBox);
         return panel;
     }
 
-    public void onDocumentSet(Document document){
-        importWorker = new ImportWorker();
-        importWorker.setDocument(document);
+    /**
+     * Populate the given comboBox with the table name list.
+     * Also display the tables information like if it is spatial or not, the SRID, the dimension ...
+     * @param geocatalogComboBox The combo box to populate.
+     * @param isSpatialDataStore True if the DataSTore is spatial, false otherwise.
+     */
+    private void populateWithTable(JComboBox<ContainerItem<Object>> geocatalogComboBox, boolean isSpatialDataStore,
+                                   boolean isOptional){
+        //Retrieve the table name list
+        List<String> tableNameList;
+        if(isSpatialDataStore) {
+            tableNameList = wpsClient.getWpsService().getGeocatalogTableList(true);
+        }
+        else {
+            tableNameList = wpsClient.getWpsService().getGeocatalogTableList(false);
+        }
+        //If there is tables, retrieve their information to format the display in the comboBox
+        if(tableNameList != null && !tableNameList.isEmpty()){
+            ContainerItem<Object> selectedItem = (ContainerItem<Object>)geocatalogComboBox.getSelectedItem();
+            geocatalogComboBox.removeAllItems();
+            for (String tableName : tableNameList) {
+                //Retrieve the table information
+                Map<String, Object> informationMap = wpsClient.getWpsService().getTableInformation(tableName);
+                //If there is information, use it to improve the table display in the comboBox
+                JPanel tablePanel = new JPanel(new MigLayout("ins 0, gap 0"));
+                if (!informationMap.isEmpty()) {
+                    //Sets the spatial icon
+                    boolean isSpatial = (boolean) informationMap.get(LocalWpsService.TABLE_IS_SPATIAL);
+                    if (isSpatial) {
+                        tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.GEO_FILE)));
+                    } else {
+                        tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.FLAT_FILE)));
+                    }
+                    tablePanel.add(new JLabel(tableName));
+                } else {
+                    tablePanel.add(new JLabel(tableName));
+                }
+                geocatalogComboBox.addItem(new ContainerItem<Object>(tablePanel, tableName));
+            }
+            if(selectedItem != null) {
+                for (int i = 0; i < geocatalogComboBox.getItemCount(); i++) {
+                    if (geocatalogComboBox.getItemAt(i).getLabel().equals(selectedItem.getLabel())) {
+                        geocatalogComboBox.setSelectedIndex(i);
+                        break;
+                    }
+                }
+            }
+        }
+        if(isOptional){
+            geocatalogComboBox.insertItemAt(new ContainerItem<Object>("New table", "New table"), 0);
+            geocatalogComboBox.setSelectedIndex(0);
+        }
     }
 
     /**
-     * When the mouse enter in the JComboBox and their is no sources listed in the JComboBox,
-     * it shows a tooltip text to the user.
+     * Action done when the file selection text field is modified.
+     * If the written file path is valid, start the import worker to load the file.
+     * @param document Document of the text field.
+     */
+    public void onDocumentSet(Document document){
+        try {
+            File file = new File(document.getText(0, document.getLength()));
+            if(file.getName().isEmpty() || file.isDirectory()){
+                return;
+            }
+            new ImportWorker(document);
+        } catch (BadLocationException e) {
+            LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
+        }
+    }
+
+    /**
+     * When the mouse enter in the JComboBox refreshes the table list.
+     * If there is no sources listed in the JComboBox, shows a tooltip text to the user.
      * @param source Source JComboBox
      */
     public void onComboBoxEntered(Object source){
         //Retrieve the client properties
-        JComboBox<String> comboBox = (JComboBox)source;
+        JComboBox<ContainerItem<Object>> comboBox = (JComboBox)source;
+        //Refreshes the list of tables displayed
+        DataStore dataStore = (DataStore)comboBox.getClientProperty(DATA_STORE_PROPERTY);
+        boolean isOptional = (boolean)comboBox.getClientProperty(IS_OUTPUT_PROPERTY);
+        Object selectedItem = comboBox.getSelectedItem();
+        populateWithTable(comboBox, dataStore.isSpatial(), isOptional);
+        if(selectedItem != null){
+            comboBox.setSelectedItem(selectedItem);
+        }
+        //if there is no table listed, shows a massage as a tooltip to the user
         if(comboBox.getItemCount() == 0) {
-            comboBox.putClientProperty("initialDelay", ToolTipManager.sharedInstance().getInitialDelay());
-            comboBox.putClientProperty("toolTipText", comboBox.getToolTipText());
+            comboBox.putClientProperty(INITIAL_DELAY_PROPERTY, ToolTipManager.sharedInstance().getInitialDelay());
+            comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, comboBox.getToolTipText());
             ToolTipManager.sharedInstance().setInitialDelay(0);
             ToolTipManager.sharedInstance().setDismissDelay(2500);
             comboBox.setToolTipText("First add a table to the Geocatalog");
             ToolTipManager.sharedInstance().mouseMoved(
                     new MouseEvent(comboBox,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
         }
-        DataStore dataStore = (DataStore)comboBox.getClientProperty("dataStore");
-        Object selectedItem = comboBox.getSelectedItem();
-        if(dataStore.isSpatial()) {
-            comboBox.removeAllItems();
-            for(String s : wpsClient.getWpsService().getGeocatalogTableList(true).toArray(new String[]{})){
-                comboBox.addItem(s);
-            }
-        }
-        else {
-            comboBox.removeAllItems();
-            for(String s : wpsClient.getWpsService().getGeocatalogTableList(false).toArray(new String[]{})){
-                comboBox.addItem(s);
-            }
-        }
-        if(selectedItem != null){
-            comboBox.setSelectedItem(selectedItem);
-        }
     }
 
     /**
-     * When the mouse leaves the JComboBox, reset the tooltip text delay.
+     * When the mouse leaves the JComboBox, reset the tooltip text and delay.
      * @param source JComboBox source.
      */
     public void onComboBoxExited(Object source){
         //Retrieve the client properties
         JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
-        Object tooltipText = comboBox.getClientProperty("toolTipText");
+        Object tooltipText = comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY);
         if(tooltipText != null) {
             comboBox.setToolTipText((String)tooltipText);
         }
-        Object delay = comboBox.getClientProperty("initialDelay");
+        Object delay = comboBox.getClientProperty(INITIAL_DELAY_PROPERTY);
         if(delay != null){
             ToolTipManager.sharedInstance().setInitialDelay((int)delay);
         }
@@ -365,19 +407,22 @@ public class DataStoreUI implements DataUI{
 
     /**
      * When a table is selected in the geocatalog field, empty the textField for a new table,
-     * save the selectedtable,
-     * tell the child DataField that there is a modification.
+     * save the selected table and tell the child DataField that there is a modification.
      * @param source Source geocatalog JComboBox
      */
     public void onGeocatalogTableSelected(Object source){
-        JComboBox<String> comboBox = (JComboBox) source;
-        //If the ComboBox is empty, don't do anything.
-        //The process won't launch util the user sets the DataStore
-        if(comboBox.getItemCount()>0 && comboBox.getItemAt(0).isEmpty()){
+        JComboBox<ContainerItem<Object>> comboBox = (JComboBox<ContainerItem<Object>>) source;
+        if(comboBox.getItemCount() == 0){
             return;
         }
-        if(comboBox.getClientProperty("textField") != null){
-            JTextField textField = (JTextField)comboBox.getClientProperty("textField");
+        String tableName0 = comboBox.getItemAt(0).getLabel();
+        //If the ComboBox is empty, don't do anything.
+        //The process won't launch util the user sets the DataStore
+        if(comboBox.getItemCount()>0 && tableName0.isEmpty()){
+            return;
+        }
+        if(comboBox.getClientProperty(TEXT_FIELD_PROPERTY) != null){
+            JTextField textField = (JTextField)comboBox.getClientProperty(TEXT_FIELD_PROPERTY);
             if(!textField.getText().isEmpty() && comboBox.getSelectedIndex() != comboBox.getItemCount()-1) {
                 textField.setText("");
             }
@@ -386,9 +431,10 @@ public class DataStoreUI implements DataUI{
             }
         }
         //Retrieve the client properties
-        Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty("dataMap");
-        URI uri = (URI) comboBox.getClientProperty("uri");
-        DataStore dataStore = (DataStore) comboBox.getClientProperty("dataStore");
+        Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
+        URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
+        DataStore dataStore = (DataStore) comboBox.getClientProperty(DATA_STORE_PROPERTY);
+        String tableName = ((ContainerItem)comboBox.getSelectedItem()).getLabel();
         //Tells all the dataField linked that the data source is loaded
         for (DataField dataField : dataStore.getListDataField()) {
             dataField.setSourceModified(true);
@@ -400,19 +446,21 @@ public class DataStoreUI implements DataUI{
                 wpsClient.getWpsService().removeTempTable(oldUri.getFragment());
             }
         }
-        dataMap.put(uri, URI.create("geocatalog:"+comboBox.getSelectedItem()+"#"+comboBox.getSelectedItem()));
+        tableName = tableName.replaceAll(" ", "_");
+        dataMap.put(uri, URI.create("geocatalog:"+tableName+"#"+tableName));
     }
 
     /**
-     * When a new table name is set, empty the comboBox and save the table name.
-     * @param document
+     * When a new table name is set, save the table name into the data map.
+     * @param document JComboBox document containing the new table name.
      */
     public void onNewTable(Document document){
         try {
-            JComboBox<String> comboBox = (JComboBox<String>)document.getProperty("comboBox");
-            Map<URI, Object> dataMap = (Map<URI, Object>)comboBox.getClientProperty("dataMap");
-            URI uri = (URI)comboBox.getClientProperty("uri");
+            JComboBox<String> comboBox = (JComboBox<String>)document.getProperty(GEOCATALOG_COMBO_BOX_PROPERTY);
+            Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty(DATA_MAP_PROPERTY);
+            URI uri = (URI)document.getProperty(URI_PROPERTY);
             String text = document.getText(0, document.getLength());
+            text = text.replaceAll(" ", "_");
             if(!text.isEmpty()){
                 dataMap.put(uri, URI.create("geocatalog:"+text.toUpperCase()+"#"+text.toUpperCase()));
             }
@@ -421,95 +469,77 @@ public class DataStoreUI implements DataUI{
         }
     }
 
-    public void onParameters(Object source){
-        if(source instanceof JButton){
-            JButton parametersButton = (JButton)source;
-            JTextField textField = (JTextField)parametersButton.getClientProperty("textField");
-            MultiInputPanel multiInputPanel = new MultiInputPanel("JDBC parameters");
-            TextBoxType textBoxDriver = new TextBoxType(TEXTFIELD_WIDTH);
-            TextBoxType textBoxJDBCUrl = new TextBoxType(TEXTFIELD_WIDTH);
-            CheckBoxChoice checkBoxPasswd = new CheckBoxChoice(false);
-            TextBoxType textBoxSchema = new TextBoxType(TEXTFIELD_WIDTH);
-            TextBoxType textBoxTable = new TextBoxType(TEXTFIELD_WIDTH);
-            multiInputPanel.addInput("driver", "Driver :", "driver string", textBoxDriver);
-            multiInputPanel.addInput("jdbcUrl", "JDBC Url :", "jdbc url", textBoxJDBCUrl);
-            multiInputPanel.addInput("passwd", "Requires password :", checkBoxPasswd);
-            multiInputPanel.addInput("schema", "Schema :", "schema", textBoxSchema);
-            multiInputPanel.addInput("table", "Table :", "table", textBoxTable);
+    /**
+     * When a type is selected in the DataStore comboBox, show the corresponding panel.
+     * @param source JComboBox containing the DataStore types.
+     */
+    public void onDataStoreTypeSelected(Object source){
+        JComboBox<ContainerItem> comboBox = (JComboBox<ContainerItem>)source;
+        JPanel component = (JPanel) comboBox.getClientProperty(COMPONENT_PROPERTY);
+        component.removeAll();
+        ContainerItem<Object> container = (ContainerItem)comboBox.getSelectedItem();
 
-            if(UIFactory.showDialog(multiInputPanel, true, true)){
-                URI uri = URI.create(textBoxJDBCUrl.getValue()+"?auth="+checkBoxPasswd.getValue()+
-                        ";driver="+textBoxDriver.getValue()+";schema="+textBoxSchema.getValue()+
-                        "#"+textBoxTable.getValue());
-                textField.setText(uri.toString());
-            }
+        if(container.getLabel().equals(GEOCATALOG)) {
+            JPanel optionPanel = (JPanel) comboBox.getClientProperty(GEOCATALOG_COMPONENT_PROPERTY);
+            component.add(optionPanel, "grow");
+            component.repaint();
         }
-    }
-
-    public void onRadioSelected(Object source){
-        if(source instanceof JRadioButton){
-            JRadioButton radioButton = (JRadioButton)source;
-            JPanel dataField = (JPanel) radioButton.getClientProperty("dataField");
-            dataField.removeAll();
-            if(radioButton.isSelected()) {
-                JPanel optionPanel = (JPanel) radioButton.getClientProperty("optionPanel");
-                dataField.add(optionPanel, "growx, span");
-                dataField.repaint();
-                if(radioButton.getClientProperty("textField") != null){
-                    ((JTextField) radioButton.getClientProperty("textField")).setText("");
-                }
-            }
-            else{
-                HashMap<URI, Object> dataMap = (HashMap<URI, Object>)radioButton.getClientProperty("dataMap");
-                URI uri = (URI)radioButton.getClientProperty("uri");
-                dataMap.put(uri, null);
-            }
-            dataField.revalidate();
+        else if(container.getLabel().equals(FILE)) {
+            HashMap<URI, Object> dataMap = (HashMap<URI, Object>)comboBox.getClientProperty(DATA_MAP_PROPERTY);
+            URI uri = (URI)comboBox.getClientProperty(URI_PROPERTY);
+            dataMap.put(uri, null);
+            JPanel optionPanel = (JPanel) comboBox.getClientProperty(FILE_COMPONENT_PROPERTY);
+            component.add(optionPanel, "growx");
+            component.repaint();
         }
+        component.revalidate();
     }
 
     /**
      * Opens an LoadPanel to permit to the user to select the file to load.
-     * @param event
+     * @param event Event thrown on clicking on the browse button
      */
     public void onBrowse(ActionEvent event){
         //Open the file browse window
         JButton source = (JButton)event.getSource();
-        OpenFilePanel openFilePanel = (OpenFilePanel)source.getClientProperty("filePanel");
+        OpenFilePanel openFilePanel = (OpenFilePanel)source.getClientProperty(FILE_PANEL_PROPERTY);
         if (UIFactory.showDialog(openFilePanel, true, true)) {
-            JTextField textField = (JTextField) source.getClientProperty("JTextField");
+            JTextField textField = (JTextField) source.getClientProperty(TEXT_FIELD_PROPERTY);
             textField.setText(openFilePanel.getSelectedFile().getAbsolutePath());
         }
     }
 
     /**
      * Save the text contained by the Document in the dataMap set as property.
-     * @param document
+     * @param document Document of the file text field.
      */
     public void saveDocumentTextFile(Document document){
-        URI selectedFileURI = null;
+        URI selectedFileURI;
         try {
-            DataStore dataStore = (DataStore)document.getProperty("dataStore");
-            JComponent fileOptions = (JComponent) document.getProperty("fileOptions");
-            DescriptionType inputOrOutput = (DescriptionType)document.getProperty("inputOrOutput");
+            DataStore dataStore = (DataStore)document.getProperty(DATA_STORE_PROPERTY);
+            JComponent fileOptions = (JComponent) document.getProperty(FILE_OPTIONS_PROPERTY);
+            DescriptionType inputOrOutput = (DescriptionType)document.getProperty(DESCRIPTION_TYPE_PROPERTY);
             File file = new File(document.getText(0, document.getLength()));
-            if(file.getName().isEmpty() || file.isDirectory()){
-                return;
-            }
             if(inputOrOutput instanceof Input) {
+                //If the file doesn't exists, show an error
+                if(!file.exists()){
+                    LoggerFactory.getLogger(DataStore.class).error("The file '"+file+"' doesn't exists.");
+                    return;
+                }
+                //Retrieve the file loading properties
                 boolean loadSource = false;
                 boolean keepSource = false;
                 if(fileOptions != null){
-                    if(fileOptions.getClientProperty("loadSource") != null) {
-                        loadSource = (boolean) fileOptions.getClientProperty("loadSource");
+                    if(fileOptions.getClientProperty(LOAD_SOURCE_PROPERTY) != null) {
+                        loadSource = (boolean) fileOptions.getClientProperty(LOAD_SOURCE_PROPERTY);
                     }
                     else{
                         loadSource = false;
                     }
-                    keepSource = (boolean)fileOptions.getClientProperty("keepSource");
+                    keepSource = (boolean)fileOptions.getClientProperty(KEEP_SOURCE_PROPERTY);
                 }
                 //Load the selected file an retrieve the table name.
-                String tableName = wpsClient.getWpsService().loadURI(file.toURI(), loadSource);
+                String tableName = wpsClient.loadURI(file.toURI(), loadSource);
                 if (tableName != null) {
                     String fileStr = file.toURI().toString();
                     if(keepSource){
@@ -518,9 +548,10 @@ public class DataStoreUI implements DataUI{
                     //Saves the table name in the URI into the uri fragment
                     selectedFileURI = URI.create(fileStr + "#" + tableName);
                     //Store the selection
-                    Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
+                    Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
                     URI uri = inputOrOutput.getIdentifier();
                     Object oldValue = dataMap.get(uri);
+                    //If a file was previoulsy loaded, remove it
                     if(oldValue != null && oldValue instanceof URI){
                         URI oldUri = ((URI)oldValue);
                         if(oldUri.getScheme().equals("file")){
@@ -540,11 +571,23 @@ public class DataStoreUI implements DataUI{
                 }
             }
             if(inputOrOutput instanceof Output){
-                String tableName = wpsClient.getDataManager().findUniqueTableName(FilenameUtils.getBaseName(file.getName()));
+                //Retrieve the table name
+                String tableName = wpsClient.getDataManager().findUniqueTableName(
+                        FilenameUtils.getBaseName(file.getName()));
                 tableName = tableName.replace("\"", "");
-                selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
+                //If the source should be keep, add a $ char at the end of the file path
+                boolean keepSource = false;
+                if(fileOptions != null){
+                    keepSource = (boolean)fileOptions.getClientProperty(KEEP_SOURCE_PROPERTY);
+                }
+                String fileStr = file.toURI().toString();
+                if(keepSource){
+                    fileStr += "$";
+                }
+                //Saves the table name in the URI into the uri fragment
+                selectedFileURI = URI.create(fileStr + "#" + tableName);
                 //Store the selection
-                Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
+                Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
                 URI uri = inputOrOutput.getIdentifier();
                 dataMap.remove(uri);
                 dataMap.put(uri, selectedFileURI);
@@ -554,95 +597,68 @@ public class DataStoreUI implements DataUI{
         }
     }
 
-    /**
-     * Save the text contained by the Document in the dataMap set as property.
-     * @param document
-     */
-    public void saveDocumentTextDataBase(Document document){
-        try {
-            DataStore dataStore = (DataStore)document.getProperty("dataStore");
-            URI uri = (URI)document.getProperty("uri");
-            URI dataBaseURI = URI.create(document.getText(0, document.getLength()));
-            //Load the selected file an retrieve the table name.
-            String tableName = wpsClient.getWpsService().loadURI(dataBaseURI, false);
-            if(tableName != null) {
-                //Store the selection
-                Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty("dataMap");
-                Object oldValue = dataMap.get(uri);
-                if(oldValue != null && oldValue instanceof URI){
-                    URI oldUri = ((URI)oldValue);
-                    if(oldUri.getScheme().equals("file")){
-                        wpsClient.getWpsService().removeTempTable(oldUri.getFragment());
-                    }
-                }
-                dataMap.put(uri, tableName);
-                //tells the dataField they should revalidate
-                for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModified(true);
-                }
-            }
-            else{
-                for (DataField dataField : dataStore.getListDataField()) {
-                    dataField.setSourceModified(false);
-                }
-            }
-        } catch (BadLocationException e) {
-            LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
-        }
-    }
-
-    /**
-     * When the file option icon is hovered, display a popup menu with the options.
-     * @param me
-     */
-    public void onFileOption(MouseEvent me){
-        JComponent source = (JComponent)me.getSource();
+    private JPopupMenu buildPopupMenu(JComponent source){
         JPopupMenu popupMenu = new JPopupMenu();
-        if(source.getClientProperty("loadSource") != null) {
-            boolean loadSource = (boolean) source.getClientProperty("loadSource");
+        //The load source property
+        if(source.getClientProperty(LOAD_SOURCE_PROPERTY) != null) {
+            boolean loadSource = (boolean) source.getClientProperty(LOAD_SOURCE_PROPERTY);
             JCheckBoxMenuItem loadItem = new JCheckBoxMenuItem("Linked table", null, !loadSource) {
                 @Override
                 protected void processMouseEvent(MouseEvent evt) {
                     if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
                         doClick();
                         setArmed(true);
-                        ((JComponent)this.getClientProperty("fileOption")).putClientProperty("loadSource", !this.getState());
+                        ((JComponent)this.getClientProperty(FILE_OPTIONS_PROPERTY))
+                                .putClientProperty(LOAD_SOURCE_PROPERTY, !this.getState());
                     } else {
                         super.processMouseEvent(evt);
                     }
                 }
             };
-            loadItem.putClientProperty("fileOption", source);
+            loadItem.putClientProperty(FILE_OPTIONS_PROPERTY, source);
             popupMenu.add(loadItem);
         }
-        if(source.getClientProperty("keepSource") != null) {
-            boolean keepSource = (boolean) source.getClientProperty("keepSource");
+        //The keep source property
+        if(source.getClientProperty(KEEP_SOURCE_PROPERTY) != null) {
+            boolean keepSource = (boolean) source.getClientProperty(KEEP_SOURCE_PROPERTY);
             JCheckBoxMenuItem keepItem = new JCheckBoxMenuItem("Keep file in base", null, keepSource) {
                 @Override
                 protected void processMouseEvent(MouseEvent evt) {
                     if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
                         doClick();
                         setArmed(true);
-                        ((JComponent) this.getClientProperty("fileOption")).putClientProperty("keepSource", !this.getState());
+                        ((JComponent) this.getClientProperty(FILE_OPTIONS_PROPERTY))
+                                .putClientProperty(KEEP_SOURCE_PROPERTY, this.getState());
                     } else {
                         super.processMouseEvent(evt);
                     }
                 }
             };
-            keepItem.putClientProperty("fileOption", source);
+            keepItem.putClientProperty(FILE_OPTIONS_PROPERTY, source);
             popupMenu.add(keepItem);
         }
+        return popupMenu;
+    }
+
+    /**
+     * When the mouse enter in the file option icon, display a popup menu with the options.
+     * @param me Mouse event
+     */
+    public void onFileOptionEntered(MouseEvent me){
+        JComponent source = (JComponent)me.getSource();
+        JPopupMenu popupMenu = (JPopupMenu)source.getClientProperty(POPUP_MENU_PROPERTY);
+        //Show the popup
         popupMenu.show(source, me.getX(), me.getY());
     }
 
     /**
-     * SwingWorker extension which will load the the selected datasource.
+     * SwingWorker extension which will load the file contained in the given document.
      */
     public class ImportWorker extends SwingWorkerPM {
 
         private Document document;
 
-        public void setDocument(Document document){
+        public ImportWorker(Document document){
             this.document = document;
             this.execute();
         }
