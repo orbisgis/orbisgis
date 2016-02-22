@@ -79,6 +79,7 @@ public class DataStoreUI implements DataUI{
     private static final String GEOCATALOG_COMBO_BOX_PROPERTY = "GEOCATALOG_COMBO_BOX_PROPERTY";
     private static final String FILE_PANEL_PROPERTY = "FILE_PANEL_PROPERTY";
     private static final String IS_OUTPUT_PROPERTY = "IS_OUTPUT_PROPERTY";
+    private static final String POPUP_MENU_PROPERTY = "POPUP_MENU_PROPERTY";
 
     /** WpsClient using the generated UI. */
     private WpsClient wpsClient;
@@ -277,6 +278,7 @@ public class DataStoreUI implements DataUI{
         }
         fileOptions.addMouseListener(
                 EventHandler.create(MouseListener.class, this, "onFileOptionEntered", "", "mouseEntered"));
+        fileOptions.putClientProperty(POPUP_MENU_PROPERTY, buildPopupMenu(fileOptions));
         textField.getDocument().putProperty(FILE_OPTIONS_PROPERTY, fileOptions);
         buttonPanel.add(fileOptions);
         optionPanelFile.add(buttonPanel, "dock east");
@@ -569,9 +571,21 @@ public class DataStoreUI implements DataUI{
                 }
             }
             if(inputOrOutput instanceof Output){
-                String tableName = wpsClient.getDataManager().findUniqueTableName(FilenameUtils.getBaseName(file.getName()));
+                //Retrieve the table name
+                String tableName = wpsClient.getDataManager().findUniqueTableName(
+                        FilenameUtils.getBaseName(file.getName()));
                 tableName = tableName.replace("\"", "");
-                selectedFileURI = URI.create(file.toURI().toString() + "#" + tableName);
+                //If the source should be keep, add a $ char at the end of the file path
+                boolean keepSource = false;
+                if(fileOptions != null){
+                    keepSource = (boolean)fileOptions.getClientProperty(KEEP_SOURCE_PROPERTY);
+                }
+                String fileStr = file.toURI().toString();
+                if(keepSource){
+                    fileStr += "$";
+                }
+                //Saves the table name in the URI into the uri fragment
+                selectedFileURI = URI.create(fileStr + "#" + tableName);
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
                 URI uri = inputOrOutput.getIdentifier();
@@ -583,12 +597,7 @@ public class DataStoreUI implements DataUI{
         }
     }
 
-    /**
-     * When the mouse enter in the file option icon, display a popup menu with the options.
-     * @param me Mouse event
-     */
-    public void onFileOptionEntered(MouseEvent me){
-        JComponent source = (JComponent)me.getSource();
+    private JPopupMenu buildPopupMenu(JComponent source){
         JPopupMenu popupMenu = new JPopupMenu();
         //The load source property
         if(source.getClientProperty(LOAD_SOURCE_PROPERTY) != null) {
@@ -599,7 +608,8 @@ public class DataStoreUI implements DataUI{
                     if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
                         doClick();
                         setArmed(true);
-                        ((JComponent)this.getClientProperty(FILE_OPTIONS_PROPERTY)).putClientProperty(LOAD_SOURCE_PROPERTY, !this.getState());
+                        ((JComponent)this.getClientProperty(FILE_OPTIONS_PROPERTY))
+                                .putClientProperty(LOAD_SOURCE_PROPERTY, !this.getState());
                     } else {
                         super.processMouseEvent(evt);
                     }
@@ -617,7 +627,8 @@ public class DataStoreUI implements DataUI{
                     if (evt.getID() == MouseEvent.MOUSE_RELEASED && contains(evt.getPoint())) {
                         doClick();
                         setArmed(true);
-                        ((JComponent) this.getClientProperty(FILE_OPTIONS_PROPERTY)).putClientProperty(KEEP_SOURCE_PROPERTY, !this.getState());
+                        ((JComponent) this.getClientProperty(FILE_OPTIONS_PROPERTY))
+                                .putClientProperty(KEEP_SOURCE_PROPERTY, this.getState());
                     } else {
                         super.processMouseEvent(evt);
                     }
@@ -626,6 +637,16 @@ public class DataStoreUI implements DataUI{
             keepItem.putClientProperty(FILE_OPTIONS_PROPERTY, source);
             popupMenu.add(keepItem);
         }
+        return popupMenu;
+    }
+
+    /**
+     * When the mouse enter in the file option icon, display a popup menu with the options.
+     * @param me Mouse event
+     */
+    public void onFileOptionEntered(MouseEvent me){
+        JComponent source = (JComponent)me.getSource();
+        JPopupMenu popupMenu = (JPopupMenu)source.getClientProperty(POPUP_MENU_PROPERTY);
         //Show the popup
         popupMenu.show(source, me.getX(), me.getY());
     }

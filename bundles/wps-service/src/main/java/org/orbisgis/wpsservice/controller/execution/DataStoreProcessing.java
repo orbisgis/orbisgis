@@ -109,9 +109,15 @@ public class DataStoreProcessing implements DataProcessing {
             URI uri = inputOrOutput.getIdentifier();
             URI dataStoreURI = (URI)stash.get(uri);
             if(dataStoreURI.getScheme().equals("file")){
-                wpsService.saveURI(URI.create(dataStoreURI.getScheme()+":"+dataStoreURI.getSchemeSpecificPart()), dataMap.get(uri).toString());
+                String path = dataStoreURI.getSchemeSpecificPart();
+                boolean keep = path.endsWith("$");
+                path = path.replace("$", "");
+                wpsService.saveURI(URI.create(dataStoreURI.getScheme()+":"+path), dataMap.get(uri).toString());
                 pel.appendLog(LogType.INFO, "Table '"+dataMap.get(uri).toString()+"' successfully exported into '"+
-                        dataStoreURI.getSchemeSpecificPart()+"'.");
+                        path+"'.");
+                if(!keep){
+                    wpsService.removeTempTable(dataMap.get(uri).toString());
+                }
             }
             else if(dataStoreURI.getScheme().equals("geocatalog")){
                 pel.appendLog(LogType.INFO, "Table '"+dataMap.get(uri).toString()+"' successfully created.");

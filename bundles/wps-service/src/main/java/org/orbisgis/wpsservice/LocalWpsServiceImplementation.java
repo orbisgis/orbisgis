@@ -285,7 +285,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
             //Print in the log the process execution error
             pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Error during the execution of the " +
+                    "process '"+process.getTitle()+"'\n"+e.getMessage());
         }
     }
 
@@ -365,7 +366,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
                 }
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the geocatalog table " +
+                    "list.\n"+e.getMessage());
         }
         return list;
     }
@@ -375,6 +377,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         Map<String, Object> map = new HashMap<>();
         try {
             Connection connection = dataManager.getDataSource().getConnection();
+            tableName = TableLocation.parse(tableName, isH2).getTable();
             TableLocation tableLocation = new TableLocation(tableName);
             boolean isSpatial = !SFSUtilities.getGeometryFields(connection, tableLocation).isEmpty();
             int srid = SFSUtilities.getSRID(connection, tableLocation);
@@ -394,7 +397,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             map.put(TABLE_SRID, srid);
             map.put(TABLE_DIMENSION, dimension);
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the table '"+tableName+
+                    "' information.\n"+e.getMessage());
         }
         return map;
     }
@@ -433,7 +437,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
                 map.put(TABLE_DIMENSION, dimension);
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to the the field '"+
+                    tableName+"."+fieldName+"' information.\n"+ e.getMessage());
         }
         return map;
     }
@@ -467,7 +472,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
                 }
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the table '"+tableName+
+                    "' field list.\n"+e.getMessage());
         }
         return fieldList;
     }
@@ -485,7 +491,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             Connection connection = dataManager.getDataSource().getConnection();
             fieldValues.addAll(JDBCUtilities.getUniqueFieldValues(connection, tableName, fieldName));
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the field '"+tableName+
+                    "."+fieldName+"' value list.\n"+e.getMessage());
         }
         return fieldValues;
     }
@@ -496,13 +503,14 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      */
     public void removeTempTable(String tableName){
         try {
+            tableName = TableLocation.parse(tableName, isH2).getTable();
             Connection connection = dataManager.getDataSource().getConnection();
-            if(JDBCUtilities.tableExists(connection, tableName)) {
-                Statement statement = connection.createStatement();
-                statement.execute("DROP TABLE " + tableName);
-            }
+            tableName = TableLocation.parse(tableName, isH2).getTable();
+            Statement statement = connection.createStatement();
+            statement.execute("DROP TABLE IF EXISTS " + tableName);
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Cannot remove the table '"+tableName+
+                    "'.\n"+e.getMessage());
         }
     }
 
@@ -513,6 +521,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      */
     public void saveURI(URI uri, String tableName){
         try {
+            tableName = TableLocation.parse(tableName, isH2).getTable();
             File f = new File(uri);
             if(!f.exists()){
                 f.createNewFile();
@@ -521,10 +530,11 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
             DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
                     extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-            driver.exportTable(dataManager.getDataSource().getConnection(), TableLocation.parse(tableName).getTable(),
+            driver.exportTable(dataManager.getDataSource().getConnection(), tableName,
                     f, new EmptyProgressVisitor());
         } catch (SQLException|IOException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Cannot save the table '"+tableName+
+                    "'\n"+e.getMessage());
         }
     }
 
