@@ -290,11 +290,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         }
     }
 
-    /**
-     * Verify if the given file is a well formed script.
-     * @param uri URI to check.
-     * @return True if the file is well formed, false otherwise.
-     */
+    @Override
     public boolean checkFolder(URI uri){
         File f = new File(uri);
         if(f.exists() && f.isDirectory()){
@@ -307,13 +303,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return false;
     }
 
-
-    /**
-     * Returns a map of the importable format.
-     * The map key is the format extension and the value is the format description.
-     * @param onlySpatial If true, returns only the spatial table.
-     * @return a map of the importable  format.
-     */
+    @Override
     public Map<String, String> getImportableFormat(boolean onlySpatial){
         Map<String, String> formatMap = new HashMap<>();
         for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
@@ -326,12 +316,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return formatMap;
     }
 
-    /**
-     * Returns a map of the exportable spatial format.
-     * The map key is the format extension and the value is the format description.
-     * @param onlySpatial If true, returns only the spatial table.
-     * @return a map of the exportable spatial format.
-     */
+    @Override
     public Map<String, String> getExportableFormat(boolean onlySpatial){
         Map<String, String> formatMap = new HashMap<>();
         for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
@@ -344,11 +329,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return formatMap;
     }
 
-    /**
-     * Returns the list of sql table from OrbisGIS.
-     * @param onlySpatial If true, returns only the spatial table.
-     * @return The list of geo sql table from OrbisGIS.
-     */
+    @Override
     public List<String> getGeocatalogTableList(boolean onlySpatial) {
         List<String> list = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
@@ -439,13 +420,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return map;
     }
 
-    /**
-     * Return the list of the field of a table.
-     * @param tableName Name of the table.
-     * @param dataTypes Type of the field accepted. If empty, accepts all the field.
-     * @param excludedTypes Type of the type not allowed for the data field..
-     * @return The list of the field name.
-     */
+    @Override
     public List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
         List<String> fieldList = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
@@ -473,13 +448,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return fieldList;
     }
 
-
-    /**
-     * Returns the list of distinct values contained by a field from a table from the database
-     * @param tableName Name of the table containing the field.
-     * @param fieldName Name of the field containing the values.
-     * @return The list of distinct values of the field.
-     */
+    @Override
     public List<String> getFieldValueList(String tableName, String fieldName) {
         List<String> fieldValues = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
@@ -501,10 +470,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return fieldValues;
     }
 
-    /**
-     * Removes a table from the database.
-     * @param tableName Table to remove from the dataBase.
-     */
+    @Override
     public void removeTempTable(String tableName){
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             tableName = TableLocation.parse(tableName, isH2).getTable();
@@ -516,11 +482,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         }
     }
 
-    /**
-     * Save a geocatalog table into a file.
-     * @param uri URI where the table will be saved.
-     * @param tableName Name of the table to save.
-     */
+    @Override
     public void saveURI(URI uri, String tableName){
         try {
             tableName = TableLocation.parse(tableName, isH2).getTable();
@@ -540,11 +502,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         }
     }
 
-    /**
-     * Loads the given file into the geocatalog and return its table name.
-     * @param uri URI to load.
-     * @return Table name of the loaded file. Returns null if the file can't be loaded.
-     */
+    @Override
     public String loadURI(URI uri, boolean copyInBase) {
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             File f = new File(uri);
@@ -576,6 +534,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return null;
     }
 
+    @Override
     public boolean isH2(){
         return isH2;
     }
@@ -597,7 +556,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             if(prop != null && !prop.toString().isEmpty()){
                 String str = prop.toString();
                 for(String s : str.split(";")){
-                    addLocalSource(URI.create(s), null, false);
+                    addLocalScript(new File(URI.create(s)), null, false);
                 }
             }
         }

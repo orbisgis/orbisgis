@@ -252,20 +252,15 @@ public class ProcessManager {
         return piList;
     }
 
+
     public String getListSourcesAsString(){
-        List<String> sourceList = new ArrayList<>();
-        for(ProcessIdentifier pi : processIdList){
-            if(!sourceList.contains(new File(pi.getParent()).toURI().toString())){
-                sourceList.add(new File(pi.getParent()).toURI().toString());
-            }
-        }
         String str = "";
-        for(String source : sourceList){
+        for(ProcessIdentifier pi : processIdList){
             if(str.isEmpty()){
-                str+=source;
+                str+=pi.getURI();
             }
             else{
-                str+=";"+source;
+                str+=";"+pi.getURI();
             }
         }
         return str;
