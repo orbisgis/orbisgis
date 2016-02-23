@@ -85,10 +85,13 @@ public final class ST_D8Watershed extends AbstractScalarRasterFunction {
                                             int pixelX = (int) pixelGridCoord.getX();
                                             int pixelY = (int) pixelGridCoord.getY();
                                             int outletIndex = pixelY * grD8Direction.getWidth() + pixelX;
-                                                final Operation watershedFromOutletIndex = new D8OpWatershedFromOutletIndex(
-                                                        outletIndex);
-                                                return ValueFactory.createValue(grD8Direction.doOperation(watershedFromOutletIndex));
-                                        }
+                                            if( outletIndex > grD8Direction.getWidth()*grD8Direction.getHeight()){
+                                                return null;
+                                            }
+                                            final Operation watershedFromOutletIndex = new D8OpWatershedFromOutletIndex(
+                                                outletIndex);
+                                            return ValueFactory.createValue(grD8Direction.doOperation(watershedFromOutletIndex));
+                                    }
                                         return null;
 
                                 default:
