@@ -351,10 +351,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      */
     public List<String> getGeocatalogTableList(boolean onlySpatial) {
         List<String> list = new ArrayList<>();
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
-            String defaultSchema = "PUBLIC";
-            List<String> tableList = JDBCUtilities.getTableNames(connection.getMetaData(), null, defaultSchema, "%", null);
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            List<String> tableList = JDBCUtilities.getTableNames(connection.getMetaData(), null, null, "%", null);
             for(String table : tableList){
                 if(onlySpatial){
                     if(!SFSUtilities.getGeometryFields(connection, new TableLocation(table)).isEmpty()){
@@ -375,8 +373,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     @Override
     public Map<String, Object> getTableInformation(String tableName){
         Map<String, Object> map = new HashMap<>();
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             tableName = TableLocation.parse(tableName, isH2).getTable();
             TableLocation tableLocation = new TableLocation(tableName);
             boolean isSpatial = !SFSUtilities.getGeometryFields(connection, tableLocation).isEmpty();
@@ -406,8 +403,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     @Override
     public Map<String, Object> getFieldInformation(String tableName, String fieldName){
         Map<String, Object> map = new HashMap<>();
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             TableLocation tableLocation = new TableLocation(tableName);
             List<String> geometricFields = SFSUtilities.getGeometryFields(connection, tableLocation);
             boolean isGeometric = false;
@@ -452,8 +448,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      */
     public List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
         List<String> fieldList = new ArrayList<>();
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             DatabaseMetaData dmd = connection.getMetaData();
             ResultSet result = dmd.getColumns(connection.getCatalog(), null, tableName, "%");
             while(result.next()){
@@ -487,8 +482,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      */
     public List<String> getFieldValueList(String tableName, String fieldName) {
         List<String> fieldValues = new ArrayList<>();
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             fieldValues.addAll(JDBCUtilities.getUniqueFieldValues(connection, tableName, fieldName));
         } catch (SQLException e) {
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the field '"+tableName+
@@ -502,9 +496,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      * @param tableName Table to remove from the dataBase.
      */
     public void removeTempTable(String tableName){
-        try {
-            tableName = TableLocation.parse(tableName, isH2).getTable();
-            Connection connection = dataManager.getDataSource().getConnection();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             tableName = TableLocation.parse(tableName, isH2).getTable();
             Statement statement = connection.createStatement();
             statement.execute("DROP TABLE IF EXISTS " + tableName);
@@ -544,14 +536,13 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
      * @return Table name of the loaded file. Returns null if the file can't be loaded.
      */
     public String loadURI(URI uri, boolean copyInBase) {
-        try {
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             File f = new File(uri);
             //Get the table name of the file
             String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), isH2);
             String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
             //Find the corresponding driver and load the file
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
-            Connection connection = dataManager.getDataSource().getConnection();
             Statement statement = connection.createStatement();
             if(extension.equalsIgnoreCase("csv")){
                 statement.execute("CREATE TEMPORARY TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
@@ -603,9 +594,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     }
 
     private boolean testDBForMultiProcess(){
-        try {
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             if(dataManager != null){
-                Connection connection = dataManager.getDataSource().getConnection();
                 isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
                 if(isH2) {
                     Statement statement = connection.createStatement();
