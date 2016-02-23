@@ -334,4 +334,14 @@ public class WpsClient implements DockingPanel {
         pe.endWaiting();
         return tableName;
     }
+
+    /**
+     * Opens if the JTree the given tags.
+     * @param tags List of tag to open.
+     */
+    public void openTags(List<String> tags){
+        for(String tag : tags){
+            toolBoxPanel.openNode(tag, ToolBoxPanel.TAG_MODEL);
+        }
+    }
 }
