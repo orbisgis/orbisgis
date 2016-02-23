@@ -217,7 +217,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         .setLogicalGroup(TableEditorActions.LGROUP_READ));
 
                 // Edition is only available if there is a primary key
-                actions.add(new ActionAddColumn(tableEditableElement));
+                //TODO : actions.add(new ActionAddColumn(tableEditableElement));
                 actions.add(new ActionAddRow(tableEditableElement));
                 actions.add(new ActionRemoveRow(tableEditableElement, this, executorService, undoManager.getLimit()));
                 actions.add(new ActionUndo(tableEditableElement, undoManager));

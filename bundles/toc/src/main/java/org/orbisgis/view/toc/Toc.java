@@ -309,8 +309,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         .setOnRealLayerOnly(true)
                         .setOnVectorSourceOnly(true)
                         .setLogicalGroup(TocActionFactory.G_STYLE));
-            // DataSource Drawing Actions
-            popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_EDIT_GEOMETRY,
+            //TODO: DataSource Drawing Actions
+            /*popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_EDIT_GEOMETRY,
                     I18N.tr("Start editing"), I18N.tr("The edit geometry toolbar will update this layer's data source."),
                     TocIcon.getIcon("pencil"),
                     EventHandler.create(ActionListener.class,this, "onMenuSetActiveLayer"),null)
@@ -321,7 +321,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                     TocIcon.getIcon("stop"),
                     EventHandler.create(ActionListener.class,this, "onMenuUnsetActiveLayer"),null)
                         .setEnabledOnActiveLayer(true)
-                        .setSingleSelection(true));
+                        .setSingleSelection(true));*/
             popupActions.addAction(new LayerAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
                     I18N.tr("Add layer group"),I18N.tr("Add layer group to the map context"),
                     TocIcon.getIcon("folder_add"),
