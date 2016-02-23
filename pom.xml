@@ -91,9 +91,9 @@
                 <h2-package>com.h2database</h2-package>
                 <h2-gis-version>1.2.4-SNAPSHOT</h2-gis-version>
                 <sl4j-version>1.6.0</sl4j-version>
-                <rsyntax-version>2.0.7</rsyntax-version>
-                <rsyntax-ls-version>r795</rsyntax-ls-version>
-                <rsyntax-autocomplete-version>2.0.7</rsyntax-autocomplete-version>
+                <rsyntax-version>2.5.8</rsyntax-version>
+                <rsyntax-ls-version>2.5.8</rsyntax-ls-version>
+                <rsyntax-autocomplete-version>2.5.8</rsyntax-autocomplete-version>
                 <gettext-commons-version>0.9.8</gettext-commons-version>
                 <gettext-maven-plugin-version>1.2.4</gettext-maven-plugin-version>
                 <cts-version>1.3.3</cts-version>
