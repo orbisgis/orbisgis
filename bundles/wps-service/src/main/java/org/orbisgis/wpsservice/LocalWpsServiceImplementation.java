@@ -483,7 +483,17 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     public List<String> getFieldValueList(String tableName, String fieldName) {
         List<String> fieldValues = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            fieldValues.addAll(JDBCUtilities.getUniqueFieldValues(connection, tableName, fieldName));
+            tableName = TableLocation.parse(tableName, isH2).getTable();
+            List<String> fieldNames = JDBCUtilities.getFieldNames(connection.getMetaData(), tableName);
+            for(String field : fieldNames){
+                if(field.equalsIgnoreCase(fieldName)){
+                    fieldName = field;
+                    break;
+                }
+            }
+            fieldValues.addAll(JDBCUtilities.getUniqueFieldValues(connection,
+                    tableName,
+                    fieldName));
         } catch (SQLException e) {
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the field '"+tableName+
                     "."+fieldName+"' value list.\n"+e.getMessage());

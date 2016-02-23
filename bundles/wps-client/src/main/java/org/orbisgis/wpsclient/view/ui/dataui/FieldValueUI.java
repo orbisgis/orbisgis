@@ -147,8 +147,17 @@ public class FieldValueUI implements DataUI{
         //If the DataField related to the FieldValue has been modified, reload the dataField values
         if(fieldValue.isDataFieldModified()) {
             fieldValue.setDataFieldModified(false);
-            String tableName = ((URI)dataMap.get(fieldValue.getDataStoreIdentifier())).getSchemeSpecificPart();
-            String fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
+            String tableName;
+            String fieldName;
+            if(fieldValue.getDataFieldIdentifier().toString().contains("$")){
+                String[] split = fieldValue.getDataFieldIdentifier().toString().split("\\$");
+                tableName = split[1];
+                fieldName = split[2];
+            }
+            else{
+                tableName = ((URI) dataMap.get(fieldValue.getDataStoreIdentifier())).getSchemeSpecificPart();
+                fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
+            }
             DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
             model.removeAllElements();
             List<String> listFields = wpsClient.getWpsService().getFieldValueList(tableName, fieldName);

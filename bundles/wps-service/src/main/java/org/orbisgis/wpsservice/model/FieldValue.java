@@ -30,11 +30,11 @@ public class FieldValue extends ComplexData{
     /** Identifier of the 'parent' DataField */
     private URI dataFieldIdentifier;
     /** Indicates if the FieldValue should be reloaded because of a modification of the parent DataField.*/
-    private boolean isDataFieldModified = false;
+    private boolean isDataFieldModified = true;
     /** Identifier of the 'parent' DataStore */
     private URI dataStoreIdentifier;
     /** Indicates if the FieldValue should be reloaded because of a modification of the parent DataStore.*/
-    private boolean isDataStoreModified = false;
+    private boolean isDataStoreModified = true;
     /** Enable the selection of more than one value if true.*/
     private boolean multiSelection;
 

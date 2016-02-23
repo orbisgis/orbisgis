@@ -32,7 +32,7 @@ public class DataField extends ComplexData{
     /** Identifier of the parent DataStore */
     private URI dataStoreIdentifier;
     /** Indicates if the DataField should be reloaded because of a modification of the parent DataStore.*/
-    private boolean isSourceModified = false;
+    private boolean isSourceModified = true;
     /** List of type accepted for the field.*/
     private List<DataType> fieldTypeList;
     /** List of type excluded for the field.*/
