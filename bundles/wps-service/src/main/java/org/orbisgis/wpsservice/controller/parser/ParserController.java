@@ -110,7 +110,15 @@ public class ParserController {
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                            inputList.add(parser.parseInput(f, defaultValue, process.getAbsolutePath()));
+                             Input input = parser.parseInput(f, defaultValue, process.getAbsolutePath());
+                            if(input.getInputs() != null){
+                                for(Input in : input.getInputs()){
+                                    inputList.add(in);
+                                }
+                            }
+                            else{
+                                inputList.add(input);
+                            }
                             parsed = true;
                         }
                     }
@@ -123,7 +131,15 @@ public class ParserController {
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                            outputList.add(parser.parseOutput(f, process.getAbsolutePath()));
+                            Output output = parser.parseOutput(f, process.getAbsolutePath());
+                            if(output.getOutputs() != null){
+                                for(Output out : output.getOutputs()){
+                                    outputList.add(out);
+                                }
+                            }
+                            else{
+                                outputList.add(output);
+                            }
                             parsed = true;
                         }
                     }

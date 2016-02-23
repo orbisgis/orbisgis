@@ -145,7 +145,7 @@ public class Input extends DescriptionType {
      * Returns the nested input.
      * @return The nested input.
      */
-    public List<Input> getInput() {
+    public List<Input> getInputs() {
         return input;
     }
 
