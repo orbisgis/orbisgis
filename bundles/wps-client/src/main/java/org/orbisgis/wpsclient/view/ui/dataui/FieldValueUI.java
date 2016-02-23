@@ -36,12 +36,16 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * UI generator associated to the FieldValue
+ * DataUI implementation for FieldValue.
+ * This class generate an interactive UI dedicated to the configuration of a FieldValue.
+ * The interface generated will be used in the ProcessEditor.
  *
  * @author Sylvain PALOMINOS
  **/
 
 public class FieldValueUI implements DataUI{
+
+    /** Size constants **/
     private static final int MAX_JLIST_ROW_COUNT = 10;
     private static final int MIN_JLIST_ROW_COUNT = 1;
 

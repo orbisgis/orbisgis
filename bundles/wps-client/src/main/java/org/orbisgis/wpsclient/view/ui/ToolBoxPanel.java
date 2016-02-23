@@ -547,14 +547,6 @@ public class ToolBoxPanel extends JPanel {
      */
     private void cleanParentNode(TreeNodeWps node, FileTreeModel model){
         model.removeNodeFromParent(node);
-        /* Piece of code to remove empty parents
-        TreeNode[] treeNodeTab = model.getPathToRoot(node);
-        if(treeNodeTab.length>1) {
-            TreeNodeWps parent = (TreeNodeWps) treeNodeTab[treeNodeTab.length - 2];
-            if (parent != model.getRoot() && parent.isLeaf() && parent.getParent() != null) {
-                cleanParentNode(parent, model);
-            }
-        }*/
     }
 
     /**
@@ -636,7 +628,7 @@ public class ToolBoxPanel extends JPanel {
      * @param nodeType Type of the nodes.
      * @return List of child nodes.
      */
-    private List<TreeNodeWps> getAllChild(TreeNodeWps node, TreeNodeWps.NodeType nodeType){
+    private List<TreeNodeWps> getAllChildWithType(TreeNodeWps node, TreeNodeWps.NodeType nodeType){
         List<TreeNodeWps> nodeList = new ArrayList<>();
         for(int i=0; i<node.getChildCount(); i++){
             TreeNodeWps child = (TreeNodeWps) node.getChildAt(i);
@@ -644,7 +636,7 @@ public class ToolBoxPanel extends JPanel {
                 nodeList.add(child);
             }
             else if(!child.isLeaf()){
-                nodeList.addAll(getAllChild(child, nodeType));
+                nodeList.addAll(getAllChildWithType(child, nodeType));
             }
         }
         return nodeList;
@@ -727,7 +719,7 @@ public class ToolBoxPanel extends JPanel {
             //Else, use the filteredModel
             else {
                 tree.setModel(filteredModel);
-                for (TreeNodeWps node : getAllChild((TreeNodeWps) fileModel.getRoot(), TreeNodeWps.NodeType.PROCESS)) {
+                for (TreeNodeWps node : getAllChildWithType((TreeNodeWps) fileModel.getRoot(), TreeNodeWps.NodeType.PROCESS)) {
                     //For all the leaf, tests if they are accepted by the filter or not.
                     TreeNodeWps filteredRoot = (TreeNodeWps) filteredModel.getRoot();
                     List<TreeNodeWps> filteredNode = getChildWithUri(node.getUri(), filteredRoot);
@@ -755,27 +747,5 @@ public class ToolBoxPanel extends JPanel {
     public void dispose(){
         filterFactoryManager.getEventFilterChange().clearListeners();
         filterFactoryManager.getEventFilterFactoryChange().clearListeners();
-    }
-
-    /**
-     * Returns the list of the URI of the local file loaded.
-     * @return List of the URI of the local files loaded.
-     */
-    public String getListLocalSourcesAsString() {
-        String uriStr = "";
-        TreeNodeWps localhost = mapHostNode.get(LOCALHOST_URI);
-        if(localhost == null){
-            return uriStr;
-        }
-        for(int i=0; i<localhost.getChildCount(); i++){
-            TreeNodeWps child = ((TreeNodeWps)localhost.getChildAt(i));
-            if(uriStr.isEmpty()){
-                uriStr = child.getUri().toString();
-            }
-            else {
-                uriStr += ";"+child.getUri().toString();
-            }
-        }
-        return uriStr;
     }
 }

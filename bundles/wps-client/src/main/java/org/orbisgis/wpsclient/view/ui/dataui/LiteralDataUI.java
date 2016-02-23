@@ -47,16 +47,31 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * UI for the definition of the LiteralData inputs.
+ * DataUI implementation for LiteralData.
+ * This class generate an interactive UI dedicated to the configuration of a LiteralData.
+ * The interface generated will be used in the ProcessEditor.
  *
  * @author Sylvain PALOMINOS
  **/
 
 public class LiteralDataUI implements DataUI {
 
+    /** Size constants **/
     private static final int MAX_ROW_NUMBER = 10;
     private static final int MIN_ROW_NUMBER = 3;
 
+    /** Constant used to pass object as client property throw JComponents **/
+    private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
+    private static final String URI_PROPERTY = "URI_PROPERTY";
+    private static final String DATA_FIELD_PROPERTY = "DATA_FIELD_PROPERTY";
+    private static final String IS_OPTIONAL_PROPERTY = "IS_OPTIONAL_PROPERTY";
+    private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
+    private static final String TYPE_PROPERTY = "TYPE_PROPERTY";
+    private static final String BOOLEAN_PROPERTY = "BOOLEAN_PROPERTY";
+    private static final String TEXT_AREA_PROPERTY = "TEXT_AREA_PROPERTY";
+    private static final String VERTICAL_BAR_PROPERTY = "VERTICAL_BAR_PROPERTY";
+
+    /** WpsClient using the generated UI. */
     private WpsClient wpsClient;
 
     public void setWpsClient(WpsClient wpsClient){
@@ -66,31 +81,16 @@ public class LiteralDataUI implements DataUI {
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         Map<URI, Object> uriDefaultValueMap = new HashMap<>();
-        List<DescriptionType> descriptionTypeList = new ArrayList<>();
         DataDescription dataDescription = null;
         URI identifier = inputOrOutput.getIdentifier();
 
-        //Gets the descriptionType list if the argument is an input
+        //Gets the dataDescription
         if(inputOrOutput instanceof Input){
             Input input = (Input) inputOrOutput;
-            if(input.getInput() != null){
-                descriptionTypeList.addAll(input.getInput());
-            }
-            else{
-                descriptionTypeList.add(input);
-            }
             dataDescription = input.getDataDescription();
         }
-
-        //Gets the descriptionType list if the argument is an output
         if(inputOrOutput instanceof Output){
             Output output = (Output) inputOrOutput;
-            if(output.getOutput() != null){
-                descriptionTypeList.addAll(output.getOutput());
-            }
-            else{
-                descriptionTypeList.add(output);
-            }
             dataDescription = output.getDataDescription();
         }
 
@@ -134,7 +134,7 @@ public class LiteralDataUI implements DataUI {
             }
             switch (dataType) {
                 case STRING:
-                    return ToolBoxIcon.getIcon("string");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.STRING);
                 case UNSIGNED_BYTE:
                 case SHORT:
                 case LONG:
@@ -142,14 +142,14 @@ public class LiteralDataUI implements DataUI {
                 case INTEGER:
                 case DOUBLE:
                 case FLOAT:
-                    return ToolBoxIcon.getIcon("number");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.NUMBER);
                 case BOOLEAN:
-                    return ToolBoxIcon.getIcon("boolean");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.BOOLEAN);
                 default:
-                    return ToolBoxIcon.getIcon("undefined");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.UNDEFINED);
             }
         }
-        return ToolBoxIcon.getIcon("undefined");
+        return ToolBoxIcon.getIcon(ToolBoxIcon.UNDEFINED);
     }
 
     @Override
@@ -168,11 +168,11 @@ public class LiteralDataUI implements DataUI {
             //JPanel containing the component to set the input value
             JComponent dataField = new JPanel(new MigLayout("fill, ins 0, gap 0"));
 
-            comboBox.putClientProperty("dataField", dataField);
-            comboBox.putClientProperty("uri", input.getIdentifier());
-            comboBox.putClientProperty("dataMap", dataMap);
-            comboBox.putClientProperty("isOptional", input.getMinOccurs()==0);
-            comboBox.putClientProperty("toolTipText", input.getResume());
+            comboBox.putClientProperty(DATA_FIELD_PROPERTY, dataField);
+            comboBox.putClientProperty(URI_PROPERTY, input.getIdentifier());
+            comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
+            comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, input.getMinOccurs()==0);
+            comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, input.getResume());
             comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onBoxChange", "source"));
             comboBox.setBackground(Color.WHITE);
 
@@ -195,9 +195,9 @@ public class LiteralDataUI implements DataUI {
      */
     public void onBoxChange(Object source){
         JComboBox comboBox = (JComboBox) source;
-        Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty("dataMap");
-        URI uri = (URI) comboBox.getClientProperty("uri");
-        boolean isOptional = (boolean)comboBox.getClientProperty("isOptional");
+        Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
+        URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
+        boolean isOptional = (boolean)comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
         String s = (String) comboBox.getSelectedItem();
         JComponent dataComponent;
         switch(DataType.valueOf(s.toUpperCase())){
@@ -212,17 +212,17 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.add(trueButton);
                 dataComponent.add(falseButton);
                 //Put the data type, the dataMap and the uri as properties
-                falseButton.putClientProperty("type", DataType.BOOLEAN);
-                falseButton.putClientProperty("dataMap",dataMap);
-                falseButton.putClientProperty("uri", uri);
-                falseButton.putClientProperty("boolean", false);
-                trueButton.putClientProperty("type", DataType.BOOLEAN);
-                trueButton.putClientProperty("dataMap",dataMap);
-                trueButton.putClientProperty("uri", uri);
-                trueButton.putClientProperty("boolean", true);
-                dataComponent.putClientProperty("type", DataType.BOOLEAN);
-                dataComponent.putClientProperty("dataMap",dataMap);
-                dataComponent.putClientProperty("uri", uri);
+                falseButton.putClientProperty(TYPE_PROPERTY, DataType.BOOLEAN);
+                falseButton.putClientProperty(DATA_MAP_PROPERTY,dataMap);
+                falseButton.putClientProperty(URI_PROPERTY, uri);
+                falseButton.putClientProperty(BOOLEAN_PROPERTY, false);
+                trueButton.putClientProperty(TYPE_PROPERTY, DataType.BOOLEAN);
+                trueButton.putClientProperty(DATA_MAP_PROPERTY,dataMap);
+                trueButton.putClientProperty(URI_PROPERTY, uri);
+                trueButton.putClientProperty(BOOLEAN_PROPERTY, true);
+                dataComponent.putClientProperty(TYPE_PROPERTY, DataType.BOOLEAN);
+                dataComponent.putClientProperty(DATA_MAP_PROPERTY,dataMap);
+                dataComponent.putClientProperty(URI_PROPERTY, uri);
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri) != null){
                     if((Boolean)dataMap.get(uri)){
@@ -248,9 +248,9 @@ public class LiteralDataUI implements DataUI {
                 //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, Byte.MIN_VALUE, Byte.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
-                dataComponent.putClientProperty("type", DataType.BYTE);
-                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                dataComponent.putClientProperty(TYPE_PROPERTY, DataType.BYTE);
+                dataComponent.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
+                dataComponent.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
                     ((JSpinner) dataComponent).setValue(dataMap.get(uri));
@@ -266,9 +266,9 @@ public class LiteralDataUI implements DataUI {
                 //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
-                dataComponent.putClientProperty("type", DataType.INTEGER);
-                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                dataComponent.putClientProperty(TYPE_PROPERTY, DataType.INTEGER);
+                dataComponent.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
+                dataComponent.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
                     ((JSpinner) dataComponent).setValue(dataMap.get(uri));
@@ -284,9 +284,9 @@ public class LiteralDataUI implements DataUI {
                 //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
-                dataComponent.putClientProperty("type", DataType.LONG);
-                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                dataComponent.putClientProperty(TYPE_PROPERTY, DataType.LONG);
+                dataComponent.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
+                dataComponent.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
                     ((JSpinner) dataComponent).setValue(dataMap.get(uri));
@@ -302,9 +302,9 @@ public class LiteralDataUI implements DataUI {
                 //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, Short.MIN_VALUE, Short.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
-                dataComponent.putClientProperty("type", DataType.SHORT);
-                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                dataComponent.putClientProperty(TYPE_PROPERTY, DataType.SHORT);
+                dataComponent.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
+                dataComponent.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
                     ((JSpinner) dataComponent).setValue(dataMap.get(uri));
@@ -320,9 +320,9 @@ public class LiteralDataUI implements DataUI {
                 //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0, 0, Character.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
-                dataComponent.putClientProperty("type", DataType.UNSIGNED_BYTE);
-                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                dataComponent.putClientProperty(TYPE_PROPERTY, DataType.UNSIGNED_BYTE);
+                dataComponent.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
+                dataComponent.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
                     ((JSpinner) dataComponent).setValue(dataMap.get(uri));
@@ -338,9 +338,9 @@ public class LiteralDataUI implements DataUI {
                 //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0D, Integer.MIN_VALUE, Integer.MAX_VALUE, 0.1));
                 //Put the data type, the dataMap and the uri as properties
-                dataComponent.putClientProperty("type", DataType.DOUBLE);
-                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri", comboBox.getClientProperty("uri"));
+                dataComponent.putClientProperty(TYPE_PROPERTY, DataType.DOUBLE);
+                dataComponent.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
+                dataComponent.putClientProperty(URI_PROPERTY, comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
                     ((JSpinner) dataComponent).setValue(dataMap.get(uri));
@@ -356,9 +356,9 @@ public class LiteralDataUI implements DataUI {
                 //Instantiate the component
                 dataComponent = new JSpinner(new SpinnerNumberModel(0F, Float.MIN_VALUE, Float.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
-                dataComponent.putClientProperty("type", DataType.FLOAT);
-                dataComponent.putClientProperty("dataMap",comboBox.getClientProperty("dataMap"));
-                dataComponent.putClientProperty("uri",comboBox.getClientProperty("uri"));
+                dataComponent.putClientProperty(TYPE_PROPERTY, DataType.FLOAT);
+                dataComponent.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
+                dataComponent.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
                     ((JSpinner) dataComponent).setValue(dataMap.get(uri));
@@ -378,8 +378,8 @@ public class LiteralDataUI implements DataUI {
                 textArea.setRows(MIN_ROW_NUMBER);
                 //Put the data type, the dataMap and the uri as properties
                 Document doc = textArea.getDocument();
-                doc.putProperty("dataMap", comboBox.getClientProperty("dataMap"));
-                doc.putProperty("uri", comboBox.getClientProperty("uri"));
+                doc.putProperty(DATA_MAP_PROPERTY, comboBox.getClientProperty(DATA_MAP_PROPERTY));
+                doc.putProperty(URI_PROPERTY, comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 textArea.setText((String)dataMap.get(uri));
                 doc.addDocumentListener(EventHandler.create(
@@ -397,13 +397,13 @@ public class LiteralDataUI implements DataUI {
                 JScrollPane scrollPane = new JScrollPane(textArea);
                 scrollPane.getViewport().addChangeListener(EventHandler.create(
                         ChangeListener.class, this, "onViewportStateChange", ""));
-                scrollPane.getViewport().putClientProperty("textArea", textArea);
-                scrollPane.getViewport().putClientProperty("verticalBar", scrollPane.getVerticalScrollBar());
+                scrollPane.getViewport().putClientProperty(TEXT_AREA_PROPERTY, textArea);
+                scrollPane.getViewport().putClientProperty(VERTICAL_BAR_PROPERTY, scrollPane.getVerticalScrollBar());
                 scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
                 JPanel panel = new JPanel(new BorderLayout());
                 panel.add(scrollPane, BorderLayout.CENTER);
-                JButton paste = new JButton(ToolBoxIcon.getIcon("paste"));
-                paste.putClientProperty("textArea", textArea);
+                JButton paste = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
+                paste.putClientProperty(TEXT_AREA_PROPERTY, textArea);
                 paste.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
                 paste.setBorderPainted(false);
                 paste.setContentAreaFilled(false);
@@ -412,9 +412,9 @@ public class LiteralDataUI implements DataUI {
                 textArea.setText("");
                 break;
         }
-        dataComponent.setToolTipText(comboBox.getClientProperty("toolTipText").toString());
+        dataComponent.setToolTipText(comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY).toString());
         //Adds to the dataField the dataComponent
-        JPanel panel = (JPanel) comboBox.getClientProperty("dataField");
+        JPanel panel = (JPanel) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
         panel.removeAll();
         panel.add(dataComponent, "growx, wrap");
         if(isOptional) {
@@ -422,8 +422,12 @@ public class LiteralDataUI implements DataUI {
         }
     }
 
+    /**
+     * Action done on clicking on the paste button.
+     * @param ae ActionEvent get on clicking on the paste button.
+     */
     public void onPaste(ActionEvent ae){
-        JTextArea textArea = ((JTextArea)((JButton)ae.getSource()).getClientProperty("textArea"));
+        JTextArea textArea = ((JTextArea)((JButton)ae.getSource()).getClientProperty(TEXT_AREA_PROPERTY));
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         //odd: the Object param of getContents is not currently used
         Transferable contents = clipboard.getContents(null);
@@ -440,11 +444,12 @@ public class LiteralDataUI implements DataUI {
     /**
      * Call when the state of the viewport of the JScrollPane of the textArea state change.
      * It uses the vertical bar properties to detect when the user need more lines to write.
+     * @param e ChangeEvent.
      */
     public void onViewportStateChange(ChangeEvent e){
         JViewport vp = (JViewport)e.getSource();
-        JTextArea textArea = (JTextArea)vp.getClientProperty("textArea");
-        JScrollBar vertical = (JScrollBar)vp.getClientProperty("verticalBar");
+        JTextArea textArea = (JTextArea)vp.getClientProperty(TEXT_AREA_PROPERTY);
+        JScrollBar vertical = (JScrollBar)vp.getClientProperty(VERTICAL_BAR_PROPERTY);
         if(textArea.getRows()<MAX_ROW_NUMBER && vertical.getValue()>0 && vertical.getMaximum()>vertical.getVisibleAmount()){
             textArea.setRows(textArea.getRows()+1);
         }
@@ -452,12 +457,12 @@ public class LiteralDataUI implements DataUI {
 
     /**
      * Call if the TextArea for the String type is changed and save the new text in the dataMap.
-     * @param document
+     * @param document TextArea document.
      */
     public void onDocumentChanged(Document document){
 
-        Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty("dataMap");
-        URI uri = (URI) document.getProperty("uri");
+        Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
+        URI uri = (URI) document.getProperty(URI_PROPERTY);
         try {
             String text = document.getText(0, document.getLength());
             if(text.isEmpty()){
@@ -471,16 +476,16 @@ public class LiteralDataUI implements DataUI {
     }
 
     /**
-     * Call if the JComponent where the value is defined is changed and save the new value in the dataMap
-     * @param source
+     * Call if the JComponent where the value is defined is changed and save the new value in the dataMap.
+     * @param source Source JComponent.
      */
     public void onDataChanged(Object source){
-        Map<URI, Object> dataMap = (Map<URI, Object>) ((JComponent)source).getClientProperty("dataMap");
-        URI uri = (URI) ((JComponent)source).getClientProperty("uri");
+        Map<URI, Object> dataMap = (Map<URI, Object>) ((JComponent)source).getClientProperty(DATA_MAP_PROPERTY);
+        URI uri = (URI) ((JComponent)source).getClientProperty(URI_PROPERTY);
 
-        switch((DataType)((JComponent)source).getClientProperty("type")){
+        switch((DataType)((JComponent)source).getClientProperty(TYPE_PROPERTY)){
             case BOOLEAN:
-                dataMap.put(uri, ((JComponent)source).getClientProperty("boolean"));
+                dataMap.put(uri, ((JComponent)source).getClientProperty(BOOLEAN_PROPERTY));
                 break;
             case BYTE:
             case INTEGER:
