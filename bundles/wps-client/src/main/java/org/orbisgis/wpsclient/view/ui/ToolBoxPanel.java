@@ -392,6 +392,33 @@ public class ToolBoxPanel extends JPanel {
         refresh();
     }
 
+    public void addFolder(URI folderUri, URI parentUri){
+        TreeNodeWps hostNode = mapHostNode.get(LOCALHOST_URI);
+        List<TreeNodeWps> sourceList = getChildrenWithUri(parentUri, hostNode);
+        TreeNodeWps parentNode;
+        if(sourceList.isEmpty()){
+            parentNode = null;
+        }
+        else{
+            parentNode = sourceList.get(0);
+        }
+
+        String folderName = new File(folderUri).getName();
+        TreeNodeWps folderNode = new TreeNodeWps();
+        folderNode.setValidNode(true);
+        folderNode.setUserObject(folderName);
+        folderNode.setUri(folderUri);
+        folderNode.setNodeType(TreeNodeWps.NodeType.FOLDER);
+
+        if(parentNode == null) {
+            fileModel.insertNodeInto(folderNode, hostNode, 0);
+        }
+        else{
+            fileModel.insertNodeInto(folderNode, parentNode, 0);
+        }
+
+    }
+
     /**
      * Adds a source in the file model.
      */
