@@ -177,11 +177,18 @@ public class Layer extends BeanLayer {
                 if (isStream()) {
                     return stream.getEnvelope();
                 } else {
-                    ComputeTableEnvelope computeTableEnvelope = new ComputeTableEnvelope(cachedEnvelope);                    
-                    executeJob(computeTableEnvelope);                    
-                    return envelope;                    
+                    try (Connection connection = dataManager.getDataSource().getConnection()) {
+                        // Check if the table exists
+                        if (!JDBCUtilities.tableExists(connection, tableReference)) {
+                            LOGGER.info(I18N.tr("Cannot draw {0} the table does not exists", tableReference));
+                        }
+                        cachedEnvelope = SFSUtilities.getTableEnvelope(connection, TableLocation.parse(tableReference), "");
+                        envelope = cachedEnvelope;
+                    } catch (SQLException ex) {
+                        LOGGER.error(I18N.tr("Cannot compute layer envelope:\n") + ex.getLocalizedMessage());
+                    }
                 }
-            } catch (LayerException ex) {
+            } catch (Exception ex) {
                 LOGGER.error(I18N.tr("Cannot compute layer envelope:\n") + ex.getLocalizedMessage());
                 return new Envelope();
             }
@@ -189,52 +196,7 @@ public class Layer extends BeanLayer {
         return cachedEnvelope;
     }
     
-    /**
-     * Compute the full extend of a table 
-     */
-    public class ComputeTableEnvelope extends SwingWorkerPM{
-
-        private  final I18n I18N = I18nFactory.getI18n(ComputeTableEnvelope.class);
-        private  final Logger LOGGER = LoggerFactory.getLogger(ComputeTableEnvelope.class);
-        private Envelope cachedEnvelope;
-        
-        public ComputeTableEnvelope(Envelope cachedEnvelope){
-            this.cachedEnvelope=cachedEnvelope;
-            setTaskName(I18N.tr("Computing layer enveloppe..."));
-        }
-        
-        @Override
-        protected Object doInBackground() throws Exception {      
-            try (Connection connection = dataManager.getDataSource().getConnection()) {
-                        // Check if the table exists
-                        if (!JDBCUtilities.tableExists(connection, tableReference)) {
-                            LOGGER.info(I18N.tr("Cannot draw {0} the table does not exists", tableReference));
-                        }                        
-                        TableLocation location = TableLocation.parse(tableReference);
-                        List<String> geomFields = SFSUtilities.getGeometryFields(connection, location);
-                        if (geomFields.isEmpty()) {
-                            throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableReference));
-                        }
-                        String sqlExtent = "SELECT ST_EXTENT(" + TableLocation.quoteIdentifier(geomFields.get(0)) + ") AS ext from "+ location;
-                        
-                        Statement st = connection.createStatement();
-                        PropertyChangeListener cancelListener = EventHandler.create(PropertyChangeListener.class, st, "cancel");                        
-                        this.getProgressMonitor().addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelListener);
-                        try {
-                            ResultSet rs = st.executeQuery(sqlExtent);
-                            if (rs.next()){
-                                cachedEnvelope = ((Geometry)rs.getObject(1)).getEnvelopeInternal();
-                            }
-                        } finally {
-                            this.getProgressMonitor().removePropertyChangeListener(cancelListener);
-                        }
-                        envelope = cachedEnvelope;
-                    } catch (SQLException ex) {
-                        LOGGER.error(I18N.tr("Cannot compute layer envelope:\n") + ex.getLocalizedMessage());
-                    }
-            return null;        
-        }
-    }
+    
 
     @Override
     public void close() throws LayerException {
@@ -342,7 +304,7 @@ public class Layer extends BeanLayer {
         return stream;
     }
     
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    @Reference
     public void setExecutorService(ExecutorService executorService) {
         this.executorService = executorService;
     }
