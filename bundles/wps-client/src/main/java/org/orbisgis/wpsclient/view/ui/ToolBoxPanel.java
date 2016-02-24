@@ -559,25 +559,15 @@ public class ToolBoxPanel extends JPanel {
         TreeNodeWps node = (TreeNodeWps) tree.getLastSelectedPathComponent();
         if(node != null) {
             if (node.isLeaf()) {
-                node.setValidNode(wpsClient.checkProcess(node.getUri()));
+                if(!wpsClient.checkProcess(node.getUri())){
+                    remove(node);
+                }
             } else {
                 //For each node, test if it is valid, and set the state of the corresponding node in the trees.
                 for (TreeNodeWps child : getAllLeaf(node)) {
-                    boolean isValid = wpsClient.checkProcess(child.getUri());
-                    List<TreeNodeWps> updatedList;
-                    updatedList = getChildrenWithUri(child.getUri(), (TreeNodeWps) tagModel.getRoot());
-                    for(TreeNodeWps updated : updatedList) {
-                        updated.setValidNode(isValid);
-                        tagModel.nodeChanged(updated);
+                    if(!wpsClient.checkProcess(child.getUri())){
+                        remove(child);
                     }
-                    updatedList = getChildrenWithUri(child.getUri(), (TreeNodeWps) fileModel.getRoot());
-                    for(TreeNodeWps updated : updatedList) {
-                        updated.setValidNode(isValid);
-                        fileModel.nodeChanged(updated);
-                    }
-                }
-                if (tree.getModel().equals(fileModel)) {
-                    wpsClient.addLocalSource(node.getUri());
                 }
             }
         }
