@@ -51,9 +51,10 @@ public abstract class AbstractLayer implements ILayer {
 
 	protected ArrayList<LayerListener> listeners = new ArrayList<LayerListener>();
 
-	/* getters and setters */
+	
 	/**
 	 * 
+         * @return the main layer
 	 * @see org.orbisgis.coremap.layerModel.ILayer#getParent()
 	 */
 	public ILayer getParent() {
@@ -62,12 +63,15 @@ public abstract class AbstractLayer implements ILayer {
 
 	/**
 	 * 
+         * @param parent to set
 	 * @see org.orbisgis.coremap.layerModel.ILayer#setParent()
 	 */
+        @Override
 	public void setParent(final ILayer parent) {
 		this.parent = parent;
 	}
 
+        @Override
         public Set<String> getAllLayersNames() {
 		final Set<String> result = new HashSet<String>();
 		result.add(getName());
@@ -93,6 +97,10 @@ public abstract class AbstractLayer implements ILayer {
 		return tmpName;
 	}
 
+        /**
+         * Get the root layer
+         * @return 
+         */
 	public ILayer getRoot() {
 		ILayer root = this;
 		while (null != root.getParent()) {
@@ -131,6 +139,8 @@ public abstract class AbstractLayer implements ILayer {
         public void setStyles(List<Style> fts) {
                 this.fireStyleChanged();
         }
+        
+        @Override
 	public ILayer[] getLayerPath() {
 		ArrayList<ILayer> path = new ArrayList<ILayer>();
 		ILayer current = this;
@@ -157,6 +167,7 @@ public abstract class AbstractLayer implements ILayer {
 		fireLayerMovedEvent(oldParent, this);
 	}
 
+        @Override
 	public void moveTo(ILayer layer) throws LayerException {
 		if (CollectionUtils.contains(getLayersRecursively(), layer)) {
 			throw new LayerException(I18N.tr("Cannot move a layer to its child"));
@@ -167,6 +178,9 @@ public abstract class AbstractLayer implements ILayer {
 		fireLayerMovedEvent(oldParent, this);
 	}
 
+        /**
+         * Event if the name of the layer change
+         */
 	protected void fireNameChanged() {
 		if (null != listeners) {
 			for (LayerListener listener : listeners) {
@@ -186,6 +200,11 @@ public abstract class AbstractLayer implements ILayer {
 		}
 	}
 
+        /**
+         * Event if the layer is moved
+         * @param parent
+         * @param layer 
+         */
 	private void fireLayerMovedEvent(ILayer parent, ILayer layer) {
                 LayerCollectionEvent evt = new LayerCollectionEvent(parent,
 					new ILayer[] { layer });
@@ -198,6 +217,9 @@ public abstract class AbstractLayer implements ILayer {
 
 	}
 
+        /**
+         * Event if the style of the layer change
+         */
 	protected void fireStyleChanged() {
 		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners
 				.clone();
@@ -206,6 +228,10 @@ public abstract class AbstractLayer implements ILayer {
 		}
 	}
 
+        /**
+         * Event if a new layer is added
+         * @param added 
+         */
 	protected void fireLayerAddedEvent(ILayer[] added) {
 		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners
 				.clone();
@@ -214,6 +240,10 @@ public abstract class AbstractLayer implements ILayer {
 		}
 	}
 
+        /**
+         * Event if a layer(s) is (are) removed
+         * @param removed 
+         */
 	protected void fireLayerRemovedEvent(ILayer[] removed) {
 		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners
 				.clone();
@@ -222,6 +252,11 @@ public abstract class AbstractLayer implements ILayer {
 		}
 	}
 
+        /**
+         * Event when the layer is removed
+         * @param toRemove
+         * @return 
+         */
 	protected boolean fireLayerRemovingEvent(ILayer[] toRemove) {
 		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners
 				.clone();
@@ -237,17 +272,17 @@ public abstract class AbstractLayer implements ILayer {
         
     @Override
     public void addLayer(ILayer layer)  throws LayerException  {
-        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); 
     }
 
     @Override
     public ILayer remove(ILayer layer)  throws LayerException {
-        throw new IllegalArgumentException(I18N.tr("This layer does not have children")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer does not have children")); 
     }
 
     @Override
     public ILayer remove(String layerName)  throws LayerException {
-        throw new IllegalArgumentException(I18N.tr("This layer does not have children")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer does not have children")); 
     }
 
     @Override
@@ -267,7 +302,7 @@ public abstract class AbstractLayer implements ILayer {
 
     @Override
     public void insertLayer(ILayer layer, int index) throws LayerException {
-        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children"));
     }
 
     @Override
@@ -282,18 +317,18 @@ public abstract class AbstractLayer implements ILayer {
 
     @Override
     public void addLayer(ILayer layer, boolean isMoving) throws LayerException {
-        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); 
     }
 
     @Override
     public ILayer remove(ILayer layer, boolean isMoving) throws LayerException {
-        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); 
     }
 
     @Override
     public void insertLayer(ILayer layer, int index, boolean isMoving)
             throws LayerException {
-        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); 
     }
 
     @Override
@@ -304,7 +339,7 @@ public abstract class AbstractLayer implements ILayer {
     @Override
     public ILayer getLayer(final int index) {
         throw new ArrayIndexOutOfBoundsException(
-                I18N.tr("This layer doesn't contain any child")); //$NON-NLS-1$
+                I18N.tr("This layer doesn't contain any child")); 
     }
 
     @Override

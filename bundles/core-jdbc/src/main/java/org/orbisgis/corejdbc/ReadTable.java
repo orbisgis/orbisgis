@@ -354,12 +354,12 @@ public class ReadTable {
                 pm.removePropertyChangeListener(listener);
             }
         }
-        res[STATS.SUM.ordinal()] = Double.valueOf(stats.getSum()).toString();
-        res[STATS.AVG.ordinal()] = Double.valueOf(stats.getMean()).toString();
-        res[STATS.COUNT.ordinal()] = Long.valueOf(stats.getN()).toString();
-        res[STATS.MIN.ordinal()] = Double.valueOf(stats.getMin()).toString();
-        res[STATS.MAX.ordinal()] = Double.valueOf(stats.getMax()).toString();
-        res[STATS.STDDEV_SAMP.ordinal()] = Double.valueOf(stats.getStandardDeviation()).toString();
+        res[STATS.SUM.ordinal()] = Double.toString(stats.getSum());
+        res[STATS.AVG.ordinal()] = Double.toString(stats.getMean());
+        res[STATS.COUNT.ordinal()] = Long.toString(stats.getN());
+        res[STATS.MIN.ordinal()] = Double.toString(stats.getMin());
+        res[STATS.MAX.ordinal()] = Double.toString(stats.getMax());
+        res[STATS.STDDEV_SAMP.ordinal()] = Double.toString(stats.getStandardDeviation());
         return res;
     }
 

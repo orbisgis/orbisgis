@@ -120,7 +120,6 @@ import org.orbisgis.coremap.layerModel.LayerListenerEvent;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.layerModel.MapContextListener;
 import org.orbisgis.coremap.layerModel.SelectionEvent;
-import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.renderer.se.CompositeSymbolizer;
 import org.orbisgis.coremap.renderer.se.Rule;
 import org.orbisgis.coremap.renderer.se.SeExceptions;
@@ -133,7 +132,6 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
-import org.orbisgis.view.toc.actions.EditLayerSourceAction;
 import org.orbisgis.view.toc.actions.cui.SimpleStyleEditor;
 import org.orbisgis.view.toc.actions.cui.legend.wizard.LegendWizard;
 import org.orbisgis.view.toc.wms.LayerConfigurationPanel;
@@ -309,8 +307,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                         .setOnRealLayerOnly(true)
                         .setOnVectorSourceOnly(true)
                         .setLogicalGroup(TocActionFactory.G_STYLE));
-            // DataSource Drawing Actions
-            popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_EDIT_GEOMETRY,
+            //TODO: DataSource Drawing Actions
+            /*popupActions.addAction(new EditLayerSourceAction(this,TocActionFactory.A_EDIT_GEOMETRY,
                     I18N.tr("Start editing"), I18N.tr("The edit geometry toolbar will update this layer's data source."),
                     TocIcon.getIcon("pencil"),
                     EventHandler.create(ActionListener.class,this, "onMenuSetActiveLayer"),null)
@@ -321,7 +319,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt, TableEditList
                     TocIcon.getIcon("stop"),
                     EventHandler.create(ActionListener.class,this, "onMenuUnsetActiveLayer"),null)
                         .setEnabledOnActiveLayer(true)
-                        .setSingleSelection(true));
+                        .setSingleSelection(true));*/
             popupActions.addAction(new LayerAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
                     I18N.tr("Add layer group"),I18N.tr("Add layer group to the map context"),
                     TocIcon.getIcon("folder_add"),
