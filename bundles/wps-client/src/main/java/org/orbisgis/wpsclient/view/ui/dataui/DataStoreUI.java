@@ -28,7 +28,7 @@ import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.wpsclient.view.utils.sif.JPanelComboBoxRenderer;
+import org.orbisgis.wpsclient.view.utils.sif.JPanelListRenderer;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.model.*;
@@ -127,7 +127,7 @@ public class DataStoreUI implements DataUI{
         //The combo box will contains ContainerItems linking a JPanel with a table name
         JComboBox<ContainerItem<Object>> dataStoreTypeBox = new JComboBox<>();
         //This custom renderer will display in the comboBox a JLabel containing the type icon and the type name.
-        dataStoreTypeBox.setRenderer(new JPanelComboBoxRenderer());
+        dataStoreTypeBox.setRenderer(new JPanelListRenderer());
         //Adds all the available type to the comboBox
         if(dataStore.isGeocatalog()) {
             dataStoreTypeBox.addItem(new ContainerItem<Object>(
@@ -163,7 +163,7 @@ public class DataStoreUI implements DataUI{
         JPanel geocatalogComponent = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         //If the DataStore is an input, uses a custom comboBox renderer to show an icon, the table name, the SRID ...
         if(inputOrOutput instanceof Input) {
-            geocatalogComboBox.setRenderer(new JPanelComboBoxRenderer());
+            geocatalogComboBox.setRenderer(new JPanelListRenderer());
         }
         //If it is an output, just show the table names, and add the 'new table' item.
         else {

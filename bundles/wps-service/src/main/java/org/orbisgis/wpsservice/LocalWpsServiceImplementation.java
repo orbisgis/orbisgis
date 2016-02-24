@@ -433,12 +433,18 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
                             fieldList.add(result.getObject(4).toString());
                         }
                     }
-                } else{
+                } else if(!excludedTypes.isEmpty()){
+                    boolean accepted = true;
                     for (DataType dataType : excludedTypes) {
-                        if (!DataType.testDBType(dataType, result.getObject(6).toString())) {
-                            fieldList.add(result.getObject(4).toString());
+                        if (DataType.testDBType(dataType, result.getObject(6).toString())) {
+                            accepted = false;
                         }
                     }
+                    if(accepted) {
+                        fieldList.add(result.getObject(4).toString());
+                    }
+                }else{
+                    fieldList.add(result.getObject(4).toString());
                 }
             }
         } catch (SQLException e) {

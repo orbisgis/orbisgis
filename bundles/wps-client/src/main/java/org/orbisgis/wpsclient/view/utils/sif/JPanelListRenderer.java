@@ -38,7 +38,7 @@ import java.awt.*;
 /**
  * @author Sylvain PALOMINOS
  */
-public class JPanelComboBoxRenderer extends JPanel implements ListCellRenderer<ContainerItem<Object>>{
+public class JPanelListRenderer extends JPanel implements ListCellRenderer<ContainerItem<Object>>{
 
     @Override
     public Component getListCellRendererComponent(JList<? extends ContainerItem<Object>> panelList,
