@@ -25,6 +25,8 @@ import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
+import org.orbisgis.wpsservice.controller.utils.CancelClosure;
+import org.orbisgis.wpsservice.controller.utils.WpsSql;
 import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.Output;
 import org.orbisgis.wpsservice.model.Process;
@@ -34,10 +36,8 @@ import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Class used to manage process.
@@ -53,6 +53,7 @@ public class ProcessManager {
     private ParserController parserController;
     private DataSourceService dataSourceService;
     private LocalWpsService wpsService;
+    private Map<Process, CancelClosure> closureMap;
 
     /**
      * Main constructor.
@@ -62,6 +63,7 @@ public class ProcessManager {
         parserController = new ParserController(wpsService);
         this.dataSourceService = dataSourceService;
         this.wpsService = wpsService;
+        this.closureMap = new HashMap<>();
     }
 
     /**
@@ -116,7 +118,11 @@ public class ProcessManager {
     public GroovyObject executeProcess(Process process,
                                        Map<URI, Object> dataMap){
         GroovyObject groovyObject = createProcess(process, dataMap);
-        groovyObject.setProperty("sql", new Sql(dataSourceService));
+        WpsSql sql = new WpsSql(dataSourceService);
+        CancelClosure closure = new CancelClosure(this);
+        closureMap.put(process, closure);
+        sql.withStatement(closure);
+        groovyObject.setProperty("sql", sql);
         groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
         groovyObject.setProperty("isH2", wpsService.isH2());
         groovyObject.invokeMethod("processing", null);
@@ -264,5 +270,9 @@ public class ProcessManager {
             }
         }
         return str;
+    }
+
+    public void cancelProcess(Process process){
+        closureMap.get(process).cancel();
     }
 }

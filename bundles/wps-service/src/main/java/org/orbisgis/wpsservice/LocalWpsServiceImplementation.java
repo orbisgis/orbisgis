@@ -251,6 +251,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){
 
         pel.setStartTime(System.currentTimeMillis());
+        Map<URI, Object> stash = new HashMap<>();
         //Catch all the Exception that can be thrown during the script execution.
         try {
             //Print in the log the process execution start
@@ -258,7 +259,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
 
             //Pre-process the data
             pel.appendLog(ProcessExecutionListener.LogType.INFO, "Pre-processing");
-            Map<URI, Object> stash = new HashMap<>();
             for(DescriptionType inputOrOutput : process.getOutput()){
                 stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
             }
@@ -287,8 +287,11 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
             //Print in the log the process execution error
             pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Error during the execution of the " +
-                    "process '"+process.getTitle()+"'\n"+e.getMessage());
+            //Post-process the data
+            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
+            for(DescriptionType inputOrOutput : process.getInput()){
+                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
+            }
         }
     }
 
@@ -598,5 +601,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
         return false;
+    }
+
+    @Override
+    public void cancelProcess(URI uri){
+        processManager.cancelProcess(processManager.getProcess(uri));
     }
 }

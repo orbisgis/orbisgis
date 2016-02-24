@@ -23,6 +23,7 @@ import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
+import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -129,6 +130,7 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
         for(ProcessEditableElement pee : listPee){
             if(pee.getId().equals(id)){
                 pee.firePropertyChangeEvent(new PropertyChangeEvent(this, ProcessEditableElement.CANCEL, null, null));
+                pee.appendLog(ProcessExecutionListener.LogType.ERROR, "Process cancelled by the user");
             }
         }
     }

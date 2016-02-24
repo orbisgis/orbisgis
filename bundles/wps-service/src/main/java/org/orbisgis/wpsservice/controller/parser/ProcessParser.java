@@ -28,6 +28,7 @@ import org.orbisgis.wpsservice.model.Output;
 import org.orbisgis.wpsservice.model.Process;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.List;
@@ -38,10 +39,10 @@ import java.util.List;
 
 public class ProcessParser {
 
-    public Process parseProcess(List<Input> inputList, List<Output> outputList, Method processingMethod, String processName){
+    public Process parseProcess(List<Input> inputList, List<Output> outputList, Method processingMethod, URI processURI){
         try {
-            Process process = new Process(processName,
-                    URI.create(processName),
+            Process process = new Process(new File(processURI).getName(),
+                    processURI,
                     outputList);
             ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(DescriptionTypeAttribute.class),
                     process);

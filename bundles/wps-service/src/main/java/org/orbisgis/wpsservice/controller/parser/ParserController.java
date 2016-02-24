@@ -154,7 +154,7 @@ public class ParserController {
             Process p = processParser.parseProcess(inputList,
                     outputList,
                     clazz.getDeclaredMethod("processing"),
-                    process.getAbsolutePath());
+                    process.toURI());
             link(p);
             return new AbstractMap.SimpleEntry<>(p, clazz);
         } catch (NoSuchMethodException e) {
