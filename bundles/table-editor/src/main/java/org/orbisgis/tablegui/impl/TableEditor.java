@@ -513,6 +513,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             return false;
         }
 
+        /**
+         * Zoom on the current selection
+         */
         public void onMenuZoomToSelection() {
                 if(table.getSelectionModel().isSelectionEmpty()) {
                         return;

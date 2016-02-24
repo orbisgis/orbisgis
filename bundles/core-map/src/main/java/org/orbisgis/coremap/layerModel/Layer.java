@@ -29,57 +29,69 @@
 package org.orbisgis.coremap.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
-
+import com.vividsolutions.jts.geom.Geometry;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.concurrent.ExecutorService;
+import javax.swing.SwingWorker;
 import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtility;
-import org.orbisgis.coremap.stream.GeoStream;
-import org.orbisgis.coremap.stream.SimpleWMSDriver;
-import org.orbisgis.coremap.stream.WMSStreamSource;
+import org.orbisgis.commons.progress.ProgressMonitor;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.renderer.se.Rule;
 import org.orbisgis.coremap.renderer.se.Style;
-import org.h2gis.utilities.SFSUtilities;
+import org.orbisgis.coremap.stream.GeoStream;
+import org.orbisgis.coremap.stream.SimpleWMSDriver;
+import org.orbisgis.coremap.stream.WMSStreamSource;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 public class Layer extends BeanLayer {
     // When dataURI is not specified, this layer use the tableReference instead of external URI
     private static final String JDBC_REFERENCE_SCHEME = "WORKSPACE";
 
-	private String tableReference = "";
+    private String tableReference = "";
     private URI dataURI;
     private DataManager dataManager;
     private Envelope envelope = new Envelope();
-    private GeoStream stream;
+    private GeoStream stream;    
+    private ExecutorService executorService = null;
 
-	public Layer(String name, String tableReference,DataManager dataManager) {
-		super(name);
-		this.tableReference = tableReference;
+    public Layer(String name, String tableReference, DataManager dataManager) {
+        super(name);
+        this.tableReference = tableReference;
         this.dataManager = dataManager;
-	}
+    }
 
-    public Layer(String name, URI dataURI,DataManager dataManager) {
+    public Layer(String name, URI dataURI, DataManager dataManager) {
         super(name);
         this.dataURI = dataURI;
         this.dataManager = dataManager;
-        if(JDBC_REFERENCE_SCHEME.equalsIgnoreCase(dataURI.getScheme())) {
+        if (JDBC_REFERENCE_SCHEME.equalsIgnoreCase(dataURI.getScheme())) {
             try {
-                Map<String,String> query = URIUtility.getQueryKeyValuePairs(URI.create(dataURI.getSchemeSpecificPart()));
-                tableReference = new TableLocation(query.get("catalog"),query.get("schema"),query.get("table")).toString();
+                Map<String, String> query = URIUtility.getQueryKeyValuePairs(URI.create(dataURI.getSchemeSpecificPart()));
+                tableReference = new TableLocation(query.get("catalog"), query.get("schema"), query.get("table")).toString();
             } catch (UnsupportedEncodingException ex) {
                 LOGGER.trace(ex.getLocalizedMessage(), ex);
             }
@@ -93,22 +105,22 @@ public class Layer extends BeanLayer {
 
     @Override
     public URI getDataUri() {
-        if(dataURI!=null) {
+        if (dataURI != null) {
             return dataURI;
         } else {
             TableLocation table = TableLocation.parse(tableReference);
-            try(Connection connection = dataManager.getDataSource().getConnection()) {
+            try (Connection connection = dataManager.getDataSource().getConnection()) {
                 // Look at table remarks if there is a file reference
                 DatabaseMetaData meta = connection.getMetaData();
-                try(ResultSet tablesRs = meta.getTables(table.getCatalog(),table.getSchema(),table.getTable(),null)) {
-                    if(tablesRs.next()) {
+                try (ResultSet tablesRs = meta.getTables(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
+                    if (tablesRs.next()) {
                         String remarks = tablesRs.getString("REMARKS");
-                        if(remarks != null) {
-                            if(remarks.toLowerCase().startsWith("file:")) {
+                        if (remarks != null) {
+                            if (remarks.toLowerCase().startsWith("file:")) {
                                 try {
                                     // The table is extracted from a file
-                                    URI fileUri =  URI.create(remarks);
-                                    if(new File(fileUri).exists()) {
+                                    URI fileUri = URI.create(remarks);
+                                    if (new File(fileUri).exists()) {
                                         dataURI = fileUri;
                                         return fileUri;
                                     }
@@ -131,9 +143,9 @@ public class Layer extends BeanLayer {
                 }
                 // Extract table location on database
                 URI databaseUri = URI.create(meta.getURL());
-                String query = String.format("catalog=%s&schema=%s&table=%s",table.getCatalog(),table.getSchema(), table.getTable());
-                return URI.create(databaseUri.toString()+"?"+query);
-            } catch (SQLException|IllegalArgumentException ex) {
+                String query = String.format("catalog=%s&schema=%s&table=%s", table.getCatalog(), table.getSchema(), table.getTable());
+                return URI.create(databaseUri.toString() + "?" + query);
+            } catch (SQLException | IllegalArgumentException ex) {
                 LOGGER.warn(I18N.tr("Unable to create URI from Layer.Please fix the layer named {0}", getName()));
                 return null;
             }
@@ -148,9 +160,9 @@ public class Layer extends BeanLayer {
     }
 
     @Override
-	public String getTableReference() {
-		return tableReference;
-	}
+    public String getTableReference() {
+        return tableReference;
+    }
 
     @Override
     public void clearCache() {
@@ -158,41 +170,81 @@ public class Layer extends BeanLayer {
     }
 
     @Override
-	public Envelope getEnvelope() {
+    public Envelope getEnvelope() {
         Envelope cachedEnvelope = envelope;
-        if(cachedEnvelope.isNull()) {
+        if (cachedEnvelope.isNull()) {
             try {
-                if(isStream()) {
+                if (isStream()) {
                     return stream.getEnvelope();
                 } else {
-                    try(Connection connection = dataManager.getDataSource().getConnection()) {
-                        // Check if the table exists
-                        if(!JDBCUtilities.tableExists(connection, tableReference)) {
-                            LOGGER.info(I18N.tr("Cannot draw {0} the table does not exists", tableReference));
-                        }
-                        cachedEnvelope = SFSUtilities.getTableEnvelope(connection, TableLocation.parse(tableReference),"");
-                        envelope = cachedEnvelope;
-                    } catch (SQLException ex) {
-                        LOGGER.error(I18N.tr("Cannot compute layer envelope:\n")+ex.getLocalizedMessage());
-                    }
+                    ComputeTableEnvelope computeTableEnvelope = new ComputeTableEnvelope(cachedEnvelope);                    
+                    executeJob(computeTableEnvelope);                    
+                    return envelope;                    
                 }
-            } catch (Exception ex) {
-                LOGGER.error(I18N.tr("Cannot compute layer envelope:\n")+ex.getLocalizedMessage());
+            } catch (LayerException ex) {
+                LOGGER.error(I18N.tr("Cannot compute layer envelope:\n") + ex.getLocalizedMessage());
                 return new Envelope();
             }
         }
-		return cachedEnvelope;
-	}
+        return cachedEnvelope;
+    }
+    
+    /**
+     * Compute the full extend of a table 
+     */
+    public class ComputeTableEnvelope extends SwingWorkerPM{
+
+        private  final I18n I18N = I18nFactory.getI18n(ComputeTableEnvelope.class);
+        private  final Logger LOGGER = LoggerFactory.getLogger(ComputeTableEnvelope.class);
+        private Envelope cachedEnvelope;
+        
+        public ComputeTableEnvelope(Envelope cachedEnvelope){
+            this.cachedEnvelope=cachedEnvelope;
+            setTaskName(I18N.tr("Computing layer enveloppe..."));
+        }
+        
+        @Override
+        protected Object doInBackground() throws Exception {      
+            try (Connection connection = dataManager.getDataSource().getConnection()) {
+                        // Check if the table exists
+                        if (!JDBCUtilities.tableExists(connection, tableReference)) {
+                            LOGGER.info(I18N.tr("Cannot draw {0} the table does not exists", tableReference));
+                        }                        
+                        TableLocation location = TableLocation.parse(tableReference);
+                        List<String> geomFields = SFSUtilities.getGeometryFields(connection, location);
+                        if (geomFields.isEmpty()) {
+                            throw new SQLException(I18N.tr("Table table {0} does not contain any geometry fields", tableReference));
+                        }
+                        String sqlExtent = "SELECT ST_EXTENT(" + TableLocation.quoteIdentifier(geomFields.get(0)) + ") AS ext from "+ location;
+                        
+                        Statement st = connection.createStatement();
+                        PropertyChangeListener cancelListener = EventHandler.create(PropertyChangeListener.class, st, "cancel");                        
+                        this.getProgressMonitor().addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelListener);
+                        try {
+                            ResultSet rs = st.executeQuery(sqlExtent);
+                            if (rs.next()){
+                                cachedEnvelope = ((Geometry)rs.getObject(1)).getEnvelopeInternal();
+                            }
+                        } finally {
+                            this.getProgressMonitor().removePropertyChangeListener(cancelListener);
+                        }
+                        envelope = cachedEnvelope;
+                    } catch (SQLException ex) {
+                        LOGGER.error(I18N.tr("Cannot compute layer envelope:\n") + ex.getLocalizedMessage());
+                    }
+            return null;        
+        }
+    }
 
     @Override
-	public void close() throws LayerException {
+    public void close() throws LayerException {
 
-	}
+    }
 
     @Override
-	public void open() throws LayerException {
-        if(tableReference.isEmpty()) {
-            if("http".equalsIgnoreCase(dataURI.getScheme())) {
+    public void open() throws LayerException {
+        if (tableReference.isEmpty()) {
+            if ("http".equalsIgnoreCase(dataURI.getScheme())) {
                 SimpleWMSDriver driver = new SimpleWMSDriver();
                 try {
                     driver.open(new WMSStreamSource(dataURI));
@@ -202,22 +254,22 @@ public class Layer extends BeanLayer {
                 stream = driver;
             } else {
                 try {
-                    tableReference =  dataManager.registerDataSource(dataURI);
+                    tableReference = dataManager.registerDataSource(dataURI);
                 } catch (Exception ex) {
                     LOGGER.warn(I18N.tr("Unable to load the data source uri {0}.", dataURI), ex);
                 }
             }
-        } else if(dataURI == null) {
+        } else if (dataURI == null) {
             // Check if the table exists
             try {
-                if(!dataManager.isTableExists(tableReference)) {
+                if (!dataManager.isTableExists(tableReference)) {
                     LOGGER.warn(I18N.tr("Specified table '{0}' does not exists, and no source URI is given", tableReference));
                 }
             } catch (SQLException ex) {
-                LOGGER.warn("Error while fetching table list",ex);
+                LOGGER.warn("Error while fetching table list", ex);
             }
         }
-        if(!tableReference.isEmpty()) {
+        if (!tableReference.isEmpty()) {
             if (getStyles().isEmpty()) {
                 // special case: no style were ever set
                 // let's go for a default style
@@ -228,65 +280,82 @@ public class Layer extends BeanLayer {
                 addStyleListener(defStyle);
             }
         }
-	}
+    }
 
     @Override
-	public boolean isRaster() throws LayerException {
-		return false;
-	}
+    public boolean isRaster() throws LayerException {
+        return false;
+    }
 
     @Override
-	public boolean isVectorial() throws LayerException {
-        if(getTableReference().isEmpty()) {
+    public boolean isVectorial() throws LayerException {
+        if (getTableReference().isEmpty()) {
             return false;
         }
-        try(Connection connection = dataManager.getDataSource().getConnection()) {
+        try (Connection connection = dataManager.getDataSource().getConnection()) {
             try {
-                return !SFSUtilities.getGeometryFields(connection,TableLocation.parse(getTableReference())).isEmpty();
+                return !SFSUtilities.getGeometryFields(connection, TableLocation.parse(getTableReference())).isEmpty();
             } finally {
                 connection.close();
             }
         } catch (SQLException ex) {
             throw new LayerException(I18N.tr("Error while fetching source MetaData"));
         }
-	}
+    }
 
-        @Override
-        public boolean isSerializable() {
-                return tableReference != null;
+    @Override
+    public boolean isSerializable() {
+        return tableReference != null;
+    }
+
+    @Override
+    public List<Rule> getRenderingRule() throws LayerException {
+        List<Style> styles = getStyles();
+        ArrayList<Rule> ret = new ArrayList<>();
+        for (Style s : styles) {
+            if (s != null) {
+                ret.addAll(s.getRules());
+            }
         }
+        return ret;
+    }
 
-	@Override
-	public List<Rule> getRenderingRule() throws LayerException {
-                List<Style> styles = getStyles();
-                ArrayList<Rule> ret = new ArrayList<>();
-                for(Style s : styles){
-                        if(s!=null){
-                                ret.addAll(s.getRules());
-                        }
-                }
-		return ret;
-	}
+    private void fireSelectionChanged() {
+        for (LayerListener listener : listeners) {
+            listener.selectionChanged(new SelectionEvent(this));
+        }
+    }
 
-	private void fireSelectionChanged() {
-		for (LayerListener listener : listeners) {
-			listener.selectionChanged(new SelectionEvent(this));
-		}
-	}
+    @Override
+    public void setSelection(Set<Long> newSelection) {
+        super.setSelection(newSelection);
+        fireSelectionChanged();
+    }
 
-	@Override
-	public void setSelection(Set<Long> newSelection) {
-		super.setSelection(newSelection);
-		fireSelectionChanged();
-	}
-
-	@Override
-	public boolean isStream() throws LayerException {
-		return stream != null;
-	}
+    @Override
+    public boolean isStream() throws LayerException {
+        return stream != null;
+    }
 
     @Override
     public GeoStream getStream() throws LayerException {
-            return stream;
+        return stream;
+    }
+    
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
+    public void unsetExecutorService(ExecutorService executorService) {
+        this.executorService = null;
+    }
+
+    private void executeJob(SwingWorker worker) {
+        if (executorService == null) {
+            worker.execute();
+        } else {
+            executorService.execute(worker);
+        }
     }
 }
