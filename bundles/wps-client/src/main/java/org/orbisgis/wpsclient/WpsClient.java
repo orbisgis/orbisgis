@@ -21,6 +21,7 @@ package org.orbisgis.wpsclient;
 
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
@@ -169,6 +170,17 @@ public class WpsClient implements DockingPanel {
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFolderPanel)){
             addLocalSource(openFolderPanel.getSelectedFile().toURI());
+        }
+    }
+    /**
+     * Open a file browser to find a local script folder and add it.
+     * Used in an EvenHandler in view.ui.ToolBoxPanel
+     */
+    public void addNewLocalScript(){
+        OpenFilePanel openFilePanel = new OpenFilePanel("ToolBox.AddSource", "Add a source");
+        //Wait the window answer and if the user validate set and run the export thread.
+        if(UIFactory.showDialog(openFilePanel)){
+            addLocalSource(openFilePanel.getSelectedFile().toURI());
         }
     }
 

@@ -58,6 +58,7 @@ import java.util.Map;
 public class ToolBoxPanel extends JPanel {
 
     private static final String ADD_SOURCE = "ADD_SOURCE";
+    private static final String ADD_SCRIPT = "ADD_SCRIPT";
     private static final String RUN_SCRIPT = "RUN_SCRIPT";
     private static final String REFRESH_SOURCE = "REFRESH_SOURCE";
     private static final String REMOVE = "REMOVE";
@@ -639,10 +640,18 @@ public class ToolBoxPanel extends JPanel {
     private void createPopupActions(WpsClient wpsClient) {
         DefaultAction addSource = new DefaultAction(
                 ADD_SOURCE,
-                "Add",
-                "Add a local source",
+                "Add folder",
+                "Add a local folder",
                 ToolBoxIcon.getIcon("folder_add"),
                 EventHandler.create(ActionListener.class, wpsClient, "addNewLocalSource"),
+                null
+        );
+        DefaultAction addFile = new DefaultAction(
+                ADD_SCRIPT,
+                "Add file",
+                "Add a local file",
+                ToolBoxIcon.getIcon("script_add"),
+                EventHandler.create(ActionListener.class, wpsClient, "addNewLocalScript"),
                 null
         );
         DefaultAction runScript = new DefaultAction(
@@ -672,6 +681,7 @@ public class ToolBoxPanel extends JPanel {
 
         popupGlobalActions = new ActionCommands();
         popupGlobalActions.addAction(addSource);
+        popupGlobalActions.addAction(addFile);
 
         popupOrbisGISLeafActions = new ActionCommands();
         popupOrbisGISLeafActions.addAction(runScript);
@@ -684,11 +694,13 @@ public class ToolBoxPanel extends JPanel {
 
         popupNodeActions = new ActionCommands();
         popupNodeActions.addAction(addSource);
+        popupNodeActions.addAction(addFile);
         popupNodeActions.addAction(refresh_source);
         popupNodeActions.addAction(remove);
 
         popupOrbisGISNodeActions = new ActionCommands();
         popupOrbisGISNodeActions.addAction(addSource);
+        popupOrbisGISNodeActions.addAction(addFile);
     }
 
     /**
