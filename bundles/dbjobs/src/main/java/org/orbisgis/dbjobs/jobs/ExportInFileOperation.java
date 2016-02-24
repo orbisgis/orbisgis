@@ -54,18 +54,20 @@ import org.xnap.commons.i18n.I18nFactory;
 public class ExportInFileOperation extends SwingWorkerPM {
 
         private static final I18n I18N = I18nFactory.getI18n(ExportInFileOperation.class);
-        private static final Logger LOGGER = LoggerFactory.getLogger(ExportInFileOperation.class);
+        private static final Logger LOGGER = LoggerFactory.getLogger("gui."+ExportInFileOperation.class);
         private File savedFile;
         private String sourceName;
         private DriverFunction driverFunction;
         private DataSource dataSource;
 
-        /**
-         * This class is used to export a source on disk.
-         *
-         * @param sourceName Table identifier
-         * @param savedFile Destination
-         */
+       /**
+        * This class is used to export a source on disk.
+        *
+        * @param sourceName Table identifier
+        * @param savedFile Destination
+        * @param driverFunction
+        * @param dataSource
+        */
         public ExportInFileOperation(String sourceName, File savedFile, DriverFunction driverFunction, DataSource dataSource) {
                 this.sourceName = sourceName;
                 this.savedFile = savedFile;
@@ -78,6 +80,7 @@ public class ExportInFileOperation extends SwingWorkerPM {
     protected Object doInBackground() throws Exception {
         try(Connection connection = dataSource.getConnection()) {
             driverFunction.exportTable(connection, sourceName , savedFile, new H2GISProgressMonitor(this.getProgressMonitor()));
+            LOGGER.info(I18N.tr("The file {0} has been saved.", savedFile.getAbsolutePath()));
         } catch (SQLException | IOException ex) {
             LOGGER.error(I18N.tr("Cannot create the file"), ex);
         }
