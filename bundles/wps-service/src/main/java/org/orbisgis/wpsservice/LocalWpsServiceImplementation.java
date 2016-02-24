@@ -58,6 +58,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     private static final String WPS_SCRIPT_FOLDER = "Scripts";
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
+    private static final String[] SHOWN_TABLE_TYPES =
+            new String[]{"TABLE", "SYSTEM TABLE","LINKED TABLE","VIEW", "EXTERNAL"};
 
     private CoreWorkspace coreWorkspace;
     boolean multiThreaded;
@@ -333,7 +335,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     public List<String> getGeocatalogTableList(boolean onlySpatial) {
         List<String> list = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            List<String> tableList = JDBCUtilities.getTableNames(connection.getMetaData(), null, null, "%", null);
+            //TODO find a better way to get only the user tabe and not the information table
+            String defaultSchema = (isH2)?"PUBLIC":"public";
+            List<String> tableList = JDBCUtilities.getTableNames(connection.getMetaData(), null,
+                    defaultSchema, null, SHOWN_TABLE_TYPES);
             for(String table : tableList){
                 if(onlySpatial){
                     if(!SFSUtilities.getGeometryFields(connection, new TableLocation(table)).isEmpty()){
@@ -425,7 +430,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         List<String> fieldList = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             DatabaseMetaData dmd = connection.getMetaData();
-            ResultSet result = dmd.getColumns(connection.getCatalog(), null, tableName, "%");
+            TableLocation tablelocation = TableLocation.parse(tableName, isH2);
+            ResultSet result = dmd.getColumns(tablelocation.getCatalog(), tablelocation.getSchema(),
+                    tablelocation.getTable(), "%");
             while(result.next()){
                 if (!dataTypes.isEmpty()) {
                     for (DataType dataType : dataTypes) {
