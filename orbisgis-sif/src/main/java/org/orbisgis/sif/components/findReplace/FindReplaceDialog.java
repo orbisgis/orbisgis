@@ -140,18 +140,15 @@ public final class FindReplaceDialog extends JDialog {
                 boolean matchCase = matchCaseCB.isSelected();
                 boolean wholeWord = wholeWrdsCB.isSelected();
                 boolean regex = regexCB.isSelected();
-                if (markAll) {
-                        rSyntaxTextArea.clearMarkAllHighlights();
-                        rSyntaxTextArea.markAll(text, matchCase, wholeWord, regex);
-                }
 
                 SearchContext c = new SearchContext();
+                c.setMarkAll(markAll);
                 c.setMatchCase(matchCase);
                 c.setSearchFor(text);
                 c.setWholeWord(wholeWord);
                 c.setRegularExpression(regex);
                 c.setSearchForward(forward);
-                boolean found = SearchEngine.find(rSyntaxTextArea, c);
+                boolean found = SearchEngine.find(rSyntaxTextArea, c).wasFound();
                 if (!found) {
                         LOGGER.info(I18N.tr("Text not found !"));
                 }
@@ -178,7 +175,7 @@ public final class FindReplaceDialog extends JDialog {
                         c.setWholeWord(wholeWord);
                         c.setRegularExpression(regex);
                         c.setSearchForward(forward);
-                        boolean found = SearchEngine.replace(rSyntaxTextArea, c);
+                        boolean found = SearchEngine.replace(rSyntaxTextArea, c).wasFound();
                         if (!found) {
                                 LOGGER.info(I18N.tr("Text not found !"));
                         }
@@ -231,14 +228,7 @@ public final class FindReplaceDialog extends JDialog {
 
         }
         
-        /**
-         * Click on mark all check box
-         */
-        public void onMarkAll() {
-                if (!markAllCB.isSelected()) {
-                        rSyntaxTextArea.clearMarkAllHighlights();
-                }
-        }
+        
         
         /**
          * Create the main panel
@@ -288,8 +278,7 @@ public final class FindReplaceDialog extends JDialog {
 
                 markAllCB = new JCheckBox(I18N.tr("M&ark all"));
                 MenuCommonFunctions.setMnemonic(markAllCB);
-                markAllCB.addActionListener(EventHandler.create(ActionListener.class,this,"onMarkAll"));
-
+                
                 ButtonGroup searchBG = new ButtonGroup();
                 upCB = new JCheckBox(I18N.tr("Search &up"), true);
                 MenuCommonFunctions.setMnemonic(upCB);

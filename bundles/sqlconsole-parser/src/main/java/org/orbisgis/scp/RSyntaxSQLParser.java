@@ -128,7 +128,7 @@ public class RSyntaxSQLParser extends AbstractParser {
                             DefaultParserNotice notice = new DefaultParserNotice(this, ex.getLocalizedMessage(),
                                     documentReader.getLineIndex(syntaxErrorPositionOffset), syntaxErrorPositionOffset,
                                     syntaxErrorLength);
-                            notice.setLevel(ParserNotice.ERROR);
+                            notice.setLevel(ParserNotice.Level.ERROR);
                             res.addNotice(notice);
                         }
                     }
