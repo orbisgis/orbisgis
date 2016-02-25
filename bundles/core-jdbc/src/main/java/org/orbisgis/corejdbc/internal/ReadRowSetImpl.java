@@ -189,14 +189,18 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         batchPK.clear();
                         // Iterate through batch until next PK is superior than search pk.
                         // For optimisation sake, a binary search could be faster than serial search
-                        Long nextPk;
+                        Long nextPk = Long.MAX_VALUE;
                         final int batchCount = getBatchCount();
                         do  {
                             batchIterId++;
                             if (batchIterId + 1 >= rowFetchFirstPk.size() || rowFetchFirstPk.get(batchIterId + 1) == null) {
                                 fetchBatchPk(batchIterId + 1);
                             }
-                            nextPk = rowFetchFirstPk.get(batchIterId + 1);
+                            if(rowFetchFirstPk.size() > batchIterId + 1) {
+                                nextPk = rowFetchFirstPk.get(batchIterId + 1);
+                            } else {
+                                break;
+                            }
                         } while (nextPk < fetchPk && batchIterId + 1 < batchCount - 1);
                         if(nextPk <= fetchPk) {
                             batchIterId++;
@@ -465,13 +469,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 }
             }
             firstPk = fetchBatch(firstPk, false, (targetBatch - lastNullBatchPK) * fetchSize);
-            if(firstPk == null) {
-                throw new SQLException("Algo error");
-            }
-            if(targetBatch >= rowFetchFirstPk.size()) {
-                rowFetchFirstPk.add(firstPk);
-            } else {
-                rowFetchFirstPk.set(targetBatch, firstPk);
+            if(firstPk != null) {
+                if(targetBatch >= rowFetchFirstPk.size()) {
+                    rowFetchFirstPk.add(firstPk);
+                } else {
+                    rowFetchFirstPk.set(targetBatch, firstPk);
+                }
             }
         }
     }
