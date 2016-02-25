@@ -424,8 +424,8 @@ public class ToolBoxPanel extends JPanel {
             fileModel.insertNodeInto(folderNode, hostNode, 0);
         } else {
             fileModel.insertNodeInto(folderNode, parentNode, 0);
+            tree.expandPath(new TreePath(parentNode.getPath()));
         }
-        tree.expandPath(new TreePath(folderNode.getPath()));
     }
 
     /**
@@ -593,18 +593,24 @@ public class ToolBoxPanel extends JPanel {
      * If the node is a folder, check the folder to re-add all the contained processes.
      */
     public void refresh(){
-        TreeNodeWps node = (TreeNodeWps) tree.getLastSelectedPathComponent();
+        refresh((TreeNodeWps) tree.getLastSelectedPathComponent());
+    }
+    /**
+     * Refresh the given node.
+     * If the node is a process (a leaf), check if it is valid or not,
+     * If the node is a category check the contained process,
+     * If the node is a folder, check the folder to re-add all the contained processes.
+     */
+    public void refresh(TreeNodeWps node){
         if(node != null) {
-            if (node.isLeaf()) {
+            if (node.getNodeType().equals(TreeNodeWps.NodeType.PROCESS)) {
                 if(!wpsClient.checkProcess(node.getUri())){
                     remove(node);
                 }
             } else {
                 //For each node, test if it is valid, and set the state of the corresponding node in the trees.
                 for (TreeNodeWps child : getAllLeaf(node)) {
-                    if(!wpsClient.checkProcess(child.getUri())){
-                        remove(child);
-                    }
+                    refresh(child);
                 }
             }
         }
