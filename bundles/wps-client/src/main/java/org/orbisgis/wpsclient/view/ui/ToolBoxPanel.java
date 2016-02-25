@@ -107,6 +107,7 @@ public class ToolBoxPanel extends JPanel {
     /** List of existing tree model. */
     private List<FileTreeModel> modelList;
 
+    private static final String DEFAULT_FILTER_FACTORY = "name_contains";
     private FilterFactoryManager<IFilter,DefaultActiveFilter> filterFactoryManager;
 
     public ToolBoxPanel(WpsClient wpsClient){
@@ -158,6 +159,7 @@ public class ToolBoxPanel extends JPanel {
 
         //Sets the filter
         filterFactoryManager = new FilterFactoryManager<>();
+        filterFactoryManager.setDefaultFilterFactory(DEFAULT_FILTER_FACTORY);
         FilterFactoryManager.FilterChangeListener refreshFilterListener = EventHandler.create(
                 FilterFactoryManager.FilterChangeListener.class,
                 this,
@@ -513,7 +515,6 @@ public class ToolBoxPanel extends JPanel {
                         case FOLDER:
                             for (TreeNodeWps child : getChildrenWithUri(leaf.getUri(), (TreeNodeWps) selectedModel.getRoot())) {
                                 if (!child.isDefaultOrbisGIS()) {
-                                    System.out.println(child);
                                     cleanParentNode(child, selectedModel);
                                 }
                             }
@@ -767,7 +768,7 @@ public class ToolBoxPanel extends JPanel {
                     //For all the leaf, tests if they are accepted by the filter or not.
                     TreeNodeWps filteredRoot = (TreeNodeWps) filteredModel.getRoot();
                     List<TreeNodeWps> filteredNode = getChildrenWithUri(node.getUri(), filteredRoot);
-                    if (filteredNode.get(0) == null) {
+                    if (filteredNode.isEmpty()) {
                         if (filter.accepts(node)) {
                             TreeNodeWps newNode = node.deepCopy();
                             filteredModel.insertNodeInto(newNode, filteredRoot, 0);
