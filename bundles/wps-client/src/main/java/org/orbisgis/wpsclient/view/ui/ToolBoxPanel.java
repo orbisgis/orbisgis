@@ -35,6 +35,8 @@ import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.Process;
 
 import javax.swing.*;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -239,12 +241,16 @@ public class ToolBoxPanel extends JPanel {
                             isValid = true;
                             break;
                         case FOLDER:
-                            //Check if the folder exists and it it contains some scripts
-                            if(selectedModel == fileModel) {
-                                isValid = wpsClient.checkFolder(selectedNode.getUri());
+                            if(selectedNode.getChildCount() != 0) {
+                                //Check if the folder exists and it it contains some scripts
+                                if (selectedModel == fileModel) {
+                                    isValid = wpsClient.checkFolder(selectedNode.getUri());
+                                } else {
+                                    isValid = true;
+                                }
                             }
                             else{
-                                isValid = true;
+                                wpsClient.addLocalSource(selectedNode.getUri());
                             }
                             break;
                         case PROCESS:
@@ -359,14 +365,14 @@ public class ToolBoxPanel extends JPanel {
 
     /**
      * Gets the the child node of the parent node which has the given userObject.
-     * @param nodeUserObject UserObject to test.
+     * @param nodeURI URI of the node.
      * @param parent Parent to analyse.
      * @return The child which has the given userObject. Null if not found.
      */
-    private TreeNodeWps getSubNode(String nodeUserObject, TreeNodeWps parent){
+    private TreeNodeWps getSubNode(URI nodeURI, TreeNodeWps parent){
         TreeNodeWps child = null;
         for(int i = 0; i < parent.getChildCount(); i++){
-            if(((TreeNodeWps)parent.getChildAt(i)).getUserObject().equals(nodeUserObject)){
+            if(((TreeNodeWps)parent.getChildAt(i)).getUri().equals(nodeURI)){
                 child = (TreeNodeWps)parent.getChildAt(i);
             }
         }
@@ -388,7 +394,6 @@ public class ToolBoxPanel extends JPanel {
                 tagNode.setDefaultOrbisGIS(pi.isDefault());
             }
         }
-
         refresh();
     }
 
@@ -401,8 +406,13 @@ public class ToolBoxPanel extends JPanel {
         }
         else{
             parentNode = sourceList.get(0);
+            if(getSubNode(folderUri, parentNode) != null){
+                return;
+            }
         }
-
+        for(TreeNodeWps node : getChildrenWithUri(folderUri, hostNode)){
+            remove(node);
+        }
         String folderName = new File(folderUri).getName();
         TreeNodeWps folderNode = new TreeNodeWps();
         folderNode.setValidNode(true);
@@ -410,13 +420,12 @@ public class ToolBoxPanel extends JPanel {
         folderNode.setUri(folderUri);
         folderNode.setNodeType(TreeNodeWps.NodeType.FOLDER);
 
-        if(parentNode == null) {
+        if (parentNode == null) {
             fileModel.insertNodeInto(folderNode, hostNode, 0);
-        }
-        else{
+        } else {
             fileModel.insertNodeInto(folderNode, parentNode, 0);
         }
-
+        tree.expandPath(new TreePath(folderNode.getPath()));
     }
 
     /**

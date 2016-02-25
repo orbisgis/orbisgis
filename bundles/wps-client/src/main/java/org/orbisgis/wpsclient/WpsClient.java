@@ -205,10 +205,18 @@ public class WpsClient implements DockingPanel {
                 toolBoxPanel.addLocalSource(pi);
             }
         }
-        else{
+        else if(file.isDirectory()){
             toolBoxPanel.addFolder(file.toURI(), file.getParentFile().toURI());
-            for(File f : file.listFiles()) {
-                addLocalSource(f.toURI(), iconName, isDefaultScript);
+            for (File f : file.listFiles()) {
+                if(f.isFile()){
+                    ProcessIdentifier pi = wpsService.addLocalScript(f, iconName, isDefaultScript);
+                    if(pi != null) {
+                        toolBoxPanel.addLocalSource(pi);
+                    }
+                }
+                else if(f.isDirectory()){
+                    toolBoxPanel.addFolder(f.toURI(), f.getParentFile().toURI());
+                }
             }
         }
     }
