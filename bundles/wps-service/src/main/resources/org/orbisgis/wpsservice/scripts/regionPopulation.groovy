@@ -30,8 +30,6 @@ import org.orbisgis.wpsgroovyapi.process.Process
         resume = "Union of municipality by their region, summing the population and doing the union of the geometry ",
         keywords = "OrbisGIS,ST_Union,ST_Accum,example")
 def processing() {
-    sql.execute("DROP TABLE IF EXISTS " + dataStoreOutput + ";")
-    sql.execute("DROP TABLE IF EXISTS " + csvDataOutput + ";")
     //Build the query
     String query = "CREATE TABLE "+dataStoreOutput+" AS" +
             " SELECT "+regionDataInput+"."+regionField+
