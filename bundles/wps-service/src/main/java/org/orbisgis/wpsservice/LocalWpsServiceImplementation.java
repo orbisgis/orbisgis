@@ -58,6 +58,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     private static final String WPS_SCRIPT_FOLDER = "Scripts";
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
+    private static final String[] SHOWN_TABLE_TYPES =
+            new String[]{"TABLE", "SYSTEM TABLE","LINKED TABLE","VIEW", "EXTERNAL"};
 
     private CoreWorkspace coreWorkspace;
     boolean multiThreaded;
@@ -249,6 +251,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){
 
         pel.setStartTime(System.currentTimeMillis());
+        Map<URI, Object> stash = new HashMap<>();
         //Catch all the Exception that can be thrown during the script execution.
         try {
             //Print in the log the process execution start
@@ -256,7 +259,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
 
             //Pre-process the data
             pel.appendLog(ProcessExecutionListener.LogType.INFO, "Pre-processing");
-            Map<URI, Object> stash = new HashMap<>();
             for(DescriptionType inputOrOutput : process.getOutput()){
                 stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
             }
@@ -285,16 +287,15 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
             //Print in the log the process execution error
             pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Error during the execution of the " +
-                    "process '"+process.getTitle()+"'\n"+e.getMessage());
+            //Post-process the data
+            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
+            for(DescriptionType inputOrOutput : process.getInput()){
+                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
+            }
         }
     }
 
-    /**
-     * Verify if the given file is a well formed script.
-     * @param uri URI to check.
-     * @return True if the file is well formed, false otherwise.
-     */
+    @Override
     public boolean checkFolder(URI uri){
         File f = new File(uri);
         if(f.exists() && f.isDirectory()){
@@ -307,13 +308,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return false;
     }
 
-
-    /**
-     * Returns a map of the importable format.
-     * The map key is the format extension and the value is the format description.
-     * @param onlySpatial If true, returns only the spatial table.
-     * @return a map of the importable  format.
-     */
+    @Override
     public Map<String, String> getImportableFormat(boolean onlySpatial){
         Map<String, String> formatMap = new HashMap<>();
         for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
@@ -326,12 +321,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return formatMap;
     }
 
-    /**
-     * Returns a map of the exportable spatial format.
-     * The map key is the format extension and the value is the format description.
-     * @param onlySpatial If true, returns only the spatial table.
-     * @return a map of the exportable spatial format.
-     */
+    @Override
     public Map<String, String> getExportableFormat(boolean onlySpatial){
         Map<String, String> formatMap = new HashMap<>();
         for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
@@ -344,17 +334,14 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return formatMap;
     }
 
-    /**
-     * Returns the list of sql table from OrbisGIS.
-     * @param onlySpatial If true, returns only the spatial table.
-     * @return The list of geo sql table from OrbisGIS.
-     */
+    @Override
     public List<String> getGeocatalogTableList(boolean onlySpatial) {
         List<String> list = new ArrayList<>();
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
-            String defaultSchema = "PUBLIC";
-            List<String> tableList = JDBCUtilities.getTableNames(connection.getMetaData(), null, defaultSchema, "%", null);
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            //TODO find a better way to get only the user tabe and not the information table
+            String defaultSchema = (isH2)?"PUBLIC":"public";
+            List<String> tableList = JDBCUtilities.getTableNames(connection.getMetaData(), null,
+                    defaultSchema, null, SHOWN_TABLE_TYPES);
             for(String table : tableList){
                 if(onlySpatial){
                     if(!SFSUtilities.getGeometryFields(connection, new TableLocation(table)).isEmpty()){
@@ -375,8 +362,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     @Override
     public Map<String, Object> getTableInformation(String tableName){
         Map<String, Object> map = new HashMap<>();
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             tableName = TableLocation.parse(tableName, isH2).getTable();
             TableLocation tableLocation = new TableLocation(tableName);
             boolean isSpatial = !SFSUtilities.getGeometryFields(connection, tableLocation).isEmpty();
@@ -406,8 +392,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     @Override
     public Map<String, Object> getFieldInformation(String tableName, String fieldName){
         Map<String, Object> map = new HashMap<>();
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             TableLocation tableLocation = new TableLocation(tableName);
             List<String> geometricFields = SFSUtilities.getGeometryFields(connection, tableLocation);
             boolean isGeometric = false;
@@ -443,19 +428,14 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return map;
     }
 
-    /**
-     * Return the list of the field of a table.
-     * @param tableName Name of the table.
-     * @param dataTypes Type of the field accepted. If empty, accepts all the field.
-     * @param excludedTypes Type of the type not allowed for the data field..
-     * @return The list of the field name.
-     */
+    @Override
     public List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
         List<String> fieldList = new ArrayList<>();
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             DatabaseMetaData dmd = connection.getMetaData();
-            ResultSet result = dmd.getColumns(connection.getCatalog(), null, tableName, "%");
+            TableLocation tablelocation = TableLocation.parse(tableName, isH2);
+            ResultSet result = dmd.getColumns(tablelocation.getCatalog(), tablelocation.getSchema(),
+                    tablelocation.getTable(), "%");
             while(result.next()){
                 if (!dataTypes.isEmpty()) {
                     for (DataType dataType : dataTypes) {
@@ -463,12 +443,18 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
                             fieldList.add(result.getObject(4).toString());
                         }
                     }
-                } else{
+                } else if(!excludedTypes.isEmpty()){
+                    boolean accepted = true;
                     for (DataType dataType : excludedTypes) {
-                        if (!DataType.testDBType(dataType, result.getObject(6).toString())) {
-                            fieldList.add(result.getObject(4).toString());
+                        if (DataType.testDBType(dataType, result.getObject(6).toString())) {
+                            accepted = false;
                         }
                     }
+                    if(accepted) {
+                        fieldList.add(result.getObject(4).toString());
+                    }
+                }else{
+                    fieldList.add(result.getObject(4).toString());
                 }
             }
         } catch (SQLException e) {
@@ -478,18 +464,21 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return fieldList;
     }
 
-
-    /**
-     * Returns the list of distinct values contained by a field from a table from the database
-     * @param tableName Name of the table containing the field.
-     * @param fieldName Name of the field containing the values.
-     * @return The list of distinct values of the field.
-     */
+    @Override
     public List<String> getFieldValueList(String tableName, String fieldName) {
         List<String> fieldValues = new ArrayList<>();
-        try {
-            Connection connection = dataManager.getDataSource().getConnection();
-            fieldValues.addAll(JDBCUtilities.getUniqueFieldValues(connection, tableName, fieldName));
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            tableName = TableLocation.parse(tableName, isH2).getTable();
+            List<String> fieldNames = JDBCUtilities.getFieldNames(connection.getMetaData(), tableName);
+            for(String field : fieldNames){
+                if(field.equalsIgnoreCase(fieldName)){
+                    fieldName = field;
+                    break;
+                }
+            }
+            fieldValues.addAll(JDBCUtilities.getUniqueFieldValues(connection,
+                    tableName,
+                    fieldName));
         } catch (SQLException e) {
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the field '"+tableName+
                     "."+fieldName+"' value list.\n"+e.getMessage());
@@ -497,14 +486,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return fieldValues;
     }
 
-    /**
-     * Removes a table from the database.
-     * @param tableName Table to remove from the dataBase.
-     */
+    @Override
     public void removeTempTable(String tableName){
-        try {
-            tableName = TableLocation.parse(tableName, isH2).getTable();
-            Connection connection = dataManager.getDataSource().getConnection();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             tableName = TableLocation.parse(tableName, isH2).getTable();
             Statement statement = connection.createStatement();
             statement.execute("DROP TABLE IF EXISTS " + tableName);
@@ -514,11 +498,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         }
     }
 
-    /**
-     * Save a geocatalog table into a file.
-     * @param uri URI where the table will be saved.
-     * @param tableName Name of the table to save.
-     */
+    @Override
     public void saveURI(URI uri, String tableName){
         try {
             tableName = TableLocation.parse(tableName, isH2).getTable();
@@ -538,20 +518,15 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         }
     }
 
-    /**
-     * Loads the given file into the geocatalog and return its table name.
-     * @param uri URI to load.
-     * @return Table name of the loaded file. Returns null if the file can't be loaded.
-     */
+    @Override
     public String loadURI(URI uri, boolean copyInBase) {
-        try {
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             File f = new File(uri);
             //Get the table name of the file
             String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), isH2);
             String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
             //Find the corresponding driver and load the file
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
-            Connection connection = dataManager.getDataSource().getConnection();
             Statement statement = connection.createStatement();
             if(extension.equalsIgnoreCase("csv")){
                 statement.execute("CREATE TEMPORARY TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
@@ -575,6 +550,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         return null;
     }
 
+    @Override
     public boolean isH2(){
         return isH2;
     }
@@ -596,16 +572,15 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             if(prop != null && !prop.toString().isEmpty()){
                 String str = prop.toString();
                 for(String s : str.split(";")){
-                    addLocalSource(URI.create(s), null, false);
+                    addLocalScript(new File(URI.create(s)), null, false);
                 }
             }
         }
     }
 
     private boolean testDBForMultiProcess(){
-        try {
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
             if(dataManager != null){
-                Connection connection = dataManager.getDataSource().getConnection();
                 isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
                 if(isH2) {
                     Statement statement = connection.createStatement();
@@ -626,5 +601,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
         return false;
+    }
+
+    @Override
+    public void cancelProcess(URI uri){
+        processManager.cancelProcess(processManager.getProcess(uri));
     }
 }

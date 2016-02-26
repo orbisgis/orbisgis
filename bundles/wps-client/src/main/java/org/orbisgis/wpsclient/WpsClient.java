@@ -21,6 +21,7 @@ package org.orbisgis.wpsclient;
 
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
@@ -171,6 +172,17 @@ public class WpsClient implements DockingPanel {
             addLocalSource(openFolderPanel.getSelectedFile().toURI());
         }
     }
+    /**
+     * Open a file browser to find a local script folder and add it.
+     * Used in an EvenHandler in view.ui.ToolBoxPanel
+     */
+    public void addNewLocalScript(){
+        OpenFilePanel openFilePanel = new OpenFilePanel("ToolBox.AddSource", "Add a source");
+        //Wait the window answer and if the user validate set and run the export thread.
+        if(UIFactory.showDialog(openFilePanel)){
+            addLocalSource(openFilePanel.getSelectedFile().toURI());
+        }
+    }
 
     /**
      * Adds a folder as a local script source.
@@ -187,17 +199,24 @@ public class WpsClient implements DockingPanel {
      */
     public void addLocalSource(URI uri, String iconName, boolean isDefaultScript){
         File file = new File(uri);
-        List<File> fileList = new ArrayList<>();
         if(file.isFile()){
-            fileList.add(file);
-        }
-        else{
-            Collections.addAll(fileList, file.listFiles());
-        }
-        for(File f : fileList) {
-            ProcessIdentifier pi = wpsService.addLocalScript(f, iconName, isDefaultScript);
+            ProcessIdentifier pi = wpsService.addLocalScript(file, iconName, isDefaultScript);
             if(pi != null) {
                 toolBoxPanel.addLocalSource(pi);
+            }
+        }
+        else if(file.isDirectory()){
+            toolBoxPanel.addFolder(file.toURI(), file.getParentFile().toURI());
+            for (File f : file.listFiles()) {
+                if(f.isFile()){
+                    ProcessIdentifier pi = wpsService.addLocalScript(f, iconName, isDefaultScript);
+                    if(pi != null) {
+                        toolBoxPanel.addLocalSource(pi);
+                    }
+                }
+                else if(f.isDirectory()){
+                    toolBoxPanel.addFolder(f.toURI(), f.getParentFile().toURI());
+                }
             }
         }
     }
@@ -333,5 +352,15 @@ public class WpsClient implements DockingPanel {
         tableName = getWpsService().loadURI(uri, loadSource);
         pe.endWaiting();
         return tableName;
+    }
+
+    /**
+     * Opens if the JTree the given tags.
+     * @param tags List of tag to open.
+     */
+    public void openTags(List<String> tags){
+        for(String tag : tags){
+            toolBoxPanel.openNode(tag, ToolBoxPanel.TAG_MODEL);
+        }
     }
 }

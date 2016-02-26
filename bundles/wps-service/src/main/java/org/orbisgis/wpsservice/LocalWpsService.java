@@ -140,5 +140,15 @@ public interface LocalWpsService extends WpsService {
      */
     String loadURI(URI uri, boolean copyInBase);
 
+    /**
+     * Returns true if the data base is H2, false otherwise.
+     * @return True if the data base is H2, false otherwise.
+     */
     boolean isH2();
+
+    /**
+     * Cancel the running process corresponding to the given URI.
+     * @param uri URI of the process to cancel.
+     */
+    void cancelProcess(URI uri);
 }

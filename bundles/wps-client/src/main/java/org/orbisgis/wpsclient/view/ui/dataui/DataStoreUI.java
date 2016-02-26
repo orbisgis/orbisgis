@@ -28,7 +28,7 @@ import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.wpsclient.view.utils.sif.JPanelComboBoxRenderer;
+import org.orbisgis.wpsclient.view.utils.sif.JPanelListRenderer;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.model.*;
@@ -127,7 +127,7 @@ public class DataStoreUI implements DataUI{
         //The combo box will contains ContainerItems linking a JPanel with a table name
         JComboBox<ContainerItem<Object>> dataStoreTypeBox = new JComboBox<>();
         //This custom renderer will display in the comboBox a JLabel containing the type icon and the type name.
-        dataStoreTypeBox.setRenderer(new JPanelComboBoxRenderer());
+        dataStoreTypeBox.setRenderer(new JPanelListRenderer());
         //Adds all the available type to the comboBox
         if(dataStore.isGeocatalog()) {
             dataStoreTypeBox.addItem(new ContainerItem<Object>(
@@ -163,7 +163,7 @@ public class DataStoreUI implements DataUI{
         JPanel geocatalogComponent = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         //If the DataStore is an input, uses a custom comboBox renderer to show an icon, the table name, the SRID ...
         if(inputOrOutput instanceof Input) {
-            geocatalogComboBox.setRenderer(new JPanelComboBoxRenderer());
+            geocatalogComboBox.setRenderer(new JPanelListRenderer());
         }
         //If it is an output, just show the table names, and add the 'new table' item.
         else {
@@ -278,6 +278,8 @@ public class DataStoreUI implements DataUI{
         }
         fileOptions.addMouseListener(
                 EventHandler.create(MouseListener.class, this, "onFileOptionEntered", "", "mouseEntered"));
+        fileOptions.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        fileOptions.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         fileOptions.putClientProperty(POPUP_MENU_PROPERTY, buildPopupMenu(fileOptions));
         textField.getDocument().putProperty(FILE_OPTIONS_PROPERTY, fileOptions);
         buttonPanel.add(fileOptions);
@@ -589,7 +591,6 @@ public class DataStoreUI implements DataUI{
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
                 URI uri = inputOrOutput.getIdentifier();
-                dataMap.remove(uri);
                 dataMap.put(uri, selectedFileURI);
             }
         } catch (BadLocationException|SQLException e) {
@@ -632,9 +633,34 @@ public class DataStoreUI implements DataUI{
                     } else {
                         super.processMouseEvent(evt);
                     }
+                    //if the checkBox is selected, dynamically updates the data of the file
+                    Map<URI, Object> dataMap = (Map<URI, Object>) this.getClientProperty(DATA_MAP_PROPERTY);
+                    URI uri = (URI) this.getClientProperty(URI_PROPERTY);
+                    if(dataMap.containsKey(uri) && dataMap.get(uri) != null) {
+                        URI fileUri = (URI)dataMap.get(uri);
+                        String tableName = fileUri.getFragment();
+                        if (this.getState()) {
+                            String fileStr = new File(fileUri.getSchemeSpecificPart()).toURI().toString();
+                            if(!fileStr.contains("$")) {
+                                fileStr += "$";
+                            }
+                            //Saves the table name in the URI into the uri fragment
+                            fileUri = URI.create(fileStr + "#" + tableName);
+                        }
+                        else{
+                            String fileStr = new File(fileUri.getSchemeSpecificPart()).toURI().toString();
+                            fileStr = fileStr.replaceAll("\\$", "");
+                            //Saves the table name in the URI into the uri fragment
+                            fileUri = URI.create(fileStr + "#" + tableName);
+                        }
+                        //Store the selection
+                        dataMap.put(uri, fileUri);
+                    }
                 }
             };
             keepItem.putClientProperty(FILE_OPTIONS_PROPERTY, source);
+            keepItem.putClientProperty(DATA_MAP_PROPERTY, source.getClientProperty(DATA_MAP_PROPERTY));
+            keepItem.putClientProperty(URI_PROPERTY, source.getClientProperty(URI_PROPERTY));
             popupMenu.add(keepItem);
         }
         return popupMenu;
