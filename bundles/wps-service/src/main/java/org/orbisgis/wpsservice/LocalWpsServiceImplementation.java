@@ -23,6 +23,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -73,6 +74,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     /** Process manager which contains all the loaded scripts. */
     private ProcessManager processManager;
     private DataSourceService dataSourceService;
+    /** Map containing object that can be used to cancel the loading of an URI. */
+    private Map<URI, Object> cancelLoadMap;
 
     @Activate
     public void init(){
@@ -96,6 +99,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
                         " the toolbox won't be able to run more than one process at the same time.");
             }
         }
+        cancelLoadMap = new HashMap<>();
     }
 
     @Deactivate
@@ -529,25 +533,48 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
             Statement statement = connection.createStatement();
             if(extension.equalsIgnoreCase("csv")){
+                //Save the statement to be able to cancel it.
+                cancelLoadMap.put(uri, statement);
                 statement.execute("CREATE TEMPORARY TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
+                cancelLoadMap.remove(uri);
             }
             else {
+                ProgressVisitor pv = new EmptyProgressVisitor();
+                //Save the progress visitor to be able to cancel it.
+                cancelLoadMap.put(uri, pv);
                 if(copyInBase || !isH2){
                     DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
                             extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, pv);
                 }
                 else {
                     DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
                             extension, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
-                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, pv);
                 }
+                cancelLoadMap.remove(uri);
             }
             return tableName;
         } catch (SQLException|IOException e) {
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
         return null;
+    }
+
+    @Override
+    public void cancelLoadUri(URI uri){
+        Object object = cancelLoadMap.get(uri);
+        if(object instanceof Statement){
+            try {
+                ((Statement)object).cancel();
+            } catch (SQLException e) {
+                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to cancel the lodaing of '"+
+                uri+"'.\n"+e.getMessage());
+            }
+        }
+        else if(object instanceof ProgressVisitor){
+            ((ProgressVisitor)object).cancel();
+        }
     }
 
     @Override

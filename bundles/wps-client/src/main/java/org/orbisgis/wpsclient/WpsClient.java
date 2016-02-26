@@ -364,6 +364,10 @@ public class WpsClient implements DockingPanel {
         return null;
     }
 
+    public void cancelLoadURI(URI uri){
+        getWpsService().cancelLoadUri(uri);
+    }
+
     /**
      * Opens if the JTree the given tags.
      * @param tags List of tag to open.

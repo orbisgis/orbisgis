@@ -38,7 +38,9 @@ import javax.swing.plaf.LayerUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -69,6 +71,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private JPanel contentPanel;
     private WaitLayerUI layerUI;
     private JLayer<JPanel> layer;
+    private JLabel waitLabel;
 
     public ProcessEditor(WpsClient wpsClient, ProcessEditableElement pee){
         this.alive = true;
@@ -87,11 +90,25 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         contentPanel = new JPanel(new BorderLayout());
         layerUI = new WaitLayerUI();
         layer = new JLayer<>(contentPanel, layerUI);
+        //Adds a mouse listener to listen the double click by the user to cancel the loading
+        this.addMouseListener(EventHandler.create(MouseListener.class, this, "cancelLoad", "", "mouseClicked"));
+        layer.addMouseListener(EventHandler.create(MouseListener.class, this, "cancelLoad", "", "mouseClicked"));
+        contentPanel.addMouseListener(EventHandler.create(MouseListener.class, this, "cancelLoad", "", "mouseClicked"));
         this.add (layer);
 
         buildUI();
         tabbedPane.setSelectedIndex(0);
         this.revalidate();
+    }
+
+    /**
+     * Cancel the current loading.
+     */
+    public void cancelLoad(MouseEvent me){
+        if(me.getClickCount() >= 2){
+            wpsClient.cancelLoadURI(((Process)pee.getObject()).getIdentifier());
+            endWaiting();
+        }
     }
 
     /**
@@ -373,23 +390,22 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         return label;
     }
 
-    private void enableChildComponent(JComponent component, boolean enable){
-        for(Component comp : component.getComponents()){
-            comp.setEnabled(enable);
-            if(comp instanceof JComponent){
-                enableChildComponent((JComponent)comp, enable);
-            }
-        }
-    }
-
     public void startWaiting(){
-        enableChildComponent(contentPanel, false);
+        int w = contentPanel.getWidth();
+        int h = contentPanel.getHeight();
+        BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = bi.createGraphics();
+        waitLabel = new JLabel(new ImageIcon(bi));
+        contentPanel.paint(g);
+        contentPanel.remove(tabbedPane);
+        contentPanel.add(waitLabel);
         layerUI.start();
     }
 
     public void endWaiting(){
         layerUI.stop();
-        enableChildComponent(contentPanel, true);
+        contentPanel.remove(waitLabel);
+        contentPanel.add(tabbedPane);
     }
 
     class WaitLayerUI extends LayerUI<JPanel> implements ActionListener {
@@ -428,14 +444,26 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             int cx = w / 2;
             int cy = h / 2;
             g2.setPaint(Color.white);
-            Font font = g2.getFont().deriveFont(Font.PLAIN, s/3);
+            //"Loading source" painting
+            Font font = g2.getFont().deriveFont(Font.PLAIN, s / 3);
             g2.setFont(font);
             FontMetrics metrics = g2.getFontMetrics(font);
             int w1 = metrics.stringWidth("Loading");
             int w2 = metrics.stringWidth("source");
             int h1 = metrics.getHeight();
-            g2.drawString("Loading", cx-w1/2, cy-h1/2);
-            g2.drawString("source", cx-w2/2, cy+h1/2);
+            g2.drawString("Loading", cx - w1 / 2, cy - h1 / 2);
+            g2.drawString("source", cx - w2 / 2, cy + h1 / 2);
+            int space = h1;
+            //"double-click to cancel" painting
+            font = g2.getFont().deriveFont(Font.PLAIN, s / 10);
+            g2.setFont(font);
+            metrics = g2.getFontMetrics(font);
+            w1 = metrics.stringWidth("Double-click");
+            w2 = metrics.stringWidth("to cancel");
+            h1 = metrics.getHeight();
+            g2.drawString("Double-click", cx - w1 / 2, cy + space - h1 / 2);
+            g2.drawString("to cancel", cx - w2 / 2, cy + space + h1 / 2);
+            //waiter painting
             g2.setStroke(new BasicStroke(s / 4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
