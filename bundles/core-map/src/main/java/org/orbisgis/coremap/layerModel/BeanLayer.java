@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import net.opengis.ows_context.LayerType;
-import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.coremap.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.coremap.renderer.se.Style;
@@ -164,6 +163,7 @@ public abstract class BeanLayer extends AbstractLayer {
         
 	/**
 	 * 
+         * @return the name of the layer
 	 * @see org.orbisgis.coremap.layerModel.ILayer#getName()
 	 */
         @Override
@@ -174,6 +174,7 @@ public abstract class BeanLayer extends AbstractLayer {
 
 	/**
 	 * 
+         * @param name set a new name to the layer
 	 * @throws LayerException
 	 * @see org.orbisgis.coremap.layerModel.ILayer#setName(java.lang.String)
 	 */
