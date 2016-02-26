@@ -38,6 +38,7 @@ import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
+import org.orbisgis.wpsservice.model.DescriptionType;
 import org.orbisgis.wpsservice.model.Process;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -346,12 +347,21 @@ public class WpsClient implements DockingPanel {
         return pe;
     }
 
-    public String loadURI(URI uri, boolean loadSource) {
-        String tableName;
-        pe.startWaiting();
-        tableName = getWpsService().loadURI(uri, loadSource);
-        pe.endWaiting();
-        return tableName;
+    public String loadURI(URI uri, boolean loadSource, DescriptionType inputOrOutput) {
+        Process process = getWpsService().describeProcess(inputOrOutput.getIdentifier());
+        for(EditorDockable ed : openEditorList){
+            if(ed instanceof ProcessEditor){
+                ProcessEditor pe = (ProcessEditor) ed;
+                if(pe.getEditableElement().getObject().equals(process)) {
+                    String tableName;
+                    pe.startWaiting();
+                    tableName = getWpsService().loadURI(uri, loadSource);
+                    pe.endWaiting();
+                    return tableName;
+                }
+            }
+        }
+        return null;
     }
 
     /**
