@@ -145,7 +145,7 @@ public class FieldValueUI implements DataUI{
         HashMap<URI, Object> dataMap = (HashMap<URI, Object>)list.getClientProperty(DATA_MAP_PROPERTY);
         boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
         //If the DataField related to the FieldValue has been modified, reload the dataField values
-        if(fieldValue.isDataFieldModified()) {
+        if(fieldValue.isDataFieldModified() && dataMap.get(fieldValue.getDataStoreIdentifier()) != null) {
             fieldValue.setDataFieldModified(false);
             String tableName;
             String fieldName;
