@@ -345,15 +345,27 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             //TODO find a better way to get only the user tabe and not the information table
             String defaultSchema = (isH2)?"PUBLIC":"public";
             List<String> tableList = JDBCUtilities.getTableNames(connection.getMetaData(), null,
-                    defaultSchema, null, SHOWN_TABLE_TYPES);
+                    null, null, SHOWN_TABLE_TYPES);
             for(String table : tableList){
                 if(onlySpatial){
-                    if(!SFSUtilities.getGeometryFields(connection, new TableLocation(table)).isEmpty()){
-                        list.add(table);
+                    if(!SFSUtilities.getGeometryFields(connection, TableLocation.parse(table)).isEmpty()){
+                        TableLocation tablelocation = TableLocation.parse(table, isH2);
+                        if(tablelocation.getSchema().equals(defaultSchema)) {
+                            list.add(tablelocation.getTable());
+                        }
+                        else{
+                            list.add(tablelocation.getSchema()+"."+tablelocation.getTable());
+                        }
                     }
                 }
                 else{
-                    list.add(table);
+                    TableLocation tablelocation = TableLocation.parse(table, isH2);
+                    if(tablelocation.getSchema().equals(defaultSchema)) {
+                        list.add(tablelocation.getTable());
+                    }
+                    else{
+                        list.add(tablelocation.getSchema()+"."+tablelocation.getTable());
+                    }
                 }
             }
         } catch (SQLException e) {

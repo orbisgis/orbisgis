@@ -167,7 +167,7 @@ public class DataStoreUI implements DataUI{
         }
         //If it is an output, just show the table names, and add the 'new table' item.
         else {
-            geocatalogComboBox.insertItemAt(new ContainerItem<Object>("New table", "New table"), 0);
+            geocatalogComboBox.insertItemAt(new ContainerItem<Object>("New_table", "New_table"), 0);
             geocatalogComboBox.setEditable(true);
             //Adds the listener for the comboBox edition
             Document doc = ((JTextComponent)geocatalogComboBox.getEditor().getEditorComponent()).getDocument();
@@ -340,7 +340,7 @@ public class DataStoreUI implements DataUI{
             }
         }
         if(isOptional){
-            geocatalogComboBox.insertItemAt(new ContainerItem<Object>("New table", "New table"), 0);
+            geocatalogComboBox.insertItemAt(new ContainerItem<Object>("New_table", "New_table"), 0);
             geocatalogComboBox.setSelectedIndex(0);
         }
     }
@@ -436,7 +436,13 @@ public class DataStoreUI implements DataUI{
         Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
         URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
         DataStore dataStore = (DataStore) comboBox.getClientProperty(DATA_STORE_PROPERTY);
-        String tableName = ((ContainerItem)comboBox.getSelectedItem()).getLabel();
+        String tableName;
+        if(comboBox.getSelectedItem() instanceof ContainerItem) {
+            tableName = ((ContainerItem) comboBox.getSelectedItem()).getLabel();
+        }
+        else{
+            tableName = comboBox.getSelectedItem().toString();
+        }
         //Tells all the dataField linked that the data source is loaded
         for (DataField dataField : dataStore.getListDataField()) {
             dataField.setSourceModified(true);
@@ -448,7 +454,6 @@ public class DataStoreUI implements DataUI{
                 wpsClient.getWpsService().removeTempTable(oldUri.getFragment());
             }
         }
-        tableName = tableName.replaceAll(" ", "_");
         dataMap.put(uri, URI.create("geocatalog:"+tableName+"#"+tableName));
     }
 
