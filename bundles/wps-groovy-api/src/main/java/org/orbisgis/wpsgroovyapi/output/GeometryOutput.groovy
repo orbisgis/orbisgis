@@ -23,11 +23,11 @@ import groovy.transform.AnnotationCollector
 import groovy.transform.Field
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
-import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute
+import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute
 
 /**
- * DataField output annotation.
- * The RawData is a complex data that represents a file or directory.
+ * Geometry output annotation.
+ * The Geometry is a complex data that represents a geometry.
  * As an output, this annotation should be placed just before the variable.
  *
  * The following fields must be defined (mandatory) :
@@ -52,5 +52,5 @@ import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, RawDataAttribute, OutputAttribute, DescriptionTypeAttribute])
-@interface RawDataOutput {}
+@AnnotationCollector([Field, GeometryAttribute, OutputAttribute, DescriptionTypeAttribute])
+@interface GeometryOutput {}
