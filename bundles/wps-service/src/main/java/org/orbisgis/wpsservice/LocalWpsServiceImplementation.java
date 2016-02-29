@@ -417,7 +417,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     public Map<String, Object> getFieldInformation(String tableName, String fieldName){
         Map<String, Object> map = new HashMap<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            TableLocation tableLocation = new TableLocation(tableName);
+            TableLocation tableLocation = TableLocation.parse(tableName);
             List<String> geometricFields = SFSUtilities.getGeometryFields(connection, tableLocation);
             boolean isGeometric = false;
             for(String field : geometricFields){

@@ -309,9 +309,9 @@ public class DataStoreUI implements DataUI{
             tableNameList = wpsClient.getWpsService().getGeocatalogTableList(false);
         }
         //If there is tables, retrieve their information to format the display in the comboBox
+        ContainerItem<Object> selectedItem = (ContainerItem<Object>)geocatalogComboBox.getSelectedItem();
         geocatalogComboBox.removeAllItems();
         if(tableNameList != null && !tableNameList.isEmpty()){
-            ContainerItem<Object> selectedItem = (ContainerItem<Object>)geocatalogComboBox.getSelectedItem();
             for (String tableName : tableNameList) {
                 //Retrieve the table information
                 Map<String, Object> informationMap = wpsClient.getWpsService().getTableInformation(tableName);
