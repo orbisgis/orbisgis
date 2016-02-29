@@ -346,23 +346,31 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             String defaultSchema = (isH2)?"PUBLIC":"public";
             List<String> tableList = JDBCUtilities.getTableNames(connection.getMetaData(), null,
                     null, null, SHOWN_TABLE_TYPES);
+            //Test each table get from the JDBCUtilities
             for(String table : tableList){
+                //If only the spatial table are allow filter them
                 if(onlySpatial){
+                    //Test if the table contains a geometrical field (if the table is spatial)
                     if(!SFSUtilities.getGeometryFields(connection, TableLocation.parse(table)).isEmpty()){
                         TableLocation tablelocation = TableLocation.parse(table, isH2);
+                        //If the table is in the default schema, just add its name
                         if(tablelocation.getSchema().equals(defaultSchema)) {
                             list.add(tablelocation.getTable());
                         }
+                        //If not, add the schema name '.' the table name (SCHEMA.TABLE)
                         else{
                             list.add(tablelocation.getSchema()+"."+tablelocation.getTable());
                         }
                     }
                 }
+                //Else add all the tables
                 else{
                     TableLocation tablelocation = TableLocation.parse(table, isH2);
+                    //If the table is in the default schema, just add its name
                     if(tablelocation.getSchema().equals(defaultSchema)) {
                         list.add(tablelocation.getTable());
                     }
+                    //If not, add the schema name '.' the table name (SCHEMA.TABLE)
                     else{
                         list.add(tablelocation.getSchema()+"."+tablelocation.getTable());
                     }
@@ -576,14 +584,17 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     @Override
     public void cancelLoadUri(URI uri){
         Object object = cancelLoadMap.get(uri);
+        //If the object from the map is a Statement, cancel and close it.
         if(object instanceof Statement){
             try {
                 ((Statement)object).cancel();
+                ((Statement)object).close();
             } catch (SQLException e) {
                 LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to cancel the lodaing of '"+
                 uri+"'.\n"+e.getMessage());
             }
         }
+        //If the object from the map is a ProgressVisitor, cancel it.
         else if(object instanceof ProgressVisitor){
             ((ProgressVisitor)object).cancel();
         }

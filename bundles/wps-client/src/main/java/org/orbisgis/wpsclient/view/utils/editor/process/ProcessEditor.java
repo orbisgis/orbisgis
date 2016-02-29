@@ -91,8 +91,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         layerUI = new WaitLayerUI();
         layer = new JLayer<>(contentPanel, layerUI);
         //Adds a mouse listener to listen the double click by the user to cancel the loading
-        this.addMouseListener(EventHandler.create(MouseListener.class, this, "cancelLoad", "", "mouseClicked"));
-        layer.addMouseListener(EventHandler.create(MouseListener.class, this, "cancelLoad", "", "mouseClicked"));
         contentPanel.addMouseListener(EventHandler.create(MouseListener.class, this, "cancelLoad", "", "mouseClicked"));
         this.add (layer);
 
@@ -390,22 +388,31 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         return label;
     }
 
+    /**
+     * Start the waiting layer and desactivate the user interface.
+     */
     public void startWaiting(){
+        //Creates a copy of the UI
         int w = contentPanel.getWidth();
         int h = contentPanel.getHeight();
         BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = bi.createGraphics();
-        waitLabel = new JLabel(new ImageIcon(bi));
         contentPanel.paint(g);
+        //Write the copy in a JLabel
+        waitLabel = new JLabel(new ImageIcon(bi));
+        //Replace the UI by the JLabel
         contentPanel.remove(tabbedPane);
-        contentPanel.add(waitLabel);
+        contentPanel.add(waitLabel, BorderLayout.CENTER);
+        //Start the waiting layer
         layerUI.start();
     }
 
     public void endWaiting(){
+        //Stop the waiting layer
         layerUI.stop();
+        //Remove the JLabel and add the UI
         contentPanel.remove(waitLabel);
-        contentPanel.add(tabbedPane);
+        contentPanel.add(tabbedPane, BorderLayout.CENTER);
     }
 
     class WaitLayerUI extends LayerUI<JPanel> implements ActionListener {
