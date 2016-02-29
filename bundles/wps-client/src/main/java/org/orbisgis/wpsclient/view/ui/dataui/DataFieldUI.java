@@ -348,12 +348,12 @@ public class DataFieldUI implements DataUI{
                     //Sets the SRID label
                     int srid = (int) informationMap.get(LocalWpsService.TABLE_SRID);
                     if (srid != 0) {
-                        fieldPanel.add(new JLabel("[EPSG:" + srid + "]"));
+                        fieldPanel.add(new JLabel(" [EPSG:" + srid + "]"));
                     }
                     //Sets the dimension label
                     int dimension = (int) informationMap.get(LocalWpsService.TABLE_DIMENSION);
                     if (dimension != 2 && dimension != 0) {
-                        fieldPanel.add(new JLabel(dimension + "D"));
+                        fieldPanel.add(new JLabel(" "+dimension + "D"));
                     }
                 } else {
                     fieldPanel.add(new JLabel(fieldName));
