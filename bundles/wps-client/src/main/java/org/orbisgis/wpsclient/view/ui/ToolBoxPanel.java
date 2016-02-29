@@ -206,18 +206,17 @@ public class ToolBoxPanel extends JPanel {
                 }
                 else {
                     TreeNodeWps node = (TreeNodeWps) tree.getLastSelectedPathComponent();
-                    if (node.isLeaf()) {
-                        if(node.isDefaultOrbisGIS()){
+                    if(node.isDefaultOrbisGIS()){
+                        if (node.isLeaf() && !node.getNodeType().equals(TreeNodeWps.NodeType.FOLDER)) {
                             popupOrbisGISLeafActions.copyEnabledActions(popupMenu);
-                        }
-                        else {
-                            popupLeafActions.copyEnabledActions(popupMenu);
-                        }
-                    } else {
-                        if(node.isDefaultOrbisGIS()){
+                        } else {
                             popupOrbisGISNodeActions.copyEnabledActions(popupMenu);
                         }
-                        else {
+                    }
+                    else {
+                        if (node.isLeaf() && !node.getNodeType().equals(TreeNodeWps.NodeType.FOLDER)) {
+                            popupLeafActions.copyEnabledActions(popupMenu);
+                        } else {
                             popupNodeActions.copyEnabledActions(popupMenu);
                         }
                     }
@@ -732,7 +731,6 @@ public class ToolBoxPanel extends JPanel {
 
         popupLeafActions = new ActionCommands();
         popupLeafActions.addAction(runScript);
-        popupLeafActions.addAction(refresh_source);
         popupLeafActions.addAction(remove);
 
         popupNodeActions = new ActionCommands();

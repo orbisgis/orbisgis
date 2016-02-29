@@ -34,8 +34,6 @@ import org.orbisgis.wpsgroovyapi.process.Process
         resume = "Execute a buffer on a geometric field.",
         keywords = "OrbisGIS,ST_Buffer,example")
 def processing() {
-    //Drop the output DataStore
-    sql.execute("DROP TABLE IF EXISTS " + dataStoreOutput + ";")
 
     //Build the start of the query
     String query = "CREATE TABLE "+dataStoreOutput+" AS SELECT ST_Buffer("+geometricField+","+bufferSize

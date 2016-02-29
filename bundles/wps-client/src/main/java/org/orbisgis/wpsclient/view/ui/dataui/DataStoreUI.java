@@ -167,7 +167,7 @@ public class DataStoreUI implements DataUI{
         }
         //If it is an output, just show the table names, and add the 'new table' item.
         else {
-            geocatalogComboBox.insertItemAt(new ContainerItem<Object>("New table", "New table"), 0);
+            geocatalogComboBox.insertItemAt(new ContainerItem<Object>("New_table", "New_table"), 0);
             geocatalogComboBox.setEditable(true);
             //Adds the listener for the comboBox edition
             Document doc = ((JTextComponent)geocatalogComboBox.getEditor().getEditorComponent()).getDocument();
@@ -284,6 +284,7 @@ public class DataStoreUI implements DataUI{
         textField.getDocument().putProperty(FILE_OPTIONS_PROPERTY, fileOptions);
         buttonPanel.add(fileOptions);
         optionPanelFile.add(buttonPanel, "dock east");
+        optionPanelFile.putClientProperty(TEXT_FIELD_PROPERTY, textField);
         dataStoreTypeBox.putClientProperty(FILE_COMPONENT_PROPERTY, optionPanelFile);
 
         /** Return the UI panel. **/
@@ -308,9 +309,9 @@ public class DataStoreUI implements DataUI{
             tableNameList = wpsClient.getWpsService().getGeocatalogTableList(false);
         }
         //If there is tables, retrieve their information to format the display in the comboBox
+        ContainerItem<Object> selectedItem = (ContainerItem<Object>)geocatalogComboBox.getSelectedItem();
+        geocatalogComboBox.removeAllItems();
         if(tableNameList != null && !tableNameList.isEmpty()){
-            ContainerItem<Object> selectedItem = (ContainerItem<Object>)geocatalogComboBox.getSelectedItem();
-            geocatalogComboBox.removeAllItems();
             for (String tableName : tableNameList) {
                 //Retrieve the table information
                 Map<String, Object> informationMap = wpsClient.getWpsService().getTableInformation(tableName);
@@ -340,7 +341,7 @@ public class DataStoreUI implements DataUI{
             }
         }
         if(isOptional){
-            geocatalogComboBox.insertItemAt(new ContainerItem<Object>("New table", "New table"), 0);
+            geocatalogComboBox.insertItemAt(new ContainerItem<Object>("New_table", "New_table"), 0);
             geocatalogComboBox.setSelectedIndex(0);
         }
     }
@@ -436,7 +437,13 @@ public class DataStoreUI implements DataUI{
         Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
         URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
         DataStore dataStore = (DataStore) comboBox.getClientProperty(DATA_STORE_PROPERTY);
-        String tableName = ((ContainerItem)comboBox.getSelectedItem()).getLabel();
+        String tableName;
+        if(comboBox.getSelectedItem() instanceof ContainerItem) {
+            tableName = ((ContainerItem) comboBox.getSelectedItem()).getLabel();
+        }
+        else{
+            tableName = comboBox.getSelectedItem().toString();
+        }
         //Tells all the dataField linked that the data source is loaded
         for (DataField dataField : dataStore.getListDataField()) {
             dataField.setSourceModified(true);
@@ -448,7 +455,6 @@ public class DataStoreUI implements DataUI{
                 wpsClient.getWpsService().removeTempTable(oldUri.getFragment());
             }
         }
-        tableName = tableName.replaceAll(" ", "_");
         dataMap.put(uri, URI.create("geocatalog:"+tableName+"#"+tableName));
     }
 
@@ -491,6 +497,7 @@ public class DataStoreUI implements DataUI{
             URI uri = (URI)comboBox.getClientProperty(URI_PROPERTY);
             dataMap.put(uri, null);
             JPanel optionPanel = (JPanel) comboBox.getClientProperty(FILE_COMPONENT_PROPERTY);
+            ((JTextField) optionPanel.getClientProperty(TEXT_FIELD_PROPERTY)).setText("");
             component.add(optionPanel, "growx");
             component.repaint();
         }
@@ -541,7 +548,7 @@ public class DataStoreUI implements DataUI{
                     keepSource = (boolean)fileOptions.getClientProperty(KEEP_SOURCE_PROPERTY);
                 }
                 //Load the selected file an retrieve the table name.
-                String tableName = wpsClient.loadURI(file.toURI(), loadSource);
+                String tableName = wpsClient.loadURI(file.toURI(), loadSource, inputOrOutput);
                 if (tableName != null) {
                     String fileStr = file.toURI().toString();
                     if(keepSource){

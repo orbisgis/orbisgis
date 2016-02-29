@@ -327,20 +327,27 @@
                                                             </placeholder-map>
                                                         </leaf>
                                                     </node>
-                                                    <leaf id="1" nodeId="1398170831441">
-                                                        <placeholders>
-                                                            <placeholder>dock.single.map_editor</placeholder>
-                                                        </placeholders>
-                                                        <placeholder-map>
-                                                            <version>0</version>
-                                                            <format>dock.PlaceholderList</format>
-                                                            <entry>
-                                                                <key shared="false">
-                                                                    <placeholder>dock.single.map_editor</placeholder>
-                                                                </key>
-                                                            </entry>
-                                                        </placeholder-map>
-                                                    </leaf>
+                                                    <node nodeId="1456742597201" orientation="HORIZONTAL" divider="0.5203883495145631">
+                                                        <leaf id="1" nodeId="1398170831441">
+                                                            <placeholders>
+                                                                <placeholder>dock.single.map_editor</placeholder>
+                                                            </placeholders>
+                                                            <placeholder-map>
+                                                                <version>0</version>
+                                                                <format>dock.PlaceholderList</format>
+                                                                <entry>
+                                                                    <key shared="false">
+                                                                        <placeholder>dock.single.map_editor</placeholder>
+                                                                    </key>
+                                                                </entry>
+                                                            </placeholder-map>
+                                                        </leaf>
+                                                        <leaf id="-1" nodeId="1456742595948">
+                                                            <placeholders>
+                                                                <placeholder>dock.single.orbistoolbox</placeholder>
+                                                            </placeholders>
+                                                        </leaf>
+                                                    </node>
                                                 </node>
                                                 <leaf id="-1" nodeId="1398170830763">
                                                     <placeholders>
@@ -441,12 +448,24 @@
                         </root>
                     </roots>
                     <children>
-                        <child key="single org.orbisgis.sqlconsole.SQLConsole" location="false">
+                        <child key="single orbistoolbox" root="base center" location="true">
+                            <location>
+                                <property factory="SplitDockPlaceholderProperty">
+                                    <placeholder>dock.single.orbistoolbox</placeholder>
+                                    <backup-path>
+                                        <node location="BOTTOM" size="0.6803900325027086" id="1398170833504"/>
+                                        <node location="TOP" size="0.5" id="1398170831443"/>
+                                        <node location="RIGHT" size="0.6457286432160805" id="1398171122333"/>
+                                        <node location="RIGHT" size="0.47961165048543686" id="1456742597201"/>
+                                        <leaf id="1456742595948"/>
+                                    </backup-path>
+                                </property>
+                            </location>
                             <layout>
-                                <layout factory="predefined" placeholder="dock.single.org\.orbisgis\.sqlconsole\.SQLConsole">
-                                    <replacement id="dockablesingle org.orbisgis.sqlconsole.SQLConsole"/>
+                                <layout factory="predefined" placeholder="dock.single.orbistoolbox">
+                                    <replacement id="dockablesingle orbistoolbox"/>
                                     <delegate id="delegate_ccontrol backup factory id">
-                                        <id>org.orbisgis.sqlconsole.SQLConsole</id>
+                                        <id>orbistoolbox</id>
                                         <area/>
                                     </delegate>
                                 </layout>
@@ -570,6 +589,30 @@
                                         <property factory="StackDockPropertyFactory">
                                             <index>1</index>
                                             <placeholder>dock.single.geocatalog\-tree</placeholder>
+                                        </property>
+                                    </location>
+                                </property>
+                            </properties>
+                        </entry>
+                        <entry id="single toolbox" current="dock.mode.toolbar">
+                            <history>
+                                <mode>dock.mode.normal</mode>
+                            </history>
+                            <properties>
+                                <property id="dock.mode.normal">
+                                    <mode>dock.mode.normal</mode>
+                                    <root>base center</root>
+                                    <applicationDefined>false</applicationDefined>
+                                    <location>
+                                        <property factory="SplitDockPlaceholderProperty">
+                                            <placeholder>dock.single.orbistoolbox</placeholder>
+                                            <backup-path>
+                                                <node location="BOTTOM" size="0.6803900325027086" id="1398170833504"/>
+                                                <node location="TOP" size="0.5" id="1398170831443"/>
+                                                <node location="LEFT" size="0.1761904761904762" id="1398171122333"/>
+                                                <node location="BOTTOM" size="0.5284280936454849" id="1398171526948"/>
+                                                <leaf id="1398171122331"/>
+                                            </backup-path>
                                         </property>
                                     </location>
                                 </property>

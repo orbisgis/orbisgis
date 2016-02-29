@@ -35,7 +35,6 @@ import org.orbisgis.wpsgroovyapi.process.Process
         resume = "Intersection of building with a flooding zone.",
         keywords = "OrbisGIS,ST_Intersects,ST_Buffer,ST_Accum,example,layerIntersection")
 def processing() {
-    sql.execute("DROP TABLE IF EXISTS " + dataStoreOutput + ";")
 
     String condition = ""
     riverNameValue.each {cityName ->

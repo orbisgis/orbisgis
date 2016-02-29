@@ -23,6 +23,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -73,6 +74,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     /** Process manager which contains all the loaded scripts. */
     private ProcessManager processManager;
     private DataSourceService dataSourceService;
+    /** Map containing object that can be used to cancel the loading of an URI. */
+    private Map<URI, Object> cancelLoadMap;
 
     @Activate
     public void init(){
@@ -96,6 +99,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
                         " the toolbox won't be able to run more than one process at the same time.");
             }
         }
+        cancelLoadMap = new HashMap<>();
     }
 
     @Deactivate
@@ -341,15 +345,35 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             //TODO find a better way to get only the user tabe and not the information table
             String defaultSchema = (isH2)?"PUBLIC":"public";
             List<String> tableList = JDBCUtilities.getTableNames(connection.getMetaData(), null,
-                    defaultSchema, null, SHOWN_TABLE_TYPES);
+                    null, null, SHOWN_TABLE_TYPES);
+            //Test each table get from the JDBCUtilities
             for(String table : tableList){
+                //If only the spatial table are allow filter them
                 if(onlySpatial){
-                    if(!SFSUtilities.getGeometryFields(connection, new TableLocation(table)).isEmpty()){
-                        list.add(table);
+                    //Test if the table contains a geometrical field (if the table is spatial)
+                    if(!SFSUtilities.getGeometryFields(connection, TableLocation.parse(table)).isEmpty()){
+                        TableLocation tablelocation = TableLocation.parse(table, isH2);
+                        //If the table is in the default schema, just add its name
+                        if(tablelocation.getSchema().equals(defaultSchema)) {
+                            list.add(tablelocation.getTable());
+                        }
+                        //If not, add the schema name '.' the table name (SCHEMA.TABLE)
+                        else{
+                            list.add(tablelocation.getSchema()+"."+tablelocation.getTable());
+                        }
                     }
                 }
+                //Else add all the tables
                 else{
-                    list.add(table);
+                    TableLocation tablelocation = TableLocation.parse(table, isH2);
+                    //If the table is in the default schema, just add its name
+                    if(tablelocation.getSchema().equals(defaultSchema)) {
+                        list.add(tablelocation.getTable());
+                    }
+                    //If not, add the schema name '.' the table name (SCHEMA.TABLE)
+                    else{
+                        list.add(tablelocation.getSchema()+"."+tablelocation.getTable());
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -393,7 +417,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     public Map<String, Object> getFieldInformation(String tableName, String fieldName){
         Map<String, Object> map = new HashMap<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            TableLocation tableLocation = new TableLocation(tableName);
+            TableLocation tableLocation = TableLocation.parse(tableName);
             List<String> geometricFields = SFSUtilities.getGeometryFields(connection, tableLocation);
             boolean isGeometric = false;
             for(String field : geometricFields){
@@ -529,25 +553,51 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             String extension = FilenameUtils.getExtension(f.getAbsolutePath());
             Statement statement = connection.createStatement();
             if(extension.equalsIgnoreCase("csv")){
+                //Save the statement to be able to cancel it.
+                cancelLoadMap.put(uri, statement);
                 statement.execute("CREATE TEMPORARY TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
+                cancelLoadMap.remove(uri);
             }
             else {
+                ProgressVisitor pv = new EmptyProgressVisitor();
+                //Save the progress visitor to be able to cancel it.
+                cancelLoadMap.put(uri, pv);
                 if(copyInBase || !isH2){
                     DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
                             extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, pv);
                 }
                 else {
                     DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
                             extension, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
-                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, new EmptyProgressVisitor());
+                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, pv);
                 }
+                cancelLoadMap.remove(uri);
             }
             return tableName;
         } catch (SQLException|IOException e) {
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
         }
         return null;
+    }
+
+    @Override
+    public void cancelLoadUri(URI uri){
+        Object object = cancelLoadMap.get(uri);
+        //If the object from the map is a Statement, cancel and close it.
+        if(object instanceof Statement){
+            try {
+                ((Statement)object).cancel();
+                ((Statement)object).close();
+            } catch (SQLException e) {
+                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to cancel the lodaing of '"+
+                uri+"'.\n"+e.getMessage());
+            }
+        }
+        //If the object from the map is a ProgressVisitor, cancel it.
+        else if(object instanceof ProgressVisitor){
+            ((ProgressVisitor)object).cancel();
+        }
     }
 
     @Override
