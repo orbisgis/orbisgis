@@ -183,15 +183,13 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static RawData annotationToObject(RawDataAttribute rawDataAttribute) {
+    public static RawData annotationToObject(RawDataAttribute rawDataAttribute, Format format) {
         try {
-            List<Format> formatList = new ArrayList<>();
-            for(FormatAttribute formatAttribute : rawDataAttribute.formats()){
-                formatList.add(ObjectAnnotationConverter.annotationToObject(formatAttribute));
-            }
-
             //Instantiate the RawData
-            return new RawData(formatList);
+            RawData rawData = new RawData(format);
+            rawData.setFile(rawDataAttribute.isFile());
+            rawData.setDirectory(rawDataAttribute.isDirectory());
+            return rawData;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;
@@ -293,6 +291,16 @@ public class ObjectAnnotationConverter {
             enumeration.setMultiSelection(enumAttribute.multiSelection());
             enumeration.setValuesNames(enumAttribute.names());
             return enumeration;
+        } catch (MalformedScriptException e) {
+            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
+            return null;
+        }
+    }
+
+    public static GeometryData annotationToObject(GeometryAttribute geometryAttribute, Format format) {
+        try{
+            GeometryData geometryData = new GeometryData(format);
+            return geometryData;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;

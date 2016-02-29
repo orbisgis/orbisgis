@@ -23,15 +23,17 @@ import java.util.List;
 
 /**
  * RawData extends the ComplexData class.
- * It can content any Object as data and the data class is stored as descriptive element.
+ * It represents a file or a folder.
  *
  * @author Sylvain PALOMINOS
  */
 
 public class RawData extends ComplexData {
 
-    /** Data object. */
-    private Object data;
+    /** True if the RawData can be a file, false otherwise. */
+    private boolean isFile;
+    /** True if the RawData can be a directory, false otherwise. */
+    private boolean isDirectory;
 
     /**
      * Constructor giving the default format.
@@ -41,7 +43,6 @@ public class RawData extends ComplexData {
      */
     public RawData(Format format) throws MalformedScriptException {
         super(format);
-        data = null;
     }
 
     /**
@@ -52,36 +53,37 @@ public class RawData extends ComplexData {
      */
     public RawData(List<Format> formatList) throws MalformedScriptException {
         super(formatList);
-        data = null;
     }
 
     /**
-     * Sets the data contained and store its class as a descriptive element.
-     * @param data Data to store.
-     * @param dataClass Data class.
+     * Returns if the RawData can be a directory or not.
+     * @return True if the RawData can be a directory, false otherwise.
      */
-    public void setData(Object data, Class dataClass) {
-        this.data = data;
-        this.setAnys(null);
-        this.addAny(dataClass);
+    public boolean isDirectory() {
+        return isDirectory;
     }
 
     /**
-     * Returns the data.
-     * @return The data.
+     * Sets if the RawData can be a directory or not.
+     * @param directory True if the RawData can be a directory, false otherwise.
      */
-    public Object getData() {
-        return data;
+    public void setDirectory(boolean directory) {
+        isDirectory = directory;
     }
 
     /**
-     * Returns the data class.
-     * @return The data class.
+     * Returns if the RawData can be a file or not.
+     * @return True if the RawData can be a file, false otherwise.
      */
-    public Class getDataClass() {
-        if (data == null) {
-            return null;
-        }
-        return (Class) getAnys().get(0);
+    public boolean isFile() {
+        return isFile;
+    }
+
+    /**
+     * Sets if the RawData can be a file or not.
+     * @param file True if the RawData can be a file, false otherwise.
+     */
+    public void setFile(boolean file) {
+        isFile = file;
     }
 }
