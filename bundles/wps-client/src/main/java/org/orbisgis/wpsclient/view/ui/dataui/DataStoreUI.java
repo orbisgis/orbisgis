@@ -284,6 +284,7 @@ public class DataStoreUI implements DataUI{
         textField.getDocument().putProperty(FILE_OPTIONS_PROPERTY, fileOptions);
         buttonPanel.add(fileOptions);
         optionPanelFile.add(buttonPanel, "dock east");
+        optionPanelFile.putClientProperty(TEXT_FIELD_PROPERTY, textField);
         dataStoreTypeBox.putClientProperty(FILE_COMPONENT_PROPERTY, optionPanelFile);
 
         /** Return the UI panel. **/
@@ -308,9 +309,9 @@ public class DataStoreUI implements DataUI{
             tableNameList = wpsClient.getWpsService().getGeocatalogTableList(false);
         }
         //If there is tables, retrieve their information to format the display in the comboBox
+        geocatalogComboBox.removeAllItems();
         if(tableNameList != null && !tableNameList.isEmpty()){
             ContainerItem<Object> selectedItem = (ContainerItem<Object>)geocatalogComboBox.getSelectedItem();
-            geocatalogComboBox.removeAllItems();
             for (String tableName : tableNameList) {
                 //Retrieve the table information
                 Map<String, Object> informationMap = wpsClient.getWpsService().getTableInformation(tableName);
@@ -496,6 +497,7 @@ public class DataStoreUI implements DataUI{
             URI uri = (URI)comboBox.getClientProperty(URI_PROPERTY);
             dataMap.put(uri, null);
             JPanel optionPanel = (JPanel) comboBox.getClientProperty(FILE_COMPONENT_PROPERTY);
+            ((JTextField) optionPanel.getClientProperty(TEXT_FIELD_PROPERTY)).setText("");
             component.add(optionPanel, "growx");
             component.repaint();
         }
