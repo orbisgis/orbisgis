@@ -192,8 +192,9 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                         request.append(" ");
                     }
                     request.append(TableLocation.quoteIdentifier(fieldName));
+                    request.append("::text");
                     if(!params.isMatchCase()) {
-                        request.append("::text)");
+                        request.append(")");
                     }
                     if(params.isWholeWord()) {
                         request.append(" = ");
