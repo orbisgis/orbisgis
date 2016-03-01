@@ -301,7 +301,20 @@ public class ObjectAnnotationConverter {
 
     public static GeometryData annotationToObject(GeometryAttribute geometryAttribute, Format format) {
         try{
-            GeometryData geometryData = new GeometryData(format);
+            format.setDefaultFormat(true);
+            List<DataType> geometryTypeList = new ArrayList<>();
+            //For each field type value from the groovy annotation, test if it is contain in the FieldType enumeration.
+            for(String type : Arrays.asList(geometryAttribute.geometryType())){
+                geometryTypeList.add(DataType.getDataTypeFromFieldType(type));
+            }
+            List<DataType> excludedTypeList = new ArrayList<>();
+            //For each excluded type value from the groovy annotation, test if it is contain in the FieldType enumeration.
+            for(String type : Arrays.asList(geometryAttribute.excludedTypes())){
+                excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
+            }
+            GeometryData geometryData = new GeometryData(format, geometryTypeList);
+            geometryData.setDimension(geometryAttribute.dimension());
+            geometryData.setExcludedTypeList(excludedTypeList);
             return geometryData;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());

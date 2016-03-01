@@ -51,6 +51,7 @@ public class DataUIManager {
         linkClassUI(DataField.class, new DataFieldUI(), wpsClient);
         linkClassUI(FieldValue.class, new FieldValueUI(), wpsClient);
         linkClassUI(Enumeration.class, new EnumerationUI(), wpsClient);
+        linkClassUI(GeometryData.class, new GeometryUI(), wpsClient);
     }
 
     /**
