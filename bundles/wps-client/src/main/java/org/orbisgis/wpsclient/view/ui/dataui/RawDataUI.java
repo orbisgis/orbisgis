@@ -21,10 +21,7 @@ package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.components.AbstractOpenPanel;
-import org.orbisgis.sif.components.OpenFilePanel;
-import org.orbisgis.sif.components.OpenFolderPanel;
-import org.orbisgis.sif.components.SaveFilePanel;
+import org.orbisgis.sif.components.OpenPanel;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.DescriptionType;
@@ -44,10 +41,9 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.IOException;
+import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,35 +86,32 @@ public class RawDataUI implements DataUI {
                 "saveDocumentText", "document"));
 
         RawData rawData = null;
-        AbstractOpenPanel openPanel = null;
+        String action = null;
         if(inputOrOutput instanceof Input){
             rawData = (RawData) ((Input)inputOrOutput).getDataDescription();
-            if(rawData.isDirectory() && !rawData.isFile()) {
-                openPanel = new OpenFolderPanel("RawDataUI.DirectoryInput", "Select Directory");
-            }
-            else if(!rawData.isDirectory() && rawData.isFile()) {
-                openPanel = new OpenFilePanel("RawDataUI.FileInput", "Select File");
-            }
-            else {
-                openPanel = new OpenPanel("RawDataUI.Input", "Select File or Directory");
-            }
+            action = OpenPanel.ACTION_OPEN;
         }
         else if(inputOrOutput instanceof Output){
             rawData = (RawData) ((Output)inputOrOutput).getDataDescription();
-            if(rawData.isDirectory() && !rawData.isFile()) {
-                openPanel = new SaveFolderPanel("RawDataUI.DirectoryInput", "Select Directory");
-            }
-            else if(!rawData.isDirectory() && rawData.isFile()) {
-                openPanel = new SaveFilePanel("RawDataUI.FileInput", "Select File");
-            }
-            else {
-                openPanel = new SavePanel("RawDataUI.Input", "Select File or Directory");
-            }
+            action = OpenPanel.ACTION_SAVE;
         }
         if(rawData == null){
             return component;
         }
-        openPanel.loadState();
+
+        String dataAccepted;
+        if(rawData.isDirectory() && !rawData.isFile()) {
+            dataAccepted = OpenPanel.ACCEPT_DIRECTORY;
+        }
+        else if(!rawData.isDirectory() && rawData.isFile()) {
+            dataAccepted = OpenPanel.ACCEPT_FILE;
+        }
+        else {
+            dataAccepted = OpenPanel.ACCEPT_BOTH;
+        }
+
+        OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", "Make your selection", action, dataAccepted);
+        openPanel.setAcceptAllFileFilterUsed(true);
 
 
         if(dataMap.get(inputOrOutput.getIdentifier()) != null)
@@ -128,18 +121,20 @@ public class RawDataUI implements DataUI {
         }
         component.add(jtf, "growx");
 
+        JPanel buttonPanel = new JPanel(new MigLayout());
         //Create the button Browse
-        JButton button = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.BROWSE));
+        JButton browseButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.BROWSE));
         //"Save" the sourceCA and the JTextField in the button
-        button.putClientProperty(DATA_MAP_PROPERTY, dataMap);
-        button.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
-        button.putClientProperty(TEXT_FIELD_DATA, jtf);
-        button.putClientProperty(OPEN_PANEL, openPanel);
-        button.setBorderPainted(false);
-        button.setContentAreaFilled(false);
+        browseButton.putClientProperty(DATA_MAP_PROPERTY, dataMap);
+        browseButton.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        browseButton.putClientProperty(TEXT_FIELD_DATA, jtf);
+        browseButton.putClientProperty(OPEN_PANEL, openPanel);
+        browseButton.setBorderPainted(false);
+        browseButton.setContentAreaFilled(false);
+        browseButton.setMargin(new Insets(0, 0, 0, 0));
         //Add the listener for the click on the button
-        button.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
-        component.add(button);
+        browseButton.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
+        buttonPanel.add(browseButton);
 
         //Create the button Browse
         JButton pasteButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
@@ -147,9 +142,12 @@ public class RawDataUI implements DataUI {
         pasteButton.putClientProperty(TEXT_FIELD_DATA, jtf);
         pasteButton.setBorderPainted(false);
         pasteButton.setContentAreaFilled(false);
+        pasteButton.setMargin(new Insets(0, 0, 0, 0));
         //Add the listener for the click on the button
         pasteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
-        component.add(pasteButton);
+        buttonPanel.add(pasteButton);
+
+        component.add(buttonPanel, "dock east");
 
         return component;
     }
@@ -161,7 +159,7 @@ public class RawDataUI implements DataUI {
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon(ToolBoxIcon.getIcon(ToolBoxIcon.RAW_DATA));
+        return ToolBoxIcon.getIcon(ToolBoxIcon.RAW_DATA);
     }
 
     public void onPaste(ActionEvent ae){
@@ -189,14 +187,10 @@ public class RawDataUI implements DataUI {
      */
     public void openLoadPanel(ActionEvent event){
         JButton source = (JButton)event.getSource();
-        OpenFilePanel openFilePanel = (OpenFilePanel)source.getClientProperty(OPEN_PANEL);
-        if (UIFactory.showDialog(openFilePanel, true, true)) {
+        OpenPanel openPanel = (OpenPanel)source.getClientProperty(OPEN_PANEL);
+        if (UIFactory.showDialog(openPanel, true, true)) {
             JTextField textField = (JTextField)source.getClientProperty(TEXT_FIELD_DATA);
-            textField.setText(openFilePanel.getSelectedFile().getName());
-            Map<URI, Object> dataMap = (Map<URI, Object>)source.getClientProperty(DATA_MAP_PROPERTY);
-            URI uri = (URI)source.getClientProperty(URI_PROPERTY);
-            dataMap.remove(uri);
-            dataMap.put(uri, openFilePanel.getSelectedFile().getAbsolutePath());
+            textField.setText(openPanel.getSelectedFile().getAbsolutePath());
         }
     }
 
@@ -206,10 +200,12 @@ public class RawDataUI implements DataUI {
      */
     public void saveDocumentText(Document document){
         try {
-            Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty(DATA_MAP_PROPERTY);
-            URI uri = (URI)document.getProperty(URI_PROPERTY);
             String name = document.getText(0, document.getLength());
-            dataMap.put(uri, name);
+            if(new File(name).exists()) {
+                Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
+                URI uri = (URI) document.getProperty(URI_PROPERTY);
+                dataMap.put(uri, name);
+            }
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(RawData.class).error(e.getMessage());
         }

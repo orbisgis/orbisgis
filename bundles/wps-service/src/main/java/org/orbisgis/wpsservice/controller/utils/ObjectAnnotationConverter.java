@@ -186,6 +186,7 @@ public class ObjectAnnotationConverter {
     public static RawData annotationToObject(RawDataAttribute rawDataAttribute, Format format) {
         try {
             //Instantiate the RawData
+            format.setDefaultFormat(true);
             RawData rawData = new RawData(format);
             rawData.setFile(rawDataAttribute.isFile());
             rawData.setDirectory(rawDataAttribute.isDirectory());
