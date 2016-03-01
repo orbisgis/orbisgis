@@ -193,7 +193,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                     }
                     request.append(TableLocation.quoteIdentifier(fieldName));
                     if(!params.isMatchCase()) {
-                        request.append(")");
+                        request.append("::text)");
                     }
                     if(params.isWholeWord()) {
                         request.append(" = ");
@@ -204,7 +204,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                     if(!params.isWholeWord()) {
                         request.append("%");
                     }
-                    request.append(params.getSearchedChars());
+                    request.append(params.isMatchCase() ? params.getSearchedChars() : params.getSearchedChars().toLowerCase());
                     if(!params.isWholeWord()) {
                         request.append("%");
                     }
