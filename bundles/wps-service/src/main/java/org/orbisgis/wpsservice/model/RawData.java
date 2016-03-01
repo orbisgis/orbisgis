@@ -34,6 +34,8 @@ public class RawData extends ComplexData {
     private boolean isFile;
     /** True if the RawData can be a directory, false otherwise. */
     private boolean isDirectory;
+    /** True if the user can select more than one file/directory, false otherwise. */
+    private boolean multiSelection;
 
     /**
      * Constructor giving the default format.
@@ -85,5 +87,21 @@ public class RawData extends ComplexData {
      */
     public void setFile(boolean file) {
         isFile = file;
+    }
+
+    /**
+     * Returns if the user can select more than just one file/directory.
+     * @return True if user can select more than just one file/directory, false otherwise.
+     */
+    public boolean multiSelection() {
+        return multiSelection;
+    }
+
+    /**
+     * Sets if the user can select more than just one file/directory.
+     * @param multiSelection True if user can select more than just one file/directory, false otherwise.
+     */
+    public void setMultiSelection(boolean multiSelection) {
+        this.multiSelection = multiSelection;
     }
 }

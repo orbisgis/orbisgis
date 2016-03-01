@@ -50,6 +50,8 @@ import java.lang.annotation.RetentionPolicy
     boolean isDirectory() default true
     /** Indicates that the RawData can be a file. */
     boolean isFile() default true
+    /** Indicates that the user can select more than one file/directory. */
+    boolean multiSelection() default false
 
 
 
@@ -58,4 +60,5 @@ import java.lang.annotation.RetentionPolicy
     /********************/
     public static final boolean defaultIsDirectory = true
     public static final boolean defaultIsFile = true
+    public static final boolean defaultMultiSelection = false
 }

@@ -190,6 +190,7 @@ public class ObjectAnnotationConverter {
             RawData rawData = new RawData(format);
             rawData.setFile(rawDataAttribute.isFile());
             rawData.setDirectory(rawDataAttribute.isDirectory());
+            rawData.setMultiSelection(rawDataAttribute.multiSelection());
             return rawData;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());

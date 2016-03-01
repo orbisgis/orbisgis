@@ -61,8 +61,9 @@ public class RawDataUI implements DataUI {
     /** Constant used to pass object as client property throw JComponents **/
     private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
     private static final String URI_PROPERTY = "URI_PROPERTY";
-    private static final String TEXT_FIELD_DATA = "TEXT_FIELD_DATA";
-    private static final String OPEN_PANEL = "OPEN_PANEL";
+    private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
+    private static final String OPEN_PANEL_PROPERTY = "OPEN_PANEL_PROPERTY";
+    private static final String MULTI_SELECTION_PROPERTY = "MULTI_SELECTION_PROPERTY";
 
     /** WpsClient using the generated UI. */
     private WpsClient wpsClient;
@@ -112,6 +113,7 @@ public class RawDataUI implements DataUI {
 
         OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", "Make your selection", action, dataAccepted);
         openPanel.setAcceptAllFileFilterUsed(true);
+        openPanel.setSingleSelection(!rawData.multiSelection());
 
 
         if(dataMap.get(inputOrOutput.getIdentifier()) != null)
@@ -125,10 +127,11 @@ public class RawDataUI implements DataUI {
         //Create the button Browse
         JButton browseButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.BROWSE));
         //"Save" the sourceCA and the JTextField in the button
+        browseButton.putClientProperty(MULTI_SELECTION_PROPERTY, rawData.multiSelection());
+        browseButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
+        browseButton.putClientProperty(OPEN_PANEL_PROPERTY, openPanel);
         browseButton.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         browseButton.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
-        browseButton.putClientProperty(TEXT_FIELD_DATA, jtf);
-        browseButton.putClientProperty(OPEN_PANEL, openPanel);
         browseButton.setBorderPainted(false);
         browseButton.setContentAreaFilled(false);
         browseButton.setMargin(new Insets(0, 0, 0, 0));
@@ -139,7 +142,7 @@ public class RawDataUI implements DataUI {
         //Create the button Browse
         JButton pasteButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
         //"Save" the sourceCA and the JTextField in the button
-        pasteButton.putClientProperty(TEXT_FIELD_DATA, jtf);
+        pasteButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
         pasteButton.setBorderPainted(false);
         pasteButton.setContentAreaFilled(false);
         pasteButton.setMargin(new Insets(0, 0, 0, 0));
@@ -166,7 +169,7 @@ public class RawDataUI implements DataUI {
         Object sourceObj = ae.getSource();
         if(sourceObj instanceof JButton){
             JButton pasteButton = (JButton) sourceObj;
-            JTextField textField = (JTextField) pasteButton.getClientProperty(TEXT_FIELD_DATA);
+            JTextField textField = (JTextField) pasteButton.getClientProperty(TEXT_FIELD_PROPERTY);
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             //odd: the Object param of getContents is not currently used
             Transferable contents = clipboard.getContents(null);
@@ -186,11 +189,29 @@ public class RawDataUI implements DataUI {
      * @param event
      */
     public void openLoadPanel(ActionEvent event){
-        JButton source = (JButton)event.getSource();
-        OpenPanel openPanel = (OpenPanel)source.getClientProperty(OPEN_PANEL);
+        JButton source = (JButton) event.getSource();
+        OpenPanel openPanel = (OpenPanel) source.getClientProperty(OPEN_PANEL_PROPERTY);
         if (UIFactory.showDialog(openPanel, true, true)) {
-            JTextField textField = (JTextField)source.getClientProperty(TEXT_FIELD_DATA);
-            textField.setText(openPanel.getSelectedFile().getAbsolutePath());
+            JTextField textField = (JTextField) source.getClientProperty(TEXT_FIELD_PROPERTY);
+            boolean multiSelection = (boolean) source.getClientProperty((MULTI_SELECTION_PROPERTY));
+            if(multiSelection){
+                String str = "";
+                for(File f : openPanel.getSelectedFiles()){
+                    if(str.isEmpty()){
+                        str+="\""+f.getAbsolutePath()+"\"";
+                    }
+                    else{
+                        str+=","+"\""+f.getAbsolutePath()+"\"";
+                    }
+                }
+                Map<URI, Object> dataMap = (Map<URI, Object>) source.getClientProperty(DATA_MAP_PROPERTY);
+                URI uri = (URI) source.getClientProperty(URI_PROPERTY);
+                dataMap.put(uri, str);
+                textField.setText(str);
+            }
+            else {
+                textField.setText(openPanel.getSelectedFile().getAbsolutePath());
+            }
         }
     }
 
