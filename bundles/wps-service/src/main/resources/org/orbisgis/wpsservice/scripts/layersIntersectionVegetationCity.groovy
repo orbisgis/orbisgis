@@ -30,7 +30,6 @@ import org.orbisgis.wpsgroovyapi.process.Process
         resume = "Intersection of a vegetation with a city.",
         keywords = "OrbisGIS,ST_Intersects,example,layerIntersection")
 def processing() {
-    sql.execute("DROP TABLE IF EXISTS " + dataStoreOutput + ";")
     //Build the query
     String condition = ""
     cityNameValue.each {cityName ->

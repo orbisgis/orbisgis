@@ -32,13 +32,15 @@ public class DataField extends ComplexData{
     /** Identifier of the parent DataStore */
     private URI dataStoreIdentifier;
     /** Indicates if the DataField should be reloaded because of a modification of the parent DataStore.*/
-    private boolean isSourceModified = false;
+    private boolean isSourceModified = true;
     /** List of type accepted for the field.*/
     private List<DataType> fieldTypeList;
     /** List of type excluded for the field.*/
     private List<DataType> excludedTypeList;
     /** List of FieldValue liked to the DataField */
     private List<FieldValue> listFieldValue;
+    /** Indicates if the use can choose more than one field*/
+    private boolean isMultipleField = false;
 
     /**
      * Main constructor.
@@ -127,5 +129,21 @@ public class DataField extends ComplexData{
      */
     public List<DataType> getExcludedTypeList() {
         return excludedTypeList;
+    }
+
+    /**
+     * Returns true if the user can select more than one field, false otherwise.
+     * @return True if the user can select more than one field, false otherwise.
+     */
+    public boolean isMultipleField() {
+        return isMultipleField;
+    }
+
+    /**
+     * Sets if the user can select more than one field or not.
+     * @@param True if the user can select more than one field, false otherwise.
+     */
+    public void setMultipleField(boolean multipleField) {
+        isMultipleField = multipleField;
     }
 }

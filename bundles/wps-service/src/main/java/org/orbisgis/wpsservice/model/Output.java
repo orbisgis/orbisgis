@@ -138,7 +138,7 @@ public class Output extends DescriptionType {
      * Returns the nested output.
      * @return The nested output.
      */
-    public List<Output> getOutput() {
+    public List<Output> getOutputs() {
         return output;
     }
 }

@@ -23,11 +23,12 @@ import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.wpsclient.view.utils.sif.JPanelComboBoxRenderer;
+import org.orbisgis.wpsclient.view.utils.sif.JPanelListRenderer;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.*;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuListener;
 import java.awt.*;
 import java.awt.event.ItemListener;
@@ -48,6 +49,9 @@ import java.util.List;
 
 public class DataFieldUI implements DataUI{
 
+    /** Size constants **/
+    private static final int MAX_JLIST_ROW_COUNT = 5;
+    private static final int MIN_JLIST_ROW_COUNT = 1;
 
     /** Constant used to pass object as client property throw JComponents **/
     private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
@@ -87,27 +91,48 @@ public class DataFieldUI implements DataUI{
         if(dataField == null){
             return panel;
         }
-        //ComboBox the field list
-        JComboBox<ContainerItem<Object>> comboBox = new JComboBox<>();
-        comboBox.setRenderer(new JPanelComboBoxRenderer());
-        comboBox.setBackground(Color.WHITE);
-        ContainerItem<Object> defaultItem = new ContainerItem<Object>("Select a field", "Select a field");
-        comboBox.addItem(defaultItem);
-        comboBox.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
-        comboBox.putClientProperty(DATA_FIELD_PROPERTY, dataField);
-        comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
-        comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
-        comboBox.putClientProperty(DEFAULT_ITEM_PROPERTY, defaultItem);
-        comboBox.putClientProperty(FIELD_TITLE_PROPERTY, inputOrOutput.getTitle());
-        comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
-        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
-        comboBox.addPopupMenuListener(EventHandler.create(PopupMenuListener.class, this, "onComboBoxEntered", "source"));
-        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
-        comboBox.setToolTipText(inputOrOutput.getResume());
-        panel.add(comboBox, "growx, wrap");
+        if(dataField.isMultipleField()){
+            JList<ContainerItem<Object>> list = new JList<>();
+            list.setModel(new DefaultListModel<ContainerItem<Object>>());
+            list.setCellRenderer(new JPanelListRenderer());
+            list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+            list.setLayoutOrientation(JList.VERTICAL);
+            list.setVisibleRowCount(MIN_JLIST_ROW_COUNT);
+            list.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+            list.putClientProperty(DATA_FIELD_PROPERTY, dataField);
+            list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
+            list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
+            list.putClientProperty(FIELD_TITLE_PROPERTY, inputOrOutput.getTitle());
+            list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onItemSelected", "source"));
+            list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
+            list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
+            list.setToolTipText(inputOrOutput.getResume());
+            JScrollPane listScroller = new JScrollPane(list);
+            panel.add(listScroller, "growx, wrap");
+        }
+        else {
+            //ComboBox the field list
+            JComboBox<ContainerItem<Object>> comboBox = new JComboBox<>();
+            comboBox.setRenderer(new JPanelListRenderer());
+            comboBox.setBackground(Color.WHITE);
+            ContainerItem<Object> defaultItem = new ContainerItem<Object>("Select a field", "Select a field");
+            comboBox.addItem(defaultItem);
+            comboBox.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+            comboBox.putClientProperty(DATA_FIELD_PROPERTY, dataField);
+            comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
+            comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
+            comboBox.putClientProperty(DEFAULT_ITEM_PROPERTY, defaultItem);
+            comboBox.putClientProperty(FIELD_TITLE_PROPERTY, inputOrOutput.getTitle());
+            comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
+            comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
+            comboBox.addPopupMenuListener(EventHandler.create(PopupMenuListener.class, this, "onComboBoxEntered", "source"));
+            comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
+            comboBox.setToolTipText(inputOrOutput.getResume());
+            panel.add(comboBox, "growx, wrap");
 
-        if(isOptional){
-            comboBox.addItem(new ContainerItem<Object>(NULL_ITEM, NULL_ITEM));
+            if (isOptional) {
+                comboBox.addItem(new ContainerItem<Object>(NULL_ITEM, NULL_ITEM));
+            }
         }
 
         return panel;
@@ -128,11 +153,22 @@ public class DataFieldUI implements DataUI{
      * @param source The source JComboBox.
      */
     public void onComboBoxExited(Object source){
-        //Retrieve the client properties
-        JComboBox<ContainerItem<Object>> comboBox = (JComboBox)source;
-        if(comboBox.getItemCount() == 0) {
-            comboBox.setToolTipText((String)comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY));
-            ToolTipManager.sharedInstance().setInitialDelay((int)comboBox.getClientProperty(INITIAL_DELAY_PROPERTY));
+        if(source instanceof JComboBox) {
+            //Retrieve the client properties
+            JComboBox<ContainerItem<Object>> comboBox = (JComboBox) source;
+            if (comboBox.getItemCount() == 0) {
+                comboBox.setToolTipText((String) comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY));
+                ToolTipManager.sharedInstance().setInitialDelay((int) comboBox.getClientProperty(INITIAL_DELAY_PROPERTY));
+            }
+        }
+        else if(source instanceof JList){
+            //Retrieve the client properties
+            JList<ContainerItem<Object>> list = (JList) source;
+            DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
+            if (model.getSize() == 0) {
+                list.setToolTipText((String) list.getClientProperty(TOOLTIP_TEXT_PROPERTY));
+                ToolTipManager.sharedInstance().setInitialDelay((int) list.getClientProperty(INITIAL_DELAY_PROPERTY));
+            }
         }
     }
 
@@ -141,47 +177,95 @@ public class DataFieldUI implements DataUI{
      * @param source The source JComboBox.
      */
     public void onComboBoxEntered(Object source){
-        JComboBox<ContainerItem<Object>> comboBox = (JComboBox)source;
-        String defaultItem = comboBox.getClientProperty(DEFAULT_ITEM_PROPERTY).toString();
-        comboBox.removeItem(defaultItem);
-        DataField dataField = (DataField)comboBox.getClientProperty(DATA_FIELD_PROPERTY);
-        HashMap<URI, Object> dataMap = (HashMap)comboBox.getClientProperty(DATA_MAP_PROPERTY);
-        boolean isOptional = (boolean)comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
-        //If the DataStore related to the DataField has been modified, reload the dataField values
-        if(dataField.isSourceModified()) {
-            dataField.setSourceModified(false);
-            comboBox.removeAllItems();
-            if (dataMap.get(dataField.getDataStoreIdentifier()) != null) {
-                populateWithFields(comboBox, isOptional);
-            }
-        }
-
-        //If the comboBox doesn't contains any values, it mean that the DataStore hasn't been well selected.
-        //So show a tooltip text to warn the user.
-        if(comboBox.getItemCount() == 0) {
-            comboBox.putClientProperty(INITIAL_DELAY_PROPERTY, ToolTipManager.sharedInstance().getInitialDelay());
-            comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, comboBox.getToolTipText());
-            ToolTipManager.sharedInstance().setInitialDelay(0);
-            ToolTipManager.sharedInstance().setDismissDelay(2500);
-            String dataFieldStr = dataField.getDataStoreIdentifier().toString();
-            comboBox.setToolTipText("First configure the DataStore : " +
-                    dataFieldStr.substring(dataFieldStr.lastIndexOf(":")+1));
-            ToolTipManager.sharedInstance().mouseMoved(
-                    new MouseEvent(comboBox,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
-        }
-        //Else try to select the good field
-        else{
-            String title = comboBox.getClientProperty(FIELD_TITLE_PROPERTY).toString().toUpperCase();
-            for(int i = 0; i < comboBox.getItemCount(); i++) {
-                if(title.contains(comboBox.getItemAt(i).getLabel()) ||
-                        comboBox.getItemAt(i).getLabel().contains(title)){
-                    comboBox.setSelectedIndex(i);
-                    break;
+        if(source instanceof JComboBox) {
+            JComboBox<ContainerItem<Object>> comboBox = (JComboBox) source;
+            String defaultItem = comboBox.getClientProperty(DEFAULT_ITEM_PROPERTY).toString();
+            comboBox.removeItem(defaultItem);
+            DataField dataField = (DataField) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
+            HashMap<URI, Object> dataMap = (HashMap) comboBox.getClientProperty(DATA_MAP_PROPERTY);
+            boolean isOptional = (boolean) comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
+            //If the DataStore related to the DataField has been modified, reload the dataField values
+            if (dataField.isSourceModified()) {
+                dataField.setSourceModified(false);
+                comboBox.removeAllItems();
+                if (dataMap.get(dataField.getDataStoreIdentifier()) != null) {
+                    List<ContainerItem<Object>> listContainer = populateWithFields(dataField, dataMap);
+                    for(ContainerItem<Object> container : listContainer){
+                        comboBox.addItem(container);
+                    }
+                    if(isOptional){
+                        comboBox.addItem(new ContainerItem<Object>(NULL_ITEM, NULL_ITEM));
+                    }
                 }
             }
-        }
 
-        comboBox.revalidate();
+            //If the comboBox doesn't contains any values, it mean that the DataStore hasn't been well selected.
+            //So show a tooltip text to warn the user.
+            if (comboBox.getItemCount() == 0) {
+                comboBox.putClientProperty(INITIAL_DELAY_PROPERTY, ToolTipManager.sharedInstance().getInitialDelay());
+                comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, comboBox.getToolTipText());
+                ToolTipManager.sharedInstance().setInitialDelay(0);
+                ToolTipManager.sharedInstance().setDismissDelay(2500);
+                String dataFieldStr = dataField.getDataStoreIdentifier().toString();
+                comboBox.setToolTipText("First configure the DataStore : " +
+                        dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1));
+                ToolTipManager.sharedInstance().mouseMoved(
+                        new MouseEvent(comboBox, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
+            }
+            //Else try to select the good field
+            else {
+                String title = comboBox.getClientProperty(FIELD_TITLE_PROPERTY).toString().toUpperCase();
+                for (int i = 0; i < comboBox.getItemCount(); i++) {
+                    if (title.contains(comboBox.getItemAt(i).getLabel()) ||
+                            comboBox.getItemAt(i).getLabel().contains(title)) {
+                        comboBox.setSelectedIndex(i);
+                        break;
+                    }
+                }
+            }
+
+            comboBox.revalidate();
+        }
+        else if(source instanceof JList){
+            JList<ContainerItem<Object>> list = (JList) source;
+            DataField dataField = (DataField) list.getClientProperty(DATA_FIELD_PROPERTY);
+            HashMap<URI, Object> dataMap = (HashMap) list.getClientProperty(DATA_MAP_PROPERTY);
+            DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
+            //If the DataStore related to the DataField has been modified, reload the dataField values
+            if (dataField.isSourceModified()) {
+                dataField.setSourceModified(false);
+                model.removeAllElements();
+                if (dataMap.get(dataField.getDataStoreIdentifier()) != null) {
+                    List<ContainerItem<Object>> listContainer = populateWithFields(dataField, dataMap);
+                    for(ContainerItem<Object> container : listContainer){
+                        model.addElement(container);
+                    }
+                }
+            }
+
+            //If the comboBox doesn't contains any values, it mean that the DataStore hasn't been well selected.
+            //So show a tooltip text to warn the user.
+            if (model.getSize() == 0) {
+                list.putClientProperty(INITIAL_DELAY_PROPERTY, ToolTipManager.sharedInstance().getInitialDelay());
+                list.putClientProperty(TOOLTIP_TEXT_PROPERTY, list.getToolTipText());
+                ToolTipManager.sharedInstance().setInitialDelay(0);
+                ToolTipManager.sharedInstance().setDismissDelay(2500);
+                String dataFieldStr = dataField.getDataStoreIdentifier().toString();
+                list.setToolTipText("First configure the DataStore : " +
+                        dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1));
+                ToolTipManager.sharedInstance().mouseMoved(
+                        new MouseEvent(list, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
+            }
+            else{
+                if(model.getSize()>MAX_JLIST_ROW_COUNT){
+                    list.setVisibleRowCount(MAX_JLIST_ROW_COUNT);
+                }
+                else{
+                    list.setVisibleRowCount(model.getSize());
+                }
+            }
+            list.revalidate();
+        }
     }
 
     /**
@@ -190,9 +274,9 @@ public class DataFieldUI implements DataUI{
      */
     public void onItemSelected(Object source){
         if(source instanceof JComboBox){
-            JComboBox<ContainerItem<String>> comboBox = (JComboBox)source;
+            JComboBox<ContainerItem<Object>> comboBox = (JComboBox)source;
             if(comboBox.getSelectedItem() != null) {
-                ContainerItem<String> selectedItem = (ContainerItem<String>)comboBox.getSelectedItem();
+                ContainerItem<Object> selectedItem = (ContainerItem<Object>)comboBox.getSelectedItem();
                 DataField dataField = (DataField) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
                 Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
                 URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
@@ -210,21 +294,44 @@ public class DataFieldUI implements DataUI{
                 }
             }
         }
+        else if(source instanceof JList){
+            JList<ContainerItem<Object>> list = (JList<ContainerItem<Object>>)source;
+            ListModel<ContainerItem<Object>> model = list.getModel();
+            if(model.getSize()>0){
+                String fieldList = "";
+                for(int i = 0; i<list.getSelectedIndices().length; i++){
+                    if(fieldList.isEmpty()){
+                        fieldList = model.getElementAt(i).getLabel();
+                    }
+                    else{
+                        fieldList += ","+model.getElementAt(i).getLabel();
+                    }
+                }
+                DataField dataField = (DataField) list.getClientProperty(DATA_FIELD_PROPERTY);
+                Map<URI, Object> dataMap = (Map<URI, Object>) list.getClientProperty(DATA_MAP_PROPERTY);
+                URI uri = (URI) list.getClientProperty(URI_PROPERTY);
+                boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
+                dataMap.remove(uri);
+                if (isOptional && fieldList.isEmpty()) {
+                    dataMap.put(uri, null);
+                }
+                else{
+                    dataMap.put(uri, fieldList);
+                }
+            }
+        }
     }
 
     /**
      * Populate the given comboBox with the table fields name list.
      * Also display the fields information like if it is spatial or not, the SRID, the dimension ...
-     * @param comboBox The combo box to populate.
-     * @param isOptional True if the DataSTore is spatial, false otherwise.
      */
-    private void populateWithFields(JComboBox<ContainerItem<Object>> comboBox, boolean isOptional){
+    private List<ContainerItem<Object>> populateWithFields(DataField dataField, HashMap<URI, Object> dataMap){
         //Retrieve the table name list
-        DataField dataField = (DataField)comboBox.getClientProperty(DATA_FIELD_PROPERTY);
-        HashMap<URI, Object> dataMap = (HashMap)comboBox.getClientProperty(DATA_MAP_PROPERTY);
         String tableName = ((URI) dataMap.get(dataField.getDataStoreIdentifier())).getFragment();
         List<String> fieldNameList = wpsClient.getWpsService().getTableFieldList(tableName,
                 dataField.getFieldTypeList(), dataField.getExcludedTypeList());
+        List<ContainerItem<Object>> listContainer = new ArrayList<>();
         //If there is tables, retrieve their information to format the display in the comboBox
         if(fieldNameList != null && !fieldNameList.isEmpty()){
             for (String fieldName : fieldNameList) {
@@ -241,21 +348,19 @@ public class DataFieldUI implements DataUI{
                     //Sets the SRID label
                     int srid = (int) informationMap.get(LocalWpsService.TABLE_SRID);
                     if (srid != 0) {
-                        fieldPanel.add(new JLabel("[EPSG:" + srid + "]"));
+                        fieldPanel.add(new JLabel(" [EPSG:" + srid + "]"));
                     }
                     //Sets the dimension label
                     int dimension = (int) informationMap.get(LocalWpsService.TABLE_DIMENSION);
                     if (dimension != 2 && dimension != 0) {
-                        fieldPanel.add(new JLabel(dimension + "D"));
+                        fieldPanel.add(new JLabel(" "+dimension + "D"));
                     }
                 } else {
                     fieldPanel.add(new JLabel(fieldName));
                 }
-                comboBox.addItem(new ContainerItem<Object>(fieldPanel, fieldName));
+                listContainer.add(new ContainerItem<Object>(fieldPanel, fieldName));
             }
         }
-        if(isOptional){
-            comboBox.addItem(new ContainerItem<Object>(NULL_ITEM, NULL_ITEM));
-        }
+        return listContainer;
     }
 }

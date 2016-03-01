@@ -267,6 +267,7 @@ public class ObjectAnnotationConverter {
             }
             DataField dataField = new DataField(format, dataTypeList, dataStoreUri);
             dataField.setExcludedTypeList(excludedTypeList);
+            dataField.setMultipleField(dataFieldAttribute.isMultipleField());
             return dataField;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());

@@ -21,6 +21,7 @@ package org.orbisgis.wpsclient;
 
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
@@ -37,6 +38,7 @@ import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
+import org.orbisgis.wpsservice.model.DescriptionType;
 import org.orbisgis.wpsservice.model.Process;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -171,6 +173,17 @@ public class WpsClient implements DockingPanel {
             addLocalSource(openFolderPanel.getSelectedFile().toURI());
         }
     }
+    /**
+     * Open a file browser to find a local script folder and add it.
+     * Used in an EvenHandler in view.ui.ToolBoxPanel
+     */
+    public void addNewLocalScript(){
+        OpenFilePanel openFilePanel = new OpenFilePanel("ToolBox.AddSource", "Add a source");
+        //Wait the window answer and if the user validate set and run the export thread.
+        if(UIFactory.showDialog(openFilePanel)){
+            addLocalSource(openFilePanel.getSelectedFile().toURI());
+        }
+    }
 
     /**
      * Adds a folder as a local script source.
@@ -187,17 +200,24 @@ public class WpsClient implements DockingPanel {
      */
     public void addLocalSource(URI uri, String iconName, boolean isDefaultScript){
         File file = new File(uri);
-        List<File> fileList = new ArrayList<>();
         if(file.isFile()){
-            fileList.add(file);
-        }
-        else{
-            Collections.addAll(fileList, file.listFiles());
-        }
-        for(File f : fileList) {
-            ProcessIdentifier pi = wpsService.addLocalScript(f, iconName, isDefaultScript);
+            ProcessIdentifier pi = wpsService.addLocalScript(file, iconName, isDefaultScript);
             if(pi != null) {
                 toolBoxPanel.addLocalSource(pi);
+            }
+        }
+        else if(file.isDirectory()){
+            toolBoxPanel.addFolder(file.toURI(), file.getParentFile().toURI());
+            for (File f : file.listFiles()) {
+                if(f.isFile()){
+                    ProcessIdentifier pi = wpsService.addLocalScript(f, iconName, isDefaultScript);
+                    if(pi != null) {
+                        toolBoxPanel.addLocalSource(pi);
+                    }
+                }
+                else if(f.isDirectory()){
+                    toolBoxPanel.addFolder(f.toURI(), f.getParentFile().toURI());
+                }
             }
         }
     }
@@ -327,11 +347,57 @@ public class WpsClient implements DockingPanel {
         return pe;
     }
 
-    public String loadURI(URI uri, boolean loadSource) {
-        String tableName;
-        pe.startWaiting();
-        tableName = getWpsService().loadURI(uri, loadSource);
-        pe.endWaiting();
-        return tableName;
+    /**
+     * Loads the given URI by giving it to the registered WPSService and returns the name of the table containing
+     * the file data.
+     * To avoid to lock the user interface, start a SwingWorker which display a waiting layer in the ProcessEditor.
+     * If the file can't be load, return null.
+     * @param uri Uri of the data source file to load in the data base.
+     * @param loadSource True if the source should be fully loaded in the base, false if a lighter loaded should be
+     *                   done (like LINKED TABLE for H2)
+     * @param inputOrOutput Input or Output (instance of DescriptionType class) asking for the data loading.
+     * @return The table name corresponding to the loaded file in the data base or null if the file can't be loaded.
+     */
+    public String loadURI(URI uri, boolean loadSource, DescriptionType inputOrOutput) {
+        //First retrieve the process containing the given input or output
+        Process process = getWpsService().describeProcess(inputOrOutput.getIdentifier());
+        //Find which of the open editors corresponds to the process
+        for(EditorDockable ed : openEditorList){
+            //Check if the editor is a ProcessEditor
+            if(ed instanceof ProcessEditor){
+                ProcessEditor pe = (ProcessEditor) ed;
+                //Check if the editor corresponds to the process
+                if(pe.getEditableElement().getObject().equals(process)) {
+                    String tableName;
+                    //Start the waiting layer
+                    pe.startWaiting();
+                    //Load the file and retrieve the table name
+                    tableName = getWpsService().loadURI(uri, loadSource);
+                    //Stop the waiting layer
+                    pe.endWaiting();
+                    return tableName;
+                }
+            }
+        }
+        //Return null if the file can't be loaded
+        return null;
+    }
+
+    /**
+     * Cancel the loading of the given URI.
+     * @param uri Uri of the file being load to cancel.
+     */
+    public void cancelLoadURI(URI uri){
+        getWpsService().cancelLoadUri(uri);
+    }
+
+    /**
+     * Opens if the JTree the given tags.
+     * @param tags List of tag to open.
+     */
+    public void openTags(List<String> tags){
+        for(String tag : tags){
+            toolBoxPanel.openNode(tag, ToolBoxPanel.TAG_MODEL);
+        }
     }
 }

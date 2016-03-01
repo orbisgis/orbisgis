@@ -59,6 +59,9 @@ import java.lang.annotation.RetentionPolicy
     /** Array of the type not allowed for the data field.*/
     String[] excludedTypes() default []
 
+    /** Enable or not the user to select more than one field.*/
+    boolean isMultipleField() default false
+
 
 
     /********************/

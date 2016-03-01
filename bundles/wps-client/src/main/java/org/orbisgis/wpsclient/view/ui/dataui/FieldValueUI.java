@@ -36,12 +36,16 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * UI generator associated to the FieldValue
+ * DataUI implementation for FieldValue.
+ * This class generate an interactive UI dedicated to the configuration of a FieldValue.
+ * The interface generated will be used in the ProcessEditor.
  *
  * @author Sylvain PALOMINOS
  **/
 
 public class FieldValueUI implements DataUI{
+
+    /** Size constants **/
     private static final int MAX_JLIST_ROW_COUNT = 10;
     private static final int MIN_JLIST_ROW_COUNT = 1;
 
@@ -141,10 +145,19 @@ public class FieldValueUI implements DataUI{
         HashMap<URI, Object> dataMap = (HashMap<URI, Object>)list.getClientProperty(DATA_MAP_PROPERTY);
         boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
         //If the DataField related to the FieldValue has been modified, reload the dataField values
-        if(fieldValue.isDataFieldModified()) {
+        if(fieldValue.isDataFieldModified() && dataMap.get(fieldValue.getDataStoreIdentifier()) != null) {
             fieldValue.setDataFieldModified(false);
-            String tableName = ((URI)dataMap.get(fieldValue.getDataStoreIdentifier())).getSchemeSpecificPart();
-            String fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
+            String tableName;
+            String fieldName;
+            if(fieldValue.getDataFieldIdentifier().toString().contains("$")){
+                String[] split = fieldValue.getDataFieldIdentifier().toString().split("\\$");
+                tableName = split[1];
+                fieldName = split[2];
+            }
+            else{
+                tableName = ((URI) dataMap.get(fieldValue.getDataStoreIdentifier())).getSchemeSpecificPart();
+                fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
+            }
             DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
             model.removeAllElements();
             List<String> listFields = wpsClient.getWpsService().getFieldValueList(tableName, fieldName);
