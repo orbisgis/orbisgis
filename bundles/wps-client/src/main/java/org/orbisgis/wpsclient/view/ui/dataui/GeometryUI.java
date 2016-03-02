@@ -19,15 +19,16 @@
 
 package org.orbisgis.wpsclient.view.ui.dataui;
 
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenPanel;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.wpsservice.model.DescriptionType;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.Output;
-import org.orbisgis.wpsservice.model.RawData;
+import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
@@ -42,8 +43,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,14 +57,12 @@ import java.util.Map;
  * @author Sylvain PALOMINOS
  **/
 
-public class RawDataUI implements DataUI {
+public class GeometryUI implements DataUI {
 
     /** Constant used to pass object as client property throw JComponents **/
     private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
     private static final String URI_PROPERTY = "URI_PROPERTY";
     private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
-    private static final String OPEN_PANEL_PROPERTY = "OPEN_PANEL_PROPERTY";
-    private static final String MULTI_SELECTION_PROPERTY = "MULTI_SELECTION_PROPERTY";
 
     /** WpsClient using the generated UI. */
     private WpsClient wpsClient;
@@ -86,58 +85,18 @@ public class RawDataUI implements DataUI {
         jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this,
                 "saveDocumentText", "document"));
 
-        RawData rawData = null;
-        String action = null;
+        GeometryData geometryData = null;
         if(inputOrOutput instanceof Input){
-            rawData = (RawData) ((Input)inputOrOutput).getDataDescription();
-            action = OpenPanel.ACTION_OPEN;
+            geometryData = (GeometryData) ((Input)inputOrOutput).getDataDescription();
         }
-        else if(inputOrOutput instanceof Output){
-            rawData = (RawData) ((Output)inputOrOutput).getDataDescription();
-            action = OpenPanel.ACTION_SAVE;
-        }
-        if(rawData == null){
+        //If the DescriptionType is an output, there is nothing to show, so exit
+        if(geometryData == null){
             return component;
         }
 
-        String dataAccepted;
-        if(rawData.isDirectory() && !rawData.isFile()) {
-            dataAccepted = OpenPanel.ACCEPT_DIRECTORY;
-        }
-        else if(!rawData.isDirectory() && rawData.isFile()) {
-            dataAccepted = OpenPanel.ACCEPT_FILE;
-        }
-        else {
-            dataAccepted = OpenPanel.ACCEPT_BOTH;
-        }
-
-        OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", "Make your selection", action, dataAccepted);
-        openPanel.setAcceptAllFileFilterUsed(true);
-        openPanel.setSingleSelection(!rawData.multiSelection());
-
-
-        if(dataMap.get(inputOrOutput.getIdentifier()) != null)
-            jtf.setText(dataMap.get(inputOrOutput.getIdentifier()).toString());
-        else {
-            jtf.setText(openPanel.getCurrentDirectory().getAbsolutePath());
-        }
         component.add(jtf, "growx");
 
         JPanel buttonPanel = new JPanel(new MigLayout());
-        //Create the button Browse
-        JButton browseButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.BROWSE));
-        //"Save" the sourceCA and the JTextField in the button
-        browseButton.putClientProperty(MULTI_SELECTION_PROPERTY, rawData.multiSelection());
-        browseButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
-        browseButton.putClientProperty(OPEN_PANEL_PROPERTY, openPanel);
-        browseButton.putClientProperty(DATA_MAP_PROPERTY, dataMap);
-        browseButton.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
-        browseButton.setBorderPainted(false);
-        browseButton.setContentAreaFilled(false);
-        browseButton.setMargin(new Insets(0, 0, 0, 0));
-        //Add the listener for the click on the button
-        browseButton.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
-        buttonPanel.add(browseButton);
 
         //Create the button Browse
         JButton pasteButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
@@ -185,48 +144,15 @@ public class RawDataUI implements DataUI {
     }
 
     /**
-     * Opens an LoadPanel to permit to the user to select the file to load.
-     * @param event
-     */
-    public void openLoadPanel(ActionEvent event){
-        JButton source = (JButton) event.getSource();
-        OpenPanel openPanel = (OpenPanel) source.getClientProperty(OPEN_PANEL_PROPERTY);
-        if (UIFactory.showDialog(openPanel, true, true)) {
-            JTextField textField = (JTextField) source.getClientProperty(TEXT_FIELD_PROPERTY);
-            boolean multiSelection = (boolean) source.getClientProperty((MULTI_SELECTION_PROPERTY));
-            if(multiSelection){
-                String str = "";
-                for(File f : openPanel.getSelectedFiles()){
-                    if(str.isEmpty()){
-                        str+="\""+f.getAbsolutePath()+"\"";
-                    }
-                    else{
-                        str+=","+"\""+f.getAbsolutePath()+"\"";
-                    }
-                }
-                Map<URI, Object> dataMap = (Map<URI, Object>) source.getClientProperty(DATA_MAP_PROPERTY);
-                URI uri = (URI) source.getClientProperty(URI_PROPERTY);
-                dataMap.put(uri, str);
-                textField.setText(str);
-            }
-            else {
-                textField.setText(openPanel.getSelectedFile().getAbsolutePath());
-            }
-        }
-    }
-
-    /**
      * Save the text contained by the Document in the dataMap set as property.
      * @param document
      */
     public void saveDocumentText(Document document){
         try {
             String name = document.getText(0, document.getLength());
-            if(new File(name).exists()) {
-                Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
-                URI uri = (URI) document.getProperty(URI_PROPERTY);
-                dataMap.put(uri, name);
-            }
+            Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
+            URI uri = (URI) document.getProperty(URI_PROPERTY);
+            dataMap.put(uri, name);
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(RawData.class).error(e.getMessage());
         }

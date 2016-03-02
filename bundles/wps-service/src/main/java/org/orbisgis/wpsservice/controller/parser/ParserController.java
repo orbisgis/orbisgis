@@ -54,13 +54,14 @@ public class ParserController {
     public ParserController(LocalWpsService wpsService){
         //Instantiate the parser list
         parserList = new ArrayList<>();
-        parserList.add(new RawDataParser());
         parserList.add(new LiteralDataParser());
         parserList.add(new BoundingBoxParser());
         parserList.add(new DataStoreParser());
         parserList.add(new DataFieldParser());
         parserList.add(new FieldValueParser());
         parserList.add(new EnumerationParser());
+        parserList.add(new RawDataParser());
+        parserList.add(new GeometryParser());
         for(Parser parser : parserList){
             parser.setLocalWpsService(wpsService);
         }
