@@ -37,30 +37,30 @@ import java.lang.annotation.RetentionPolicy
  * The RawData is a complex data that represents a file or directory.
  *
  * The following fields can be defined (optional) :
- *  - formats : FormatAttribute[]
- *      List of supported formats.
  *  - isDirectory : boolean
  *      Indicates that the RawData can be a directory.
  *  - isFile : boolean
  *      Indicates that the RawData can be a file.
+ *  - multiSelection : boolean
+ *      Indicates that the user can select more than one file/directory.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface RawDataAttribute {
-    /** List of supported formats. */
-    FormatAttribute[] formats() default []
     /** Indicates that the RawData can be a directory. */
     boolean isDirectory() default true
     /** Indicates that the RawData can be a file. */
     boolean isFile() default true
+    /** Indicates that the user can select more than one file/directory. */
+    boolean multiSelection() default false
 
 
 
     /********************/
     /** default values **/
     /********************/
-    public static final FormatAttribute[] defaultFormats = []
     public static final boolean defaultIsDirectory = true
     public static final boolean defaultIsFile = true
+    public static final boolean defaultMultiSelection = false
 }
