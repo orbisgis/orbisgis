@@ -304,7 +304,7 @@ public class ObjectAnnotationConverter {
             format.setDefaultFormat(true);
             List<DataType> geometryTypeList = new ArrayList<>();
             //For each field type value from the groovy annotation, test if it is contain in the FieldType enumeration.
-            for(String type : Arrays.asList(geometryAttribute.geometryType())){
+            for(String type : Arrays.asList(geometryAttribute.geometryTypes())){
                 geometryTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
             List<DataType> excludedTypeList = new ArrayList<>();

@@ -19,6 +19,10 @@
 
 package org.orbisgis.wpsclient.view.ui.dataui;
 
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenPanel;
@@ -59,8 +63,6 @@ public class GeometryUI implements DataUI {
     private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
     private static final String URI_PROPERTY = "URI_PROPERTY";
     private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
-    private static final String OPEN_PANEL_PROPERTY = "OPEN_PANEL_PROPERTY";
-    private static final String MULTI_SELECTION_PROPERTY = "MULTI_SELECTION_PROPERTY";
 
     /** WpsClient using the generated UI. */
     private WpsClient wpsClient;
@@ -87,9 +89,7 @@ public class GeometryUI implements DataUI {
         if(inputOrOutput instanceof Input){
             geometryData = (GeometryData) ((Input)inputOrOutput).getDataDescription();
         }
-        else if(inputOrOutput instanceof Output){
-            geometryData = (GeometryData) ((Output)inputOrOutput).getDataDescription();
-        }
+        //If the DescriptionType is an output, there is nothing to show, so exit
         if(geometryData == null){
             return component;
         }

@@ -6,7 +6,6 @@ import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.*;
-import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -60,7 +59,7 @@ public class GeometryProcessing implements DataProcessing {
                 }
                 if(!flag){
                     pel.appendLog(ProcessExecutionListener.LogType.ERROR,"The geometry '"+input.getTitle()+
-                            "' type is not accepted ('"+geometry.getGeometryType()+"' not allowed.");
+                            "' type is not accepted ('"+geometry.getGeometryType()+"' not allowed).");
                     dataMap.put(inputOrOutput.getIdentifier(), null);
                     return null;
                 }
@@ -73,14 +72,15 @@ public class GeometryProcessing implements DataProcessing {
                 }
                 if(!flag){
                     pel.appendLog(ProcessExecutionListener.LogType.ERROR,"The geometry '"+input.getTitle()+
-                            "' type is not accepted ('"+geometry.getGeometryType()+"' not allowed.");
+                            "' type is not accepted ('"+geometry.getGeometryType()+"' not allowed).");
                     dataMap.put(inputOrOutput.getIdentifier(), null);
                     return null;
                 }
                 //Check the geometry dimension
-                if(geometryData.getDimension() != geometry.getDimension()){
+                if((geometryData.getDimension() == 2 && !Double.isNaN(geometry.getCoordinate().z)) ||
+                        (geometryData.getDimension() == 3 && Double.isNaN(geometry.getCoordinate().z))){
                     pel.appendLog(ProcessExecutionListener.LogType.ERROR,"The geometry '"+input.getTitle()+
-                            "' has not a wrong dimension (should be '"+geometryData.getDimension()+"'.");
+                            "' has not a wrong dimension (should be '"+geometryData.getDimension()+"').");
                     dataMap.put(inputOrOutput.getIdentifier(), null);
                     return null;
                 }
@@ -119,7 +119,7 @@ public class GeometryProcessing implements DataProcessing {
                     }
                     if (!flag) {
                         pel.appendLog(ProcessExecutionListener.LogType.ERROR,"The geometry '" + output.getTitle() +
-                                "' type is not accepted ('" + geometry.getGeometryType() + "' not allowed.");
+                                "' type is not accepted ('" + geometry.getGeometryType() + "' not allowed).");
                         dataMap.put(inputOrOutput.getIdentifier(), null);
                         return;
                     }
@@ -132,7 +132,7 @@ public class GeometryProcessing implements DataProcessing {
                     }
                     if (!flag) {
                         pel.appendLog(ProcessExecutionListener.LogType.ERROR,"The geometry '" + output.getTitle() +
-                                "' type is not accepted ('" + geometry.getGeometryType() + "' not allowed.");
+                                "' type is not accepted ('" + geometry.getGeometryType() + "' not allowed).");
                         dataMap.put(inputOrOutput.getIdentifier(), null);
                         return;
                     }
@@ -146,7 +146,7 @@ public class GeometryProcessing implements DataProcessing {
                     }
                     dataMap.put(inputOrOutput.getIdentifier(), wkt);
 
-                    pel.appendLog(ProcessExecutionListener.LogType.ERROR,"Output geometry '" +
+                    pel.appendLog(ProcessExecutionListener.LogType.INFO,"Output geometry '" +
                             output.getTitle() + "' is '"+wkt+"'.");
                 }
             }

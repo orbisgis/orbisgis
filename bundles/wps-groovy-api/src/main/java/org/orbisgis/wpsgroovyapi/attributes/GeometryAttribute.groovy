@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy
 @interface GeometryAttribute {
 
     /** Array of geometry type allowed. If no types are specified, accept all.*/
-    String[] geometryType() default []
+    String[] geometryTypes() default []
 
     /** Array of the type not allowed for the geometry.*/
     String[] excludedTypes() default []
@@ -35,8 +35,8 @@ import java.lang.annotation.RetentionPolicy
     /********************/
     /** default values **/
     /********************/
-    public static final boolean defaultGeometryType = []
-    public static final boolean defaultExcludedType = []
+    public static final boolean defaultGeometryTypes = []
+    public static final boolean defaultExcludedTypes = []
     public static final boolean defaultDimension = 2
 
 }
