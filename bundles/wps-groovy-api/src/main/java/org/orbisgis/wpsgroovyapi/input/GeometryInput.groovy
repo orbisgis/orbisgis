@@ -31,13 +31,13 @@ package org.orbisgis.wpsgroovyapi.input
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
-import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
+import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute
 
 /**
- * RawData input annotation.
- * The RawData is a complex data that represents a file or directory.
+ * Geometry input annotation.
+ * The Geometry is a complex data that represents a geometry.
  * As an input, this annotation should be placed just before the variable.
  *
  * The following fields must be defined (mandatory) :
@@ -57,20 +57,16 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *      Minimum number of times that values for this parameter are required. 0 means the input is optional.
  *  - maxOccurs : int
  *      Maximum number of times that this parameter may be present.
- *  - isDirectory : boolean
- *      Indicates that the RawData can be a directory.
- *  - isFile : boolean
- *      Indicates that the RawData can be a file.
- *  - isDirectory : boolean
- *      Indicates that the RawData can be a directory.
- *  - isFile : boolean
- *      Indicates that the RawData can be a file.
- *  - multiSelection : boolean
- *      Indicates that the user can select more than one file/directory.
+ *  - geometryType : String[]
+ *      Array of geometry type allowed. If no types are specified, accept all.
+ *  - excludedTypes : String[]
+ *      Array of the type not allowed for the geometry.
+ *  - dimension : int
+ *      Dimension of the geometry (can be 2 or 3).
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, RawDataAttribute, InputAttribute, DescriptionTypeAttribute])
-@interface RawDataInput {}
+@AnnotationCollector([Field, GeometryAttribute, InputAttribute, DescriptionTypeAttribute])
+@interface GeometryInput {}

@@ -20,6 +20,7 @@
 package org.orbisgis.wpsservice.controller.parser;
 
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute;
 import org.orbisgis.wpsservice.LocalWpsService;
@@ -32,12 +33,12 @@ import java.lang.reflect.Field;
 import java.net.URI;
 
 /**
- * Parser dedicated to the RawData parsing.
+ * Parser dedicated to the Geometry parsing.
  *
  * @author Sylvain PALOMINOS
  **/
 
-public class RawDataParser implements Parser {
+public class GeometryParser implements Parser {
 
     private LocalWpsService wpsService;
 
@@ -49,16 +50,16 @@ public class RawDataParser implements Parser {
     public Input parseInput(Field f, Object defaultValue, String processId) {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
-        RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class), format);
+        GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);
 
         Input input;
         try {
             //Instantiate the returned input
             input = new Input(f.getName(),
                     URI.create(processId + ":input:" + f.getName()),
-                    rawData);
+                    geometryData);
         } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(RawDataParser.class).error(e.getMessage());
+            LoggerFactory.getLogger(GeometryParser.class).error(e.getMessage());
             return null;
         }
 
@@ -72,16 +73,16 @@ public class RawDataParser implements Parser {
     public Output parseOutput(Field f, String processId) {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
-        RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class), format);
+        GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);
 
         Output output;
         try {
             //Instantiate the returned output
             output = new Output(f.getName(),
                     URI.create(processId + ":output:" + f.getName()),
-                    rawData);
+                    geometryData);
         } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(RawDataParser.class).error(e.getMessage());
+            LoggerFactory.getLogger(GeometryParser.class).error(e.getMessage());
             return null;
         }
 
@@ -92,6 +93,6 @@ public class RawDataParser implements Parser {
 
     @Override
     public Class getAnnotation() {
-        return RawDataAttribute.class;
+        return GeometryAttribute.class;
     }
 }

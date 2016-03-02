@@ -23,11 +23,11 @@ import groovy.transform.AnnotationCollector
 import groovy.transform.Field
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
-import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute
+import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute
 
 /**
- * DataField output annotation.
- * The RawData is a complex data that represents a file or directory.
+ * Geometry output annotation.
+ * The Geometry is a complex data that represents a geometry.
  * As an output, this annotation should be placed just before the variable.
  *
  * The following fields must be defined (mandatory) :
@@ -47,16 +47,16 @@ import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute
  *      Indicates that the RawData can be a directory.
  *  - isFile : boolean
  *      Indicates that the RawData can be a file.
- *  - isDirectory : boolean
- *      Indicates that the RawData can be a directory.
- *  - isFile : boolean
- *      Indicates that the RawData can be a file.
- *  - multiSelection : boolean
- *      Indicates that the user can select more than one file/directory.
+ *  - geometryType : String[]
+ *      Array of geometry type allowed. If no types are specified, accept all.
+ *  - excludedTypes : String[]
+ *      Array of the type not allowed for the geometry.
+ *  - dimension : int
+ *      Dimension of the geometry (can be 2 or 3).
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, RawDataAttribute, OutputAttribute, DescriptionTypeAttribute])
-@interface RawDataOutput {}
+@AnnotationCollector([Field, GeometryAttribute, OutputAttribute, DescriptionTypeAttribute])
+@interface GeometryOutput {}

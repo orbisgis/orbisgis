@@ -183,15 +183,15 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static RawData annotationToObject(RawDataAttribute rawDataAttribute) {
+    public static RawData annotationToObject(RawDataAttribute rawDataAttribute, Format format) {
         try {
-            List<Format> formatList = new ArrayList<>();
-            for(FormatAttribute formatAttribute : rawDataAttribute.formats()){
-                formatList.add(ObjectAnnotationConverter.annotationToObject(formatAttribute));
-            }
-
             //Instantiate the RawData
-            return new RawData(formatList);
+            format.setDefaultFormat(true);
+            RawData rawData = new RawData(format);
+            rawData.setFile(rawDataAttribute.isFile());
+            rawData.setDirectory(rawDataAttribute.isDirectory());
+            rawData.setMultiSelection(rawDataAttribute.multiSelection());
+            return rawData;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;
@@ -293,6 +293,29 @@ public class ObjectAnnotationConverter {
             enumeration.setMultiSelection(enumAttribute.multiSelection());
             enumeration.setValuesNames(enumAttribute.names());
             return enumeration;
+        } catch (MalformedScriptException e) {
+            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
+            return null;
+        }
+    }
+
+    public static GeometryData annotationToObject(GeometryAttribute geometryAttribute, Format format) {
+        try{
+            format.setDefaultFormat(true);
+            List<DataType> geometryTypeList = new ArrayList<>();
+            //For each field type value from the groovy annotation, test if it is contain in the FieldType enumeration.
+            for(String type : Arrays.asList(geometryAttribute.geometryTypes())){
+                geometryTypeList.add(DataType.getDataTypeFromFieldType(type));
+            }
+            List<DataType> excludedTypeList = new ArrayList<>();
+            //For each excluded type value from the groovy annotation, test if it is contain in the FieldType enumeration.
+            for(String type : Arrays.asList(geometryAttribute.excludedTypes())){
+                excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
+            }
+            GeometryData geometryData = new GeometryData(format, geometryTypeList);
+            geometryData.setDimension(geometryAttribute.dimension());
+            geometryData.setExcludedTypeList(excludedTypeList);
+            return geometryData;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;

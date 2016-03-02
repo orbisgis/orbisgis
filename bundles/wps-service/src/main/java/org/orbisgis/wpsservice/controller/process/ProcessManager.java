@@ -126,7 +126,40 @@ public class ProcessManager {
         groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
         groovyObject.setProperty("isH2", wpsService.isH2());
         groovyObject.invokeMethod("processing", null);
+        retrieveData(process, groovyObject, dataMap);
         return groovyObject;
+    }
+
+    /**
+     * Retrieve the data from the groovy object and store the into the dataMap.
+     * @param process Process that has generate the groovy object.
+     * @param groovyObject GroovyObject containing the processed data.
+     * @param dataMap Map linking the data and their identifier.
+     */
+    private void retrieveData(Process process, GroovyObject groovyObject, Map<URI, Object> dataMap){
+        ProcessIdentifier pi = null;
+        for(ProcessIdentifier proId : processIdList){
+            if(proId.getProcess().getIdentifier().equals(process.getIdentifier())){
+                pi = proId;
+            }
+        }
+        if(pi == null){
+            return;
+        }
+        try {
+            for(Input i : process.getInput()) {
+                Field f = getField(pi.getClazz(), i.getIdentifier());
+                f.setAccessible(true);
+                dataMap.put(i.getIdentifier(), f.get(groovyObject));
+            }
+            for(Output o : process.getOutput()) {
+                Field f = getField(pi.getClazz(), o.getIdentifier());
+                f.setAccessible(true);
+                dataMap.put(o.getIdentifier(), f.get(groovyObject));
+            }
+        } catch (IllegalAccessException e) {
+            LoggerFactory.getLogger(ProcessManager.class).error(e.getMessage());
+        }
     }
 
     /**
