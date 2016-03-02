@@ -334,7 +334,7 @@ public class MapControl extends JComponent implements ContainerListener {
                             // Drawer have failing to restore awaitingDrawing flag value.
                             awaitingDrawing.set(false);
                         } else {
-                            drawer.cancel(false);
+                            drawer.cancel();
                         }
                     } catch (Exception ex) {
                         // Ignore errors
@@ -430,11 +430,13 @@ public class MapControl extends JComponent implements ContainerListener {
             } catch (Exception ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
             } finally {
-                mapControl.getMapTransform().setImage(rendererImage);
-                intermediateDrawing.set(false);
-                awaitingDrawing.set(false);
-                updateViewTime.stop();
-                mapControl.repaint();
+                if(!isCancelled()) {
+                    mapControl.getMapTransform().setImage(rendererImage);
+                    intermediateDrawing.set(false);
+                    awaitingDrawing.set(false);
+                    updateViewTime.stop();
+                    mapControl.repaint();
+                }
             }
             return null;
         }
@@ -468,6 +470,11 @@ public class MapControl extends JComponent implements ContainerListener {
                 renderer.updateImage(sG2);
                 mapControl.repaint();
             }
+        }
+
+        @Override
+        public void cancel(){
+            this.getProgressMonitor().setCancelled(true);
         }
     }
 
