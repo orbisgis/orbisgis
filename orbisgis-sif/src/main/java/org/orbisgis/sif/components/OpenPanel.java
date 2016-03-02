@@ -2,7 +2,7 @@
  * OrbisGIS is a GIS application dedicated to scientific spatial analysis.
  * This cross-platform GIS is developed at the Lab-STICC laboratory by the DECIDE 
  * team located in University of South Brittany, Vannes.
- * 
+ *
  * OrbisGIS is distributed under GPL 3 license.
  *
  * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
@@ -83,14 +83,30 @@ public class OpenPanel extends AbstractOpenPanel {
         this.action = action;
         this.dataAccepted = dataAccepted;
 
+        JFileChooser fileChooser = getFileChooser();
         if(action.equals(ACTION_OPEN)){
-            getFileChooser().setDialogType(JFileChooser.OPEN_DIALOG);
+            fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
             setAcceptAllFileFilterUsed(true);
         }
         else if(action.equals(ACTION_SAVE)){
-            getFileChooser().setDialogType(JFileChooser.SAVE_DIALOG);
-            setAcceptAllFileFilterUsed(false);
+            fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+            if(dataAccepted.equals(ACCEPT_FILE)) {
+                setAcceptAllFileFilterUsed(false);
+            }
+            else{
+                setAcceptAllFileFilterUsed(true);
+            }
             confirmOverwrite = true;
+        }
+        //Sets the type of selection the file chooser accepts.
+        if(dataAccepted.equals(ACCEPT_BOTH)) {
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        }
+        else if(dataAccepted.equals(ACCEPT_FILE)) {
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        }
+        else if(dataAccepted.equals(ACCEPT_DIRECTORY)) {
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         }
     }
 
@@ -175,7 +191,7 @@ public class OpenPanel extends AbstractOpenPanel {
         JFileChooser fileChooser = getFileChooser();
         File selectedFile = fileChooser.getSelectedFile();
         //If the action done is save and nothing is selection, complete if needed the file name with the extension.
-        if(action.equals(ACTION_SAVE) && selectedFile == null){
+        if(action.equals(ACTION_SAVE) && (selectedFile == null || selectedFile.isFile())){
             FileChooserUI ui = fileChooser.getUI();
             if (ui instanceof BasicFileChooserUI) {
                 BasicFileChooserUI basicUI = (BasicFileChooserUI) ui;
@@ -202,7 +218,7 @@ public class OpenPanel extends AbstractOpenPanel {
                 return fileChooser.getCurrentDirectory();
             }
         }
-        return null;
+        return selectedFile;
     }
 
     private File autoComplete(File selectedFile) {
@@ -217,7 +233,7 @@ public class OpenPanel extends AbstractOpenPanel {
 
     @Override
     public boolean showFoldersOnly() {
-            return true;
+        return dataAccepted.equals(ACCEPT_DIRECTORY);
     }
 
     /**
@@ -226,30 +242,30 @@ public class OpenPanel extends AbstractOpenPanel {
      * @return
      */
     public String[] getFieldNames() {
-            return new String[]{FIELD_NAME, FILTER_NAME};
+        return new String[]{FIELD_NAME, FILTER_NAME};
     }
 
     public void setValue(String fieldName, String fieldValue) {
-            if (fieldName.equals(FIELD_NAME)) {
-                    String[] files = fieldValue.split("\\Q||\\E");
-                    File[] selectedFiles = new File[files.length];
-                    for (int i = 0; i < selectedFiles.length; i++) {
-                            selectedFiles[i] = new File(files[i]);
-                    }
-                    getFileChooser().setSelectedFiles(selectedFiles);
-            } else {
-                    FileFilter[] filters = getFileChooser().getChoosableFileFilters();
-                    for (FileFilter fileFilter : filters) {
-                            if (fieldValue.equals(fileFilter.getDescription())) {
-                                    getFileChooser().setFileFilter(fileFilter);
-                            }
-                    }
+        if (fieldName.equals(FIELD_NAME)) {
+            String[] files = fieldValue.split("\\Q||\\E");
+            File[] selectedFiles = new File[files.length];
+            for (int i = 0; i < selectedFiles.length; i++) {
+                selectedFiles[i] = new File(files[i]);
             }
+            getFileChooser().setSelectedFiles(selectedFiles);
+        } else {
+            FileFilter[] filters = getFileChooser().getChoosableFileFilters();
+            for (FileFilter fileFilter : filters) {
+                if (fieldValue.equals(fileFilter.getDescription())) {
+                    getFileChooser().setFileFilter(fileFilter);
+                }
+            }
+        }
     }
 
     @Override
     public URL getIconURL() {
-            return UIFactory.getDefaultIcon();
+        return UIFactory.getDefaultIcon();
     }
 
     /**
