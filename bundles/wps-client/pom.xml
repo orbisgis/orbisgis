@@ -48,19 +48,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>core-jdbc</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>wps-service</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>dbjobs</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -69,18 +69,5 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>IRSTV</id>
-            <name>IRSTV repository</name>
-            <url>http://repo.orbisgis.org</url>
-        </repository>
-        <repository>
-            <id>repo2.maven.org</id>
-            <name>Maven2 repository 2</name>
-            <url>http://repo2.maven.org/maven2</url>
-        </repository>
-    </repositories>
 
 </project>

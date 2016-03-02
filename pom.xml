@@ -104,14 +104,28 @@
                 <itext-version>5.0.2</itext-version>
         </properties>
         <scm>
-                <connection>scm:git:https://github.com/irstv/orbisgis.git</connection>
-                <developerConnection>scm:git:https://github.com/irstv/orbisgis.git</developerConnection>
-                <url>git@github.com:irstv/orbisgis.git</url>
+                <connection>scm:git:https://github.com/orbisgis/orbisgis.git</connection>
+                <developerConnection>scm:git:https://github.com/orbisgis/orbisgis.git</developerConnection>
+                <url>git@github.com:orbisgis/orbisgis.git</url>
         </scm>
+        <developers>
+                <developer>
+                        <name>Nicolas Fortin</name>
+                        <organization>IFSTTAR</organization>
+                </developer>
+                <developer>
+                        <name>Erwan Bocher</name>
+                        <organization>Lab-STICC - CNRS UMR 6285</organization>
+                </developer>
+                <developer>
+                        <name>Sylvain Palominos</name>
+                        <organization>Lab-STICC - CNRS UMR 6285</organization>
+                </developer>
+        </developers>
         <repositories>
                 <repository>
-                        <id>IRSTV</id>
-                        <name>IRSTV repository</name>
+                        <id>OrbisGIS</id>
+                        <name>OrbisGIS repository</name>
                         <url>http://repo.orbisgis.org</url>
                 </repository>
                 <repository>

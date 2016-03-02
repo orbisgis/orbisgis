@@ -30,7 +30,7 @@
                                 <configuration>
                                         <instructions>
                                                 <Private-Package>org.orbisgis.omanager.ui.*</Private-Package>
-                                                <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
+                                                <Bundle-Vendor>Lab-STICC - CNRS UMR 6285</Bundle-Vendor>
                                                 <Bundle-Category>gui</Bundle-Category>
                                                 <Import-Service>org.osgi.service.obr.RepositoryAdmin</Import-Service>
                                         </instructions>
