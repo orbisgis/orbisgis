@@ -430,13 +430,11 @@ public class MapControl extends JComponent implements ContainerListener {
             } catch (Exception ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
             } finally {
-                if(!isCancelled()) {
-                    mapControl.getMapTransform().setImage(rendererImage);
-                    intermediateDrawing.set(false);
-                    awaitingDrawing.set(false);
-                    updateViewTime.stop();
-                    mapControl.repaint();
-                }
+                mapControl.getMapTransform().setImage(rendererImage);
+                intermediateDrawing.set(false);
+                awaitingDrawing.set(false);
+                updateViewTime.stop();
+                mapControl.repaint();
             }
             return null;
         }
