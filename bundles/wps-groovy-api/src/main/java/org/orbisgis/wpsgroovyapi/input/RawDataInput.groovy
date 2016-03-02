@@ -61,6 +61,12 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *      Indicates that the RawData can be a directory.
  *  - isFile : boolean
  *      Indicates that the RawData can be a file.
+ *  - isDirectory : boolean
+ *      Indicates that the RawData can be a directory.
+ *  - isFile : boolean
+ *      Indicates that the RawData can be a file.
+ *  - multiSelection : boolean
+ *      Indicates that the user can select more than one file/directory.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *

@@ -57,6 +57,12 @@ import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute
  *      Minimum number of times that values for this parameter are required. 0 means the input is optional.
  *  - maxOccurs : int
  *      Maximum number of times that this parameter may be present.
+ *  - geometryType : String[]
+ *      Array of geometry type allowed. If no types are specified, accept all.
+ *  - excludedTypes : String[]
+ *      Array of the type not allowed for the geometry.
+ *  - dimension : int
+ *      Dimension of the geometry (can be 2 or 3).
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
