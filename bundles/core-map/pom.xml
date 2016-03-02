@@ -135,7 +135,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>cts</artifactId>
             <version>${cts-version}</version>
-            <!-- https://github.com/irstv/CTS -->
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

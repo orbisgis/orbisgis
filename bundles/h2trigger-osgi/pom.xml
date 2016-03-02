@@ -33,7 +33,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
+                        <Bundle-Vendor>Lab-STICC - CNRS UMR 6285</Bundle-Vendor>
                         <Private-Package>org.orbisgis.h2triggersosgi.*</Private-Package>
                     </instructions>
                 </configuration>
@@ -51,12 +51,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>h2trigger</artifactId>
             <version>${parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>core-jdbc</artifactId>
             <version>${parent.version}</version>
         </dependency>
@@ -67,7 +67,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>${parent.groupId}</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial</artifactId>
             <version>${h2-gis-version}</version>
             <scope>test</scope>
