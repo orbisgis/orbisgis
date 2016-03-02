@@ -33,7 +33,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
+                        <Bundle-Vendor>Lab-STICC - CNRS UMR 6285</Bundle-Vendor>
                     </instructions>
                 </configuration>
             </plugin>

@@ -16,7 +16,7 @@
                 <configuration>
                     <instructions>
                         <Public-Package>org.orbisgis.frameworkapi.*</Public-Package>
-                        <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
+                        <Bundle-Vendor>Lab-STICC - CNRS UMR 6285</Bundle-Vendor>
                     </instructions>
                 </configuration>
             </plugin>
