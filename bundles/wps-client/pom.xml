@@ -48,19 +48,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>core-jdbc</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>wps-service</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>dbjobs</artifactId>
-            <version>5.1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
