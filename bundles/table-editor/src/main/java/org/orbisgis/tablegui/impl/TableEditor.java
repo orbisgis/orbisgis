@@ -828,6 +828,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 tableSorter.addRowSorterListener(
                         EventHandler.create(RowSorterListener.class,this,
                         "onShownRowsChanged"));
+                tableSorter.setExecutorService(executorService);
                 table.setRowSorter(tableSorter);
                 //Set the row count at left
                 tableRowHeader = new TableRowHeader(table);

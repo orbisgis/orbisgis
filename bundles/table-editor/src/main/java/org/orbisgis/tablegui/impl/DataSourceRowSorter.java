@@ -32,6 +32,7 @@ import java.beans.EventHandler;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import javax.sql.DataSource;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
@@ -59,12 +60,28 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         private DataSource dataSource;
         // Sort result given through JDBC
         private Collection<Integer> viewToModelJDBC;
-        
+        private ExecutorService executorService = null;
+
+        /**
+         * Constructor
+         * @param model Datasource table model
+         * @param dataSource JDBC Datasource
+         */
         public DataSourceRowSorter(DataSourceTableModel model, DataSource dataSource) {
                 this.model = model;
                 this.dataSource = dataSource;
         }
-        
+
+        /**
+         * Push sort process in background thread using this executor service
+         * @param executorService Instance of executor service or null
+         */
+        public void setExecutorService(ExecutorService executorService) {
+            this.executorService = executorService;
+        }
+
+
+
         @Override
         public DataSourceTableModel getModel() {
                 return model;
@@ -170,7 +187,11 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 if(model.getRowCount() > 0) {
                     SortJob sortJob = new SortJob(sortInformation, model, viewToModel, dataSource);
                     sortJob.getEventSortedListeners().addListener(this, EventHandler.create(SortJob.SortJobListener.class, this, "onRowSortDone", ""));
-                    sortJob.execute();
+                    if(executorService != null) {
+                        executorService.execute(sortJob);
+                    } else {
+                        sortJob.execute();
+                    }
                 }
         }
 
