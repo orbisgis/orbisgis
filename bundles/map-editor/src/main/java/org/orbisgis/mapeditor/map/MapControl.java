@@ -334,7 +334,7 @@ public class MapControl extends JComponent implements ContainerListener {
                             // Drawer have failing to restore awaitingDrawing flag value.
                             awaitingDrawing.set(false);
                         } else {
-                            drawer.cancel(false);
+                            drawer.cancel();
                         }
                     } catch (Exception ex) {
                         // Ignore errors
@@ -468,6 +468,11 @@ public class MapControl extends JComponent implements ContainerListener {
                 renderer.updateImage(sG2);
                 mapControl.repaint();
             }
+        }
+
+        @Override
+        public void cancel(){
+            this.getProgressMonitor().setCancelled(true);
         }
     }
 

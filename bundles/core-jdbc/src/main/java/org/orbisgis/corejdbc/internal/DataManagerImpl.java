@@ -160,12 +160,13 @@ public class DataManagerImpl implements DataManager {
         } else if("jdbc".equalsIgnoreCase(uri.getScheme())) {
             // A link to a remote or local database
             try(Connection connection = dataSource.getConnection()) {
-                String uriStr = uri.toString();
+                //Replaces the '%20' character by ' ' to manager URI with encoded spaces.
+                String uriStr = uri.toString().replace("%20", " ");
                 if(uriStr.contains("?")) {
                     String withoutQuery = uriStr.substring(0,uriStr.indexOf("?"));
                     if(connection.getMetaData().getURL().startsWith(withoutQuery)) {
                         // Extract catalog, schema and table name
-                        Map<String,String> query = URIUtility.getQueryKeyValuePairs(new URI(uri.getSchemeSpecificPart()));
+                        Map<String,String> query = URIUtility.getQueryKeyValuePairs(new URI(uri.getRawSchemeSpecificPart()));
                         return new TableLocation(query.get("catalog"),query.get("schema"),query.get("table")).toString();
                     }
                 }
