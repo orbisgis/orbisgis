@@ -179,22 +179,29 @@ public class DataFieldUI implements DataUI{
     public void onComboBoxEntered(Object source){
         if(source instanceof JComboBox) {
             JComboBox<ContainerItem<Object>> comboBox = (JComboBox) source;
-            String defaultItem = comboBox.getClientProperty(DEFAULT_ITEM_PROPERTY).toString();
-            comboBox.removeItem(defaultItem);
             DataField dataField = (DataField) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
             HashMap<URI, Object> dataMap = (HashMap) comboBox.getClientProperty(DATA_MAP_PROPERTY);
             boolean isOptional = (boolean) comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
             //If the DataStore related to the DataField has been modified, reload the dataField values
             if (dataField.isSourceModified()) {
+                String defaultItem = comboBox.getClientProperty(DEFAULT_ITEM_PROPERTY).toString();
+                comboBox.removeItem(defaultItem);
                 dataField.setSourceModified(false);
                 comboBox.removeAllItems();
-                if (dataMap.get(dataField.getDataStoreIdentifier()) != null) {
-                    List<ContainerItem<Object>> listContainer = populateWithFields(dataField, dataMap);
-                    for(ContainerItem<Object> container : listContainer){
-                        comboBox.addItem(container);
-                    }
-                    if(isOptional){
-                        comboBox.addItem(new ContainerItem<Object>(NULL_ITEM, NULL_ITEM));
+                List<ContainerItem<Object>> listContainer = populateWithFields(dataField, dataMap);
+                for(ContainerItem<Object> container : listContainer){
+                    comboBox.addItem(container);
+                }
+                if(isOptional){
+                    comboBox.addItem(new ContainerItem<Object>(NULL_ITEM, NULL_ITEM));
+                }
+                //Try to select the good field
+                String title = comboBox.getClientProperty(FIELD_TITLE_PROPERTY).toString().toUpperCase();
+                for (int i = 0; i < comboBox.getItemCount(); i++) {
+                    if (title.contains(comboBox.getItemAt(i).getLabel()) ||
+                            comboBox.getItemAt(i).getLabel().contains(title)) {
+                        comboBox.setSelectedIndex(i);
+                        break;
                     }
                 }
             }
@@ -211,17 +218,6 @@ public class DataFieldUI implements DataUI{
                         dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1));
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(comboBox, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
-            }
-            //Else try to select the good field
-            else {
-                String title = comboBox.getClientProperty(FIELD_TITLE_PROPERTY).toString().toUpperCase();
-                for (int i = 0; i < comboBox.getItemCount(); i++) {
-                    if (title.contains(comboBox.getItemAt(i).getLabel()) ||
-                            comboBox.getItemAt(i).getLabel().contains(title)) {
-                        comboBox.setSelectedIndex(i);
-                        break;
-                    }
-                }
             }
 
             comboBox.revalidate();
@@ -328,10 +324,25 @@ public class DataFieldUI implements DataUI{
      */
     private List<ContainerItem<Object>> populateWithFields(DataField dataField, HashMap<URI, Object> dataMap){
         //Retrieve the table name list
-        String tableName = ((URI) dataMap.get(dataField.getDataStoreIdentifier())).getFragment();
+        List<ContainerItem<Object>> listContainer = new ArrayList<>();
+        String tableName = null;
+        if(dataField.getDataStoreIdentifier().toString().contains("$")){
+            String[] split = dataField.getDataStoreIdentifier().toString().split("\\$");
+            if(split.length == 3){
+                tableName = split[1]+"."+split[2];
+            }
+            else if(split.length == 2){
+                tableName = split[1];
+            }
+        }
+        else{
+            tableName = ((URI) dataMap.get(dataField.getDataStoreIdentifier())).getFragment();
+        }
+        if(tableName == null){
+            return listContainer;
+        }
         List<String> fieldNameList = wpsClient.getWpsService().getTableFieldList(tableName,
                 dataField.getFieldTypeList(), dataField.getExcludedTypeList());
-        List<ContainerItem<Object>> listContainer = new ArrayList<>();
         //If there is tables, retrieve their information to format the display in the comboBox
         if(fieldNameList != null && !fieldNameList.isEmpty()){
             for (String fieldName : fieldNameList) {
