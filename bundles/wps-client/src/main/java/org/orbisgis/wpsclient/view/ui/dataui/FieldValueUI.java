@@ -194,7 +194,20 @@ public class FieldValueUI implements DataUI{
             ToolTipManager.sharedInstance().setInitialDelay(0);
             ToolTipManager.sharedInstance().setDismissDelay(2500);
             String fieldValueStr = fieldValue.getDataFieldIdentifier().toString();
-            list.setToolTipText("First configure the DataField : " + fieldValueStr.substring(fieldValueStr.lastIndexOf(":")+1));
+            if(fieldValueStr.contains("$")){
+                String[] split = fieldValueStr.split("\\$");
+                if(split.length == 3){
+                    fieldValueStr = split[1]+"."+split[2];
+                }
+                else if(split.length == 4){
+                    fieldValueStr = split[1]+"."+split[2]+"."+split[3];
+                }
+                list.setToolTipText("First configure the DataField : " + fieldValueStr);
+            }
+            else {
+                list.setToolTipText("First configure the DataField : " +
+                        fieldValueStr.substring(fieldValueStr.lastIndexOf(":") + 1));
+            }
             ToolTipManager.sharedInstance().mouseMoved(
                     new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
         }

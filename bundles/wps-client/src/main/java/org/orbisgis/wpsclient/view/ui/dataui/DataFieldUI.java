@@ -247,8 +247,20 @@ public class DataFieldUI implements DataUI{
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
                 String dataFieldStr = dataField.getDataStoreIdentifier().toString();
-                list.setToolTipText("First configure the DataStore : " +
-                        dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1));
+                if(dataFieldStr.contains("$")){
+                    String[] split = dataFieldStr.split("\\$");
+                    if(split.length == 2){
+                        dataFieldStr = split[1];
+                    }
+                    else if(split.length == 3){
+                        dataFieldStr = split[1]+"."+split[2];
+                    }
+                    list.setToolTipText("First configure the DataField : " + dataFieldStr);
+                }
+                else {
+                    list.setToolTipText("First configure the DataStore : " +
+                            dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1));
+                }
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(list, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
             }
