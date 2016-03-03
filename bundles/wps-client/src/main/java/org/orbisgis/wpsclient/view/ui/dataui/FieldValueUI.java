@@ -145,34 +145,44 @@ public class FieldValueUI implements DataUI{
         HashMap<URI, Object> dataMap = (HashMap<URI, Object>)list.getClientProperty(DATA_MAP_PROPERTY);
         boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
         //If the DataField related to the FieldValue has been modified, reload the dataField values
-        if(fieldValue.isDataFieldModified() && dataMap.get(fieldValue.getDataStoreIdentifier()) != null) {
+        if(fieldValue.isDataFieldModified()) {
             fieldValue.setDataFieldModified(false);
-            String tableName;
-            String fieldName;
+            String tableName = null;
+            String fieldName = null;
             if(fieldValue.getDataFieldIdentifier().toString().contains("$")){
                 String[] split = fieldValue.getDataFieldIdentifier().toString().split("\\$");
-                tableName = split[1];
-                fieldName = split[2];
+                if(split.length == 4) {
+                    tableName = split[1]+"."+split[2];
+                    fieldName = split[3];
+                }
+                else if(split.length == 3){
+                    tableName = split[1];
+                    fieldName = split[2];
+                }
+                else{
+                    return;
+                }
             }
-            else{
+            else if (dataMap.get(fieldValue.getDataStoreIdentifier()) != null){
                 tableName = ((URI) dataMap.get(fieldValue.getDataStoreIdentifier())).getSchemeSpecificPart();
                 fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
             }
-            DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
-            model.removeAllElements();
-            List<String> listFields = wpsClient.getWpsService().getFieldValueList(tableName, fieldName);
-            Collections.sort(listFields);
-            for (String field : listFields) {
-                model.addElement(field);
-            }
-            if(listFields.size() < MAX_JLIST_ROW_COUNT){
-                list.setVisibleRowCount(listFields.size());
-            }
-            else{
-                list.setVisibleRowCount(MAX_JLIST_ROW_COUNT);
-            }
-            if(!isOptional && list.getModel().getSize() > 0){
-                list.setSelectedIndex(0);
+            if(tableName != null && fieldName != null) {
+                DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
+                model.removeAllElements();
+                List<String> listFields = wpsClient.getWpsService().getFieldValueList(tableName, fieldName);
+                Collections.sort(listFields);
+                for (String field : listFields) {
+                    model.addElement(field);
+                }
+                if (listFields.size() < MAX_JLIST_ROW_COUNT) {
+                    list.setVisibleRowCount(listFields.size());
+                } else {
+                    list.setVisibleRowCount(MAX_JLIST_ROW_COUNT);
+                }
+                if (!isOptional && list.getModel().getSize() > 0) {
+                    list.setSelectedIndex(0);
+                }
             }
         }
 

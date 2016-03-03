@@ -494,6 +494,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             tableName = TableLocation.parse(tableName, isH2).getTable();
             List<String> fieldNames = JDBCUtilities.getFieldNames(connection.getMetaData(), tableName);
+            if(fieldNames.isEmpty()){
+                return fieldValues;
+            }
             for(String field : fieldNames){
                 if(field.equalsIgnoreCase(fieldName)){
                     fieldName = field;
