@@ -142,7 +142,7 @@ public class Layer extends BeanLayer {
                     }
                 }
                 // Extract table location on database
-                URI databaseUri = URI.create(meta.getURL());
+                URI databaseUri = URI.create(meta.getURL().replace(" ", "%20"));
                 String query = String.format("catalog=%s&schema=%s&table=%s", table.getCatalog(), table.getSchema(), table.getTable());
                 return URI.create(databaseUri.toString() + "?" + query);
             } catch (SQLException | IllegalArgumentException ex) {
