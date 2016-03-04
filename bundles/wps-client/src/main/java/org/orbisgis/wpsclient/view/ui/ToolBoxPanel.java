@@ -231,23 +231,18 @@ public class ToolBoxPanel extends JPanel {
             if(selectedNode != null) {
                 //if a simple click is done
                 if (event.getClickCount() == 1) {
-                    boolean isValid = false;
                     switch(selectedNode.getNodeType()){
                         case HOST_DISTANT:
                             //TODO : check if the host is reachable an if it contains a WPS service.
-                            isValid = true;
                             break;
                         case HOST_LOCAL:
                             //TODO : check if the OrbisGIS WPS script folder is available or not
-                            isValid = true;
                             break;
                         case FOLDER:
                             if(selectedNode.getChildCount() != 0) {
                                 //Check if the folder exists and it it contains some scripts
                                 if (selectedModel == fileModel) {
-                                    isValid = wpsClient.checkFolder(selectedNode.getUri());
-                                } else {
-                                    isValid = true;
+                                    refresh(selectedNode);
                                 }
                             }
                             else{
@@ -255,10 +250,9 @@ public class ToolBoxPanel extends JPanel {
                             }
                             break;
                         case PROCESS:
-                            isValid = wpsClient.checkProcess(selectedNode.getUri());
+                            refresh(selectedNode);
                             break;
                     }
-                    selectedNode.setValidNode(isValid);
                 }
                 //If a double click is done
                 if (event.getClickCount() == 2) {

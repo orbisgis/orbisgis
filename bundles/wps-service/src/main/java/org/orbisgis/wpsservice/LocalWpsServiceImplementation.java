@@ -244,12 +244,23 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         processManager.removeProcess(processManager.getProcess(uri));
     }
 
+    @Override
     public boolean checkProcess(URI uri){
         ProcessIdentifier pi = processManager.getProcessIdentifier(uri);
+        //If the file corresponding to the URI does not exist anymore, remove if and warn the user.
+        File f = new File(uri);
+        if(!f.exists()){
+            processManager.removeProcess(pi.getProcess());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("The script '"+f.getAbsolutePath()+
+                    "' does not exist anymore.");
+            return false;
+        }
+        //If the URI correspond to a ProcessIdentifier remove it before adding it again
         if(pi != null){
             processManager.removeProcess(pi.getProcess());
+            return (processManager.addLocalScript(uri, pi.getCategory(), pi.isDefault()) != null);
         }
-        return (processManager.addLocalScript(uri, pi.getCategory(), pi.isDefault()) != null);
+        return false;
     }
 
     public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){
@@ -288,9 +299,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             pel.setProcessState(ProcessExecutionListener.ProcessState.COMPLETED);
         }
         catch (Exception e) {
-            pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
             //Print in the log the process execution error
             pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
+            pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
             //Post-process the data
             pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
             for(DescriptionType inputOrOutput : process.getInput()){
