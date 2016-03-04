@@ -299,9 +299,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             pel.setProcessState(ProcessExecutionListener.ProcessState.COMPLETED);
         }
         catch (Exception e) {
-            pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
             //Print in the log the process execution error
             pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
+            pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
             //Post-process the data
             pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
             for(DescriptionType inputOrOutput : process.getInput()){
