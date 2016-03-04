@@ -126,5 +126,10 @@
             <artifactId>spatial-utilities</artifactId>
             <version>${h2-gis-version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wps-service</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

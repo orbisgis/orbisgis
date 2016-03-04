@@ -102,6 +102,9 @@ import org.orbisgis.tablegui.impl.filters.WhereSQLFilterFactory;
 import org.orbisgis.tablegui.impl.jobs.ComputeFieldStatistics;
 import org.orbisgis.tablegui.impl.jobs.OptimalWidthJob;
 import org.orbisgis.tablegui.impl.jobs.SearchJob;
+import org.orbisgis.wpsservice.LocalWpsService;
+import org.orbisgis.wpsservice.WpsService;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -145,12 +148,13 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         private int currentSelectionNavigation = 0;
         private EditorManager editorManager;
         private ExecutorService executorService;
+        private WpsService wpsService;
 
         /**
          * Constructor
          * @param element Source to read and edit
          */
-        public TableEditor(TableEditableElement element, DataManager dataManager, EditorManager editorManager, ExecutorService executorService) {
+        public TableEditor(TableEditableElement element, DataManager dataManager, EditorManager editorManager, ExecutorService executorService, WpsService wpsService) {
                 super(new BorderLayout());
                 this.editorManager = editorManager;
                 this.executorService = executorService;
@@ -175,6 +179,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         registerMapContext(mapContext);
                     }
                 }
+            this.wpsService = wpsService;
         }
 
         public void onMenuRefresh() {
@@ -219,7 +224,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 // Edition is only available if there is a primary key
                 //TODO : actions.add(new ActionAddColumn(tableEditableElement));
                 actions.add(new ActionAddRow(tableEditableElement));
-                actions.add(new ActionRemoveRow(tableEditableElement, this, executorService, undoManager.getLimit()));
+                actions.add(new ActionRemoveRow(tableEditableElement, this, executorService, undoManager.getLimit(), wpsService));
                 actions.add(new ActionUndo(tableEditableElement, undoManager));
                 actions.add(new ActionRedo(tableEditableElement, undoManager));
                 actions.add(new ActionEdition(tableEditableElement));
@@ -1319,5 +1324,4 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             return true;
         }
     }
-
 }

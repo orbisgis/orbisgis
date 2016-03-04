@@ -29,12 +29,16 @@
 
 package org.orbisgis.tablegui.impl;
 
-import org.orbisgis.editorjdbc.jobs.DeleteSelectedRows;
+import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.sif.components.actions.ActionTools;
-import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
+import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.orbisgis.wpsservice.model.Input;
+import org.orbisgis.wpsservice.model.Process;
+import org.orbisgis.wpsservice.WpsService;
+import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -46,8 +50,11 @@ import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.URI;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.ExecutorService;
@@ -57,64 +64,113 @@ import java.util.concurrent.ExecutorService;
  * @author Nicolas Fortin
  */
 public class ActionRemoveRow extends AbstractAction {
-        private final TableEditableElement editable;
-        private static final I18n I18N = I18nFactory.getI18n(ActionRemoveRow.class);
-        private Component parentComponent;
-        private ExecutorService executorService;
-        private final int limitUndoableDelete;
-        private static final Logger LOGGER = LoggerFactory.getLogger(ActionRemoveRow.class);
+    private static final String PROCESS_TITLE = "RemoveRow";
+    private static final String INPUT_TABLE = "Table";
+    private static final String INPUT_PK_FIELD = "PKField";
+    private static final String INPUT_PK_ARRAY = "PKArray";
+    private final TableEditableElement editable;
+    private static final I18n I18N = I18nFactory.getI18n(ActionRemoveRow.class);
+    private Component parentComponent;
+    private ExecutorService executorService;
+    private final int limitUndoableDelete;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActionRemoveRow.class);
+    private WpsService wpsService;
 
-        /**
-         * Constructor
-         * @param editable Table editable instance
-         */
-        public ActionRemoveRow(TableEditableElement editable, Component parentComponent,ExecutorService executorService, int limitUndoableDelete) {
-                super(I18N.tr("Delete selected rows"), TableEditorIcon.getIcon("delete_row"));
-                this.parentComponent = parentComponent;
-                this.executorService = executorService;
-                this.limitUndoableDelete = limitUndoableDelete;
-                putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
-                putValue(ActionTools.MENU_ID,TableEditorActions.A_REMOVE_ROW);
-                this.editable = editable;
-                updateEnabledState();
-                editable.addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class, this, "onEditableUpdate",""));
-        }
+    /**
+     * Constructor
+     * @param editable Table editable instance
+     */
+    public ActionRemoveRow(TableEditableElement editable, Component parentComponent,ExecutorService executorService, int limitUndoableDelete, WpsService wpsService) {
+        super(I18N.tr("Delete selected rows"), TableEditorIcon.getIcon("delete_row"));
+        this.parentComponent = parentComponent;
+        this.executorService = executorService;
+        this.limitUndoableDelete = limitUndoableDelete;
+        putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
+        putValue(ActionTools.MENU_ID,TableEditorActions.A_REMOVE_ROW);
+        this.editable = editable;
+        updateEnabledState();
+        editable.addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class, this, "onEditableUpdate",""));
+        this.wpsService = wpsService;
+    }
 
-        /**
-         * Enable this action only if edition is enabled
-         */
-        public void onEditableUpdate(PropertyChangeEvent evt) {
-                if(TableEditableElement.PROP_SELECTION.equals(evt.getPropertyName())
-                        || TableEditableElement.PROP_EDITING.equals(evt.getPropertyName())) {
-                        updateEnabledState();
-                }
+    /**
+     * Enable this action only if edition is enabled
+     */
+    public void onEditableUpdate(PropertyChangeEvent evt) {
+        if(TableEditableElement.PROP_SELECTION.equals(evt.getPropertyName())
+            || TableEditableElement.PROP_EDITING.equals(evt.getPropertyName())) {
+            updateEnabledState();
         }
-        private void updateEnabledState() {
-                setEnabled(editable.isEditing() && !editable.getSelection().isEmpty());
-        }
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-                if(editable.isEditing()) {
-                        Set<Long> selectedRows = editable.getSelection();
-                        int response = JOptionPane.showConfirmDialog(parentComponent,
-                                I18N.tr("Are you sure to remove the {0} selected rows ?", selectedRows.size()),
-                                I18N.tr("Delete selected rows"),
-                                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-                        if(response == JOptionPane.YES_OPTION) {
-                                SortedSet<Long> pkToDelete = editable.getSelection();
-                                if(pkToDelete.size() > limitUndoableDelete) {
-                                    // Launch process without undoing capabilities
-                                    executorService.execute(new DeleteSelectedRows(editable.getSelection(), editable.getTableReference(), editable.getDataManager().getDataSource()));
-                                } else {
-                                    // Launch process with undoing capabilities
-                                    try {
-                                        DeleteSelectedRows.deleteUsingRowSet(editable.getRowSet(), pkToDelete);
-                                    } catch (EditableElementException | InterruptedException | SQLException ex) {
-                                        LOGGER.error(ex.getLocalizedMessage(), ex);
-                                    }
-                                }
+    }
+    private void updateEnabledState() {
+            setEnabled(editable.isEditing() && !editable.getSelection().isEmpty());
+    }
+    @Override
+    public void actionPerformed(ActionEvent actionEvent) {
+        if(editable.isEditing()) {
+            Set<Long> selectedRows = editable.getSelection();
+            int response = JOptionPane.showConfirmDialog(parentComponent,
+                I18N.tr("Are you sure to remove the {0} selected rows ?", selectedRows.size()),
+                I18N.tr("Delete selected rows"),
+                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if(response == JOptionPane.YES_OPTION) {
+                if(wpsService != null){
+                    Process p = null;
+                    for(ProcessIdentifier pi : wpsService.getCapabilities()){
+                        if(pi.getProcess().getTitle().equals(PROCESS_TITLE)){
+                            p = pi.getProcess();
+                            break;
                         }
-                }
-        }
+                    }
+                    if(p != null){
+                        try(Connection connection = editable.getDataManager().getDataSource().getConnection()) {
+                            //Gets the pk column name
+                            int columnId = JDBCUtilities.getIntegerPrimaryKey(connection, editable.getTableReference());
+                            String pkColumnName = JDBCUtilities.getFieldName(connection.getMetaData(), editable.getTableReference(), columnId);
+                            //Gets the pk list as a String[]
+                            String[] pkList = new String[editable.getSelection().size()];
+                            SortedSet<Long> selection = editable.getSelection();
+                            int i = 0;
+                            for (Long l : selection) {
+                                pkList[i] = l.toString();
+                                i++;
+                            }
+                            //Build the dataMap
+                            Map<URI, Object> dataMap = new HashMap<>();
+                            for (Input input : p.getInput()) {
+                                if (input.getTitle().equals(INPUT_TABLE)) {
+                                    dataMap.put(input.getIdentifier(), URI.create("geocatalog:" + editable.getTableReference() + "#" + editable.getTableReference()));
+                                }
+                                if (input.getTitle().equals(INPUT_PK_ARRAY)) {
+                                    dataMap.put(input.getIdentifier(), pkList);
+                                }
+                                if (input.getTitle().equals(INPUT_PK_FIELD)) {
+                                    dataMap.put(input.getIdentifier(), pkColumnName);
+                                }
+                            }
+                            //Run the service
+                            wpsService.execute(p, dataMap, new ProcessExecutionListener() {
+                                @Override
+                                public void setStartTime(long time) {
 
+                                }
+
+                                @Override
+                                public void appendLog(LogType logType, String message) {
+                                    System.out.println(message);
+                                }
+
+                                @Override
+                                public void setProcessState(ProcessState processState) {
+
+                                }
+                            });
+                        } catch (SQLException e) {
+                            LOGGER.error("Unable to get the connection to remove rows.\n"+e.getMessage());
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

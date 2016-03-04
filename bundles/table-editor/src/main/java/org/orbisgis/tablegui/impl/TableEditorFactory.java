@@ -36,6 +36,8 @@ import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.sif.edition.EditorFactory;
 import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.wpsservice.LocalWpsService;
+import org.orbisgis.wpsservice.WpsService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -56,6 +58,7 @@ public class TableEditorFactory implements EditorFactory {
         private DataManager dataManager;
         private EditorManager editorManager;
         private ExecutorService executorService;
+        private WpsService wpsService;
 
         @Override
         public DockingPanelLayout makeEditableLayout(EditableElement editable) {
@@ -92,6 +95,15 @@ public class TableEditorFactory implements EditorFactory {
         public void unsetEditorManager(EditorManager editorManager) {
             this.editorManager = null;
         }
+
+    @Reference
+    public void setLocalWpsService(LocalWpsService wpsService) {
+        this.wpsService = wpsService;
+    }
+
+    public void unsetLocalWpsService(LocalWpsService wpsService) {
+        this.wpsService = null;
+    }
 
         /**
          * @param dataManager JDBC DataManager factory
@@ -131,7 +143,7 @@ public class TableEditorFactory implements EditorFactory {
         public EditorDockable create(DockingPanelLayout layout) {
                 TableEditableElement editableTable = ((TablePanelLayout)layout).getTableEditableElement();
                 //Check the DataSource state
-                return new TableEditor(editableTable, dataManager, editorManager, executorService);
+                return new TableEditor(editableTable, dataManager, editorManager, executorService, wpsService);
         }
 
         @Override
