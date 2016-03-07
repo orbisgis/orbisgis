@@ -29,6 +29,8 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DataSourceService;
+import org.orbisgis.corejdbc.DatabaseProgressionListener;
+import org.orbisgis.corejdbc.StateEvent;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
@@ -46,21 +48,23 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import javax.swing.*;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component(service = {LocalWpsService.class})
-public class LocalWpsServiceImplementation implements LocalWpsService {
+public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseProgressionListener {
     /** String of the Groovy file extension. */
     public static final String GROOVY_EXTENSION = "groovy";
     private static final String WPS_SCRIPT_FOLDER = "Scripts";
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
     private static final String[] SHOWN_TABLE_TYPES =
-            new String[]{"TABLE", "SYSTEM TABLE","LINKED TABLE","VIEW", "EXTERNAL"};
+            new String[]{"TABLE",/*"SYSTEM TABLE",*/"LINKED TABLE","VIEW","EXTERNAL"};
 
     private CoreWorkspace coreWorkspace;
     boolean multiThreaded;
@@ -76,6 +80,13 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     private DataSourceService dataSourceService;
     /** Map containing object that can be used to cancel the loading of an URI. */
     private Map<URI, Object> cancelLoadMap;
+    private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); /*!< If true a swing runnable
+         * is pending to refresh the content of SourceListModel*/
+    private boolean updateWhileAwaitingRefresh = false;
+    /** List of map containing the table with their basic information.
+     * It is used as a buffer to avoid to reload all the table list to save time.
+     */
+    List<Map<String, String>> tableList;
 
     @Activate
     public void init(){
@@ -100,6 +111,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
             }
         }
         cancelLoadMap = new HashMap<>();
+        //Install database listeners
+        dataManager.addDatabaseProgressionListener(this, StateEvent.DB_STATES.STATE_STATEMENT_END);
+        //Call readDatabase when a SourceManager fire an event
+        onDataManagerChange();
     }
 
     @Deactivate
@@ -350,78 +365,44 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     }
 
     @Override
-    public List<String> getGeocatalogTableList(boolean onlySpatial) {
-        List<String> list = new ArrayList<>();
-        try(Connection connection = dataManager.getDataSource().getConnection()) {
-            //TODO find a better way to get only the user tabe and not the information table
-            String defaultSchema = (isH2)?"PUBLIC":"public";
-            List<String> tableList = JDBCUtilities.getTableNames(connection.getMetaData(), null,
-                    null, null, SHOWN_TABLE_TYPES);
-            //Test each table get from the JDBCUtilities
-            for(String table : tableList){
-                //If only the spatial table are allow filter them
-                if(onlySpatial){
-                    //Test if the table contains a geometrical field (if the table is spatial)
-                    if(!SFSUtilities.getGeometryFields(connection, TableLocation.parse(table)).isEmpty()){
-                        TableLocation tablelocation = TableLocation.parse(table, isH2);
+    public Map<String, Boolean> getGeocatalogTableList(boolean onlySpatial) {
+        Map<String, Boolean> mapTable = new HashMap<>();
+        String defaultSchema = (isH2)?"PUBLIC":"public";
+        //Read the tableList to get the desired tables
+        for(Map<String, String> map : tableList){
+            if(onlySpatial){
+                //Test if the table contains a geometrical field (if the table is spatial)
+                if(map.containsKey(GEOMETRY_TYPE)){
+                    if(map.containsKey(TABLE_LOCATION)) {
+                        TableLocation tablelocation = TableLocation.parse(map.get(TABLE_LOCATION), isH2);
                         //If the table is in the default schema, just add its name
-                        if(tablelocation.getSchema().equals(defaultSchema)) {
-                            list.add(tablelocation.getTable());
+                        if (tablelocation.getSchema(defaultSchema).equals(defaultSchema)) {
+                            mapTable.put(tablelocation.getTable(), map.containsKey(GEOMETRY_TYPE));
                         }
                         //If not, add the schema name '.' the table name (SCHEMA.TABLE)
-                        else{
-                            list.add(tablelocation.getSchema()+"."+tablelocation.getTable());
+                        else {
+                            mapTable.put(tablelocation.getSchema() + "." + tablelocation.getTable(),
+                                    map.containsKey(GEOMETRY_TYPE));
                         }
                     }
                 }
-                //Else add all the tables
-                else{
-                    TableLocation tablelocation = TableLocation.parse(table, isH2);
+            }
+            //Else add all the tables
+            else{
+                if(map.containsKey(TABLE_LOCATION)) {
+                    TableLocation tablelocation = TableLocation.parse(map.get(TABLE_LOCATION), isH2);
                     //If the table is in the default schema, just add its name
-                    if(tablelocation.getSchema().equals(defaultSchema)) {
-                        list.add(tablelocation.getTable());
+                    if (tablelocation.getSchema(defaultSchema).equals(defaultSchema)) {
+                        mapTable.put(tablelocation.getTable(), map.containsKey(GEOMETRY_TYPE));
                     }
                     //If not, add the schema name '.' the table name (SCHEMA.TABLE)
-                    else{
-                        list.add(tablelocation.getSchema()+"."+tablelocation.getTable());
+                    else {
+                        mapTable.put(tablelocation.getSchema() + "." + tablelocation.getTable(), map.containsKey(GEOMETRY_TYPE));
                     }
                 }
             }
-        } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the geocatalog table " +
-                    "list.\n"+e.getMessage());
         }
-        return list;
-    }
-
-    @Override
-    public Map<String, Object> getTableInformation(String tableName){
-        Map<String, Object> map = new HashMap<>();
-        try(Connection connection = dataManager.getDataSource().getConnection()) {
-            tableName = TableLocation.parse(tableName, isH2).getTable();
-            TableLocation tableLocation = new TableLocation(tableName);
-            boolean isSpatial = !SFSUtilities.getGeometryFields(connection, tableLocation).isEmpty();
-            int srid = SFSUtilities.getSRID(connection, tableLocation);
-            //TODO : move this statement to SFSUtilities or JDBCUtilities to request the table dimension.
-            Statement statement = connection.createStatement();
-            String query = "SELECT COORD_DIMENSION FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '"+
-                    TableLocation.parse(tableName).getTable()+"';";
-            ResultSet rs = statement.executeQuery(query);
-            int dimension;
-            if(rs.next()){
-                dimension = rs.getInt(1);
-            }
-            else{
-                dimension=0;
-            }
-            map.put(TABLE_IS_SPATIAL, isSpatial);
-            map.put(TABLE_SRID, srid);
-            map.put(TABLE_DIMENSION, dimension);
-        } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the table '"+tableName+
-                    "' information.\n"+e.getMessage());
-        }
-        return map;
+        return mapTable;
     }
 
     @Override
@@ -670,5 +651,138 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
     @Override
     public void cancelProcess(URI uri){
         processManager.cancelProcess(processManager.getProcess(uri));
+    }
+
+
+    /**
+     * The DataManager fire a DataSourceEvent
+     * Swing will update the list later.
+     * This method is called by the EventSource listener
+     */
+    public void onDataManagerChange() {
+        //This is useless to invoke a refresh thread because
+        //The content will be refresh is coming soon fired by another ReadDataManagerOnSwingThread
+        if(!awaitingRefresh.getAndSet(true)) {
+            ReadDataManagerOnSwingThread worker = new ReadDataManagerOnSwingThread(this);
+            worker.execute();
+        } else {
+            updateWhileAwaitingRefresh = true;
+        }
+    }
+
+    @Override
+    public void progressionUpdate(StateEvent state) {
+        if (state.isUpdateDatabaseStructure()) {
+            onDataManagerChange();
+        }
+    }
+
+    /**
+     * Read the table list in the database
+     */
+    protected void readDatabase() {
+        List<Map<String, String>> newTables = new ArrayList<>();
+        try (Connection connection = dataManager.getDataSource().getConnection()) {
+            final String defaultCatalog = connection.getCatalog();
+            String defaultSchema = "PUBLIC";
+            try {
+                if (connection.getSchema() != null) {
+                    defaultSchema = connection.getSchema();
+                }
+            } catch (AbstractMethodError | Exception ex) {
+                // Driver has been compiled with JAVA 6, or is not implemented
+            }
+            // Fetch Geometry tables
+            Map<String,String> tableGeometry = new HashMap<>();
+            try(Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery("SELECT * FROM "+defaultSchema+".geometry_columns")) {
+                while(rs.next()) {
+                    tableGeometry.put(new TableLocation(rs.getString("F_TABLE_CATALOG"),
+                            rs.getString("F_TABLE_SCHEMA"), rs.getString("F_TABLE_NAME")).toString(), rs.getString("TYPE"));
+                }
+            } catch (SQLException ex) {
+                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Geometry columns information of tables are not available", ex);
+            }
+            // Fetch all tables
+            try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {
+                while(rs.next()) {
+                    Map<String, String> tableAttr = new HashMap<>();
+                    TableLocation location = new TableLocation(rs);
+                    if(location.getCatalog().isEmpty()) {
+                        // PostGIS return empty catalog on metadata
+                        location = new TableLocation(defaultCatalog, location.getSchema(), location.getTable());
+                    }
+                    // Make Label
+                    StringBuilder label = new StringBuilder(addQuotesIfNecessary(location.getTable()));
+                    if(!location.getSchema().isEmpty() && !location.getSchema().equalsIgnoreCase(defaultSchema)) {
+                        label.insert(0, ".");
+                        label.insert(0, addQuotesIfNecessary(location.getSchema()));
+                    }
+                    if(!location.getCatalog().isEmpty() && !location.getCatalog().equalsIgnoreCase(defaultCatalog)) {
+                        label.insert(0, ".");
+                        label.insert(0, addQuotesIfNecessary(location.getCatalog()));
+                    }
+                    // Shortcut location for H2 database
+                    TableLocation shortLocation;
+                    if(isH2) {
+                        shortLocation = new TableLocation("",
+                                location.getSchema().equals(defaultSchema) ? "" : location.getSchema(),
+                                location.getTable());
+                    } else {
+                        shortLocation = new TableLocation(location.getCatalog().equalsIgnoreCase(defaultCatalog) ?
+                                "" : location.getCatalog(),
+                                location.getCatalog().equalsIgnoreCase(defaultCatalog) &&
+                                        location.getSchema().equalsIgnoreCase(defaultSchema) ? "" : location.getSchema(),
+                                location.getTable());
+                    }
+                    tableAttr.put(TABLE_LOCATION, shortLocation.toString(isH2));
+                    tableAttr.put(TABLE_LABEL, label.toString());
+                    String type = tableGeometry.get(location.toString());
+                    if(type != null) {
+                        tableAttr.put(GEOMETRY_TYPE, type);
+                    }
+                    newTables.add(tableAttr);
+                }
+            }
+            tableList = newTables;
+        } catch (SQLException ex) {
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Cannot read the table list", ex);
+        }
+    }
+
+    private static String addQuotesIfNecessary(String tableLocationPart) {
+        if(tableLocationPart.contains(".")) {
+            return "\""+tableLocationPart+"\"";
+        } else {
+            return tableLocationPart;
+        }
+    }
+
+    /**
+     * Refresh the JList on the swing thread
+     */
+    private static class ReadDataManagerOnSwingThread extends SwingWorker<Boolean, Boolean> {
+        private LocalWpsServiceImplementation wpsService;
+
+        private ReadDataManagerOnSwingThread(LocalWpsServiceImplementation wpsService) {
+            this.wpsService = wpsService;
+        }
+
+        @Override
+        protected Boolean doInBackground() throws Exception {
+            wpsService.readDatabase();
+            return true;
+        }
+
+        @Override
+        protected void done() {
+            //Refresh the JList on the swing thread
+            wpsService.awaitingRefresh.set(false);
+            // An update occurs during fetching tables
+            if(wpsService.updateWhileAwaitingRefresh) {
+                wpsService.updateWhileAwaitingRefresh = false;
+                wpsService.onDataManagerChange();
+            }
+        }
     }
 }
