@@ -29,6 +29,7 @@
 
 package org.orbisgis.wpsservice;
 
+import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.DataType;
 
@@ -153,4 +154,6 @@ public interface LocalWpsService extends WpsService {
      * @param uri URI of the process to cancel.
      */
     void cancelProcess(URI uri);
+
+    ReadRowSet getFieldAndReadRowSet(String tableName, String fieldName);
 }

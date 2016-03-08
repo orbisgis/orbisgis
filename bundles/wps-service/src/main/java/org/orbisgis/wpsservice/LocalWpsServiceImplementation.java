@@ -27,10 +27,10 @@ import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.corejdbc.DataSourceService;
-import org.orbisgis.corejdbc.DatabaseProgressionListener;
-import org.orbisgis.corejdbc.StateEvent;
+import org.orbisgis.commons.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.orbisgis.corejdbc.*;
+import org.orbisgis.corejdbc.internal.ReadRowSetImpl;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
@@ -48,7 +48,12 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import javax.sql.RowSetEvent;
+import javax.sql.RowSetListener;
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.JdbcRowSet;
 import javax.swing.*;
+import java.beans.EventHandler;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
@@ -784,5 +789,30 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 wpsService.onDataManagerChange();
             }
         }
+    }
+
+    @Override
+    public ReadRowSet getFieldAndReadRowSet(String tableName, String fieldName){
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            tableName = TableLocation.parse(tableName, isH2).getTable();
+            List<String> fieldNames = JDBCUtilities.getFieldNames(connection.getMetaData(), tableName);
+            if(fieldNames.isEmpty()){
+                return null;
+            }
+            for(String field : fieldNames){
+                if(field.equalsIgnoreCase(fieldName)){
+                    fieldName = field;
+                    break;
+                }
+            }
+            String pkName = MetaData.getPkName(connection, tableName, true);
+            ReadRowSet readRowSet = dataManager.createReadRowSet();
+            readRowSet.initialize(tableName, pkName, new NullProgressMonitor());
+            return readRowSet;
+        } catch (SQLException e) {
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the field '"+tableName+
+                    "."+fieldName+"' value list.\n"+e.getMessage());
+        }
+        return null;
     }
 }

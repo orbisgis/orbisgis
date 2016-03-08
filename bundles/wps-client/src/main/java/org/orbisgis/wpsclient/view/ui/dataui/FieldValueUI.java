@@ -20,7 +20,9 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.view.utils.FieldValueListModel;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.DescriptionType;
 import org.orbisgis.wpsservice.model.FieldValue;
@@ -48,6 +50,8 @@ public class FieldValueUI implements DataUI{
     /** Size constants **/
     private static final int MAX_JLIST_ROW_COUNT = 10;
     private static final int MIN_JLIST_ROW_COUNT = 1;
+    private static final int MIN_WIDTH_CELL = 1;
+    private static final int MAX_HEIGHT_CELL = 15;
 
     /** Constant used to pass object as client property throw JComponents **/
     private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
@@ -168,27 +172,25 @@ public class FieldValueUI implements DataUI{
                 fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
             }
             if(tableName != null && fieldName != null) {
-                DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
-                model.removeAllElements();
-                List<String> listFields = wpsClient.getWpsService().getFieldValueList(tableName, fieldName);
-                Collections.sort(listFields);
-                for (String field : listFields) {
-                    model.addElement(field);
-                }
-                if (listFields.size() < MAX_JLIST_ROW_COUNT) {
-                    list.setVisibleRowCount(listFields.size());
-                } else {
-                    list.setVisibleRowCount(MAX_JLIST_ROW_COUNT);
-                }
-                if (!isOptional && list.getModel().getSize() > 0) {
-                    list.setSelectedIndex(0);
+                ReadRowSet readRowSet = wpsClient.getWpsService().getFieldAndReadRowSet(tableName, fieldName);
+                if(readRowSet != null) {
+                    FieldValueListModel model = new FieldValueListModel(readRowSet, fieldName);
+                    list.setModel(model);
+                    list.setFixedCellWidth(MIN_WIDTH_CELL);
+                    list.setFixedCellHeight(MAX_HEIGHT_CELL);
+
+                    if (model.getSize() < MAX_JLIST_ROW_COUNT) {
+                        list.setVisibleRowCount(model.getSize());
+                    } else {
+                        list.setVisibleRowCount(MAX_JLIST_ROW_COUNT);
+                    }
                 }
             }
         }
 
         //If the jList doesn't contains any values, it mean that the DataField hasn't been well selected.
         //So show a tooltip text to warn the user.
-        if(list.getSelectedIndices().length == 0) {
+        if(list.getModel().getSize() == 0) {
             list.putClientProperty(INITIAL_DELAY_PROPERTY, ToolTipManager.sharedInstance().getInitialDelay());
             list.putClientProperty(TOOLTIP_TEXT_PROPERTY, list.getToolTipText());
             ToolTipManager.sharedInstance().setInitialDelay(0);
@@ -211,7 +213,7 @@ public class FieldValueUI implements DataUI{
             ToolTipManager.sharedInstance().mouseMoved(
                     new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
         }
-        list.revalidate();
+        //list.revalidate();
     }
 
     public void onListSelection(Object source){
