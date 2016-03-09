@@ -19,6 +19,7 @@
 
 package org.orbisgis.wpsservice.model;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,10 @@ import java.util.List;
  **/
 
 public class DataStore extends ComplexData{
+    /**DataStore types.*/
+    public static final String DATASTORE_TYPE_GEOCATALOG = "DATASTORE_TYPE_GEOCATALOG";
+    public static final String DATASTORE_TYPE_FILE = "DATASTORE_TYPE_FILE";
+
     /** True if the data is spatial, false otherwise **/
     private boolean isSpatial;
     /** True if the data can come from the OrbisGIS geocatalog spatial, false otherwise **/
@@ -138,5 +143,27 @@ public class DataStore extends ComplexData{
      */
     public List<DataField> getListDataField(){
         return listDataField;
+    }
+
+    /**
+     * Build an URI usable in the wps service from the dataStore information.
+     * @param dataStoreType Type of the dataStore, can be DATASTORE_TYPE_GEOCATALOG or DATASTORE_TYPE_FILE.
+     * @param dataSource Body of the uri. If it is a file, dataSource is the file absolute path, if it is a geocatalog,
+     *                   dataSource is the table name.
+     * @param tableName Table name.
+     * @return
+     */
+    public static URI buildUriDataStore(String dataStoreType, String dataSource, String tableName){
+        String uri = "";
+        switch(dataStoreType){
+            case DATASTORE_TYPE_GEOCATALOG:
+                uri += "geocatalog:";
+                break;
+            case DATASTORE_TYPE_FILE:
+                uri += "file:";
+        }
+        uri += dataSource;
+        uri += "#"+tableName;
+        return URI.create(uri);
     }
 }

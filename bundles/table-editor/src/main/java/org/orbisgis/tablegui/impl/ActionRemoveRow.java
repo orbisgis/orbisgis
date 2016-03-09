@@ -30,11 +30,13 @@
 package org.orbisgis.tablegui.impl;
 
 import org.h2gis.utilities.JDBCUtilities;
+import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.orbisgis.wpsservice.model.DataStore;
 import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.Process;
 import org.orbisgis.wpsservice.WpsService;
@@ -45,6 +47,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
@@ -62,6 +65,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * Remove selected rows in the DataSource.
  * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS
  */
 public class ActionRemoveRow extends AbstractAction {
     private static final String PROCESS_TITLE = "RemoveRow";
@@ -70,9 +74,7 @@ public class ActionRemoveRow extends AbstractAction {
     private static final String INPUT_PK_ARRAY = "PKArray";
     private final TableEditableElement editable;
     private static final I18n I18N = I18nFactory.getI18n(ActionRemoveRow.class);
-    private Component parentComponent;
-    private ExecutorService executorService;
-    private final int limitUndoableDelete;
+    private TableEditor tableEditor;
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionRemoveRow.class);
     private WpsService wpsService;
 
@@ -80,11 +82,9 @@ public class ActionRemoveRow extends AbstractAction {
      * Constructor
      * @param editable Table editable instance
      */
-    public ActionRemoveRow(TableEditableElement editable, Component parentComponent,ExecutorService executorService, int limitUndoableDelete, WpsService wpsService) {
+    public ActionRemoveRow(TableEditableElement editable, TableEditor tableEditor, WpsService wpsService) {
         super(I18N.tr("Delete selected rows"), TableEditorIcon.getIcon("delete_row"));
-        this.parentComponent = parentComponent;
-        this.executorService = executorService;
-        this.limitUndoableDelete = limitUndoableDelete;
+        this.tableEditor = tableEditor;
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
         putValue(ActionTools.MENU_ID,TableEditorActions.A_REMOVE_ROW);
         this.editable = editable;
@@ -109,7 +109,7 @@ public class ActionRemoveRow extends AbstractAction {
     public void actionPerformed(ActionEvent actionEvent) {
         if(editable.isEditing()) {
             Set<Long> selectedRows = editable.getSelection();
-            int response = JOptionPane.showConfirmDialog(parentComponent,
+            int response = JOptionPane.showConfirmDialog(tableEditor,
                 I18N.tr("Are you sure to remove the {0} selected rows ?", selectedRows.size()),
                 I18N.tr("Delete selected rows"),
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -139,7 +139,10 @@ public class ActionRemoveRow extends AbstractAction {
                             Map<URI, Object> dataMap = new HashMap<>();
                             for (Input input : p.getInput()) {
                                 if (input.getTitle().equals(INPUT_TABLE)) {
-                                    dataMap.put(input.getIdentifier(), URI.create("geocatalog:" + editable.getTableReference() + "#" + editable.getTableReference()));
+                                    URI uri = DataStore.buildUriDataStore(DataStore.DATASTORE_TYPE_GEOCATALOG,
+                                            editable.getTableReference(),
+                                            editable.getTableReference());
+                                    dataMap.put(input.getIdentifier(), uri);
                                 }
                                 if (input.getTitle().equals(INPUT_PK_ARRAY)) {
                                     dataMap.put(input.getIdentifier(), pkList);
@@ -149,24 +152,15 @@ public class ActionRemoveRow extends AbstractAction {
                                 }
                             }
                             //Run the service
-                            wpsService.execute(p, dataMap, new ProcessExecutionListener() {
-                                @Override
-                                public void setStartTime(long time) {
-
-                                }
-
-                                @Override
-                                public void appendLog(LogType logType, String message) {
-                                    System.out.println(message);
-                                }
-
-                                @Override
-                                public void setProcessState(ProcessState processState) {
-
-                                }
-                            });
+                            wpsService.execute(p, dataMap, null);
+                            //Indicates to the tableEditor that a change occurred.
+                            tableEditor.tableChange(new TableEditEvent(editable.getTableReference(),
+                                    TableModelEvent.ALL_COLUMNS,
+                                    null,
+                                    null,
+                                    TableModelEvent.UPDATE));
                         } catch (SQLException e) {
-                            LOGGER.error("Unable to get the connection to remove rows.\n"+e.getMessage());
+                            LOGGER.error(I18N.tr("Unable to get the connection to remove rows.\n")+e.getMessage());
                         }
                     }
                 }

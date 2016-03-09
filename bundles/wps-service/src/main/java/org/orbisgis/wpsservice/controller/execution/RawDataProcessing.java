@@ -40,8 +40,10 @@ public class RawDataProcessing implements DataProcessing {
             Output output = (Output) inputOrOutput;
             //Check if the input is a GeometryData
             if(output.getDataDescription() instanceof RawData) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO,"Output RawData '" +
-                        output.getTitle() + "' is '"+dataMap.get(output.getIdentifier())+"'.");
+                if(pel != null) {
+                    pel.appendLog(ProcessExecutionListener.LogType.INFO, "Output RawData '" +
+                            output.getTitle() + "' is '" + dataMap.get(output.getIdentifier()) + "'.");
+                }
             }
         }
     }

@@ -31,7 +31,6 @@ def processing() {
     //Build the start of the query
     for (String s : pkToRemove) {
         String query = "DELETE FROM " + tableName + " WHERE " + pkField + " = " + Long.parseLong(s)
-        print query
         //Execute the query
         sql.execute(query)
     }
