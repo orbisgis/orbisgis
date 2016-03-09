@@ -20,7 +20,10 @@ import org.orbisgis.wpsservice.model.LiteralData
  * This process insert the given value in the given table.
  * The user has to specify (mandatory):
  *  - The input table (DataStore)
- *  - The primary keys of the rows to remove (LiteralData)
+ *  - The values to insert (LiteralData)
+ *
+ * The user can specify (optional) :
+ *  - The field list concerned by the value insertion (DataField)
  *
  * @author Sylvain PALOMINOS
  */
@@ -28,12 +31,18 @@ import org.orbisgis.wpsservice.model.LiteralData
         resume = "Insert values into a table.",
         keywords = "OrbisGIS,table_editor")
 def processing() {
-    //Build the start of the query
-    String queryBase = "INSERT INTO " + tableName + "(" + fields + ") VALUES ("
+    //Build the query
+    String queryBase = "INSERT INTO " + tableName;
+    if(fields != null){
+        queryBase += " (" + fields + ") ";
+    }
+    queryBase += " VALUES (";
+    //execute the query for each row
     String[] rowArray = values.split(";")
     for(String row : rowArray){
         String query = queryBase
         String[] valueArray = row.split(",")
+        //Retrieve the values to insert
         String formatedValues = ""
         for(String value : valueArray){
             if(formatedValues.isEmpty()){
@@ -44,7 +53,7 @@ def processing() {
             }
         }
         query += formatedValues + ");"
-        print query
+        //execute the query
         sql.execute(query)
     }
     literalOutput = "Insert done."
@@ -71,7 +80,8 @@ String tableName
         title = "Fields",
         resume = "The field concerned by the value insertion",
         dataStore = "tableName",
-        isMultipleField = true)
+        isMultipleField = true,
+        minOccurs = 0)
 String fields
 
 /** This DataStore is the output data source for the buffer. */

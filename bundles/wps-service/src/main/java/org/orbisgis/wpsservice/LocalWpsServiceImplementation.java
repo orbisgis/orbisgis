@@ -311,11 +311,11 @@ public class LocalWpsServiceImplementation implements LocalWpsService {
         }
         catch (Exception e) {
             if(pel != null) {
-                pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
                 //Print in the log the process execution error
                 pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
                 //Post-process the data
                 pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
+                pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
             }
             else{
                 LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Error on execution the WPS " +
