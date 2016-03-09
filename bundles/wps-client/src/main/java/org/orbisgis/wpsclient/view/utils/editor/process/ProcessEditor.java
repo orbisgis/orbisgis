@@ -253,6 +253,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             if(dataUI!=null) {
                 JComponent component = dataUI.createUI(o, pee.getOutputDataMap());
                 if(component != null) {
+                    outputPanel.add(new JLabel(o.getTitle()), "growx, span");
                     outputPanel.add(component, "growx, span");
                 }
                 outputPanel.add(new JSeparator(), "growx, span");
