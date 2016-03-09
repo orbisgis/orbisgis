@@ -24,10 +24,7 @@ import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.FieldValueListModel;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.wpsservice.model.DescriptionType;
-import org.orbisgis.wpsservice.model.FieldValue;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.Output;
+import org.orbisgis.wpsservice.model.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -50,7 +47,10 @@ public class FieldValueUI implements DataUI{
     /** Size constants **/
     private static final int MAX_JLIST_ROW_COUNT = 10;
     private static final int MIN_JLIST_ROW_COUNT = 1;
+    //Set the minimal cell width to 1 because the JList will be in a MigLayout with a 'growx' attribute that will
+    //make if take the whole parent component width.
     private static final int MIN_WIDTH_CELL = 1;
+    //TODO dynamically calculate it
     private static final int MAX_HEIGHT_CELL = 15;
 
     /** Constant used to pass object as client property throw JComponents **/
@@ -147,7 +147,6 @@ public class FieldValueUI implements DataUI{
         JList<String> list = (JList<String>)source;
         FieldValue fieldValue = (FieldValue)list.getClientProperty(FIELD_VALUE_PROPERTY);
         HashMap<URI, Object> dataMap = (HashMap<URI, Object>)list.getClientProperty(DATA_MAP_PROPERTY);
-        boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
         //If the DataField related to the FieldValue has been modified, reload the dataField values
         if(fieldValue.isDataFieldModified()) {
             fieldValue.setDataFieldModified(false);
@@ -172,8 +171,18 @@ public class FieldValueUI implements DataUI{
                 fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
             }
             if(tableName != null && fieldName != null) {
-                ReadRowSet readRowSet = wpsClient.getWpsService().getFieldAndReadRowSet(tableName, fieldName);
+                //First retrieve the good field name with the good case.
+                List<String> fieldList = wpsClient.getWpsService().getTableFieldList(tableName,
+                        new ArrayList<DataType>(), new ArrayList<DataType>());
+                for(String field : fieldList){
+                    if(field.equalsIgnoreCase(fieldName)){
+                        fieldName = field;
+                    }
+                }
+                //Retrieve the rowSet reading the table from the wpsService.
+                ReadRowSet readRowSet = wpsClient.getWpsService().getTableReadRowSet(tableName);
                 if(readRowSet != null) {
+                    //Sets the list with a custom model using the rowSet.
                     FieldValueListModel model = new FieldValueListModel(readRowSet, fieldName);
                     list.setModel(model);
                     list.setFixedCellWidth(MIN_WIDTH_CELL);
@@ -213,7 +222,6 @@ public class FieldValueUI implements DataUI{
             ToolTipManager.sharedInstance().mouseMoved(
                     new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
         }
-        //list.revalidate();
     }
 
     public void onListSelection(Object source){

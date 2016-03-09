@@ -291,11 +291,12 @@ public class DataStoreUI implements DataUI{
     }
 
     /**
-     * Populate the given comboBox with the table map get from the LocalWpsService.
-     * Also display the tables information like if it is spatial or not.
+     * Populate the given comboBox with the table map get from the LocalWpsService (table name as key, if it is
+     * spatial or not as value).
+     * Once populated, the combo box will display an icon regarding if the table is spatial or not and the table name.
      * @param geocatalogComboBox The combo box to populate.
-     * @param isSpatialDataStore True if the DataSTore is spatial, false otherwise.
-     * @param isOutput True if the DataSTore is an output, false otherwise.
+     * @param isSpatialDataStore True if the DataStore is spatial, false otherwise.
+     * @param isOutput True if the DataStore is an output, false otherwise.
      */
     private void populateWithTable(JComboBox<ContainerItem<Object>> geocatalogComboBox, boolean isSpatialDataStore,
                                    boolean isOutput){
@@ -314,14 +315,13 @@ public class DataStoreUI implements DataUI{
         if(tableMap != null && !tableMap.isEmpty()){
             for (Map.Entry<String, Boolean> entry : tableMap.entrySet()) {
                 JPanel tablePanel = new JPanel(new MigLayout("ins 0, gap 0"));
-                //Sets the spatial icon
-                boolean isSpatial = entry.getValue();
-                if (isSpatial) {
+                //Sets the spatial icon regarding the entry value
+                if (entry.getValue()) {
                     tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.GEO_FILE)));
                 } else {
                     tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.FLAT_FILE)));
                 }
-                //Adds the table label
+                //Adds the table label contained in the entry key
                 tablePanel.add(new JLabel(entry.getKey()));
                 //Save the ContainerItem in the list
                 containerItemList.add(new ContainerItem<Object>(tablePanel, entry.getKey()));

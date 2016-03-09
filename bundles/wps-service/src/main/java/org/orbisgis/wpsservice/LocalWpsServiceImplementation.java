@@ -28,9 +28,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.NullProgressMonitor;
-import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.*;
-import org.orbisgis.corejdbc.internal.ReadRowSetImpl;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
@@ -48,12 +46,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import javax.sql.RowSetEvent;
-import javax.sql.RowSetListener;
-import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.JdbcRowSet;
 import javax.swing.*;
-import java.beans.EventHandler;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
@@ -61,6 +54,11 @@ import java.sql.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * This class is an implementation of the LocalWpsService interface and is declared a OSGI component.
+ * It gives all the methods needed by the a WPS client to be able to get a process, to configure it and to run it.
+ * It also implements the DatabaseProgressionListener to be able to know the table list in the database.
+ */
 @Component(service = {LocalWpsService.class})
 public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseProgressionListener {
     /** String of the Groovy file extension. */
@@ -68,8 +66,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     private static final String WPS_SCRIPT_FOLDER = "Scripts";
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
-    private static final String[] SHOWN_TABLE_TYPES =
-            new String[]{"TABLE",/*"SYSTEM TABLE",*/"LINKED TABLE","VIEW","EXTERNAL"};
+    /**Array of the table type accepted. */
+    private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL"};
 
     private CoreWorkspace coreWorkspace;
     boolean multiThreaded;
@@ -85,8 +83,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     private DataSourceService dataSourceService;
     /** Map containing object that can be used to cancel the loading of an URI. */
     private Map<URI, Object> cancelLoadMap;
-    private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); /*!< If true a swing runnable
-         * is pending to refresh the content of SourceListModel*/
+    /** True if a swing runnable is pending to refresh the content of the table list, false otherwise. */
+    private AtomicBoolean awaitingRefresh=new AtomicBoolean(false);
+    /** True if an updates happen while another on is running. */
     private boolean updateWhileAwaitingRefresh = false;
     /** List of map containing the table with their basic information.
      * It is used as a buffer to avoid to reload all the table list to save time.
@@ -658,15 +657,11 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         processManager.cancelProcess(processManager.getProcess(uri));
     }
 
-
     /**
-     * The DataManager fire a DataSourceEvent
-     * Swing will update the list later.
-     * This method is called by the EventSource listener
+     * Method called when a change happens in the DataManager (i.e. a table suppression, a table add ...)
      */
     public void onDataManagerChange() {
-        //This is useless to invoke a refresh thread because
-        //The content will be refresh is coming soon fired by another ReadDataManagerOnSwingThread
+        //If not actually doing a refresh, do it.
         if(!awaitingRefresh.getAndSet(true)) {
             ReadDataManagerOnSwingThread worker = new ReadDataManagerOnSwingThread(this);
             worker.execute();
@@ -755,6 +750,11 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         }
     }
 
+    /**
+     * If needed, quote the table location part
+     * @param tableLocationPart Table location part to quote.
+     * @return Quoted table location part.
+     */
     private static String addQuotesIfNecessary(String tableLocationPart) {
         if(tableLocationPart.contains(".")) {
             return "\""+tableLocationPart+"\"";
@@ -792,26 +792,16 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     @Override
-    public ReadRowSet getFieldAndReadRowSet(String tableName, String fieldName){
+    public ReadRowSet getTableReadRowSet(String tableName){
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             tableName = TableLocation.parse(tableName, isH2).getTable();
-            List<String> fieldNames = JDBCUtilities.getFieldNames(connection.getMetaData(), tableName);
-            if(fieldNames.isEmpty()){
-                return null;
-            }
-            for(String field : fieldNames){
-                if(field.equalsIgnoreCase(fieldName)){
-                    fieldName = field;
-                    break;
-                }
-            }
             String pkName = MetaData.getPkName(connection, tableName, true);
             ReadRowSet readRowSet = dataManager.createReadRowSet();
             readRowSet.initialize(tableName, pkName, new NullProgressMonitor());
             return readRowSet;
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the field '"+tableName+
-                    "."+fieldName+"' value list.\n"+e.getMessage());
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to initialize a ReadRowSet with " +
+                    "the table '"+tableName+"'.\n"+e.getMessage());
         }
         return null;
     }
