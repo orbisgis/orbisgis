@@ -17,25 +17,37 @@ import org.orbisgis.wpsservice.model.LiteralData
 /********************/
 
 /**
- * This process removes the given rows from the given table.
+ * This process insert the given value in the given table.
  * The user has to specify (mandatory):
  *  - The input table (DataStore)
- *  - The primary key field (DataField)
- *  - The primary keys of the rows to remove (FieldValue)
+ *  - The primary keys of the rows to remove (LiteralData)
  *
  * @author Sylvain PALOMINOS
  */
-@Process(title = "RemoveRow",
-        resume = "Remove rows from a table.",
+@Process(title = "InsertInto",
+        resume = "Insert values into a table.",
         keywords = "OrbisGIS,table_editor")
 def processing() {
     //Build the start of the query
-    for (String s : pkToRemove) {
-        String query = "DELETE FROM " + tableName + " WHERE " + pkField + " = " + Long.parseLong(s)
-        //Execute the query
+    String queryBase = "INSERT INTO " + tableName + "(" + fields + ") VALUES ("
+    String[] rowArray = values.split(";")
+    for(String row : rowArray){
+        String query = queryBase
+        String[] valueArray = row.split(",")
+        String formatedValues = ""
+        for(String value : valueArray){
+            if(formatedValues.isEmpty()){
+                formatedValues += "'" + value + "'";
+            }
+            else{
+                formatedValues += ",'" + value + "'";
+            }
+        }
+        query += formatedValues + ");"
+        print query
         sql.execute(query)
     }
-    literalOutput = "Remove done."
+    literalOutput = "Insert done."
 }
 
 
@@ -54,22 +66,21 @@ String tableName
 /** INPUT Parameters **/
 /**********************/
 
-/** Name of the PrimaryKey field of the DataStore tableName. */
+/** Field list concerned by the value insertion. */
 @DataFieldInput(
-        title = "PKField",
-        resume = "The primary key field",
-        dataStore = "tableName")
-String pkField
+        title = "Fields",
+        resume = "The field concerned by the value insertion",
+        dataStore = "tableName",
+        isMultipleField = true)
+String fields
 
-/** List of primary keys to remove from the table. */
-@FieldValueInput(
-        title = "PKArray",
-        resume = "The array of the primary keys of the rows to remove",
-        dataField = "pkField",
-        multiSelection = true)
-String[] pkToRemove
+/** This DataStore is the output data source for the buffer. */
+@LiteralDataInput(
+        title="Values",
+        resume="The input values. The values should be separated by a ',' and rows by ';'")
+String values
 
-/** Output message. */
+/** This DataStore is the output data source for the buffer. */
 @LiteralDataOutput(
         title="Output message",
         resume="The output message")
