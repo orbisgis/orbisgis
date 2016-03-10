@@ -40,6 +40,8 @@ import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.WpsService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -58,7 +60,7 @@ public class TableEditorFactory implements EditorFactory {
         private DataManager dataManager;
         private EditorManager editorManager;
         private ExecutorService executorService;
-        private WpsService wpsService;
+        private WpsService wpsService = null;
 
         @Override
         public DockingPanelLayout makeEditableLayout(EditableElement editable) {
@@ -96,7 +98,7 @@ public class TableEditorFactory implements EditorFactory {
             this.editorManager = null;
         }
 
-    @Reference
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
     public void setLocalWpsService(LocalWpsService wpsService) {
         this.wpsService = wpsService;
     }
