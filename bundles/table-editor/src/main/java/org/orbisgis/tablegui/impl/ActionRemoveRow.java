@@ -35,7 +35,6 @@ import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.orbisgis.wpsservice.model.DataStore;
 import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.Process;
@@ -48,7 +47,6 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
@@ -60,7 +58,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Remove selected rows in the DataSource.

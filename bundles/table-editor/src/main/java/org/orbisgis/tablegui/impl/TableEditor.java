@@ -223,7 +223,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
                 // Edition is only available if there is a primary key
                 //TODO : actions.add(new ActionAddColumn(tableEditableElement));
-                actions.add(new ActionAddRow(tableEditableElement));
+                actions.add(new ActionAddRow(tableEditableElement, this, wpsService));
                 actions.add(new ActionRemoveRow(tableEditableElement, this, wpsService));
                 actions.add(new ActionUndo(tableEditableElement, undoManager));
                 actions.add(new ActionRedo(tableEditableElement, undoManager));

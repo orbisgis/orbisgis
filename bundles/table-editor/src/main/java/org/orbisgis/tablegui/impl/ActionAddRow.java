@@ -29,13 +29,18 @@
 
 package org.orbisgis.tablegui.impl;
 
-import org.orbisgis.corejdbc.ReversibleRowSet;
+import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.editorjdbc.AskValidRow;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
+import org.orbisgis.wpsservice.WpsService;
+import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
+import org.orbisgis.wpsservice.model.DataStore;
+import org.orbisgis.wpsservice.model.Input;
+import org.orbisgis.wpsservice.model.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -43,25 +48,33 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
 import javax.swing.AbstractAction;
+import javax.swing.event.TableModelEvent;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.util.concurrent.locks.Lock;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Add a row in the DataSource.
  * @author Nicolas Fortin
  */
 public class ActionAddRow extends AbstractAction {
+    private static final String PROCESS_TITLE = "InsertInto";
+    private static final String INPUT_TABLE = "Table";
+    private static final String INPUT_VALUES = "Values";
     private final TableEditableElement editable;
     private static final I18n I18N = I18nFactory.getI18n(ActionAddRow.class);
-    private final Logger logger = LoggerFactory.getLogger(ActionAddRow.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(ActionAddRow.class);
+    private TableEditor tableEditor;
+    private WpsService wpsService;
 
     /**
      * Constructor
      * @param editable Table editable instance
      */
-    public ActionAddRow(TableEditableElement editable) {
+    public ActionAddRow(TableEditableElement editable, TableEditor tableEditor, WpsService wpsService) {
         super(I18N.tr("Add a row"), TableEditorIcon.getIcon("add_row"));
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
         putValue(ActionTools.MENU_ID, TableEditorActions.A_ADD_ROW);
@@ -69,6 +82,8 @@ public class ActionAddRow extends AbstractAction {
         updateEnabledState();
         editable.addPropertyChangeListener(TableEditableElement.PROP_EDITING,
                 EventHandler.create(PropertyChangeListener.class, this, "updateEnabledState"));
+        this.tableEditor = tableEditor;
+        this.wpsService = wpsService;
     }
 
     /**
@@ -84,20 +99,54 @@ public class ActionAddRow extends AbstractAction {
             try {
                 AskValidRow rowInput = new AskValidRow(I18N.tr("New row"), source, editable.getTableReference());
                 if(UIFactory.showDialog(rowInput)) {
-                    Object[] newRow = rowInput.getRow();
-                    ReversibleRowSet rowSet = editable.getRowSet();
-                    Lock lock = rowSet.getReadLock();
-                    if(lock.tryLock()) {
-                        rowSet.moveToInsertRow();
-                        for(int column = 0; column < newRow.length; column++) {
-                            rowSet.updateObject(column + 1, newRow[column]);
+                    if(wpsService != null){
+                        Process p = null;
+                        for(ProcessIdentifier pi : wpsService.getCapabilities()){
+                            if(pi.getProcess().getTitle().equals(PROCESS_TITLE)){
+                                p = pi.getProcess();
+                                break;
+                            }
                         }
-                        rowSet.insertRow();
-                        rowSet.moveToCurrentRow();
+                        if(p != null){
+                            //Get the values formatted string
+                            String values = "";
+                            boolean flag = false;
+                            Object[] newRow = rowInput.getRow();
+                            for(Object o : newRow){
+                                if(flag){
+                                    values += ",";
+                                }
+                                if(o != null){
+                                    values += o.toString();
+                                }
+                                flag = true;
+                            }
+                            //Build the dataMap
+                            Map<URI, Object> dataMap = new HashMap<>();
+                            for (Input input : p.getInput()) {
+                                if (input.getTitle().equals(INPUT_TABLE)) {
+                                    URI uri = DataStore.buildUriDataStore(DataStore.DATASTORE_TYPE_GEOCATALOG,
+                                            editable.getTableReference(),
+                                            editable.getTableReference());
+                                    dataMap.put(input.getIdentifier(), uri);
+                                }
+                                if (input.getTitle().equals(INPUT_VALUES)) {
+                                    dataMap.put(input.getIdentifier(), values);
+                                }
+                            }
+                            //Run the service
+                            wpsService.execute(p, dataMap, null);
+                            //Indicates to the tableEditor that a change occurred.
+                            tableEditor.tableChange(new TableEditEvent(editable.getTableReference(),
+                                    TableModelEvent.ALL_COLUMNS,
+                                    null,
+                                    null,
+                                    TableModelEvent.UPDATE));
+                        }
                     }
                 }
             } catch (Exception ex) {
-                logger.error(ex.getLocalizedMessage(),ex);
+                LOGGER.error(ex.getLocalizedMessage(),ex);
             }
         }
     }

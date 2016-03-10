@@ -41,15 +41,18 @@ def processing() {
     String[] rowArray = values.split(";")
     for(String row : rowArray){
         String query = queryBase
-        String[] valueArray = row.split(",")
+        String[] valueArray = row.split(",", -1)
         //Retrieve the values to insert
         String formatedValues = ""
         for(String value : valueArray){
-            if(formatedValues.isEmpty()){
-                formatedValues += "'" + value + "'";
+            if(!formatedValues.isEmpty()){
+                formatedValues += ",";
+            }
+            if(value.isEmpty()){
+                formatedValues += "NULL"
             }
             else{
-                formatedValues += ",'" + value + "'";
+                formatedValues += "'" + value + "'";
             }
         }
         query += formatedValues + ");"
