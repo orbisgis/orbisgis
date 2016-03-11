@@ -17,7 +17,7 @@ import org.orbisgis.wpsservice.model.LiteralData
 /********************/
 
 /**
- * This process insert the given value in the given table.
+ * This process insert the given values in the given table.
  * The user has to specify (mandatory):
  *  - The input table (DataStore)
  *  - The values to insert (LiteralData)
@@ -87,13 +87,13 @@ String tableName
         minOccurs = 0)
 String fields
 
-/** This DataStore is the output data source for the buffer. */
+/** Coma separated values to insert. */
 @LiteralDataInput(
         title="Values",
         resume="The input values. The values should be separated by a ',' and rows by ';'")
 String values
 
-/** This DataStore is the output data source for the buffer. */
+/** String output of the process. */
 @LiteralDataOutput(
         title="Output message",
         resume="The output message")

@@ -61,8 +61,11 @@ import java.util.Map;
  * @author Nicolas Fortin
  */
 public class ActionAddRow extends AbstractAction {
+    /** Title of the wps process to use. */
     private static final String PROCESS_TITLE = "InsertInto";
+    /** Name of the process input containing the table name. */
     private static final String INPUT_TABLE = "Table";
+    /** Name of the process input containing the values to add. */
     private static final String INPUT_VALUES = "Values";
     private final TableEditableElement editable;
     private static final I18n I18N = I18nFactory.getI18n(ActionAddRow.class);
@@ -100,6 +103,7 @@ public class ActionAddRow extends AbstractAction {
                 AskValidRow rowInput = new AskValidRow(I18N.tr("New row"), source, editable.getTableReference());
                 if(UIFactory.showDialog(rowInput)) {
                     if(wpsService != null){
+                        //Firs try to retrieve the process corresponding to the process title.
                         Process p = null;
                         for(ProcessIdentifier pi : wpsService.getCapabilities()){
                             if(pi.getProcess().getTitle().equals(PROCESS_TITLE)){
@@ -108,20 +112,22 @@ public class ActionAddRow extends AbstractAction {
                             }
                         }
                         if(p != null){
-                            //Get the values formatted string
+                            //Get the string containing the values to add separated by a coma.
                             String values = "";
-                            boolean flag = false;
+                            boolean isEmptyString = true;
                             Object[] newRow = rowInput.getRow();
                             for(Object o : newRow){
-                                if(flag){
+                                if(!isEmptyString){
                                     values += ",";
                                 }
+                                //If the value is null, put an empty string,
+                                // the process will convert it into a null value.
                                 if(o != null){
                                     values += o.toString();
                                 }
-                                flag = true;
+                                isEmptyString = false;
                             }
-                            //Build the dataMap
+                            //Build the dataMap containing the process input
                             Map<URI, Object> dataMap = new HashMap<>();
                             for (Input input : p.getInput()) {
                                 if (input.getTitle().equals(INPUT_TABLE)) {
@@ -142,6 +148,9 @@ public class ActionAddRow extends AbstractAction {
                                     null,
                                     null,
                                     TableModelEvent.UPDATE));
+                        }
+                        else{
+                            LOGGER.error(I18N.tr("Unable to get the process '{0}' from the WpsService.", PROCESS_TITLE));
                         }
                     }
                 }

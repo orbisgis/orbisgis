@@ -65,9 +65,13 @@ import java.util.SortedSet;
  * @author Sylvain PALOMINOS
  */
 public class ActionRemoveRow extends AbstractAction {
+    /** Title of the wps process to use. */
     private static final String PROCESS_TITLE = "RemoveRow";
+    /** Name of the process input containing the table name. */
     private static final String INPUT_TABLE = "Table";
+    /** Name of the process input containing the primary key field name. */
     private static final String INPUT_PK_FIELD = "PKField";
+    /** Name of the process input containing the primary key array. */
     private static final String INPUT_PK_ARRAY = "PKArray";
     private final TableEditableElement editable;
     private static final I18n I18N = I18nFactory.getI18n(ActionRemoveRow.class);
@@ -159,6 +163,9 @@ public class ActionRemoveRow extends AbstractAction {
                         } catch (SQLException e) {
                             LOGGER.error(I18N.tr("Unable to get the connection to remove rows.\n")+e.getMessage());
                         }
+                    }
+                    else{
+                        LOGGER.error(I18N.tr("Unable to get the process '{0}' from the WpsService.", PROCESS_TITLE));
                     }
                 }
             }
