@@ -36,8 +36,24 @@ public interface DataProcessing {
 
     void setLocalWpsService(LocalWpsService wpsService);
     Class<? extends DataDescription> getDataClass();
+
+    /**
+     * Preprocess the input/output to adapt it to the process (i.e. convert a File into a table name).
+     * @param inputOrOutput The DescriptionType representing the input or output.
+     * @param dataMap DataMap containing the input or output values.
+     * @param pel ProcessExecutionListener to log the preprocessing (can be null).
+     * @return Return a stash map containing information for post processing.
+     */
     Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap,
                                     ProcessExecutionListener pel);
+
+    /**
+     * Postprocess the input/output to adapt it to the process (i.e. convert a File into a table name).
+     * @param inputOrOutput The DescriptionType representing the input or output.
+     * @param dataMap DataMap containing the input or output values.
+     * @param stash DataMap containing the information coming from the preprocessing.
+     * @param pel ProcessExecutionListener to log the postprocessing (can be null).
+     */
     void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
                          ProcessExecutionListener pel);
 }

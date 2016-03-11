@@ -32,8 +32,10 @@ public class LiteralDataProcessing implements DataProcessing {
     @Override
     public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash, ProcessExecutionListener pel) {
         if(inputOrOutput instanceof Output) {
-            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Literal output : '" +
-                    dataMap.get(inputOrOutput.getIdentifier()) + "'");
+            if(pel != null) {
+                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Literal output : '" +
+                        dataMap.get(inputOrOutput.getIdentifier()) + "'");
+            }
         }
     }
 }

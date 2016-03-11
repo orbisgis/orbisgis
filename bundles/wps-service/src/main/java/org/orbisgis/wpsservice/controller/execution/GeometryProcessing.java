@@ -6,6 +6,8 @@ import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -15,6 +17,9 @@ import java.util.Map;
  * @author Sylvain PALOMINOS
  */
 public class GeometryProcessing implements DataProcessing {
+
+    /**Logger */
+    private Logger LOGGER = LoggerFactory.getLogger(GeometryProcessing.class);
 
     private LocalWpsService wpsService;
 
@@ -44,8 +49,13 @@ public class GeometryProcessing implements DataProcessing {
                 try {
                     geometry = new WKTReader().read(str);
                 } catch (ParseException e) {
-                    pel.appendLog(ProcessExecutionListener.LogType.ERROR,"Unable to parse the string '" + str +
-                            "' into Geometry.");
+                    if(pel != null) {
+                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, "Unable to parse the string '" + str +
+                                "' into Geometry.");
+                    }
+                    else{
+                        LOGGER.error("Unable to parse the string '" + str + "' into Geometry.");
+                    }
                     dataMap.put(inputOrOutput.getIdentifier(), null);
                     return null;
                 }
@@ -58,8 +68,14 @@ public class GeometryProcessing implements DataProcessing {
                     }
                 }
                 if(!flag){
-                    pel.appendLog(ProcessExecutionListener.LogType.ERROR,"The geometry '"+input.getTitle()+
-                            "' type is not accepted ('"+geometry.getGeometryType()+"' not allowed).");
+                    if(pel != null) {
+                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, "The geometry '" + input.getTitle() +
+                                "' type is not accepted ('" + geometry.getGeometryType() + "' not allowed).");
+                    }
+                    else{
+                        LOGGER.error("The geometry '" + input.getTitle() + "' type is not accepted ('" +
+                                geometry.getGeometryType() + "' not allowed).");
+                    }
                     dataMap.put(inputOrOutput.getIdentifier(), null);
                     return null;
                 }
@@ -71,16 +87,29 @@ public class GeometryProcessing implements DataProcessing {
                     }
                 }
                 if(!flag){
-                    pel.appendLog(ProcessExecutionListener.LogType.ERROR,"The geometry '"+input.getTitle()+
-                            "' type is not accepted ('"+geometry.getGeometryType()+"' not allowed).");
+                    if(pel != null) {
+                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, "The geometry '" + input.getTitle() +
+                                "' type is not accepted ('" + geometry.getGeometryType() + "' not allowed).");
+                    }
+                    else{
+                        LOGGER.error("The geometry '" + input.getTitle() + "' type is not accepted ('" +
+                                geometry.getGeometryType() + "' not allowed).");
+                    }
                     dataMap.put(inputOrOutput.getIdentifier(), null);
                     return null;
                 }
                 //Check the geometry dimension
                 if((geometryData.getDimension() == 2 && !Double.isNaN(geometry.getCoordinate().z)) ||
                         (geometryData.getDimension() == 3 && Double.isNaN(geometry.getCoordinate().z))){
-                    pel.appendLog(ProcessExecutionListener.LogType.ERROR,"The geometry '"+input.getTitle()+
-                            "' has not a wrong dimension (should be '"+geometryData.getDimension()+"').");
+                    if(pel != null) {
+                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, "The geometry '" + input.getTitle() +
+                                "' has not a wrong dimension (should be '" + geometryData.getDimension() + "').");
+                    }
+                    else{
+
+                        LOGGER.error("The geometry '" + input.getTitle() + "' has not a wrong dimension (should be '" +
+                                geometryData.getDimension() + "').");
+                    }
                     dataMap.put(inputOrOutput.getIdentifier(), null);
                     return null;
                 }
@@ -118,8 +147,14 @@ public class GeometryProcessing implements DataProcessing {
                         }
                     }
                     if (!flag) {
-                        pel.appendLog(ProcessExecutionListener.LogType.ERROR,"The geometry '" + output.getTitle() +
-                                "' type is not accepted ('" + geometry.getGeometryType() + "' not allowed).");
+                        if(pel != null) {
+                            pel.appendLog(ProcessExecutionListener.LogType.ERROR, "The geometry '" + output.getTitle() +
+                                    "' type is not accepted ('" + geometry.getGeometryType() + "' not allowed).");
+                        }
+                        else{
+                            LOGGER.error("The geometry '" + output.getTitle() + "' type is not accepted ('" +
+                                    geometry.getGeometryType() + "' not allowed).");
+                        }
                         dataMap.put(inputOrOutput.getIdentifier(), null);
                         return;
                     }
@@ -131,23 +166,36 @@ public class GeometryProcessing implements DataProcessing {
                         }
                     }
                     if (!flag) {
-                        pel.appendLog(ProcessExecutionListener.LogType.ERROR,"The geometry '" + output.getTitle() +
-                                "' type is not accepted ('" + geometry.getGeometryType() + "' not allowed).");
+                        if(pel != null) {
+                            pel.appendLog(ProcessExecutionListener.LogType.ERROR, "The geometry '" + output.getTitle() +
+                                    "' type is not accepted ('" + geometry.getGeometryType() + "' not allowed).");
+                        }
+                        else{
+                            LOGGER.error("The geometry '" + output.getTitle() + "' type is not accepted ('" +
+                                    geometry.getGeometryType() + "' not allowed).");
+                        }
                         dataMap.put(inputOrOutput.getIdentifier(), null);
                         return;
                     }
                     //Read the string to retrieve the Geometry
                     String wkt = new WKTWriter(geometryData.getDimension()).write(geometry);
                     if(wkt == null || wkt.isEmpty()){
-                        pel.appendLog(ProcessExecutionListener.LogType.ERROR,"Unable to read the geometry '" +
-                                output.getTitle() + "'.");
+                        if(pel != null) {
+                            pel.appendLog(ProcessExecutionListener.LogType.ERROR, "Unable to read the geometry '" +
+                                    output.getTitle() + "'.");
+                        }
+                        else{
+                            LOGGER.error("Unable to read the geometry '" + output.getTitle() + "'.");
+                        }
                         dataMap.put(inputOrOutput.getIdentifier(), null);
                         return;
                     }
                     dataMap.put(inputOrOutput.getIdentifier(), wkt);
 
-                    pel.appendLog(ProcessExecutionListener.LogType.INFO,"Output geometry '" +
-                            output.getTitle() + "' is '"+wkt+"'.");
+                    if(pel != null) {
+                        pel.appendLog(ProcessExecutionListener.LogType.INFO, "Output geometry '" +
+                                output.getTitle() + "' is '" + wkt + "'.");
+                    }
                 }
             }
         }

@@ -17,5 +17,13 @@ public interface WpsService {
 
     Process describeProcess(URI uri);
 
+    /**
+     * Execute the given process with the given dataMap.
+     * The process results will be put into the dataMap.
+     * The process execution will be log in the processExecutionListener (which ca be null).
+     * @param process Process to execute.
+     * @param dataMap DataMap containing all the data (input and output)
+     * @param pel Process executionListener used to log the process execution (can be null).
+     */
     void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel);
 }

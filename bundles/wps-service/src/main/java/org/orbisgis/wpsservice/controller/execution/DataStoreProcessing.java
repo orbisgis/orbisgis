@@ -22,6 +22,8 @@ package org.orbisgis.wpsservice.controller.execution;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener.LogType;
 import org.orbisgis.wpsservice.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -31,6 +33,9 @@ import java.util.Map;
  * @author Sylvain PALOMINOS
  */
 public class DataStoreProcessing implements DataProcessing {
+
+    /**Logger */
+    private Logger LOGGER = LoggerFactory.getLogger(DataStoreProcessing.class);
 
     private LocalWpsService wpsService;
 
@@ -113,14 +118,18 @@ public class DataStoreProcessing implements DataProcessing {
                 boolean keep = path.endsWith("$");
                 path = path.replace("$", "");
                 wpsService.saveURI(URI.create(dataStoreURI.getScheme()+":"+path), dataMap.get(uri).toString());
-                pel.appendLog(LogType.INFO, "Table '"+dataMap.get(uri).toString()+"' successfully exported into '"+
-                        path+"'.");
+                if(pel != null) {
+                    pel.appendLog(LogType.INFO, "Table '" + dataMap.get(uri).toString() + "' successfully exported into '" +
+                            path + "'.");
+                }
                 if(!keep){
                     wpsService.removeTempTable(dataMap.get(uri).toString());
                 }
             }
             else if(dataStoreURI.getScheme().equals("geocatalog")){
-                pel.appendLog(LogType.INFO, "Table '"+dataMap.get(uri).toString()+"' successfully created.");
+                if(pel != null) {
+                    pel.appendLog(LogType.INFO, "Table '" + dataMap.get(uri).toString() + "' successfully created.");
+                }
             }
         }
     }
