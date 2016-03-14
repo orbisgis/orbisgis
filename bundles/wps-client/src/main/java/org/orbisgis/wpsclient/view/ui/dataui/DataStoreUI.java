@@ -29,7 +29,6 @@ import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.sif.JPanelListRenderer;
-import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
@@ -45,9 +44,8 @@ import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * DataUI implementation for DataStore.
@@ -293,44 +291,48 @@ public class DataStoreUI implements DataUI{
     }
 
     /**
-     * Populate the given comboBox with the table name list.
-     * Also display the tables information like if it is spatial or not, the SRID, the dimension ...
+     * Populate the given comboBox with the table map get from the LocalWpsService (table name as key, if it is
+     * spatial or not as value).
+     * Once populated, the combo box will display an icon regarding if the table is spatial or not and the table name.
      * @param geocatalogComboBox The combo box to populate.
-     * @param isSpatialDataStore True if the DataSTore is spatial, false otherwise.
+     * @param isSpatialDataStore True if the DataStore is spatial, false otherwise.
+     * @param isOutput True if the DataStore is an output, false otherwise.
      */
     private void populateWithTable(JComboBox<ContainerItem<Object>> geocatalogComboBox, boolean isSpatialDataStore,
-                                   boolean isOptional){
-        //Retrieve the table name list
-        List<String> tableNameList;
+                                   boolean isOutput){
+        //Retrieve the table map
+        Map<String, Boolean> tableMap;
         if(isSpatialDataStore) {
-            tableNameList = wpsClient.getWpsService().getGeocatalogTableList(true);
+            tableMap = wpsClient.getWpsService().getGeocatalogTableList(true);
         }
         else {
-            tableNameList = wpsClient.getWpsService().getGeocatalogTableList(false);
+            tableMap = wpsClient.getWpsService().getGeocatalogTableList(false);
         }
-        //If there is tables, retrieve their information to format the display in the comboBox
+        //If there is tables, build all the ContainerItem containing the JPanel representing a table
         ContainerItem<Object> selectedItem = (ContainerItem<Object>)geocatalogComboBox.getSelectedItem();
         geocatalogComboBox.removeAllItems();
-        if(tableNameList != null && !tableNameList.isEmpty()){
-            for (String tableName : tableNameList) {
-                //Retrieve the table information
-                Map<String, Object> informationMap = wpsClient.getWpsService().getTableInformation(tableName);
-                //If there is information, use it to improve the table display in the comboBox
+        List<ContainerItem<Object>> containerItemList = new ArrayList<>();
+        if(tableMap != null && !tableMap.isEmpty()){
+            for (Map.Entry<String, Boolean> entry : tableMap.entrySet()) {
                 JPanel tablePanel = new JPanel(new MigLayout("ins 0, gap 0"));
-                if (!informationMap.isEmpty()) {
-                    //Sets the spatial icon
-                    boolean isSpatial = (boolean) informationMap.get(LocalWpsService.TABLE_IS_SPATIAL);
-                    if (isSpatial) {
-                        tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.GEO_FILE)));
-                    } else {
-                        tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.FLAT_FILE)));
-                    }
-                    tablePanel.add(new JLabel(tableName));
+                //Sets the spatial icon regarding the entry value
+                if (entry.getValue()) {
+                    tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.GEO_FILE)));
                 } else {
-                    tablePanel.add(new JLabel(tableName));
+                    tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.FLAT_FILE)));
                 }
-                geocatalogComboBox.addItem(new ContainerItem<Object>(tablePanel, tableName));
+                //Adds the table label contained in the entry key
+                tablePanel.add(new JLabel(entry.getKey()));
+                //Save the ContainerItem in the list
+                containerItemList.add(new ContainerItem<Object>(tablePanel, entry.getKey()));
             }
+            //Sort the ContainerItem by alphabetical order
+            Collections.sort(containerItemList);
+            //Adds all the ContainerItem to the comboBox
+            for(ContainerItem<Object> containerItem : containerItemList){
+                geocatalogComboBox.addItem(containerItem);
+            }
+            //If an item was selected, try to reselect it
             if(selectedItem != null) {
                 for (int i = 0; i < geocatalogComboBox.getItemCount(); i++) {
                     if (geocatalogComboBox.getItemAt(i).getLabel().equals(selectedItem.getLabel())) {
@@ -340,7 +342,8 @@ public class DataStoreUI implements DataUI{
                 }
             }
         }
-        if(isOptional){
+        //If it is an output, adds the newTable item
+        if(isOutput){
             geocatalogComboBox.insertItemAt(new ContainerItem<Object>("New_table", "New_table"), 0);
             geocatalogComboBox.setSelectedIndex(0);
         }

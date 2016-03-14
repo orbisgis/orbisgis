@@ -29,6 +29,7 @@
 
 package org.orbisgis.wpsservice;
 
+import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.DataType;
 
@@ -45,6 +46,8 @@ public interface LocalWpsService extends WpsService {
     String TABLE_IS_SPATIAL = "TABLE_IS_SPATIAL";
     String TABLE_DIMENSION = "TABLE_DIMENSION";
     String GEOMETRY_TYPE = "GEOMETRY_TYPE";
+    String TABLE_LOCATION = "TABLE_LOCATION";
+    String TABLE_LABEL = "TABLE_LABEL";
 
     void addLocalSource(URI uri, String iconName, boolean isDefaultScript);
 
@@ -95,18 +98,11 @@ public interface LocalWpsService extends WpsService {
     void removeTempTable(String tableName);
 
     /**
-     * Returns the list of sql table from OrbisGIS.
+     * Returns a map containing the sql table from OrbisGIS as key and if it is spatial or not as value.
      * @param onlySpatial If true, returns only the spatial table.
-     * @return The list of geo sql table from OrbisGIS.
+     * @return A map containing the sql table from OrbisGIS as key and if it is spatial or not as value.
      */
-    List<String> getGeocatalogTableList(boolean onlySpatial);
-
-    /**
-     * Returns a map containing table information (table type, SRID, ...)
-     * @param tableName Name of the table.
-     * @return Map containing the table information.
-     */
-    Map<String, Object> getTableInformation(String tableName);
+    Map<String, Boolean> getGeocatalogTableList(boolean onlySpatial);
 
     /**
      * Returns a map containing field information (table type, SRID, ...)
