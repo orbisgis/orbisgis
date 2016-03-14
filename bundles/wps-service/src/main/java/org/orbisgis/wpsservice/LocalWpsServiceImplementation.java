@@ -790,19 +790,4 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             }
         }
     }
-
-    @Override
-    public ReadRowSet getTableReadRowSet(String tableName){
-        try(Connection connection = dataManager.getDataSource().getConnection()) {
-            tableName = TableLocation.parse(tableName, isH2).getTable();
-            String pkName = MetaData.getPkName(connection, tableName, true);
-            ReadRowSet readRowSet = dataManager.createReadRowSet();
-            readRowSet.initialize(tableName, pkName, new NullProgressMonitor());
-            return readRowSet;
-        } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to initialize a ReadRowSet with " +
-                    "the table '"+tableName+"'.\n"+e.getMessage());
-        }
-        return null;
-    }
 }

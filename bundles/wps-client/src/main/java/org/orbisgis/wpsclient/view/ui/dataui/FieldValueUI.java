@@ -194,7 +194,6 @@ public class FieldValueUI implements DataUI{
         @Override
         protected Object doInBackground() throws Exception {
             WaitLayerUI layerUI = (WaitLayerUI)list.getClientProperty(LAYERUI_PROPERTY);
-            layerUI.start();
             FieldValue fieldValue = (FieldValue)list.getClientProperty(FIELD_VALUE_PROPERTY);
             HashMap<URI, Object> dataMap = (HashMap<URI, Object>)list.getClientProperty(DATA_MAP_PROPERTY);
             boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
@@ -214,7 +213,6 @@ public class FieldValueUI implements DataUI{
                         fieldName = split[2];
                     }
                     else{
-                        layerUI.stop();
                         return null;
                     }
                 }
@@ -223,6 +221,7 @@ public class FieldValueUI implements DataUI{
                     fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
                 }
                 if(tableName != null && fieldName != null) {
+                    layerUI.start();
                     //First retrieve the good field name with the good case.
                     List<String> fieldList = wpsClient.getWpsService().getTableFieldList(tableName,
                             new ArrayList<DataType>(), new ArrayList<DataType>());
@@ -247,6 +246,7 @@ public class FieldValueUI implements DataUI{
                     if (!isOptional && list.getModel().getSize() > 0) {
                         list.setSelectedIndex(0);
                     }
+                    layerUI.stop();
                 }
             }
 
@@ -275,7 +275,6 @@ public class FieldValueUI implements DataUI{
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
             }
-            layerUI.stop();
             return null;
         }
     }

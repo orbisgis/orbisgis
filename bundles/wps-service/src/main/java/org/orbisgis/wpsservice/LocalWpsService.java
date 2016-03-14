@@ -154,11 +154,4 @@ public interface LocalWpsService extends WpsService {
      * @param uri URI of the process to cancel.
      */
     void cancelProcess(URI uri);
-
-    /**
-     * Returns a ReadRowSet initialized with the given table.
-     * @param tableName Table name to use in the ReadRowSet
-     * @return The ReadRowSet for reading the given table.
-     */
-    ReadRowSet getTableReadRowSet(String tableName);
 }
