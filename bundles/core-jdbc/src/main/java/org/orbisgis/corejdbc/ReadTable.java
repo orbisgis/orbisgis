@@ -302,7 +302,7 @@ public class ReadTable {
             sb.append(func.name());
             sb.append("(");
             sb.append(columnName);
-            sb.append("::double) ");
+            sb.append("::double precision) ");
             sb.append(func.name());
         }
         try(Statement st = connection.createStatement()) {

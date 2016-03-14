@@ -283,16 +283,21 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){
-
-        pel.setStartTime(System.currentTimeMillis());
+        if(pel != null) {
+            pel.setStartTime(System.currentTimeMillis());
+        }
         Map<URI, Object> stash = new HashMap<>();
         //Catch all the Exception that can be thrown during the script execution.
         try {
             //Print in the log the process execution start
-            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Start the process");
+            if(pel != null) {
+                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Start the process");
+            }
 
             //Pre-process the data
-            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Pre-processing");
+            if(pel != null) {
+                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Pre-processing");
+            }
             for(DescriptionType inputOrOutput : process.getOutput()){
                 stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
             }
@@ -301,11 +306,15 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             }
 
             //Execute the process and retrieve the groovy object.
-            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Execute the script");
+            if(pel != null) {
+                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Execute the script");
+            }
             processManager.executeProcess(process, dataMap);
 
             //Post-process the data
-            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
+            if(pel != null) {
+                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
+            }
             for(DescriptionType inputOrOutput : process.getOutput()){
                 dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
             }
@@ -314,15 +323,23 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             }
 
             //Print in the log the process execution end
-            pel.appendLog(ProcessExecutionListener.LogType.INFO, "End of the process");
-            pel.setProcessState(ProcessExecutionListener.ProcessState.COMPLETED);
+            if(pel != null) {
+                pel.appendLog(ProcessExecutionListener.LogType.INFO, "End of the process");
+                pel.setProcessState(ProcessExecutionListener.ProcessState.COMPLETED);
+            }
         }
         catch (Exception e) {
-            //Print in the log the process execution error
-            pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
-            pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
-            //Post-process the data
-            pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
+            if(pel != null) {
+                //Print in the log the process execution error
+                pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
+                //Post-process the data
+                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
+                pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
+            }
+            else{
+                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Error on execution the WPS " +
+                        "process '"+process.getTitle()+"'.\n"+e.getMessage());
+            }
             for(DescriptionType inputOrOutput : process.getInput()){
                 dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
             }
