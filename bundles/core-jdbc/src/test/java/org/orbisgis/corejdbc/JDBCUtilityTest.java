@@ -110,19 +110,19 @@ public class JDBCUtilityTest {
                 // Test ascending
                 Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", true, new NullProgressMonitor());
                 Iterator<Integer> itTest = sortedRowId.iterator();
-                assertEquals(5, itTest.next().intValue());
-                assertEquals(4, itTest.next().intValue());
+                assertEquals(16, itTest.next().intValue());
+                assertEquals(8, itTest.next().intValue());
                 assertEquals(2, itTest.next().intValue());
-                assertEquals(3, itTest.next().intValue());
+                assertEquals(4, itTest.next().intValue());
                 assertEquals(1, itTest.next().intValue());
                 // Test descending
                 sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", false, new NullProgressMonitor());
                 itTest = sortedRowId.iterator();
                 assertEquals(1, itTest.next().intValue());
-                assertEquals(3, itTest.next().intValue());
-                assertEquals(2, itTest.next().intValue());
                 assertEquals(4, itTest.next().intValue());
-                assertEquals(5, itTest.next().intValue());
+                assertEquals(2, itTest.next().intValue());
+                assertEquals(8, itTest.next().intValue());
+                assertEquals(16, itTest.next().intValue());
             } finally {
                 st.execute("DROP TABLE inttable IF EXISTS");
             }
@@ -139,18 +139,18 @@ public class JDBCUtilityTest {
             Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", true, new NullProgressMonitor());
             Iterator<Integer> itTest = sortedRowId.iterator();
             assertEquals(2, itTest.next().intValue());
-            assertEquals(5, itTest.next().intValue());
+            assertEquals(16, itTest.next().intValue());
+            assertEquals(8, itTest.next().intValue());
             assertEquals(4, itTest.next().intValue());
-            assertEquals(3, itTest.next().intValue());
             assertEquals(1, itTest.next().intValue());
             // Test descending
             sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", false, new NullProgressMonitor());
             itTest = sortedRowId.iterator();
             assertEquals(1, itTest.next().intValue());
-            assertEquals(3, itTest.next().intValue());
             assertEquals(4, itTest.next().intValue());
+            assertEquals(8, itTest.next().intValue());
             assertEquals(2, itTest.next().intValue());
-            assertEquals(5, itTest.next().intValue());
+            assertEquals(16, itTest.next().intValue());
         }
     }
 
