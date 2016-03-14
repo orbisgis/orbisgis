@@ -87,7 +87,7 @@ public class ReadTable {
             try {
                 int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, tableLocation.toString());
                 if (pkIndex > 0) {
-                    ProgressMonitor jobProgress = progressMonitor.startTask(2);
+                    ProgressMonitor jobProgress = progressMonitor.startTask(1);
                     // Do not cache values
                     // Use SQL sort
                     DatabaseMetaData meta = connection.getMetaData();
@@ -96,22 +96,11 @@ public class ReadTable {
                     if(!ascending) {
                         desc = " DESC";
                     }
-                    // Create a map of Row Id to Pk Value
-                    ProgressMonitor cacheProgress = jobProgress.startTask(I18N.tr("Cache primary key values"), rowCount);
-                    Map<Long, Integer> pkValueToRowId = new HashMap<>(rowCount);
-                    int rowId=0;
-                    try(ResultSet rs = st.executeQuery("select "+pkFieldName+" from "+table)) {
-                        while(rs.next()) {
-                            rowId++;
-                            pkValueToRowId.put(rs.getLong(1), rowId);
-                            cacheProgress.endTask();
-                        }
-                    }
                     // Read ordered pk values
                     ProgressMonitor sortProgress = jobProgress.startTask(I18N.tr("Read sorted keys"), rowCount);
                     try(ResultSet rs = st.executeQuery("select "+pkFieldName+" from "+table+" ORDER BY "+columnName+desc)) {
                         while(rs.next()) {
-                            columnValues.add(pkValueToRowId.get(rs.getLong(1)));
+                            columnValues.add((int)rs.getLong(1));
                             sortProgress.endTask();
                         }
                     }
