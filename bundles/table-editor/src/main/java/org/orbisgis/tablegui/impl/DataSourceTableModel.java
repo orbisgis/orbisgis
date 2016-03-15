@@ -65,7 +65,7 @@ public class DataSourceTableModel extends AbstractTableModel {
                 this.element = element;
         }
 
-        public RowSet getRowSet() throws SQLException {
+        public ReversibleRowSet getRowSet() throws SQLException {
             try {
                 return element.getRowSet();
             } catch (EditableElementException ex) {
