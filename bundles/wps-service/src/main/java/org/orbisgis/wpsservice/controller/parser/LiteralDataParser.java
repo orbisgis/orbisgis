@@ -43,7 +43,7 @@ public class LiteralDataParser implements Parser {
     }
 
     @Override
-    public Input parseInput(Field f, Object defaultValue, String processId) {
+    public Input parseInput(Field f, Object defaultValue, URI processId) {
         LiteralData data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
 
         try {
@@ -119,7 +119,7 @@ public class LiteralDataParser implements Parser {
     }
 
     @Override
-    public Output parseOutput(Field f, String processId) {
+    public Output parseOutput(Field f, URI processId) {
         DataDescription data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
 
         try {

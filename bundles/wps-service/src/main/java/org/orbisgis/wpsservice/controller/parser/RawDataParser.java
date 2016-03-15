@@ -46,7 +46,7 @@ public class RawDataParser implements Parser {
     }
 
     @Override
-    public Input parseInput(Field f, Object defaultValue, String processId) {
+    public Input parseInput(Field f, Object defaultValue, URI processId) {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
         RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class), format);
@@ -69,7 +69,7 @@ public class RawDataParser implements Parser {
     }
 
     @Override
-    public Output parseOutput(Field f, String processId) {
+    public Output parseOutput(Field f, URI processId) {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
         RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class), format);

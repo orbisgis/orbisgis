@@ -111,7 +111,7 @@ public class ParserController {
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                             Input input = parser.parseInput(f, defaultValue, process.getAbsolutePath());
+                             Input input = parser.parseInput(f, defaultValue, process.toURI());
                             if(input.getInputs() != null){
                                 for(Input in : input.getInputs()){
                                     inputList.add(in);
@@ -124,7 +124,7 @@ public class ParserController {
                         }
                     }
                     if(!parsed){
-                        inputList.add(defaultParser.parseInput(f, defaultValue, process.getAbsolutePath()));
+                        inputList.add(defaultParser.parseInput(f, defaultValue, process.toURI()));
                     }
                 }
                 if(a instanceof OutputAttribute){
@@ -132,7 +132,7 @@ public class ParserController {
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                            Output output = parser.parseOutput(f, process.getAbsolutePath());
+                            Output output = parser.parseOutput(f, process.toURI());
                             if(output.getOutputs() != null){
                                 for(Output out : output.getOutputs()){
                                     outputList.add(out);
@@ -145,7 +145,7 @@ public class ParserController {
                         }
                     }
                     if(!parsed){
-                        outputList.add(defaultParser.parseOutput(f, process.getAbsolutePath()));
+                        outputList.add(defaultParser.parseOutput(f, process.toURI()));
                     }
                 }
             }

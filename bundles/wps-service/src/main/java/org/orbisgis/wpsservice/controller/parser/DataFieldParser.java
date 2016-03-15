@@ -46,7 +46,7 @@ public class DataFieldParser implements Parser {
     }
 
     @Override
-    public Input parseInput(Field f, Object defaultValue, String processId) {
+    public Input parseInput(Field f, Object defaultValue, URI processId) {
         //Instantiate the DataField object
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
@@ -71,7 +71,7 @@ public class DataFieldParser implements Parser {
     }
 
     @Override
-    public Output parseOutput(Field f, String processId) {
+    public Output parseOutput(Field f, URI processId) {
         //Instantiate the DataField object
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
