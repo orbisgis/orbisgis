@@ -38,6 +38,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 import javax.sql.DataSource;
+import javax.sql.rowset.JdbcRowSet;
+import javax.sql.rowset.RowSetFactory;
+
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.JDBCUtilities;
@@ -53,6 +56,7 @@ import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.h2gis.drivers.DriverManager;
+import org.orbisgis.corejdbc.internal.ReadRowSetImpl;
 
 /**
  * @author Nicolas Fortin
@@ -77,14 +81,19 @@ public class JDBCUtilityTest {
 
     @Test
     public void sortTest() throws SQLException {
+        DataManager factory = new DataManagerImpl(dataSource);
         try(Statement st = connection.createStatement()) {
             st.execute("DROP TABLE INTTABLE IF EXISTS");
             try {
                 // Test without PK
                 st.execute("CREATE TABLE INTTABLE (\"vals\" integer)");
                 st.execute("INSERT INTO INTTABLE VALUES (20), (5), (15), (4), (1)");
+                // Create original order resultset
+                ReadRowSet readRowSet = factory.createReadRowSet();
+                readRowSet.setCommand("SELECT * FROM INTTABLE");
+                readRowSet.execute();
                 // Test ascending
-                Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", true, new NullProgressMonitor());
+                Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, readRowSet, "INTTABLE", "vals", true, new NullProgressMonitor());
                 Iterator<Integer> itTest = sortedRowId.iterator();
                 assertEquals(5, itTest.next().intValue());
                 assertEquals(4, itTest.next().intValue());
@@ -92,13 +101,14 @@ public class JDBCUtilityTest {
                 assertEquals(3, itTest.next().intValue());
                 assertEquals(1, itTest.next().intValue());
                 // Test descending
-                sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", false, new NullProgressMonitor());
+                sortedRowId = ReadTable.getSortedColumnRowIndex(connection, readRowSet, "INTTABLE", "vals", false, new NullProgressMonitor());
                 itTest = sortedRowId.iterator();
                 assertEquals(1, itTest.next().intValue());
                 assertEquals(3, itTest.next().intValue());
                 assertEquals(2, itTest.next().intValue());
                 assertEquals(4, itTest.next().intValue());
                 assertEquals(5, itTest.next().intValue());
+                readRowSet.close();
             } finally {
                 st.execute("DROP TABLE INTTABLE IF EXISTS");
             }
@@ -107,8 +117,12 @@ public class JDBCUtilityTest {
                 // Test with PK
                 st.execute("CREATE TABLE INTTABLE (id integer primary key, \"vals\" integer)");
                 st.execute("INSERT INTO INTTABLE VALUES (1,20), (2,5), (4,15), (8,4), (16,1)");
+                // Create original order resultset
+                ReadRowSet readRowSet = factory.createReadRowSet();
+                readRowSet.setCommand("SELECT * FROM INTTABLE");
+                readRowSet.execute();
                 // Test ascending
-                Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", true, new NullProgressMonitor());
+                Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, readRowSet, "INTTABLE", "vals", true, new NullProgressMonitor());
                 Iterator<Integer> itTest = sortedRowId.iterator();
                 assertEquals(5, itTest.next().intValue());
                 assertEquals(4, itTest.next().intValue());
@@ -116,13 +130,14 @@ public class JDBCUtilityTest {
                 assertEquals(3, itTest.next().intValue());
                 assertEquals(1, itTest.next().intValue());
                 // Test descending
-                sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", false, new NullProgressMonitor());
+                sortedRowId = ReadTable.getSortedColumnRowIndex(connection, readRowSet, "INTTABLE", "vals", false, new NullProgressMonitor());
                 itTest = sortedRowId.iterator();
                 assertEquals(1, itTest.next().intValue());
                 assertEquals(3, itTest.next().intValue());
                 assertEquals(2, itTest.next().intValue());
                 assertEquals(4, itTest.next().intValue());
                 assertEquals(5, itTest.next().intValue());
+                readRowSet.close();
             } finally {
                 st.execute("DROP TABLE inttable IF EXISTS");
             }
@@ -131,12 +146,17 @@ public class JDBCUtilityTest {
 
     @Test
     public void testSortNullPk() throws SQLException {
+        DataManager factory = new DataManagerImpl(dataSource);
         try(Statement st = connection.createStatement()) {
             st.execute("DROP TABLE INTTABLE IF EXISTS");
             st.execute("CREATE TABLE INTTABLE (id integer primary key, \"vals\" integer)");
             st.execute("INSERT INTO INTTABLE VALUES (1,20), (2,null), (4,15), (8,4), (16,null)");
+            // Create original order resultset
+            ReadRowSet readRowSet = factory.createReadRowSet();
+            readRowSet.setCommand("SELECT * FROM INTTABLE");
+            readRowSet.execute();
             // Test ascending
-            Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", true, new NullProgressMonitor());
+            Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection,readRowSet, "INTTABLE", "vals", true, new NullProgressMonitor());
             Iterator<Integer> itTest = sortedRowId.iterator();
             assertEquals(2, itTest.next().intValue());
             assertEquals(5, itTest.next().intValue());
@@ -144,25 +164,31 @@ public class JDBCUtilityTest {
             assertEquals(3, itTest.next().intValue());
             assertEquals(1, itTest.next().intValue());
             // Test descending
-            sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", false, new NullProgressMonitor());
+            sortedRowId = ReadTable.getSortedColumnRowIndex(connection, readRowSet, "INTTABLE", "vals", false, new NullProgressMonitor());
             itTest = sortedRowId.iterator();
             assertEquals(1, itTest.next().intValue());
             assertEquals(3, itTest.next().intValue());
             assertEquals(4, itTest.next().intValue());
             assertEquals(2, itTest.next().intValue());
             assertEquals(5, itTest.next().intValue());
+            readRowSet.close();
         }
     }
 
 
     @Test
     public void testSortNullNoPk() throws SQLException {
+        DataManager factory = new DataManagerImpl(dataSource);
         try(Statement st = connection.createStatement()) {
             st.execute("DROP TABLE INTTABLE IF EXISTS");
             st.execute("CREATE TABLE INTTABLE (\"vals\" integer)");
             st.execute("INSERT INTO INTTABLE VALUES (20), (null), (15), (4), (null)");
+            // Create original order resultset
+            ReadRowSet readRowSet = factory.createReadRowSet();
+            readRowSet.setCommand("SELECT * FROM INTTABLE");
+            readRowSet.execute();
             // Test ascending
-            Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", true, new NullProgressMonitor());
+            Collection<Integer> sortedRowId = ReadTable.getSortedColumnRowIndex(connection,readRowSet, "INTTABLE", "vals", true, new NullProgressMonitor());
             Iterator<Integer> itTest = sortedRowId.iterator();
             assertEquals(2, itTest.next().intValue());
             assertEquals(5, itTest.next().intValue());
@@ -170,13 +196,14 @@ public class JDBCUtilityTest {
             assertEquals(3, itTest.next().intValue());
             assertEquals(1, itTest.next().intValue());
             // Test descending
-            sortedRowId = ReadTable.getSortedColumnRowIndex(connection, "INTTABLE", "vals", false, new NullProgressMonitor());
+            sortedRowId = ReadTable.getSortedColumnRowIndex(connection,readRowSet, "INTTABLE", "vals", false, new NullProgressMonitor());
             itTest = sortedRowId.iterator();
             assertEquals(1, itTest.next().intValue());
             assertEquals(3, itTest.next().intValue());
             assertEquals(4, itTest.next().intValue());
             assertEquals(5, itTest.next().intValue());
             assertEquals(2, itTest.next().intValue());
+            readRowSet.close();
         }
     }
     private static void checkStats(String[] props) {

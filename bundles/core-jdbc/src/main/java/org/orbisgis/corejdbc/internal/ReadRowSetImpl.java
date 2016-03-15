@@ -701,7 +701,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         if(cachedColumnNames == null) {
             cacheColumnNames();
         }
-        Integer columnId = cachedColumnNames.get(label.toUpperCase());
+        Integer columnId = cachedColumnNames.get(label);
         if(columnId == null) {
             throw new SQLException("Column "+label+" does not exists");
         }
