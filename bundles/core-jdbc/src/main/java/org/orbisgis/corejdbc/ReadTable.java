@@ -54,6 +54,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
@@ -69,8 +70,8 @@ public class ReadTable {
     private static Logger LOGGER = LoggerFactory.getLogger(ReadTable.class);
     private static final int INSERT_BATCH_SIZE = 30;
 
-    public static Collection<Integer> getSortedColumnRowIndex(Connection connection, String table, String columnName, boolean ascending, ProgressMonitor progressMonitor) throws SQLException {
-        columnName = TableLocation.quoteIdentifier(columnName);
+    public static Collection<Integer> getSortedColumnRowIndex(Connection connection,ReadRowSet originalOrder, String table, String originalColumnName, boolean ascending, ProgressMonitor progressMonitor) throws SQLException {
+        String quoteIdentifier = TableLocation.quoteIdentifier(originalColumnName);
         TableLocation tableLocation = TableLocation.parse(table);
         Collection<Integer> columnValues;
         try(Statement st = connection.createStatement()) {
@@ -87,7 +88,7 @@ public class ReadTable {
             try {
                 int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, tableLocation.toString());
                 if (pkIndex > 0) {
-                    ProgressMonitor jobProgress = progressMonitor.startTask(1);
+                    ProgressMonitor jobProgress = progressMonitor.startTask(2);
                     // Do not cache values
                     // Use SQL sort
                     DatabaseMetaData meta = connection.getMetaData();
@@ -96,11 +97,27 @@ public class ReadTable {
                     if(!ascending) {
                         desc = " DESC";
                     }
+                    // Create a map of Row Id to Pk Value
+                    ProgressMonitor cacheProgress = jobProgress.startTask(I18N.tr("Cache primary key values"), rowCount);
+                    Map<Long, Integer> pkValueToRowId = new HashMap<>(rowCount);
+                    int rowId=0;
+                    Lock lock = originalOrder.getReadLock();
+                    lock.tryLock();
+                    try{
+                        originalOrder.beforeFirst();
+                        while (originalOrder.next()) {
+                            rowId++;
+                            pkValueToRowId.put(originalOrder.getPk(), rowId);
+                            cacheProgress.endTask();
+                        }
+                    } finally {
+                        lock.unlock();
+                    }
                     // Read ordered pk values
                     ProgressMonitor sortProgress = jobProgress.startTask(I18N.tr("Read sorted keys"), rowCount);
-                    try(ResultSet rs = st.executeQuery("select "+pkFieldName+" from "+table+" ORDER BY "+columnName+desc)) {
+                    try(ResultSet rs = st.executeQuery("select "+pkFieldName+" from "+table+" ORDER BY "+quoteIdentifier+desc)) {
                         while(rs.next()) {
-                            columnValues.add((int)rs.getLong(1));
+                            columnValues.add(pkValueToRowId.get(rs.getLong(1)));
                             sortProgress.endTask();
                         }
                     }
@@ -109,16 +126,22 @@ public class ReadTable {
                     //Cache values
                     ProgressMonitor cacheProgress = jobProgress.startTask(I18N.tr("Cache table values"), rowCount);
                     Comparable[] cache = new Comparable[rowCount];
-                    try(ResultSet rs = st.executeQuery("select "+columnName+" from "+table)) {
+                    Lock lock = originalOrder.getReadLock();
+                    lock.tryLock();
+                    try{
+                        originalOrder.beforeFirst();
                         int i = 0;
-                        while(rs.next()) {
-                            Object obj = rs.getObject(1);
+                        final int fieldIndex = originalOrder.findColumn(originalColumnName);
+                        while(originalOrder.next()) {
+                            Object obj = originalOrder.getObject(fieldIndex);
                             if(obj != null && !(obj instanceof Comparable)) {
                                 throw new SQLException(I18N.tr("Could only sort comparable database object type"));
                             }
                             cache[i++] = (Comparable)obj;
                             cacheProgress.endTask();
                         }
+                    } finally {
+                        lock.unlock();
                     }
                     ProgressMonitor sortProgress = jobProgress.startTask(I18N.tr("Sort table values"), rowCount);
                     Comparator<Integer> comparator = new SortValueCachedComparator(cache);

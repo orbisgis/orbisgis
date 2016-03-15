@@ -88,6 +88,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -701,8 +702,14 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         if(cachedColumnNames == null) {
             cacheColumnNames();
         }
-        Integer columnId = cachedColumnNames.get(label.toUpperCase());
+        Integer columnId = cachedColumnNames.get(label);
         if(columnId == null) {
+            // Search with insensitive case
+            for(Map.Entry<String, Integer> entry : cachedColumnNames.entrySet()) {
+                if(entry.getKey().equalsIgnoreCase(label)) {
+                    return entry.getValue();
+                }
+            }
             throw new SQLException("Column "+label+" does not exists");
         }
         return columnId;
