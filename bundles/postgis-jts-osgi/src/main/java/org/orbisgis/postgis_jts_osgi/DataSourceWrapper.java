@@ -28,6 +28,7 @@
  */
 package org.orbisgis.postgis_jts_osgi;
 
+import org.orbisgis.postgis_jts.ConnectionWrapper;
 import org.postgis.PGbox2d;
 import org.postgis.PGbox3d;
 import org.postgis.jts.JtsGeometry;
