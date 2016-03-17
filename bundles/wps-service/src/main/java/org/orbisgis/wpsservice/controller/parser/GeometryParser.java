@@ -47,7 +47,7 @@ public class GeometryParser implements Parser {
     }
 
     @Override
-    public Input parseInput(Field f, Object defaultValue, String processId) {
+    public Input parseInput(Field f, Object defaultValue, URI processId) {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
         GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);
@@ -70,7 +70,7 @@ public class GeometryParser implements Parser {
     }
 
     @Override
-    public Output parseOutput(Field f, String processId) {
+    public Output parseOutput(Field f, URI processId) {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
         GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);

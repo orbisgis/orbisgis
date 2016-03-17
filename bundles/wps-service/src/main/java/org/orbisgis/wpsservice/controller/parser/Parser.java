@@ -24,6 +24,7 @@ import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.Output;
 
 import java.lang.reflect.Field;
+import java.net.URI;
 
 /**
  * Interface to define a Parser associated to a data from the model (i.e. LiteralData or RawData).
@@ -43,7 +44,7 @@ public interface Parser {
      * @param processId The process identifier.
      * @return Parsed DataDescription.
      */
-    Input parseInput(Field f, Object defaultValue, String processId);
+    Input parseInput(Field f, Object defaultValue, URI processId);
 
     /**
      * Parse the given field as an output and returns the corresponding DataDescription.
@@ -51,7 +52,7 @@ public interface Parser {
      * @param processId The process identifier.
      * @return Parsed DataDescription.
      */
-    Output parseOutput(Field f, String processId);
+    Output parseOutput(Field f, URI processId);
 
     /**
      * Returns the groovy annotation associated to this parser.

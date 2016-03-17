@@ -25,6 +25,7 @@ import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.Output;
 
 import java.lang.reflect.Field;
+import java.net.URI;
 
 /**
  * BoundingBox parser< Not yet implemented.
@@ -41,12 +42,12 @@ public class BoundingBoxParser implements Parser {
     }
 
     @Override
-    public Input parseInput(Field f, Object defaultValue, String processId) {
+    public Input parseInput(Field f, Object defaultValue, URI processId) {
         return null;
     }
 
     @Override
-    public Output parseOutput(Field f, String processId) {
+    public Output parseOutput(Field f, URI processId) {
         return null;
     }
 
