@@ -26,6 +26,7 @@
                 <module>orbisgis-sif</module>
                 <module>workspace-gui</module>
                 <module>bundles/postgis-jts-osgi</module>
+                <module>bundles/postgis-jts</module>
                 <module>bundles/core-jdbc</module>
                 <module>bundles/h2trigger</module>
                 <module>bundles/h2trigger-osgi</module>

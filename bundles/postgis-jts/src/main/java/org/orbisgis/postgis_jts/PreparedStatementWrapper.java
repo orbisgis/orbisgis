@@ -26,11 +26,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.postgis_jts_osgi;
+package org.orbisgis.postgis_jts;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.postgis.jts.JtsGeometry;
-import org.postgresql.util.PGobject;
 
 import java.io.InputStream;
 import java.io.Reader;

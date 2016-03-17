@@ -277,6 +277,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>postgis-jts</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>itext-osgi</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
