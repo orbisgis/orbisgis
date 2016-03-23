@@ -140,7 +140,6 @@ public class ObjectAnnotationConverter {
         format.setMimeType(formatAttribute.mimeType());
         format.setSchema(URI.create(formatAttribute.schema()).toString());
         format.setDefault(formatAttribute.isDefaultFormat());
-        format.setMaximumMegabytes(BigInteger.valueOf(formatAttribute.maximumMegaBytes()));
         if(formatAttribute.maximumMegaBytes() == FormatAttribute.defaultMaximumMegaBytes) {
             format.setMaximumMegabytes(null);
         }
@@ -160,6 +159,7 @@ public class ObjectAnnotationConverter {
         metadata.setHref(href.toString());
         metadata.setRole(role.toString());
         metadata.setTitle(title);
+        metadata.setTYPE(TypeType.SIMPLE);
 
         return metadata;
     }

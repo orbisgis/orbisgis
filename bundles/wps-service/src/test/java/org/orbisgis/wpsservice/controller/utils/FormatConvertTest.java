@@ -37,9 +37,9 @@ public class FormatConvertTest {
     public void testFullFormatAttributeConvert(){
         try {
             boolean annotationFound = false;
-            //Retrieve the DescriptionType object
+            //Retrieve the Format object
             Format format = new Format();
-            //Inspect all the annotation of the field to get the DescriptionTypeAttribute one
+            //Inspect all the annotation of the field to get the FormatAttribute one
             Field formatField = this.getClass().getDeclaredField(FULL_FORMAT_ATTRIBUTE_FIELD_NAME);
             for(Annotation annotation : formatField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
@@ -126,9 +126,9 @@ public class FormatConvertTest {
     public void testSimpleFormatAttributeConvert(){
         try {
             boolean annotationFound = false;
-            //Retrieve the DescriptionType object
+            //Retrieve the Format object
             Format format = new Format();
-            //Inspect all the annotation of the field to get the DescriptionTypeAttribute one
+            //Inspect all the annotation of the field to get the FormatAttribute one
             Field formatField = this.getClass().getDeclaredField(SIMPLE_FORMAT_ATTRIBUTE_FIELD_NAME);
             for(Annotation annotation : formatField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
