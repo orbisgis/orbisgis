@@ -141,6 +141,13 @@ public class ObjectAnnotationConverter {
         format.setSchema(URI.create(formatAttribute.schema()).toString());
         format.setDefault(formatAttribute.isDefaultFormat());
         format.setMaximumMegabytes(BigInteger.valueOf(formatAttribute.maximumMegaBytes()));
+        if(formatAttribute.maximumMegaBytes() == FormatAttribute.defaultMaximumMegaBytes) {
+            format.setMaximumMegabytes(null);
+        }
+        else{
+            format.setMaximumMegabytes(BigInteger.valueOf(formatAttribute.maximumMegaBytes()));
+        }
+        format.setEncoding(formatAttribute.encoding());
         return format;
     }
 
