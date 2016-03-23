@@ -19,17 +19,22 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
+import net.opengis.ows.v_2_0.CodeType;
+import net.opengis.wps.v_2_0.Format;
+import net.opengis.wps.v_2_0.InputDescriptionType;
+import net.opengis.wps.v_2_0.OutputDescriptionType;
 import org.orbisgis.wpsgroovyapi.attributes.DataStoreAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
-import org.orbisgis.wpsservice.model.*;
+import org.orbisgis.wpsservice.model.DataStore;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import java.lang.reflect.Field;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +53,7 @@ public class DataStoreParser implements Parser{
     }
 
     @Override
-    public Input parseInput(Field f, Object defaultValue, URI processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
         //Instantiate the DataStore and its formats
         DataStoreAttribute dataStoreAttribute = f.getAnnotation(DataStoreAttribute.class);
         List<Format> formatList;
@@ -95,33 +100,33 @@ public class DataStoreParser implements Parser{
         if(formatList.isEmpty()) {
             formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION));
         }
-        formatList.get(0).setDefaultFormat(true);
+        formatList.get(0).setDefault(true);
 
         //Instantiate the DataStore
-        DataStoreOld dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
+        DataStore dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
         dataStore.setIsDataBase(isDataBase);
         dataStore.setIsGeocatalog(isGeocatalog);
         dataStore.setIsFile(isFile);
 
-        Input input;
-        try {
-            //Instantiate the returned input
-            input = new Input(f.getName(),
-                    URI.create(processId + ":input:" + f.getName()),
-                    dataStore);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(DataStoreParser.class).error(e.getMessage());
-            return null;
-        }
+        InputDescriptionType input = new InputDescriptionType();
+        QName qname = new QName("http://orbisgis.org", "data_store");
+        JAXBElement<DataStore> jaxbElement = new JAXBElement<>(qname, DataStore.class, dataStore);
+        input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
+
+        if(input.getIdentifier() == null){
+            CodeType codeType = new CodeType();
+            codeType.setValue(processId+":input:"+input.getTitle());
+            input.setIdentifier(codeType);
+        }
 
         return input;
     }
 
     @Override
-    public Output parseOutput(Field f, URI processId) {
+    public OutputDescriptionType parseOutput(Field f, String processId) {
         //Instantiate the DataStore and its formats
         DataStoreAttribute dataStoreAttribute = f.getAnnotation(DataStoreAttribute.class);
         List<Format> formatList;
@@ -164,26 +169,26 @@ public class DataStoreParser implements Parser{
             isFile = true;
             formatList = FormatFactory.getFormatsFromExtensions(exportableGeoFormat);
         }
-        formatList.get(0).setDefaultFormat(true);
+        formatList.get(0).setDefault(true);
 
         //Instantiate the DataStore
-        DataStoreOld dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
+        DataStore dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
         dataStore.setIsDataBase(isDataBase);
         dataStore.setIsGeocatalog(isGeocatalog);
         dataStore.setIsFile(isFile);
 
-        Output output;
-        try {
-            //Instantiate the returned output
-            output = new Output(f.getName(),
-                    URI.create(processId + ":output:" + f.getName()),
-                    dataStore);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(DataStoreParser.class).error(e.getMessage());
-            return null;
-        }
+        OutputDescriptionType output = new OutputDescriptionType();
+        QName qname = new QName("http://orbisgis.org", "data_store");
+        JAXBElement<DataStore> jaxbElement = new JAXBElement<>(qname, DataStore.class, dataStore);
+        output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
+
+        if(output.getIdentifier() == null){
+            CodeType codeType = new CodeType();
+            codeType.setValue(processId+":output:"+output.getTitle());
+            output.setIdentifier(codeType);
+        }
 
         return output;
     }
