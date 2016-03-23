@@ -1,5 +1,9 @@
 package org.orbisgis.wpsservice.model;
 
+import net.opengis.wps.v_2_0.ComplexDataType;
+import net.opengis.wps.v_2_0.Format;
+
+
 import java.util.List;
 
 /**
@@ -8,8 +12,7 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  */
-@Deprecated
-public class GeometryDataOld extends ComplexData {
+public class GeometryData extends ComplexDataType {
 
     /** List of type accepted for the geometry.*/
     private List<DataType> geometryTypeList;
@@ -20,12 +23,12 @@ public class GeometryDataOld extends ComplexData {
 
     /**
      * Main Constructor.
-     * @param format Format allowed.
+     * @param formatList Format allowed.
      * @param geometryTypeList List of the type accepted for this geometry.
      * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
      */
-    public GeometryDataOld(Format format, List<DataType> geometryTypeList) throws MalformedScriptException {
-        super(format);
+    public GeometryData(List<Format> formatList, List<DataType> geometryTypeList) throws MalformedScriptException {
+        setFormat(formatList);
         this.geometryTypeList = geometryTypeList;
     }
 
@@ -45,7 +48,7 @@ public class GeometryDataOld extends ComplexData {
         for(DataType excludedType : excludedTypeList){
             for(DataType dataType : geometryTypeList){
                 if(excludedType.equals(dataType)){
-                    throw new MalformedScriptException(GeometryDataOld.class, "excludedTypeList", "A same DataType is" +
+                    throw new MalformedScriptException(GeometryData.class, "excludedTypeList", "A same DataType is" +
                             " accepted and excluded");
                 }
             }

@@ -19,12 +19,17 @@
 
 package org.orbisgis.wpsservice.model;
 
+import net.opengis.wps.v_2_0.ComplexDataType;
+import net.opengis.wps.v_2_0.Format;
+
+import java.util.List;
+
 /**
  * Enumeration model class
  * @author Sylvain PALOMINOS
  **/
-@Deprecated
-public class EnumerationOld extends ComplexData{
+
+public class Enumeration extends ComplexDataType{
 
     /** List of values.*/
     private String[] values;
@@ -39,13 +44,13 @@ public class EnumerationOld extends ComplexData{
 
     /**
      * Main constructor.
-     * @param format Format of the data accepted.
+     * @param formatList Formats of the data accepted.
      * @param valueList List of values.
      * @param defaultValues Default value. If null, no default value.
      * @throws MalformedScriptException
      */
-    public EnumerationOld(Format format, String[] valueList, String[] defaultValues) throws MalformedScriptException {
-        super(format);
+    public Enumeration(List<Format> formatList, String[] valueList, String[] defaultValues) throws MalformedScriptException {
+        setFormat(format);
         this.values = valueList;
         this.defaultValues = defaultValues;
     }

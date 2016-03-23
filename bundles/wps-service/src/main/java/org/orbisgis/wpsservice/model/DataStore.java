@@ -19,6 +19,9 @@
 
 package org.orbisgis.wpsservice.model;
 
+import net.opengis.wps.v_2_0.ComplexDataType;
+import net.opengis.wps.v_2_0.Format;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +31,8 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  **/
-@Deprecated
-public class DataStoreOld extends ComplexData {
+
+public class DataStore extends ComplexDataType {
     /**DataStore types.*/
     public static final String DATASTORE_TYPE_GEOCATALOG = "DATASTORE_TYPE_GEOCATALOG";
     public static final String DATASTORE_TYPE_FILE = "DATASTORE_TYPE_FILE";
@@ -43,7 +46,7 @@ public class DataStoreOld extends ComplexData {
     /** True if the data can come from an external dataBase, false otherwise **/
     private boolean isDataBase;
     /** List of DataField liked to the DataStore */
-    private List<DataFieldOld> listDataField;
+    private List<DataField> listDataField;
     /** True if the toolBox should load the file or just give the file path. */
     private boolean autoImport;
 
@@ -52,8 +55,8 @@ public class DataStoreOld extends ComplexData {
      * @param formatList List of formats accepted.
      * @throws MalformedScriptException
      */
-    public DataStoreOld(List<Format> formatList) throws MalformedScriptException {
-        super(formatList);
+    public DataStore(List<Format> formatList) throws MalformedScriptException {
+        setFormat(formatList);
         listDataField = new ArrayList<>();
     }
 
@@ -133,7 +136,7 @@ public class DataStoreOld extends ComplexData {
      * Adds a DataField as a 'child' of the DataStore.
      * @param dataField DataField to add.
      */
-    public void addDataField(DataFieldOld dataField){
+    public void addDataField(DataField dataField){
         this.listDataField.add(dataField);
     }
 
@@ -141,7 +144,7 @@ public class DataStoreOld extends ComplexData {
      * Return the list of 'child' DataField.
      * @return List of DataField.
      */
-    public List<DataFieldOld> getListDataField(){
+    public List<DataField> getListDataField(){
         return listDataField;
     }
 
