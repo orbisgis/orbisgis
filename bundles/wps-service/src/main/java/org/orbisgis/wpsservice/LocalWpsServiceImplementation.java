@@ -275,7 +275,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     public Process describeProcess(URI uri){
-        return processManager.getProcess(uri);
+        //return processManager.getProcess(uri);
+        return null;
     }
 
     public void removeProcess(URI uri){
@@ -288,21 +289,21 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         //If the file corresponding to the URI does not exist anymore, remove if and warn the user.
         File f = new File(uri);
         if(!f.exists()){
-            processManager.removeProcess(pi.getProcess());
+            processManager.removeProcess(pi.getProcessDescriptionType());
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("The script '"+f.getAbsolutePath()+
                     "' does not exist anymore.");
             return false;
         }
         //If the URI correspond to a ProcessIdentifier remove it before adding it again
         if(pi != null){
-            processManager.removeProcess(pi.getProcess());
+            processManager.removeProcess(pi.getProcessDescriptionType());
             return (processManager.addLocalScript(uri, pi.getCategory(), pi.isDefault()) != null);
         }
         return false;
     }
 
     public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){
-        if(pel != null) {
+        /*if(pel != null) {
             pel.setStartTime(System.currentTimeMillis());
         }
         Map<URI, Object> stash = new HashMap<>();
@@ -362,7 +363,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             for(DescriptionType inputOrOutput : process.getInput()){
                 dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
             }
-        }
+        }*/
     }
 
     @Override
