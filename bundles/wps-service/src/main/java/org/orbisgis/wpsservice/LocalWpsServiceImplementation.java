@@ -505,7 +505,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     public List<String> getFieldValueList(String tableName, String fieldName) {
         List<String> fieldValues = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            tableName = TableLocation.parse(tableName, isH2).getTable();
+            tableName = TableLocation.parse(tableName, isH2).toString(isH2);
             List<String> fieldNames = JDBCUtilities.getFieldNames(connection.getMetaData(), tableName);
             if(fieldNames.isEmpty()){
                 return fieldValues;
