@@ -19,23 +19,24 @@
 
 package org.orbisgis.wpsservice.controller.execution;
 
+import net.opengis.wps.v_2_0.DataDescriptionType;
+import net.opengis.wps.v_2_0.DescriptionType;
 import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
-import org.orbisgis.wpsservice.model.DataDescription;
-import org.orbisgis.wpsservice.model.DescriptionType;
 
 import java.net.URI;
 import java.util.Map;
 
 /**
  * Interface to define the DataProcessing classes.
+ * The method contained by this interface will be called before and after the process to adapt the input and
+ * output data to the execution
  *
  * @author Sylvain PALOMINOS
  */
 public interface DataProcessing {
 
     void setLocalWpsService(LocalWpsService wpsService);
-    Class<? extends DataDescription> getDataClass();
+    Class<? extends DataDescriptionType> getDataClass();
 
     /**
      * Preprocess the input/output to adapt it to the process (i.e. convert a File into a table name).

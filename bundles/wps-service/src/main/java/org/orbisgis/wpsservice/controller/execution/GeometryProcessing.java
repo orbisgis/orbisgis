@@ -4,8 +4,13 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
+import net.opengis.wps.v_2_0.DataDescriptionType;
+import net.opengis.wps.v_2_0.DescriptionType;
+import net.opengis.wps.v_2_0.InputDescriptionType;
+import net.opengis.wps.v_2_0.OutputDescriptionType;
 import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.model.*;
+import org.orbisgis.wpsservice.model.DataType;
+import org.orbisgis.wpsservice.model.GeometryData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,21 +34,21 @@ public class GeometryProcessing implements DataProcessing {
     }
 
     @Override
-    public Class<? extends DataDescription> getDataClass() {
-        return GeometryDataOld.class;
+    public Class<? extends DataDescriptionType> getDataClass() {
+        return GeometryData.class;
     }
 
     @Override
     public Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap,
                                            ProcessExecutionListener pel) {
         //Check if it is an input
-        if(inputOrOutput instanceof Input) {
+        if(inputOrOutput instanceof InputDescriptionType) {
             Map<URI, Object> map = new HashMap<>();
-            Input input = (Input) inputOrOutput;
+            InputDescriptionType input = (InputDescriptionType) inputOrOutput;
             //Check if the input is a GeometryData
-            if(input.getDataDescription() instanceof GeometryDataOld) {
-                GeometryDataOld geometryData = (GeometryDataOld) input.getDataDescription();
-                String str = dataMap.get(inputOrOutput.getIdentifier()).toString();
+            if(input.getDataDescription().getValue() instanceof GeometryData) {
+                GeometryData geometryData = (GeometryData) input.getDataDescription().getValue();
+                String str = dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue())).toString();
                 //Read the string to retrieve the Geometry
                 Geometry geometry;
                 try {
@@ -56,7 +61,7 @@ public class GeometryProcessing implements DataProcessing {
                     else{
                         LOGGER.error("Unable to parse the string '" + str + "' into Geometry.");
                     }
-                    dataMap.put(inputOrOutput.getIdentifier(), null);
+                    dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
                     return null;
                 }
                 //Check the Geometry has the good type
@@ -76,7 +81,7 @@ public class GeometryProcessing implements DataProcessing {
                         LOGGER.error("The geometry '" + input.getTitle() + "' type is not accepted ('" +
                                 geometry.getGeometryType() + "' not allowed).");
                     }
-                    dataMap.put(inputOrOutput.getIdentifier(), null);
+                    dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
                     return null;
                 }
                 //Check the Geometry has not an excluded type
@@ -95,7 +100,7 @@ public class GeometryProcessing implements DataProcessing {
                         LOGGER.error("The geometry '" + input.getTitle() + "' type is not accepted ('" +
                                 geometry.getGeometryType() + "' not allowed).");
                     }
-                    dataMap.put(inputOrOutput.getIdentifier(), null);
+                    dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
                     return null;
                 }
                 //Check the geometry dimension
@@ -110,17 +115,17 @@ public class GeometryProcessing implements DataProcessing {
                         LOGGER.error("The geometry '" + input.getTitle() + "' has not a wrong dimension (should be '" +
                                 geometryData.getDimension() + "').");
                     }
-                    dataMap.put(inputOrOutput.getIdentifier(), null);
+                    dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
                     return null;
                 }
-                dataMap.put(inputOrOutput.getIdentifier(), geometry);
+                dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), geometry);
             }
-            map.put(inputOrOutput.getIdentifier(), null);
+            map.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
             return map;
         }
-        else if(inputOrOutput instanceof Output){
+        else if(inputOrOutput instanceof OutputDescriptionType){
             Map<URI, Object> map = new HashMap<>();
-            map.put(inputOrOutput.getIdentifier(), null);
+            map.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
             return map;
         }
         return null;
@@ -130,12 +135,12 @@ public class GeometryProcessing implements DataProcessing {
     public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
                                 ProcessExecutionListener pel) {
         //Check if it is an output
-        if(inputOrOutput instanceof Output) {
-            Output output = (Output) inputOrOutput;
+        if(inputOrOutput instanceof OutputDescriptionType) {
+            OutputDescriptionType output = (OutputDescriptionType) inputOrOutput;
             //Check if the input is a GeometryData
-            if(output.getDataDescription() instanceof GeometryDataOld) {
-                GeometryDataOld geometryData = (GeometryDataOld) output.getDataDescription();
-                Object obj = dataMap.get(inputOrOutput.getIdentifier());
+            if(output.getDataDescription().getValue() instanceof GeometryData) {
+                GeometryData geometryData = (GeometryData) output.getDataDescription().getValue();
+                Object obj = dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue()));
                 if(obj instanceof Geometry) {
                     Geometry geometry = (Geometry) obj;
                     //Check the Geometry has the good type
@@ -155,7 +160,7 @@ public class GeometryProcessing implements DataProcessing {
                             LOGGER.error("The geometry '" + output.getTitle() + "' type is not accepted ('" +
                                     geometry.getGeometryType() + "' not allowed).");
                         }
-                        dataMap.put(inputOrOutput.getIdentifier(), null);
+                        dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
                         return;
                     }
                     //Check the Geometry has not an excluded type
@@ -174,7 +179,7 @@ public class GeometryProcessing implements DataProcessing {
                             LOGGER.error("The geometry '" + output.getTitle() + "' type is not accepted ('" +
                                     geometry.getGeometryType() + "' not allowed).");
                         }
-                        dataMap.put(inputOrOutput.getIdentifier(), null);
+                        dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
                         return;
                     }
                     //Read the string to retrieve the Geometry
@@ -187,10 +192,10 @@ public class GeometryProcessing implements DataProcessing {
                         else{
                             LOGGER.error("Unable to read the geometry '" + output.getTitle() + "'.");
                         }
-                        dataMap.put(inputOrOutput.getIdentifier(), null);
+                        dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
                         return;
                     }
-                    dataMap.put(inputOrOutput.getIdentifier(), wkt);
+                    dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), wkt);
 
                     if(pel != null) {
                         pel.appendLog(ProcessExecutionListener.LogType.INFO, "Output geometry '" +

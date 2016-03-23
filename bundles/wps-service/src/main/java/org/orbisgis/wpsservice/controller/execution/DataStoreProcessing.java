@@ -19,6 +19,8 @@
 
 package org.orbisgis.wpsservice.controller.execution;
 
+import net.opengis.wps.v_2_0.*;
+import net.opengis.wps.v_2_0.DescriptionType;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener.LogType;
 import org.orbisgis.wpsservice.model.*;
@@ -48,25 +50,25 @@ public class DataStoreProcessing implements DataProcessing {
     }
 
     @Override
-    public Class<? extends DataDescription> getDataClass() {
-        return DataStoreOld.class;
+    public Class<? extends DataDescriptionType> getDataClass() {
+        return DataStore.class;
     }
 
     @Override
     public Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap,
                                            ProcessExecutionListener pel) {
         Map<URI, Object> stash = new HashMap<>();
-        URI uri = inputOrOutput.getIdentifier();
+        URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
         URI dataStoreURI = (URI)dataMap.get(uri);
         String tableName;
-        if(inputOrOutput instanceof Input){
+        if(inputOrOutput instanceof InputDescriptionType){
             if(dataStoreURI.getScheme().equals("geocatalog")){
                 tableName = dataStoreURI.getSchemeSpecificPart();
                 dataMap.put(uri, tableName);
                 stash.put(uri, "geocatalog");
             }
             else if(dataStoreURI.getScheme().equals("file")){
-                DataStoreOld dataStore = (DataStoreOld) ((Input) inputOrOutput).getDataDescription();
+                DataStore dataStore = (DataStore) ((InputDescriptionType) inputOrOutput).getDataDescription().getValue();
                 String path = dataStoreURI.getSchemeSpecificPart();
                 boolean keep = path.endsWith("$");
                 if(dataStore.isAutoImport()) {
@@ -86,7 +88,7 @@ public class DataStoreProcessing implements DataProcessing {
                 }
             }
         }
-        if(inputOrOutput instanceof Output){
+        if(inputOrOutput instanceof OutputDescriptionType){
             if(dataStoreURI.getScheme().equals("geocatalog")){
                 stash.put(uri, dataStoreURI);
                 tableName = dataStoreURI.getSchemeSpecificPart();
@@ -104,14 +106,14 @@ public class DataStoreProcessing implements DataProcessing {
     @Override
     public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
                                 ProcessExecutionListener pel) {
-        if(inputOrOutput instanceof Input){
-            URI uri = inputOrOutput.getIdentifier();
+        if(inputOrOutput instanceof InputDescriptionType){
+            URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
             if(stash.get(uri) != null && stash.get(uri).equals("file")){
                 wpsService.removeTempTable(dataMap.get(uri).toString());
             }
         }
-        if(inputOrOutput instanceof Output){
-            URI uri = inputOrOutput.getIdentifier();
+        if(inputOrOutput instanceof OutputDescriptionType){
+            URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
             URI dataStoreURI = (URI)stash.get(uri);
             if(dataStoreURI.getScheme().equals("file")){
                 String path = dataStoreURI.getSchemeSpecificPart();
