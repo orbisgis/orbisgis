@@ -50,7 +50,7 @@ public class EnumerationParser implements Parser{
         //Instantiate the DataStore and its formats
         EnumerationAttribute enumerationAttribute = f.getAnnotation(EnumerationAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
-        Enumeration enumeration = ObjectAnnotationConverter.annotationToObject(enumerationAttribute, format);
+        EnumerationOld enumeration = ObjectAnnotationConverter.annotationToObject(enumerationAttribute, format);
 
         Input input;
         try {
@@ -74,7 +74,7 @@ public class EnumerationParser implements Parser{
         //Instantiate the DataStore and its formats
         EnumerationAttribute enumerationAttribute = f.getAnnotation(EnumerationAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
-        Enumeration enumeration = ObjectAnnotationConverter.annotationToObject(enumerationAttribute, format);
+        EnumerationOld enumeration = ObjectAnnotationConverter.annotationToObject(enumerationAttribute, format);
 
         Output output;
         try {

@@ -117,7 +117,7 @@ public class DefaultParser implements Parser {
             }
             //If the field can not be parsed as a LiteralData, parse it as a RawData
             else {
-                data = new RawData(formatList);
+                data = new RawDataOld(formatList);
             }
 
             //Instantiate the returned input
@@ -208,7 +208,7 @@ public class DefaultParser implements Parser {
             }
             //If the field can not be parsed as a LiteralData, parse it as a RawData
             else {
-                data = new RawData(formatList);
+                data = new RawDataOld(formatList);
             }
             //Instantiate the returned output
             Output output = new Output(f.getName(),

@@ -51,7 +51,7 @@ public class FieldValueParser implements Parser {
         FieldValueAttribute fieldValueAttribute = f.getAnnotation(FieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
         URI dataFieldUri = URI.create(processId + ":input:" + fieldValueAttribute.dataField());
-        FieldValue fieldValue = ObjectAnnotationConverter.annotationToObject(fieldValueAttribute, format, dataFieldUri);
+        FieldValueOld fieldValue = ObjectAnnotationConverter.annotationToObject(fieldValueAttribute, format, dataFieldUri);
 
         //Instantiate the returned input
         Input input;
@@ -76,7 +76,7 @@ public class FieldValueParser implements Parser {
         FieldValueAttribute fieldValueAttribute = f.getAnnotation(FieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
         URI dataFieldUri = URI.create(processId + ":output:" + fieldValueAttribute.dataField());
-        FieldValue fieldValue = ObjectAnnotationConverter.annotationToObject(fieldValueAttribute, format, dataFieldUri);
+        FieldValueOld fieldValue = ObjectAnnotationConverter.annotationToObject(fieldValueAttribute, format, dataFieldUri);
 
         //Instantiate the returned output
         Output output;

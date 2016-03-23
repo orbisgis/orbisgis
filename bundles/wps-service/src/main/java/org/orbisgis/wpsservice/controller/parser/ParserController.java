@@ -171,22 +171,22 @@ public class ParserController {
     private void link(Process p){
         //Link the DataField with its DataStore
         for(Input i : p.getInput()){
-            if(i.getDataDescription() instanceof DataField){
-                DataField dataField = (DataField)i.getDataDescription();
+            if(i.getDataDescription() instanceof DataFieldOld){
+                DataFieldOld dataField = (DataFieldOld)i.getDataDescription();
                 for(Input dataStore : p.getInput()){
                     if(dataStore.getIdentifier().equals(dataField.getDataStoreIdentifier())){
-                        ((DataStore)dataStore.getDataDescription()).addDataField(dataField);
+                        ((DataStoreOld)dataStore.getDataDescription()).addDataField(dataField);
                     }
                 }
             }
         }
         //Link the FieldValue with its DataField and its DataStore
         for(Input i : p.getInput()){
-            if(i.getDataDescription() instanceof FieldValue){
-                FieldValue fieldValue = (FieldValue)i.getDataDescription();
+            if(i.getDataDescription() instanceof FieldValueOld){
+                FieldValueOld fieldValue = (FieldValueOld)i.getDataDescription();
                 for(Input input : p.getInput()){
                     if(input.getIdentifier().equals(fieldValue.getDataFieldIdentifier())){
-                        DataField dataField = (DataField)input.getDataDescription();
+                        DataFieldOld dataField = (DataFieldOld)input.getDataDescription();
                         dataField.addFieldValue(fieldValue);
                         fieldValue.setDataStoredIdentifier(dataField.getDataStoreIdentifier());
                     }

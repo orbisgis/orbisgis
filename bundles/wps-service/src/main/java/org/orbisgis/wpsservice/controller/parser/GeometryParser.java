@@ -22,7 +22,6 @@ package org.orbisgis.wpsservice.controller.parser;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
-import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
@@ -50,7 +49,7 @@ public class GeometryParser implements Parser {
     public Input parseInput(Field f, Object defaultValue, URI processId) {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
-        GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);
+        GeometryDataOld geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);
 
         Input input;
         try {
@@ -73,7 +72,7 @@ public class GeometryParser implements Parser {
     public Output parseOutput(Field f, URI processId) {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
-        GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);
+        GeometryDataOld geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);
 
         Output output;
         try {

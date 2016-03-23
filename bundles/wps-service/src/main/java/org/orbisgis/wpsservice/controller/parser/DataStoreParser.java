@@ -23,7 +23,6 @@ import org.orbisgis.wpsgroovyapi.attributes.DataStoreAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.*;
@@ -99,7 +98,7 @@ public class DataStoreParser implements Parser{
         formatList.get(0).setDefaultFormat(true);
 
         //Instantiate the DataStore
-        DataStore dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
+        DataStoreOld dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
         dataStore.setIsDataBase(isDataBase);
         dataStore.setIsGeocatalog(isGeocatalog);
         dataStore.setIsFile(isFile);
@@ -168,7 +167,7 @@ public class DataStoreParser implements Parser{
         formatList.get(0).setDefaultFormat(true);
 
         //Instantiate the DataStore
-        DataStore dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
+        DataStoreOld dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
         dataStore.setIsDataBase(isDataBase);
         dataStore.setIsGeocatalog(isGeocatalog);
         dataStore.setIsFile(isFile);

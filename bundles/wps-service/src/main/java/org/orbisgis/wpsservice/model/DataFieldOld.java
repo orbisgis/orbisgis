@@ -27,7 +27,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  **/
 
-public class DataField extends ComplexData{
+public class DataFieldOld extends ComplexData{
 
     /** Identifier of the parent DataStore */
     private URI dataStoreIdentifier;
@@ -38,7 +38,7 @@ public class DataField extends ComplexData{
     /** List of type excluded for the field.*/
     private List<DataType> excludedTypeList;
     /** List of FieldValue liked to the DataField */
-    private List<FieldValue> listFieldValue;
+    private List<FieldValueOld> listFieldValue;
     /** Indicates if the use can choose more than one field*/
     private boolean isMultipleField = false;
 
@@ -49,7 +49,7 @@ public class DataField extends ComplexData{
      * @param dataStoreURI Identifier of the parent dataStore.
      * @throws MalformedScriptException
      */
-    public DataField(Format format, List<DataType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
+    public DataFieldOld(Format format, List<DataType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
         super(format);
         listFieldValue = new ArrayList<>();
         this.fieldTypeList = fieldTypeList;
@@ -78,7 +78,7 @@ public class DataField extends ComplexData{
      */
     public void setSourceModified(boolean isSourceModified) {
         this.isSourceModified = isSourceModified;
-        for(FieldValue fieldValue : listFieldValue){
+        for(FieldValueOld fieldValue : listFieldValue){
             fieldValue.setDataStoreModified(isSourceModified);
         }
     }
@@ -95,7 +95,7 @@ public class DataField extends ComplexData{
      * Adds a FieldValue as a 'child' of the DataField.
      * @param fieldValue FieldValue to add.
      */
-    public void addFieldValue(FieldValue fieldValue){
+    public void addFieldValue(FieldValueOld fieldValue){
         this.listFieldValue.add(fieldValue);
     }
 
@@ -103,7 +103,7 @@ public class DataField extends ComplexData{
      * Return the list of 'child' FieldValue.
      * @return List of FieldValue.
      */
-    public List<FieldValue> getListFieldValue(){
+    public List<FieldValueOld> getListFieldValue(){
         return listFieldValue;
     }
 
@@ -115,7 +115,7 @@ public class DataField extends ComplexData{
         for(DataType excludedType : excludedTypeList){
             for(DataType dataType : fieldTypeList){
                 if(excludedType.equals(dataType)){
-                    throw new MalformedScriptException(DataField.class, "excludedTypeList", "A same DataType is" +
+                    throw new MalformedScriptException(DataFieldOld.class, "excludedTypeList", "A same DataType is" +
                             " accepted and excluded");
                 }
             }

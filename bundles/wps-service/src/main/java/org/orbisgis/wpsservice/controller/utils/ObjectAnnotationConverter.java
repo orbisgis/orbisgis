@@ -183,11 +183,11 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static RawData annotationToObject(RawDataAttribute rawDataAttribute, Format format) {
+    public static RawDataOld annotationToObject(RawDataAttribute rawDataAttribute, Format format) {
         try {
             //Instantiate the RawData
             format.setDefaultFormat(true);
-            RawData rawData = new RawData(format);
+            RawDataOld rawData = new RawDataOld(format);
             rawData.setFile(rawDataAttribute.isFile());
             rawData.setDirectory(rawDataAttribute.isDirectory());
             rawData.setMultiSelection(rawDataAttribute.multiSelection());
@@ -240,9 +240,9 @@ public class ObjectAnnotationConverter {
         process.setLanguage(Locale.forLanguageTag(processAttribute.language()));
     }
 
-    public static DataStore annotationToObject(DataStoreAttribute dataStoreAttribute, List<Format> formatList) {
+    public static DataStoreOld annotationToObject(DataStoreAttribute dataStoreAttribute, List<Format> formatList) {
         try {
-            DataStore dataStore = new DataStore(formatList);
+            DataStoreOld dataStore = new DataStoreOld(formatList);
             dataStore.setAutoImport(dataStoreAttribute.isCreateTable());
             dataStore.setIsSpatial(dataStoreAttribute.isSpatial());
             return dataStore;
@@ -252,7 +252,7 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static DataField annotationToObject(DataFieldAttribute dataFieldAttribute, Format format, URI dataStoreUri) {
+    public static DataFieldOld annotationToObject(DataFieldAttribute dataFieldAttribute, Format format, URI dataStoreUri) {
         try {
             format.setDefaultFormat(true);
             List<DataType> dataTypeList = new ArrayList<>();
@@ -265,7 +265,7 @@ public class ObjectAnnotationConverter {
             for(String type : Arrays.asList(dataFieldAttribute.excludedTypes())){
                 excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
-            DataField dataField = new DataField(format, dataTypeList, dataStoreUri);
+            DataFieldOld dataField = new DataFieldOld(format, dataTypeList, dataStoreUri);
             dataField.setExcludedTypeList(excludedTypeList);
             dataField.setMultipleField(dataFieldAttribute.isMultipleField());
             return dataField;
@@ -275,20 +275,20 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static FieldValue annotationToObject(FieldValueAttribute fieldvalueAttribute, Format format, URI dataFieldUri) {
+    public static FieldValueOld annotationToObject(FieldValueAttribute fieldvalueAttribute, Format format, URI dataFieldUri) {
         try {
             format.setDefaultFormat(true);
-            return new FieldValue(format, dataFieldUri, fieldvalueAttribute.multiSelection());
+            return new FieldValueOld(format, dataFieldUri, fieldvalueAttribute.multiSelection());
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;
         }
     }
 
-    public static Enumeration annotationToObject(EnumerationAttribute enumAttribute, Format format) {
+    public static EnumerationOld annotationToObject(EnumerationAttribute enumAttribute, Format format) {
         try{
             format.setDefaultFormat(true);
-            Enumeration enumeration = new Enumeration(format, enumAttribute.values(), enumAttribute.defaultValues());
+            EnumerationOld enumeration = new EnumerationOld(format, enumAttribute.values(), enumAttribute.defaultValues());
             enumeration.setEditable(enumAttribute.isEditable());
             enumeration.setMultiSelection(enumAttribute.multiSelection());
             enumeration.setValuesNames(enumAttribute.names());
@@ -299,7 +299,7 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static GeometryData annotationToObject(GeometryAttribute geometryAttribute, Format format) {
+    public static GeometryDataOld annotationToObject(GeometryAttribute geometryAttribute, Format format) {
         try{
             format.setDefaultFormat(true);
             List<DataType> geometryTypeList = new ArrayList<>();
@@ -312,7 +312,7 @@ public class ObjectAnnotationConverter {
             for(String type : Arrays.asList(geometryAttribute.excludedTypes())){
                 excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
-            GeometryData geometryData = new GeometryData(format, geometryTypeList);
+            GeometryDataOld geometryData = new GeometryDataOld(format, geometryTypeList);
             geometryData.setDimension(geometryAttribute.dimension());
             geometryData.setExcludedTypeList(excludedTypeList);
             return geometryData;

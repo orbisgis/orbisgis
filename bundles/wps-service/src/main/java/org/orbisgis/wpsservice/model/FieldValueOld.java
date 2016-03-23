@@ -25,7 +25,7 @@ import java.net.URI;
  * FieldValue represent one or more values from a DataField.
  * @author Sylvain PALOMINOS
  */
-public class FieldValue extends ComplexData{
+public class FieldValueOld extends ComplexData{
 
     /** Identifier of the 'parent' DataField */
     private URI dataFieldIdentifier;
@@ -45,7 +45,7 @@ public class FieldValue extends ComplexData{
      * @param multiSelection Enable or not the selection of more than one value.
      * @throws MalformedScriptException
      */
-    public FieldValue(Format format, URI dataFieldIdentifier, boolean multiSelection) throws MalformedScriptException {
+    public FieldValueOld(Format format, URI dataFieldIdentifier, boolean multiSelection) throws MalformedScriptException {
         super(format);
         this.multiSelection = multiSelection;
         this.dataFieldIdentifier = dataFieldIdentifier;

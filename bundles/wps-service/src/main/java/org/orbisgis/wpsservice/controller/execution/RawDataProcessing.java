@@ -21,7 +21,7 @@ public class RawDataProcessing implements DataProcessing {
 
     @Override
     public Class<? extends DataDescription> getDataClass() {
-        return RawData.class;
+        return RawDataOld.class;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class RawDataProcessing implements DataProcessing {
         if(inputOrOutput instanceof Output) {
             Output output = (Output) inputOrOutput;
             //Check if the input is a GeometryData
-            if(output.getDataDescription() instanceof RawData) {
+            if(output.getDataDescription() instanceof RawDataOld) {
                 if(pel != null) {
                     pel.appendLog(ProcessExecutionListener.LogType.INFO, "Output RawData '" +
                             output.getTitle() + "' is '" + dataMap.get(output.getIdentifier()) + "'.");

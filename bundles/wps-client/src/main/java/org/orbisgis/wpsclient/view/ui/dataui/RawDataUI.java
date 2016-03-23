@@ -27,7 +27,7 @@ import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.DescriptionType;
 import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.Output;
-import org.orbisgis.wpsservice.model.RawData;
+import org.orbisgis.wpsservice.model.RawDataOld;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
@@ -86,14 +86,14 @@ public class RawDataUI implements DataUI {
         jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this,
                 "saveDocumentText", "document"));
 
-        RawData rawData = null;
+        RawDataOld rawData = null;
         String action = null;
         if(inputOrOutput instanceof Input){
-            rawData = (RawData) ((Input)inputOrOutput).getDataDescription();
+            rawData = (RawDataOld) ((Input)inputOrOutput).getDataDescription();
             action = OpenPanel.ACTION_OPEN;
         }
         else if(inputOrOutput instanceof Output){
-            rawData = (RawData) ((Output)inputOrOutput).getDataDescription();
+            rawData = (RawDataOld) ((Output)inputOrOutput).getDataDescription();
             action = OpenPanel.ACTION_SAVE;
         }
         if(rawData == null){
@@ -228,7 +228,7 @@ public class RawDataUI implements DataUI {
                 dataMap.put(uri, name);
             }
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(RawData.class).error(e.getMessage());
+            LoggerFactory.getLogger(RawDataOld.class).error(e.getMessage());
         }
     }
 }

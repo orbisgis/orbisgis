@@ -28,7 +28,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 
-public class RawData extends ComplexData {
+public class RawDataOld extends ComplexData {
 
     /** True if the RawData can be a file, false otherwise. */
     private boolean isFile;
@@ -43,7 +43,7 @@ public class RawData extends ComplexData {
      * @param format Not null default format.
      * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
      */
-    public RawData(Format format) throws MalformedScriptException {
+    public RawDataOld(Format format) throws MalformedScriptException {
         super(format);
     }
 
@@ -53,7 +53,7 @@ public class RawData extends ComplexData {
      * @param formatList Not null default format.
      * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
      */
-    public RawData(List<Format> formatList) throws MalformedScriptException {
+    public RawDataOld(List<Format> formatList) throws MalformedScriptException {
         super(formatList);
     }
 

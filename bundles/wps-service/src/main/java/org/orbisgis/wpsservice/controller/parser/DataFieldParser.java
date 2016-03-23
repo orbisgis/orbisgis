@@ -51,7 +51,7 @@ public class DataFieldParser implements Parser {
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
         URI dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStore());
-        DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
+        DataFieldOld dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 
         //Instantiate the returned input
         Input input;
@@ -76,7 +76,7 @@ public class DataFieldParser implements Parser {
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
         URI dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.dataStore());
-        DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
+        DataFieldOld dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 
         //Instantiate the returned output
         Output output;

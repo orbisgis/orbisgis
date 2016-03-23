@@ -75,17 +75,17 @@ public class FieldValueUI implements DataUI{
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-        FieldValue fieldValue = null;
+        FieldValueOld fieldValue = null;
         //Retrieve the FieldValue and if it is optional
         boolean isOptional = false;
         if(inputOrOutput instanceof Input){
-            fieldValue = (FieldValue)((Input)inputOrOutput).getDataDescription();
+            fieldValue = (FieldValueOld)((Input)inputOrOutput).getDataDescription();
             if(((Input)inputOrOutput).getMinOccurs() == 0){
                 isOptional = true;
             }
         }
         else if(inputOrOutput instanceof Output){
-            fieldValue = (FieldValue)((Output)inputOrOutput).getDataDescription();
+            fieldValue = (FieldValueOld)((Output)inputOrOutput).getDataDescription();
         }
 
         if(fieldValue == null){
@@ -194,7 +194,7 @@ public class FieldValueUI implements DataUI{
         @Override
         protected Object doInBackground() throws Exception {
             WaitLayerUI layerUI = (WaitLayerUI)list.getClientProperty(LAYERUI_PROPERTY);
-            FieldValue fieldValue = (FieldValue)list.getClientProperty(FIELD_VALUE_PROPERTY);
+            FieldValueOld fieldValue = (FieldValueOld)list.getClientProperty(FIELD_VALUE_PROPERTY);
             HashMap<URI, Object> dataMap = (HashMap<URI, Object>)list.getClientProperty(DATA_MAP_PROPERTY);
             boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
             //If the DataField related to the FieldValue has been modified, reload the dataField values

@@ -49,7 +49,7 @@ public class DataStoreProcessing implements DataProcessing {
 
     @Override
     public Class<? extends DataDescription> getDataClass() {
-        return DataStore.class;
+        return DataStoreOld.class;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class DataStoreProcessing implements DataProcessing {
                 stash.put(uri, "geocatalog");
             }
             else if(dataStoreURI.getScheme().equals("file")){
-                DataStore dataStore = (DataStore) ((Input) inputOrOutput).getDataDescription();
+                DataStoreOld dataStore = (DataStoreOld) ((Input) inputOrOutput).getDataDescription();
                 String path = dataStoreURI.getSchemeSpecificPart();
                 boolean keep = path.endsWith("$");
                 if(dataStore.isAutoImport()) {

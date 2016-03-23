@@ -24,7 +24,7 @@ package org.orbisgis.wpsservice.model;
  * @author Sylvain PALOMINOS
  **/
 
-public class Enumeration extends ComplexData{
+public class EnumerationOld extends ComplexData{
 
     /** List of values.*/
     private String[] values;
@@ -44,7 +44,7 @@ public class Enumeration extends ComplexData{
      * @param defaultValues Default value. If null, no default value.
      * @throws MalformedScriptException
      */
-    public Enumeration(Format format, String[] valueList, String[] defaultValues) throws MalformedScriptException {
+    public EnumerationOld(Format format, String[] valueList, String[] defaultValues) throws MalformedScriptException {
         super(format);
         this.values = valueList;
         this.defaultValues = defaultValues;

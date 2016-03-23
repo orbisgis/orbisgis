@@ -19,13 +19,7 @@
 
 package org.orbisgis.wpsclient.view.ui.dataui;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.components.OpenPanel;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
@@ -43,7 +37,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -85,9 +78,9 @@ public class GeometryUI implements DataUI {
         jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this,
                 "saveDocumentText", "document"));
 
-        GeometryData geometryData = null;
+        GeometryDataOld geometryData = null;
         if(inputOrOutput instanceof Input){
-            geometryData = (GeometryData) ((Input)inputOrOutput).getDataDescription();
+            geometryData = (GeometryDataOld) ((Input)inputOrOutput).getDataDescription();
         }
         //If the DescriptionType is an output, there is nothing to show, so exit
         if(geometryData == null){
@@ -154,7 +147,7 @@ public class GeometryUI implements DataUI {
             URI uri = (URI) document.getProperty(URI_PROPERTY);
             dataMap.put(uri, name);
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(RawData.class).error(e.getMessage());
+            LoggerFactory.getLogger(RawDataOld.class).error(e.getMessage());
         }
     }
 }

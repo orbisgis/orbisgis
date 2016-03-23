@@ -30,7 +30,7 @@ public class GeometryProcessing implements DataProcessing {
 
     @Override
     public Class<? extends DataDescription> getDataClass() {
-        return GeometryData.class;
+        return GeometryDataOld.class;
     }
 
     @Override
@@ -41,8 +41,8 @@ public class GeometryProcessing implements DataProcessing {
             Map<URI, Object> map = new HashMap<>();
             Input input = (Input) inputOrOutput;
             //Check if the input is a GeometryData
-            if(input.getDataDescription() instanceof GeometryData) {
-                GeometryData geometryData = (GeometryData) input.getDataDescription();
+            if(input.getDataDescription() instanceof GeometryDataOld) {
+                GeometryDataOld geometryData = (GeometryDataOld) input.getDataDescription();
                 String str = dataMap.get(inputOrOutput.getIdentifier()).toString();
                 //Read the string to retrieve the Geometry
                 Geometry geometry;
@@ -133,8 +133,8 @@ public class GeometryProcessing implements DataProcessing {
         if(inputOrOutput instanceof Output) {
             Output output = (Output) inputOrOutput;
             //Check if the input is a GeometryData
-            if(output.getDataDescription() instanceof GeometryData) {
-                GeometryData geometryData = (GeometryData) output.getDataDescription();
+            if(output.getDataDescription() instanceof GeometryDataOld) {
+                GeometryDataOld geometryData = (GeometryDataOld) output.getDataDescription();
                 Object obj = dataMap.get(inputOrOutput.getIdentifier());
                 if(obj instanceof Geometry) {
                     Geometry geometry = (Geometry) obj;

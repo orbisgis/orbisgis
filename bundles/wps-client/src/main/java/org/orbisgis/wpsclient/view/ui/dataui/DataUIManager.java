@@ -46,12 +46,12 @@ public class DataUIManager {
     public DataUIManager(WpsClient wpsClient){
         dataUIMap = new HashMap<>();
         linkClassUI(LiteralData.class, new LiteralDataUI(), wpsClient);
-        linkClassUI(RawData.class, new RawDataUI(), wpsClient);
-        linkClassUI(DataStore.class, new DataStoreUI(), wpsClient);
-        linkClassUI(DataField.class, new DataFieldUI(), wpsClient);
-        linkClassUI(FieldValue.class, new FieldValueUI(), wpsClient);
-        linkClassUI(Enumeration.class, new EnumerationUI(), wpsClient);
-        linkClassUI(GeometryData.class, new GeometryUI(), wpsClient);
+        linkClassUI(RawDataOld.class, new RawDataUI(), wpsClient);
+        linkClassUI(DataStoreOld.class, new DataStoreUI(), wpsClient);
+        linkClassUI(DataFieldOld.class, new DataFieldUI(), wpsClient);
+        linkClassUI(FieldValueOld.class, new FieldValueUI(), wpsClient);
+        linkClassUI(EnumerationOld.class, new EnumerationUI(), wpsClient);
+        linkClassUI(GeometryDataOld.class, new GeometryUI(), wpsClient);
     }
 
     /**
