@@ -19,6 +19,9 @@
 
 package org.orbisgis.wpsservice;
 
+import net.opengis.ows.v_2_0.*;
+import net.opengis.wps.v_2_0.*;
+import net.opengis.wps.v_2_0.GetCapabilitiesType;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
@@ -27,7 +30,6 @@ import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.corejdbc.*;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
@@ -66,6 +68,23 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     private static final String WPS_SCRIPT_FOLDER = "Scripts";
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
+
+    private static final String WPS_VERSION = "2.0.0";
+    private static final String WPS = "WPS";
+    private static final String LANG = "en";
+    private static final String SERVICE_TITLE = "OrbisGIS Local WPS";
+    private static final String SERVICE_ABSTRACT = "OrbisGIS local instance of the WPS Service";
+    private static final String ORBISGIS = "ORBISGIS";
+    private static final String ORBISGIS_WEBSITE = "http://orbisgis.org/";
+    private static final String ORBISGIS_INFO_MAIL = "info@orbisgis.org";
+    private static final String OPERATION_GETCAPABILITIES = "GetCapabilities";
+    private static final String OPERATION_DESCRIBEPROCESS = "DescribeProcess";
+    private static final String OPERATION_EXECUTE = "Execute";
+    private static final String OPERATION_GETSTATUS = "GetStatus";
+    private static final String OPERATION_GETRESULT = "GetResult";
+    private static final String OPERATION_DISMISS = "Dismiss";
+    private static final String OPTION_SYNC_EXEC = "sync-execute";
+    private static final String OPTION_ASYNC_EXEC = "async-execute";
     /**Array of the table type accepted. */
     private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL"};
 
@@ -347,6 +366,182 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     @Override
+    public WPSCapabilitiesType getCapabilities(GetCapabilitiesType getCapabilities) {
+        WPSCapabilitiesType capabilitiesType = new WPSCapabilitiesType();
+        capabilitiesType.setVersion(WPS_VERSION);
+
+        /** Sets the ServiceIdentification **/
+        ServiceIdentification serviceIdentification = new ServiceIdentification();
+
+        //ServiceIdentification title
+        List<LanguageStringType> titleStringTypeList = new ArrayList<>();
+        //EN title language string type
+        LanguageStringType enLanguageTitle = new LanguageStringType();
+        enLanguageTitle.setLang("en");
+        enLanguageTitle.setValue(SERVICE_TITLE);
+        titleStringTypeList.add(enLanguageTitle);
+        serviceIdentification.setTitle(titleStringTypeList);
+
+        //ServiceIdentification abstract
+        List<LanguageStringType> abstractStringTypeList = new ArrayList<>();
+        //EN abstract language string type
+        LanguageStringType enLanguageAbstract = new LanguageStringType();
+        enLanguageAbstract.setLang(LANG);
+        enLanguageAbstract.setValue(SERVICE_ABSTRACT);
+        abstractStringTypeList.add(enLanguageAbstract);
+        serviceIdentification.setAbstract(abstractStringTypeList);
+
+        //ServiceIdentification keywords
+        List<KeywordsType> keywordList = new ArrayList<>();
+        KeywordsType keyword = new KeywordsType();
+        //List of keyword
+        List<LanguageStringType> keywordStringTypeList = new ArrayList<>();
+        //'toolbox' keyword
+        LanguageStringType toolboxEnKeyword = new LanguageStringType();
+        toolboxEnKeyword.setLang(LANG);
+        toolboxEnKeyword.setLang("Toolbox");
+        keywordStringTypeList.add(toolboxEnKeyword);
+        //'WPS' keyword
+        LanguageStringType wpsEnKeyword = new LanguageStringType();
+        wpsEnKeyword.setLang(LANG);
+        wpsEnKeyword.setLang("WPS");
+        keywordStringTypeList.add(wpsEnKeyword);
+        //'OrbisGIS' keyword
+        LanguageStringType orbisgisEnKeyword = new LanguageStringType();
+        orbisgisEnKeyword.setLang(LANG);
+        orbisgisEnKeyword.setLang("OrbisGIS");
+        keywordStringTypeList.add(orbisgisEnKeyword);
+        keyword.setKeyword(keywordStringTypeList);
+        keywordList.add(keyword);
+        serviceIdentification.setKeywords(keywordList);
+
+        //ServiceIdentification ServiceType
+        CodeType serviceCodeType = new CodeType();
+        serviceCodeType.setValue(WPS);
+        serviceIdentification.setServiceType(serviceCodeType);
+
+        //ServiceIdentification ServiceTypeVersion
+        List<String> serviceTypeVersionList = new ArrayList<>();
+        serviceTypeVersionList.add(WPS_VERSION);
+        serviceIdentification.setServiceTypeVersion(serviceTypeVersionList);
+
+        capabilitiesType.setServiceIdentification(serviceIdentification);
+
+        /** Sets the ServiceProvider **/
+        ServiceProvider serviceProvider = new ServiceProvider();
+        serviceProvider.setProviderName(ORBISGIS);
+        OnlineResourceType onlineResourceType = new OnlineResourceType();
+        onlineResourceType.setHref(ORBISGIS_WEBSITE);
+        serviceProvider.setProviderSite(onlineResourceType);
+        ResponsiblePartySubsetType responsiblePartySubsetType = new ResponsiblePartySubsetType();
+        ContactType contactType = new ContactType();
+        AddressType addressType = new AddressType();
+        List<String> mailAddressList = new ArrayList<>();
+        mailAddressList.add(ORBISGIS_INFO_MAIL);
+        addressType.setElectronicMailAddress(mailAddressList);
+        contactType.setAddress(addressType);
+        responsiblePartySubsetType.setContactInfo(contactType);
+        serviceProvider.setServiceContact(responsiblePartySubsetType);
+        capabilitiesType.setServiceProvider(serviceProvider);
+
+
+        /** Sets the OperationMetadata **/
+        OperationsMetadata operationsMetadata = new OperationsMetadata();
+        List<Operation> operationList = new ArrayList<>();
+        Operation getCapaOperation = new Operation();
+        getCapaOperation.setName(OPERATION_GETCAPABILITIES);
+        getCapaOperation.setDCP(new ArrayList<DCP>());
+        operationList.add(getCapaOperation);
+        Operation describeOperation = new Operation();
+        describeOperation.setName(OPERATION_DESCRIBEPROCESS);
+        describeOperation.setDCP(new ArrayList<DCP>());
+        operationList.add(describeOperation);
+        Operation executeOperation = new Operation();
+        executeOperation.setName(OPERATION_EXECUTE);
+        executeOperation.setDCP(new ArrayList<DCP>());
+        operationList.add(executeOperation);
+        Operation getStatusOperation = new Operation();
+        getStatusOperation.setName(OPERATION_GETSTATUS);
+        getStatusOperation.setDCP(new ArrayList<DCP>());
+        operationList.add(getStatusOperation);
+        Operation getResultOperation = new Operation();
+        getResultOperation.setName(OPERATION_GETRESULT);
+        getResultOperation.setDCP(new ArrayList<DCP>());
+        operationList.add(getResultOperation);
+        operationsMetadata.setOperation(operationList);
+        capabilitiesType.setOperationsMetadata(operationsMetadata);
+
+        /** Sets the Contents **/
+        Contents contents = new Contents();
+        List<ProcessSummaryType> processSummaryTypeList = new ArrayList<>();
+        //TODO get the process List
+        List<ProcessDescriptionType> processList = getProcessList();
+        for(ProcessDescriptionType process : processList) {
+            ProcessSummaryType processSummaryType = new ProcessSummaryType();
+            List<String> options = new ArrayList<>();
+            options.add(OPTION_ASYNC_EXEC);
+            options.add(OPTION_SYNC_EXEC);
+            processSummaryType.setJobControlOptions(options);
+            processSummaryType.setAbstract(process.getAbstract());
+            processSummaryType.setIdentifier(process.getIdentifier());
+            processSummaryType.setKeywords(process.getKeywords());
+            processSummaryType.setMetadata(process.getMetadata());
+            processSummaryType.setTitle(process.getTitle());
+
+            processSummaryTypeList.add(processSummaryType);
+        }
+        contents.setProcessSummary(processSummaryTypeList);
+        capabilitiesType.setContents(contents);
+        /** Sets the UpdateSequence **/
+        //No UpdateSequence
+        //capabilitiesType.setUpdateSequence();
+        /** Sets the Extension **/
+        //No Extension
+        //capabilitiesType.setExtension();
+        return capabilitiesType;
+    }
+
+    @Override
+    public ProcessOfferings describeProcess(DescribeProcess describeProcess) {
+        List<CodeType> idList = describeProcess.getIdentifier();
+
+        ProcessOfferings processOfferings = new ProcessOfferings();
+        List<ProcessOffering> processOfferingList = new ArrayList<>();
+        for(CodeType id : idList) {
+            ProcessOffering processOffering = new ProcessOffering();
+            List<String> jobOption = new ArrayList<>();
+            jobOption.add(OPTION_ASYNC_EXEC);
+            jobOption.add(OPTION_SYNC_EXEC);
+            processOffering.setJobControlOptions(jobOption);
+            //TODO get the process from the identifier
+            processOffering.setProcess(getProcessFromIdentifier(id));
+            processOfferingList.add(processOffering);
+        }
+        processOfferings.setProcessOffering(processOfferingList);
+        return processOfferings;
+    }
+
+    @Override
+    public Object execute(ExecuteRequestType execute) {
+        return null;
+    }
+
+    @Override
+    public StatusInfo getStatus(GetStatus getStatus) {
+        return null;
+    }
+
+    @Override
+    public Result getResult(GetResult getResult) {
+        return null;
+    }
+
+    @Override
+    public String callOperation(String xml) {
+        return null;
+    }
+
+    @Override
     public boolean checkFolder(URI uri){
         File f = new File(uri);
         if(f.exists() && f.isDirectory()){
@@ -505,7 +700,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     public List<String> getFieldValueList(String tableName, String fieldName) {
         List<String> fieldValues = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            tableName = TableLocation.parse(tableName, isH2).toString(isH2);
+            tableName = TableLocation.parse(tableName, isH2).getTable();
             List<String> fieldNames = JDBCUtilities.getFieldNames(connection.getMetaData(), tableName);
             if(fieldNames.isEmpty()){
                 return fieldValues;
@@ -607,7 +802,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 ((Statement)object).close();
             } catch (SQLException e) {
                 LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to cancel the lodaing of '"+
-                uri+"'.\n"+e.getMessage());
+                        uri+"'.\n"+e.getMessage());
             }
         }
         //If the object from the map is a ProgressVisitor, cancel it.
@@ -806,5 +1001,15 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 wpsService.onDataManagerChange();
             }
         }
+    }
+
+    //TODO implements the method returning the list of the processes.
+    private List<ProcessDescriptionType> getProcessList(){
+        return null;
+    }
+
+    //TODO implements the method returning the process from the identifier.
+    private ProcessDescriptionType getProcessFromIdentifier(CodeType identifier){
+        return null;
     }
 }
