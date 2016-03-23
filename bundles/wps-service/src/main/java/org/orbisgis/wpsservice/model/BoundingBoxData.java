@@ -32,6 +32,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class BoundingBoxData extends DataDescription {
     /** The supported CRS for BoundingBox data. */
     private List<SupportedCRS> supportedCRSs;

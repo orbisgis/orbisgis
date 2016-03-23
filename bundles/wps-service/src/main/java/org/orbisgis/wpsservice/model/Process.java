@@ -32,6 +32,7 @@ import java.util.Locale;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class Process extends DescriptionType {
     /** List of the process input. */
     private List<Input> input;

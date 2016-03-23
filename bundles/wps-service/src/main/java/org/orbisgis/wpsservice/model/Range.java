@@ -30,6 +30,7 @@ package org.orbisgis.wpsservice.model;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class Range extends Values {
     /**
      * Minimum value of the range (can not be null)

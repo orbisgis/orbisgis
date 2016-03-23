@@ -32,6 +32,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class DescriptionType {
 
     /** Title of a process, input, and output. Normally available for display to a human. */

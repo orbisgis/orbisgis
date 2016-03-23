@@ -29,6 +29,7 @@ import java.net.URI;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class Format {
     /** Media type of the data. */
     private String mimeType;

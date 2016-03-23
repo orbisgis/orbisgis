@@ -8,6 +8,7 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  */
+@Deprecated
 public class GeometryData extends ComplexData {
 
     /** List of type accepted for the geometry.*/

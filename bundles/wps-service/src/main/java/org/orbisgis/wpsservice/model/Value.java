@@ -26,6 +26,7 @@ package org.orbisgis.wpsservice.model;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class Value<T> extends Values {
     /** String representation of the value. */
     private T value;

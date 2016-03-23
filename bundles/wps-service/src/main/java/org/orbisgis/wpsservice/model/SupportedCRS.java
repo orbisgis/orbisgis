@@ -34,6 +34,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class SupportedCRS {
 
     /** References to a CRS definition. */

@@ -25,6 +25,7 @@ import java.net.URI;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class Metadata {
     /** Title of the documentation. Normally available for display to a human. */
     private String title;

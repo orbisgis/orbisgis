@@ -34,6 +34,7 @@ import java.net.URISyntaxException;
  */
 
 
+@Deprecated
 public enum DataType {
     //LiteralData types
     NUMBER("number"),

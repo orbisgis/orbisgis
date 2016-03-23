@@ -35,6 +35,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class Output extends DescriptionType {
     /** Data type and domain of this output. */
     private DataDescription dataDescription;
