@@ -15,11 +15,11 @@ import java.lang.reflect.Field;
 public class ValuesConvertTest {
 
 
-    /*********************
-     * FULL RANGE VALUES *
-     *********************/
+    /**************
+     * FULL RANGE *
+     **************/
 
-    /** Field containing the full Values annotation. */
+    /** Field containing the full annotation. */
     @ValuesAttribute(
             type = ValuesType.RANGE,
             maximum = "maximum",
@@ -27,21 +27,21 @@ public class ValuesConvertTest {
             spacing = "spacing",
             value = "value"
     )
-    public Object fullRangeValuesAttribute;
-    /** Name of the field containing the fullRangeValuesAttribute annotation. */
-    private static final String FULL_RANGE_VALUES_ATTRIBUTE_FIELD_NAME = "fullRangeValuesAttribute";
+    public Object fullRangeAttribute;
+    /** Name of the field containing the fullRangeAttribute annotation. */
+    private static final String FULL_RANGE_ATTRIBUTE_FIELD_NAME = "fullRangeAttribute";
 
     /**
-     * Test if the decoding and convert of the full range Values annotation into its java object is valid.
+     * Test if the decoding and convert of the full range annotation into its java object is valid.
      */
     @Test
-    public void testFullRangeValuesAttributeConvert() {
+    public void testFullRangeAttributeConvert() {
         try {
             boolean annotationFound = false;
             //Retrieve the Values object
             Object object = null;
             //Inspect all the annotation of the field to get the ValuesAttribute one
-            Field valuesField = this.getClass().getDeclaredField(FULL_RANGE_VALUES_ATTRIBUTE_FIELD_NAME);
+            Field valuesField = this.getClass().getDeclaredField(FULL_RANGE_ATTRIBUTE_FIELD_NAME);
             for (Annotation annotation : valuesField.getDeclaredAnnotations()) {
                 //Once the annotation is get, decode it.
                 if (annotation instanceof ValuesAttribute) {
@@ -54,7 +54,7 @@ public class ValuesConvertTest {
             //If the annotation hasn't been found, the test has failed.
             if (!annotationFound || object == null) {
                 Assert.fail("Unable to get the annotation '@ValuesAttribute' from the field '" +
-                        FULL_RANGE_VALUES_ATTRIBUTE_FIELD_NAME + "'.");
+                        FULL_RANGE_ATTRIBUTE_FIELD_NAME + "'.");
             }
             String messageClass = "The parsed value should be a '"+RangeType.class.getCanonicalName()+"' instance of '"+
                     object.getClass().getCanonicalName()+"'.";
@@ -104,35 +104,35 @@ public class ValuesConvertTest {
             Assert.assertTrue(messageSpacing, conditionSpacing);
 
         } catch (NoSuchFieldException e) {
-            Assert.fail("Unable to get the field '" + FULL_RANGE_VALUES_ATTRIBUTE_FIELD_NAME + "' from the class '" +
+            Assert.fail("Unable to get the field '" + FULL_RANGE_ATTRIBUTE_FIELD_NAME + "' from the class '" +
                     this.getClass().getCanonicalName() + "'.");
         }
     }
 
 
-    /************************
-     * MINIMAL RANGE VALUES *
-     ************************/
+    /*****************
+     * MINIMAL RANGE *
+     *****************/
 
-    /** Field containing the minimal Range Values annotation. */
+    /** Field containing the minimal Range annotation. */
     @ValuesAttribute(
             type = ValuesType.RANGE
     )
-    public Object minimalRangeValuesAttribute;
-    /** Name of the field containing the minimalRangeValuesAttribute annotation. */
-    private static final String MINIMAL_RANGE_VALUES_ATTRIBUTE_FIELD_NAME = "minimalRangeValuesAttribute";
+    public Object minimalRangeAttribute;
+    /** Name of the field containing the minimalRangeAttribute annotation. */
+    private static final String MINIMAL_RANGE_ATTRIBUTE_FIELD_NAME = "minimalRangeAttribute";
 
     /**
-     * Test if the decoding and convert of the minimal range Values annotation into its java object is valid.
+     * Test if the decoding and convert of the minimal range annotation into its java object is valid.
      */
     @Test
-    public void testMinimalRangeValuesAttributeConvert() {
+    public void testMinimalRangeAttributeConvert() {
         try {
             boolean annotationFound = false;
             //Retrieve the Values object
             Object object = null;
             //Inspect all the annotation of the field to get the ValuesAttribute one
-            Field valuesField = this.getClass().getDeclaredField(MINIMAL_RANGE_VALUES_ATTRIBUTE_FIELD_NAME);
+            Field valuesField = this.getClass().getDeclaredField(MINIMAL_RANGE_ATTRIBUTE_FIELD_NAME);
             for (Annotation annotation : valuesField.getDeclaredAnnotations()) {
                 //Once the annotation is get, decode it.
                 if (annotation instanceof ValuesAttribute) {
@@ -145,7 +145,7 @@ public class ValuesConvertTest {
             //If the annotation hasn't been found, the test has failed.
             if (!annotationFound || object == null) {
                 Assert.fail("Unable to get the annotation '@ValuesAttribute' from the field '" +
-                        MINIMAL_RANGE_VALUES_ATTRIBUTE_FIELD_NAME + "'.");
+                        MINIMAL_RANGE_ATTRIBUTE_FIELD_NAME + "'.");
             }
             String messageClass = "The parsed value should be a '"+RangeType.class.getCanonicalName()+"' instance of '"+
                     object.getClass().getCanonicalName()+"'.";
@@ -183,7 +183,130 @@ public class ValuesConvertTest {
             Assert.assertTrue(messageSpacing, conditionSpacing);
 
         } catch (NoSuchFieldException e) {
-            Assert.fail("Unable to get the field '" + MINIMAL_RANGE_VALUES_ATTRIBUTE_FIELD_NAME + "' from the class '" +
+            Assert.fail("Unable to get the field '" + MINIMAL_RANGE_ATTRIBUTE_FIELD_NAME + "' from the class '" +
+                    this.getClass().getCanonicalName() + "'.");
+        }
+    }
+
+
+    /***************
+     * FULL VALUES *
+     ***************/
+
+    /** Field containing the full Values annotation. */
+    @ValuesAttribute(
+            type = ValuesType.VALUE,
+            maximum = "maximum",
+            minimum = "minimum",
+            spacing = "spacing",
+            value = "value"
+    )
+    public Object fullValueAttribute;
+    /** Name of the field containing the fullValueAttribute annotation. */
+    private static final String FULL_VALUE_ATTRIBUTE_FIELD_NAME = "fullValueAttribute";
+
+    /**
+     * Test if the decoding and convert of the full value annotation into its java object is valid.
+     */
+    @Test
+    public void testFullRangeValuesAttributeConvert() {
+        try {
+            boolean annotationFound = false;
+            //Retrieve the Values object
+            Object object = null;
+            //Inspect all the annotation of the field to get the ValuesAttribute one
+            Field valuesField = this.getClass().getDeclaredField(FULL_VALUE_ATTRIBUTE_FIELD_NAME);
+            for (Annotation annotation : valuesField.getDeclaredAnnotations()) {
+                //Once the annotation is get, decode it.
+                if (annotation instanceof ValuesAttribute) {
+                    annotationFound = true;
+                    ValuesAttribute valuesAnnotation = (ValuesAttribute) annotation;
+                    object = ObjectAnnotationConverter.annotationToObject(valuesAnnotation);
+                }
+            }
+
+            //If the annotation hasn't been found, the test has failed.
+            if (!annotationFound || object == null) {
+                Assert.fail("Unable to get the annotation '@ValuesAttribute' from the field '" +
+                        FULL_VALUE_ATTRIBUTE_FIELD_NAME + "'.");
+            }
+            String messageClass = "The parsed value should be a '"+ValueType.class.getCanonicalName()+"' instance of '"+
+                    object.getClass().getCanonicalName()+"'.";
+            boolean conditionClass = object instanceof ValueType;
+            Assert.assertTrue(messageClass, conditionClass);
+
+            ValueType valueType = (ValueType) object;
+
+            ////////////////////////////////////
+            // Build the Range Values to test //
+            ////////////////////////////////////
+
+            ValueType toTest = new ValueType();
+            toTest.setValue("value");
+
+            ////////////////////////////
+            // Tests the Range Values //
+            ////////////////////////////
+
+            //Test the value
+            String messageValue = "The value is not the one expected (" +
+                    valueType.getValue() + " instead of " + toTest.getValue();
+            boolean conditionValue = valueType.getValue().equals(toTest.getValue());
+            Assert.assertTrue(messageValue, conditionValue);
+
+        } catch (NoSuchFieldException e) {
+            Assert.fail("Unable to get the field '" + FULL_VALUE_ATTRIBUTE_FIELD_NAME + "' from the class '" +
+                    this.getClass().getCanonicalName() + "'.");
+        }
+    }
+
+
+    /*****************
+     * MINIMAL VALUE *
+     *****************/
+
+    /** Field containing the minimal Value annotation. */
+    @ValuesAttribute(
+            type = ValuesType.VALUE
+    )
+    public Object minimalValueAttribute;
+    /** Name of the field containing the minimalValueAttribute annotation. */
+    private static final String MINIMAL_VALUE_ATTRIBUTE_FIELD_NAME = "minimalValueAttribute";
+
+    /**
+     * Test if the decoding and convert of the minimal value annotation into its java object is valid.
+     */
+    @Test
+    public void testMinimalValueAttributeConvert() {
+        try {
+            boolean annotationFound = false;
+            //Retrieve the Values object
+            Object object = null;
+            //Inspect all the annotation of the field to get the ValuesAttribute one
+            Field valuesField = this.getClass().getDeclaredField(MINIMAL_VALUE_ATTRIBUTE_FIELD_NAME);
+            for (Annotation annotation : valuesField.getDeclaredAnnotations()) {
+                //Once the annotation is get, decode it.
+                if (annotation instanceof ValuesAttribute) {
+                    annotationFound = true;
+                    ValuesAttribute valuesAnnotation = (ValuesAttribute) annotation;
+                    object = ObjectAnnotationConverter.annotationToObject(valuesAnnotation);
+                }
+            }
+
+            //If the annotation hasn't been found, the test has failed.
+            if (!annotationFound) {
+                Assert.fail("Unable to get the annotation '@ValuesAttribute' from the field '" +
+                        MINIMAL_VALUE_ATTRIBUTE_FIELD_NAME + "'.");
+            }
+            boolean conditionValue = object == null;
+            if(!conditionValue) {
+                String messageValue = "The value is not the one expected (" +
+                        ((ValueType) object).getValue() + " instead of " + null;
+                Assert.assertTrue(messageValue, conditionValue);
+            }
+
+        } catch (NoSuchFieldException e) {
+            Assert.fail("Unable to get the field '" + MINIMAL_VALUE_ATTRIBUTE_FIELD_NAME + "' from the class '" +
                     this.getClass().getCanonicalName() + "'.");
         }
     }

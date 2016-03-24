@@ -166,11 +166,14 @@ public class ObjectAnnotationConverter {
 
     public static Object annotationToObject(ValuesAttribute valueAttribute){
         if(valueAttribute.type().equals(ValuesType.VALUE)){
+            if(valueAttribute.value().equals(ValuesAttribute.defaultValue)){
+                return null;
+            }
             ValueType value = new ValueType();
             value.setValue(valueAttribute.value());
             return value;
         }
-        else{
+        else if(valueAttribute.type().equals(ValuesType.RANGE)){
             RangeType range = new RangeType();
             if(!valueAttribute.spacing().equals(ValuesAttribute.defaultSpacing)) {
                 ValueType spacing = new ValueType();
@@ -189,6 +192,7 @@ public class ObjectAnnotationConverter {
             }
             return range;
         }
+        return null;
     }
 
     public static LiteralDataDomain annotationToObject(LiteralDataDomainAttribute literalDataDomainAttribute){
