@@ -172,17 +172,21 @@ public class ObjectAnnotationConverter {
         }
         else{
             RangeType range = new RangeType();
-            if(!valueAttribute.spacing().isEmpty()) {
+            if(!valueAttribute.spacing().equals(ValuesAttribute.defaultSpacing)) {
                 ValueType spacing = new ValueType();
                 spacing.setValue(valueAttribute.spacing());
                 range.setSpacing(spacing);
             }
-            ValueType max = new ValueType();
-            max.setValue(valueAttribute.maximum());
-            range.setMaximumValue(max);
-            ValueType min = new ValueType();
-            min.setValue(valueAttribute.minimum());
-            range.setMinimumValue(min);
+            if(!valueAttribute.maximum().equals(ValuesAttribute.defaultMaximum)){
+                ValueType max = new ValueType();
+                max.setValue(valueAttribute.maximum());
+                range.setMaximumValue(max);
+            }
+            if(!valueAttribute.minimum().equals(ValuesAttribute.defaultMinimum)){
+                ValueType min = new ValueType();
+                min.setValue(valueAttribute.minimum());
+                range.setMinimumValue(min);
+            }
             return range;
         }
     }
