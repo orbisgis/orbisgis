@@ -237,8 +237,16 @@ public class ObjectAnnotationConverter {
             formatList.get(0).setDefault(true);
         }
         else {
+            boolean isDefault = false;
             for (FormatAttribute formatAttribute : literalDataAttribute.formats()) {
-                formatList.add(ObjectAnnotationConverter.annotationToObject(formatAttribute));
+                Format format = ObjectAnnotationConverter.annotationToObject(formatAttribute);
+                if(format.isDefault()){
+                    isDefault = true;
+                }
+                formatList.add(format);
+            }
+            if(!isDefault){
+                formatList.get(0).setDefault(true);
             }
         }
         literalDataType.setFormat(formatList);
@@ -259,8 +267,16 @@ public class ObjectAnnotationConverter {
             lddList.add(literalDataDomain);
         }
         else {
+            boolean isDefault = false;
             for (LiteralDataDomainAttribute literalDataDomainAttribute : literalDataAttribute.validDomains()) {
-                lddList.add(ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute));
+                LiteralDataDomain ldd = ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute);
+                if(ldd.isDefault()){
+                    isDefault = true;
+                }
+                lddList.add(ldd);
+            }
+            if(!isDefault){
+                lddList.get(0).setDefault(true);
             }
         }
         literalDataType.setLiteralDataDomain(lddList);
