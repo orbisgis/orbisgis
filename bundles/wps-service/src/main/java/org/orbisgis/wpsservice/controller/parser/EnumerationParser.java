@@ -53,7 +53,7 @@ public class EnumerationParser implements Parser{
     public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
         //Instantiate the DataStore and its formats
         EnumerationAttribute enumerationAttribute = f.getAnnotation(EnumerationAttribute.class);
-        Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
+        Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         Enumeration enumeration = ObjectAnnotationConverter.annotationToObject(enumerationAttribute, format);
 
         InputDescriptionType input = new InputDescriptionType();
@@ -77,7 +77,7 @@ public class EnumerationParser implements Parser{
     public OutputDescriptionType parseOutput(Field f, String processId) {
         //Instantiate the DataStore and its formats
         EnumerationAttribute enumerationAttribute = f.getAnnotation(EnumerationAttribute.class);
-        Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
+        Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         Enumeration enumeration = ObjectAnnotationConverter.annotationToObject(enumerationAttribute, format);
 
         OutputDescriptionType output = new OutputDescriptionType();

@@ -233,7 +233,7 @@ public class ObjectAnnotationConverter {
 
         List<Format> formatList = new ArrayList<>();
         if(literalDataAttribute.formats().length == 0){
-            formatList.add(FormatFactory.getFormatFromExtension(""));
+            formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
             formatList.get(0).setDefault(true);
         }
         else {

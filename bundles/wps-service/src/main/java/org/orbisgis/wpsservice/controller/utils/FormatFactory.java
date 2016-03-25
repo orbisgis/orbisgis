@@ -36,7 +36,7 @@ public class FormatFactory {
     public static final String SQL_EXTENSION = "sqlTable";
     public static final String WKT_EXTENSION = "wkt";
     public static final String GEOMETRY_EXTENSION = "geometry";
-    public static final String OTHER_EXTENSION = "*";
+    public static final String TEXT_EXTENSION = ".txt";
 
     public static final String GEOCATALOG_EXTENSION = "geocatalog";
     public static final String DATABASE_EXTENSION = "dataBase";
@@ -45,7 +45,7 @@ public class FormatFactory {
     public static final String GEOJSON_MIMETYPE = "application/json";
     public static final String SQL_MIMETYPE = "custom/sql";
     public static final String WKT_MIMETYPE = "custom/wkt";
-    public static final String OTHER_MIMETYPE = "custom/other";
+    public static final String TEXT_MIMETYPE = "text/plain";
 
     public static final String SHAPEFILE_URI = "https://tools.ietf.org/html/rfc2046";
     public static final String GEOJSON_URI = "https://tools.ietf.org/html/rfc4627";
@@ -82,7 +82,7 @@ public class FormatFactory {
                 format.setSchema(WKT_URI);
                 break;
             default:
-                format.setMimeType(OTHER_MIMETYPE);
+                format.setMimeType(TEXT_MIMETYPE);
                 format.setSchema(OTHER_URI);
                 break;
         }
@@ -130,8 +130,8 @@ public class FormatFactory {
                 return SQL_DESCRIPTION;
             case WKT_MIMETYPE:
                 return WKT_DESCRIPTION;
-            case OTHER_MIMETYPE:
-                return OTHER_EXTENSION;
+            case TEXT_MIMETYPE:
+                return TEXT_EXTENSION;
             default:
                 return format.getMimeType();
         }
@@ -152,8 +152,8 @@ public class FormatFactory {
                 return SQL_DESCRIPTION;
             case WKT_MIMETYPE:
                 return WKT_DESCRIPTION;
-            case OTHER_MIMETYPE:
-                return OTHER_EXTENSION;
+            case TEXT_MIMETYPE:
+                return TEXT_EXTENSION;
             default:
                 return format.getMimeType();
         }

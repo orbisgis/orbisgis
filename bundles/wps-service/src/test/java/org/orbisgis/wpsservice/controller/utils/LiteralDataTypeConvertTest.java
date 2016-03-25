@@ -98,7 +98,7 @@ public class LiteralDataTypeConvertTest {
                 }
             }
             boolean conditionLdd = isDefaultLdd && onlyOneDefaultLdd;
-            Assert.assertTrue(messageFormat, conditionLdd);
+            Assert.assertTrue(messageLdd, conditionLdd);
 
         } catch (NoSuchFieldException e) {
             Assert.fail("Unable to get the field '" + FULL_LITERAL_DATA_ATTRIBUTE_FIELD_NAME + "' from the class '" +
@@ -112,24 +112,7 @@ public class LiteralDataTypeConvertTest {
      ************************/
 
     /** Field containing the minimal LiteralDataAttribute annotation. */
-    @LiteralDataAttribute(
-            formats = {
-                    @FormatAttribute(mimeType = "mimetype", schema = "schema"),
-                    @FormatAttribute(mimeType = "mimetype", schema = "schema")
-            },
-            validDomains = {
-                    @LiteralDataDomainAttribute(
-                            possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(),
-                            dataType = "STRING",
-                            defaultValue = @ValuesAttribute(value = "value")
-                    ),
-                    @LiteralDataDomainAttribute(
-                            possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(),
-                            dataType = "STRING",
-                            defaultValue = @ValuesAttribute(value = "value")
-                    )
-            }
-    )
+    @LiteralDataAttribute()
     public Object minimalLiteralDataAttribute;
     /** Name of the field containing the minimalLiteralDataAttribute annotation. */
     private static final String MINIMAL_LITERAL_DATA_ATTRIBUTE_FIELD_NAME = "minimalLiteralDataAttribute";
@@ -192,7 +175,7 @@ public class LiteralDataTypeConvertTest {
                 }
             }
             boolean conditionLdd = isDefaultLdd && onlyOneDefaultLdd;
-            Assert.assertTrue(messageFormat, conditionLdd);
+            Assert.assertTrue(messageLdd, conditionLdd);
 
         } catch (NoSuchFieldException e) {
             Assert.fail("Unable to get the field '" + MINIMAL_LITERAL_DATA_ATTRIBUTE_FIELD_NAME + "' from the class '" +
