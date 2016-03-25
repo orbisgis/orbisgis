@@ -56,7 +56,7 @@ public class ValuesConvertTest {
                 Assert.fail("Unable to get the annotation '@ValuesAttribute' from the field '" +
                         FULL_RANGE_ATTRIBUTE_FIELD_NAME + "'.");
             }
-            String messageClass = "The parsed value should be a '"+RangeType.class.getCanonicalName()+"' instance of '"+
+            String messageClass = "The parsed value should be a '"+RangeType.class.getCanonicalName()+"' instead of '"+
                     object.getClass().getCanonicalName()+"'.";
             boolean conditionClass = object instanceof RangeType;
             Assert.assertTrue(messageClass, conditionClass);
@@ -147,7 +147,7 @@ public class ValuesConvertTest {
                 Assert.fail("Unable to get the annotation '@ValuesAttribute' from the field '" +
                         MINIMAL_RANGE_ATTRIBUTE_FIELD_NAME + "'.");
             }
-            String messageClass = "The parsed value should be a '"+RangeType.class.getCanonicalName()+"' instance of '"+
+            String messageClass = "The parsed value should be a '"+RangeType.class.getCanonicalName()+"' instead of '"+
                     object.getClass().getCanonicalName()+"'.";
             boolean conditionClass = object instanceof RangeType;
             Assert.assertTrue(messageClass, conditionClass);
@@ -230,7 +230,7 @@ public class ValuesConvertTest {
                 Assert.fail("Unable to get the annotation '@ValuesAttribute' from the field '" +
                         FULL_VALUE_ATTRIBUTE_FIELD_NAME + "'.");
             }
-            String messageClass = "The parsed value should be a '"+ValueType.class.getCanonicalName()+"' instance of '"+
+            String messageClass = "The parsed value should be a '"+ValueType.class.getCanonicalName()+"' instead of '"+
                     object.getClass().getCanonicalName()+"'.";
             boolean conditionClass = object instanceof ValueType;
             Assert.assertTrue(messageClass, conditionClass);
