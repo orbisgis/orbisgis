@@ -24,12 +24,13 @@ import net.opengis.wps.v_2_0.*;
 import net.opengis.wps.v_2_0.DescriptionType;
 import net.opengis.wps.v_2_0.Format;
 import net.opengis.wps.v_2_0.LiteralDataType.LiteralDataDomain;
+import org.hisrc.w3c.xlink.v_1_0.TypeType;
 import org.orbisgis.wpsgroovyapi.attributes.*;
 import org.orbisgis.wpsservice.model.*;
-import org.orbisgis.wpsservice.model.LiteralValue;
 import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.IncompleteAnnotationException;
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.URI;
@@ -48,14 +49,35 @@ public class ObjectAnnotationConverter {
 
     public static void annotationToObject(DescriptionTypeAttribute descriptionTypeAttribute,
                                           DescriptionType descriptionType){
-        if(!descriptionTypeAttribute.title().equals("")){
+        if(descriptionTypeAttribute.traducedTitles().length != DescriptionTypeAttribute.defaultTraducedTitles.length){
+            List<LanguageStringType> titleList = new ArrayList<>();
+            for(LanguageString languageString : descriptionTypeAttribute.traducedTitles()){
+                LanguageStringType title = new LanguageStringType();
+                title.setValue(languageString.value());
+                title.setLang(languageString.lang());
+                titleList.add(title);
+            }
+            descriptionType.setTitle(titleList);
+        }
+        else if(!descriptionTypeAttribute.title().equals("")){
             List<LanguageStringType> titleList = new ArrayList<>();
             LanguageStringType title = new LanguageStringType();
             title.setValue(descriptionTypeAttribute.title());
             titleList.add(title);
             descriptionType.setTitle(titleList);
         }
-        if(!descriptionTypeAttribute.resume().equals(DescriptionTypeAttribute.defaultResume)){
+
+        if(descriptionTypeAttribute.traducedResumes().length != DescriptionTypeAttribute.defaultTraducedResumes.length) {
+            List<LanguageStringType> resumeList = new ArrayList<>();
+            for(LanguageString languageString : descriptionTypeAttribute.traducedResumes()){
+                LanguageStringType resume = new LanguageStringType();
+                resume.setValue(languageString.value());
+                resume.setLang(languageString.lang());
+                resumeList.add(resume);
+            }
+            descriptionType.setAbstract(resumeList);
+        }
+        else if(!descriptionTypeAttribute.resume().equals(DescriptionTypeAttribute.defaultResume)){
             List<LanguageStringType> resumeList = new ArrayList<>();
             LanguageStringType resume = new LanguageStringType();
             resume.setValue(descriptionTypeAttribute.resume());
@@ -67,9 +89,27 @@ public class ObjectAnnotationConverter {
             codeType.setValue(descriptionTypeAttribute.identifier());
             descriptionType.setIdentifier(codeType);
         }
-        if(!descriptionTypeAttribute.keywords().equals(DescriptionTypeAttribute.defaultKeywords)){
+
+        if(descriptionTypeAttribute.traducedKeywords().length !=
+                DescriptionTypeAttribute.defaultTraducedKeywords.length) {
+            List<KeywordsType> keywordTypeList = new ArrayList<>();
+            for(Keyword keyword : descriptionTypeAttribute.traducedKeywords()) {
+                KeywordsType keywordsType = new KeywordsType();
+                List<LanguageStringType> keywordList = new ArrayList<>();
+                for (LanguageString languageString : keyword.traducedKeywords()) {
+                    LanguageStringType keywordString = new LanguageStringType();
+                    keywordString.setValue(languageString.value());
+                    keywordString.setLang(languageString.lang());
+                    keywordList.add(keywordString);
+                }
+                keywordsType.setKeyword(keywordList);
+                keywordTypeList.add(keywordsType);
+            }
+            descriptionType.setKeywords(keywordTypeList);
+        }
+        else if(descriptionTypeAttribute.keywords().length != DescriptionTypeAttribute.defaultKeywords.length){
             List<KeywordsType> keywordList = new ArrayList<>();
-            for(String key : descriptionTypeAttribute.keywords().split(",")){
+            for(String key : descriptionTypeAttribute.keywords()){
                 KeywordsType keyword = new KeywordsType();
                 List<LanguageStringType> stringList = new ArrayList<>();
                 LanguageStringType string = new LanguageStringType();
@@ -80,7 +120,19 @@ public class ObjectAnnotationConverter {
             }
             descriptionType.setKeywords(keywordList);
         }
-        //TODO : implements for metadata.
+        if(descriptionTypeAttribute.metadata().length != DescriptionTypeAttribute.defaultMetadata.length){
+            List<JAXBElement<? extends MetadataType>> metadataList = new ArrayList<>();
+            QName qname = new QName("http://orbisgis.org", "metadata");
+            for(MetadataAttribute metadataAttribute : descriptionTypeAttribute.metadata()){
+                MetadataType metadataType = new MetadataType();
+                metadataType.setHref(metadataAttribute.href());
+                metadataType.setRole(metadataAttribute.role());
+                metadataType.setTitle(metadataAttribute.title());
+                metadataType.setTYPE(TypeType.SIMPLE);
+                metadataList.add(new JAXBElement<>(qname, MetadataType.class, metadataType));
+            }
+            descriptionType.setMetadata(metadataList);
+        }
     }
 
     public static Format annotationToObject(FormatAttribute formatAttribute){
@@ -88,7 +140,13 @@ public class ObjectAnnotationConverter {
         format.setMimeType(formatAttribute.mimeType());
         format.setSchema(URI.create(formatAttribute.schema()).toString());
         format.setDefault(formatAttribute.isDefaultFormat());
-        format.setMaximumMegabytes(BigInteger.valueOf(formatAttribute.maximumMegaBytes()));
+        if(formatAttribute.maximumMegaBytes() == FormatAttribute.defaultMaximumMegaBytes) {
+            format.setMaximumMegabytes(null);
+        }
+        else{
+            format.setMaximumMegabytes(BigInteger.valueOf(formatAttribute.maximumMegaBytes()));
+        }
+        format.setEncoding(formatAttribute.encoding());
         return format;
     }
 
@@ -101,31 +159,40 @@ public class ObjectAnnotationConverter {
         metadata.setHref(href.toString());
         metadata.setRole(role.toString());
         metadata.setTitle(title);
+        metadata.setTYPE(TypeType.SIMPLE);
 
         return metadata;
     }
 
     public static Object annotationToObject(ValuesAttribute valueAttribute){
         if(valueAttribute.type().equals(ValuesType.VALUE)){
+            if(valueAttribute.value().equals(ValuesAttribute.defaultValue)){
+                return null;
+            }
             ValueType value = new ValueType();
             value.setValue(valueAttribute.value());
             return value;
         }
-        else{
+        else if(valueAttribute.type().equals(ValuesType.RANGE)){
             RangeType range = new RangeType();
-            if(!valueAttribute.spacing().isEmpty()) {
+            if(!valueAttribute.spacing().equals(ValuesAttribute.defaultSpacing)) {
                 ValueType spacing = new ValueType();
                 spacing.setValue(valueAttribute.spacing());
                 range.setSpacing(spacing);
             }
-            ValueType max = new ValueType();
-            max.setValue(valueAttribute.maximum());
-            range.setMaximumValue(max);
-            ValueType min = new ValueType();
-            min.setValue(valueAttribute.minimum());
-            range.setMinimumValue(min);
+            if(!valueAttribute.maximum().equals(ValuesAttribute.defaultMaximum)){
+                ValueType max = new ValueType();
+                max.setValue(valueAttribute.maximum());
+                range.setMaximumValue(max);
+            }
+            if(!valueAttribute.minimum().equals(ValuesAttribute.defaultMinimum)){
+                ValueType min = new ValueType();
+                min.setValue(valueAttribute.minimum());
+                range.setMinimumValue(min);
+            }
             return range;
         }
+        return null;
     }
 
     public static LiteralDataDomain annotationToObject(LiteralDataDomainAttribute literalDataDomainAttribute){
