@@ -1,7 +1,10 @@
 package org.orbisgis.wpsservice.controller.execution;
 
+import net.opengis.wps.v_2_0.DataDescriptionType;
+import net.opengis.wps.v_2_0.DescriptionType;
+import net.opengis.wps.v_2_0.OutputDescriptionType;
 import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.model.*;
+import org.orbisgis.wpsservice.model.RawData;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -20,7 +23,7 @@ public class RawDataProcessing implements DataProcessing {
     }
 
     @Override
-    public Class<? extends DataDescription> getDataClass() {
+    public Class<? extends DataDescriptionType> getDataClass() {
         return RawData.class;
     }
 
@@ -28,7 +31,7 @@ public class RawDataProcessing implements DataProcessing {
     public Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap,
                                            ProcessExecutionListener pel) {
         Map<URI, Object> map = new HashMap<>();
-        map.put(inputOrOutput.getIdentifier(), null);
+        map.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
         return map;
     }
 
@@ -36,13 +39,13 @@ public class RawDataProcessing implements DataProcessing {
     public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
                                 ProcessExecutionListener pel) {
         //Check if it is an output
-        if(inputOrOutput instanceof Output) {
-            Output output = (Output) inputOrOutput;
+        if(inputOrOutput instanceof OutputDescriptionType) {
+            OutputDescriptionType output = (OutputDescriptionType) inputOrOutput;
             //Check if the input is a GeometryData
-            if(output.getDataDescription() instanceof RawData) {
+            if(output.getDataDescription().getValue() instanceof RawData) {
                 if(pel != null) {
                     pel.appendLog(ProcessExecutionListener.LogType.INFO, "Output RawData '" +
-                            output.getTitle() + "' is '" + dataMap.get(output.getIdentifier()) + "'.");
+                            output.getTitle() + "' is '" + dataMap.get(URI.create(output.getIdentifier().getValue())) + "'.");
                 }
             }
         }

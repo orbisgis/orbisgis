@@ -19,13 +19,11 @@
 
 package org.orbisgis.wpsservice.controller.execution;
 
+import net.opengis.wps.v_2_0.DataDescriptionType;
+import net.opengis.wps.v_2_0.DescriptionType;
+import net.opengis.wps.v_2_0.InputDescriptionType;
+import net.opengis.wps.v_2_0.OutputDescriptionType;
 import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
-import org.orbisgis.wpsservice.WpsService;
-import org.orbisgis.wpsservice.model.DataDescription;
-import org.orbisgis.wpsservice.model.DescriptionType;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.Output;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -54,14 +52,14 @@ public class DataProcessingManager {
                                            ProcessExecutionListener pel){
         Map<URI, Object> stash = new HashMap<>();
         for(DataProcessing dp : listDataProcessing){
-            if(inputOrOutput instanceof Input) {
-                DataDescription dataDescription = ((Input)inputOrOutput).getDataDescription();
+            if(inputOrOutput instanceof InputDescriptionType) {
+                DataDescriptionType dataDescription = ((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
                     stash.putAll(dp.preProcessData(inputOrOutput, dataMap, pel));
                 }
             }
-            if(inputOrOutput instanceof Output) {
-                DataDescription dataDescription = ((Output)inputOrOutput).getDataDescription();
+            if(inputOrOutput instanceof OutputDescriptionType) {
+                DataDescriptionType dataDescription = ((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
                     stash.putAll(dp.preProcessData(inputOrOutput, dataMap, pel));
                 }
@@ -73,14 +71,14 @@ public class DataProcessingManager {
     public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
                                 ProcessExecutionListener pel){
         for(DataProcessing dp : listDataProcessing){
-            if(inputOrOutput instanceof Input) {
-                DataDescription dataDescription = ((Input) inputOrOutput).getDataDescription();
+            if(inputOrOutput instanceof InputDescriptionType) {
+                DataDescriptionType dataDescription = ((InputDescriptionType) inputOrOutput).getDataDescription().getValue();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
                     dp.postProcessData(inputOrOutput, dataMap, stash, pel);
                 }
             }
-            if(inputOrOutput instanceof Output) {
-                DataDescription dataDescription = ((Output) inputOrOutput).getDataDescription();
+            if(inputOrOutput instanceof OutputDescriptionType) {
+                DataDescriptionType dataDescription = ((OutputDescriptionType) inputOrOutput).getDataDescription().getValue();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
                     dp.postProcessData(inputOrOutput, dataMap, stash, pel);
                 }

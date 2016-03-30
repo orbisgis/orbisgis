@@ -24,7 +24,7 @@ import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
-import org.orbisgis.wpsservice.model.Enumeration;
+import org.orbisgis.wpsservice.model.EnumerationOld;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
@@ -68,16 +68,16 @@ public class EnumerationUI implements DataUI{
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         //Get the enumeration object
-        Enumeration enumeration = null;
+        EnumerationOld enumeration = null;
         boolean isOptional = false;
         if(inputOrOutput instanceof Input){
-            enumeration = (Enumeration)((Input)inputOrOutput).getDataDescription();
+            enumeration = (EnumerationOld)((Input)inputOrOutput).getDataDescription();
             if(((Input)inputOrOutput).getMinOccurs() == 0){
                 isOptional = true;
             }
         }
         else if(inputOrOutput instanceof Output){
-            enumeration = (Enumeration)((Output)inputOrOutput).getDataDescription();
+            enumeration = (EnumerationOld)((Output)inputOrOutput).getDataDescription();
         }
 
         if(enumeration == null){
@@ -163,14 +163,14 @@ public class EnumerationUI implements DataUI{
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         Map<URI, Object> map = new HashMap<>();
-        Enumeration enumeration = null;
+        EnumerationOld enumeration = null;
         boolean isOptional = false;
         if(inputOrOutput instanceof Input){
-            enumeration = (Enumeration)((Input)inputOrOutput).getDataDescription();
+            enumeration = (EnumerationOld)((Input)inputOrOutput).getDataDescription();
             isOptional = ((Input)inputOrOutput).getMinOccurs()==0;
         }
         else if(inputOrOutput instanceof Output){
-            enumeration = (Enumeration)((Output)inputOrOutput).getDataDescription();
+            enumeration = (EnumerationOld)((Output)inputOrOutput).getDataDescription();
         }
         if(!isOptional) {
             if(enumeration.getDefaultValues().length != 0) {
@@ -277,7 +277,7 @@ public class EnumerationUI implements DataUI{
             }
             dataMap.put(uri, listValues);
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
+            LoggerFactory.getLogger(DataStoreOld.class).error(e.getMessage());
         }
     }
 }

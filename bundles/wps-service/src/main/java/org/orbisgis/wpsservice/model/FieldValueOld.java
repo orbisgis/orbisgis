@@ -19,17 +19,14 @@
 
 package org.orbisgis.wpsservice.model;
 
-import net.opengis.wps.v_2_0.ComplexDataType;
-import net.opengis.wps.v_2_0.Format;
-
 import java.net.URI;
-import java.util.List;
 
 /**
  * FieldValue represent one or more values from a DataField.
  * @author Sylvain PALOMINOS
  */
-public class FieldValue extends ComplexDataType{
+@Deprecated
+public class FieldValueOld extends ComplexData{
 
     /** Identifier of the 'parent' DataField */
     private URI dataFieldIdentifier;
@@ -44,13 +41,13 @@ public class FieldValue extends ComplexDataType{
 
     /**
      * Main constructor
-     * @param formatList Formats of the data accepted.
+     * @param format Format of the data accepted.
      * @param dataFieldIdentifier Identifier of the 'parent' dataField.
      * @param multiSelection Enable or not the selection of more than one value.
      * @throws MalformedScriptException
      */
-    public FieldValue(List<Format> formatList, URI dataFieldIdentifier, boolean multiSelection) throws MalformedScriptException {
-        setFormat(formatList);
+    public FieldValueOld(Format format, URI dataFieldIdentifier, boolean multiSelection) throws MalformedScriptException {
+        super(format);
         this.multiSelection = multiSelection;
         this.dataFieldIdentifier = dataFieldIdentifier;
     }

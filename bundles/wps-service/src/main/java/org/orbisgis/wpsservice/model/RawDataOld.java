@@ -19,9 +19,6 @@
 
 package org.orbisgis.wpsservice.model;
 
-import net.opengis.wps.v_2_0.ComplexDataType;
-import net.opengis.wps.v_2_0.Format;
-
 import java.util.List;
 
 /**
@@ -30,8 +27,8 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  */
-
-public class RawData extends ComplexDataType {
+@Deprecated
+public class RawDataOld extends ComplexData {
 
     /** True if the RawData can be a file, false otherwise. */
     private boolean isFile;
@@ -41,13 +38,23 @@ public class RawData extends ComplexDataType {
     private boolean multiSelection;
 
     /**
+     * Constructor giving the default format.
+     * The Format can not be null and should be set as the default one.
+     * @param format Not null default format.
+     * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
+     */
+    public RawDataOld(Format format) throws MalformedScriptException {
+        super(format);
+    }
+
+    /**
      * Constructor giving a list of format.
      * The Format list can not be null and only one of the format should be set as the default one.
      * @param formatList Not null default format.
      * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
      */
-    public RawData(List<Format> formatList) throws MalformedScriptException {
-        setFormat(formatList);
+    public RawDataOld(List<Format> formatList) throws MalformedScriptException {
+        super(formatList);
     }
 
     /**

@@ -35,7 +35,7 @@ import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.wpsservice.model.DataStore;
+import org.orbisgis.wpsservice.model.DataStoreOld;
 import org.orbisgis.wpsservice.model.Input;
 import org.orbisgis.wpsservice.model.Process;
 import org.orbisgis.wpsservice.WpsService;
@@ -140,7 +140,7 @@ public class ActionRemoveRow extends AbstractAction {
                             Map<URI, Object> dataMap = new HashMap<>();
                             for (Input input : p.getInput()) {
                                 if (input.getTitle().equals(INPUT_TABLE)) {
-                                    URI uri = DataStore.buildUriDataStore(DataStore.DATASTORE_TYPE_GEOCATALOG,
+                                    URI uri = DataStoreOld.buildUriDataStore(DataStoreOld.DATASTORE_TYPE_GEOCATALOG,
                                             editable.getTableReference(),
                                             editable.getTableReference());
                                     dataMap.put(input.getIdentifier(), uri);

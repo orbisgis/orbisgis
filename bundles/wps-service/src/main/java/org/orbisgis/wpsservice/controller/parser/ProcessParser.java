@@ -19,16 +19,13 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
+import net.opengis.ows.v_2_0.CodeType;
+import net.opengis.wps.v_2_0.InputDescriptionType;
+import net.opengis.wps.v_2_0.OutputDescriptionType;
+import net.opengis.wps.v_2_0.ProcessDescriptionType;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.ProcessAttribute;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.MalformedScriptException;
-import org.orbisgis.wpsservice.model.Output;
-import org.orbisgis.wpsservice.model.Process;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.List;
@@ -39,20 +36,23 @@ import java.util.List;
 
 public class ProcessParser {
 
-    public Process parseProcess(List<Input> inputList, List<Output> outputList, Method processingMethod, URI processURI){
-        try {
-            Process process = new Process(new File(processURI).getName(),
-                    processURI,
-                    outputList);
-            ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(DescriptionTypeAttribute.class),
-                    process);
-            ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(ProcessAttribute.class),
-                    process);
-            process.setInput(inputList);
-            return process;
-        } catch (MalformedScriptException e){
-            LoggerFactory.getLogger(ProcessParser.class).error(e.getMessage());
-            return null;
+    public ProcessDescriptionType parseProcess(List<InputDescriptionType> inputList,
+                                               List<OutputDescriptionType> outputList,
+                                               Method processingMethod,
+                                               URI processURI){
+        ProcessDescriptionType process = new ProcessDescriptionType();
+        ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(DescriptionTypeAttribute.class),
+                process);
+        ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(ProcessAttribute.class),
+                process);
+        process.setOutput(outputList);
+        process.setInput(inputList);
+
+        if(process.getIdentifier() == null){
+            CodeType codeType = new CodeType();
+            codeType.setValue(processURI.toString());
+            process.setIdentifier(codeType);
         }
+        return process;
     }
 }

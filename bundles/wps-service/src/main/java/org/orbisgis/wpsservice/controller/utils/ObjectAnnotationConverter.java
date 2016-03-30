@@ -19,13 +19,19 @@
 
 package org.orbisgis.wpsservice.controller.utils;
 
+import net.opengis.ows.v_2_0.*;
+import net.opengis.wps.v_2_0.*;
+import net.opengis.wps.v_2_0.DescriptionType;
+import net.opengis.wps.v_2_0.Format;
+import net.opengis.wps.v_2_0.LiteralDataType.LiteralDataDomain;
 import org.orbisgis.wpsgroovyapi.attributes.*;
 import org.orbisgis.wpsservice.model.*;
-import org.orbisgis.wpsservice.model.Process;
+import org.orbisgis.wpsservice.model.LiteralValue;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.IncompleteAnnotationException;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,152 +48,167 @@ public class ObjectAnnotationConverter {
 
     public static void annotationToObject(DescriptionTypeAttribute descriptionTypeAttribute,
                                           DescriptionType descriptionType){
-        try {
-            if(!descriptionTypeAttribute.title().equals("")){
-                    descriptionType.setTitle(descriptionTypeAttribute.title());
-            }
-            if(!descriptionTypeAttribute.resume().equals(DescriptionTypeAttribute.defaultResume)){
-                descriptionType.setResume(descriptionTypeAttribute.resume());
-            }
-            if(!descriptionTypeAttribute.identifier().equals(DescriptionTypeAttribute.defaultIdentifier)){
-                descriptionType.setIdentifier(URI.create(descriptionTypeAttribute.identifier()));
-            }
-            if(!descriptionTypeAttribute.keywords().equals(DescriptionTypeAttribute.defaultKeywords)){
-                descriptionType.setKeywords(Arrays.asList(descriptionTypeAttribute.keywords().split(",")));
-            }
-            //TODO : implements for metadata.
-            if(!descriptionTypeAttribute.metadata().equals(DescriptionTypeAttribute.defaultMetadata)){
-                List<Metadata> metadatas = new ArrayList<>();
-                for(MetadataAttribute metadata : descriptionTypeAttribute.metadata()) {
-                    metadatas.add(ObjectAnnotationConverter.annotationToObject(metadata));
-                }
-                descriptionType.setMetadata(metadatas);
-            }
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
+        if(!descriptionTypeAttribute.title().equals("")){
+            List<LanguageStringType> titleList = new ArrayList<>();
+            LanguageStringType title = new LanguageStringType();
+            title.setValue(descriptionTypeAttribute.title());
+            titleList.add(title);
+            descriptionType.setTitle(titleList);
         }
+        if(!descriptionTypeAttribute.resume().equals(DescriptionTypeAttribute.defaultResume)){
+            List<LanguageStringType> resumeList = new ArrayList<>();
+            LanguageStringType resume = new LanguageStringType();
+            resume.setValue(descriptionTypeAttribute.resume());
+            resumeList.add(resume);
+            descriptionType.setAbstract(resumeList);
+        }
+        if(!descriptionTypeAttribute.identifier().equals(DescriptionTypeAttribute.defaultIdentifier)){
+            CodeType codeType = new CodeType();
+            codeType.setValue(descriptionTypeAttribute.identifier());
+            descriptionType.setIdentifier(codeType);
+        }
+        if(!descriptionTypeAttribute.keywords().equals(DescriptionTypeAttribute.defaultKeywords)){
+            List<KeywordsType> keywordList = new ArrayList<>();
+            for(String key : descriptionTypeAttribute.keywords().split(",")){
+                KeywordsType keyword = new KeywordsType();
+                List<LanguageStringType> stringList = new ArrayList<>();
+                LanguageStringType string = new LanguageStringType();
+                string.setValue(key);
+                stringList.add(string);
+                keyword.setKeyword(stringList);
+                keywordList.add(keyword);
+            }
+            descriptionType.setKeywords(keywordList);
+        }
+        //TODO : implements for metadata.
     }
 
     public static Format annotationToObject(FormatAttribute formatAttribute){
-        try {
-            Format format = new Format(formatAttribute.mimeType(), URI.create(formatAttribute.schema()));
-            format.setDefaultFormat(formatAttribute.isDefaultFormat());
-            format.setMaximumMegaBytes(formatAttribute.maximumMegaBytes());
-            return format;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
-        }
+        Format format = new Format();
+        format.setMimeType(formatAttribute.mimeType());
+        format.setSchema(URI.create(formatAttribute.schema()).toString());
+        format.setDefault(formatAttribute.isDefaultFormat());
+        format.setMaximumMegabytes(BigInteger.valueOf(formatAttribute.maximumMegaBytes()));
+        return format;
     }
 
-    public static Metadata annotationToObject(MetadataAttribute descriptionTypeAttribute){
-        try {
-            URI href = URI.create(descriptionTypeAttribute.href());
-            URI role = URI.create(descriptionTypeAttribute.role());
-            String title = descriptionTypeAttribute.title();
+    public static MetadataType annotationToObject(MetadataAttribute descriptionTypeAttribute){
+        URI href = URI.create(descriptionTypeAttribute.href());
+        URI role = URI.create(descriptionTypeAttribute.role());
+        String title = descriptionTypeAttribute.title();
 
-            return new Metadata(title, role, href);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
-        }
+        MetadataType metadata = new MetadataType();
+        metadata.setHref(href.toString());
+        metadata.setRole(role.toString());
+        metadata.setTitle(title);
+
+        return metadata;
     }
 
-    public static Values annotationToObject(ValuesAttribute valueAttribute){
-        try {
-            Values value;
-            if(valueAttribute.type().equals(ValuesType.VALUE)){
-                value = new Value<>(valueAttribute.value());
-            }
-            else{
-                if(valueAttribute.spacing().equals("")) {
-                    value = new Range(
-                                    Double.parseDouble(valueAttribute.minimum()),
-                                    Double.parseDouble(valueAttribute.maximum())
-                    );
-                }
-                else{
-                    value = new Range(
-                                    Double.parseDouble(valueAttribute.minimum()),
-                                    Double.parseDouble(valueAttribute.maximum()),
-                                    Double.parseDouble(valueAttribute.spacing())
-                    );
-                }
-            }
+    public static Object annotationToObject(ValuesAttribute valueAttribute){
+        if(valueAttribute.type().equals(ValuesType.VALUE)){
+            ValueType value = new ValueType();
+            value.setValue(valueAttribute.value());
             return value;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
+        }
+        else{
+            RangeType range = new RangeType();
+            if(!valueAttribute.spacing().isEmpty()) {
+                ValueType spacing = new ValueType();
+                spacing.setValue(valueAttribute.spacing());
+                range.setSpacing(spacing);
+            }
+            ValueType max = new ValueType();
+            max.setValue(valueAttribute.maximum());
+            range.setMaximumValue(max);
+            ValueType min = new ValueType();
+            min.setValue(valueAttribute.minimum());
+            range.setMinimumValue(min);
+            return range;
         }
     }
 
     public static LiteralDataDomain annotationToObject(LiteralDataDomainAttribute literalDataDomainAttribute){
-        try {
-            PossibleLiteralValuesChoice possibleLiteralValuesChoice = ObjectAnnotationConverter.annotationToObject(
-                    literalDataDomainAttribute.possibleLiteralValues());
-
-            DataType dataType = DataType.valueOf(literalDataDomainAttribute.dataType());
-
-            Values defaultValue = ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute.defaultValue());
-
-            LiteralDataDomain literalDataDomain = new LiteralDataDomain(
-                    possibleLiteralValuesChoice,
-                    dataType,
-                    defaultValue
-            );
-
-            literalDataDomain.setDefaultDomain(literalDataDomainAttribute.isDefault());
-
-            return literalDataDomain;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
+        LiteralDataDomain literalDataDomain = new LiteralDataDomain();
+        literalDataDomain.setDefault(literalDataDomainAttribute.isDefault());
+        if(!literalDataDomainAttribute.uom().isEmpty()){
+            DomainMetadataType uom = new DomainMetadataType();
+            URI uomUri = URI.create(literalDataDomainAttribute.uom());
+            uom.setValue(uomUri.getPath());
+            uom.setReference(uomUri.toString());
+            literalDataDomain.setUOM(uom);
         }
+        DataType dataType = DataType.valueOf(literalDataDomainAttribute.dataType());
+        DomainMetadataType domainDataType = new DomainMetadataType();
+        domainDataType.setReference(dataType.getUri().toString());
+        domainDataType.setValue(dataType.name());
+        literalDataDomain.setDataType(domainDataType);
+
+        Object value = ObjectAnnotationConverter.annotationToObject(
+                literalDataDomainAttribute.possibleLiteralValues());
+        if(value instanceof AllowedValues){
+            literalDataDomain.setAllowedValues((AllowedValues)value);
+        }
+        else if(value instanceof AnyValue){
+            literalDataDomain.setAnyValue((AnyValue) value);
+        }
+        else if(value instanceof ValuesReference){
+            literalDataDomain.setValuesReference((ValuesReference) value);
+        }
+        Object defaultValue = ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute.defaultValue());
+        literalDataDomain.setDefaultValue((ValueType) defaultValue);
+
+
+        return literalDataDomain;
     }
 
-    public static LiteralData annotationToObject(LiteralDataAttribute literalDataAttribute) {
-        try {
-            List<Format> formatList = new ArrayList<>();
-            if(literalDataAttribute.formats().length == 0){
-                formatList.add(new Format("undefined", URI.create("undefined")));
-                formatList.get(0).setDefaultFormat(true);
-            }
-            else {
-                for (FormatAttribute formatAttribute : literalDataAttribute.formats()) {
-                    formatList.add(ObjectAnnotationConverter.annotationToObject(formatAttribute));
-                }
-            }
+    public static LiteralDataType annotationToObject(LiteralDataAttribute literalDataAttribute) {
+        LiteralDataType literalDataType = new LiteralDataType();
 
-            List<LiteralDataDomain> lddList = new ArrayList<>();
-            if(literalDataAttribute.validDomains().length == 0){
-                lddList.add(new LiteralDataDomain(new PossibleLiteralValuesChoice(), DataType.STRING, new Value<String>("")));
-            }
-            else {
-                for (LiteralDataDomainAttribute literalDataDomainAttribute : literalDataAttribute.validDomains()) {
-                    lddList.add(ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute));
-                }
-            }
-
-            LiteralValue literalValue = null;
-            try {
-                literalValue = ObjectAnnotationConverter.annotationToObject(literalDataAttribute.valueAttribute());
-            }
-            catch(IncompleteAnnotationException e){
-                literalValue = new LiteralValue();
-            }
-
-            return new LiteralData(formatList, lddList, literalValue);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
+        List<Format> formatList = new ArrayList<>();
+        if(literalDataAttribute.formats().length == 0){
+            formatList.add(FormatFactory.getFormatFromExtension(""));
+            formatList.get(0).setDefault(true);
         }
+        else {
+            for (FormatAttribute formatAttribute : literalDataAttribute.formats()) {
+                formatList.add(ObjectAnnotationConverter.annotationToObject(formatAttribute));
+            }
+        }
+        literalDataType.setFormat(formatList);
+
+        List<LiteralDataType.LiteralDataDomain> lddList = new ArrayList<>();
+        if(literalDataAttribute.validDomains().length == 0){
+            LiteralDataDomain literalDataDomain = new LiteralDataDomain();
+            literalDataDomain.setDefault(true);
+            AnyValue anyValue = new AnyValue();
+            literalDataDomain.setAnyValue(anyValue);
+            ValueType defaultValue = new ValueType();
+            defaultValue.setValue("");
+            literalDataDomain.setDefaultValue(defaultValue);
+            DomainMetadataType domainMetadataType = new DomainMetadataType();
+            domainMetadataType.setReference(DataType.STRING.getUri().toString());
+            domainMetadataType.setValue(DataType.STRING.name());
+            literalDataDomain.setDataType(domainMetadataType);
+            lddList.add(literalDataDomain);
+        }
+        else {
+            for (LiteralDataDomainAttribute literalDataDomainAttribute : literalDataAttribute.validDomains()) {
+                lddList.add(ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute));
+            }
+        }
+        literalDataType.setLiteralDataDomain(lddList);
+
+        return literalDataType;
     }
 
     public static RawData annotationToObject(RawDataAttribute rawDataAttribute, Format format) {
         try {
             //Instantiate the RawData
-            format.setDefaultFormat(true);
-            RawData rawData = new RawData(format);
+            format.setDefault(true);
+            List<Format> formatList = new ArrayList<>();
+            formatList.add(format);
+            RawData rawData = new RawData(formatList);
             rawData.setFile(rawDataAttribute.isFile());
             rawData.setDirectory(rawDataAttribute.isDirectory());
             rawData.setMultiSelection(rawDataAttribute.multiSelection());
@@ -198,46 +219,34 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static LiteralValue annotationToObject(LiteralValueAttribute literalValueAttribute){
-        LiteralValue literalValue = new LiteralValue();
-        if(!literalValueAttribute.uom().equals(LiteralValueAttribute.defaultUOM)) {
-            literalValue.setUom(URI.create(literalValueAttribute.uom()));
-        }
-        if(!literalValueAttribute.dataType().equals(LiteralValueAttribute.defaultDataType)) {
-            literalValue.setDataType(DataType.valueOf(literalValueAttribute.dataType()));
-        }
-        return literalValue;
+    public static void annotationToObject(InputAttribute inputAttribute, InputDescriptionType input){
+        input.setMaxOccurs(""+inputAttribute.maxOccurs());
+        input.setMinOccurs(BigInteger.valueOf(inputAttribute.minOccurs()));
     }
 
-    public static void annotationToObject(InputAttribute inputAttribute, Input input){
-        input.setMinOccurs(0);
-        input.setMaxOccurs(inputAttribute.maxOccurs());
-        input.setMinOccurs(inputAttribute.minOccurs());
-    }
-
-    public static PossibleLiteralValuesChoice annotationToObject(
+    public static Object annotationToObject(
             PossibleLiteralValuesChoiceAttribute possibleLiteralValuesChoiceAttribute){
-        try {
-            PossibleLiteralValuesChoice possibleLiteralValuesChoice = null;
             if(possibleLiteralValuesChoiceAttribute.allowedValues().length != 0){
-                List<Values> valuesList = new ArrayList<>();
+                AllowedValues allowedValues = new AllowedValues();
+                List<Object> valueList = new ArrayList<>();
                 for(ValuesAttribute va : possibleLiteralValuesChoiceAttribute.allowedValues()){
-                    valuesList.add(ObjectAnnotationConverter.annotationToObject(va));
+                    valueList.add(ObjectAnnotationConverter.annotationToObject(va));
                 }
-                possibleLiteralValuesChoice = new PossibleLiteralValuesChoice(valuesList);
+                allowedValues.setValueOrRange(valueList);
+                return allowedValues;
             }
-            else{
-                possibleLiteralValuesChoice = new PossibleLiteralValuesChoice();
+            else if (!possibleLiteralValuesChoiceAttribute.reference().isEmpty()){
+                ValuesReference valuesReference = new ValuesReference();
+                URI uri = URI.create(possibleLiteralValuesChoiceAttribute.reference());
+                valuesReference.setValue(uri.getPath());
+                valuesReference.setReference(uri.toString());
+                return valuesReference;
             }
-            return possibleLiteralValuesChoice;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
-        }
+            return new AnyValue();
     }
 
-    public static void annotationToObject(ProcessAttribute processAttribute, Process process){
-        process.setLanguage(Locale.forLanguageTag(processAttribute.language()));
+    public static void annotationToObject(ProcessAttribute processAttribute, ProcessDescriptionType process){
+        process.setLang(Locale.forLanguageTag(processAttribute.language()).toString());
     }
 
     public static DataStore annotationToObject(DataStoreAttribute dataStoreAttribute, List<Format> formatList) {
@@ -254,7 +263,7 @@ public class ObjectAnnotationConverter {
 
     public static DataField annotationToObject(DataFieldAttribute dataFieldAttribute, Format format, URI dataStoreUri) {
         try {
-            format.setDefaultFormat(true);
+            format.setDefault(true);
             List<DataType> dataTypeList = new ArrayList<>();
             //For each field type value from the groovy annotation, test if it is contain in the FieldType enumeration.
             for(String type : Arrays.asList(dataFieldAttribute.fieldTypes())){
@@ -265,7 +274,9 @@ public class ObjectAnnotationConverter {
             for(String type : Arrays.asList(dataFieldAttribute.excludedTypes())){
                 excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
-            DataField dataField = new DataField(format, dataTypeList, dataStoreUri);
+            List<Format> formatList = new ArrayList<>();
+            formatList.add(format);
+            DataField dataField = new DataField(formatList, dataTypeList, dataStoreUri);
             dataField.setExcludedTypeList(excludedTypeList);
             dataField.setMultipleField(dataFieldAttribute.isMultipleField());
             return dataField;
@@ -277,8 +288,10 @@ public class ObjectAnnotationConverter {
 
     public static FieldValue annotationToObject(FieldValueAttribute fieldvalueAttribute, Format format, URI dataFieldUri) {
         try {
-            format.setDefaultFormat(true);
-            return new FieldValue(format, dataFieldUri, fieldvalueAttribute.multiSelection());
+            format.setDefault(true);
+            List<Format> formatList = new ArrayList<>();
+            formatList.add(format);
+            return new FieldValue(formatList, dataFieldUri, fieldvalueAttribute.multiSelection());
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;
@@ -287,8 +300,10 @@ public class ObjectAnnotationConverter {
 
     public static Enumeration annotationToObject(EnumerationAttribute enumAttribute, Format format) {
         try{
-            format.setDefaultFormat(true);
-            Enumeration enumeration = new Enumeration(format, enumAttribute.values(), enumAttribute.defaultValues());
+            format.setDefault(true);
+            List<Format> formatList = new ArrayList<>();
+            formatList.add(format);
+            Enumeration enumeration = new Enumeration(formatList, enumAttribute.values(), enumAttribute.defaultValues());
             enumeration.setEditable(enumAttribute.isEditable());
             enumeration.setMultiSelection(enumAttribute.multiSelection());
             enumeration.setValuesNames(enumAttribute.names());
@@ -301,7 +316,7 @@ public class ObjectAnnotationConverter {
 
     public static GeometryData annotationToObject(GeometryAttribute geometryAttribute, Format format) {
         try{
-            format.setDefaultFormat(true);
+            format.setDefault(true);
             List<DataType> geometryTypeList = new ArrayList<>();
             //For each field type value from the groovy annotation, test if it is contain in the FieldType enumeration.
             for(String type : Arrays.asList(geometryAttribute.geometryTypes())){
@@ -312,7 +327,9 @@ public class ObjectAnnotationConverter {
             for(String type : Arrays.asList(geometryAttribute.excludedTypes())){
                 excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
-            GeometryData geometryData = new GeometryData(format, geometryTypeList);
+            List<Format> formatList = new ArrayList<>();
+            formatList.add(format);
+            GeometryData geometryData = new GeometryData(formatList, geometryTypeList);
             geometryData.setDimension(geometryAttribute.dimension());
             geometryData.setExcludedTypeList(excludedTypeList);
             return geometryData;

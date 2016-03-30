@@ -20,16 +20,16 @@
 package org.orbisgis.wpsservice.controller.process;
 
 import groovy.lang.GroovyObject;
-import groovy.sql.Sql;
+import net.opengis.wps.v_2_0.InputDescriptionType;
+import net.opengis.wps.v_2_0.OutputDescriptionType;
+import net.opengis.wps.v_2_0.ProcessDescriptionType;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
 import org.orbisgis.wpsservice.controller.utils.CancelClosure;
 import org.orbisgis.wpsservice.controller.utils.WpsSql;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.Output;
-import org.orbisgis.wpsservice.model.Process;
+import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -37,7 +37,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * Class used to manage process.
@@ -53,7 +52,7 @@ public class ProcessManager {
     private ParserController parserController;
     private DataSourceService dataSourceService;
     private LocalWpsService wpsService;
-    private Map<Process, CancelClosure> closureMap;
+    private Map<ProcessDescriptionType, CancelClosure> closureMap;
 
     /**
      * Main constructor.
@@ -85,14 +84,20 @@ public class ProcessManager {
      * @param uri URI of the local script.
      * @return The process corresponding to the script.
      */
-    public Process addLocalScript(URI uri, String category, boolean isDefault){
+    public ProcessDescriptionType addLocalScript(URI uri, String category, boolean isDefault){
         File f = new File(uri);
         //Test that the script name is not only '.groovy'
         if (f.getName().endsWith(".groovy") && f.getName().length()>7) {
             //Ensure that the process does not already exists.
             if(getProcess(uri) == null) {
                 //Parse the process
-                AbstractMap.SimpleEntry<Process, Class> entry = parserController.parseProcess(f.getAbsolutePath());
+                AbstractMap.SimpleEntry<ProcessDescriptionType, Class> entry;
+                try {
+                    entry = parserController.parseProcess(f.getAbsolutePath());
+                } catch (MalformedScriptException e) {
+                    LoggerFactory.getLogger(ProcessManager.class).error("Unable to parse the process '"+uri+"'.", e);
+                    return null;
+                }
                 //Check if the process has been well parsed
                 if (entry != null && entry.getKey() != null && entry.getValue() != null) {
                     //Save the process in a ProcessIdentifier
@@ -115,7 +120,7 @@ public class ProcessManager {
      * @param dataMap Map containing the data for the process.
      * @return The groovy object on which the 'processing' method will be called.
      */
-    public GroovyObject executeProcess(Process process,
+    public GroovyObject executeProcess(ProcessDescriptionType process,
                                        Map<URI, Object> dataMap){
         GroovyObject groovyObject = createProcess(process, dataMap);
         WpsSql sql = new WpsSql(dataSourceService);
@@ -136,7 +141,7 @@ public class ProcessManager {
      * @param groovyObject GroovyObject containing the processed data.
      * @param dataMap Map linking the data and their identifier.
      */
-    private void retrieveData(Process process, GroovyObject groovyObject, Map<URI, Object> dataMap){
+    private void retrieveData(ProcessDescriptionType process, GroovyObject groovyObject, Map<URI, Object> dataMap){
         ProcessIdentifier pi = null;
         for(ProcessIdentifier proId : processIdList){
             if(proId.getProcess().getIdentifier().equals(process.getIdentifier())){
@@ -147,15 +152,15 @@ public class ProcessManager {
             return;
         }
         try {
-            for(Input i : process.getInput()) {
-                Field f = getField(pi.getClazz(), i.getIdentifier());
+            for(InputDescriptionType i : process.getInput()) {
+                Field f = getField(pi.getClazz(), i.getIdentifier().getValue());
                 f.setAccessible(true);
-                dataMap.put(i.getIdentifier(), f.get(groovyObject));
+                dataMap.put(URI.create(i.getIdentifier().getValue()), f.get(groovyObject));
             }
-            for(Output o : process.getOutput()) {
-                Field f = getField(pi.getClazz(), o.getIdentifier());
+            for(OutputDescriptionType o : process.getOutput()) {
+                Field f = getField(pi.getClazz(), o.getIdentifier().getValue());
                 f.setAccessible(true);
-                dataMap.put(o.getIdentifier(), f.get(groovyObject));
+                dataMap.put(URI.create(o.getIdentifier().getValue()), f.get(groovyObject));
             }
         } catch (IllegalAccessException e) {
             LoggerFactory.getLogger(ProcessManager.class).error(e.getMessage());
@@ -168,7 +173,7 @@ public class ProcessManager {
      * @param dataMap Map of the data for the process.
      * @return A groovy object representing the process with the given data.
      */
-    private GroovyObject createProcess(Process process, Map<URI, Object> dataMap){
+    private GroovyObject createProcess(ProcessDescriptionType process, Map<URI, Object> dataMap){
         ProcessIdentifier pi = null;
         for(ProcessIdentifier proId : processIdList){
             if(proId.getProcess().getIdentifier().equals(process.getIdentifier())){
@@ -186,15 +191,19 @@ public class ProcessManager {
             return null;
         }
         try {
-            for(Input i : process.getInput()) {
-                Field f = getField(pi.getClazz(), i.getIdentifier());
-                f.setAccessible(true);
-                f.set(groovyObject, dataMap.get(i.getIdentifier()));
+            for(InputDescriptionType i : process.getInput()) {
+                Field f = getField(pi.getClazz(), i.getIdentifier().getValue());
+                if(f != null) {
+                    f.setAccessible(true);
+                    f.set(groovyObject, dataMap.get(URI.create(i.getIdentifier().getValue())));
+                }
             }
-            for(Output o : process.getOutput()) {
-                Field f = getField(pi.getClazz(), o.getIdentifier());
-                f.setAccessible(true);
-                f.set(groovyObject, dataMap.get(o.getIdentifier()));
+            for(OutputDescriptionType o : process.getOutput()) {
+                Field f = getField(pi.getClazz(), o.getIdentifier().getValue());
+                if(f != null) {
+                    f.setAccessible(true);
+                    f.set(groovyObject, dataMap.get(URI.create(o.getIdentifier().getValue())));
+                }
             }
         } catch (IllegalAccessException e) {
             LoggerFactory.getLogger(ProcessManager.class).error(e.getMessage());
@@ -209,21 +218,21 @@ public class ProcessManager {
      * @param identifier Identifier of the desired process.
      * @return The process.
      */
-    public Process getProcess(URI identifier){
+    public ProcessDescriptionType getProcess(URI identifier){
         for(ProcessIdentifier pi : processIdList){
             if(pi.getURI().equals(identifier)){
-                return pi.getProcess();
+                return pi.getProcessDescriptionType();
             }
         }
         for(ProcessIdentifier pi : processIdList){
-            for(Input input : pi.getProcess().getInput()) {
-                if (input.getIdentifier().equals(identifier)) {
-                    return pi.getProcess();
+            for(InputDescriptionType input : pi.getProcessDescriptionType().getInput()) {
+                if (URI.create(input.getIdentifier().getValue()).equals(identifier)) {
+                    return pi.getProcessDescriptionType();
                 }
             }
-            for(Output output : pi.getProcess().getOutput()) {
-                if (output.getIdentifier().equals(identifier)) {
-                    return pi.getProcess();
+            for(OutputDescriptionType output : pi.getProcessDescriptionType().getOutput()) {
+                if (URI.create(output.getIdentifier().getValue()).equals(identifier)) {
+                    return pi.getProcessDescriptionType();
                 }
             }
         }
@@ -236,15 +245,15 @@ public class ProcessManager {
      * @param identifier Identifier of the field.
      * @return The field.
      */
-    private Field getField(Class clazz, URI identifier){
+    private Field getField(Class clazz, String identifier){
         for(Field f : clazz.getDeclaredFields()){
             for(Annotation a : f.getDeclaredAnnotations()){
                 if(a instanceof DescriptionTypeAttribute){
-                    if(URI.create(((DescriptionTypeAttribute)a).identifier()).equals(identifier)){
+                    if(((DescriptionTypeAttribute)a).identifier().equals(identifier)){
                         return f;
                     }
                 }
-                if(identifier.toString().endsWith(":input:"+f.getName()) || identifier.toString().endsWith(":output:"+f.getName())){
+                if(identifier.endsWith(":input:"+f.getName()) || identifier.endsWith(":output:"+f.getName())){
                     return f;
                 }
             }
@@ -256,7 +265,7 @@ public class ProcessManager {
      * Remove the given process.
      * @param process Process to remove.
      */
-    public void removeProcess(Process process) {
+    public void removeProcess(ProcessDescriptionType process) {
         ProcessIdentifier toRemove = null;
         for(ProcessIdentifier pi : processIdList){
             if(pi.getProcess().equals(process)){
@@ -305,7 +314,7 @@ public class ProcessManager {
         return str;
     }
 
-    public void cancelProcess(Process process){
+    public void cancelProcess(ProcessDescriptionType process){
         closureMap.get(process).cancel();
     }
 }

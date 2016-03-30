@@ -101,12 +101,12 @@ public class DataStoreUI implements DataUI{
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         //Main panel which contains all the UI
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-        DataStore dataStore;
+        DataStoreOld dataStore;
         boolean isOptional = false;
         /** Retrieve the DataStore from the DescriptionType. **/
         if(inputOrOutput instanceof Input){
             Input input = (Input)inputOrOutput;
-            dataStore = (DataStore)input.getDataDescription();
+            dataStore = (DataStoreOld)input.getDataDescription();
             //As an input, the DataStore can be optional.
             if(input.getMinOccurs() == 0){
                 isOptional = true;
@@ -114,7 +114,7 @@ public class DataStoreUI implements DataUI{
         }
         else if(inputOrOutput instanceof Output){
             Output output = (Output)inputOrOutput;
-            dataStore = (DataStore)output.getDataDescription();
+            dataStore = (DataStoreOld)output.getDataDescription();
         }
         else {
             //If inputOrOutput is not a input and not an output, exit
@@ -362,7 +362,7 @@ public class DataStoreUI implements DataUI{
             }
             new ImportWorker(document);
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
+            LoggerFactory.getLogger(DataStoreOld.class).error(e.getMessage());
         }
     }
 
@@ -375,7 +375,7 @@ public class DataStoreUI implements DataUI{
         //Retrieve the client properties
         JComboBox<ContainerItem<Object>> comboBox = (JComboBox)source;
         //Refreshes the list of tables displayed
-        DataStore dataStore = (DataStore)comboBox.getClientProperty(DATA_STORE_PROPERTY);
+        DataStoreOld dataStore = (DataStoreOld)comboBox.getClientProperty(DATA_STORE_PROPERTY);
         boolean isOptional = (boolean)comboBox.getClientProperty(IS_OUTPUT_PROPERTY);
         Object selectedItem = comboBox.getSelectedItem();
         populateWithTable(comboBox, dataStore.isSpatial(), isOptional);
@@ -439,7 +439,7 @@ public class DataStoreUI implements DataUI{
         //Retrieve the client properties
         Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
         URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
-        DataStore dataStore = (DataStore) comboBox.getClientProperty(DATA_STORE_PROPERTY);
+        DataStoreOld dataStore = (DataStoreOld) comboBox.getClientProperty(DATA_STORE_PROPERTY);
         String tableName;
         if(comboBox.getSelectedItem() instanceof ContainerItem) {
             tableName = ((ContainerItem) comboBox.getSelectedItem()).getLabel();
@@ -448,7 +448,7 @@ public class DataStoreUI implements DataUI{
             tableName = comboBox.getSelectedItem().toString();
         }
         //Tells all the dataField linked that the data source is loaded
-        for (DataField dataField : dataStore.getListDataField()) {
+        for (DataFieldOld dataField : dataStore.getListDataField()) {
             dataField.setSourceModified(true);
         }
         Object oldValue = dataMap.get(uri);
@@ -528,14 +528,14 @@ public class DataStoreUI implements DataUI{
     public void saveDocumentTextFile(Document document){
         URI selectedFileURI;
         try {
-            DataStore dataStore = (DataStore)document.getProperty(DATA_STORE_PROPERTY);
+            DataStoreOld dataStore = (DataStoreOld)document.getProperty(DATA_STORE_PROPERTY);
             JComponent fileOptions = (JComponent) document.getProperty(FILE_OPTIONS_PROPERTY);
             DescriptionType inputOrOutput = (DescriptionType)document.getProperty(DESCRIPTION_TYPE_PROPERTY);
             File file = new File(document.getText(0, document.getLength()));
             if(inputOrOutput instanceof Input) {
                 //If the file doesn't exists, show an error
                 if(!file.exists()){
-                    LoggerFactory.getLogger(DataStore.class).error("The file '"+file+"' doesn't exists.");
+                    LoggerFactory.getLogger(DataStoreOld.class).error("The file '"+file+"' doesn't exists.");
                     return;
                 }
                 //Retrieve the file loading properties
@@ -572,12 +572,12 @@ public class DataStoreUI implements DataUI{
                     }
                     dataMap.put(uri, selectedFileURI);
                     //tells the dataField they should revalidate
-                    for (DataField dataField : dataStore.getListDataField()) {
+                    for (DataFieldOld dataField : dataStore.getListDataField()) {
                         dataField.setSourceModified(true);
                     }
                 }
                 else{
-                    for (DataField dataField : dataStore.getListDataField()) {
+                    for (DataFieldOld dataField : dataStore.getListDataField()) {
                         dataField.setSourceModified(false);
                     }
                 }
@@ -604,7 +604,7 @@ public class DataStoreUI implements DataUI{
                 dataMap.put(uri, selectedFileURI);
             }
         } catch (BadLocationException|SQLException e) {
-            LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
+            LoggerFactory.getLogger(DataStoreOld.class).error(e.getMessage());
         }
     }
 
