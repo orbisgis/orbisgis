@@ -37,6 +37,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class Input extends DescriptionType {
     /** Minimum number of times that values for this parameter are required. */
     private int minOccurs;

@@ -29,6 +29,7 @@ import java.net.URI;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class LiteralDataDomain {
     /** Identifies a valid format for an input or output. */
     private PossibleLiteralValuesChoice plvc;

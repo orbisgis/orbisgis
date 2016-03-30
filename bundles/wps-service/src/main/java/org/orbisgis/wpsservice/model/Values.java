@@ -25,6 +25,6 @@ package org.orbisgis.wpsservice.model;
  *
  * @author Sylvain PALOMINOS
  */
-
+@Deprecated
 public abstract class Values {
 }

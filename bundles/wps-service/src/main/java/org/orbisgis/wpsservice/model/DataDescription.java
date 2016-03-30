@@ -34,6 +34,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public abstract class DataDescription {
 
     /** List of supported formats */

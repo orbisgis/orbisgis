@@ -29,6 +29,7 @@ import java.net.URI;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class LiteralValue {
     /** Value */
     private Values data;

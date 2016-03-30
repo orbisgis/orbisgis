@@ -36,6 +36,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class PossibleLiteralValuesChoice {
     /** List of all valid values and/or ranges of values for this quantity. */
     private List<Values> allowedValues;

@@ -31,6 +31,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class LiteralData extends DataDescription {
     /** The valid domain for literal data */
     private List<LiteralDataDomain> literalDataDomains;

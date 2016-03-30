@@ -29,6 +29,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public class BoundingBox {
     /** Coordinates of bounding box corner at which the value of each coordinate normally
      *  is the algebraic minimum a within this bounding box. */

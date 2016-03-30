@@ -31,6 +31,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 
+@Deprecated
 public abstract class ComplexData extends DataDescription {
 
     /** Other descriptive elements giving more information about the data format. */
