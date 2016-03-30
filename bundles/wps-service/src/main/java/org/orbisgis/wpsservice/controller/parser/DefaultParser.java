@@ -19,6 +19,8 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
+import net.opengis.wps.v_2_0.InputDescriptionType;
+import net.opengis.wps.v_2_0.OutputDescriptionType;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.*;
@@ -35,7 +37,7 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  **/
-
+@Deprecated
 public class DefaultParser implements Parser {
 
     private LocalWpsService wpsService;
@@ -45,7 +47,7 @@ public class DefaultParser implements Parser {
     }
 
     @Override
-    public Input parseInput(Field f, Object defaultValue, URI processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
         DataDescription data;
         List<Format> formatList = new ArrayList<>();
         List<LiteralDataDomain> lddList = new ArrayList<>();
@@ -117,7 +119,7 @@ public class DefaultParser implements Parser {
             }
             //If the field can not be parsed as a LiteralData, parse it as a RawData
             else {
-                data = new RawData(formatList);
+                data = null;
             }
 
             //Instantiate the returned input
@@ -128,7 +130,7 @@ public class DefaultParser implements Parser {
             input.setMaxOccurs(1);
             input.setMinOccurs(1);
 
-            return input;
+            return null;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(DefaultParser.class).error(e.getMessage());
             return null;
@@ -136,7 +138,7 @@ public class DefaultParser implements Parser {
     }
 
     @Override
-    public Output parseOutput(Field f, URI processId) {
+    public OutputDescriptionType parseOutput(Field f, String processId) {
         DataDescription data;
         List<Format> formatList = new ArrayList<>();
         List<LiteralDataDomain> lddList = new ArrayList<>();
@@ -208,14 +210,14 @@ public class DefaultParser implements Parser {
             }
             //If the field can not be parsed as a LiteralData, parse it as a RawData
             else {
-                data = new RawData(formatList);
+                data = null;
             }
             //Instantiate the returned output
             Output output = new Output(f.getName(),
                     URI.create(processId + ":output:" + f.getName()),
                     data);
 
-            return output;
+            return null;
         } catch(MalformedScriptException e){
             LoggerFactory.getLogger(DefaultParser.class).error(e.getMessage());
             return null;

@@ -19,15 +19,20 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
+import net.opengis.ows.v_2_0.CodeType;
+import net.opengis.wps.v_2_0.InputDescriptionType;
+import net.opengis.wps.v_2_0.Format;
+import net.opengis.wps.v_2_0.OutputDescriptionType;
 import org.orbisgis.wpsgroovyapi.attributes.DataFieldAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
-import org.orbisgis.wpsservice.model.*;
-import org.slf4j.LoggerFactory;
+import org.orbisgis.wpsservice.model.DataField;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import java.lang.reflect.Field;
 import java.net.URI;
 
@@ -46,7 +51,7 @@ public class DataFieldParser implements Parser {
     }
 
     @Override
-    public Input parseInput(Field f, Object defaultValue, URI processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
         //Instantiate the DataField object
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
@@ -54,24 +59,25 @@ public class DataFieldParser implements Parser {
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 
         //Instantiate the returned input
-        Input input;
-        try {
-            input = new Input(f.getName(),
-                    URI.create(processId + ":input:" + f.getName()),
-                    dataField);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(DataFieldParser.class).error(e.getMessage());
-            return null;
-        }
+        InputDescriptionType input = new InputDescriptionType();
+        QName qname = new QName("http://orbisgis.org", "data_field");
+        JAXBElement<DataField> jaxbElement = new JAXBElement<>(qname, DataField.class, dataField);
+        input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
+
+        if(input.getIdentifier() == null){
+            CodeType codeType = new CodeType();
+            codeType.setValue(processId+":input:"+input.getTitle());
+            input.setIdentifier(codeType);
+        }
 
         return input;
     }
 
     @Override
-    public Output parseOutput(Field f, URI processId) {
+    public OutputDescriptionType parseOutput(Field f, String processId) {
         //Instantiate the DataField object
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
@@ -79,17 +85,17 @@ public class DataFieldParser implements Parser {
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 
         //Instantiate the returned output
-        Output output;
-        try {
-            output = new Output(f.getName(),
-                    URI.create(processId + ":output:" + f.getName()),
-                    dataField);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(DataFieldParser.class).error(e.getMessage());
-            return null;
-        }
+        OutputDescriptionType output = new OutputDescriptionType();QName qname = new QName("http://orbisgis.org", "data_field");
+        JAXBElement<DataField> jaxbElement = new JAXBElement<>(qname, DataField.class, dataField);
+        output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
+
+        if(output.getIdentifier() == null){
+            CodeType codeType = new CodeType();
+            codeType.setValue(processId+":output:"+output.getTitle());
+            output.setIdentifier(codeType);
+        }
 
         return output;
     }

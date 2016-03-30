@@ -19,11 +19,7 @@
 
 package org.orbisgis.wpsservice.controller.utils;
 
-import org.orbisgis.wpsservice.model.Format;
-import org.orbisgis.wpsservice.model.MalformedScriptException;
-import org.slf4j.LoggerFactory;
-
-import java.net.URI;
+import net.opengis.wps.v_2_0.Format;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,25 +62,31 @@ public class FormatFactory {
      * @return Format corresponding to the given extension.
      */
     public static Format getFormatFromExtension(String extension){
-        try {
-            switch(extension){
-                case SHAPEFILE_EXTENSION:
-                    return new Format(SHAPEFILE_MIMETYPE, URI.create(SHAPEFILE_URI));
-                case GEOJSON_EXTENSION:
-                    return new Format(GEOJSON_MIMETYPE, URI.create(GEOJSON_URI));
-                case SQL_EXTENSION:
-                    return new Format(SQL_MIMETYPE, URI.create(SQL_URI));
-                case WKT_EXTENSION:
-                    return new Format(WKT_MIMETYPE, URI.create(WKT_URI));
-                case OTHER_EXTENSION:
-                    return new Format(OTHER_MIMETYPE, URI.create(OTHER_URI));
-                default:
-                    return new Format(extension, URI.create(OTHER_URI));
-            }
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(FormatFactory.class);
-            return null;
+        Format format = new Format();
+        format.setEncoding("simple");
+        switch(extension){
+            case SHAPEFILE_EXTENSION:
+                format.setMimeType(SHAPEFILE_MIMETYPE);
+                format.setSchema(SHAPEFILE_URI);
+                break;
+            case GEOJSON_EXTENSION:
+                format.setMimeType(GEOJSON_MIMETYPE);
+                format.setSchema(GEOJSON_URI);
+                break;
+            case SQL_EXTENSION:
+                format.setMimeType(SQL_MIMETYPE);
+                format.setSchema(SQL_URI);
+                break;
+            case WKT_EXTENSION:
+                format.setMimeType(WKT_MIMETYPE);
+                format.setSchema(WKT_URI);
+                break;
+            default:
+                format.setMimeType(OTHER_MIMETYPE);
+                format.setSchema(OTHER_URI);
+                break;
         }
+        return format;
     }
 
     /**
@@ -119,6 +121,28 @@ public class FormatFactory {
      * @return File extension.
      */
     public static String getFormatExtension(Format format){
+        switch(format.getMimeType()){
+            case SHAPEFILE_MIMETYPE:
+                return SHAPEFILE_EXTENSION;
+            case GEOJSON_MIMETYPE:
+                return GEOJSON_EXTENSION;
+            case SQL_MIMETYPE:
+                return SQL_DESCRIPTION;
+            case WKT_MIMETYPE:
+                return WKT_DESCRIPTION;
+            case OTHER_MIMETYPE:
+                return OTHER_EXTENSION;
+            default:
+                return format.getMimeType();
+        }
+    }
+
+    /**
+     * Return the extension from a Format.
+     * @param format Format to decode.
+     * @return File extension.
+     */
+    public static String getFormatExtension(org.orbisgis.wpsservice.model.Format format){
         switch(format.getMimeType()){
             case SHAPEFILE_MIMETYPE:
                 return SHAPEFILE_EXTENSION;

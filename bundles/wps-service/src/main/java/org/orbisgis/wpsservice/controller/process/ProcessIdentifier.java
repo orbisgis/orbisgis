@@ -19,6 +19,8 @@
 
 package org.orbisgis.wpsservice.controller.process;
 
+import net.opengis.wps.v_2_0.ProcessDescriptionType;
+
 import org.orbisgis.wpsservice.model.Process;
 
 import java.net.URI;
@@ -30,13 +32,13 @@ import java.net.URI;
 public class ProcessIdentifier {
 
     private Class clazz;
-    private Process process;
+    private ProcessDescriptionType process;
     private URI uri;
     private URI parent;
     private String category;
     private boolean isDefault;
 
-    public ProcessIdentifier(Class clazz, Process process, URI uri, URI parent){
+    public ProcessIdentifier(Class clazz, ProcessDescriptionType process, URI uri, URI parent){
         this.clazz = clazz;
         this.process = process;
         this.uri = uri;
@@ -57,8 +59,12 @@ public class ProcessIdentifier {
         return clazz;
     }
 
-    public Process getProcess() {
+    public ProcessDescriptionType getProcessDescriptionType() {
         return process;
+    }
+    @Deprecated
+    public Process getProcess() {
+        return null;
     }
 
     public URI getURI() {

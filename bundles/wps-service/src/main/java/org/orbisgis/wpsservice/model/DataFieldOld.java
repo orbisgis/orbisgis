@@ -19,9 +19,6 @@
 
 package org.orbisgis.wpsservice.model;
 
-import net.opengis.wps.v_2_0.ComplexDataType;
-import net.opengis.wps.v_2_0.Format;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +26,8 @@ import java.util.List;
 /**
  * @author Sylvain PALOMINOS
  **/
-
-public class DataField extends ComplexDataType{
+@Deprecated
+public class DataFieldOld extends ComplexData{
 
     /** Identifier of the parent DataStore */
     private URI dataStoreIdentifier;
@@ -41,19 +38,19 @@ public class DataField extends ComplexDataType{
     /** List of type excluded for the field.*/
     private List<DataType> excludedTypeList;
     /** List of FieldValue liked to the DataField */
-    private List<FieldValue> listFieldValue;
+    private List<FieldValueOld> listFieldValue;
     /** Indicates if the use can choose more than one field*/
     private boolean isMultipleField = false;
 
     /**
      * Main constructor.
-     * @param formatList Formats of the data accepted.
+     * @param format Format of the data accepted.
      * @param fieldTypeList List of the type accepted for this field.
      * @param dataStoreURI Identifier of the parent dataStore.
      * @throws MalformedScriptException
      */
-    public DataField(List<Format> formatList, List<DataType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
-        setFormat(formatList);
+    public DataFieldOld(Format format, List<DataType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
+        super(format);
         listFieldValue = new ArrayList<>();
         this.fieldTypeList = fieldTypeList;
         this.dataStoreIdentifier = dataStoreURI;
@@ -81,7 +78,7 @@ public class DataField extends ComplexDataType{
      */
     public void setSourceModified(boolean isSourceModified) {
         this.isSourceModified = isSourceModified;
-        for(FieldValue fieldValue : listFieldValue){
+        for(FieldValueOld fieldValue : listFieldValue){
             fieldValue.setDataStoreModified(isSourceModified);
         }
     }
@@ -98,7 +95,7 @@ public class DataField extends ComplexDataType{
      * Adds a FieldValue as a 'child' of the DataField.
      * @param fieldValue FieldValue to add.
      */
-    public void addFieldValue(FieldValue fieldValue){
+    public void addFieldValue(FieldValueOld fieldValue){
         this.listFieldValue.add(fieldValue);
     }
 
@@ -106,7 +103,7 @@ public class DataField extends ComplexDataType{
      * Return the list of 'child' FieldValue.
      * @return List of FieldValue.
      */
-    public List<FieldValue> getListFieldValue(){
+    public List<FieldValueOld> getListFieldValue(){
         return listFieldValue;
     }
 
@@ -118,7 +115,7 @@ public class DataField extends ComplexDataType{
         for(DataType excludedType : excludedTypeList){
             for(DataType dataType : fieldTypeList){
                 if(excludedType.equals(dataType)){
-                    throw new MalformedScriptException(DataField.class, "excludedTypeList", "A same DataType is" +
+                    throw new MalformedScriptException(DataFieldOld.class, "excludedTypeList", "A same DataType is" +
                             " accepted and excluded");
                 }
             }
