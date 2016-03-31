@@ -122,7 +122,7 @@ public class ObjectAnnotationConverter {
         }
         if(descriptionTypeAttribute.metadata().length != DescriptionTypeAttribute.defaultMetadata.length){
             List<JAXBElement<? extends MetadataType>> metadataList = new ArrayList<>();
-            QName qname = new QName("http://orbisgis.org", "metadata");
+            QName qname = new QName("http://www.opengis.net/ows/2.0", "Metadata");
             for(MetadataAttribute metadataAttribute : descriptionTypeAttribute.metadata()){
                 MetadataType metadataType = new MetadataType();
                 metadataType.setHref(metadataAttribute.href());

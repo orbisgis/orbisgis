@@ -22,8 +22,11 @@ package org.orbisgis.wpsservice;
 import net.opengis.ows.v_2_0.*;
 import net.opengis.wps.v_2_0.*;
 import net.opengis.wps.v_2_0.GetCapabilitiesType;
+import net.opengis.wps.v_2_0.DescriptionType;
+import org.apache.commons.collections.ArrayStack;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.*;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
@@ -33,12 +36,12 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.*;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.orbisgis.wpsgroovyapi.attributes.LanguageString;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.model.DataType;
-import org.orbisgis.wpsservice.model.DescriptionType;
 import org.orbisgis.wpsservice.model.Process;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
@@ -49,7 +52,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import javax.swing.*;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.sql.*;
@@ -138,6 +145,14 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         dataManager.addDatabaseProgressionListener(this, StateEvent.DB_STATES.STATE_STATEMENT_END);
         //Call readDatabase when a SourceManager fire an event
         onDataManagerChange();
+    }
+
+    /**
+     * Init method only used for the tests.
+     */
+    public void initTest(){
+        processManager = new ProcessManager(dataSourceService, this);
+        dataProcessingManager = new DataProcessingManager(this);
     }
 
     @Deactivate
@@ -475,7 +490,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         /** Sets the Contents **/
         Contents contents = new Contents();
         List<ProcessSummaryType> processSummaryTypeList = new ArrayList<>();
-        //TODO get the process List
         List<ProcessDescriptionType> processList = getProcessList();
         for(ProcessDescriptionType process : processList) {
             ProcessSummaryType processSummaryType = new ProcessSummaryType();
@@ -514,8 +528,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             jobOption.add(OPTION_ASYNC_EXEC);
             jobOption.add(OPTION_SYNC_EXEC);
             processOffering.setJobControlOptions(jobOption);
-            //TODO get the process from the identifier
-            processOffering.setProcess(getProcessFromIdentifier(id));
+            //Get the translated process and add it to the ProcessOffering
+            ProcessDescriptionType process = getProcessFromIdentifier(id);
+            processOffering.setProcess(getTranslatedProcess(process, describeProcess.getLang()));
             processOfferingList.add(processOffering);
         }
         processOfferings.setProcessOffering(processOfferingList);
@@ -538,8 +553,46 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     @Override
-    public String callOperation(String xml) {
-        return null;
+    public OutputStream callOperation(InputStream xml) {
+        Object result = null;
+        try {
+            Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+            Object o = unmarshaller.unmarshal(xml);
+            //Call the WPS method associated to the unmarshalled object
+            if(o instanceof GetCapabilitiesType){
+                result = getCapabilities((GetCapabilitiesType)o);
+            }
+            else if(o instanceof DescribeProcess){
+                result = describeProcess((DescribeProcess)o);
+            }
+            else if(o instanceof ExecuteRequestType){
+                result = execute((ExecuteRequestType)o);
+            }
+            else if(o instanceof GetStatus){
+                result = getStatus((GetStatus)o);
+            }
+            else if(o instanceof GetResult){
+                result = getResult((GetResult)o);
+            }
+        } catch (JAXBException e) {
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to parse the incoming xml\n"+
+                e.getMessage());
+            return new ByteArrayOutputStream();
+        }
+        //Write the request answer in an ByteArrayOutputStream
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        if(result != null){
+            try {
+                Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+                marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+                marshaller.marshal(result, out);
+            } catch (JAXBException e) {
+                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to parse the outcoming xml\n"+
+                        e.getMessage());
+            }
+        }
+        return out;
     }
 
     @Override
@@ -558,10 +611,12 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     @Override
     public Map<String, String> getImportableFormat(boolean onlySpatial){
         Map<String, String> formatMap = new HashMap<>();
-        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
-            for(String ext : df.getImportFormats()){
-                if(df.isSpatialFormat(ext) || !onlySpatial) {
-                    formatMap.put(ext, df.getFormatDescription(ext));
+        if(driverFunctionContainer != null) {
+            for (DriverFunction df : driverFunctionContainer.getDriverFunctionList()) {
+                for (String ext : df.getImportFormats()) {
+                    if (df.isSpatialFormat(ext) || !onlySpatial) {
+                        formatMap.put(ext, df.getFormatDescription(ext));
+                    }
                 }
             }
         }
@@ -571,10 +626,12 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     @Override
     public Map<String, String> getExportableFormat(boolean onlySpatial){
         Map<String, String> formatMap = new HashMap<>();
-        for(DriverFunction df : driverFunctionContainer.getDriverFunctionList()){
-            for(String ext : df.getExportFormats()){
-                if(df.isSpatialFormat(ext) || !onlySpatial) {
-                    formatMap.put(ext, df.getFormatDescription(ext));
+        if(driverFunctionContainer != null) {
+            for (DriverFunction df : driverFunctionContainer.getDriverFunctionList()) {
+                for (String ext : df.getExportFormats()) {
+                    if (df.isSpatialFormat(ext) || !onlySpatial) {
+                        formatMap.put(ext, df.getFormatDescription(ext));
+                    }
                 }
             }
         }
@@ -1004,13 +1061,138 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         }
     }
 
-    //TODO implements the method returning the list of the processes.
+    /**
+     * Returns the list of processes managed by the wpsService.
+     * @return The list of processes managed by the wpsService.
+     */
     private List<ProcessDescriptionType> getProcessList(){
+        List<ProcessDescriptionType> processList = new ArrayList<>();
+        List<ProcessIdentifier> piList = processManager.getAllProcessIdentifier();
+        for(ProcessIdentifier pi : piList){
+            processList.add(pi.getProcessDescriptionType());
+        }
+        return processList;
+    }
+
+    /**
+     * Returns the process containing the given identifier.
+     * @param identifier Identifier contained by the needed process.
+     * @return The process containing the identifier.
+     */
+    private ProcessDescriptionType getProcessFromIdentifier(CodeType identifier){
+        List<ProcessIdentifier> piList = processManager.getAllProcessIdentifier();
+        for(ProcessIdentifier pi : piList){
+            if(pi.getProcessDescriptionType().getIdentifier().getValue().equals(identifier.getValue())){
+                return pi.getProcessDescriptionType();
+            }
+        }
         return null;
     }
 
-    //TODO implements the method returning the process from the identifier.
-    private ProcessDescriptionType getProcessFromIdentifier(CodeType identifier){
-        return null;
+    /**
+     * Return the process with the given language translation.
+     * If the asked translation doesn't exists, use the english one. If it doesn't exists too, uses one of the others.
+     * @param process Process to traduce.
+     * @param language Language asked.
+     * @return The traduced process.
+     */
+    private ProcessDescriptionType getTranslatedProcess(ProcessDescriptionType process, String language){
+        ProcessDescriptionType translatedProcess = new ProcessDescriptionType();
+        translatedProcess.setLang(language);
+        List<InputDescriptionType> inputList = new ArrayList<>();
+        for(InputDescriptionType input : process.getInput()){
+            InputDescriptionType translatedInput = new InputDescriptionType();
+            translatedInput.setDataDescription(input.getDataDescription());
+            translatedInput.setMaxOccurs(input.getMaxOccurs());
+            translatedInput.setMinOccurs(input.getMinOccurs());
+            translateDescriptionType(translatedInput, input, language);
+            inputList.add(translatedInput);
+        }
+        translatedProcess.setInput(inputList);
+        List<OutputDescriptionType> outputList = new ArrayList<>();
+        for(OutputDescriptionType output : process.getOutput()){
+            OutputDescriptionType translatedOutput = new OutputDescriptionType();
+            translatedOutput.setDataDescription(output.getDataDescription());
+            translateDescriptionType(translatedOutput, output, language);
+            outputList.add(translatedOutput);
+        }
+        translatedProcess.setOutput(outputList);
+        translateDescriptionType(translatedProcess, process, language);
+        return translatedProcess;
+    }
+
+    /**
+     * Sets the given translatedDescriptionType with the traduced elements of the source descriptionType.
+     * If the asked translation doesn't exists, use the english one. If it doesn't exists too, uses one of the others.
+     *
+     * @param translatedDescriptionType Translated DescriptionType.
+     * @param descriptionType Source DescriptionType.
+     * @param language Language asked.
+     */
+    private void translateDescriptionType(DescriptionType translatedDescriptionType, DescriptionType descriptionType, String language){
+        String enLanguage = "en";
+        translatedDescriptionType.setIdentifier(descriptionType.getIdentifier());
+        translatedDescriptionType.setMetadata(descriptionType.getMetadata());
+        //Find the good abstract
+        LanguageStringType translatedAbstract = new LanguageStringType();
+        boolean defaultAbstrFound = false;
+        for(LanguageStringType abstr : descriptionType.getAbstract()){
+            if(abstr.getLang().equals(language)){
+                translatedAbstract = abstr;
+                break;
+            }
+            else if(abstr.getLang().equals(enLanguage)){
+                translatedAbstract = abstr;
+                defaultAbstrFound = true;
+            }
+            else if(!defaultAbstrFound){
+                translatedAbstract = abstr;
+            }
+        }
+        List<LanguageStringType> abstrList = new ArrayList<>();
+        abstrList.add(translatedAbstract);
+        translatedDescriptionType.setAbstract(abstrList);
+        //Find the good title
+        LanguageStringType translatedTitle = new LanguageStringType();
+        boolean defaultTitleFound = false;
+        for(LanguageStringType title : descriptionType.getTitle()){
+            if(title.getLang().equals(language)){
+                translatedTitle = title;
+                break;
+            }
+            else if(title.getLang().equals(enLanguage)){
+                translatedTitle = title;
+                defaultTitleFound = true;
+            }
+            else if(!defaultTitleFound){
+                translatedTitle = title;
+            }
+        }
+        List<LanguageStringType> titleList = new ArrayList<>();
+        titleList.add(translatedTitle);
+        translatedDescriptionType.setTitle(titleList);
+        //Find the good keywords
+        List<KeywordsType> keywordsList = new ArrayList<>();
+        KeywordsType translatedKeywords = new KeywordsType();
+        List<LanguageStringType> keywordList = new ArrayList<>();
+        for(KeywordsType keywords : descriptionType.getKeywords()) {
+            LanguageStringType translatedKeyword = new LanguageStringType();
+            boolean defaultKeywordFound = false;
+            for (LanguageStringType keyword : keywords.getKeyword()) {
+                if (keyword.getLang().equals(language)) {
+                    translatedKeyword = keyword;
+                    break;
+                } else if (keyword.getLang().equals(enLanguage)) {
+                    translatedKeyword = keyword;
+                    defaultKeywordFound = true;
+                } else if (!defaultKeywordFound) {
+                    translatedKeyword = keyword;
+                }
+            }
+            keywordList.add(translatedKeyword);
+        }
+        translatedKeywords.setKeyword(keywordList);
+        keywordsList.add(translatedKeywords);
+        translatedDescriptionType.setKeywords(keywordsList);
     }
 }

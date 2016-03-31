@@ -60,6 +60,11 @@ public class DataStore extends ComplexDataType {
         listDataField = new ArrayList<>();
     }
 
+    /**
+     * Protected empty constructor used in the ObjectFactory for JAXB.
+     */
+    protected DataStore(){}
+
     public void setAutoImport(boolean autoImport){
         this.autoImport = autoImport;
     }

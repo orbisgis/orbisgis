@@ -109,7 +109,7 @@ public class DataStoreParser implements Parser{
         dataStore.setIsFile(isFile);
 
         InputDescriptionType input = new InputDescriptionType();
-        QName qname = new QName("http://orbisgis.org", "data_store");
+        QName qname = new QName("http://orbisgis.org", "DataStore");
         JAXBElement<DataStore> jaxbElement = new JAXBElement<>(qname, DataStore.class, dataStore);
         input.setDataDescription(jaxbElement);
 
@@ -169,6 +169,9 @@ public class DataStoreParser implements Parser{
             isFile = true;
             formatList = FormatFactory.getFormatsFromExtensions(exportableGeoFormat);
         }
+        if(formatList.isEmpty()){
+            formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
+        }
         formatList.get(0).setDefault(true);
 
         //Instantiate the DataStore
@@ -178,7 +181,7 @@ public class DataStoreParser implements Parser{
         dataStore.setIsFile(isFile);
 
         OutputDescriptionType output = new OutputDescriptionType();
-        QName qname = new QName("http://orbisgis.org", "data_store");
+        QName qname = new QName("http://orbisgis.org", "DataStore");
         JAXBElement<DataStore> jaxbElement = new JAXBElement<>(qname, DataStore.class, dataStore);
         output.setDataDescription(jaxbElement);
 
