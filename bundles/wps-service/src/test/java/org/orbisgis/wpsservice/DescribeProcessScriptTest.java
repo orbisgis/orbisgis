@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 /**
  * This test class perform tests about groovy wps scripts.
@@ -41,34 +42,31 @@ public class DescribeProcessScriptTest {
         try {
             Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             marshaller.marshal(describeProcess, out);
             //Write the OutputStream content into an Input stream before sending it to the wpsService
             InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
             ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
             //Get back the result of the DescribeProcess request as a BufferReader
-            BufferedReader result = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(xml.toByteArray())));
-            //Read the result BufferReader line by line and check they are the same as the ones from the
-            //DataStoreProcessOffering xml file in the resources
+            InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
+            //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+            Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+            Object resultObject = unmarshaller.unmarshal(resultXml);
+            File f = new File(this.getClass().getResource("DataStoreProcessOfferings.xml").getFile());
+            Object ressourceObject = unmarshaller.unmarshal(f);
+            String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
+
+            //Get the result xml
+            resultXml.reset();
+            BufferedReader result = new BufferedReader(new InputStreamReader(resultXml));
             String responseLine;
-            String resourcePath = this.getClass().getResource("DataStoreProcessOfferings.xml").getFile();
-            BufferedReader resource = new BufferedReader(new FileReader(resourcePath));
-            String resourceLine;
-            while ((responseLine = result.readLine()) != null && (resourceLine = resource.readLine()) != null) {
-                boolean condition = responseLine.equals(resourceLine);
-                String message = "Error on the response xml : should be '"+resourceLine+"' instead of '"+responseLine+"'.";
-                Assert.assertTrue(message, condition);
+            while ((responseLine = result.readLine()) != null) {
+                message+=responseLine+"\n";
             }
-            boolean condition = responseLine == null;
-            String message = "Error on the response xml : should be empty (null) instead of '"+responseLine+"'.";
-            Assert.assertTrue(message, condition);
-        } catch (JAXBException e) {
-            Assert.fail("Unable to get the JAXB Marshaller.\n"+e.getMessage());
-        } catch (FileNotFoundException e) {
-            Assert.fail("Unable to get the resource file 'DataStoreProcessOfferings.xml'.\n"+e.getMessage());
-        } catch (IOException e) {
-            Assert.fail("Unable to read the bufferReader.\n" + e.getMessage());
+
+            Assert.assertTrue(message, ressourceObject.equals(resultObject));
+        } catch (JAXBException | IOException e) {
+            Assert.fail(e.getLocalizedMessage());
         }
 
     }

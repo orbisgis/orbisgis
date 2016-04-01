@@ -585,7 +585,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             try {
                 Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-                marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
                 marshaller.marshal(result, out);
             } catch (JAXBException e) {
                 LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to parse the outcoming xml\n"+
