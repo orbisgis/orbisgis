@@ -98,7 +98,7 @@ public class DataStoreParser implements Parser{
 
         //If there is no file format enable, add the "other" format to the format list but it won't be visible.
         if(formatList.isEmpty()) {
-            formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION));
+            formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
         }
         formatList.get(0).setDefault(true);
 

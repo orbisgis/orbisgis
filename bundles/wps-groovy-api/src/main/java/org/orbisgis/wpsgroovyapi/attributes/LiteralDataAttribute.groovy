@@ -39,8 +39,6 @@ import java.lang.annotation.RetentionPolicy
  *
  *
  * The following fields must be defined (mandatory) :
- *  - valueAttribute : LiteralValueAttribute
- *      Information about the literal value.
  *
  * The following fields can be defined (optional) :
  *  - formats : FormatAttribute[]
@@ -58,9 +56,6 @@ import java.lang.annotation.RetentionPolicy
 
     /** The valid domain for literal data */
     LiteralDataDomainAttribute[] validDomains() default []
-
-    /** The literal value information */
-    LiteralValueAttribute valueAttribute()
 
 
 

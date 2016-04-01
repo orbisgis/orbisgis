@@ -211,8 +211,7 @@ public class ObjectAnnotationConverter {
         domainDataType.setValue(dataType.name());
         literalDataDomain.setDataType(domainDataType);
 
-        Object value = ObjectAnnotationConverter.annotationToObject(
-                literalDataDomainAttribute.possibleLiteralValues());
+        Object value = ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute.possibleLiteralValues());
         if(value instanceof AllowedValues){
             literalDataDomain.setAllowedValues((AllowedValues)value);
         }
@@ -234,12 +233,20 @@ public class ObjectAnnotationConverter {
 
         List<Format> formatList = new ArrayList<>();
         if(literalDataAttribute.formats().length == 0){
-            formatList.add(FormatFactory.getFormatFromExtension(""));
+            formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
             formatList.get(0).setDefault(true);
         }
         else {
+            boolean isDefault = false;
             for (FormatAttribute formatAttribute : literalDataAttribute.formats()) {
-                formatList.add(ObjectAnnotationConverter.annotationToObject(formatAttribute));
+                Format format = ObjectAnnotationConverter.annotationToObject(formatAttribute);
+                if(format.isDefault()){
+                    isDefault = true;
+                }
+                formatList.add(format);
+            }
+            if(!isDefault){
+                formatList.get(0).setDefault(true);
             }
         }
         literalDataType.setFormat(formatList);
@@ -260,8 +267,16 @@ public class ObjectAnnotationConverter {
             lddList.add(literalDataDomain);
         }
         else {
+            boolean isDefault = false;
             for (LiteralDataDomainAttribute literalDataDomainAttribute : literalDataAttribute.validDomains()) {
-                lddList.add(ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute));
+                LiteralDataDomain ldd = ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute);
+                if(ldd.isDefault()){
+                    isDefault = true;
+                }
+                lddList.add(ldd);
+            }
+            if(!isDefault){
+                lddList.get(0).setDefault(true);
             }
         }
         literalDataType.setLiteralDataDomain(lddList);
@@ -293,23 +308,28 @@ public class ObjectAnnotationConverter {
 
     public static Object annotationToObject(
             PossibleLiteralValuesChoiceAttribute possibleLiteralValuesChoiceAttribute){
-            if(possibleLiteralValuesChoiceAttribute.allowedValues().length != 0){
-                AllowedValues allowedValues = new AllowedValues();
-                List<Object> valueList = new ArrayList<>();
-                for(ValuesAttribute va : possibleLiteralValuesChoiceAttribute.allowedValues()){
-                    valueList.add(ObjectAnnotationConverter.annotationToObject(va));
-                }
-                allowedValues.setValueOrRange(valueList);
-                return allowedValues;
-            }
-            else if (!possibleLiteralValuesChoiceAttribute.reference().isEmpty()){
-                ValuesReference valuesReference = new ValuesReference();
-                URI uri = URI.create(possibleLiteralValuesChoiceAttribute.reference());
-                valuesReference.setValue(uri.getPath());
-                valuesReference.setReference(uri.toString());
-                return valuesReference;
-            }
+        if(possibleLiteralValuesChoiceAttribute.anyValues() ||
+                (possibleLiteralValuesChoiceAttribute.allowedValues().length != 0 &&
+                        !possibleLiteralValuesChoiceAttribute.reference().isEmpty())){
             return new AnyValue();
+        }
+        else if(possibleLiteralValuesChoiceAttribute.allowedValues().length != 0){
+            AllowedValues allowedValues = new AllowedValues();
+            List<Object> valueList = new ArrayList<>();
+            for(ValuesAttribute va : possibleLiteralValuesChoiceAttribute.allowedValues()){
+                valueList.add(ObjectAnnotationConverter.annotationToObject(va));
+            }
+            allowedValues.setValueOrRange(valueList);
+            return allowedValues;
+        }
+        else if (!possibleLiteralValuesChoiceAttribute.reference().isEmpty()){
+            ValuesReference valuesReference = new ValuesReference();
+            URI uri = URI.create(possibleLiteralValuesChoiceAttribute.reference());
+            valuesReference.setValue(uri.getPath());
+            valuesReference.setReference(uri.toString());
+            return valuesReference;
+        }
+        return new AnyValue();
     }
 
     public static void annotationToObject(ProcessAttribute processAttribute, ProcessDescriptionType process){
