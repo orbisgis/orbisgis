@@ -5,6 +5,10 @@ import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.Process;
 
+import java.io.InputStream;
+import java.io.File;
+import java.io.OutputStream;
+import java.io.PipedOutputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -109,5 +113,5 @@ public interface WpsService {
      * @param xml Xml containing the operation to execute.
      * @return The xml answer.
      */
-    String callOperation(String xml);
+    OutputStream callOperation(InputStream xml);
 }
