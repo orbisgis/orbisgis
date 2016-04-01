@@ -4,11 +4,14 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 /**
+ * Container class with the JAXB contexts
+ *
  * @author Sylvain PALOMINOS
  */
 public class JaxbContainer {
+    //Make the JaxbContainer constructor private to avoid its instantiation.
     private JaxbContainer() {}
-
+    //The JaxbContext
     public static final JAXBContext JAXBCONTEXT;
     static {
         try {

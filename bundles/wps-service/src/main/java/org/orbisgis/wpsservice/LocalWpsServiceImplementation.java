@@ -583,6 +583,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         if(result != null){
             try {
+                //Marshall the WpsService answer
                 Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
                 marshaller.marshal(result, out);
@@ -610,6 +611,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     @Override
     public Map<String, String> getImportableFormat(boolean onlySpatial){
         Map<String, String> formatMap = new HashMap<>();
+        //Try to get the available import format
         if(driverFunctionContainer != null) {
             for (DriverFunction df : driverFunctionContainer.getDriverFunctionList()) {
                 for (String ext : df.getImportFormats()) {
@@ -625,6 +627,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     @Override
     public Map<String, String> getExportableFormat(boolean onlySpatial){
         Map<String, String> formatMap = new HashMap<>();
+        //Try to get the available export format
         if(driverFunctionContainer != null) {
             for (DriverFunction df : driverFunctionContainer.getDriverFunctionList()) {
                 for (String ext : df.getExportFormats()) {
