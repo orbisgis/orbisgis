@@ -22,7 +22,7 @@ package org.orbisgis.wpsclient.view.ui.dataui;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenPanel;
-import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.DescriptionType;
 import org.orbisgis.wpsservice.model.Input;
@@ -66,10 +66,10 @@ public class RawDataUI implements DataUI {
     private static final String MULTI_SELECTION_PROPERTY = "MULTI_SELECTION_PROPERTY";
 
     /** WpsClient using the generated UI. */
-    private WpsClient wpsClient;
+    private WpsClientImpl wpsClient;
 
     @Override
-    public void setWpsClient(WpsClient wpsClient){
+    public void setWpsClient(WpsClientImpl wpsClient){
         this.wpsClient = wpsClient;
     }
 

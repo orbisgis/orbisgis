@@ -21,7 +21,7 @@ package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.common.ContainerItem;
-import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsservice.model.Enumeration;
@@ -57,10 +57,10 @@ public class EnumerationUI implements DataUI{
     private static final String LIST_PROPERTY = "LIST_PROPERTY";
 
     /** WpsClient using the generated UI. */
-    private WpsClient wpsClient;
+    private WpsClientImpl wpsClient;
 
     @Override
-    public void setWpsClient(WpsClient wpsClient){
+    public void setWpsClient(WpsClientImpl wpsClient){
         this.wpsClient = wpsClient;
     }
 

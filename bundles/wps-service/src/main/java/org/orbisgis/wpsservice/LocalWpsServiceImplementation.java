@@ -27,7 +27,6 @@ import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.corejdbc.*;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
@@ -223,30 +222,26 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                         "Error : "+e.getMessage());
             }
         }
-        addLocalSource(wpsScriptFolder.toURI(), "orbisgis", true);
+        addLocalSource(wpsScriptFolder.toURI(), new String[]{"orbisgis"}, true, "OrbisGIS");
     }
 
-    public void addLocalSource(URI uri, String iconName, boolean isDefaultScript){
+    public void addLocalSource(URI uri, String[] iconArray, boolean isDefaultScript, String nodePath){
         File file = new File(uri);
         if(file.isFile()){
             return;
         }
         for(File f : file.listFiles()) {
-            addLocalScript(f, iconName, isDefaultScript);
+            addLocalScript(f, iconArray, isDefaultScript, nodePath);
         }
-    }
-
-    public List<ProcessIdentifier> getProcessIdentifierFromParent(URI parent){
-        return processManager.getProcessIdentifierFromParent(parent);
     }
 
     public List<ProcessIdentifier> getCapabilities(){
         return processManager.getAllProcessIdentifier();
     }
 
-    public ProcessIdentifier addLocalScript(File f, String iconName, boolean isDefaultScript){
+    public ProcessIdentifier addLocalScript(File f, String[] iconArray, boolean isDefaultScript, String nodePath){
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
-            processManager.addLocalScript(f.toURI(), iconName, isDefaultScript);
+            processManager.addLocalScript(f.toURI(), iconArray, isDefaultScript, nodePath);
             ProcessIdentifier pi = processManager.getProcessIdentifier(f.toURI());
             if(pi != null) {
                 return pi;
@@ -277,7 +272,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         //If the URI correspond to a ProcessIdentifier remove it before adding it again
         if(pi != null){
             processManager.removeProcess(pi.getProcess());
-            return (processManager.addLocalScript(uri, pi.getCategory(), pi.isDefault()) != null);
+            return (processManager.addLocalScript(uri, pi.getCategory(), pi.isDefault(), pi.getNodePath()) != null);
         }
         return false;
     }
@@ -638,7 +633,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             if(prop != null && !prop.toString().isEmpty()){
                 String str = prop.toString();
                 for(String s : str.split(";")){
-                    addLocalScript(new File(URI.create(s)), null, false);
+                    File f = new File(URI.create(s));
+                    addLocalScript(f, null, false, new File(f.getParent()).getName());
                 }
             }
         }

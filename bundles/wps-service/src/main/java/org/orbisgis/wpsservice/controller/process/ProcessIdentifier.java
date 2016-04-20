@@ -33,19 +33,21 @@ public class ProcessIdentifier {
     private Process process;
     private URI uri;
     private URI parent;
-    private String category;
+    private String[] category;
     private boolean isDefault;
+    private String nodePath;
 
-    public ProcessIdentifier(Class clazz, Process process, URI uri, URI parent){
+    public ProcessIdentifier(Class clazz, Process process, URI uri, URI parent, String nodePath){
         this.clazz = clazz;
         this.process = process;
         this.uri = uri;
         this.parent = parent;
         this.category = null;
         this.isDefault = false;
+        this.nodePath = nodePath;
     }
 
-    public void setCategory(String category){
+    public void setCategory(String[] category){
         this.category = category;
     }
 
@@ -69,11 +71,15 @@ public class ProcessIdentifier {
         return parent;
     }
 
-    public String getCategory(){
+    public String[] getCategory(){
         return category;
     }
 
     public boolean isDefault(){
         return isDefault;
+    }
+
+    public String getNodePath(){
+        return nodePath;
     }
 }

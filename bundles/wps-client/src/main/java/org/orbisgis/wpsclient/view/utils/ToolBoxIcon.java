@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 /**
  * Use this class to retrieve the data of an icon
@@ -58,12 +59,22 @@ public class ToolBoxIcon {
     public static Image getIconImage(String iconName) {
         return iconManager.getIconImage(ToolBoxIcon.class, iconName);
     }
+
     /**
-     * Retrieve icon by its name
-     * @param iconName The icon name, without extension. All icons are stored in the png format.
+     * Retrieve icon by its name or its full file path.     *
+     *
+     * @param iconName The icon name, without extension or icon file path. All icons are stored in the png format.
      * @return The ImageIcon requested, or an ImageIcon corresponding to a Missing Resource
      */
     public static ImageIcon getIcon(String iconName) {
-        return iconManager.getIcon(ToolBoxIcon.class, iconName);
+        //If the iconName is a file path, load it
+        File f = new File(iconName);
+        if(f.exists() && f.isFile()){
+            return new ImageIcon(iconName);
+        }
+        //It the iconName is the icon name, load it
+        else {
+            return iconManager.getIcon(ToolBoxIcon.class, iconName);
+        }
     }
 }

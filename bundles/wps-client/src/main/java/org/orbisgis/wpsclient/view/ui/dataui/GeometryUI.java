@@ -19,14 +19,8 @@
 
 package org.orbisgis.wpsclient.view.ui.dataui;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
 import net.miginfocom.swing.MigLayout;
-import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.components.OpenPanel;
-import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
@@ -43,7 +37,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -65,10 +58,10 @@ public class GeometryUI implements DataUI {
     private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
 
     /** WpsClient using the generated UI. */
-    private WpsClient wpsClient;
+    private WpsClientImpl wpsClient;
 
     @Override
-    public void setWpsClient(WpsClient wpsClient){
+    public void setWpsClient(WpsClientImpl wpsClient){
         this.wpsClient = wpsClient;
     }
 

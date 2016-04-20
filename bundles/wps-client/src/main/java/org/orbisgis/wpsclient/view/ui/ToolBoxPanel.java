@@ -26,7 +26,7 @@ import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
-import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.Filter.IFilter;
 import org.orbisgis.wpsclient.view.utils.Filter.SearchFilter;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
@@ -35,8 +35,6 @@ import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.Process;
 
 import javax.swing.*;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -78,7 +76,7 @@ public class ToolBoxPanel extends JPanel {
     private JComboBox<String> treeNodeBox;
 
     /** Reference to the toolbox.*/
-    private WpsClient wpsClient;
+    private WpsClientImpl wpsClient;
 
     /** JTree */
     private JTree tree;
@@ -110,7 +108,7 @@ public class ToolBoxPanel extends JPanel {
     private static final String DEFAULT_FILTER_FACTORY = "name_contains";
     private FilterFactoryManager<IFilter,DefaultActiveFilter> filterFactoryManager;
 
-    public ToolBoxPanel(WpsClient wpsClient){
+    public ToolBoxPanel(WpsClientImpl wpsClient){
         super(new BorderLayout());
 
         this.wpsClient = wpsClient;
@@ -285,11 +283,12 @@ public class ToolBoxPanel extends JPanel {
      * @param p Process to add.
      * @param uri Process URI.
      */
-    public void addScriptInTagModel(Process p, URI uri, String iconName){
+    public void addScriptInTagModel(Process p, URI uri, String iconName, boolean isDefault){
         TreeNodeWps root = (TreeNodeWps) tagModel.getRoot();
         TreeNodeWps script = new TreeNodeWps();
         script.setUri(uri);
         script.setNodeType(TreeNodeWps.NodeType.PROCESS);
+        script.setDefaultOrbisGIS(isDefault);
 
         script.setValidNode(p!=null);
         if(iconName != null){
@@ -378,8 +377,16 @@ public class ToolBoxPanel extends JPanel {
      * Adds a local source of default scripts. Open the given directory and find all the groovy script contained.
      */
     public void addLocalSource(ProcessIdentifier pi) {
-        addLocalSourceInFileModel(pi.getParent(), mapHostNode.get(LOCALHOST_URI), pi.getCategory(), pi.getURI());
-        addScriptInTagModel(pi.getProcess(), pi.getURI(), pi.getCategory());
+        //Add the process in the File model
+        addLocalSourceInFileModel(pi.getParent(), mapHostNode.get(LOCALHOST_URI), pi.getCategory(), pi.getURI(),
+                pi.getNodePath(), pi.isDefault());
+        //Get the last icon to use it for the Category model
+        String categoryIconName = null;
+        if(pi.getCategory() != null){
+            categoryIconName = pi.getCategory()[pi.getCategory().length-1];
+        }
+        //Add the process to the Category model
+        addScriptInTagModel(pi.getProcess(), pi.getURI(), categoryIconName, pi.isDefault());
         TreeNodeWps scriptFileModel = getChildrenWithUri(pi.getParent(), (TreeNodeWps)fileModel.getRoot()).get(0);
         scriptFileModel.setDefaultOrbisGIS(pi.isDefault());
         for(TreeNodeWps node : getAllChild(scriptFileModel)){
@@ -426,44 +433,56 @@ public class ToolBoxPanel extends JPanel {
     /**
      * Adds a source in the file model.
      */
-    private void addLocalSourceInFileModel(URI parentUri, TreeNodeWps hostNode, String iconName, URI processUri){
-        List<TreeNodeWps> sourceList = getChildrenWithUri(parentUri, hostNode);
-        TreeNodeWps source;
-        if(sourceList.isEmpty()){
-            source = null;
-        }
-        else{
-            source = sourceList.get(0);
-        }
-        String folderName = new File(parentUri).getName();
-
-        if(source == null) {
-            source = new TreeNodeWps();
-            source.setValidNode(true);
-            source.setUserObject(folderName);
-            source.setUri(parentUri);
-            source.setNodeType(TreeNodeWps.NodeType.FOLDER);
-            if(iconName != null){
-                source.setCustomIcon(iconName);
+    private void addLocalSourceInFileModel(URI parentUri, TreeNodeWps hostNode, String[] iconName, URI processUri,
+                                           String nodePath, boolean isDefault){
+        //Ensure that the tree contains all the node of the given nodePath of the process
+        String[] split = nodePath.split("/");
+        TreeNodeWps parent = hostNode;
+        TreeNodeWps node = null;
+        int index = 0;
+        //For each node of the path
+        for(String str : split){
+            //Test if the node exist
+            node = getChildWithUserObject(str, parent);
+            if (node == null) {
+                //If it doesn't, create and set it
+                node = new TreeNodeWps();
+                node.setValidNode(true);
+                node.setUserObject(str);
+                node.setUri(URI.create(parentUri.toString()+"/"+str));
+                node.setNodeType(TreeNodeWps.NodeType.FOLDER);
+                node.setDefaultOrbisGIS(isDefault);
+                //If icon names were defined, use them.
+                if(iconName != null) {
+                    if (iconName.length > index) {
+                        node.setCustomIcon(iconName[index]);
+                    } else {
+                        node.setCustomIcon(iconName[iconName.length - 1]);
+                    }
+                }
+                fileModel.insertNodeInto(node, parent, 0);
             }
-            fileModel.insertNodeInto(source, hostNode, 0);
+            parent = node;
+            index++;
         }
+        parent.setUri(parentUri);
 
-        if(getChildrenWithUri(processUri, source).isEmpty()) {
+        if(getChildrenWithUri(processUri, node).isEmpty()) {
             Process process = wpsClient.getWpsService().describeProcess(processUri);
             TreeNodeWps script = new TreeNodeWps();
             script.setUri(processUri);
             script.setValidNode(process != null);
             script.setNodeType(TreeNodeWps.NodeType.PROCESS);
+            script.setDefaultOrbisGIS(isDefault);
             if(process != null){
                 script.setUserObject(process.getTitle());
             }
             else{
                 script.setUserObject(new File(processUri).getName().replace(".groovy", ""));
             }
-            fileModel.insertNodeInto(script, source, 0);
+            fileModel.insertNodeInto(script, node, 0);
         }
-        tree.expandPath(new TreePath(source.getPath()));
+        tree.expandPath(new TreePath(parent.getPath()));
     }
 
     /**
@@ -503,26 +522,24 @@ public class ToolBoxPanel extends JPanel {
             List<TreeNodeWps> leafList = new ArrayList<>();
             leafList.addAll(getAllChild(node));
             for(TreeNodeWps leaf : leafList){
-                if(!node.isDefaultOrbisGIS()) {
-                    switch(leaf.getNodeType()){
-                        case FOLDER:
-                            for (TreeNodeWps child : getChildrenWithUri(leaf.getUri(), (TreeNodeWps) selectedModel.getRoot())) {
-                                if (!child.isDefaultOrbisGIS()) {
-                                    cleanParentNode(child, selectedModel);
+                switch(leaf.getNodeType()){
+                    case FOLDER:
+                        for (TreeNodeWps child : getChildrenWithUri(leaf.getUri(), (TreeNodeWps) selectedModel.getRoot())) {
+                            if (!child.isDefaultOrbisGIS()) {
+                                cleanParentNode(child, selectedModel);
+                            }
+                        }
+                        break;
+                    case PROCESS:
+                        for (FileTreeModel model : modelList) {
+                            for (TreeNodeWps child : getChildrenWithUri(leaf.getUri(), (TreeNodeWps) model.getRoot())) {
+                                if (child != null) {
+                                    cleanParentNode(child, model);
                                 }
                             }
-                            break;
-                        case PROCESS:
-                            for (FileTreeModel model : modelList) {
-                                for (TreeNodeWps child : getChildrenWithUri(leaf.getUri(), (TreeNodeWps) model.getRoot())) {
-                                    if (child != null && !child.isDefaultOrbisGIS()) {
-                                        cleanParentNode(child, model);
-                                    }
-                                }
-                            }
-                            wpsClient.removeProcess(leaf.getUri());
-                            break;
-                    }
+                        }
+                        wpsClient.removeProcess(leaf.getUri());
+                        break;
                 }
             }
         }
@@ -577,7 +594,13 @@ public class ToolBoxPanel extends JPanel {
      * @param model Model containing the node.
      */
     private void cleanParentNode(TreeNodeWps node, FileTreeModel model){
-        model.removeNodeFromParent(node);
+        //If the node is the last one from its parent, call 'cleanParentNode()' on it
+        if(node.getParent().getChildCount() == 1){
+            cleanParentNode((TreeNodeWps)node.getParent(), model);
+        }
+        else {
+            model.removeNodeFromParent(node);
+        }
     }
 
     /**
@@ -588,6 +611,13 @@ public class ToolBoxPanel extends JPanel {
      */
     public void refresh(){
         refresh((TreeNodeWps) tree.getLastSelectedPathComponent());
+    }
+
+    public void refreshAll(){
+        List<TreeNodeWps> leafList = getAllLeaf((TreeNodeWps)selectedModel.getRoot());
+        for(TreeNodeWps node : leafList){
+            refresh(node);
+        }
     }
     /**
      * Refresh the given node.
@@ -673,7 +703,7 @@ public class ToolBoxPanel extends JPanel {
      * Creates the action for the popup.
      * @param wpsClient ToolBox.
      */
-    private void createPopupActions(WpsClient wpsClient) {
+    private void createPopupActions(WpsClientImpl wpsClient) {
         DefaultAction addSource = new DefaultAction(
                 ADD_SOURCE,
                 "Add folder",
