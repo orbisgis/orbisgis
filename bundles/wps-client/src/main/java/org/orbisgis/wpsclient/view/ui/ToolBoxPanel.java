@@ -283,11 +283,12 @@ public class ToolBoxPanel extends JPanel {
      * @param p Process to add.
      * @param uri Process URI.
      */
-    public void addScriptInTagModel(Process p, URI uri, String iconName){
+    public void addScriptInTagModel(Process p, URI uri, String iconName, boolean isDefault){
         TreeNodeWps root = (TreeNodeWps) tagModel.getRoot();
         TreeNodeWps script = new TreeNodeWps();
         script.setUri(uri);
         script.setNodeType(TreeNodeWps.NodeType.PROCESS);
+        script.setDefaultOrbisGIS(isDefault);
 
         script.setValidNode(p!=null);
         if(iconName != null){
@@ -376,13 +377,16 @@ public class ToolBoxPanel extends JPanel {
      * Adds a local source of default scripts. Open the given directory and find all the groovy script contained.
      */
     public void addLocalSource(ProcessIdentifier pi) {
+        //Add the process in the File model
         addLocalSourceInFileModel(pi.getParent(), mapHostNode.get(LOCALHOST_URI), pi.getCategory(), pi.getURI(),
-                pi.getNodePath());
+                pi.getNodePath(), pi.isDefault());
+        //Get the last icon to use it for the Category model
         String categoryIconName = null;
         if(pi.getCategory() != null){
             categoryIconName = pi.getCategory()[pi.getCategory().length-1];
         }
-        addScriptInTagModel(pi.getProcess(), pi.getURI(), categoryIconName);
+        //Add the process to the Category model
+        addScriptInTagModel(pi.getProcess(), pi.getURI(), categoryIconName, pi.isDefault());
         TreeNodeWps scriptFileModel = getChildrenWithUri(pi.getParent(), (TreeNodeWps)fileModel.getRoot()).get(0);
         scriptFileModel.setDefaultOrbisGIS(pi.isDefault());
         for(TreeNodeWps node : getAllChild(scriptFileModel)){
@@ -430,19 +434,25 @@ public class ToolBoxPanel extends JPanel {
      * Adds a source in the file model.
      */
     private void addLocalSourceInFileModel(URI parentUri, TreeNodeWps hostNode, String[] iconName, URI processUri,
-                                           String nodePath){
+                                           String nodePath, boolean isDefault){
+        //Ensure that the tree contains all the node of the given nodePath of the process
         String[] split = nodePath.split("/");
         TreeNodeWps parent = hostNode;
         TreeNodeWps node = null;
         int index = 0;
+        //For each node of the path
         for(String str : split){
+            //Test if the node exist
             node = getChildWithUserObject(str, parent);
             if (node == null) {
+                //If it doesn't, create and set it
                 node = new TreeNodeWps();
                 node.setValidNode(true);
                 node.setUserObject(str);
                 node.setUri(URI.create(parentUri.toString()+"/"+str));
                 node.setNodeType(TreeNodeWps.NodeType.FOLDER);
+                node.setDefaultOrbisGIS(isDefault);
+                //If icon names were defined, use them.
                 if(iconName != null) {
                     if (iconName.length > index) {
                         node.setCustomIcon(iconName[index]);
@@ -463,6 +473,7 @@ public class ToolBoxPanel extends JPanel {
             script.setUri(processUri);
             script.setValidNode(process != null);
             script.setNodeType(TreeNodeWps.NodeType.PROCESS);
+            script.setDefaultOrbisGIS(isDefault);
             if(process != null){
                 script.setUserObject(process.getTitle());
             }
@@ -583,6 +594,7 @@ public class ToolBoxPanel extends JPanel {
      * @param model Model containing the node.
      */
     private void cleanParentNode(TreeNodeWps node, FileTreeModel model){
+        //If the node is the last one from its parent, call 'cleanParentNode()' on it
         if(node.getParent().getChildCount() == 1){
             cleanParentNode((TreeNodeWps)node.getParent(), model);
         }
