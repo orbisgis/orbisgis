@@ -29,7 +29,6 @@
 
 package org.orbisgis.wpsservice;
 
-import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.DataType;
 
@@ -49,11 +48,9 @@ public interface LocalWpsService extends WpsService {
     String TABLE_LOCATION = "TABLE_LOCATION";
     String TABLE_LABEL = "TABLE_LABEL";
 
-    void addLocalSource(URI uri, String iconName, boolean isDefaultScript);
+    void addLocalSource(URI uri, String[] iconArray, boolean isDefaultScript, String nodePath);
 
-    List<ProcessIdentifier> getProcessIdentifierFromParent(URI parent);
-
-    ProcessIdentifier addLocalScript(File f, String iconName, boolean isDefaultScript);
+    ProcessIdentifier addLocalScript(File f, String[] iconArray, boolean isDefaultScript, String nodePath);
 
     void removeProcess(URI uri);
 

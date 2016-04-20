@@ -70,13 +70,13 @@ public class ProcessManager {
      * Adds a local source to the toolbox and get all the groovy script.
      * @param uri URI to the local source.
      */
-    public void addLocalSource(URI uri, String category, boolean isDefault){
+    public void addLocalSource(URI uri, String[] category, boolean isDefault, String nodePath){
         File folder = new File(uri);
         if(!folder.exists() || !folder.isDirectory()){
             return;
         }
         for(File f : folder.listFiles()){
-            addLocalScript(f.toURI(), category, isDefault);
+            addLocalScript(f.toURI(), category, isDefault, nodePath);
         }
     }
 
@@ -85,7 +85,7 @@ public class ProcessManager {
      * @param uri URI of the local script.
      * @return The process corresponding to the script.
      */
-    public Process addLocalScript(URI uri, String category, boolean isDefault){
+    public Process addLocalScript(URI uri, String[] category, boolean isDefault, String nodePath){
         File f = new File(uri);
         //Test that the script name is not only '.groovy'
         if (f.getName().endsWith(".groovy") && f.getName().length()>7) {
@@ -97,7 +97,7 @@ public class ProcessManager {
                 if (entry != null && entry.getKey() != null && entry.getValue() != null) {
                     //Save the process in a ProcessIdentifier
                     ProcessIdentifier pi = new ProcessIdentifier(entry.getValue(), entry.getKey(), uri,
-                            f.getParentFile().toURI());
+                            f.getParentFile().toURI(), nodePath);
                     pi.setCategory(category);
                     pi.setDefault(isDefault);
                     processIdList.add(pi);
@@ -280,17 +280,6 @@ public class ProcessManager {
     public List<ProcessIdentifier> getAllProcessIdentifier(){
         return processIdList;
     }
-
-    public List<ProcessIdentifier> getProcessIdentifierFromParent(URI parent){
-        List<ProcessIdentifier> piList = new ArrayList<>();
-        for(ProcessIdentifier pi : processIdList){
-            if(pi.getParent().equals(parent)){
-                piList.add(pi);
-            }
-        }
-        return piList;
-    }
-
 
     public String getListSourcesAsString(){
         String str = "";

@@ -24,7 +24,7 @@ import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
-import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUI;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUIManager;
 import org.orbisgis.wpsclient.view.utils.ExecutionWorker;
@@ -59,7 +59,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     public static final String NAME = "PROCESS_EDITOR";
 
     private ProcessEditableElement pee;
-    private WpsClient wpsClient;
+    private WpsClientImpl wpsClient;
     private DockingPanelParameters dockingPanelParameters;
     /** TabbedPane containing the configuration panel, the info panel and the execution panel */
     private JTabbedPane tabbedPane;
@@ -73,7 +73,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private JLayer<JPanel> layer;
     private JLabel waitLabel;
 
-    public ProcessEditor(WpsClient wpsClient, ProcessEditableElement pee){
+    public ProcessEditor(WpsClientImpl wpsClient, ProcessEditableElement pee){
         this.alive = true;
         this.wpsClient = wpsClient;
         this.pee = pee;
@@ -82,7 +82,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         dockingPanelParameters.setName(NAME+"_"+pee.getProcess().getTitle());
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("process"));
         dockingPanelParameters.setDefaultDockingLocation(
-                new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClient.TOOLBOX_REFERENCE));
+                new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClientImpl.TOOLBOX_REFERENCE));
         dockingPanelParameters.setTitle(pee.getProcessReference());
         this.setLayout(new BorderLayout());
         dataUIManager = wpsClient.getDataUIManager();
