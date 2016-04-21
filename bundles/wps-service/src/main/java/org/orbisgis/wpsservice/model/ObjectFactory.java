@@ -33,18 +33,19 @@ public class ObjectFactory {
      * Create an instance of {@link DataStore }
      *
      */
-    public DataStore createProcessDescriptionType() {
-        return new DataStore();
-    }
+    public DataStore createDataStore() { return new DataStore(); }
 
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link DataStore }{@code >}}
      *
      */
-    @XmlElementDecl(namespace = "http://orbisgis.org", name = "DataStore")
-    public JAXBElement<DataStore> createProcess(DataStore value) {
-        return new JAXBElement<DataStore>(_DataStore_QNAME, DataStore.class, null, value);
+    @XmlElementDecl(namespace="http://orbisgis.org",
+            name="DataStore",
+            substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
+            substitutionHeadName="DataDescription")
+    public JAXBElement<DataStore> createDataStore(DataStore dataStore) {
+        return new JAXBElement<DataStore>(new QName("http://orbisgis.org", "DataStore"), DataStore.class, dataStore);
     }
 
 }

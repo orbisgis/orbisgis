@@ -72,17 +72,21 @@ public class DataStoreParser implements Parser{
         if(dataStoreAttribute.extensions().length!=0) {
             List<String> validFormats = new ArrayList<>();
             for(String extension : dataStoreAttribute.extensions()){
+                boolean validFormat = false;
                 if(extension.equals(FormatFactory.GEOCATALOG_EXTENSION)){
                     isGeocatalog = true;
+                    validFormat = true;
                 }
-                else if(extension.equals(FormatFactory.DATABASE_EXTENSION)){
+                if(extension.equals(FormatFactory.DATABASE_EXTENSION)){
                     isDataBase = true;
+                    validFormat = true;
                 }
-                else if(importableFormat.contains(extension)){
+                if(importableFormat.contains(extension)){
                     isFile = true;
+                    validFormat = true;
                     validFormats.add(extension);
                 }
-                else{
+                if(!validFormat){
                     LoggerFactory.getLogger(DataStoreParser.class).warn("The format '" + extension + "' is not supported");
                 }
             }
