@@ -175,8 +175,6 @@ public class DataField extends ComplexDataType implements Equals2{
         isMultipleField = multipleField;
     }
 
-
-
     @Override
     public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
         if ((object == null)||(this.getClass()!= object.getClass())) {
