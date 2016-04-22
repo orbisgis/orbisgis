@@ -1,4 +1,4 @@
-<!-- This xml is used to test the DescribeProcess WPS operation result on the DataStore.groovy script. -->
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns4:ProcessOfferings xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:ns3="http://www.opengis.net/ows/2.0" xmlns:ns4="http://www.opengis.net/wps/2.0" xmlns:ns5="http://orbisgis.org">
     <ns4:ProcessOffering jobControlOptions="async-execute sync-execute">
         <ns4:Process xml:lang="fr">
@@ -19,13 +19,8 @@
                 </ns3:Keywords>
                 <ns3:Identifier>orbisgis:test:datastore:input</ns3:Identifier>
                 <ns3:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
-                <ns5:DataStore>
-                    <ns4:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
-                    <isSpatial>true</isSpatial>
-                    <isGeocatalog>true</isGeocatalog>
-                    <isFile>false</isFile>
-                    <isDataBase>false</isDataBase>
-                    <autoImport>false</autoImport>
+                <ns5:DataStore ns5:isSpatial="true" ns5:isGeocatalog="true" ns5:isFile="false" ns5:isDataBase="false" ns5:isAutoImport="false">
+                    <ns4:Format mimeType="text/plain" encoding="simple" schema="" default = "true"/>
                 </ns5:DataStore>
             </ns4:Input>
             <ns4:Output>
@@ -36,13 +31,8 @@
                 </ns3:Keywords>
                 <ns3:Identifier>orbisgis:test:datastore:output</ns3:Identifier>
                 <ns3:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
-                <ns5:DataStore>
+                <ns5:DataStore ns5:isSpatial="false" ns5:isGeocatalog="true" ns5:isFile="false" ns5:isDataBase="false" ns5:isAutoImport="true">
                     <ns4:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
-                    <isSpatial>false</isSpatial>
-                    <isGeocatalog>true</isGeocatalog>
-                    <isFile>false</isFile>
-                    <isDataBase>false</isDataBase>
-                    <autoImport>true</autoImport>
                 </ns5:DataStore>
             </ns4:Output>
         </ns4:Process>

@@ -21,7 +21,14 @@ package org.orbisgis.wpsservice.model;
 
 import net.opengis.wps.v_2_0.ComplexDataType;
 import net.opengis.wps.v_2_0.Format;
+import org.jvnet.jaxb2_commons.lang.Equals2;
+import org.jvnet.jaxb2_commons.lang.EqualsStrategy2;
+import org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy;
+import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,24 +38,31 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  **/
-
-public class DataStore extends ComplexDataType {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "DataStore", propOrder = {"isSpatial", "isGeocatalog", "isFile", "isDataBase", "listDataField", "isAutoImport"})
+public class DataStore extends ComplexDataType implements Equals2 {
     /**DataStore types.*/
     public static final String DATASTORE_TYPE_GEOCATALOG = "DATASTORE_TYPE_GEOCATALOG";
     public static final String DATASTORE_TYPE_FILE = "DATASTORE_TYPE_FILE";
 
     /** True if the data is spatial, false otherwise **/
+    @XmlAttribute(name = "isSpatial", namespace = "http://orbisgis.org")
     private boolean isSpatial;
     /** True if the data can come from the OrbisGIS geocatalog spatial, false otherwise **/
+    @XmlAttribute(name = "isGeocatalog", namespace = "http://orbisgis.org")
     private boolean isGeocatalog;
     /** True if the data can be a file, false otherwise **/
+    @XmlAttribute(name = "isFile", namespace = "http://orbisgis.org")
     private boolean isFile;
     /** True if the data can come from an external dataBase, false otherwise **/
+    @XmlAttribute(name = "isDataBase", namespace = "http://orbisgis.org")
     private boolean isDataBase;
     /** List of DataField liked to the DataStore */
+    @XmlElement(name = "DataField", namespace = "http://orbisgis.org")
     private List<DataField> listDataField;
     /** True if the toolBox should load the file or just give the file path. */
-    private boolean autoImport;
+    @XmlAttribute(name = "isAutoImport", namespace = "http://orbisgis.org")
+    private boolean isAutoImport;
 
     /**
      * Main constructor
@@ -56,21 +70,24 @@ public class DataStore extends ComplexDataType {
      * @throws MalformedScriptException
      */
     public DataStore(List<Format> formatList) throws MalformedScriptException {
-        setFormat(formatList);
+        super.setFormat(formatList);
         listDataField = new ArrayList<>();
     }
 
     /**
-     * Protected empty constructor used in the ObjectFactory for JAXB.
+     * Protected empty constructor used in the ObjectFactory class for JAXB.
      */
-    protected DataStore(){}
+    protected DataStore(){
+        super();
+        listDataField = new ArrayList<>();
+    }
 
-    public void setAutoImport(boolean autoImport){
-        this.autoImport = autoImport;
+    public void setAutoImport(boolean isAutoImport){
+        this.isAutoImport = isAutoImport;
     }
 
     public boolean isAutoImport(){
-        return autoImport;
+        return isAutoImport;
     }
 
     /**
@@ -173,5 +190,33 @@ public class DataStore extends ComplexDataType {
         uri += dataSource;
         uri += "#"+tableName;
         return URI.create(uri);
+    }
+
+    @Override
+    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
+        if ((object == null)||(this.getClass()!= object.getClass())) {
+            return false;
+        }
+        if (this == object) {
+            return true;
+        }
+        if (!super.equals(thisLocator, thatLocator, object, strategy)) {
+            return false;
+        }
+        final DataStore that = ((DataStore) object);
+        {
+            if( (this.isAutoImport() != that.isAutoImport()) ||
+                    (this.isDataBase() != that.isDataBase()) ||
+                    (this.isFile() != that.isFile()) ||
+                    (this.isGeocatalog() != that.isGeocatalog()) ||
+                    (this.isSpatial() != that.isSpatial()) )
+                return false;
+        }
+        return true;
+    }
+
+    public boolean equals(Object object) {
+        final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
+        return equals(null, null, object, strategy);
     }
 }

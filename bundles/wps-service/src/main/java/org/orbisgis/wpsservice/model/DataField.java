@@ -21,7 +21,12 @@ package org.orbisgis.wpsservice.model;
 
 import net.opengis.wps.v_2_0.ComplexDataType;
 import net.opengis.wps.v_2_0.Format;
+import org.jvnet.jaxb2_commons.lang.Equals2;
+import org.jvnet.jaxb2_commons.lang.EqualsStrategy2;
+import org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy;
+import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
+import javax.xml.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,19 +35,28 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  **/
 
-public class DataField extends ComplexDataType{
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "DataField", propOrder = {"dataStoreIdentifier", "fieldTypeList",
+        "excludedTypeList", "listFieldValue", "isMultipleField"})
+public class DataField extends ComplexDataType implements Equals2{
 
     /** Identifier of the parent DataStore */
+    @XmlElement(name = "DataStoreId", namespace = "http://orbisgis.org")
     private URI dataStoreIdentifier;
     /** Indicates if the DataField should be reloaded because of a modification of the parent DataStore.*/
+    @XmlTransient
     private boolean isSourceModified = true;
     /** List of type accepted for the field.*/
+    @XmlElement(name = "FieldType", namespace = "http://orbisgis.org")
     private List<DataType> fieldTypeList;
     /** List of type excluded for the field.*/
+    @XmlElement(name = "ExcludedType", namespace = "http://orbisgis.org")
     private List<DataType> excludedTypeList;
     /** List of FieldValue liked to the DataField */
+    @XmlElement(name = "FieldValue", namespace = "http://orbisgis.org")
     private List<FieldValue> listFieldValue;
     /** Indicates if the use can choose more than one field*/
+    @XmlAttribute(name = "isMultipleField", namespace = "http://orbisgis.org")
     private boolean isMultipleField = false;
 
     /**
@@ -57,6 +71,17 @@ public class DataField extends ComplexDataType{
         listFieldValue = new ArrayList<>();
         this.fieldTypeList = fieldTypeList;
         this.dataStoreIdentifier = dataStoreURI;
+    }
+
+    /**
+     * Protected empty constructor used in the ObjectFactory class for JAXB.
+     */
+    protected DataField(){
+        super();
+        fieldTypeList = new ArrayList<>();
+        excludedTypeList = new ArrayList<>();
+        listFieldValue = new ArrayList<>();
+        dataStoreIdentifier = null;
     }
 
     /**
@@ -144,9 +169,40 @@ public class DataField extends ComplexDataType{
 
     /**
      * Sets if the user can select more than one field or not.
-     * @@param True if the user can select more than one field, false otherwise.
+     * @param multipleField True if the user can select more than one field, false otherwise.
      */
     public void setMultipleField(boolean multipleField) {
         isMultipleField = multipleField;
+    }
+
+
+
+    @Override
+    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
+        if ((object == null)||(this.getClass()!= object.getClass())) {
+            return false;
+        }
+        if (this == object) {
+            return true;
+        }
+        if (!super.equals(thisLocator, thatLocator, object, strategy)) {
+            return false;
+        }
+        final DataField that = ((DataField) object);
+        {
+            if( (this.isSourceModified() != that.isSourceModified()) ||
+                    (this.isMultipleField() != that.isMultipleField()) ||
+                    (!this.getDataStoreIdentifier().equals(that.getDataStoreIdentifier())) ||
+                    (!this.getExcludedTypeList().equals(that.getExcludedTypeList())) ||
+                    (!this.getListFieldValue().equals(that.getListFieldValue())) ||
+                    (!this.getFieldTypeList().equals(that.getFieldTypeList())) )
+                return false;
+        }
+        return true;
+    }
+
+    public boolean equals(Object object) {
+        final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
+        return equals(null, null, object, strategy);
     }
 }

@@ -23,10 +23,8 @@ import net.opengis.ows.v_2_0.*;
 import net.opengis.wps.v_2_0.*;
 import net.opengis.wps.v_2_0.GetCapabilitiesType;
 import net.opengis.wps.v_2_0.DescriptionType;
-import org.apache.commons.collections.ArrayStack;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.*;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
@@ -36,7 +34,6 @@ import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.*;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
@@ -1158,11 +1155,11 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         LanguageStringType translatedTitle = new LanguageStringType();
         boolean defaultTitleFound = false;
         for(LanguageStringType title : descriptionType.getTitle()){
-            if(title.getLang().equals(language)){
+            if(title.getLang() != null && title.getLang().equals(language)){
                 translatedTitle = title;
                 break;
             }
-            else if(title.getLang().equals(enLanguage)){
+            else if(title.getLang() != null && title.getLang().equals(enLanguage)){
                 translatedTitle = title;
                 defaultTitleFound = true;
             }
