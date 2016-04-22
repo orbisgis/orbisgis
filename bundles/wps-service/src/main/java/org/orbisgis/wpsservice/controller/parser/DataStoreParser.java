@@ -30,10 +30,10 @@ import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.DataStore;
+import org.orbisgis.wpsservice.model.ObjectFactory;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,8 +113,7 @@ public class DataStoreParser implements Parser{
         dataStore.setIsFile(isFile);
 
         InputDescriptionType input = new InputDescriptionType();
-        QName qname = new QName("http://orbisgis.org", "DataStore");
-        JAXBElement<DataStore> jaxbElement = new JAXBElement<>(qname, DataStore.class, dataStore);
+        JAXBElement<DataStore> jaxbElement = new ObjectFactory().createDataStore(dataStore);
         input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
@@ -185,8 +184,7 @@ public class DataStoreParser implements Parser{
         dataStore.setIsFile(isFile);
 
         OutputDescriptionType output = new OutputDescriptionType();
-        QName qname = new QName("http://orbisgis.org", "DataStore");
-        JAXBElement<DataStore> jaxbElement = new JAXBElement<>(qname, DataStore.class, dataStore);
+        JAXBElement<DataStore> jaxbElement = new ObjectFactory().createDataStore(dataStore);
         output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);

@@ -195,5 +195,29 @@ public class ParserController {
                 }
             }
         }
+        //Link the DataField with its DataStore
+        for(OutputDescriptionType o : p.getOutput()){
+            if(o.getDataDescription().getValue() instanceof DataField){
+                DataField dataField = (DataField)o.getDataDescription().getValue();
+                for(OutputDescriptionType dataStore : p.getOutput()){
+                    if(dataStore.getIdentifier().getValue().equals(dataField.getDataStoreIdentifier().toString())){
+                        ((DataStore)dataStore.getDataDescription().getValue()).addDataField(dataField);
+                    }
+                }
+            }
+        }
+        //Link the FieldValue with its DataField and its DataStore
+        for(OutputDescriptionType o : p.getOutput()){
+            if(o.getDataDescription().getValue() instanceof FieldValue){
+                FieldValue fieldValue = (FieldValue)o.getDataDescription().getValue();
+                for(OutputDescriptionType output : p.getOutput()){
+                    if(output.getIdentifier().getValue().equals(fieldValue.getDataFieldIdentifier().toString())){
+                        DataField dataField = (DataField)output.getDataDescription().getValue();
+                        dataField.addFieldValue(fieldValue);
+                        fieldValue.setDataStoredIdentifier(dataField.getDataStoreIdentifier());
+                    }
+                }
+            }
+        }
     }
 }

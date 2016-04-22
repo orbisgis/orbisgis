@@ -30,9 +30,9 @@ import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.DataField;
+import org.orbisgis.wpsservice.model.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 import java.lang.reflect.Field;
 import java.net.URI;
 
@@ -55,13 +55,20 @@ public class DataFieldParser implements Parser {
         //Instantiate the DataField object
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
-        URI dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStore());
+        URI dataStoreUri;
+        //If the dataStore attribute is not an URI, autoGenerate one.
+        if(!dataFieldAttribute.dataStore().contains(":")) {
+            dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStore());
+        }
+        //else, use it
+        else {
+            dataStoreUri = URI.create(dataFieldAttribute.dataStore());
+        }
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 
         //Instantiate the returned input
         InputDescriptionType input = new InputDescriptionType();
-        QName qname = new QName("http://orbisgis.org", "data_field");
-        JAXBElement<DataField> jaxbElement = new JAXBElement<>(qname, DataField.class, dataField);
+        JAXBElement<DataField> jaxbElement = new ObjectFactory().createDataField(dataField);
         input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
@@ -81,12 +88,20 @@ public class DataFieldParser implements Parser {
         //Instantiate the DataField object
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
-        URI dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.dataStore());
+        URI dataStoreUri;
+        //If the dataStore attribute is not an URI, autoGenerate one.
+        if(!dataFieldAttribute.dataStore().contains(":")) {
+            dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.dataStore());
+        }
+        //else, use it
+        else {
+            dataStoreUri = URI.create(dataFieldAttribute.dataStore());
+        }
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 
         //Instantiate the returned output
-        OutputDescriptionType output = new OutputDescriptionType();QName qname = new QName("http://orbisgis.org", "data_field");
-        JAXBElement<DataField> jaxbElement = new JAXBElement<>(qname, DataField.class, dataField);
+        OutputDescriptionType output = new OutputDescriptionType();
+        JAXBElement<DataField> jaxbElement = new ObjectFactory().createDataField(dataField);
         output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
