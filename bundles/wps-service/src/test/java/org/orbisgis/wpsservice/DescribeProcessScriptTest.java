@@ -81,12 +81,6 @@ public class DescribeProcessScriptTest {
         ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
-        BufferedReader br = new BufferedReader(new InputStreamReader(resultXml));
-        String line;
-        while((line = br.readLine()) != null){
-            System.out.println(line);
-        }
-        resultXml.reset();
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
