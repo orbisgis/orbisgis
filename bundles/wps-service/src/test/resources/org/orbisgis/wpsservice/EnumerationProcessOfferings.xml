@@ -2,38 +2,45 @@
 <ns4:ProcessOfferings xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:ns3="http://www.opengis.net/ows/2.0" xmlns:ns4="http://www.opengis.net/wps/2.0" xmlns:ns5="http://orbisgis.org">
     <ns4:ProcessOffering jobControlOptions="async-execute sync-execute">
         <ns4:Process xml:lang="fr">
-            <ns3:Title xml:lang="fr">Test du DataStore</ns3:Title>
-            <ns3:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData DataStore.</ns3:Abstract>
+            <ns3:Title xml:lang="fr">Test du Enumeration</ns3:Title>
+            <ns3:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData Enumeration.</ns3:Abstract>
             <ns3:Keywords>
                 <ns3:Keyword xml:lang="fr">test</ns3:Keyword>
                 <ns3:Keyword xml:lang="fr">scripte</ns3:Keyword>
                 <ns3:Keyword xml:lang="fr">wps</ns3:Keyword>
             </ns3:Keywords>
-            <ns3:Identifier>orbisgis:test:datastore</ns3:Identifier>
+            <ns3:Identifier>orbisgis:test:enumeration</ns3:Identifier>
             <ns3:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
             <ns4:Input minOccurs="0" maxOccurs="2">
-                <ns3:Title xml:lang="fr">Entrée DataStore</ns3:Title>
-                <ns3:Abstract xml:lang="fr">Une entrée DataStore.</ns3:Abstract>
+                <ns3:Title xml:lang="fr">Entrée Enumeration</ns3:Title>
+                <ns3:Abstract xml:lang="fr">Une entrée Enumeration.</ns3:Abstract>
                 <ns3:Keywords>
                     <ns3:Keyword xml:lang="fr">entrée</ns3:Keyword>
                 </ns3:Keywords>
-                <ns3:Identifier>orbisgis:test:datastore:input</ns3:Identifier>
+                <ns3:Identifier>orbisgis:test:enumeration:input</ns3:Identifier>
                 <ns3:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
-                <ns5:DataStore isSpatial="true" isGeocatalog="true" isFile="false" isDataBase="false" isAutoImport="false">
-                    <ns4:Format mimeType="text/plain" encoding="simple" schema="" default = "true"/>
-                </ns5:DataStore>
+                <ns5:Enumeration multiSelection="true" isEditable="true">
+                    <ns4:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <ns5:Value>value1</ns5:Value>
+                    <ns5:Value>value2</ns5:Value>
+                    <ns5:Name>name1</ns5:Name>
+                    <ns5:Name>name2</ns5:Name>
+                    <ns5:DefaultValue>value2</ns5:DefaultValue>
+                </ns5:Enumeration>
             </ns4:Input>
             <ns4:Output>
-                <ns3:Title xml:lang="fr">Sortie DataStore</ns3:Title>
-                <ns3:Abstract xml:lang="fr">Une sortie DataStore.</ns3:Abstract>
+                <ns3:Title xml:lang="fr">Sortie Enumeration</ns3:Title>
+                <ns3:Abstract xml:lang="fr">Une sortie Enumeration.</ns3:Abstract>
                 <ns3:Keywords>
                     <ns3:Keyword xml:lang="fr">sortie</ns3:Keyword>
                 </ns3:Keywords>
-                <ns3:Identifier>orbisgis:test:datastore:output</ns3:Identifier>
+                <ns3:Identifier>orbisgis:test:enumeration:output</ns3:Identifier>
                 <ns3:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
-                <ns5:DataStore isSpatial="false" isGeocatalog="true" isFile="false" isDataBase="false" isAutoImport="true">
+                <ns5:Enumeration multiSelection="false" isEditable="false">
                     <ns4:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
-                </ns5:DataStore>
+                    <ns5:Value>value1</ns5:Value>
+                    <ns5:Value>value2</ns5:Value>
+                </ns5:Enumeration>
             </ns4:Output>
         </ns4:Process>
     </ns4:ProcessOffering>

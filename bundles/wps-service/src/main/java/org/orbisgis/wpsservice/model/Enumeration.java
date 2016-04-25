@@ -21,7 +21,12 @@ package org.orbisgis.wpsservice.model;
 
 import net.opengis.wps.v_2_0.ComplexDataType;
 import net.opengis.wps.v_2_0.Format;
+import org.jvnet.jaxb2_commons.lang.EqualsStrategy2;
+import org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy;
+import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
+import javax.xml.bind.annotation.*;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,17 +34,24 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  **/
 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Enumeration", propOrder = {"values", "names", "defaultValues", "multiSelection", "isEditable"})
 public class Enumeration extends ComplexDataType{
 
     /** List of values.*/
+    @XmlElement(name = "Value", namespace = "http://orbisgis.org")
     private String[] values;
     /** List of values names.*/
+    @XmlElement(name = "Name", namespace = "http://orbisgis.org")
     private String[] names;
     /** Default values.*/
+    @XmlElement(name = "DefaultValue", namespace = "http://orbisgis.org")
     private String[] defaultValues;
     /** Enable or not the selection of more than one value.*/
+    @XmlAttribute(name = "multiSelection")
     private boolean multiSelection = false;
     /** Enable or not the user to use its own value.*/
+    @XmlAttribute(name = "isEditable")
     private boolean isEditable = false;
 
     /**
@@ -50,9 +62,16 @@ public class Enumeration extends ComplexDataType{
      * @throws MalformedScriptException
      */
     public Enumeration(List<Format> formatList, String[] valueList, String[] defaultValues) throws MalformedScriptException {
-        setFormat(format);
+        setFormat(formatList);
         this.values = valueList;
         this.defaultValues = defaultValues;
+    }
+
+    /**
+     * Protected empty constructor used in the ObjectFactory class for JAXB.
+     */
+    protected Enumeration(){
+        super();
     }
 
     /**
@@ -109,5 +128,33 @@ public class Enumeration extends ComplexDataType{
 
     public String[] getValuesNames(){
         return names;
+    }
+
+    @Override
+    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
+        if ((object == null)||(this.getClass()!= object.getClass())) {
+            return false;
+        }
+        if (this == object) {
+            return true;
+        }
+        if (!super.equals(thisLocator, thatLocator, object, strategy)) {
+            return false;
+        }
+        final Enumeration that = ((Enumeration) object);
+        {
+            if( !Arrays.equals(this.getDefaultValues(),that.getDefaultValues()) ||
+                    !Arrays.equals(this.getValues(),that.getValues()) ||
+                    !Arrays.equals(this.getValuesNames(),that.getValuesNames()) ||
+                    this.isEditable() != that.isEditable() ||
+                    this.isMultiSelection() != that.isMultiSelection() )
+                return false;
+        }
+        return true;
+    }
+
+    public boolean equals(Object object) {
+        final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
+        return equals(null, null, object, strategy);
     }
 }

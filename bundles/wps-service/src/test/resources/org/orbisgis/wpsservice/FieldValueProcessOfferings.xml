@@ -3,7 +3,7 @@
     <ns3:ProcessOffering jobControlOptions="async-execute sync-execute">
         <ns3:Process xml:lang="fr">
             <ns1:Title xml:lang="fr">Test du FieldValue</ns1:Title>
-            <ns1:Abstract xml:lang="fr">Scripts test pour l'usage du FieldValue FieldValue.</ns1:Abstract>
+            <ns1:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData FieldValue.</ns1:Abstract>
             <ns1:Keywords>
                 <ns1:Keyword xml:lang="fr">test</ns1:Keyword>
                 <ns1:Keyword xml:lang="fr">scripte</ns1:Keyword>
@@ -16,9 +16,9 @@
                 <ns1:Abstract/>
                 <ns1:Keywords/>
                 <ns1:Identifier>orbisgis:test:datastore:input</ns1:Identifier>
-                <ns5:DataStore ns5:isSpatial="false" ns5:isGeocatalog="true" ns5:isFile="true" ns5:isDataBase="true" ns5:isAutoImport="true">
+                <ns5:DataStore isSpatial="false" isGeocatalog="true" isFile="true" isDataBase="true" isAutoImport="true">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
-                    <ns5:DataField ns5:isMultipleField="false">
+                    <ns5:DataField isMultipleField="false">
                         <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                         <ns5:DataStoreId>orbisgis:test:datastore:input</ns5:DataStoreId>
                         <ns5:FieldValue multiSelection="false">
@@ -34,7 +34,7 @@
                 <ns1:Abstract/>
                 <ns1:Keywords/>
                 <ns1:Identifier>orbisgis:test:datafield:input</ns1:Identifier>
-                <ns5:DataField ns5:isMultipleField="false">
+                <ns5:DataField isMultipleField="false">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                     <ns5:DataStoreId>orbisgis:test:datastore:input</ns5:DataStoreId>
                     <ns5:FieldValue multiSelection="false">
@@ -63,9 +63,9 @@
                 <ns1:Abstract/>
                 <ns1:Keywords/>
                 <ns1:Identifier>orbisgis:test:datastore:output</ns1:Identifier>
-                <ns5:DataStore ns5:isSpatial="false" ns5:isGeocatalog="true" ns5:isFile="true" ns5:isDataBase="true" ns5:isAutoImport="true">
+                <ns5:DataStore isSpatial="false" isGeocatalog="true" isFile="true" isDataBase="true" isAutoImport="true">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
-                    <ns5:DataField ns5:isMultipleField="false">
+                    <ns5:DataField isMultipleField="false">
                         <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                         <ns5:DataStoreId>orbisgis:test:datastore:output</ns5:DataStoreId>
                         <ns5:FieldValue multiSelection="true">
@@ -81,7 +81,7 @@
                 <ns1:Abstract/>
                 <ns1:Keywords/>
                 <ns1:Identifier>orbisgis:test:datafield:output</ns1:Identifier>
-                <ns5:DataField ns5:isMultipleField="false">
+                <ns5:DataField isMultipleField="false">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                     <ns5:DataStoreId>orbisgis:test:datastore:output</ns5:DataStoreId>
                     <ns5:FieldValue multiSelection="true">

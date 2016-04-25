@@ -3,7 +3,6 @@ package org.orbisgis.wpsservice.model;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
-import javax.xml.datatype.DatatypeConstants;
 import javax.xml.namespace.QName;
 
 
@@ -23,6 +22,7 @@ public class ObjectFactory {
     private final static QName _DataStore_QNAME = new QName("http://orbisgis.org", "DataStore");
     private final static QName _DataField_QNAME = new QName("http://orbisgis.org", "DataField");
     private final static QName _FieldValue_QNAME = new QName("http://orbisgis.org", "FieldValue");
+    private final static QName _Enumeration_QNAME = new QName("http://orbisgis.org", "Enumeration");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: net.opengis.wps.v_2_0
@@ -84,5 +84,23 @@ public class ObjectFactory {
             substitutionHeadName="DataDescription")
     public JAXBElement<FieldValue> createFieldValue(FieldValue fieldValue) {
         return new JAXBElement<>(_FieldValue_QNAME, FieldValue.class, fieldValue);
+    }
+
+    /**
+     * Create an instance of {@link Enumeration }
+     *
+     */
+    public Enumeration createEnumeration() { return new Enumeration(); }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Enumeration }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace="http://orbisgis.org",
+            name="Enumeration",
+            substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
+            substitutionHeadName="DataDescription")
+    public JAXBElement<Enumeration> createEnumeration(Enumeration enumeration) {
+        return new JAXBElement<>(_Enumeration_QNAME, Enumeration.class, enumeration);
     }
 }

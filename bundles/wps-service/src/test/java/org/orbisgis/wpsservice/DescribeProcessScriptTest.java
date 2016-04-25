@@ -117,15 +117,46 @@ public class DescribeProcessScriptTest {
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         BufferedReader br = new BufferedReader(new InputStreamReader(resultXml));
-        String line;
-        while((line = br.readLine()) != null){
-            System.out.println(line);
-        }
-        resultXml.reset();
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("FieldValueProcessOfferings.xml").getFile());
+        Object ressourceObject = unmarshaller.unmarshal(f);
+
+        String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
+        Assert.assertTrue(message, ressourceObject.equals(resultObject));
+    }
+
+    /**
+     * Test the Enumeration script DescribeProcess request.
+     */
+    @Test
+    public void testEnumerationScript() throws JAXBException, IOException {
+        //Start the wpsService
+        initWpsService();
+        //Build the DescribeProcess object
+        DescribeProcess describeProcess = new DescribeProcess();
+        describeProcess.setLang("fr");
+        List<CodeType> identifierList = new ArrayList<>();
+        CodeType dataStoreId = new CodeType();
+        dataStoreId.setValue("orbisgis:test:enumeration");
+        identifierList.add(dataStoreId);
+        describeProcess.setIdentifier(identifierList);
+        //Marshall the DescribeProcess object into an OutputStream
+        Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshaller.marshal(describeProcess, out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
+        BufferedReader br = new BufferedReader(new InputStreamReader(resultXml));
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+        Object resultObject = unmarshaller.unmarshal(resultXml);
+        File f = new File(this.getClass().getResource("EnumerationProcessOfferings.xml").getFile());
         Object ressourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
@@ -154,6 +185,11 @@ public class DescribeProcessScriptTest {
                     localWpsService.addLocalScript(f, null, false);
                 }
                 url = this.getClass().getResource("FieldValue.groovy");
+                if (url != null) {
+                    File f = new File(url.toURI());
+                    localWpsService.addLocalScript(f, null, false);
+                }
+                url = this.getClass().getResource("Enumeration.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
                     localWpsService.addLocalScript(f, null, false);

@@ -27,7 +27,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
         resume = "Test script using the FieldValue ComplexData.",
         traducedResumes = [
                 @LanguageString(value = "Test script using the FieldValue ComplexData.", lang = "en"),
-                @LanguageString(value = "Scripts test pour l'usage du FieldValue FieldValue.", lang = "fr")
+                @LanguageString(value = "Scripts test pour l'usage du ComplexData FieldValue.", lang = "fr")
         ],
         keywords = ["test", "script", "wps"],
         traducedKeywords = [
