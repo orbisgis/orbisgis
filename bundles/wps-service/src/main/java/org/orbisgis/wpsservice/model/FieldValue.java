@@ -21,25 +21,38 @@ package org.orbisgis.wpsservice.model;
 
 import net.opengis.wps.v_2_0.ComplexDataType;
 import net.opengis.wps.v_2_0.Format;
+import org.jvnet.jaxb2_commons.lang.Equals2;
+import org.jvnet.jaxb2_commons.lang.EqualsStrategy2;
+import org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy;
+import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
+import javax.xml.bind.annotation.*;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * FieldValue represent one or more values from a DataField.
  * @author Sylvain PALOMINOS
  */
-public class FieldValue extends ComplexDataType{
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "FieldValue", propOrder = {"dataFieldIdentifier", "dataStoreIdentifier", "multiSelection"})
+public class FieldValue extends ComplexDataType implements Equals2{
 
     /** Identifier of the 'parent' DataField */
+    @XmlElement(name = "DataFieldId", namespace = "http://orbisgis.org")
     private URI dataFieldIdentifier;
     /** Indicates if the FieldValue should be reloaded because of a modification of the parent DataField.*/
+    @XmlTransient
     private boolean isDataFieldModified = true;
     /** Identifier of the 'parent' DataStore */
+    @XmlElement(name = "DataStoreId", namespace = "http://orbisgis.org")
     private URI dataStoreIdentifier;
     /** Indicates if the FieldValue should be reloaded because of a modification of the parent DataStore.*/
+    @XmlTransient
     private boolean isDataStoreModified = true;
     /** Enable the selection of more than one value if true.*/
+    @XmlAttribute(name = "multiSelection")
     private boolean multiSelection;
 
     /**
@@ -53,6 +66,15 @@ public class FieldValue extends ComplexDataType{
         setFormat(formatList);
         this.multiSelection = multiSelection;
         this.dataFieldIdentifier = dataFieldIdentifier;
+    }
+
+    /**
+     * Protected empty constructor used in the ObjectFactory class for JAXB.
+     */
+    protected FieldValue(){
+        super();
+        dataFieldIdentifier = null;
+        dataStoreIdentifier = null;
     }
 
     /**
@@ -134,5 +156,31 @@ public class FieldValue extends ComplexDataType{
      */
     public boolean getMuliSelection(){
         return multiSelection;
+    }
+
+    @Override
+    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
+        if ((object == null)||(this.getClass()!= object.getClass())) {
+            return false;
+        }
+        if (this == object) {
+            return true;
+        }
+        if (!super.equals(thisLocator, thatLocator, object, strategy)) {
+            return false;
+        }
+        final FieldValue that = ((FieldValue) object);
+        {
+            if( (this.getMuliSelection() != that.getMuliSelection()) ||
+                    (!this.getDataFieldIdentifier().equals(that.getDataFieldIdentifier())) ||
+                    (!this.getDataStoreIdentifier().equals(that.getDataStoreIdentifier())) )
+                return false;
+        }
+        return true;
+    }
+
+    public boolean equals(Object object) {
+        final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
+        return equals(null, null, object, strategy);
     }
 }

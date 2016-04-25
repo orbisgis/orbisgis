@@ -56,7 +56,7 @@ public class DataField extends ComplexDataType implements Equals2{
     @XmlElement(name = "FieldValue", namespace = "http://orbisgis.org")
     private List<FieldValue> listFieldValue;
     /** Indicates if the use can choose more than one field*/
-    @XmlAttribute(name = "isMultipleField", namespace = "http://orbisgis.org")
+    @XmlAttribute(name = "isMultipleField")
     private boolean isMultipleField = false;
 
     /**
@@ -174,8 +174,6 @@ public class DataField extends ComplexDataType implements Equals2{
     public void setMultipleField(boolean multipleField) {
         isMultipleField = multipleField;
     }
-
-
 
     @Override
     public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {

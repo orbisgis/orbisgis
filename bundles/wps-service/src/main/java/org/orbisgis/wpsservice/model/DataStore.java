@@ -46,22 +46,22 @@ public class DataStore extends ComplexDataType implements Equals2 {
     public static final String DATASTORE_TYPE_FILE = "DATASTORE_TYPE_FILE";
 
     /** True if the data is spatial, false otherwise **/
-    @XmlAttribute(name = "isSpatial", namespace = "http://orbisgis.org")
+    @XmlAttribute(name = "isSpatial")
     private boolean isSpatial;
     /** True if the data can come from the OrbisGIS geocatalog spatial, false otherwise **/
-    @XmlAttribute(name = "isGeocatalog", namespace = "http://orbisgis.org")
+    @XmlAttribute(name = "isGeocatalog")
     private boolean isGeocatalog;
     /** True if the data can be a file, false otherwise **/
-    @XmlAttribute(name = "isFile", namespace = "http://orbisgis.org")
+    @XmlAttribute(name = "isFile")
     private boolean isFile;
     /** True if the data can come from an external dataBase, false otherwise **/
-    @XmlAttribute(name = "isDataBase", namespace = "http://orbisgis.org")
+    @XmlAttribute(name = "isDataBase")
     private boolean isDataBase;
     /** List of DataField liked to the DataStore */
     @XmlElement(name = "DataField", namespace = "http://orbisgis.org")
     private List<DataField> listDataField;
     /** True if the toolBox should load the file or just give the file path. */
-    @XmlAttribute(name = "isAutoImport", namespace = "http://orbisgis.org")
+    @XmlAttribute(name = "isAutoImport")
     private boolean isAutoImport;
 
     /**
