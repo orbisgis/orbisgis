@@ -79,7 +79,7 @@ public class DataStore extends ComplexDataType implements Equals2 {
      */
     protected DataStore(){
         super();
-        listDataField = new ArrayList<>();
+        listDataField = null;
     }
 
     public void setAutoImport(boolean isAutoImport){

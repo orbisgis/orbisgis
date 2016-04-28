@@ -29,6 +29,7 @@ import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
+import org.orbisgis.wpsservice.model.ObjectFactory;
 import org.orbisgis.wpsservice.model.RawData;
 
 import javax.xml.bind.JAXBElement;
@@ -56,8 +57,7 @@ public class RawDataParser implements Parser {
         RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class), format);
 
         InputDescriptionType input = new InputDescriptionType();
-        QName qname = new QName("http://orbisgis.org", "geometryData");
-        JAXBElement<RawData> jaxbElement = new JAXBElement<>(qname, RawData.class, rawData);
+        JAXBElement<RawData> jaxbElement = new ObjectFactory().createRawData(rawData);
         input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
@@ -79,8 +79,7 @@ public class RawDataParser implements Parser {
         RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class), format);
 
         OutputDescriptionType output = new OutputDescriptionType();
-        QName qname = new QName("http://orbisgis.org", "geometryData");
-        JAXBElement<RawData> jaxbElement = new JAXBElement<>(qname, RawData.class, rawData);
+        JAXBElement<RawData> jaxbElement = new ObjectFactory().createRawData(rawData);
         output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);

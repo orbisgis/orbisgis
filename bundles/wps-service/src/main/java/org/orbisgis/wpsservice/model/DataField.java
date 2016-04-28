@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Sylvain PALOMINOS
@@ -78,9 +79,9 @@ public class DataField extends ComplexDataType implements Equals2{
      */
     protected DataField(){
         super();
-        fieldTypeList = new ArrayList<>();
-        excludedTypeList = new ArrayList<>();
-        listFieldValue = new ArrayList<>();
+        fieldTypeList = null;
+        excludedTypeList = null;
+        listFieldValue = null;
         dataStoreIdentifier = null;
     }
 
@@ -190,10 +191,10 @@ public class DataField extends ComplexDataType implements Equals2{
         {
             if( (this.isSourceModified() != that.isSourceModified()) ||
                     (this.isMultipleField() != that.isMultipleField()) ||
-                    (!this.getDataStoreIdentifier().equals(that.getDataStoreIdentifier())) ||
-                    (!this.getExcludedTypeList().equals(that.getExcludedTypeList())) ||
-                    (!this.getListFieldValue().equals(that.getListFieldValue())) ||
-                    (!this.getFieldTypeList().equals(that.getFieldTypeList())) )
+                    !Objects.equals(this.getDataStoreIdentifier(), that.getDataStoreIdentifier()) ||
+                    !Objects.equals(this.getExcludedTypeList(), that.getExcludedTypeList()) ||
+                    !Objects.equals(this.getListFieldValue(), that.getListFieldValue()) ||
+                    !Objects.equals(this.getFieldTypeList(), that.getFieldTypeList()) )
                 return false;
         }
         return true;

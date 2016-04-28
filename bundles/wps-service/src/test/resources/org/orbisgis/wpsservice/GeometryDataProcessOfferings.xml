@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns4:ProcessOfferings xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:ns3="http://www.opengis.net/ows/2.0" xmlns:ns4="http://www.opengis.net/wps/2.0" xmlns:ns5="http://orbisgis.org">
+    <ns4:ProcessOffering jobControlOptions="async-execute sync-execute">
+        <ns4:Process xml:lang="fr">
+            <ns3:Title xml:lang="fr">Test du Geometry</ns3:Title>
+            <ns3:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData Geometry.</ns3:Abstract>
+            <ns3:Keywords>
+                <ns3:Keyword xml:lang="fr">test</ns3:Keyword>
+                <ns3:Keyword xml:lang="fr">scripte</ns3:Keyword>
+                <ns3:Keyword xml:lang="fr">wps</ns3:Keyword>
+            </ns3:Keywords>
+            <ns3:Identifier>orbisgis:test:geometry</ns3:Identifier>
+            <ns3:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
+            <ns4:Input minOccurs="0" maxOccurs="2">
+                <ns3:Title xml:lang="fr">Entrée Geometry</ns3:Title>
+                <ns3:Abstract xml:lang="fr">Une entrée Geometry.</ns3:Abstract>
+                <ns3:Keywords>
+                    <ns3:Keyword xml:lang="fr">entrée</ns3:Keyword>
+                </ns3:Keywords>
+                <ns3:Identifier>orbisgis:test:geometry:input</ns3:Identifier>
+                <ns3:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
+                <ns5:Geometry dimension="3">
+                    <ns4:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <ns5:ExcludedType>MULTIPOINT</ns5:ExcludedType>
+                    <ns5:ExcludedType>POINT</ns5:ExcludedType>
+                </ns5:Geometry>
+            </ns4:Input>
+            <ns4:Output>
+                <ns3:Title xml:lang="fr">Sortie Geometry</ns3:Title>
+                <ns3:Abstract xml:lang="fr">Une sortie Geometry.</ns3:Abstract>
+                <ns3:Keywords>
+                    <ns3:Keyword xml:lang="fr">sortie</ns3:Keyword>
+                </ns3:Keywords>
+                <ns3:Identifier>orbisgis:test:geometry:output</ns3:Identifier>
+                <ns3:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
+                <ns5:Geometry dimension="2">
+                    <ns4:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <ns5:GeometryType>POLYGON</ns5:GeometryType>
+                    <ns5:GeometryType>POINT</ns5:GeometryType>
+                </ns5:Geometry>
+            </ns4:Output>
+        </ns4:Process>
+    </ns4:ProcessOffering>
+</ns4:ProcessOfferings>
