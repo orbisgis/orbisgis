@@ -21,7 +21,15 @@ package org.orbisgis.wpsservice.model;
 
 import net.opengis.wps.v_2_0.ComplexDataType;
 import net.opengis.wps.v_2_0.Format;
+import org.jvnet.jaxb2_commons.lang.Equals2;
+import org.jvnet.jaxb2_commons.lang.EqualsStrategy2;
+import org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy;
+import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 /**
@@ -31,13 +39,18 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 
-public class RawData extends ComplexDataType {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "RawData", propOrder = {"isFile", "isDirectory", "multiSelection"})
+public class RawData extends ComplexDataType implements Equals2 {
 
     /** True if the RawData can be a file, false otherwise. */
+    @XmlAttribute(name = "isFile")
     private boolean isFile;
     /** True if the RawData can be a directory, false otherwise. */
+    @XmlAttribute(name = "isDirectory")
     private boolean isDirectory;
     /** True if the user can select more than one file/directory, false otherwise. */
+    @XmlAttribute(name = "multiSelection")
     private boolean multiSelection;
 
     /**
@@ -48,6 +61,13 @@ public class RawData extends ComplexDataType {
      */
     public RawData(List<Format> formatList) throws MalformedScriptException {
         setFormat(formatList);
+    }
+
+    /**
+     * Protected empty constructor used in the ObjectFactory class for JAXB.
+     */
+    protected RawData(){
+        super();
     }
 
     /**
@@ -96,5 +116,31 @@ public class RawData extends ComplexDataType {
      */
     public void setMultiSelection(boolean multiSelection) {
         this.multiSelection = multiSelection;
+    }
+
+    @Override
+    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
+        if ((object == null)||(this.getClass()!= object.getClass())) {
+            return false;
+        }
+        if (this == object) {
+            return true;
+        }
+        if (!super.equals(thisLocator, thatLocator, object, strategy)) {
+            return false;
+        }
+        final RawData that = ((RawData) object);
+        {
+            if( (this.isDirectory() != that.isDirectory()) ||
+                    (this.isFile() != that.isFile()) ||
+                    (this.multiSelection() != that.multiSelection()) )
+                return false;
+        }
+        return true;
+    }
+
+    public boolean equals(Object object) {
+        final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
+        return equals(null, null, object, strategy);
     }
 }
