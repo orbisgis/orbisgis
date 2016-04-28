@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * FieldValue represent one or more values from a DataField.
@@ -172,8 +173,8 @@ public class FieldValue extends ComplexDataType implements Equals2{
         final FieldValue that = ((FieldValue) object);
         {
             if( (this.getMuliSelection() != that.getMuliSelection()) ||
-                    (!this.getDataFieldIdentifier().equals(that.getDataFieldIdentifier())) ||
-                    (!this.getDataStoreIdentifier().equals(that.getDataStoreIdentifier())) )
+                    !Objects.equals(this.getDataFieldIdentifier(), that.getDataFieldIdentifier()) ||
+                    !Objects.equals(this.getDataStoreIdentifier(), that.getDataStoreIdentifier()) )
                 return false;
         }
         return true;

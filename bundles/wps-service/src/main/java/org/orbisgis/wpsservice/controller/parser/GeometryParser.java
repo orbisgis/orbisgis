@@ -30,6 +30,7 @@ import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.GeometryData;
+import org.orbisgis.wpsservice.model.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -56,8 +57,7 @@ public class GeometryParser implements Parser {
         GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);
 
         InputDescriptionType input = new InputDescriptionType();
-        QName qname = new QName("http://orbisgis.org", "geometryData");
-        JAXBElement<GeometryData> jaxbElement = new JAXBElement<>(qname, GeometryData.class, geometryData);
+        JAXBElement<GeometryData> jaxbElement = new ObjectFactory().createGeometryData(geometryData);
         input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
@@ -79,8 +79,7 @@ public class GeometryParser implements Parser {
         GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);
 
         OutputDescriptionType output = new OutputDescriptionType();
-        QName qname = new QName("http://orbisgis.org", "geometryData");
-        JAXBElement<GeometryData> jaxbElement = new JAXBElement<>(qname, GeometryData.class, geometryData);
+        JAXBElement<GeometryData> jaxbElement = new ObjectFactory().createGeometryData(geometryData);
         output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);

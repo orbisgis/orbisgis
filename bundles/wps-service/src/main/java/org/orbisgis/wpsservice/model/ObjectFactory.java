@@ -23,6 +23,7 @@ public class ObjectFactory {
     private final static QName _DataField_QNAME = new QName("http://orbisgis.org", "DataField");
     private final static QName _FieldValue_QNAME = new QName("http://orbisgis.org", "FieldValue");
     private final static QName _Enumeration_QNAME = new QName("http://orbisgis.org", "Enumeration");
+    private final static QName _GeometryData_QNAME = new QName("http://orbisgis.org", "Geometry");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: net.opengis.wps.v_2_0
@@ -102,5 +103,23 @@ public class ObjectFactory {
             substitutionHeadName="DataDescription")
     public JAXBElement<Enumeration> createEnumeration(Enumeration enumeration) {
         return new JAXBElement<>(_Enumeration_QNAME, Enumeration.class, enumeration);
+    }
+
+    /**
+     * Create an instance of {@link GeometryData }
+     *
+     */
+    public GeometryData createGeometryData() { return new GeometryData(); }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Enumeration }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace="http://orbisgis.org",
+            name="Geometry",
+            substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
+            substitutionHeadName="DataDescription")
+    public JAXBElement<GeometryData> createGeometryData(GeometryData geometryData) {
+        return new JAXBElement<>(_GeometryData_QNAME, GeometryData.class, geometryData);
     }
 }

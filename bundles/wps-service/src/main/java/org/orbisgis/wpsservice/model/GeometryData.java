@@ -2,9 +2,15 @@ package org.orbisgis.wpsservice.model;
 
 import net.opengis.wps.v_2_0.ComplexDataType;
 import net.opengis.wps.v_2_0.Format;
+import org.jvnet.jaxb2_commons.lang.Equals2;
+import org.jvnet.jaxb2_commons.lang.EqualsStrategy2;
+import org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy;
+import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
 
+import javax.xml.bind.annotation.*;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * GeometryData extends the ComplexData class.
@@ -12,13 +18,18 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  */
-public class GeometryData extends ComplexDataType {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Geometry", propOrder = {"geometryTypeList", "excludedTypeList", "dimension"})
+public class GeometryData extends ComplexDataType implements Equals2 {
 
     /** List of type accepted for the geometry.*/
+    @XmlElement(name = "GeometryType", namespace = "http://orbisgis.org")
     private List<DataType> geometryTypeList;
     /** List of type excluded for the geometry.*/
+    @XmlElement(name = "ExcludedType", namespace = "http://orbisgis.org")
     private List<DataType> excludedTypeList;
     /** Dimension of the geometry. Can be 2(D) or 3(D). */
+    @XmlAttribute(name = "dimension")
     private int dimension;
 
     /**
@@ -30,6 +41,13 @@ public class GeometryData extends ComplexDataType {
     public GeometryData(List<Format> formatList, List<DataType> geometryTypeList) throws MalformedScriptException {
         setFormat(formatList);
         this.geometryTypeList = geometryTypeList;
+    }
+
+    /**
+     * Protected empty constructor used in the ObjectFactory class for JAXB.
+     */
+    protected GeometryData(){
+        super();
     }
 
     /**
@@ -78,5 +96,32 @@ public class GeometryData extends ComplexDataType {
      */
     public int getDimension(){
         return dimension;
+    }
+
+
+    @Override
+    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
+        if ((object == null)||(this.getClass()!= object.getClass())) {
+            return false;
+        }
+        if (this == object) {
+            return true;
+        }
+        if (!super.equals(thisLocator, thatLocator, object, strategy)) {
+            return false;
+        }
+        final GeometryData that = ((GeometryData) object);
+        {
+            if( (this.getDimension() != that.getDimension()) ||
+                    !Objects.equals(this.getGeometryTypeList(), that.getGeometryTypeList()) ||
+                    !Objects.equals(this.getExcludedTypeList(), that.getExcludedTypeList()) )
+                return false;
+        }
+        return true;
+    }
+
+    public boolean equals(Object object) {
+        final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
+        return equals(null, null, object, strategy);
     }
 }
