@@ -3,11 +3,8 @@ package org.orbisgis.wpsservice;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.*;
 
-import net.opengis.ows.v_2_0.*;
 import net.opengis.wps.v_2_0.*;
 import net.opengis.wps.v_2_0.GetCapabilitiesType;
 import net.opengis.wps.v_2_0.ObjectFactory;
@@ -30,14 +27,10 @@ public class WpsClientRequestTest {
     public void testDataStoreScript() throws JAXBException, IOException {
         //Start the wpsService
         initWpsService();
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         //Build the DescribeProcess object
-        DescribeProcess describeProcess = new DescribeProcess();
-        describeProcess.setLang("fr");
-        List<CodeType> identifierList = new ArrayList<>();
-        CodeType dataStoreId = new CodeType();
-        dataStoreId.setValue("orbisgis:test:datastore");
-        identifierList.add(dataStoreId);
-        describeProcess.setIdentifier(identifierList);
+        File describeProcessFile = new File(this.getClass().getResource("DataStoreDescribeProcess.xml").getFile());
+        Object describeProcess = unmarshaller.unmarshal(describeProcessFile);
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -49,7 +42,6 @@ public class WpsClientRequestTest {
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("DataStoreProcessOfferings.xml").getFile());
         Object resourceObject = unmarshaller.unmarshal(f);
@@ -65,14 +57,10 @@ public class WpsClientRequestTest {
     public void testDataFieldScript() throws JAXBException, IOException {
         //Start the wpsService
         initWpsService();
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         //Build the DescribeProcess object
-        DescribeProcess describeProcess = new DescribeProcess();
-        describeProcess.setLang("fr");
-        List<CodeType> identifierList = new ArrayList<>();
-        CodeType dataFieldId = new CodeType();
-        dataFieldId.setValue("orbisgis:test:datafield");
-        identifierList.add(dataFieldId);
-        describeProcess.setIdentifier(identifierList);
+        File describeProcessFile = new File(this.getClass().getResource("DataFieldDescribeProcess.xml").getFile());
+        Object describeProcess = unmarshaller.unmarshal(describeProcessFile);
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -84,7 +72,6 @@ public class WpsClientRequestTest {
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("DataFieldProcessOfferings.xml").getFile());
         Object resourceObject = unmarshaller.unmarshal(f);
@@ -100,14 +87,10 @@ public class WpsClientRequestTest {
     public void testFieldValueScript() throws JAXBException, IOException {
         //Start the wpsService
         initWpsService();
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         //Build the DescribeProcess object
-        DescribeProcess describeProcess = new DescribeProcess();
-        describeProcess.setLang("fr");
-        List<CodeType> identifierList = new ArrayList<>();
-        CodeType fieldValueId = new CodeType();
-        fieldValueId.setValue("orbisgis:test:fieldvalue");
-        identifierList.add(fieldValueId);
-        describeProcess.setIdentifier(identifierList);
+        File describeProcessFile = new File(this.getClass().getResource("FieldValueDescribeProcess.xml").getFile());
+        Object describeProcess = unmarshaller.unmarshal(describeProcessFile);
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -119,7 +102,6 @@ public class WpsClientRequestTest {
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("FieldValueProcessOfferings.xml").getFile());
         Object resourceObject = unmarshaller.unmarshal(f);
@@ -135,14 +117,10 @@ public class WpsClientRequestTest {
     public void testEnumerationScript() throws JAXBException, IOException {
         //Start the wpsService
         initWpsService();
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         //Build the DescribeProcess object
-        DescribeProcess describeProcess = new DescribeProcess();
-        describeProcess.setLang("fr");
-        List<CodeType> identifierList = new ArrayList<>();
-        CodeType enumerationId = new CodeType();
-        enumerationId.setValue("orbisgis:test:enumeration");
-        identifierList.add(enumerationId);
-        describeProcess.setIdentifier(identifierList);
+        File describeProcessFile = new File(this.getClass().getResource("EnumerationDescribeProcess.xml").getFile());
+        Object describeProcess = unmarshaller.unmarshal(describeProcessFile);
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -154,7 +132,6 @@ public class WpsClientRequestTest {
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("EnumerationProcessOfferings.xml").getFile());
         Object resourceObject = unmarshaller.unmarshal(f);
@@ -170,14 +147,10 @@ public class WpsClientRequestTest {
     public void testGeometryDataScript() throws JAXBException, IOException {
         //Start the wpsService
         initWpsService();
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         //Build the DescribeProcess object
-        DescribeProcess describeProcess = new DescribeProcess();
-        describeProcess.setLang("fr");
-        List<CodeType> identifierList = new ArrayList<>();
-        CodeType geometryDataId = new CodeType();
-        geometryDataId.setValue("orbisgis:test:geometry");
-        identifierList.add(geometryDataId);
-        describeProcess.setIdentifier(identifierList);
+        File describeProcessFile = new File(this.getClass().getResource("GeometryDataDescribeProcess.xml").getFile());
+        Object describeProcess = unmarshaller.unmarshal(describeProcessFile);
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -189,7 +162,6 @@ public class WpsClientRequestTest {
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("GeometryDataProcessOfferings.xml").getFile());
         Object resourceObject = unmarshaller.unmarshal(f);
@@ -205,14 +177,10 @@ public class WpsClientRequestTest {
     public void testRawDataScript() throws JAXBException, IOException {
         //Start the wpsService
         initWpsService();
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         //Build the DescribeProcess object
-        DescribeProcess describeProcess = new DescribeProcess();
-        describeProcess.setLang("fr");
-        List<CodeType> identifierList = new ArrayList<>();
-        CodeType rawDataId = new CodeType();
-        rawDataId.setValue("orbisgis:test:rawdata");
-        identifierList.add(rawDataId);
-        describeProcess.setIdentifier(identifierList);
+        File describeProcessFile = new File(this.getClass().getResource("RawDataDescribeProcess.xml").getFile());
+        Object describeProcess = unmarshaller.unmarshal(describeProcessFile);
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -224,7 +192,6 @@ public class WpsClientRequestTest {
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("RawDataProcessOfferings.xml").getFile());
         Object resourceObject = unmarshaller.unmarshal(f);
@@ -234,7 +201,7 @@ public class WpsClientRequestTest {
     }
 
     /**
-     * Test the RawData script DescribeProcess request.
+     * Test the GetCapabilities request.
      */
     @Test
     public void testGetCapabilities() throws JAXBException, IOException {
@@ -260,7 +227,7 @@ public class WpsClientRequestTest {
         Object resourceObject = unmarshaller.unmarshal(f);
 
         WPSCapabilitiesType result = (WPSCapabilitiesType) ((JAXBElement) resultObject).getValue();
-        WPSCapabilitiesType resource = (WPSCapabilitiesType) ((JAXBElement) resultObject).getValue();
+        WPSCapabilitiesType resource = (WPSCapabilitiesType) ((JAXBElement) resourceObject).getValue();
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
         Assert.assertTrue(message, resource.equals(result));
     }
