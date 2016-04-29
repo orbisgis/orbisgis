@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.*;
 
-import net.opengis.ows.v_2_0.CodeType;
+import net.opengis.ows.v_2_0.*;
 import net.opengis.wps.v_2_0.*;
+import net.opengis.wps.v_2_0.GetCapabilitiesType;
+import net.opengis.wps.v_2_0.ObjectFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,7 +20,7 @@ import org.junit.Test;
  *
  * @author Sylvain PALOMINOS
  */
-public class DescribeProcessScriptTest {
+public class WpsClientRequestTest {
     WpsService wpsService;
 
     /**
@@ -50,10 +52,10 @@ public class DescribeProcessScriptTest {
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("DataStoreProcessOfferings.xml").getFile());
-        Object ressourceObject = unmarshaller.unmarshal(f);
+        Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, ressourceObject.equals(resultObject));
+        Assert.assertTrue(message, resourceObject.equals(resultObject));
     }
 
     /**
@@ -85,10 +87,10 @@ public class DescribeProcessScriptTest {
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("DataFieldProcessOfferings.xml").getFile());
-        Object ressourceObject = unmarshaller.unmarshal(f);
+        Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, ressourceObject.equals(resultObject));
+        Assert.assertTrue(message, resourceObject.equals(resultObject));
     }
 
     /**
@@ -120,10 +122,10 @@ public class DescribeProcessScriptTest {
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("FieldValueProcessOfferings.xml").getFile());
-        Object ressourceObject = unmarshaller.unmarshal(f);
+        Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, ressourceObject.equals(resultObject));
+        Assert.assertTrue(message, resourceObject.equals(resultObject));
     }
 
     /**
@@ -155,10 +157,10 @@ public class DescribeProcessScriptTest {
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("EnumerationProcessOfferings.xml").getFile());
-        Object ressourceObject = unmarshaller.unmarshal(f);
+        Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, ressourceObject.equals(resultObject));
+        Assert.assertTrue(message, resourceObject.equals(resultObject));
     }
 
     /**
@@ -190,10 +192,10 @@ public class DescribeProcessScriptTest {
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("GeometryDataProcessOfferings.xml").getFile());
-        Object ressourceObject = unmarshaller.unmarshal(f);
+        Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, ressourceObject.equals(resultObject));
+        Assert.assertTrue(message, resourceObject.equals(resultObject));
     }
 
     /**
@@ -225,10 +227,42 @@ public class DescribeProcessScriptTest {
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("RawDataProcessOfferings.xml").getFile());
-        Object ressourceObject = unmarshaller.unmarshal(f);
+        Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, ressourceObject.equals(resultObject));
+        Assert.assertTrue(message, resourceObject.equals(resultObject));
+    }
+
+    /**
+     * Test the RawData script DescribeProcess request.
+     */
+    @Test
+    public void testGetCapabilities() throws JAXBException, IOException {
+        //Start the wpsService
+        initWpsService();
+        //Build the GetCapabilities object
+        GetCapabilitiesType getCapabilities = new ObjectFactory().createGetCapabilitiesType();
+        JAXBElement element = new ObjectFactory().createGetCapabilities(getCapabilities);
+        //Marshall the DescribeProcess object into an OutputStream
+        Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshaller.marshal(element, out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+        Object resultObject = unmarshaller.unmarshal(resultXml);
+        File f = new File(this.getClass().getResource("Capabilities.xml").getFile());
+        Object resourceObject = unmarshaller.unmarshal(f);
+
+        WPSCapabilitiesType result = (WPSCapabilitiesType) ((JAXBElement) resultObject).getValue();
+        WPSCapabilitiesType resource = (WPSCapabilitiesType) ((JAXBElement) resultObject).getValue();
+        String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
+        Assert.assertTrue(message, resource.equals(result));
     }
 
     /**

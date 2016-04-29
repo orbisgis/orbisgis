@@ -23,6 +23,7 @@ import net.opengis.ows.v_2_0.*;
 import net.opengis.wps.v_2_0.*;
 import net.opengis.wps.v_2_0.GetCapabilitiesType;
 import net.opengis.wps.v_2_0.DescriptionType;
+import net.opengis.wps.v_2_0.ObjectFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import javax.swing.*;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -406,26 +408,36 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
         //ServiceIdentification keywords
         List<KeywordsType> keywordList = new ArrayList<>();
-        KeywordsType keyword = new KeywordsType();
-        //List of keyword
-        List<LanguageStringType> keywordStringTypeList = new ArrayList<>();
         //'toolbox' keyword
+
+        KeywordsType toolboxKeyword = new KeywordsType();
+        List<LanguageStringType> toolboxKeywordStringTypeList = new ArrayList<>();
         LanguageStringType toolboxEnKeyword = new LanguageStringType();
         toolboxEnKeyword.setLang(LANG);
-        toolboxEnKeyword.setLang("Toolbox");
-        keywordStringTypeList.add(toolboxEnKeyword);
+        toolboxEnKeyword.setValue("Toolbox");
+        toolboxKeywordStringTypeList.add(toolboxEnKeyword);
+        toolboxKeyword.setKeyword(toolboxKeywordStringTypeList);
+        keywordList.add(toolboxKeyword);
         //'WPS' keyword
+        KeywordsType wpsKeyword = new KeywordsType();
+        List<LanguageStringType> wpsKeywordStringTypeList = new ArrayList<>();
+        wpsKeywordStringTypeList = new ArrayList<>();
         LanguageStringType wpsEnKeyword = new LanguageStringType();
         wpsEnKeyword.setLang(LANG);
-        wpsEnKeyword.setLang("WPS");
-        keywordStringTypeList.add(wpsEnKeyword);
+        wpsEnKeyword.setValue("WPS");
+        wpsKeywordStringTypeList.add(wpsEnKeyword);
+        wpsKeyword.setKeyword(wpsKeywordStringTypeList);
+        keywordList.add(wpsKeyword);
         //'OrbisGIS' keyword
+        KeywordsType orbisgisKeyword = new KeywordsType();
+        List<LanguageStringType> orbisgisKeywordStringTypeList = new ArrayList<>();
+        orbisgisKeywordStringTypeList = new ArrayList<>();
         LanguageStringType orbisgisEnKeyword = new LanguageStringType();
         orbisgisEnKeyword.setLang(LANG);
-        orbisgisEnKeyword.setLang("OrbisGIS");
-        keywordStringTypeList.add(orbisgisEnKeyword);
-        keyword.setKeyword(keywordStringTypeList);
-        keywordList.add(keyword);
+        orbisgisEnKeyword.setValue("OrbisGIS");
+        orbisgisKeywordStringTypeList.add(orbisgisEnKeyword);
+        orbisgisKeyword.setKeyword(orbisgisKeywordStringTypeList);
+        keywordList.add(orbisgisKeyword);
         serviceIdentification.setKeywords(keywordList);
 
         //ServiceIdentification ServiceType
@@ -459,27 +471,44 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
 
         /** Sets the OperationMetadata **/
+        List<DCP> dcpList = new ArrayList<>();
+        DCP dcp = new DCP();
+        HTTP http = new HTTP();
+        net.opengis.ows.v_2_0.ObjectFactory factory = new net.opengis.ows.v_2_0.ObjectFactory();
+        List<JAXBElement<RequestMethodType>> list = new ArrayList<>();
+        RequestMethodType get = factory.createRequestMethodType();
+        get.setHref("http://orbisgis.org/wps");
+        JAXBElement<RequestMethodType> getElement = factory.createHTTPGet(get);
+        list.add(getElement);
+        RequestMethodType post = factory.createRequestMethodType();
+        post.setHref("http://orbisgis.org/wps");
+        JAXBElement<RequestMethodType> postElement = factory.createHTTPPost(post);
+        list.add(postElement);
+        http.setGetOrPost(list);
+        dcp.setHTTP(http);
+        dcpList.add(dcp);
+
         OperationsMetadata operationsMetadata = new OperationsMetadata();
         List<Operation> operationList = new ArrayList<>();
         Operation getCapaOperation = new Operation();
         getCapaOperation.setName(OPERATION_GETCAPABILITIES);
-        getCapaOperation.setDCP(new ArrayList<DCP>());
+        getCapaOperation.setDCP(dcpList);
         operationList.add(getCapaOperation);
         Operation describeOperation = new Operation();
         describeOperation.setName(OPERATION_DESCRIBEPROCESS);
-        describeOperation.setDCP(new ArrayList<DCP>());
+        describeOperation.setDCP(dcpList);
         operationList.add(describeOperation);
         Operation executeOperation = new Operation();
         executeOperation.setName(OPERATION_EXECUTE);
-        executeOperation.setDCP(new ArrayList<DCP>());
+        executeOperation.setDCP(dcpList);
         operationList.add(executeOperation);
         Operation getStatusOperation = new Operation();
         getStatusOperation.setName(OPERATION_GETSTATUS);
-        getStatusOperation.setDCP(new ArrayList<DCP>());
+        getStatusOperation.setDCP(dcpList);
         operationList.add(getStatusOperation);
         Operation getResultOperation = new Operation();
         getResultOperation.setName(OPERATION_GETRESULT);
-        getResultOperation.setDCP(new ArrayList<DCP>());
+        getResultOperation.setDCP(dcpList);
         operationList.add(getResultOperation);
         operationsMetadata.setOperation(operationList);
         capabilitiesType.setOperationsMetadata(operationsMetadata);
@@ -552,12 +581,16 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     @Override
     public OutputStream callOperation(InputStream xml) {
         Object result = null;
+        ObjectFactory factory = new ObjectFactory();
         try {
             Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
             Object o = unmarshaller.unmarshal(xml);
+            if(o instanceof JAXBElement){
+                o = ((JAXBElement) o).getValue();
+            }
             //Call the WPS method associated to the unmarshalled object
             if(o instanceof GetCapabilitiesType){
-                result = getCapabilities((GetCapabilitiesType)o);
+                result = factory.createCapabilities(getCapabilities((GetCapabilitiesType)o));
             }
             else if(o instanceof DescribeProcess){
                 result = describeProcess((DescribeProcess)o);
