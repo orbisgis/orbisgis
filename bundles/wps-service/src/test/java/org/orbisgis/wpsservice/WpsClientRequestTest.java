@@ -207,9 +207,10 @@ public class WpsClientRequestTest {
     public void testGetCapabilities() throws JAXBException, IOException {
         //Start the wpsService
         initWpsService();
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         //Build the GetCapabilities object
-        GetCapabilitiesType getCapabilities = new ObjectFactory().createGetCapabilitiesType();
-        JAXBElement element = new ObjectFactory().createGetCapabilities(getCapabilities);
+        File getCapabilitiesFile = new File(this.getClass().getResource("GetCapabilities.xml").getFile());
+        Object element = unmarshaller.unmarshal(getCapabilitiesFile);
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -221,7 +222,6 @@ public class WpsClientRequestTest {
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         Object resultObject = unmarshaller.unmarshal(resultXml);
         File f = new File(this.getClass().getResource("Capabilities.xml").getFile());
         Object resourceObject = unmarshaller.unmarshal(f);
