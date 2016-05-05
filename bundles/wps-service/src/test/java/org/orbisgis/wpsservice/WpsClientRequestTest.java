@@ -3,8 +3,11 @@ package org.orbisgis.wpsservice;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.*;
 
+import net.opengis.ows.v_2_0.CodeType;
 import net.opengis.wps.v_2_0.*;
 import net.opengis.wps.v_2_0.GetCapabilitiesType;
 import net.opengis.wps.v_2_0.ObjectFactory;
@@ -230,6 +233,40 @@ public class WpsClientRequestTest {
         WPSCapabilitiesType resource = (WPSCapabilitiesType) ((JAXBElement) resourceObject).getValue();
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
         Assert.assertTrue(message, resource.equals(result));
+    }
+
+    /**
+     * Test the Execute request.
+     */
+    @Test
+    public void testExecuteRequest() throws JAXBException, IOException {
+        //Start the wpsService
+        initWpsService();
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+        //Build the Execute object
+        File executeFile = new File(this.getClass().getResource("ExecuteRequest.xml").getFile());
+        Object element = unmarshaller.unmarshal(executeFile);
+        //Marshall the DescribeProcess object into an OutputStream
+        Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshaller.marshal(element, out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
+        BufferedReader br = new BufferedReader(new InputStreamReader(resultXml));
+        String line;
+        while((line = br.readLine()) != null){
+            System.out.println(line);
+        }
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        Object resultObject = unmarshaller.unmarshal(resultXml);
+
+        String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
+        //Impossible to test the result object because of the JobID which is each time different.
+        Assert.assertTrue(message, resultObject != null);
     }
 
     /**

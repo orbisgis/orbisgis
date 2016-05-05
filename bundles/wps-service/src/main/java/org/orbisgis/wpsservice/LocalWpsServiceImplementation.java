@@ -60,6 +60,7 @@ import java.net.URI;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -95,7 +96,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL"};
 
     private CoreWorkspace coreWorkspace;
-    boolean multiThreaded;
+    private ExecutorService executorService;
+    private boolean multiThreaded;
     /** True if the database is H2, false otherwise. */
     private boolean isH2;
     /** OrbisGIS DataManager. */
@@ -199,6 +201,14 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
     public void unsetDataManager(DataManager dataManager) {
         this.dataManager = null;
+    }
+
+    @Reference
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+    public void unsetExecutorService(ExecutorService executorService) {
+        this.executorService = null;
     }
 
     /**
@@ -316,69 +326,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         return false;
     }
 
-    public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){
-        /*if(pel != null) {
-            pel.setStartTime(System.currentTimeMillis());
-        }
-        Map<URI, Object> stash = new HashMap<>();
-        //Catch all the Exception that can be thrown during the script execution.
-        try {
-            //Print in the log the process execution start
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Start the process");
-            }
-
-            //Pre-process the data
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Pre-processing");
-            }
-            for(DescriptionType inputOrOutput : process.getOutput()){
-                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
-            }
-            for(DescriptionType inputOrOutput : process.getInput()){
-                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
-            }
-
-            //Execute the process and retrieve the groovy object.
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Execute the script");
-            }
-            processManager.executeProcess(process, dataMap);
-
-            //Post-process the data
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
-            }
-            for(DescriptionType inputOrOutput : process.getOutput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
-            }
-            for(DescriptionType inputOrOutput : process.getInput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
-            }
-
-            //Print in the log the process execution end
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "End of the process");
-                pel.setProcessState(ProcessExecutionListener.ProcessState.COMPLETED);
-            }
-        }
-        catch (Exception e) {
-            if(pel != null) {
-                //Print in the log the process execution error
-                pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
-                //Post-process the data
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
-                pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
-            }
-            else{
-                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Error on execution the WPS " +
-                        "process '"+process.getTitle()+"'.\n"+e.getMessage());
-            }
-            for(DescriptionType inputOrOutput : process.getInput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
-            }
-        }*/
-    }
+    public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){}
 
     @Override
     public WPSCapabilitiesType getCapabilities(GetCapabilitiesType getCapabilities) {
@@ -521,7 +469,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             ProcessSummaryType processSummaryType = new ProcessSummaryType();
             List<String> options = new ArrayList<>();
             options.add(OPTION_ASYNC_EXEC);
-            options.add(OPTION_SYNC_EXEC);
             processSummaryType.setJobControlOptions(options);
             processSummaryType.setAbstract(process.getAbstract());
             processSummaryType.setIdentifier(process.getIdentifier());
@@ -556,6 +503,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             processOffering.setJobControlOptions(jobOption);
             //Get the translated process and add it to the ProcessOffering
             ProcessDescriptionType process = getProcessFromIdentifier(id);
+            List<DataTransmissionModeType> listTransmission = new ArrayList<>();
+            listTransmission.add(DataTransmissionModeType.VALUE);
+            processOffering.setOutputTransmission(listTransmission);
             processOffering.setProcess(getTranslatedProcess(process, describeProcess.getLang()));
             processOfferingList.add(processOffering);
         }
@@ -565,7 +515,45 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
     @Override
     public Object execute(ExecuteRequestType execute) {
-        return null;
+        //Generate the DataMap
+        Map<URI, Object> dataMap = new HashMap<>();
+        for(DataInputType input : execute.getInput()){
+            URI id = URI.create(input.getId());
+            Object data;
+            if(input.getData().getContent().size() == 1){
+                data = input.getData().getContent().get(0);
+            }
+            else{
+                data = input.getData().getContent();
+            }
+            dataMap.put(id, data);
+        }
+        //Generation of the StatusInfo
+        StatusInfo statusInfo = new StatusInfo();
+        //Generation of the Job unique ID
+        UUID jobId = UUID.randomUUID();
+        statusInfo.setJobID(jobId.toString());
+        //Get the Process
+        ProcessIdentifier processIdentifier = processManager.getProcessIdentifier(execute.getIdentifier());
+        //Generate the processInstance
+        ProcessInstance processInstance = new ProcessInstance(processIdentifier.getProcessDescriptionType(), jobId);
+        statusInfo.setStatus(processInstance.getState().name());
+
+        //Process execution in new thread
+        ProcessWorker worker = new ProcessWorker(processInstance,
+                processIdentifier.getProcessDescriptionType(),
+                dataProcessingManager,
+                processManager,
+                dataMap);
+
+        if(executorService != null){
+            executorService.execute(worker);
+        }
+        else {
+            worker.run();
+        }
+        statusInfo.setStatus(processInstance.getState().name());
+        return statusInfo;
     }
 
     @Override

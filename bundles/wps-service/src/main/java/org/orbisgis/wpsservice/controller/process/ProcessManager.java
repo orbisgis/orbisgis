@@ -20,6 +20,7 @@
 package org.orbisgis.wpsservice.controller.process;
 
 import groovy.lang.GroovyObject;
+import net.opengis.ows.v_2_0.CodeType;
 import net.opengis.wps.v_2_0.InputDescriptionType;
 import net.opengis.wps.v_2_0.OutputDescriptionType;
 import net.opengis.wps.v_2_0.ProcessDescriptionType;
@@ -123,15 +124,19 @@ public class ProcessManager {
     public GroovyObject executeProcess(ProcessDescriptionType process,
                                        Map<URI, Object> dataMap){
         GroovyObject groovyObject = createProcess(process, dataMap);
-        WpsSql sql = new WpsSql(dataSourceService);
-        CancelClosure closure = new CancelClosure(this);
-        closureMap.put(process, closure);
-        sql.withStatement(closure);
-        groovyObject.setProperty("sql", sql);
-        groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
-        groovyObject.setProperty("isH2", wpsService.isH2());
-        groovyObject.invokeMethod("processing", null);
-        retrieveData(process, groovyObject, dataMap);
+        if(groovyObject != null) {
+            if (dataSourceService != null) {
+                WpsSql sql = new WpsSql(dataSourceService);
+                CancelClosure closure = new CancelClosure(this);
+                closureMap.put(process, closure);
+                sql.withStatement(closure);
+                groovyObject.setProperty("sql", sql);
+            }
+            groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
+            groovyObject.setProperty("isH2", wpsService.isH2());
+            groovyObject.invokeMethod("processing", null);
+            retrieveData(process, groovyObject, dataMap);
+        }
         return groovyObject;
     }
 
@@ -144,7 +149,7 @@ public class ProcessManager {
     private void retrieveData(ProcessDescriptionType process, GroovyObject groovyObject, Map<URI, Object> dataMap){
         ProcessIdentifier pi = null;
         for(ProcessIdentifier proId : processIdList){
-            if(proId.getProcess().getIdentifier().equals(process.getIdentifier())){
+            if(proId.getProcessDescriptionType().getIdentifier().equals(process.getIdentifier())){
                 pi = proId;
             }
         }
@@ -176,7 +181,7 @@ public class ProcessManager {
     private GroovyObject createProcess(ProcessDescriptionType process, Map<URI, Object> dataMap){
         ProcessIdentifier pi = null;
         for(ProcessIdentifier proId : processIdList){
-            if(proId.getProcess().getIdentifier().equals(process.getIdentifier())){
+            if(proId.getProcessDescriptionType().getIdentifier().equals(process.getIdentifier())){
                 pi = proId;
             }
         }
@@ -280,6 +285,15 @@ public class ProcessManager {
     public ProcessIdentifier getProcessIdentifier(URI processURI){
         for(ProcessIdentifier pi : processIdList){
             if(pi.getURI().equals(processURI)){
+                return pi;
+            }
+        }
+        return null;
+    }
+
+    public ProcessIdentifier getProcessIdentifier(CodeType identifier){
+        for(ProcessIdentifier pi : processIdList){
+            if(pi.getProcessDescriptionType().getIdentifier().equals(identifier)){
                 return pi;
             }
         }

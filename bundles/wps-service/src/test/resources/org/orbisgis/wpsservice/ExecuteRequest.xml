@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns3:Execute xmlns:ns1="http://www.opengis.net/ows/2.0" xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:ns3="http://www.opengis.net/wps/2.0" xmlns:ns5="http://orbisgis.org" mode="auto" response="document" service="WPS" version="2.0.0">
+    <ns1:Identifier>orbisgis:test:enumeration</ns1:Identifier>
+    <ns3:Input id="orbisgis:test:enumeration:input">
+        <ns3:Data mimeType="text/plain" encoding="simple">value1</ns3:Data>
+    </ns3:Input>
+    <ns3:Output id="orbisgis:test:enumeration:input" transmission="value" mimeType="text/plain" encoding="simple"/>
+</ns3:Execute>
