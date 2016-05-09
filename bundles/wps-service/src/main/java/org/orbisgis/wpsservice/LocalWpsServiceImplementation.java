@@ -347,136 +347,19 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
     @Override
     public WPSCapabilitiesType getCapabilities(GetCapabilitiesType getCapabilities) {
-        WPSCapabilitiesType capabilitiesType = new WPSCapabilitiesType();
-        capabilitiesType.setVersion(WPS_VERSION);
-
-        /** Sets the ServiceIdentification **/
-        ServiceIdentification serviceIdentification = new ServiceIdentification();
-
-        //ServiceIdentification title
-        List<LanguageStringType> titleStringTypeList = new ArrayList<>();
-        //EN title language string type
-        LanguageStringType enLanguageTitle = new LanguageStringType();
-        enLanguageTitle.setLang("en");
-        enLanguageTitle.setValue(SERVICE_TITLE);
-        titleStringTypeList.add(enLanguageTitle);
-        serviceIdentification.setTitle(titleStringTypeList);
-
-        //ServiceIdentification abstract
-        List<LanguageStringType> abstractStringTypeList = new ArrayList<>();
-        //EN abstract language string type
-        LanguageStringType enLanguageAbstract = new LanguageStringType();
-        enLanguageAbstract.setLang(LANG);
-        enLanguageAbstract.setValue(SERVICE_ABSTRACT);
-        abstractStringTypeList.add(enLanguageAbstract);
-        serviceIdentification.setAbstract(abstractStringTypeList);
-
-        //ServiceIdentification keywords
-        List<KeywordsType> keywordList = new ArrayList<>();
-        //'toolbox' keyword
-
-        KeywordsType toolboxKeyword = new KeywordsType();
-        List<LanguageStringType> toolboxKeywordStringTypeList = new ArrayList<>();
-        LanguageStringType toolboxEnKeyword = new LanguageStringType();
-        toolboxEnKeyword.setLang(LANG);
-        toolboxEnKeyword.setValue("Toolbox");
-        toolboxKeywordStringTypeList.add(toolboxEnKeyword);
-        toolboxKeyword.setKeyword(toolboxKeywordStringTypeList);
-        keywordList.add(toolboxKeyword);
-        //'WPS' keyword
-        KeywordsType wpsKeyword = new KeywordsType();
-        List<LanguageStringType> wpsKeywordStringTypeList = new ArrayList<>();
-        wpsKeywordStringTypeList = new ArrayList<>();
-        LanguageStringType wpsEnKeyword = new LanguageStringType();
-        wpsEnKeyword.setLang(LANG);
-        wpsEnKeyword.setValue("WPS");
-        wpsKeywordStringTypeList.add(wpsEnKeyword);
-        wpsKeyword.setKeyword(wpsKeywordStringTypeList);
-        keywordList.add(wpsKeyword);
-        //'OrbisGIS' keyword
-        KeywordsType orbisgisKeyword = new KeywordsType();
-        List<LanguageStringType> orbisgisKeywordStringTypeList = new ArrayList<>();
-        orbisgisKeywordStringTypeList = new ArrayList<>();
-        LanguageStringType orbisgisEnKeyword = new LanguageStringType();
-        orbisgisEnKeyword.setLang(LANG);
-        orbisgisEnKeyword.setValue("OrbisGIS");
-        orbisgisKeywordStringTypeList.add(orbisgisEnKeyword);
-        orbisgisKeyword.setKeyword(orbisgisKeywordStringTypeList);
-        keywordList.add(orbisgisKeyword);
-        serviceIdentification.setKeywords(keywordList);
-
-        //ServiceIdentification ServiceType
-        CodeType serviceCodeType = new CodeType();
-        serviceCodeType.setValue(WPS);
-        serviceIdentification.setServiceType(serviceCodeType);
-
-        //ServiceIdentification ServiceTypeVersion
-        List<String> serviceTypeVersionList = new ArrayList<>();
-        serviceTypeVersionList.add(WPS_VERSION);
-        serviceIdentification.setServiceTypeVersion(serviceTypeVersionList);
-
-        capabilitiesType.setServiceIdentification(serviceIdentification);
-
-        /** Sets the ServiceProvider **/
-        ServiceProvider serviceProvider = new ServiceProvider();
-        serviceProvider.setProviderName(ORBISGIS);
-        OnlineResourceType onlineResourceType = new OnlineResourceType();
-        onlineResourceType.setHref(ORBISGIS_WEBSITE);
-        serviceProvider.setProviderSite(onlineResourceType);
-        ResponsiblePartySubsetType responsiblePartySubsetType = new ResponsiblePartySubsetType();
-        ContactType contactType = new ContactType();
-        AddressType addressType = new AddressType();
-        List<String> mailAddressList = new ArrayList<>();
-        mailAddressList.add(ORBISGIS_INFO_MAIL);
-        addressType.setElectronicMailAddress(mailAddressList);
-        contactType.setAddress(addressType);
-        responsiblePartySubsetType.setContactInfo(contactType);
-        serviceProvider.setServiceContact(responsiblePartySubsetType);
-        capabilitiesType.setServiceProvider(serviceProvider);
-
-
-        /** Sets the OperationMetadata **/
-        List<DCP> dcpList = new ArrayList<>();
-        DCP dcp = new DCP();
-        HTTP http = new HTTP();
-        net.opengis.ows.v_2_0.ObjectFactory factory = new net.opengis.ows.v_2_0.ObjectFactory();
-        List<JAXBElement<RequestMethodType>> list = new ArrayList<>();
-        RequestMethodType get = factory.createRequestMethodType();
-        get.setHref("http://orbisgis.org/wps");
-        JAXBElement<RequestMethodType> getElement = factory.createHTTPGet(get);
-        list.add(getElement);
-        RequestMethodType post = factory.createRequestMethodType();
-        post.setHref("http://orbisgis.org/wps");
-        JAXBElement<RequestMethodType> postElement = factory.createHTTPPost(post);
-        list.add(postElement);
-        http.setGetOrPost(list);
-        dcp.setHTTP(http);
-        dcpList.add(dcp);
-
-        OperationsMetadata operationsMetadata = new OperationsMetadata();
-        List<Operation> operationList = new ArrayList<>();
-        Operation getCapaOperation = new Operation();
-        getCapaOperation.setName(OPERATION_GETCAPABILITIES);
-        getCapaOperation.setDCP(dcpList);
-        operationList.add(getCapaOperation);
-        Operation describeOperation = new Operation();
-        describeOperation.setName(OPERATION_DESCRIBEPROCESS);
-        describeOperation.setDCP(dcpList);
-        operationList.add(describeOperation);
-        Operation executeOperation = new Operation();
-        executeOperation.setName(OPERATION_EXECUTE);
-        executeOperation.setDCP(dcpList);
-        operationList.add(executeOperation);
-        Operation getStatusOperation = new Operation();
-        getStatusOperation.setName(OPERATION_GETSTATUS);
-        getStatusOperation.setDCP(dcpList);
-        operationList.add(getStatusOperation);
-        Operation getResultOperation = new Operation();
-        getResultOperation.setName(OPERATION_GETRESULT);
-        getResultOperation.setDCP(dcpList);
-        operationList.add(getResultOperation);
-        operationsMetadata.setOperation(operationList);
-        capabilitiesType.setOperationsMetadata(operationsMetadata);
+        Unmarshaller unmarshaller = null;
+        WPSCapabilitiesType capabilitiesType = null;
+        try {
+            unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+            File executeFile = new File(this.getClass().getResource("WpsServiceBasicCapabilities.xml").getFile());
+            capabilitiesType = ((JAXBElement<WPSCapabilitiesType>)unmarshaller.unmarshal(executeFile)).getValue();
+        } catch (JAXBException e) {
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class)
+                    .error("Error on using the unmarshaller.\n"+e.getMessage());
+        }
+        if(unmarshaller == null || capabilitiesType == null){
+            return null;
+        }
 
         /** Sets the Contents **/
         Contents contents = new Contents();
@@ -590,6 +473,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     public Result getResult(GetResult getResult) {
         Result result = new Result();
         //generate the XMLGregorianCalendar Object to put in the Result Object
+        //TODO make the service be able to set the expiration date
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(new Date());
         XMLGregorianCalendar date = null;
