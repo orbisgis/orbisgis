@@ -135,11 +135,11 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         }
         if(successful) {
             LoggerFactory.getLogger(LogEditor.class).info(log);
-            lp.setState(ProcessEditableElement.ProcessState.COMPLETED);
+            lp.setState(ProcessEditableElement.ProcessState.SUCCEEDED);
         }
         else{
             LoggerFactory.getLogger(LogEditor.class).error(log);
-            lp.setState(ProcessEditableElement.ProcessState.ERROR);
+            lp.setState(ProcessEditableElement.ProcessState.FAILED);
         }
         lp.stop();
         lp.addLogText("(This window will be automatically closed in 5 seconds)\n" +
@@ -202,10 +202,10 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         if(event.getPropertyName().equals(ProcessEditableElement.STATE_PROPERTY)){
             ProcessEditableElement pee = (ProcessEditableElement)event.getSource();
             switch((ProcessEditableElement.ProcessState)event.getNewValue()){
-                case COMPLETED:
+                case SUCCEEDED:
                     removeLog(pee, true);
                     break;
-                case ERROR:
+                case FAILED:
                     removeLog(pee, false);
                     break;
                 case RUNNING:

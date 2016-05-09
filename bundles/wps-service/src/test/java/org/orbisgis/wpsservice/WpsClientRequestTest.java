@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.xml.bind.*;
 
 import net.opengis.ows.v_2_0.CodeType;
@@ -236,37 +237,68 @@ public class WpsClientRequestTest {
     }
 
     /**
-     * Test the Execute request.
+     * Test the Execute, GetStatus and GetResult requests.
      */
     @Test
-    public void testExecuteRequest() throws JAXBException, IOException {
+    public void testExecuteStatusResultRequest() throws JAXBException, IOException {
         //Start the wpsService
         initWpsService();
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         //Build the Execute object
         File executeFile = new File(this.getClass().getResource("ExecuteRequest.xml").getFile());
         Object element = unmarshaller.unmarshal(executeFile);
-        //Marshall the DescribeProcess object into an OutputStream
+        //Marshall the Execute object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        marshaller.marshal(element, out);
+        ByteArrayOutputStream outExecute = new ByteArrayOutputStream();
+        marshaller.marshal(element, outExecute);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
-        InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        InputStream in = new DataInputStream(new ByteArrayInputStream(outExecute.toByteArray()));
         ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
-        InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
-        BufferedReader br = new BufferedReader(new InputStreamReader(resultXml));
-        String line;
-        while((line = br.readLine()) != null){
-            System.out.println(line);
-        }
+        InputStream resultExecXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-        Object resultObject = unmarshaller.unmarshal(resultXml);
+        Object resultObject = unmarshaller.unmarshal(resultExecXml);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
         //Impossible to test the result object because of the JobID which is each time different.
-        Assert.assertTrue(message, resultObject != null);
+        Assert.assertTrue(message, resultObject != null && resultObject instanceof StatusInfo);
+
+        //Now test the getStatus request
+        UUID jobId = UUID.fromString(((StatusInfo)resultObject).getJobID());
+        GetStatus getStatus = new GetStatus();
+        getStatus.setJobID(jobId.toString());
+        //Marshall the GetStatus object into an OutputStream
+        ByteArrayOutputStream outStatus = new ByteArrayOutputStream();
+        marshaller.marshal(getStatus, outStatus);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        in = new DataInputStream(new ByteArrayInputStream(outStatus.toByteArray()));
+        xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        InputStream resultStatusXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        resultObject = unmarshaller.unmarshal(resultStatusXml);
+
+        //Impossible to test the result object because of the JobID which is each time different.
+        Assert.assertTrue(message, resultObject != null && resultObject instanceof StatusInfo);
+
+        //Now test the getResult request
+        jobId = UUID.fromString(((StatusInfo)resultObject).getJobID());
+        GetResult getResult = new GetResult();
+        getResult.setJobID(jobId.toString());
+        //Marshall the GetResult object into an OutputStream
+        ByteArrayOutputStream outResult = new ByteArrayOutputStream();
+        marshaller.marshal(getResult, outResult);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        in = new DataInputStream(new ByteArrayInputStream(outResult.toByteArray()));
+        xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        InputStream resultResultXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        resultObject = unmarshaller.unmarshal(resultResultXml);
+
+        //Impossible to test the result object because of the JobID which is each time different.
+        Assert.assertTrue(message, resultObject != null && resultObject instanceof Result);
     }
 
     /**

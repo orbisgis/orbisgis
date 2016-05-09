@@ -54,12 +54,16 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.*;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -117,7 +121,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     /** List of map containing the table with their basic information.
      * It is used as a buffer to avoid to reload all the table list to save time.
      */
-    List<Map<String, String>> tableList;
+    private List<Map<String, String>> tableList;
+    private Map<UUID, Job> jobMap;
 
     @Activate
     public void init(){
@@ -146,6 +151,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         dataManager.addDatabaseProgressionListener(this, StateEvent.DB_STATES.STATE_STATEMENT_END);
         //Call readDatabase when a SourceManager fire an event
         onDataManagerChange();
+        jobMap = new HashMap<>();
     }
 
     /**
@@ -154,6 +160,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     public void initTest(){
         processManager = new ProcessManager(dataSourceService, this);
         dataProcessingManager = new DataProcessingManager(this);
+        jobMap = new HashMap<>();
     }
 
     @Deactivate
@@ -536,11 +543,12 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         //Get the Process
         ProcessIdentifier processIdentifier = processManager.getProcessIdentifier(execute.getIdentifier());
         //Generate the processInstance
-        ProcessInstance processInstance = new ProcessInstance(processIdentifier.getProcessDescriptionType(), jobId);
-        statusInfo.setStatus(processInstance.getState().name());
+        Job job = new Job(processIdentifier.getProcessDescriptionType(), jobId, dataMap);
+        jobMap.put(jobId, job);
+        statusInfo.setStatus(job.getState().name());
 
         //Process execution in new thread
-        ProcessWorker worker = new ProcessWorker(processInstance,
+        ProcessWorker worker = new ProcessWorker(job,
                 processIdentifier.getProcessDescriptionType(),
                 dataProcessingManager,
                 processManager,
@@ -552,18 +560,59 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         else {
             worker.run();
         }
-        statusInfo.setStatus(processInstance.getState().name());
+        statusInfo.setStatus(job.getState().name());
         return statusInfo;
     }
 
     @Override
     public StatusInfo getStatus(GetStatus getStatus) {
-        return null;
+        UUID jobId = UUID.fromString(getStatus.getJobID());
+        Job job = jobMap.get(jobId);
+        StatusInfo statusInfo = new StatusInfo();
+        statusInfo.setJobID(jobId.toString());
+        statusInfo.setStatus(job.getState().name());
+        return statusInfo;
     }
 
     @Override
     public Result getResult(GetResult getResult) {
-        return null;
+        Result result = new Result();
+        GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setTime(new Date());
+        XMLGregorianCalendar date = null;
+        try {
+            date = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
+        } catch (DatatypeConfigurationException e) {
+            e.printStackTrace();
+        }
+        result.setExpirationDate(date);
+        UUID jobId = UUID.fromString(getResult.getJobID());
+        Job job = jobMap.get(jobId);
+        result.setJobID(jobId.toString());
+        List<DataOutputType> listOutput = new ArrayList<>();
+        for(Map.Entry<URI, Object> entry : job.getDataMap().entrySet()){
+            boolean contained = false;
+            for(OutputDescriptionType output : job.getProcess().getOutput()){
+                if(output.getIdentifier().getValue().equals(entry.getKey().toString())){
+                    contained = true;
+                }
+            }
+            if(contained) {
+                DataOutputType output = new DataOutputType();
+                output.setId(entry.getKey().toString());
+                Data data = new Data();
+                data.setEncoding("simple");
+                data.setMimeType("");
+                //TODO make the difference between the different data type from the map.
+                List<Serializable> serializableList = new ArrayList<>();
+                serializableList.add(entry.getValue().toString());
+                data.setContent(serializableList);
+                output.setData(data);
+                listOutput.add(output);
+            }
+        }
+        result.setOutput(listOutput);
+        return result;
     }
 
     @Override

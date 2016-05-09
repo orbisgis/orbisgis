@@ -34,6 +34,10 @@ public class ProcessWorker implements Runnable {
         this.dataMap = dataMap;
     }
 
+    public Map<URI, Object> getDataMap(){
+        return dataMap;
+    }
+
     @Override
     public void run() {
         if(pel != null) {
@@ -78,7 +82,7 @@ public class ProcessWorker implements Runnable {
             //Print in the log the process execution end
             if(pel != null) {
                 pel.appendLog(ProcessExecutionListener.LogType.INFO, "End of the process");
-                pel.setProcessState(ProcessExecutionListener.ProcessState.COMPLETED);
+                pel.setProcessState(ProcessExecutionListener.ProcessState.SUCCEEDED);
             }
         }
         catch (Exception e) {
@@ -87,7 +91,7 @@ public class ProcessWorker implements Runnable {
                 pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
                 //Post-process the data
                 pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
-                pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
+                pel.setProcessState(ProcessExecutionListener.ProcessState.FAILED);
             }
             else{
                 LoggerFactory.getLogger(ProcessWorker.class).error("Error on execution the WPS " +

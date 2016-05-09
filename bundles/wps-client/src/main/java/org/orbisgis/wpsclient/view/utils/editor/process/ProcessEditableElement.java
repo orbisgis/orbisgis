@@ -168,7 +168,7 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
 
     /**
      * Append to the log a new entry.
-     * @param logType Type of the message (INFO, WARN, ERROR ...).
+     * @param logType Type of the message (INFO, WARN, FAILED ...).
      * @param message Message.
      */
     public void appendLog(ProcessExecutionListener.LogType logType, String message){

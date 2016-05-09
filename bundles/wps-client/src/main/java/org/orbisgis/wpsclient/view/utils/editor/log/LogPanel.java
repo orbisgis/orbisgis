@@ -116,10 +116,10 @@ public class LogPanel extends JPanel {
      */
     public void setState(ProcessEditableElement.ProcessState state){
         switch(state){
-            case COMPLETED:
+            case SUCCEEDED:
                 icon.setIcon(ToolBoxIcon.getIcon("process"));
                 break;
-            case ERROR:
+            case FAILED:
                 icon.setIcon(ToolBoxIcon.getIcon("process_error"));
                 break;
             case RUNNING:

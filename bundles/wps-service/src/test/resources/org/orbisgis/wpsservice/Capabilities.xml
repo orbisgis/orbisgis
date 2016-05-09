@@ -69,7 +69,7 @@
         </ns1:Operation>
     </ns1:OperationsMetadata>
     <ns3:Contents>
-        <ns3:ProcessSummary jobControlOptions="async-execute sync-execute">
+        <ns3:ProcessSummary jobControlOptions="async-execute">
             <ns1:Title xml:lang="en">DataStore test</ns1:Title>
             <ns1:Title xml:lang="fr">Test du DataStore</ns1:Title>
             <ns1:Abstract xml:lang="en">Test script using the DataStore ComplexData.</ns1:Abstract>
@@ -89,7 +89,7 @@
             <ns1:Identifier>orbisgis:test:datastore</ns1:Identifier>
             <ns1:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
         </ns3:ProcessSummary>
-        <ns3:ProcessSummary jobControlOptions="async-execute sync-execute">
+        <ns3:ProcessSummary jobControlOptions="async-execute">
             <ns1:Title xml:lang="en">DataField test</ns1:Title>
             <ns1:Title xml:lang="fr">Test du DataField</ns1:Title>
             <ns1:Abstract xml:lang="en">Test script using the DataField ComplexData.</ns1:Abstract>
@@ -109,7 +109,7 @@
             <ns1:Identifier>orbisgis:test:datafield</ns1:Identifier>
             <ns1:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
         </ns3:ProcessSummary>
-        <ns3:ProcessSummary jobControlOptions="async-execute sync-execute">
+        <ns3:ProcessSummary jobControlOptions="async-execute">
             <ns1:Title xml:lang="en">FieldValue test</ns1:Title>
             <ns1:Title xml:lang="fr">Test du FieldValue</ns1:Title>
             <ns1:Abstract xml:lang="en">Test script using the FieldValue ComplexData.</ns1:Abstract>
@@ -129,7 +129,7 @@
             <ns1:Identifier>orbisgis:test:fieldvalue</ns1:Identifier>
             <ns1:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
         </ns3:ProcessSummary>
-        <ns3:ProcessSummary jobControlOptions="async-execute sync-execute">
+        <ns3:ProcessSummary jobControlOptions="async-execute">
             <ns1:Title xml:lang="en">Enumeration test</ns1:Title>
             <ns1:Title xml:lang="fr">Test du Enumeration</ns1:Title>
             <ns1:Abstract xml:lang="en">Test script using the Enumeration ComplexData.</ns1:Abstract>
@@ -149,7 +149,7 @@
             <ns1:Identifier>orbisgis:test:enumeration</ns1:Identifier>
             <ns1:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
         </ns3:ProcessSummary>
-        <ns3:ProcessSummary jobControlOptions="async-execute sync-execute">
+        <ns3:ProcessSummary jobControlOptions="async-execute">
             <ns1:Title xml:lang="en">Geometry test</ns1:Title>
             <ns1:Title xml:lang="fr">Test du Geometry</ns1:Title>
             <ns1:Abstract xml:lang="en">Test script using the Geometry ComplexData.</ns1:Abstract>
@@ -169,7 +169,7 @@
             <ns1:Identifier>orbisgis:test:geometry</ns1:Identifier>
             <ns1:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
         </ns3:ProcessSummary>
-        <ns3:ProcessSummary jobControlOptions="async-execute sync-execute">
+        <ns3:ProcessSummary jobControlOptions="async-execute">
             <ns1:Title xml:lang="en">RawData test</ns1:Title>
             <ns1:Title xml:lang="fr">Test du RawData</ns1:Title>
             <ns1:Abstract xml:lang="en">Test script using the RawData ComplexData.</ns1:Abstract>
