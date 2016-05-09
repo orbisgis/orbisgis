@@ -291,6 +291,11 @@ public class ProcessManager {
         return null;
     }
 
+    /**
+     * Returns the ProcessIdentifier containing the process with the given CodeType.
+     * @param identifier CodeType used as identifier of a process.
+     * @return The process.
+     */
     public ProcessIdentifier getProcessIdentifier(CodeType identifier){
         for(ProcessIdentifier pi : processIdList){
             if(pi.getProcessDescriptionType().getIdentifier().equals(identifier)){

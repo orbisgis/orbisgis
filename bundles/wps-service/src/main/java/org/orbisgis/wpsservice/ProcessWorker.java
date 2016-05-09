@@ -12,14 +12,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Class implementing the Runnable interface is dedicated to the WPS process execution.
+ *
  * @author Sylvain PALOMINOS
  */
 public class ProcessWorker implements Runnable {
 
+    /** Process execution listener which will be watching the execution */
     private ProcessExecutionListener pel;
+    /** Process to execute */
     private ProcessDescriptionType process;
+    /** The class managing the DataProcessing classes */
     private DataProcessingManager dataProcessingManager;
+    /** The process manager */
     private ProcessManager processManager;
+    /** Map containing the process execution output/input data and URI */
     private Map<URI, Object> dataMap;
 
     public ProcessWorker(ProcessExecutionListener pel,
@@ -34,6 +41,10 @@ public class ProcessWorker implements Runnable {
         this.dataMap = dataMap;
     }
 
+    /**
+     * Returns the data Map.
+     * @return The data Map.
+     */
     public Map<URI, Object> getDataMap(){
         return dataMap;
     }

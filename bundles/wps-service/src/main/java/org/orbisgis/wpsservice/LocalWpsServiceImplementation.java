@@ -99,18 +99,23 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     /**Array of the table type accepted. */
     private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL"};
 
+    /** CoreWorkspace of OrbisGIS */
     private CoreWorkspace coreWorkspace;
+    /** ExecutorService of OrbisGIS */
     private ExecutorService executorService;
+    /** True if the H2 configuration allows the multiThread, false otherwise */
     private boolean multiThreaded;
     /** True if the database is H2, false otherwise. */
     private boolean isH2;
     /** OrbisGIS DataManager. */
     private DataManager dataManager;
+    /** Class managing the DataProcessing classes */
     private DataProcessingManager dataProcessingManager;
     /** OrbisGIS DriverFunctionContainer. */
     private DriverFunctionContainer driverFunctionContainer;
     /** Process manager which contains all the loaded scripts. */
     private ProcessManager processManager;
+    /** DataSource Service from OrbisGIS */
     private DataSourceService dataSourceService;
     /** Map containing object that can be used to cancel the loading of an URI. */
     private Map<URI, Object> cancelLoadMap;
@@ -122,6 +127,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
      * It is used as a buffer to avoid to reload all the table list to save time.
      */
     private List<Map<String, String>> tableList;
+    /** Map containg the WPS Jobs and their UUID */
     private Map<UUID, Job> jobMap;
 
     @Activate
@@ -305,6 +311,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         return null;
     }
 
+    /** Will be removed when the WPS Client will use the WPS Request */
+    @Deprecated
     public Process describeProcess(URI uri){
         //return processManager.getProcess(uri);
         return null;
@@ -333,6 +341,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         return false;
     }
 
+    /** Will be removed when the WPS Client will use the WPS Request */
+    @Deprecated
     public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){}
 
     @Override
@@ -566,8 +576,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
     @Override
     public StatusInfo getStatus(GetStatus getStatus) {
+        //Get the job concerned by the getStatus request
         UUID jobId = UUID.fromString(getStatus.getJobID());
         Job job = jobMap.get(jobId);
+        //Generate the StatusInfo to return
         StatusInfo statusInfo = new StatusInfo();
         statusInfo.setJobID(jobId.toString());
         statusInfo.setStatus(job.getState().name());
@@ -577,20 +589,25 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     @Override
     public Result getResult(GetResult getResult) {
         Result result = new Result();
+        //generate the XMLGregorianCalendar Object to put in the Result Object
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(new Date());
         XMLGregorianCalendar date = null;
         try {
             date = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
         } catch (DatatypeConfigurationException e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class)
+                    .error("Unable to generate the XMLGregorianCalendar object.\n"+e.getMessage());
         }
         result.setExpirationDate(date);
+        //Get the concerned Job
         UUID jobId = UUID.fromString(getResult.getJobID());
         Job job = jobMap.get(jobId);
         result.setJobID(jobId.toString());
+        //Get the list of outputs to transmit
         List<DataOutputType> listOutput = new ArrayList<>();
         for(Map.Entry<URI, Object> entry : job.getDataMap().entrySet()){
+            //Test if the URI is an Output URI.
             boolean contained = false;
             for(OutputDescriptionType output : job.getProcess().getOutput()){
                 if(output.getIdentifier().getValue().equals(entry.getKey().toString())){
@@ -598,6 +615,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 }
             }
             if(contained) {
+                //Create the DataOutputType object, set it and add it to the output list.
                 DataOutputType output = new DataOutputType();
                 output.setId(entry.getKey().toString());
                 Data data = new Data();
