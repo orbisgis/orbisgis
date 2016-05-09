@@ -23,6 +23,7 @@ import net.opengis.ows.v_2_0.*;
 import net.opengis.wps.v_2_0.*;
 import net.opengis.wps.v_2_0.GetCapabilitiesType;
 import net.opengis.wps.v_2_0.DescriptionType;
+import net.opengis.wps.v_2_0.ObjectFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
@@ -49,15 +50,21 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import javax.swing.*;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.*;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
+import java.util.Date;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -92,17 +99,23 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     /**Array of the table type accepted. */
     private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL"};
 
+    /** CoreWorkspace of OrbisGIS */
     private CoreWorkspace coreWorkspace;
-    boolean multiThreaded;
+    /** ExecutorService of OrbisGIS */
+    private ExecutorService executorService;
+    /** True if the H2 configuration allows the multiThread, false otherwise */
+    private boolean multiThreaded;
     /** True if the database is H2, false otherwise. */
     private boolean isH2;
     /** OrbisGIS DataManager. */
     private DataManager dataManager;
+    /** Class managing the DataProcessing classes */
     private DataProcessingManager dataProcessingManager;
     /** OrbisGIS DriverFunctionContainer. */
     private DriverFunctionContainer driverFunctionContainer;
     /** Process manager which contains all the loaded scripts. */
     private ProcessManager processManager;
+    /** DataSource Service from OrbisGIS */
     private DataSourceService dataSourceService;
     /** Map containing object that can be used to cancel the loading of an URI. */
     private Map<URI, Object> cancelLoadMap;
@@ -113,7 +126,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     /** List of map containing the table with their basic information.
      * It is used as a buffer to avoid to reload all the table list to save time.
      */
-    List<Map<String, String>> tableList;
+    private List<Map<String, String>> tableList;
+    /** Map containg the WPS Jobs and their UUID */
+    private Map<UUID, Job> jobMap;
 
     @Activate
     public void init(){
@@ -142,6 +157,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         dataManager.addDatabaseProgressionListener(this, StateEvent.DB_STATES.STATE_STATEMENT_END);
         //Call readDatabase when a SourceManager fire an event
         onDataManagerChange();
+        jobMap = new HashMap<>();
     }
 
     /**
@@ -150,6 +166,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     public void initTest(){
         processManager = new ProcessManager(dataSourceService, this);
         dataProcessingManager = new DataProcessingManager(this);
+        jobMap = new HashMap<>();
     }
 
     @Deactivate
@@ -197,6 +214,14 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
     public void unsetDataManager(DataManager dataManager) {
         this.dataManager = null;
+    }
+
+    @Reference
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+    public void unsetExecutorService(ExecutorService executorService) {
+        this.executorService = null;
     }
 
     /**
@@ -286,6 +311,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         return null;
     }
 
+    /** Will be removed when the WPS Client will use the WPS Request */
+    @Deprecated
     public Process describeProcess(URI uri){
         //return processManager.getProcess(uri);
         return null;
@@ -314,69 +341,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         return false;
     }
 
-    public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){
-        /*if(pel != null) {
-            pel.setStartTime(System.currentTimeMillis());
-        }
-        Map<URI, Object> stash = new HashMap<>();
-        //Catch all the Exception that can be thrown during the script execution.
-        try {
-            //Print in the log the process execution start
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Start the process");
-            }
-
-            //Pre-process the data
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Pre-processing");
-            }
-            for(DescriptionType inputOrOutput : process.getOutput()){
-                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
-            }
-            for(DescriptionType inputOrOutput : process.getInput()){
-                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
-            }
-
-            //Execute the process and retrieve the groovy object.
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Execute the script");
-            }
-            processManager.executeProcess(process, dataMap);
-
-            //Post-process the data
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
-            }
-            for(DescriptionType inputOrOutput : process.getOutput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
-            }
-            for(DescriptionType inputOrOutput : process.getInput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
-            }
-
-            //Print in the log the process execution end
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "End of the process");
-                pel.setProcessState(ProcessExecutionListener.ProcessState.COMPLETED);
-            }
-        }
-        catch (Exception e) {
-            if(pel != null) {
-                //Print in the log the process execution error
-                pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
-                //Post-process the data
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
-                pel.setProcessState(ProcessExecutionListener.ProcessState.ERROR);
-            }
-            else{
-                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Error on execution the WPS " +
-                        "process '"+process.getTitle()+"'.\n"+e.getMessage());
-            }
-            for(DescriptionType inputOrOutput : process.getInput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
-            }
-        }*/
-    }
+    /** Will be removed when the WPS Client will use the WPS Request */
+    @Deprecated
+    public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){}
 
     @Override
     public WPSCapabilitiesType getCapabilities(GetCapabilitiesType getCapabilities) {
@@ -406,26 +373,36 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
         //ServiceIdentification keywords
         List<KeywordsType> keywordList = new ArrayList<>();
-        KeywordsType keyword = new KeywordsType();
-        //List of keyword
-        List<LanguageStringType> keywordStringTypeList = new ArrayList<>();
         //'toolbox' keyword
+
+        KeywordsType toolboxKeyword = new KeywordsType();
+        List<LanguageStringType> toolboxKeywordStringTypeList = new ArrayList<>();
         LanguageStringType toolboxEnKeyword = new LanguageStringType();
         toolboxEnKeyword.setLang(LANG);
-        toolboxEnKeyword.setLang("Toolbox");
-        keywordStringTypeList.add(toolboxEnKeyword);
+        toolboxEnKeyword.setValue("Toolbox");
+        toolboxKeywordStringTypeList.add(toolboxEnKeyword);
+        toolboxKeyword.setKeyword(toolboxKeywordStringTypeList);
+        keywordList.add(toolboxKeyword);
         //'WPS' keyword
+        KeywordsType wpsKeyword = new KeywordsType();
+        List<LanguageStringType> wpsKeywordStringTypeList = new ArrayList<>();
+        wpsKeywordStringTypeList = new ArrayList<>();
         LanguageStringType wpsEnKeyword = new LanguageStringType();
         wpsEnKeyword.setLang(LANG);
-        wpsEnKeyword.setLang("WPS");
-        keywordStringTypeList.add(wpsEnKeyword);
+        wpsEnKeyword.setValue("WPS");
+        wpsKeywordStringTypeList.add(wpsEnKeyword);
+        wpsKeyword.setKeyword(wpsKeywordStringTypeList);
+        keywordList.add(wpsKeyword);
         //'OrbisGIS' keyword
+        KeywordsType orbisgisKeyword = new KeywordsType();
+        List<LanguageStringType> orbisgisKeywordStringTypeList = new ArrayList<>();
+        orbisgisKeywordStringTypeList = new ArrayList<>();
         LanguageStringType orbisgisEnKeyword = new LanguageStringType();
         orbisgisEnKeyword.setLang(LANG);
-        orbisgisEnKeyword.setLang("OrbisGIS");
-        keywordStringTypeList.add(orbisgisEnKeyword);
-        keyword.setKeyword(keywordStringTypeList);
-        keywordList.add(keyword);
+        orbisgisEnKeyword.setValue("OrbisGIS");
+        orbisgisKeywordStringTypeList.add(orbisgisEnKeyword);
+        orbisgisKeyword.setKeyword(orbisgisKeywordStringTypeList);
+        keywordList.add(orbisgisKeyword);
         serviceIdentification.setKeywords(keywordList);
 
         //ServiceIdentification ServiceType
@@ -459,27 +436,44 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
 
         /** Sets the OperationMetadata **/
+        List<DCP> dcpList = new ArrayList<>();
+        DCP dcp = new DCP();
+        HTTP http = new HTTP();
+        net.opengis.ows.v_2_0.ObjectFactory factory = new net.opengis.ows.v_2_0.ObjectFactory();
+        List<JAXBElement<RequestMethodType>> list = new ArrayList<>();
+        RequestMethodType get = factory.createRequestMethodType();
+        get.setHref("http://orbisgis.org/wps");
+        JAXBElement<RequestMethodType> getElement = factory.createHTTPGet(get);
+        list.add(getElement);
+        RequestMethodType post = factory.createRequestMethodType();
+        post.setHref("http://orbisgis.org/wps");
+        JAXBElement<RequestMethodType> postElement = factory.createHTTPPost(post);
+        list.add(postElement);
+        http.setGetOrPost(list);
+        dcp.setHTTP(http);
+        dcpList.add(dcp);
+
         OperationsMetadata operationsMetadata = new OperationsMetadata();
         List<Operation> operationList = new ArrayList<>();
         Operation getCapaOperation = new Operation();
         getCapaOperation.setName(OPERATION_GETCAPABILITIES);
-        getCapaOperation.setDCP(new ArrayList<DCP>());
+        getCapaOperation.setDCP(dcpList);
         operationList.add(getCapaOperation);
         Operation describeOperation = new Operation();
         describeOperation.setName(OPERATION_DESCRIBEPROCESS);
-        describeOperation.setDCP(new ArrayList<DCP>());
+        describeOperation.setDCP(dcpList);
         operationList.add(describeOperation);
         Operation executeOperation = new Operation();
         executeOperation.setName(OPERATION_EXECUTE);
-        executeOperation.setDCP(new ArrayList<DCP>());
+        executeOperation.setDCP(dcpList);
         operationList.add(executeOperation);
         Operation getStatusOperation = new Operation();
         getStatusOperation.setName(OPERATION_GETSTATUS);
-        getStatusOperation.setDCP(new ArrayList<DCP>());
+        getStatusOperation.setDCP(dcpList);
         operationList.add(getStatusOperation);
         Operation getResultOperation = new Operation();
         getResultOperation.setName(OPERATION_GETRESULT);
-        getResultOperation.setDCP(new ArrayList<DCP>());
+        getResultOperation.setDCP(dcpList);
         operationList.add(getResultOperation);
         operationsMetadata.setOperation(operationList);
         capabilitiesType.setOperationsMetadata(operationsMetadata);
@@ -492,7 +486,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             ProcessSummaryType processSummaryType = new ProcessSummaryType();
             List<String> options = new ArrayList<>();
             options.add(OPTION_ASYNC_EXEC);
-            options.add(OPTION_SYNC_EXEC);
             processSummaryType.setJobControlOptions(options);
             processSummaryType.setAbstract(process.getAbstract());
             processSummaryType.setIdentifier(process.getIdentifier());
@@ -527,6 +520,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             processOffering.setJobControlOptions(jobOption);
             //Get the translated process and add it to the ProcessOffering
             ProcessDescriptionType process = getProcessFromIdentifier(id);
+            List<DataTransmissionModeType> listTransmission = new ArrayList<>();
+            listTransmission.add(DataTransmissionModeType.VALUE);
+            processOffering.setOutputTransmission(listTransmission);
             processOffering.setProcess(getTranslatedProcess(process, describeProcess.getLang()));
             processOfferingList.add(processOffering);
         }
@@ -536,28 +532,120 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
     @Override
     public Object execute(ExecuteRequestType execute) {
-        return null;
+        //Generate the DataMap
+        Map<URI, Object> dataMap = new HashMap<>();
+        for(DataInputType input : execute.getInput()){
+            URI id = URI.create(input.getId());
+            Object data;
+            if(input.getData().getContent().size() == 1){
+                data = input.getData().getContent().get(0);
+            }
+            else{
+                data = input.getData().getContent();
+            }
+            dataMap.put(id, data);
+        }
+        //Generation of the StatusInfo
+        StatusInfo statusInfo = new StatusInfo();
+        //Generation of the Job unique ID
+        UUID jobId = UUID.randomUUID();
+        statusInfo.setJobID(jobId.toString());
+        //Get the Process
+        ProcessIdentifier processIdentifier = processManager.getProcessIdentifier(execute.getIdentifier());
+        //Generate the processInstance
+        Job job = new Job(processIdentifier.getProcessDescriptionType(), jobId, dataMap);
+        jobMap.put(jobId, job);
+        statusInfo.setStatus(job.getState().name());
+
+        //Process execution in new thread
+        ProcessWorker worker = new ProcessWorker(job,
+                processIdentifier.getProcessDescriptionType(),
+                dataProcessingManager,
+                processManager,
+                dataMap);
+
+        if(executorService != null){
+            executorService.execute(worker);
+        }
+        else {
+            worker.run();
+        }
+        statusInfo.setStatus(job.getState().name());
+        return statusInfo;
     }
 
     @Override
     public StatusInfo getStatus(GetStatus getStatus) {
-        return null;
+        //Get the job concerned by the getStatus request
+        UUID jobId = UUID.fromString(getStatus.getJobID());
+        Job job = jobMap.get(jobId);
+        //Generate the StatusInfo to return
+        StatusInfo statusInfo = new StatusInfo();
+        statusInfo.setJobID(jobId.toString());
+        statusInfo.setStatus(job.getState().name());
+        return statusInfo;
     }
 
     @Override
     public Result getResult(GetResult getResult) {
-        return null;
+        Result result = new Result();
+        //generate the XMLGregorianCalendar Object to put in the Result Object
+        GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setTime(new Date());
+        XMLGregorianCalendar date = null;
+        try {
+            date = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
+        } catch (DatatypeConfigurationException e) {
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class)
+                    .error("Unable to generate the XMLGregorianCalendar object.\n"+e.getMessage());
+        }
+        result.setExpirationDate(date);
+        //Get the concerned Job
+        UUID jobId = UUID.fromString(getResult.getJobID());
+        Job job = jobMap.get(jobId);
+        result.setJobID(jobId.toString());
+        //Get the list of outputs to transmit
+        List<DataOutputType> listOutput = new ArrayList<>();
+        for(Map.Entry<URI, Object> entry : job.getDataMap().entrySet()){
+            //Test if the URI is an Output URI.
+            boolean contained = false;
+            for(OutputDescriptionType output : job.getProcess().getOutput()){
+                if(output.getIdentifier().getValue().equals(entry.getKey().toString())){
+                    contained = true;
+                }
+            }
+            if(contained) {
+                //Create the DataOutputType object, set it and add it to the output list.
+                DataOutputType output = new DataOutputType();
+                output.setId(entry.getKey().toString());
+                Data data = new Data();
+                data.setEncoding("simple");
+                data.setMimeType("");
+                //TODO make the difference between the different data type from the map.
+                List<Serializable> serializableList = new ArrayList<>();
+                serializableList.add(entry.getValue().toString());
+                data.setContent(serializableList);
+                output.setData(data);
+                listOutput.add(output);
+            }
+        }
+        result.setOutput(listOutput);
+        return result;
     }
 
     @Override
     public OutputStream callOperation(InputStream xml) {
         Object result = null;
+        ObjectFactory factory = new ObjectFactory();
         try {
             Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
             Object o = unmarshaller.unmarshal(xml);
+            if(o instanceof JAXBElement){
+                o = ((JAXBElement) o).getValue();
+            }
             //Call the WPS method associated to the unmarshalled object
             if(o instanceof GetCapabilitiesType){
-                result = getCapabilities((GetCapabilitiesType)o);
+                result = factory.createCapabilities(getCapabilities((GetCapabilitiesType)o));
             }
             else if(o instanceof DescribeProcess){
                 result = describeProcess((DescribeProcess)o);

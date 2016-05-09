@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns4:ProcessOfferings xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:ns3="http://www.opengis.net/ows/2.0" xmlns:ns4="http://www.opengis.net/wps/2.0" xmlns:ns5="http://orbisgis.org">
-    <ns4:ProcessOffering jobControlOptions="async-execute sync-execute">
+    <ns4:ProcessOffering jobControlOptions="async-execute sync-execute" outputTransmission="value">
         <ns4:Process xml:lang="fr">
             <ns3:Title xml:lang="fr">Test du Enumeration</ns3:Title>
             <ns3:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData Enumeration.</ns3:Abstract>
