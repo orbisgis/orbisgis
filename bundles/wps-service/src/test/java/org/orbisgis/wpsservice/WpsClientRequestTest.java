@@ -3,15 +3,10 @@ package org.orbisgis.wpsservice;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import javax.xml.bind.*;
 
-import net.opengis.ows.v_2_0.CodeType;
 import net.opengis.wps.v_2_0.*;
-import net.opengis.wps.v_2_0.GetCapabilitiesType;
-import net.opengis.wps.v_2_0.ObjectFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -309,7 +304,7 @@ public class WpsClientRequestTest {
         if (wpsService == null) {
             //Start the WpsService
             LocalWpsServiceImplementation localWpsService = new LocalWpsServiceImplementation();
-            localWpsService.initTest();
+            localWpsService.init();
             //Try to load the groovy scripts
             try {
                 URL url = this.getClass().getResource("DataStore.groovy");
