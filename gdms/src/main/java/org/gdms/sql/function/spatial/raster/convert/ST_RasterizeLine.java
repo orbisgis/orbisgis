@@ -61,6 +61,8 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.data.values.NumericValue;
+import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DataSet;
@@ -96,50 +98,22 @@ public final class ST_RasterizeLine extends AbstractTableFunction {
         @Override
         public DataSet evaluate(DataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
-                LOG.trace("Evaluating");
+                LOG.trace("Evaluating");                
                 final DataSet sds = tables[0];
-                final int spatialFieldIndex;
                 final DataSet dsRaster = tables[1];
-                final int rasterFieldIndex;
-
-                try {
-                        int value = values[0].getAsInt();
-
-                        final MemoryDataSetDriver driver = new MemoryDataSetDriver(
-                                getMetadata(null));
-                        long dsGeomRowCount = sds.getRowCount();
-                        long dsRasterRowCount = dsRaster.getRowCount();
-
-                        spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(sds.getMetadata());
-                        rasterFieldIndex = MetadataUtilities.getSpatialFieldIndex(dsRaster.getMetadata());
-
-                        for (int rasterIdx = 0; rasterIdx < dsRasterRowCount; rasterIdx++) {
-                                final GeoRaster raster = dsRaster.getFieldValue(rasterIdx, rasterFieldIndex).getAsRaster();
-                                final PixelsUtil pixelsUtil = new PixelsUtil(raster);
-                                final ArrayList<Roi> rois = new ArrayList<Roi>();
-
-                                for (int geomIdx = 0; geomIdx < dsGeomRowCount; geomIdx++) {
-                                        final Geometry geom = sds.getFieldValue(geomIdx, spatialFieldIndex).getAsGeometry();
-                                        rois.addAll(getRoi(geom, pixelsUtil));
-                                }
-
-                                if (!rois.isEmpty()) {
-                                        final Operation rasterizing = new Rasterization(
-                                                RasteringMode.DRAW, rois, value);
-                                        final GeoRaster grResult = raster.doOperation(rasterizing);
-                                        driver.addValues(new Value[]{ValueFactory.createValue(grResult)});
-                                }
-                        }
-                        return driver;
-                } catch (DriverException e) {
-                        throw new FunctionException(
-                                "Problem trying to access input datasources", e);
-                } catch (IOException e) {
-                        throw new FunctionException(
-                                "Problem trying to raster input datasource", e);
-                } catch (OperationException e) {
-                        throw new FunctionException(
-                                "error with GRAP Rasterization operation", e);
+                Value inputValue = values[0];      
+                if(inputValue.isNull()){
+                    throw new FunctionException("The input value for pixels cannot be null.");
+                }
+                if(inputValue instanceof NumericValue){
+                    return rasterizeWithConstant(sds, dsRaster, inputValue);
+                }
+                else if (inputValue instanceof StringValue){
+                    return rasterizeWithFieldValues(sds, dsRaster, inputValue);
+                }
+                else{
+                    throw new FunctionException("Supported value are numeric constant apply to all pixels or\n"
+                            + " a string to set a field name that contains numeric values.");
                 }
         }
 
@@ -196,7 +170,127 @@ public final class ST_RasterizeLine extends AbstractTableFunction {
                                 new TableFunctionSignature(TableDefinition.RASTER,
                                 new TableArgument(TableDefinition.GEOMETRY),
                                 new TableArgument(TableDefinition.RASTER),
-                                ScalarArgument.DOUBLE)
+                                ScalarArgument.DOUBLE),new TableFunctionSignature(TableDefinition.RASTER,
+                                new TableArgument(TableDefinition.GEOMETRY),
+                                new TableArgument(TableDefinition.RASTER),
+                                ScalarArgument.STRING)
                         };
         }
+
+     /**
+     * Rasterize a set of lines with the same pixel value
+     *
+     * @param sds
+     * @param dsRaster
+     * @param value
+     * @return
+     * @throws FunctionException
+     */
+    private DataSet rasterizeWithConstant(DataSet sds, DataSet dsRaster, Value value) throws FunctionException {
+
+        final int spatialFieldIndex;
+        final int rasterFieldIndex;
+        try {
+
+            final MemoryDataSetDriver driver = new MemoryDataSetDriver(
+                    getMetadata(null));
+            long dsGeomRowCount = sds.getRowCount();
+            long dsRasterRowCount = dsRaster.getRowCount();
+
+            spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(sds.getMetadata());
+            rasterFieldIndex = MetadataUtilities.getSpatialFieldIndex(dsRaster.getMetadata());
+
+            for (int rasterIdx = 0; rasterIdx < dsRasterRowCount; rasterIdx++) {
+                final GeoRaster raster = dsRaster.getFieldValue(rasterIdx, rasterFieldIndex).getAsRaster();
+                final PixelsUtil pixelsUtil = new PixelsUtil(raster);
+                final ArrayList<Roi> rois = new ArrayList<Roi>();
+
+                for (int geomIdx = 0; geomIdx < dsGeomRowCount; geomIdx++) {
+                    final Geometry geom = sds.getFieldValue(geomIdx, spatialFieldIndex).getAsGeometry();
+                    rois.addAll(getRoi(geom, pixelsUtil));
+                }
+
+                if (!rois.isEmpty()) {
+                    final Operation rasterizing = new Rasterization(
+                            RasteringMode.DRAW, rois, value.getAsDouble());
+                    final GeoRaster grResult = raster.doOperation(rasterizing);
+                    driver.addValues(new Value[]{ValueFactory.createValue(grResult)});
+                }
+            }
+            return driver;
+        } catch (DriverException e) {
+            throw new FunctionException(
+                    "Problem trying to access input datasources", e);
+        } catch (IOException e) {
+            throw new FunctionException(
+                    "Problem trying to raster input datasource", e);
+        } catch (OperationException e) {
+            throw new FunctionException(
+                    "error with GRAP Rasterization operation", e);
+        }
+    }
+
+    /**
+     * Method to rasterize a set of lines with a pixel value get from a column
+     * @param sds
+     * @param dsRaster
+     * @param inputValue
+     * @return
+     * @throws FunctionException 
+     */
+    private DataSet rasterizeWithFieldValues(DataSet sds, DataSet dsRaster, Value inputValue) throws FunctionException {
+        final int spatialFieldIndex;
+        final int rasterFieldIndex;
+        try {
+
+            final MemoryDataSetDriver driver = new MemoryDataSetDriver(
+                    getMetadata(null));
+            long dsGeomRowCount = sds.getRowCount();
+            long dsRasterRowCount = dsRaster.getRowCount();
+            
+            Metadata sdsMeta = sds.getMetadata();
+            
+            int fieldIdx = sdsMeta.getFieldIndex(inputValue.getAsString());
+            
+            Type fieldType = sdsMeta.getFieldType(fieldIdx);
+            
+            if(!TypeFactory.isNumerical(fieldType.getTypeCode())){
+               throw new FunctionException("The type of the column must be numerical.");
+            }            
+
+            spatialFieldIndex = MetadataUtilities.getSpatialFieldIndex(sdsMeta);
+            rasterFieldIndex = MetadataUtilities.getSpatialFieldIndex(dsRaster.getMetadata());
+
+            for (int rasterIdx = 0; rasterIdx < dsRasterRowCount; rasterIdx++) {
+                final GeoRaster raster = dsRaster.getFieldValue(rasterIdx, rasterFieldIndex).getAsRaster();
+                final PixelsUtil pixelsUtil = new PixelsUtil(raster);
+                final ArrayList<Roi> rois = new ArrayList<Roi>();
+                final ArrayList<Double> values = new ArrayList<Double>();
+
+                for (int geomIdx = 0; geomIdx < dsGeomRowCount; geomIdx++) {
+                    final Geometry geom = sds.getFieldValue(geomIdx, spatialFieldIndex).getAsGeometry();
+                    rois.addAll(getRoi(geom, pixelsUtil));
+                    double fieldValue = sds.getFieldValue(geomIdx, fieldIdx).getAsDouble();
+                    values.add(fieldValue);
+                }
+                if (!rois.isEmpty() ) {
+                    final Operation rasterizing = new Rasterization(
+                            RasteringMode.DRAW, rois, values);
+                    final GeoRaster grResult = raster.doOperation(rasterizing);
+                    driver.addValues(new Value[]{ValueFactory.createValue(grResult)});
+                }
+            }
+            return driver;
+        } catch (DriverException e) {
+            throw new FunctionException(
+                    "Problem trying to access input datasources", e);
+        } catch (IOException e) {
+            throw new FunctionException(
+                    "Problem trying to raster input datasource", e);
+        } catch (OperationException e) {
+            throw new FunctionException(
+                    "error with GRAP Rasterization operation", e);
+        }
+    
+    }
 }
