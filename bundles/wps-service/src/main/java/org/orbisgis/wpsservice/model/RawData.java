@@ -113,30 +113,4 @@ public class RawData extends ComplexDataType {
     public void setMultiSelection(boolean multiSelection) {
         this.multiSelection = multiSelection;
     }
-/*
-    @Override
-    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
-        if ((object == null)||(this.getClass()!= object.getClass())) {
-            return false;
-        }
-        if (this == object) {
-            return true;
-        }
-        if (!super.equals(thisLocator, thatLocator, object, strategy)) {
-            return false;
-        }
-        final RawData that = ((RawData) object);
-        {
-            if( (this.isDirectory() != that.isDirectory()) ||
-                    (this.isFile() != that.isFile()) ||
-                    (this.multiSelection() != that.multiSelection()) )
-                return false;
-        }
-        return true;
-    }
-
-    public boolean equals(Object object) {
-        final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
-        return equals(null, null, object, strategy);
-    }*/
 }

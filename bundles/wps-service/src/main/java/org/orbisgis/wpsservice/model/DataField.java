@@ -171,33 +171,4 @@ public class DataField extends ComplexDataType {
     public void setMultipleField(boolean multipleField) {
         isMultipleField = multipleField;
     }
-/*
-    @Override
-    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
-        if ((object == null)||(this.getClass()!= object.getClass())) {
-            return false;
-        }
-        if (this == object) {
-            return true;
-        }
-        if (!super.equals(thisLocator, thatLocator, object, strategy)) {
-            return false;
-        }
-        final DataField that = ((DataField) object);
-        {
-            if( (this.isSourceModified() != that.isSourceModified()) ||
-                    (this.isMultipleField() != that.isMultipleField()) ||
-                    !Objects.equals(this.getDataStoreIdentifier(), that.getDataStoreIdentifier()) ||
-                    !Objects.equals(this.getExcludedTypeList(), that.getExcludedTypeList()) ||
-                    !Objects.equals(this.getListFieldValue(), that.getListFieldValue()) ||
-                    !Objects.equals(this.getFieldTypeList(), that.getFieldTypeList()) )
-                return false;
-        }
-        return true;
-    }
-
-    public boolean equals(Object object) {
-        final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
-        return equals(null, null, object, strategy);
-    }*/
 }

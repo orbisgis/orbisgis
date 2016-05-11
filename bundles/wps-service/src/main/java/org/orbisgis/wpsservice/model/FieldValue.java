@@ -153,30 +153,4 @@ public class FieldValue extends ComplexDataType {
     public boolean getMuliSelection(){
         return multiSelection;
     }
-/*
-    @Override
-    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
-        if ((object == null)||(this.getClass()!= object.getClass())) {
-            return false;
-        }
-        if (this == object) {
-            return true;
-        }
-        if (!super.equals(thisLocator, thatLocator, object, strategy)) {
-            return false;
-        }
-        final FieldValue that = ((FieldValue) object);
-        {
-            if( (this.getMuliSelection() != that.getMuliSelection()) ||
-                    !Objects.equals(this.getDataFieldIdentifier(), that.getDataFieldIdentifier()) ||
-                    !Objects.equals(this.getDataStoreIdentifier(), that.getDataStoreIdentifier()) )
-                return false;
-        }
-        return true;
-    }
-
-    public boolean equals(Object object) {
-        final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
-        return equals(null, null, object, strategy);
-    }*/
 }

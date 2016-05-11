@@ -93,31 +93,4 @@ public class GeometryData extends ComplexDataType {
     public int getDimension(){
         return dimension;
     }
-
-/*
-    @Override
-    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
-        if ((object == null)||(this.getClass()!= object.getClass())) {
-            return false;
-        }
-        if (this == object) {
-            return true;
-        }
-        if (!super.equals(thisLocator, thatLocator, object, strategy)) {
-            return false;
-        }
-        final GeometryData that = ((GeometryData) object);
-        {
-            if( (this.getDimension() != that.getDimension()) ||
-                    !Objects.equals(this.getGeometryTypeList(), that.getGeometryTypeList()) ||
-                    !Objects.equals(this.getExcludedTypeList(), that.getExcludedTypeList()) )
-                return false;
-        }
-        return true;
-    }
-
-    public boolean equals(Object object) {
-        final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
-        return equals(null, null, object, strategy);
-    }*/
 }

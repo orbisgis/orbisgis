@@ -126,32 +126,4 @@ public class Enumeration extends ComplexDataType{
     public String[] getValuesNames(){
         return names;
     }
-/*
-    @Override
-    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
-        if ((object == null)||(this.getClass()!= object.getClass())) {
-            return false;
-        }
-        if (this == object) {
-            return true;
-        }
-        if (!super.equals(thisLocator, thatLocator, object, strategy)) {
-            return false;
-        }
-        final Enumeration that = ((Enumeration) object);
-        {
-            if( !Arrays.equals(this.getDefaultValues(),that.getDefaultValues()) ||
-                    !Arrays.equals(this.getValues(),that.getValues()) ||
-                    !Arrays.equals(this.getValuesNames(),that.getValuesNames()) ||
-                    this.isEditable() != that.isEditable() ||
-                    this.isMultiSelection() != that.isMultiSelection() )
-                return false;
-        }
-        return true;
-    }
-
-    public boolean equals(Object object) {
-        final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
-        return equals(null, null, object, strategy);
-    }*/
 }
