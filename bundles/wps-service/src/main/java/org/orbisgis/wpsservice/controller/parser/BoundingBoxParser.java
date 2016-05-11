@@ -19,7 +19,7 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
-import net.opengis.wps.v_2_0.*;
+import net.opengis.wps._2_0.*;
 import org.orbisgis.wpsgroovyapi.attributes.BoundingBoxAttribute;
 import org.orbisgis.wpsservice.LocalWpsService;
 

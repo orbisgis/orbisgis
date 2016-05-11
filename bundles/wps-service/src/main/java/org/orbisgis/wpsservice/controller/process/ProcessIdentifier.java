@@ -19,7 +19,7 @@
 
 package org.orbisgis.wpsservice.controller.process;
 
-import net.opengis.wps.v_2_0.ProcessDescriptionType;
+import net.opengis.wps._2_0.ProcessDescriptionType;
 
 import org.orbisgis.wpsservice.model.Process;
 

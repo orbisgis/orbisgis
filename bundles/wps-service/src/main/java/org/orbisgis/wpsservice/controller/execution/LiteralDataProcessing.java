@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservice.controller.execution;
 
-import net.opengis.wps.v_2_0.*;
+import net.opengis.wps._2_0.*;
 import org.orbisgis.wpsservice.LocalWpsService;
 
 import java.net.URI;

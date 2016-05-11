@@ -19,10 +19,10 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
-import net.opengis.ows.v_2_0.CodeType;
-import net.opengis.wps.v_2_0.Format;
-import net.opengis.wps.v_2_0.InputDescriptionType;
-import net.opengis.wps.v_2_0.OutputDescriptionType;
+import net.opengis.ows._2.CodeType;
+import net.opengis.wps._2_0.Format;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.EnumerationAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
@@ -33,7 +33,6 @@ import org.orbisgis.wpsservice.model.Enumeration;
 import org.orbisgis.wpsservice.model.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 import java.lang.reflect.Field;
 
 /**

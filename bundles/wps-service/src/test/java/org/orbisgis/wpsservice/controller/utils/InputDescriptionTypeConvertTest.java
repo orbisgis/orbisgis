@@ -3,7 +3,7 @@ package org.orbisgis.wpsservice.controller.utils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
-import net.opengis.wps.v_2_0.*;
+import net.opengis.wps._2_0.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

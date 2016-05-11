@@ -106,11 +106,6 @@
             <artifactId>ogc-custom</artifactId>
             <version>${ogc-commons-version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.jvnet.ogc</groupId>
-            <artifactId>wps-v_2_0</artifactId>
-            <version>2.6.1</version>
-        </dependency>
     </dependencies>
 
     <properties>

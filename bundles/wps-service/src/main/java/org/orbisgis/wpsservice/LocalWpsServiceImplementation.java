@@ -19,11 +19,11 @@
 
 package org.orbisgis.wpsservice;
 
-import net.opengis.ows.v_2_0.*;
-import net.opengis.wps.v_2_0.*;
-import net.opengis.wps.v_2_0.GetCapabilitiesType;
-import net.opengis.wps.v_2_0.DescriptionType;
-import net.opengis.wps.v_2_0.ObjectFactory;
+import net.opengis.ows._2.*;
+import net.opengis.wps._2_0.*;
+import net.opengis.wps._2_0.GetCapabilitiesType;
+import net.opengis.wps._2_0.DescriptionType;
+import net.opengis.wps._2_0.ObjectFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
@@ -407,7 +407,14 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
     @Override
     public WPSCapabilitiesType getCapabilities(GetCapabilitiesType getCapabilities) {
-        WPSCapabilitiesType capabilitiesType = (WPSCapabilitiesType)basicCapabilities.clone();
+        WPSCapabilitiesType capabilitiesType = new WPSCapabilitiesType();
+        capabilitiesType.setExtension(basicCapabilities.getExtension());
+        capabilitiesType.setLanguages(basicCapabilities.getLanguages());
+        capabilitiesType.setOperationsMetadata(basicCapabilities.getOperationsMetadata());
+        capabilitiesType.setServiceIdentification(basicCapabilities.getServiceIdentification());
+        capabilitiesType.setServiceProvider(basicCapabilities.getServiceProvider());
+        capabilitiesType.setUpdateSequence(basicCapabilities.getUpdateSequence());
+        capabilitiesType.setVersion(basicCapabilities.getVersion());
 
         /** Sets the Contents **/
         Contents contents = new Contents();
@@ -415,23 +422,24 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         List<ProcessDescriptionType> processList = getProcessList();
         for(ProcessDescriptionType process : processList) {
             ProcessSummaryType processSummaryType = new ProcessSummaryType();
-            processSummaryType.setJobControlOptions(jobControlOptions);
-            processSummaryType.setAbstract(process.getAbstract());
+            processSummaryType.getJobControlOptions().clear();
+            processSummaryType.getJobControlOptions().addAll(jobControlOptions);
+            processSummaryType.getAbstract().clear();
+            processSummaryType.getAbstract().addAll(process.getAbstract());
             processSummaryType.setIdentifier(process.getIdentifier());
-            processSummaryType.setKeywords(process.getKeywords());
-            processSummaryType.setMetadata(process.getMetadata());
-            processSummaryType.setTitle(process.getTitle());
+            processSummaryType.getKeywords().clear();
+            processSummaryType.getKeywords().addAll(process.getKeywords());
+            processSummaryType.getMetadata().clear();
+            processSummaryType.getMetadata().addAll(process.getMetadata());
+            processSummaryType.getTitle().clear();
+            processSummaryType.getTitle().addAll(process.getTitle());
 
             processSummaryTypeList.add(processSummaryType);
         }
-        contents.setProcessSummary(processSummaryTypeList);
+        contents.getProcessSummary().clear();
+        contents.getProcessSummary().addAll(processSummaryTypeList);
         capabilitiesType.setContents(contents);
-        /** Sets the UpdateSequence **/
-        //No UpdateSequence
-        //capabilitiesType.setUpdateSequence();
-        /** Sets the Extension **/
-        //No Extension
-        //capabilitiesType.setExtension();
+
         return capabilitiesType;
     }
 
@@ -443,16 +451,19 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         List<ProcessOffering> processOfferingList = new ArrayList<>();
         for(CodeType id : idList) {
             ProcessOffering processOffering = new ProcessOffering();
-            processOffering.setJobControlOptions(jobControlOptions);
+            processOffering.getJobControlOptions().clear();
+            processOffering.getJobControlOptions().addAll(jobControlOptions);
             //Get the translated process and add it to the ProcessOffering
             ProcessDescriptionType process = getProcessFromIdentifier(id);
             List<DataTransmissionModeType> listTransmission = new ArrayList<>();
             listTransmission.add(DataTransmissionModeType.VALUE);
-            processOffering.setOutputTransmission(listTransmission);
+            processOffering.getOutputTransmission().clear();
+            processOffering.getOutputTransmission().addAll(listTransmission);
             processOffering.setProcess(getTranslatedProcess(process, describeProcess.getLang()));
             processOfferingList.add(processOffering);
         }
-        processOfferings.setProcessOffering(processOfferingList);
+        processOfferings.getProcessOffering().clear();
+        processOfferings.getProcessOffering().addAll(processOfferingList);
         return processOfferings;
     }
 
@@ -551,12 +562,14 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 //TODO make the difference between the different data type from the map.
                 List<Serializable> serializableList = new ArrayList<>();
                 serializableList.add(entry.getValue().toString());
-                data.setContent(serializableList);
+                data.getContent().clear();
+                data.getContent().addAll(serializableList);
                 output.setData(data);
                 listOutput.add(output);
             }
         }
-        result.setOutput(listOutput);
+        result.getOutput().clear();
+        result.getOutput().addAll(listOutput);
         return result;
     }
 
@@ -1099,7 +1112,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             translateDescriptionType(translatedInput, input, language);
             inputList.add(translatedInput);
         }
-        translatedProcess.setInput(inputList);
+        translatedProcess.getInput().clear();
+        translatedProcess.getInput().addAll(inputList);
         List<OutputDescriptionType> outputList = new ArrayList<>();
         for(OutputDescriptionType output : process.getOutput()){
             OutputDescriptionType translatedOutput = new OutputDescriptionType();
@@ -1107,7 +1121,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             translateDescriptionType(translatedOutput, output, language);
             outputList.add(translatedOutput);
         }
-        translatedProcess.setOutput(outputList);
+        translatedProcess.getOutput().clear();
+        translatedProcess.getOutput().addAll(outputList);
         translateDescriptionType(translatedProcess, process, language);
         return translatedProcess;
     }
@@ -1123,7 +1138,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     private void translateDescriptionType(DescriptionType translatedDescriptionType, DescriptionType descriptionType, String language){
         String enLanguage = "en";
         translatedDescriptionType.setIdentifier(descriptionType.getIdentifier());
-        translatedDescriptionType.setMetadata(descriptionType.getMetadata());
+        translatedDescriptionType.getMetadata().clear();
+        translatedDescriptionType.getMetadata().addAll(descriptionType.getMetadata());
         //Find the good abstract
         LanguageStringType translatedAbstract = new LanguageStringType();
         boolean defaultAbstrFound = false;
@@ -1142,7 +1158,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         }
         List<LanguageStringType> abstrList = new ArrayList<>();
         abstrList.add(translatedAbstract);
-        translatedDescriptionType.setAbstract(abstrList);
+        translatedDescriptionType.getAbstract().clear();
+        translatedDescriptionType.getAbstract().addAll(abstrList);
         //Find the good title
         LanguageStringType translatedTitle = new LanguageStringType();
         boolean defaultTitleFound = false;
@@ -1161,7 +1178,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         }
         List<LanguageStringType> titleList = new ArrayList<>();
         titleList.add(translatedTitle);
-        translatedDescriptionType.setTitle(titleList);
+        translatedDescriptionType.getTitle().clear();
+        translatedDescriptionType.getTitle().addAll(titleList);
         //Find the good keywords
         List<KeywordsType> keywordsList = new ArrayList<>();
         KeywordsType translatedKeywords = new KeywordsType();
@@ -1182,8 +1200,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             }
             keywordList.add(translatedKeyword);
         }
-        translatedKeywords.setKeyword(keywordList);
+        translatedKeywords.getKeyword().clear();
+        translatedKeywords.getKeyword().addAll(keywordList);
         keywordsList.add(translatedKeywords);
-        translatedDescriptionType.setKeywords(keywordsList);
+        translatedDescriptionType.getKeywords().clear();
+        translatedDescriptionType.getKeywords().addAll(keywordsList);
     }
 }

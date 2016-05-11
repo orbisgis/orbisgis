@@ -19,12 +19,8 @@
 
 package org.orbisgis.wpsservice.model;
 
-import net.opengis.wps.v_2_0.ComplexDataType;
-import net.opengis.wps.v_2_0.Format;
-import org.jvnet.jaxb2_commons.lang.Equals2;
-import org.jvnet.jaxb2_commons.lang.EqualsStrategy2;
-import org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy;
-import org.jvnet.jaxb2_commons.locator.ObjectLocator;
+import net.opengis.wps._2_0.ComplexDataType;
+import net.opengis.wps._2_0.Format;
 
 import javax.xml.bind.annotation.*;
 import java.net.URI;
@@ -39,7 +35,7 @@ import java.util.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DataField", propOrder = {"dataStoreIdentifier", "fieldTypeList",
         "excludedTypeList", "listFieldValue", "isMultipleField"})
-public class DataField extends ComplexDataType implements Equals2{
+public class DataField extends ComplexDataType {
 
     /** Identifier of the parent DataStore */
     @XmlElement(name = "DataStoreId", namespace = "http://orbisgis.org")
@@ -68,7 +64,7 @@ public class DataField extends ComplexDataType implements Equals2{
      * @throws MalformedScriptException
      */
     public DataField(List<Format> formatList, List<DataType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
-        setFormat(formatList);
+        format = formatList;
         listFieldValue = new ArrayList<>();
         this.fieldTypeList = fieldTypeList;
         this.dataStoreIdentifier = dataStoreURI;
@@ -175,7 +171,7 @@ public class DataField extends ComplexDataType implements Equals2{
     public void setMultipleField(boolean multipleField) {
         isMultipleField = multipleField;
     }
-
+/*
     @Override
     public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
         if ((object == null)||(this.getClass()!= object.getClass())) {
@@ -203,5 +199,5 @@ public class DataField extends ComplexDataType implements Equals2{
     public boolean equals(Object object) {
         final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
         return equals(null, null, object, strategy);
-    }
+    }*/
 }

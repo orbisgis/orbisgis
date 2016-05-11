@@ -19,12 +19,11 @@
 
 package org.orbisgis.wpsservice.controller.utils;
 
-import net.opengis.ows.v_2_0.*;
-import net.opengis.wps.v_2_0.*;
-import net.opengis.wps.v_2_0.DescriptionType;
-import net.opengis.wps.v_2_0.Format;
-import net.opengis.wps.v_2_0.LiteralDataType.LiteralDataDomain;
-import org.hisrc.w3c.xlink.v_1_0.TypeType;
+import net.opengis.ows._2.*;
+import net.opengis.wps._2_0.*;
+import net.opengis.wps._2_0.DescriptionType;
+import net.opengis.wps._2_0.Format;
+import net.opengis.wps._2_0.LiteralDataType.LiteralDataDomain;
 import org.orbisgis.wpsgroovyapi.attributes.*;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
@@ -57,14 +56,16 @@ public class ObjectAnnotationConverter {
                 title.setLang(languageString.lang());
                 titleList.add(title);
             }
-            descriptionType.setTitle(titleList);
+            descriptionType.getTitle().clear();
+            descriptionType.getTitle().addAll(titleList);
         }
         else if(!descriptionTypeAttribute.title().equals("")){
             List<LanguageStringType> titleList = new ArrayList<>();
             LanguageStringType title = new LanguageStringType();
             title.setValue(descriptionTypeAttribute.title());
             titleList.add(title);
-            descriptionType.setTitle(titleList);
+            descriptionType.getTitle().clear();
+            descriptionType.getTitle().addAll(titleList);
         }
 
         if(descriptionTypeAttribute.traducedResumes().length != DescriptionTypeAttribute.defaultTraducedResumes.length) {
@@ -75,14 +76,16 @@ public class ObjectAnnotationConverter {
                 resume.setLang(languageString.lang());
                 resumeList.add(resume);
             }
-            descriptionType.setAbstract(resumeList);
+            descriptionType.getAbstract().clear();
+            descriptionType.getAbstract().addAll(resumeList);
         }
         else if(!descriptionTypeAttribute.resume().equals(DescriptionTypeAttribute.defaultResume)){
             List<LanguageStringType> resumeList = new ArrayList<>();
             LanguageStringType resume = new LanguageStringType();
             resume.setValue(descriptionTypeAttribute.resume());
             resumeList.add(resume);
-            descriptionType.setAbstract(resumeList);
+            descriptionType.getAbstract().clear();
+            descriptionType.getAbstract().addAll(resumeList);
         }
         if(!descriptionTypeAttribute.identifier().equals(DescriptionTypeAttribute.defaultIdentifier)){
             CodeType codeType = new CodeType();
@@ -102,10 +105,12 @@ public class ObjectAnnotationConverter {
                     keywordString.setLang(languageString.lang());
                     keywordList.add(keywordString);
                 }
-                keywordsType.setKeyword(keywordList);
+                keywordsType.getKeyword().clear();
+                keywordsType.getKeyword().addAll(keywordList);
                 keywordTypeList.add(keywordsType);
             }
-            descriptionType.setKeywords(keywordTypeList);
+            descriptionType.getKeywords().clear();
+            descriptionType.getKeywords().addAll(keywordTypeList);
         }
         else if(descriptionTypeAttribute.keywords().length != DescriptionTypeAttribute.defaultKeywords.length){
             List<KeywordsType> keywordList = new ArrayList<>();
@@ -115,23 +120,24 @@ public class ObjectAnnotationConverter {
                 LanguageStringType string = new LanguageStringType();
                 string.setValue(key);
                 stringList.add(string);
-                keyword.setKeyword(stringList);
+                keyword.getKeyword().clear();
+                keyword.getKeyword().addAll(stringList);
                 keywordList.add(keyword);
             }
-            descriptionType.setKeywords(keywordList);
+            descriptionType.getKeywords().clear();
+            descriptionType.getKeywords().addAll(keywordList);
         }
         if(descriptionTypeAttribute.metadata().length != DescriptionTypeAttribute.defaultMetadata.length){
-            List<JAXBElement<? extends MetadataType>> metadataList = new ArrayList<>();
-            QName qname = new QName("http://www.opengis.net/ows/2.0", "Metadata");
+            List<MetadataType> metadataList = new ArrayList<>();
             for(MetadataAttribute metadataAttribute : descriptionTypeAttribute.metadata()){
                 MetadataType metadataType = new MetadataType();
                 metadataType.setHref(metadataAttribute.href());
                 metadataType.setRole(metadataAttribute.role());
                 metadataType.setTitle(metadataAttribute.title());
-                metadataType.setTYPE(TypeType.SIMPLE);
-                metadataList.add(new JAXBElement<>(qname, MetadataType.class, metadataType));
+                metadataList.add(metadataType);
             }
-            descriptionType.setMetadata(metadataList);
+            descriptionType.getMetadata().clear();
+            descriptionType.getMetadata().addAll(metadataList);
         }
     }
 
@@ -159,7 +165,6 @@ public class ObjectAnnotationConverter {
         metadata.setHref(href.toString());
         metadata.setRole(role.toString());
         metadata.setTitle(title);
-        metadata.setTYPE(TypeType.SIMPLE);
 
         return metadata;
     }
@@ -249,7 +254,8 @@ public class ObjectAnnotationConverter {
                 formatList.get(0).setDefault(true);
             }
         }
-        literalDataType.setFormat(formatList);
+        literalDataType.getFormat().clear();
+        literalDataType.getFormat().addAll(formatList);
 
         List<LiteralDataType.LiteralDataDomain> lddList = new ArrayList<>();
         if(literalDataAttribute.validDomains().length == 0){
@@ -279,7 +285,8 @@ public class ObjectAnnotationConverter {
                 lddList.get(0).setDefault(true);
             }
         }
-        literalDataType.setLiteralDataDomain(lddList);
+        literalDataType.getLiteralDataDomain().clear();
+        literalDataType.getLiteralDataDomain().addAll(lddList);
 
         return literalDataType;
     }
@@ -319,7 +326,8 @@ public class ObjectAnnotationConverter {
             for(ValuesAttribute va : possibleLiteralValuesChoiceAttribute.allowedValues()){
                 valueList.add(ObjectAnnotationConverter.annotationToObject(va));
             }
-            allowedValues.setValueOrRange(valueList);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(valueList);
             return allowedValues;
         }
         else if (!possibleLiteralValuesChoiceAttribute.reference().isEmpty()){

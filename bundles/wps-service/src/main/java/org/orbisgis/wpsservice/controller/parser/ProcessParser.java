@@ -19,10 +19,10 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
-import net.opengis.ows.v_2_0.CodeType;
-import net.opengis.wps.v_2_0.InputDescriptionType;
-import net.opengis.wps.v_2_0.OutputDescriptionType;
-import net.opengis.wps.v_2_0.ProcessDescriptionType;
+import net.opengis.ows._2.CodeType;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
+import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.ProcessAttribute;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
@@ -45,8 +45,10 @@ public class ProcessParser {
                 process);
         ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(ProcessAttribute.class),
                 process);
-        process.setOutput(outputList);
-        process.setInput(inputList);
+        process.getOutput().clear();
+        process.getOutput().addAll(outputList);
+        process.getInput().clear();
+        process.getInput().addAll(inputList);
 
         if(process.getIdentifier() == null){
             CodeType codeType = new CodeType();

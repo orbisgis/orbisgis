@@ -19,11 +19,8 @@
 
 package org.orbisgis.wpsservice.model;
 
-import net.opengis.wps.v_2_0.ComplexDataType;
-import net.opengis.wps.v_2_0.Format;
-import org.jvnet.jaxb2_commons.lang.EqualsStrategy2;
-import org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy;
-import org.jvnet.jaxb2_commons.locator.ObjectLocator;
+import net.opengis.wps._2_0.ComplexDataType;
+import net.opengis.wps._2_0.Format;
 
 import javax.xml.bind.annotation.*;
 import java.util.Arrays;
@@ -62,7 +59,7 @@ public class Enumeration extends ComplexDataType{
      * @throws MalformedScriptException
      */
     public Enumeration(List<Format> formatList, String[] valueList, String[] defaultValues) throws MalformedScriptException {
-        setFormat(formatList);
+        format = formatList;
         this.values = valueList;
         this.defaultValues = defaultValues;
     }
@@ -129,7 +126,7 @@ public class Enumeration extends ComplexDataType{
     public String[] getValuesNames(){
         return names;
     }
-
+/*
     @Override
     public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
         if ((object == null)||(this.getClass()!= object.getClass())) {
@@ -156,5 +153,5 @@ public class Enumeration extends ComplexDataType{
     public boolean equals(Object object) {
         final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
         return equals(null, null, object, strategy);
-    }
+    }*/
 }

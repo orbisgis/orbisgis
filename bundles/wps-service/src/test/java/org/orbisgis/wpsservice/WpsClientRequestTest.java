@@ -3,10 +3,11 @@ package org.orbisgis.wpsservice;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.UUID;
 import javax.xml.bind.*;
 
-import net.opengis.wps.v_2_0.*;
+import net.opengis.wps._2_0.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -46,7 +47,12 @@ public class WpsClientRequestTest {
         Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, resourceObject.equals(resultObject));
+        Assert.assertTrue(message, resultObject != null && resultObject instanceof ProcessOfferings);
+        ProcessOfferings pos = (ProcessOfferings)resultObject;
+        Assert.assertTrue(message, pos.getProcessOffering() != null && pos.getProcessOffering().size() == 1);
+        ProcessOffering po = pos.getProcessOffering().get(0);
+        Assert.assertTrue(message, po.isSetProcess());
+
     }
 
     /**
@@ -76,7 +82,11 @@ public class WpsClientRequestTest {
         Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, resourceObject.equals(resultObject));
+        Assert.assertTrue(message, resultObject != null && resultObject instanceof ProcessOfferings);
+        ProcessOfferings pos = (ProcessOfferings)resultObject;
+        Assert.assertTrue(message, pos.getProcessOffering() != null && pos.getProcessOffering().size() == 1);
+        ProcessOffering po = pos.getProcessOffering().get(0);
+        Assert.assertTrue(message, po.isSetProcess());
     }
 
     /**
@@ -106,7 +116,11 @@ public class WpsClientRequestTest {
         Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, resourceObject.equals(resultObject));
+        Assert.assertTrue(message, resultObject != null && resultObject instanceof ProcessOfferings);
+        ProcessOfferings pos = (ProcessOfferings)resultObject;
+        Assert.assertTrue(message, pos.getProcessOffering() != null && pos.getProcessOffering().size() == 1);
+        ProcessOffering po = pos.getProcessOffering().get(0);
+        Assert.assertTrue(message, po.isSetProcess());
     }
 
     /**
@@ -136,7 +150,11 @@ public class WpsClientRequestTest {
         Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, resourceObject.equals(resultObject));
+        Assert.assertTrue(message, resultObject != null && resultObject instanceof ProcessOfferings);
+        ProcessOfferings pos = (ProcessOfferings)resultObject;
+        Assert.assertTrue(message, pos.getProcessOffering() != null && pos.getProcessOffering().size() == 1);
+        ProcessOffering po = pos.getProcessOffering().get(0);
+        Assert.assertTrue(message, po.isSetProcess());
     }
 
     /**
@@ -166,7 +184,11 @@ public class WpsClientRequestTest {
         Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, resourceObject.equals(resultObject));
+        Assert.assertTrue(message, resultObject != null && resultObject instanceof ProcessOfferings);
+        ProcessOfferings pos = (ProcessOfferings)resultObject;
+        Assert.assertTrue(message, pos.getProcessOffering() != null && pos.getProcessOffering().size() == 1);
+        ProcessOffering po = pos.getProcessOffering().get(0);
+        Assert.assertTrue(message, po.isSetProcess());
     }
 
     /**
@@ -196,7 +218,11 @@ public class WpsClientRequestTest {
         Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, resourceObject.equals(resultObject));
+        Assert.assertTrue(message, resultObject != null && resultObject instanceof ProcessOfferings);
+        ProcessOfferings pos = (ProcessOfferings)resultObject;
+        Assert.assertTrue(message, pos.getProcessOffering() != null && pos.getProcessOffering().size() == 1);
+        ProcessOffering po = pos.getProcessOffering().get(0);
+        Assert.assertTrue(message, po.isSetProcess());
     }
 
     /**
@@ -225,10 +251,9 @@ public class WpsClientRequestTest {
         File f = new File(this.getClass().getResource("Capabilities.xml").getFile());
         Object resourceObject = unmarshaller.unmarshal(f);
 
-        WPSCapabilitiesType result = (WPSCapabilitiesType) ((JAXBElement) resultObject).getValue();
-        WPSCapabilitiesType resource = (WPSCapabilitiesType) ((JAXBElement) resourceObject).getValue();
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, resource.equals(result));
+        Assert.assertTrue(message, resultObject != null && resultObject instanceof JAXBElement);
+        Assert.assertTrue(message, ((JAXBElement<WPSCapabilitiesType>)resultObject).getValue() != null );
     }
 
     /**
@@ -256,7 +281,6 @@ public class WpsClientRequestTest {
         Object resultObject = unmarshaller.unmarshal(resultExecXml);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        //Impossible to test the result object because of the JobID which is each time different.
         Assert.assertTrue(message, resultObject != null && resultObject instanceof StatusInfo);
 
         //Now test the getStatus request
@@ -274,7 +298,6 @@ public class WpsClientRequestTest {
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         resultObject = unmarshaller.unmarshal(resultStatusXml);
 
-        //Impossible to test the result object because of the JobID which is each time different.
         Assert.assertTrue(message, resultObject != null && resultObject instanceof StatusInfo);
 
         //Now test the getResult request
@@ -292,7 +315,6 @@ public class WpsClientRequestTest {
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         resultObject = unmarshaller.unmarshal(resultResultXml);
 
-        //Impossible to test the result object because of the JobID which is each time different.
         Assert.assertTrue(message, resultObject != null && resultObject instanceof Result);
     }
 
