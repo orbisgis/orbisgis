@@ -19,7 +19,6 @@
 
 package org.orbisgis.wpsclient.view.ui;
 
-import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.KeywordsType;
 import net.opengis.wps._2_0.ProcessSummaryType;
 import org.orbisgis.sif.components.actions.ActionCommands;
@@ -38,8 +37,6 @@ import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.Process;
 
 import javax.swing.*;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionListener;

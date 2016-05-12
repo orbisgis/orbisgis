@@ -356,11 +356,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         return processManager.getProcessIdentifierFromParent(parent);
     }
 
-    @Deprecated
-    public List<ProcessIdentifier> getCapabilities(){
-        return processManager.getAllProcessIdentifier();
-    }
-
     public ProcessIdentifier addLocalScript(File f, String iconName, boolean isDefaultScript){
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
             processManager.addLocalScript(f.toURI(), iconName, isDefaultScript);

@@ -16,9 +16,6 @@ import java.util.Map;
  */
 public interface WpsService {
 
-    @Deprecated
-    List<ProcessIdentifier> getCapabilities();
-
     /**
      * This operation allows a client to retrieve service metadata, basic process offerings, and the available
      * processes present on a WPS server.
