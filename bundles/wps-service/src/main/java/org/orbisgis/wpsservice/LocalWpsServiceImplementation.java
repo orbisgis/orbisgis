@@ -351,6 +351,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         }
     }
 
+    @Deprecated
     public List<ProcessIdentifier> getProcessIdentifierFromParent(URI parent){
         return processManager.getProcessIdentifierFromParent(parent);
     }

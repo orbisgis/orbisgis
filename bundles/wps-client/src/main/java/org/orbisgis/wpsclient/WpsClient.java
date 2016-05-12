@@ -19,6 +19,11 @@
 
 package org.orbisgis.wpsclient;
 
+import net.opengis.ows._2.*;
+import net.opengis.wps._2_0.*;
+import net.opengis.ows._2.GetCapabilitiesType.AcceptLanguages;
+import net.opengis.wps._2_0.GetCapabilitiesType;
+import net.opengis.wps._2_0.ObjectFactory;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
@@ -36,6 +41,7 @@ import org.orbisgis.wpsclient.view.utils.editor.log.LogEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.log.LogEditor;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
+import org.orbisgis.wpsservice.JaxbContainer;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.DescriptionType;
@@ -47,10 +53,13 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.io.File;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -63,6 +72,7 @@ import java.util.concurrent.ExecutorService;
 
 @Component(immediate = true)
 public class WpsClient implements DockingPanel {
+    public static final String LANG = "en";
     /** String reference of the ToolBox used for DockingFrame. */
     public static final String TOOLBOX_REFERENCE = "orbistoolbox";
 
@@ -108,8 +118,8 @@ public class WpsClient implements DockingPanel {
         lee = new LogEditableElement();
         le = null;
 
-        for(ProcessIdentifier pi : wpsService.getCapabilities()) {
-            toolBoxPanel.addLocalSource(pi);
+        for(ProcessSummaryType processSummary : getAvailableProcesses()) {
+            toolBoxPanel.addProcess(processSummary);
         }
     }
 
@@ -117,7 +127,81 @@ public class WpsClient implements DockingPanel {
         return wpsService;
     }
 
+    /**
+     * Uses the request object to ask it to the WPS service, get the result and unmarshall it.
+     * @param request The request to ask to the WPS service.
+     * @return The result object.
+     */
+    public Object askService(Object request){
+        Marshaller marshaller;
+        Unmarshaller unmarshaller;
+        try {
+            marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+        } catch (JAXBException e) {
+            LoggerFactory.getLogger(WpsClient.class).error("Unable to create the marshall objects.\n"+
+                    e.getMessage());
+            return null;
+        }
 
+        //Marshall the WpsService ask
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            marshaller.marshal(request, out);
+        } catch (JAXBException e) {
+            LoggerFactory.getLogger(WpsClient.class).error("Unable to marshall the request object : '"+
+                    request.getClass().getName()+"'.\n"+
+                    e.getMessage());
+            return null;
+        }
+        DataInputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+
+        //Ask the WpsService
+        ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+
+        //unmarshall the WpsService answer
+        InputStream resultResultXml = new ByteArrayInputStream(xml.toByteArray());
+        Object resultObject;
+        try {
+            resultObject = unmarshaller.unmarshal(resultResultXml);
+        } catch (JAXBException e) {
+            LoggerFactory.getLogger(WpsClient.class).error("Unable to marshall the answer xml.\n"+
+                    e.getMessage());
+            return null;
+        }
+        if(resultObject instanceof JAXBElement){
+            resultObject = ((JAXBElement)resultObject).getValue();
+        }
+        return resultObject;
+    }
+
+    private List<ProcessSummaryType> getAvailableProcesses(){
+        //Sets the getCapabilities request
+        GetCapabilitiesType getCapabilities = new GetCapabilitiesType();
+        //Sets the language
+        AcceptLanguages acceptLanguages = new AcceptLanguages();
+        acceptLanguages.getLanguage().add(LANG);
+        getCapabilities.setAcceptLanguages(acceptLanguages);
+        //Sets the version
+        AcceptVersionsType acceptVersions = new AcceptVersionsType();
+        acceptVersions.getVersion().add("2.0.0");
+        getCapabilities.setAcceptVersions(acceptVersions);
+
+        JAXBElement<GetCapabilitiesType> request = new ObjectFactory().createGetCapabilities(getCapabilities);
+
+        //Ask the service
+        Object capabilities = askService(request);
+
+        //Retrieve the process list from the Capabilities answer
+        if(capabilities != null && capabilities instanceof WPSCapabilitiesType){
+            WPSCapabilitiesType wpsCapabilities = (WPSCapabilitiesType) capabilities;
+            if(wpsCapabilities.getContents() != null && wpsCapabilities.getContents().getProcessSummary() != null){
+                return wpsCapabilities.getContents().getProcessSummary();
+            }
+        }
+        return new ArrayList<>();
+    }
 
     @Deactivate
     public void dispose() {

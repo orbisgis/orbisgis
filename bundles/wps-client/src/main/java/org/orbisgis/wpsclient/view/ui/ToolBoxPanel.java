@@ -19,6 +19,9 @@
 
 package org.orbisgis.wpsclient.view.ui;
 
+import net.opengis.ows._2.CodeType;
+import net.opengis.ows._2.KeywordsType;
+import net.opengis.wps._2_0.ProcessSummaryType;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
@@ -425,6 +428,7 @@ public class ToolBoxPanel extends JPanel {
 
     /**
      * Adds a source in the file model.
+     * @param iconName Name of the icon to use for the node representing the process to add to the tree
      */
     private void addLocalSourceInFileModel(URI parentUri, TreeNodeWps hostNode, String iconName, URI processUri){
         List<TreeNodeWps> sourceList = getChildrenWithUri(parentUri, hostNode);
@@ -819,5 +823,141 @@ public class ToolBoxPanel extends JPanel {
         }
         tree.setModel(model);
         selectedModel = model;
+    }
+
+    //TODO get the parent URI to add it as a subnode
+    //TODO get if the process is a default one or not
+    //TODO get the category
+    //TODO get the URI (identifier ?)
+    public void addProcess(ProcessSummaryType processSummary) {
+        addLocalSourceInFileModel(LOCALHOST_URI, mapHostNode.get(LOCALHOST_URI), null, processSummary);
+        addScriptInTagModel(processSummary, null);
+        TreeNodeWps scriptFileModel = getChildrenWithUri(LOCALHOST_URI, (TreeNodeWps)fileModel.getRoot()).get(0);
+        scriptFileModel.setDefaultOrbisGIS(false);
+        for(TreeNodeWps node : getAllChild(scriptFileModel)){
+            node.setDefaultOrbisGIS(false);
+            List<TreeNodeWps> tagNodeList = getChildrenWithUri(node.getUri(), (TreeNodeWps)tagModel.getRoot());
+            for(TreeNodeWps tagNode : tagNodeList){
+                tagNode.setDefaultOrbisGIS(false);
+            }
+        }
+        refresh();
+    }
+
+    /**
+     * Adds a source in the file model.
+     * @param iconName Name of the icon to use for the node representing the process to add to the tree
+     */
+    private void addLocalSourceInFileModel(URI parentUri, TreeNodeWps hostNode, String iconName, ProcessSummaryType processSummary){
+        List<TreeNodeWps> sourceList = getChildrenWithUri(parentUri, hostNode);
+        TreeNodeWps source;
+        if(sourceList.isEmpty()){
+            source = null;
+        }
+        else{
+            source = sourceList.get(0);
+        }
+        String folderName;
+        if(parentUri.toString().startsWith("file:/") || parentUri.toString().startsWith("/")){
+            folderName = new File(parentUri).getName();
+        }
+        else{
+            folderName = parentUri.toString();
+        }
+
+        if(source == null) {
+            source = new TreeNodeWps();
+            source.setValidNode(true);
+            source.setUserObject(folderName);
+            source.setUri(parentUri);
+            source.setNodeType(TreeNodeWps.NodeType.FOLDER);
+            if(iconName != null){
+                source.setCustomIcon(iconName);
+            }
+            fileModel.insertNodeInto(source, hostNode, 0);
+        }
+
+        URI processUri = URI.create(processSummary.getIdentifier().getValue());
+        if(getChildrenWithUri(processUri, source).isEmpty()) {
+            TreeNodeWps script = new TreeNodeWps();
+            script.setUri(processUri);
+            script.setValidNode(processSummary != null);
+            script.setNodeType(TreeNodeWps.NodeType.PROCESS);
+            if(processSummary != null){
+                if(processSummary.getTitle() != null && !processSummary.getTitle().isEmpty()) {
+                    script.setUserObject(processSummary.getTitle().get(0).getValue());
+                }
+            }
+            else{
+                script.setUserObject(new File(processUri).getName().replace(".groovy", ""));
+            }
+            fileModel.insertNodeInto(script, source, 0);
+        }
+        tree.expandPath(new TreePath(source.getPath()));
+    }
+
+    /**
+     * Adds a process in the tag model.
+     */
+    public void addScriptInTagModel(ProcessSummaryType processSummary, String iconName){
+        TreeNodeWps root = (TreeNodeWps) tagModel.getRoot();
+        TreeNodeWps script = new TreeNodeWps();
+        URI uri = URI.create(processSummary.getIdentifier().getValue());
+        script.setUri(uri);
+        script.setNodeType(TreeNodeWps.NodeType.PROCESS);
+
+        script.setValidNode(processSummary!=null);
+        if(iconName != null){
+            script.setCustomIcon(iconName);
+        }
+        if(processSummary!=null){
+            if(processSummary.getTitle() != null && !processSummary.getTitle().isEmpty()) {
+                script.setUserObject(processSummary.getTitle().get(0).getValue());
+            }
+            if(processSummary.getKeywords() != null) {
+                for (KeywordsType tag : processSummary.getKeywords()) {
+                    TreeNodeWps tagNode = getChildWithUserObject(tag, root);
+                    if (tagNode == null) {
+                        tagNode = new TreeNodeWps();
+                        tagNode.setNodeType(TreeNodeWps.NodeType.FOLDER);
+                        if(tag.getKeyword()!= null && !tag.getKeyword().isEmpty()) {
+                            tagNode.setUserObject(tag.getKeyword().get(0));
+                        }
+                        tagNode.setValidNode(true);
+                        tagModel.insertNodeInto(tagNode, root, 0);
+                    }
+                    if (getChildrenWithUri(uri, tagNode).isEmpty()) {
+                        tagModel.insertNodeInto(script.deepCopy(), tagNode, 0);
+                    }
+                }
+            }
+            else{
+                TreeNodeWps tagNode = getChildWithUserObject("no_tag", root);
+                if(tagNode == null){
+                    tagNode = new TreeNodeWps();
+                    tagNode.setNodeType(TreeNodeWps.NodeType.FOLDER);
+                    tagNode.setUserObject("no_tag");
+                    tagNode.setValidNode(true);
+                    tagModel.insertNodeInto(tagNode, root, 0);
+                }
+                if(getChildrenWithUri(uri, tagNode).isEmpty()){
+                    tagModel.insertNodeInto(script.deepCopy(), tagNode, 0);
+                }
+            }
+        }
+        else{
+            script.setUserObject(new File(uri).getName().replace(".groovy", ""));
+            TreeNodeWps tagNode = getChildWithUserObject("invalid", root);
+            if(tagNode == null){
+                tagNode = new TreeNodeWps();
+                tagNode.setNodeType(TreeNodeWps.NodeType.FOLDER);
+                tagNode.setUserObject("invalid");
+                tagNode.setValidNode(true);
+                tagModel.insertNodeInto(tagNode, root, 0);
+            }
+            if(getChildrenWithUri(uri, tagNode).isEmpty()){
+                tagModel.insertNodeInto(script.deepCopy(), tagNode, 0);
+            }
+        }
     }
 }
