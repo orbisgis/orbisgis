@@ -19,10 +19,11 @@
 
 package org.orbisgis.wpsclient.view.ui.dataui;
 
+import net.opengis.wps._2_0.*;
+import net.opengis.wps._2_0.DataDescriptionType;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
-import org.orbisgis.wpsservice.model.Process;
 
 import javax.swing.*;
 import java.net.URI;
@@ -38,20 +39,20 @@ import java.util.Map;
 public class DataUIManager {
 
     /** Map linking the data class and its UI*/
-    private Map<Class<? extends DataDescription>, DataUI> dataUIMap;
+    private Map<Class<? extends DataDescriptionType>, DataUI> dataUIMap;
 
     /**
      * Main constructor.
      */
     public DataUIManager(WpsClient wpsClient){
         dataUIMap = new HashMap<>();
-        linkClassUI(LiteralData.class, new LiteralDataUI(), wpsClient);
-        linkClassUI(RawDataOld.class, new RawDataUI(), wpsClient);
-        linkClassUI(DataStoreOld.class, new DataStoreUI(), wpsClient);
-        linkClassUI(DataFieldOld.class, new DataFieldUI(), wpsClient);
-        linkClassUI(FieldValueOld.class, new FieldValueUI(), wpsClient);
-        linkClassUI(EnumerationOld.class, new EnumerationUI(), wpsClient);
-        linkClassUI(GeometryDataOld.class, new GeometryUI(), wpsClient);
+        linkClassUI(LiteralDataType.class, new LiteralDataUI(), wpsClient);
+        linkClassUI(RawData.class, new RawDataUI(), wpsClient);
+        linkClassUI(DataStore.class, new DataStoreUI(), wpsClient);
+        linkClassUI(DataField.class, new DataFieldUI(), wpsClient);
+        linkClassUI(FieldValue.class, new FieldValueUI(), wpsClient);
+        linkClassUI(Enumeration.class, new EnumerationUI(), wpsClient);
+        linkClassUI(GeometryData.class, new GeometryUI(), wpsClient);
     }
 
     /**
@@ -59,7 +60,7 @@ public class DataUIManager {
      * @param clazz Class to link.
      * @param dataUI UI corresponding to the class.
      */
-    public void linkClassUI(Class<? extends DataDescription> clazz, DataUI dataUI, WpsClient wpsClient){
+    public void linkClassUI(Class<? extends DataDescriptionType> clazz, DataUI dataUI, WpsClient wpsClient){
         dataUI.setWpsClient(wpsClient);
         dataUIMap.put(clazz, dataUI);
     }
@@ -69,7 +70,7 @@ public class DataUIManager {
      * @param clazz data class.
      * @return DataUI of the given data class.
      */
-    public DataUI getDataUI(Class<? extends DataDescription> clazz) {
+    public DataUI getDataUI(Class<? extends DataDescriptionType> clazz) {
         return dataUIMap.get(clazz);
     }
 
@@ -78,12 +79,12 @@ public class DataUIManager {
      * @param process Process to analyse
      * @return Map of the default input values and their URI.
      */
-    public Map<URI, Object> getInputDefaultValues(Process process){
+    public Map<URI, Object> getInputDefaultValues(ProcessDescriptionType process){
         Map<URI, Object> map = new HashMap<>();
-        for(Input input : process.getInput()) {
+        for(InputDescriptionType input : process.getInput()) {
             //If there is a DataUI corresponding to the input, get the defaults values.
-            if(getDataUI(input.getDataDescription().getClass()) != null) {
-                map.putAll(getDataUI(input.getDataDescription().getClass()).getDefaultValue(input));
+            if(getDataUI(input.getDataDescription().getValue().getClass()) != null) {
+                map.putAll(getDataUI(input.getDataDescription().getValue().getClass()).getDefaultValue(input));
             }
         }
         return map;
@@ -94,13 +95,13 @@ public class DataUIManager {
      * @param inputOrOutput Input or Output to analyse.
      * @return An ImageIcon corresponding to the data type.
      */
-    public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        DataDescription dataDescription = null;
-        if(inputOrOutput instanceof Input){
-            dataDescription = ((Input) inputOrOutput).getDataDescription();
+    public ImageIcon getIconFromData(net.opengis.wps._2_0.DescriptionType inputOrOutput) {
+        DataDescriptionType dataDescription = null;
+        if(inputOrOutput instanceof InputDescriptionType){
+            dataDescription = ((InputDescriptionType) inputOrOutput).getDataDescription().getValue();
         }
-        if(inputOrOutput instanceof Output){
-            dataDescription = ((Output) inputOrOutput).getDataDescription();
+        if(inputOrOutput instanceof OutputDescriptionType){
+            dataDescription = ((OutputDescriptionType) inputOrOutput).getDataDescription().getValue();
         }
         ImageIcon icon = dataUIMap.get(dataDescription.getClass()).getIconFromData(inputOrOutput);
         if(icon != null) {

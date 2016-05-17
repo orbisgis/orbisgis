@@ -20,6 +20,9 @@
 package org.orbisgis.wpsclient.view.utils.editor.process;
 
 import net.miginfocom.swing.MigLayout;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
+import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
@@ -27,10 +30,7 @@ import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUI;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUIManager;
-import org.orbisgis.wpsclient.view.utils.ExecutionWorker;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.Output;
 import org.orbisgis.wpsservice.model.Process;
 
 import javax.swing.*;
@@ -44,6 +44,8 @@ import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.math.BigInteger;
+import java.net.URI;
 import java.util.AbstractMap;
 
 /**
@@ -67,7 +69,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private DataUIManager dataUIManager;
     /** Tells if the this editor has been open or not. */
     private boolean alive;
-    private ExecutionWorker thread;
     private JPanel contentPanel;
     private WaitLayerUI layerUI;
     private JLayer<JPanel> layer;
@@ -156,7 +157,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             AbstractMap.Entry<String, Color> entry = (AbstractMap.Entry)propertyChangeEvent.getNewValue();
         }
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.CANCEL)){
-            wpsClient.getWpsService().cancelProcess(pee.getProcess().getIdentifier());
+            wpsClient.getWpsService().cancelProcess(URI.create(pee.getProcess().getIdentifier().getValue()));
         }
     }
 
@@ -178,9 +179,11 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     public boolean runProcess(){
         wpsClient.validateInstance(this);
         pee.setProcessState(ProcessEditableElement.ProcessState.RUNNING);
+
+        /*
         //Run the process in a separated thread
         thread = new ExecutionWorker(pee, wpsClient.getWpsService());
-        wpsClient.getExecutorService().execute(thread);
+        wpsClient.getExecutorService().execute(thread);*/
         return false;
     }
 
@@ -198,15 +201,15 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         inputPanel.setBorder(BorderFactory.createTitledBorder("Inputs"));
         panel.add(inputPanel, "growx, span");
 
-        for(Input i : pee.getProcess().getInput()){
-            DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getClass());
+        for(InputDescriptionType i : pee.getProcess().getInput()){
+            DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getValue().getClass());
 
             if(dataUI!=null) {
                 //Retrieve the component containing all the UI components.
                 JComponent uiComponent = dataUI.createUI(i, pee.getInputDataMap());
                 if(uiComponent != null) {
                     //If the input is optional, hide it
-                    if(i.getMinOccurs()==0) {
+                    if(i.getMinOccurs().equals(new BigInteger("0"))) {
                         uiComponent.setVisible(false);
                         //This panel is the one which contains the header with the title of the input and
                         // the hide/show button
@@ -223,7 +226,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                         showButton.addMouseListener(EventHandler.create(MouseListener.class,
                                 this, "onClickButton", "source", "mouseClicked"));
                         hideShowPanel.add(showButton);
-                        hideShowPanel.add(new JLabel(i.getTitle()), "growx, span");
+                        hideShowPanel.add(new JLabel(i.getTitle().get(0).getValue()), "growx, span");
                         hideShowPanel.setToolTipText("Hide/Show option");
                         hideShowPanel.putClientProperty("body", uiComponent);
                         hideShowPanel.putClientProperty("parent", contentPanel);
@@ -235,7 +238,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                         inputPanel.add(contentPanel, "growx, span");
                     }
                     else{
-                        inputPanel.add(new JLabel(i.getTitle()), "growx, span");
+                        inputPanel.add(new JLabel(i.getTitle().get(0).getValue()), "growx, span");
                         inputPanel.add(uiComponent, "growx, span");
                     }
                     inputPanel.add(new JSeparator(), "growx, span");
@@ -248,12 +251,12 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         outputPanel.setBorder(BorderFactory.createTitledBorder("Outputs"));
         panel.add(outputPanel, "growx, span");
 
-        for(Output o : pee.getProcess().getOutput()){
-            DataUI dataUI = dataUIManager.getDataUI(o.getDataDescription().getClass());
+        for(OutputDescriptionType o : pee.getProcess().getOutput()){
+            DataUI dataUI = dataUIManager.getDataUI(o.getDataDescription().getValue().getClass());
             if(dataUI!=null) {
                 JComponent component = dataUI.createUI(o, pee.getOutputDataMap());
                 if(component != null) {
-                    outputPanel.add(new JLabel(o.getTitle()), "growx, span");
+                    outputPanel.add(new JLabel(o.getTitle().get(0).getValue()), "growx, span");
                     outputPanel.add(component, "growx, span");
                 }
                 outputPanel.add(new JSeparator(), "growx, span");
@@ -315,12 +318,12 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      */
     private JComponent buildUIInfo(){
         JPanel panel = new JPanel(new MigLayout("fill"));
-        Process p  = pee.getProcess();
+        ProcessDescriptionType p  = pee.getProcess();
         //Process info
-        JLabel titleContentLabel = new JLabel(p.getTitle());
+        JLabel titleContentLabel = new JLabel(p.getTitle().get(0).getValue());
         JTextArea resumeContentLabel;
-        if(p.getResume() != null) {
-            resumeContentLabel = createResumeLabel(p.getResume());
+        if(p.getAbstract().get(0).getValue() != null) {
+            resumeContentLabel = createResumeLabel(p.getAbstract().get(0).getValue());
         }
         else{
             resumeContentLabel = createResumeLabel("-");
@@ -336,13 +339,13 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JPanel inputPanel = new JPanel(new MigLayout("fill"));
         inputPanel.setBorder(BorderFactory.createTitledBorder("Inputs :"));
 
-        for(Input i : p.getInput()){
+        for(InputDescriptionType i : p.getInput()){
             JPanel title = new JPanel(new BorderLayout());
             title.add(new JLabel(dataUIManager.getIconFromData(i)), BorderLayout.LINE_START);
-            title.add(new JLabel(i.getTitle()), BorderLayout.CENTER);
+            title.add(new JLabel(i.getTitle().get(0).getValue()), BorderLayout.CENTER);
             inputPanel.add(title, "align left, growx, wrap");
-            if(i.getResume() != null) {
-                JTextArea resume = createResumeLabel(i.getResume());
+            if(i.getAbstract().get(0).getValue() != null) {
+                JTextArea resume = createResumeLabel(i.getAbstract().get(0).getValue());
                 inputPanel.add(resume, "growx, wrap");
             }
             else {
@@ -354,13 +357,13 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JPanel outputPanel = new JPanel(new MigLayout("fill"));
         outputPanel.setBorder(BorderFactory.createTitledBorder("Outputs :"));
 
-        for(Output o : p.getOutput()){
+        for(OutputDescriptionType o : p.getOutput()){
             JPanel title = new JPanel(new BorderLayout());
             title.add(new JLabel(dataUIManager.getIconFromData(o)), BorderLayout.LINE_START);
-            title.add(new JLabel(o.getTitle()), BorderLayout.CENTER);
+            title.add(new JLabel(o.getTitle().get(0).getValue()), BorderLayout.CENTER);
             outputPanel.add(title, "align left, growx, wrap");
-            if(o.getResume() != null) {
-                JTextArea resume = createResumeLabel(o.getResume());
+            if(o.getAbstract().get(0).getValue() != null) {
+                JTextArea resume = createResumeLabel(o.getAbstract().get(0).getValue());
                 outputPanel.add(resume, "growx, wrap");
             }
             else {

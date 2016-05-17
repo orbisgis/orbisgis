@@ -20,6 +20,9 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import net.opengis.wps._2_0.DescriptionType;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
@@ -78,9 +81,9 @@ public class GeometryUI implements DataUI {
         jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this,
                 "saveDocumentText", "document"));
 
-        GeometryDataOld geometryData = null;
-        if(inputOrOutput instanceof Input){
-            geometryData = (GeometryDataOld) ((Input)inputOrOutput).getDataDescription();
+        GeometryData geometryData = null;
+        if(inputOrOutput instanceof InputDescriptionType){
+            geometryData = (GeometryData) ((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
         }
         //If the DescriptionType is an output, there is nothing to show, so exit
         if(geometryData == null){
@@ -147,7 +150,7 @@ public class GeometryUI implements DataUI {
             URI uri = (URI) document.getProperty(URI_PROPERTY);
             dataMap.put(uri, name);
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(RawDataOld.class).error(e.getMessage());
+            LoggerFactory.getLogger(GeometryUI.class).error(e.getMessage());
         }
     }
 }

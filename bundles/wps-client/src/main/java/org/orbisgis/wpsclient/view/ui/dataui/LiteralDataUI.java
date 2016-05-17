@@ -20,6 +20,8 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import net.opengis.wps._2_0.*;
+import net.opengis.wps._2_0.DescriptionType;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
@@ -40,6 +42,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,35 +84,26 @@ public class LiteralDataUI implements DataUI {
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         Map<URI, Object> uriDefaultValueMap = new HashMap<>();
-        DataDescription dataDescription = null;
-        URI identifier = inputOrOutput.getIdentifier();
+        DataDescriptionType dataDescription = null;
+        URI identifier = URI.create(inputOrOutput.getIdentifier().getValue());
 
         //Gets the dataDescription
-        if(inputOrOutput instanceof Input){
-            Input input = (Input) inputOrOutput;
-            dataDescription = input.getDataDescription();
+        if(inputOrOutput instanceof InputDescriptionType){
+            InputDescriptionType input = (InputDescriptionType) inputOrOutput;
+            dataDescription = input.getDataDescription().getValue();
         }
-        if(inputOrOutput instanceof Output){
-            Output output = (Output) inputOrOutput;
-            dataDescription = output.getDataDescription();
+        if(inputOrOutput instanceof OutputDescriptionType){
+            OutputDescriptionType output = (OutputDescriptionType) inputOrOutput;
+            dataDescription = output.getDataDescription().getValue();
         }
 
-        if (dataDescription instanceof LiteralData) {
-            LiteralData literalData = (LiteralData)dataDescription;
-            //If the LiteralData already contains a Value, uses it, else, uses one of the LiteralDataDomain.
-            if(literalData.getValue().getData() instanceof Value){
-                uriDefaultValueMap.put(identifier, ((Value)literalData.getValue().getData()).getValue());
-            }
-            else{
-                //Find in the dataDescription the default LiteralDataDomain an retrieve its default value
-                for (LiteralDataDomain ldda : ((LiteralData) dataDescription).getLiteralDomainType()) {
-                    if (ldda.isDefaultDomain()) {
-                        //If the default value is a Range, get the minimum as default value
-                        if (ldda.getDefaultValue() instanceof Range) {
-                            uriDefaultValueMap.put(identifier, ((Range) ldda.getDefaultValue()).getMinimumValue());
-                        } else if (ldda.getDefaultValue() instanceof Value) {
-                            uriDefaultValueMap.put(identifier, ((Value) ldda.getDefaultValue()).getValue());
-                        }
+        if (dataDescription instanceof LiteralDataType) {
+            //Find in the dataDescription the default LiteralDataDomain an retrieve its default value
+            for (LiteralDataDomainType ldda : ((LiteralDataType) dataDescription).getLiteralDataDomain()) {
+                if (ldda.isSetDefaultValue()) {
+                    //If the default value is a Range, get the minimum as default value
+                    if (ldda.getDefaultValue().isSetValue()) {
+                        uriDefaultValueMap.put(identifier, (ldda.getDefaultValue().getValue()));
                     }
                 }
             }
@@ -119,19 +113,20 @@ public class LiteralDataUI implements DataUI {
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        DataDescription dataDescription = null;
-        if(inputOrOutput instanceof Input){
-            dataDescription = ((Input) inputOrOutput).getDataDescription();
+        DataDescriptionType dataDescription = null;
+        if(inputOrOutput instanceof InputDescriptionType){
+            dataDescription = ((InputDescriptionType) inputOrOutput).getDataDescription().getValue();
         }
-        if(inputOrOutput instanceof Output){
-            dataDescription = ((Output) inputOrOutput).getDataDescription();
+        if(inputOrOutput instanceof OutputDescriptionType){
+            dataDescription = ((OutputDescriptionType) inputOrOutput).getDataDescription().getValue();
         }
-        if(dataDescription instanceof LiteralData) {
-            LiteralData ld = (LiteralData)dataDescription;
+        if(dataDescription instanceof LiteralDataType) {
+            LiteralDataType ld = (LiteralDataType)dataDescription;
             DataType dataType = DataType.STRING;
-            if(ld.getValue() != null && ld.getValue().getDataType()!= null) {
+            //TODO manage the dataType with the icons
+            /*if(ld.getValue() != null && ld.getValue().getDataType()!= null) {
                 dataType = ld.getValue().getDataType();
-            }
+            }*/
             switch (dataType) {
                 case STRING:
                     return ToolBoxIcon.getIcon(ToolBoxIcon.STRING);
@@ -158,21 +153,21 @@ public class LiteralDataUI implements DataUI {
 
         //If the descriptionType is an input, add a comboBox to select the input type and according to the type,
         // add a second JComponent to write the input value
-        if(inputOrOutput instanceof Input){
-            Input input = (Input)inputOrOutput;
-            LiteralData literalData = (LiteralData)input.getDataDescription();
+        if(inputOrOutput instanceof InputDescriptionType){
+            InputDescriptionType input = (InputDescriptionType)inputOrOutput;
+            LiteralDataType literalData = (LiteralDataType)input.getDataDescription().getValue();
             //JComboBox with the input type
             JComboBox<String> comboBox = new JComboBox<>();
-            comboBox.addItem(literalData.getValue().getDataType().name());
+            comboBox.addItem(literalData.getLiteralDataDomain().get(0).getDataType().getValue());
 
             //JPanel containing the component to set the input value
             JComponent dataField = new JPanel(new MigLayout("fill, ins 0, gap 0"));
 
             comboBox.putClientProperty(DATA_FIELD_PROPERTY, dataField);
-            comboBox.putClientProperty(URI_PROPERTY, input.getIdentifier());
+            comboBox.putClientProperty(URI_PROPERTY, URI.create(input.getIdentifier().getValue()));
             comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
-            comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, input.getMinOccurs()==0);
-            comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, input.getResume());
+            comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, input.getMinOccurs().equals(new BigInteger("0")));
+            comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, input.getAbstract().get(0).getValue());
             comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onBoxChange", "source"));
             comboBox.setBackground(Color.WHITE);
 

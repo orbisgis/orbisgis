@@ -20,14 +20,14 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import net.opengis.wps._2_0.DescriptionType;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenPanel;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.wpsservice.model.DescriptionType;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.Output;
-import org.orbisgis.wpsservice.model.RawDataOld;
+import org.orbisgis.wpsservice.model.RawData;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
@@ -86,14 +86,14 @@ public class RawDataUI implements DataUI {
         jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this,
                 "saveDocumentText", "document"));
 
-        RawDataOld rawData = null;
+        RawData rawData = null;
         String action = null;
-        if(inputOrOutput instanceof Input){
-            rawData = (RawDataOld) ((Input)inputOrOutput).getDataDescription();
+        if(inputOrOutput instanceof InputDescriptionType){
+            rawData = (RawData) ((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
             action = OpenPanel.ACTION_OPEN;
         }
-        else if(inputOrOutput instanceof Output){
-            rawData = (RawDataOld) ((Output)inputOrOutput).getDataDescription();
+        else if(inputOrOutput instanceof OutputDescriptionType){
+            rawData = (RawData) ((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
             action = OpenPanel.ACTION_SAVE;
         }
         if(rawData == null){
@@ -228,7 +228,7 @@ public class RawDataUI implements DataUI {
                 dataMap.put(uri, name);
             }
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(RawDataOld.class).error(e.getMessage());
+            LoggerFactory.getLogger(RawDataUI.class).error(e.getMessage());
         }
     }
 }

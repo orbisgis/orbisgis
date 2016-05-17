@@ -351,11 +351,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         }
     }
 
-    @Deprecated
-    public List<ProcessIdentifier> getProcessIdentifierFromParent(URI parent){
-        return processManager.getProcessIdentifierFromParent(parent);
-    }
-
     public ProcessIdentifier addLocalScript(File f, String iconName, boolean isDefaultScript){
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
             processManager.addLocalScript(f.toURI(), iconName, isDefaultScript);
@@ -743,6 +738,12 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
     @Override
     public List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
+        if(dataTypes == null){
+            dataTypes = new ArrayList<>();
+        }
+        if(excludedTypes == null){
+            excludedTypes = new ArrayList<>();
+        }
         List<String> fieldList = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             DatabaseMetaData dmd = connection.getMetaData();
@@ -781,7 +782,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     public List<String> getFieldValueList(String tableName, String fieldName) {
         List<String> fieldValues = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            tableName = TableLocation.parse(tableName, isH2).getTable();
+            tableName = TableLocation.parse(tableName, isH2).toString();
             List<String> fieldNames = JDBCUtilities.getFieldNames(connection.getMetaData(), tableName);
             if(fieldNames.isEmpty()){
                 return fieldValues;
@@ -1140,11 +1141,11 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         LanguageStringType translatedAbstract = new LanguageStringType();
         boolean defaultAbstrFound = false;
         for(LanguageStringType abstr : descriptionType.getAbstract()){
-            if(abstr.getLang().equals(language)){
+            if(abstr.getLang() != null && abstr.getLang().equals(language)){
                 translatedAbstract = abstr;
                 break;
             }
-            else if(abstr.getLang().equals(enLanguage)){
+            else if(abstr.getLang() != null && abstr.getLang().equals(enLanguage)){
                 translatedAbstract = abstr;
                 defaultAbstrFound = true;
             }
@@ -1184,10 +1185,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             LanguageStringType translatedKeyword = new LanguageStringType();
             boolean defaultKeywordFound = false;
             for (LanguageStringType keyword : keywords.getKeyword()) {
-                if (keyword.getLang().equals(language)) {
+                if (keyword.getLang() != null && keyword.getLang().equals(language)) {
                     translatedKeyword = keyword;
                     break;
-                } else if (keyword.getLang().equals(enLanguage)) {
+                } else if (keyword.getLang() != null && keyword.getLang().equals(enLanguage)) {
                     translatedKeyword = keyword;
                     defaultKeywordFound = true;
                 } else if (!defaultKeywordFound) {

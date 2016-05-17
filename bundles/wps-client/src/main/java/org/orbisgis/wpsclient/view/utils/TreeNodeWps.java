@@ -19,6 +19,7 @@
 
 package org.orbisgis.wpsclient.view.utils;
 
+import net.opengis.ows._2.CodeType;
 import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
 
 import javax.swing.*;
@@ -50,7 +51,7 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
     /** Type of the node. */
     private NodeType nodeType = NodeType.FOLDER;
     /** File or folder name associated to the node. */
-    private URI uri;
+    private CodeType identyifier;
     /** Indicates if the node is a valid folder, script, host ... or not. */
     private boolean isValid = true;
     /** Indicates if the node is a default process from OrbisGIS. */
@@ -197,16 +198,16 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
      * The URI value has no impact on the node appearance.
      * @return The URI represented by the node.
      */
-    public URI getUri() {
-        return uri;
+    public CodeType getIdentifier() {
+        return identyifier;
     }
 
     /**
      * Sets the URI represented by the node.
-     * @param uri The URI represented by the node.
+     * @param identifier The URI represented by the node.
      */
-    public void setUri(URI uri){
-        this.uri = uri;
+    public void setIdentifier(CodeType identifier){
+        this.identyifier = identifier;
     }
 
     /**
@@ -308,7 +309,9 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
      */
     public TreeNodeWps deepCopy(){
         TreeNodeWps copy = new TreeNodeWps();
-        copy.uri = this.uri;
+        copy.setIdentifier(new CodeType());
+        copy.identyifier.setCodeSpace(this.identyifier.getCodeSpace());
+        copy.identyifier.setValue(this.identyifier.getValue());
         copy.isValid = this.isValid;
         copy.nodeType = this.nodeType;
         copy.userObject = this.userObject;

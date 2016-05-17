@@ -58,7 +58,7 @@ public class DataFieldParser implements Parser {
         URI dataStoreUri;
         //If the dataStore attribute is not an URI, autoGenerate one.
         if(!dataFieldAttribute.dataStore().contains(":")) {
-            dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStore());
+            dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStore().replaceAll("[^a-zA-Z0-9_]", "_"));
         }
         //else, use it
         else {
@@ -76,7 +76,7 @@ public class DataFieldParser implements Parser {
 
         if(input.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":input:"+input.getTitle());
+            codeType.setValue(processId+":input:"+input.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
             input.setIdentifier(codeType);
         }
 
@@ -91,7 +91,7 @@ public class DataFieldParser implements Parser {
         URI dataStoreUri;
         //If the dataStore attribute is not an URI, autoGenerate one.
         if(!dataFieldAttribute.dataStore().contains(":")) {
-            dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.dataStore());
+            dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.dataStore().replaceAll("[^a-zA-Z0-9_]", "_"));
         }
         //else, use it
         else {
@@ -108,7 +108,7 @@ public class DataFieldParser implements Parser {
 
         if(output.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":output:"+output.getTitle());
+            codeType.setValue(processId+":output:"+output.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
             output.setIdentifier(codeType);
         }
 

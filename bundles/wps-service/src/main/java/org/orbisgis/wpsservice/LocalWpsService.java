@@ -50,8 +50,6 @@ public interface LocalWpsService extends WpsService {
 
     void addLocalSource(URI uri, String iconName, boolean isDefaultScript);
 
-    List<ProcessIdentifier> getProcessIdentifierFromParent(URI parent);
-
     ProcessIdentifier addLocalScript(File f, String iconName, boolean isDefaultScript);
 
     void removeProcess(URI uri);

@@ -70,24 +70,24 @@ String cityDataInput
 
 @DataFieldInput(title="Vegetation geometric field",
         resume="The vegetation geometric field",
-        dataStore="vegetationDataInput",
+        dataStore="Input vegetation",
         fieldTypes = ["GEOMETRY"])
 String vegetationGeometricField
 
 @DataFieldInput(title="City geometric field",
         resume="The city geometric field",
-        dataStore="cityDataInput",
+        dataStore="Input city",
         fieldTypes = ["GEOMETRY"])
 String cityGeometricField
 
 @DataFieldInput(title="City name field",
         resume="The city name field",
-        dataStore="cityDataInput")
+        dataStore="Input city")
 String cityNameField
 
 @FieldValueInput(title="City name value",
         resume="The city name value",
-        dataField="cityNameField",
+        dataField="Input city",
         multiSelection = true)
 String[] cityNameValue
 

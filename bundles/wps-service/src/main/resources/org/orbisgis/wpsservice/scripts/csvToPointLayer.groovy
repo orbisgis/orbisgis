@@ -81,17 +81,17 @@ String separator
 
 @DataFieldInput(title="Id field",
         resume="The point id field",
-        dataStore="csvDataInput")
+        dataStore="Input csv")
 String idField
 
 @DataFieldInput(title="X field",
         resume="The X coordinate field",
-        dataStore="csvDataInput")
+        dataStore="Input csv")
 String xField
 
 @DataFieldInput(title="Y field",
         resume="The Y coordinate field",
-        dataStore="csvDataInput")
+        dataStore="Input csv")
 String yField
 
 @EnumerationInput(title="Input EPSG",
