@@ -87,7 +87,7 @@ String cityNameField
 
 @FieldValueInput(title="City name value",
         resume="The city name value",
-        dataField="Input city",
+        dataField="City name field",
         multiSelection = true)
 String[] cityNameValue
 

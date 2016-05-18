@@ -134,7 +134,7 @@ public class EnumerationUI implements DataUI{
         JScrollPane listScroller = new JScrollPane(list);
         panel.add(listScroller, "growx, wrap");
         //Sets the List properties
-        list.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        list.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
         list.putClientProperty(ENUMERATION_PROPERTY, enumeration);
         list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
@@ -147,7 +147,7 @@ public class EnumerationUI implements DataUI{
             //Sets the text field
             JTextField textField = new JTextField();
             textField.getDocument().putProperty(DATA_MAP_PROPERTY, dataMap);
-            textField.getDocument().putProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+            textField.getDocument().putProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
             textField.getDocument().putProperty(ENUMERATION_PROPERTY, enumeration);
             textField.getDocument().putProperty(LIST_PROPERTY, list);
             textField.getDocument().putProperty(IS_MULTISELECTION_PROPERTY, enumeration.isMultiSelection());

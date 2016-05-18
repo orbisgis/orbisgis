@@ -121,7 +121,7 @@ String riverNameField
 
 @FieldValueInput(title="River name",
         resume="The river name",
-        dataField = "Input river",
+        dataField = "River name field",
         multiSelection = true)
 String[] riverNameValue
 
