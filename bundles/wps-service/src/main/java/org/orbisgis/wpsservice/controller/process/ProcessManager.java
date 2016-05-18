@@ -273,7 +273,7 @@ public class ProcessManager {
     public void removeProcess(ProcessDescriptionType process) {
         ProcessIdentifier toRemove = null;
         for(ProcessIdentifier pi : processIdList){
-            if(pi.getProcess().equals(process)){
+            if(pi.getProcessDescriptionType().getIdentifier().getValue().equals(process.getIdentifier().getValue())){
                 toRemove = pi;
             }
         }

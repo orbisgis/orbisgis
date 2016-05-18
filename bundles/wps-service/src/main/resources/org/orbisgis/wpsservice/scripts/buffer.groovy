@@ -86,7 +86,7 @@ String inputDataStore
 @DataFieldInput(
         title = "Geometric field",
         resume = "The geometric field of the data source",
-        dataStore = "inputDataStore",
+        dataStore = "Input spatial data",
         fieldTypes = ["GEOMETRY"])
 String geometricField
 

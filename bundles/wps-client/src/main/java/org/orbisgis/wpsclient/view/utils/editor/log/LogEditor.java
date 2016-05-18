@@ -101,7 +101,7 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
      * @param pee ProcessEditableElement of the running process to add.
      */
     private void addNewLog(ProcessEditableElement pee){
-        LogPanel panel = new LogPanel(pee.getProcess().getTitle(), this);
+        LogPanel panel = new LogPanel(pee.getProcess().getTitle().get(0).getValue(), this);
         panel.setState(ProcessEditableElement.ProcessState.RUNNING);
         componentMap.put(pee.getId(), panel);
         contentPanel.add(panel, "growx, span");
@@ -126,7 +126,7 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
     private void removeLog(ProcessEditableElement pee, boolean successful){
         LogPanel lp = componentMap.get(pee.getId());
         String log = "\n=====================================\n"+
-                "WPS Process : "+pee.getProcess().getTitle() +"\n"+
+                "WPS Process : "+pee.getProcess().getTitle().get(0).getValue() +"\n"+
                 "=====================================\n"+
                 "Result : "+pee.getProcessState()+"\n"+
                 "Log : \n";

@@ -366,7 +366,7 @@ public class LiteralDataParser implements Parser {
         }
         if(input.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":input:"+input.getTitle());
+            codeType.setValue(processId+":input:"+input.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
             input.setIdentifier(codeType);
         }
         return input;
@@ -390,7 +390,7 @@ public class LiteralDataParser implements Parser {
         }
         if(output.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":output:"+output.getTitle());
+            codeType.setValue(processId+":output:"+output.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
             output.setIdentifier(codeType);
         }
         return output;

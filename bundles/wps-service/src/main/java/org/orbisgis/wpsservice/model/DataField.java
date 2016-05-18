@@ -103,8 +103,10 @@ public class DataField extends ComplexDataType {
      */
     public void setSourceModified(boolean isSourceModified) {
         this.isSourceModified = isSourceModified;
-        for(FieldValue fieldValue : listFieldValue){
-            fieldValue.setDataStoreModified(isSourceModified);
+        if(listFieldValue != null) {
+            for (FieldValue fieldValue : listFieldValue) {
+                fieldValue.setDataStoreModified(isSourceModified);
+            }
         }
     }
 

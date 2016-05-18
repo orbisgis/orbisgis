@@ -82,7 +82,7 @@ String tableName
 @DataFieldInput(
         title = "Fields",
         resume = "The field concerned by the value insertion",
-        dataStore = "tableName",
+        dataStore = "Table",
         isMultipleField = true,
         minOccurs = 0)
 String fields

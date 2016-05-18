@@ -24,6 +24,7 @@ import net.opengis.wps._2_0.*;
 import net.opengis.ows._2.GetCapabilitiesType.AcceptLanguages;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
+import net.opengis.wps._2_0.DescriptionType;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
@@ -44,7 +45,9 @@ import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
 import org.orbisgis.wpsservice.JaxbContainer;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
-import org.orbisgis.wpsservice.model.DescriptionType;
+import org.orbisgis.wpsservice.model.DataField;
+import org.orbisgis.wpsservice.model.DataStore;
+import org.orbisgis.wpsservice.model.FieldValue;
 import org.orbisgis.wpsservice.model.Process;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -203,6 +206,32 @@ public class WpsClient implements DockingPanel {
         return new ArrayList<>();
     }
 
+    /**
+     * Return the list of the ProcessOffering contained by the WpsService corresponding to the given CodeType.
+     * @param processIdentifier CodeType of the processes asked.
+     * @return The list of the ProcessOffering
+     */
+    private List<ProcessOffering> getProcessOffering(CodeType processIdentifier){
+        //Sets the describeProcess request
+        DescribeProcess describeProcess = new DescribeProcess();
+        //Sets the language
+        describeProcess.setLang(LANG);
+        //Sets the process
+        describeProcess.getIdentifier().add(processIdentifier);
+
+        //Ask the service
+        Object answer = askService(describeProcess);
+
+        //Retrieve the process list from the Capabilities answer
+        if(answer != null && answer instanceof ProcessOfferings){
+            ProcessOfferings processOfferings = (ProcessOfferings) answer;
+            if(processOfferings.getProcessOffering() != null && !processOfferings.getProcessOffering().isEmpty()){
+                return processOfferings.getProcessOffering();
+            }
+        }
+        return new ArrayList<>();
+    }
+
     @Deactivate
     public void dispose() {
         //Removes all the EditorDockable that were added
@@ -308,11 +337,22 @@ public class WpsClient implements DockingPanel {
 
     /**
      * Open the process window for the selected process.
-     * @param scriptUri Script URI to execute as a process.
+     * @param scriptIdentifier Script URI to execute as a process.
      * @return The ProcessEditableElement which contains the running process information (log, state, ...).
      */
-    public ProcessEditableElement openProcess(URI scriptUri){
-        Process process = wpsService.describeProcess(scriptUri);
+    public ProcessEditableElement openProcess(CodeType scriptIdentifier){
+        //Get the list of ProcessOffering
+        List<ProcessOffering> listProcess = getProcessOffering(scriptIdentifier);
+        if(listProcess == null || listProcess.isEmpty()){
+            LoggerFactory.getLogger(WpsClient.class).warn("Unable to retrieve the process '"+
+                    scriptIdentifier.getValue()+".");
+            return null;
+        }
+        //Get the process
+        ProcessDescriptionType process = listProcess.get(0).getProcess();
+        //Link the DataStore with the DataField, with the FieldValue
+        link(process);
+        //Open the ProcessEditor
         ProcessEditableElement pee = new ProcessEditableElement(process);
         pe = new ProcessEditor(this, pee);
         //Find if there is already a ProcessEditor open with the same process.
@@ -328,13 +368,70 @@ public class WpsClient implements DockingPanel {
             openEditorList.add(pe);
         }
         else{
-            LoggerFactory.getLogger(WpsClient.class).warn("The process '"+pee.getProcess().getTitle()+"' is already open.");
+            LoggerFactory.getLogger(WpsClient.class).warn("The process '"+
+                    pee.getProcess().getTitle().get(0).getValue()+"' is already open.");
         }
         return pee;
     }
 
+    /**
+     * Link the deiffrents input/output together like the DataStore with its DataFields,
+     * the DataFields with its FieldValues ...
+     * @param p Process to link.
+     */
+    private void link(ProcessDescriptionType p){
+        //Link the DataField with its DataStore
+        for(InputDescriptionType i : p.getInput()){
+            if(i.getDataDescription().getValue() instanceof DataField){
+                DataField dataField = (DataField)i.getDataDescription().getValue();
+                for(InputDescriptionType dataStore : p.getInput()){
+                    if(dataStore.getIdentifier().getValue().equals(dataField.getDataStoreIdentifier().toString())){
+                        ((DataStore)dataStore.getDataDescription().getValue()).addDataField(dataField);
+                    }
+                }
+            }
+        }
+        //Link the FieldValue with its DataField and its DataStore
+        for(InputDescriptionType i : p.getInput()){
+            if(i.getDataDescription().getValue() instanceof FieldValue){
+                FieldValue fieldValue = (FieldValue)i.getDataDescription().getValue();
+                for(InputDescriptionType input : p.getInput()){
+                    if(input.getIdentifier().getValue().equals(fieldValue.getDataFieldIdentifier().toString())){
+                        DataField dataField = (DataField)input.getDataDescription().getValue();
+                        dataField.addFieldValue(fieldValue);
+                        fieldValue.setDataStoredIdentifier(dataField.getDataStoreIdentifier());
+                    }
+                }
+            }
+        }
+        //Link the DataField with its DataStore
+        for(OutputDescriptionType o : p.getOutput()){
+            if(o.getDataDescription().getValue() instanceof DataField){
+                DataField dataField = (DataField)o.getDataDescription().getValue();
+                for(OutputDescriptionType dataStore : p.getOutput()){
+                    if(dataStore.getIdentifier().getValue().equals(dataField.getDataStoreIdentifier().toString())){
+                        ((DataStore)dataStore.getDataDescription().getValue()).addDataField(dataField);
+                    }
+                }
+            }
+        }
+        //Link the FieldValue with its DataField and its DataStore
+        for(OutputDescriptionType o : p.getOutput()){
+            if(o.getDataDescription().getValue() instanceof FieldValue){
+                FieldValue fieldValue = (FieldValue)o.getDataDescription().getValue();
+                for(OutputDescriptionType output : p.getOutput()){
+                    if(output.getIdentifier().getValue().equals(fieldValue.getDataFieldIdentifier().toString())){
+                        DataField dataField = (DataField)output.getDataDescription().getValue();
+                        dataField.addFieldValue(fieldValue);
+                        fieldValue.setDataStoredIdentifier(dataField.getDataStoreIdentifier());
+                    }
+                }
+            }
+        }
+    }
+
     public void openProcess(){
-        openProcess(toolBoxPanel.getSelectedNode().getUri());
+        openProcess(toolBoxPanel.getSelectedNode().getIdentifier());
     }
 
     /**
@@ -444,7 +541,7 @@ public class WpsClient implements DockingPanel {
      */
     public String loadURI(URI uri, boolean loadSource, DescriptionType inputOrOutput) {
         //First retrieve the process containing the given input or output
-        Process process = getWpsService().describeProcess(inputOrOutput.getIdentifier());
+        Process process = getWpsService().describeProcess(URI.create(inputOrOutput.getIdentifier().getValue()));
         //Find which of the open editors corresponds to the process
         for(EditorDockable ed : openEditorList){
             //Check if the editor is a ProcessEditor

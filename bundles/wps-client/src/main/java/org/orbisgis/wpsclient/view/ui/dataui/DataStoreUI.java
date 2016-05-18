@@ -20,6 +20,10 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import net.opengis.wps._2_0.DescriptionType;
+import net.opengis.wps._2_0.Format;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
 import org.apache.commons.io.FilenameUtils;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.sif.UIFactory;
@@ -42,6 +46,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.EventHandler;
 import java.io.File;
+import java.math.BigInteger;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.*;
@@ -101,20 +106,20 @@ public class DataStoreUI implements DataUI{
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         //Main panel which contains all the UI
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-        DataStoreOld dataStore;
+        DataStore dataStore;
         boolean isOptional = false;
         /** Retrieve the DataStore from the DescriptionType. **/
-        if(inputOrOutput instanceof Input){
-            Input input = (Input)inputOrOutput;
-            dataStore = (DataStoreOld)input.getDataDescription();
+        if(inputOrOutput instanceof InputDescriptionType){
+            InputDescriptionType input = (InputDescriptionType)inputOrOutput;
+            dataStore = (DataStore)input.getDataDescription().getValue();
             //As an input, the DataStore can be optional.
-            if(input.getMinOccurs() == 0){
+            if(input.getMinOccurs().equals(new BigInteger("0"))){
                 isOptional = true;
             }
         }
-        else if(inputOrOutput instanceof Output){
-            Output output = (Output)inputOrOutput;
-            dataStore = (DataStoreOld)output.getDataDescription();
+        else if(inputOrOutput instanceof OutputDescriptionType){
+            OutputDescriptionType output = (OutputDescriptionType)inputOrOutput;
+            dataStore = (DataStore)output.getDataDescription().getValue();
         }
         else {
             //If inputOrOutput is not a input and not an output, exit
@@ -143,7 +148,7 @@ public class DataStoreUI implements DataUI{
         }
         //Adds all the properties used on the type selection
         dataStoreTypeBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
-        dataStoreTypeBox.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        dataStoreTypeBox.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
         //Panel that will contain the JComponent belonging to the selected type (geocatalog, file ...)
         JComponent component  = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         dataStoreTypeBox.putClientProperty(COMPONENT_PROPERTY, component);
@@ -160,7 +165,7 @@ public class DataStoreUI implements DataUI{
         JComboBox<ContainerItem<Object>> geocatalogComboBox = new JComboBox<>();
         JPanel geocatalogComponent = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         //If the DataStore is an input, uses a custom comboBox renderer to show an icon, the table name, the SRID ...
-        if(inputOrOutput instanceof Input) {
+        if(inputOrOutput instanceof InputDescriptionType) {
             geocatalogComboBox.setRenderer(new JPanelListRenderer());
         }
         //If it is an output, just show the table names, and add the 'new table' item.
@@ -171,11 +176,11 @@ public class DataStoreUI implements DataUI{
             Document doc = ((JTextComponent)geocatalogComboBox.getEditor().getEditorComponent()).getDocument();
             doc.putProperty(GEOCATALOG_COMBO_BOX_PROPERTY, geocatalogComboBox);
             doc.putProperty(DATA_MAP_PROPERTY, dataMap);
-            doc.putProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+            doc.putProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
             doc.addDocumentListener(EventHandler.create(DocumentListener.class, this, "onNewTable", "document"));
         }
         //Populate the comboBox with the available tables.
-        populateWithTable(geocatalogComboBox, dataStore.isSpatial(), inputOrOutput instanceof Output);
+        populateWithTable(geocatalogComboBox, dataStore.isSpatial(), inputOrOutput instanceof OutputDescriptionType);
         //Adds the listener on combo box item selection
         geocatalogComboBox.addActionListener(
                 EventHandler.create(ActionListener.class, this, "onGeocatalogTableSelected", "source"));
@@ -184,12 +189,12 @@ public class DataStoreUI implements DataUI{
                 EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
         geocatalogComboBox.addMouseListener(
                 EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
-        geocatalogComboBox.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        geocatalogComboBox.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
         geocatalogComboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         geocatalogComboBox.putClientProperty(DATA_STORE_PROPERTY, dataStore);
-        geocatalogComboBox.putClientProperty(IS_OUTPUT_PROPERTY, inputOrOutput instanceof Output);
+        geocatalogComboBox.putClientProperty(IS_OUTPUT_PROPERTY, inputOrOutput instanceof OutputDescriptionType);
         geocatalogComboBox.setBackground(Color.WHITE);
-        geocatalogComboBox.setToolTipText(inputOrOutput.getResume());
+        geocatalogComboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
         geocatalogComponent.add(geocatalogComboBox, "span, grow");
         //Register the geocatalog combo box as a property in the DataStore type box
         dataStoreTypeBox.putClientProperty(GEOCATALOG_COMPONENT_PROPERTY, geocatalogComponent);
@@ -210,7 +215,7 @@ public class DataStoreUI implements DataUI{
                 this,
                 "onDocumentSet",
                 "document"));
-        textField.setToolTipText(inputOrOutput.getResume());
+        textField.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
 
         optionPanelFile.add(textField, "span, grow");
         JPanel buttonPanel = new JPanel(new MigLayout("ins 0, gap 0"));
@@ -220,18 +225,18 @@ public class DataStoreUI implements DataUI{
         browseButton.setContentAreaFilled(false);
         browseButton.setMargin(new Insets(0, 0, 0, 0));
         browseButton.addActionListener(EventHandler.create(ActionListener.class, this, "onBrowse", ""));
-        browseButton.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        browseButton.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
         browseButton.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         browseButton.putClientProperty(TEXT_FIELD_PROPERTY, textField);
         browseButton.putClientProperty(DATA_STORE_PROPERTY, dataStore);
         //Instantiate the file panel (OpenFilePanel or SaveFilePanel)
         OpenFilePanel filePanel;
         //If it is an input, the file panel is an Open one
-        if(inputOrOutput instanceof Input){
-            filePanel = new OpenFilePanel("DataStoreUI.File."+inputOrOutput.getIdentifier(), "Select File");
+        if(inputOrOutput instanceof InputDescriptionType){
+            filePanel = new OpenFilePanel("DataStoreUI.File."+inputOrOutput.getIdentifier().getValue(), "Select File");
             filePanel.setAcceptAllFileFilterUsed(false);
             //Adds the format filters to the file panel
-            for(Format format : dataStore.getFormats()){
+            for(Format format : dataStore.getFormat()){
                 String ext = FormatFactory.getFormatExtension(format);
                 String description = "";
                 for(Map.Entry<String, String> entry : wpsClient.getWpsService().getImportableFormat(false).entrySet()){
@@ -244,9 +249,9 @@ public class DataStoreUI implements DataUI{
         }
         //If it is an output, the file panel is an Save one
         else {
-            filePanel = new SaveFilePanel("DataStoreUI.File."+inputOrOutput.getIdentifier(), "Save File");
+            filePanel = new SaveFilePanel("DataStoreUI.File."+inputOrOutput.getIdentifier().getValue(), "Save File");
             //Adds the format filters to the file panel
-            for(Format format : dataStore.getFormats()){
+            for(Format format : dataStore.getFormat()){
                 String ext = FormatFactory.getFormatExtension(format);
                 String description = "";
                 for(Map.Entry<String, String> entry : wpsClient.getWpsService().getExportableFormat(false).entrySet()){
@@ -265,7 +270,7 @@ public class DataStoreUI implements DataUI{
         //Sets the DataStore file option
         JLabel fileOptions = new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.OPTIONS));
         //If the DataStore is an input adds the load option.
-        if(inputOrOutput instanceof Input) {
+        if(inputOrOutput instanceof InputDescriptionType) {
             fileOptions.putClientProperty(KEEP_SOURCE_PROPERTY, false);
             if(wpsClient.getWpsService().isH2()) {
                 fileOptions.putClientProperty(LOAD_SOURCE_PROPERTY, false);
@@ -276,7 +281,7 @@ public class DataStoreUI implements DataUI{
         }
         fileOptions.addMouseListener(
                 EventHandler.create(MouseListener.class, this, "onFileOptionEntered", "", "mouseEntered"));
-        fileOptions.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        fileOptions.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
         fileOptions.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         fileOptions.putClientProperty(POPUP_MENU_PROPERTY, buildPopupMenu(fileOptions));
         textField.getDocument().putProperty(FILE_OPTIONS_PROPERTY, fileOptions);
@@ -362,7 +367,7 @@ public class DataStoreUI implements DataUI{
             }
             new ImportWorker(document);
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(DataStoreOld.class).error(e.getMessage());
+            LoggerFactory.getLogger(DataStoreUI.class).error(e.getMessage());
         }
     }
 
@@ -375,7 +380,7 @@ public class DataStoreUI implements DataUI{
         //Retrieve the client properties
         JComboBox<ContainerItem<Object>> comboBox = (JComboBox)source;
         //Refreshes the list of tables displayed
-        DataStoreOld dataStore = (DataStoreOld)comboBox.getClientProperty(DATA_STORE_PROPERTY);
+        DataStore dataStore = (DataStore)comboBox.getClientProperty(DATA_STORE_PROPERTY);
         boolean isOptional = (boolean)comboBox.getClientProperty(IS_OUTPUT_PROPERTY);
         Object selectedItem = comboBox.getSelectedItem();
         populateWithTable(comboBox, dataStore.isSpatial(), isOptional);
@@ -439,7 +444,7 @@ public class DataStoreUI implements DataUI{
         //Retrieve the client properties
         Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
         URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
-        DataStoreOld dataStore = (DataStoreOld) comboBox.getClientProperty(DATA_STORE_PROPERTY);
+        DataStore dataStore = (DataStore) comboBox.getClientProperty(DATA_STORE_PROPERTY);
         String tableName;
         if(comboBox.getSelectedItem() instanceof ContainerItem) {
             tableName = ((ContainerItem) comboBox.getSelectedItem()).getLabel();
@@ -448,8 +453,10 @@ public class DataStoreUI implements DataUI{
             tableName = comboBox.getSelectedItem().toString();
         }
         //Tells all the dataField linked that the data source is loaded
-        for (DataFieldOld dataField : dataStore.getListDataField()) {
-            dataField.setSourceModified(true);
+        if(dataStore.getListDataField() != null) {
+            for (DataField dataField : dataStore.getListDataField()) {
+                dataField.setSourceModified(true);
+            }
         }
         Object oldValue = dataMap.get(uri);
         if(oldValue != null && oldValue instanceof URI){
@@ -528,14 +535,14 @@ public class DataStoreUI implements DataUI{
     public void saveDocumentTextFile(Document document){
         URI selectedFileURI;
         try {
-            DataStoreOld dataStore = (DataStoreOld)document.getProperty(DATA_STORE_PROPERTY);
+            DataStore dataStore = (DataStore)document.getProperty(DATA_STORE_PROPERTY);
             JComponent fileOptions = (JComponent) document.getProperty(FILE_OPTIONS_PROPERTY);
             DescriptionType inputOrOutput = (DescriptionType)document.getProperty(DESCRIPTION_TYPE_PROPERTY);
             File file = new File(document.getText(0, document.getLength()));
-            if(inputOrOutput instanceof Input) {
+            if(inputOrOutput instanceof InputDescriptionType) {
                 //If the file doesn't exists, show an error
                 if(!file.exists()){
-                    LoggerFactory.getLogger(DataStoreOld.class).error("The file '"+file+"' doesn't exists.");
+                    LoggerFactory.getLogger(DataStoreUI.class).error("The file '"+file+"' doesn't exists.");
                     return;
                 }
                 //Retrieve the file loading properties
@@ -561,7 +568,7 @@ public class DataStoreUI implements DataUI{
                     selectedFileURI = URI.create(fileStr + "#" + tableName);
                     //Store the selection
                     Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
-                    URI uri = inputOrOutput.getIdentifier();
+                    URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
                     Object oldValue = dataMap.get(uri);
                     //If a file was previoulsy loaded, remove it
                     if(oldValue != null && oldValue instanceof URI){
@@ -572,17 +579,17 @@ public class DataStoreUI implements DataUI{
                     }
                     dataMap.put(uri, selectedFileURI);
                     //tells the dataField they should revalidate
-                    for (DataFieldOld dataField : dataStore.getListDataField()) {
+                    for (DataField dataField : dataStore.getListDataField()) {
                         dataField.setSourceModified(true);
                     }
                 }
                 else{
-                    for (DataFieldOld dataField : dataStore.getListDataField()) {
+                    for (DataField dataField : dataStore.getListDataField()) {
                         dataField.setSourceModified(false);
                     }
                 }
             }
-            if(inputOrOutput instanceof Output){
+            if(inputOrOutput instanceof OutputDescriptionType){
                 //Retrieve the table name
                 String tableName = wpsClient.getDataManager().findUniqueTableName(
                         FilenameUtils.getBaseName(file.getName()));
@@ -600,11 +607,11 @@ public class DataStoreUI implements DataUI{
                 selectedFileURI = URI.create(fileStr + "#" + tableName);
                 //Store the selection
                 Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
-                URI uri = inputOrOutput.getIdentifier();
+                URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
                 dataMap.put(uri, selectedFileURI);
             }
         } catch (BadLocationException|SQLException e) {
-            LoggerFactory.getLogger(DataStoreOld.class).error(e.getMessage());
+            LoggerFactory.getLogger(DataStoreUI.class).error(e.getMessage());
         }
     }
 

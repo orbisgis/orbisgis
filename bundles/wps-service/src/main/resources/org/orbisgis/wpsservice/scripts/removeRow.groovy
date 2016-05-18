@@ -54,14 +54,14 @@ String tableName
 @DataFieldInput(
         title = "PKField",
         resume = "The primary key field",
-        dataStore = "tableName")
+        dataStore = "Table")
 String pkField
 
 /** List of primary keys to remove from the table. */
 @FieldValueInput(
         title = "PKArray",
         resume = "The array of the primary keys of the rows to remove",
-        dataField = "pkField",
+        dataField = "PKField",
         multiSelection = true)
 String[] pkToRemove
 

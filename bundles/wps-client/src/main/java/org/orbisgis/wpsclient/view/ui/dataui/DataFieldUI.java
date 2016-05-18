@@ -20,6 +20,9 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import net.opengis.wps._2_0.DescriptionType;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
@@ -35,6 +38,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
 import java.util.List;
@@ -74,18 +78,18 @@ public class DataFieldUI implements DataUI{
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-        DataFieldOld dataField = null;
+        DataField dataField = null;
         boolean isOptional = false;
         //Retrieve the DataField
         //If it is an input, find if it is optional.
-        if(inputOrOutput instanceof Input){
-            dataField = (DataFieldOld)((Input)inputOrOutput).getDataDescription();
-            if(((Input)inputOrOutput).getMinOccurs() == 0){
+        if(inputOrOutput instanceof InputDescriptionType){
+            dataField = (DataField)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            if(((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"))){
                 isOptional = true;
             }
         }
-        else if(inputOrOutput instanceof Output){
-            dataField = (DataFieldOld)((Output)inputOrOutput).getDataDescription();
+        else if(inputOrOutput instanceof OutputDescriptionType){
+            dataField = (DataField)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
         }
 
         if(dataField == null){
@@ -98,15 +102,15 @@ public class DataFieldUI implements DataUI{
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
             list.setLayoutOrientation(JList.VERTICAL);
             list.setVisibleRowCount(MIN_JLIST_ROW_COUNT);
-            list.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+            list.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
             list.putClientProperty(DATA_FIELD_PROPERTY, dataField);
             list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
             list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
-            list.putClientProperty(FIELD_TITLE_PROPERTY, inputOrOutput.getTitle());
+            list.putClientProperty(FIELD_TITLE_PROPERTY, URI.create(inputOrOutput.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_")));
             list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onItemSelected", "source"));
             list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
             list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
-            list.setToolTipText(inputOrOutput.getResume());
+            list.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
             JScrollPane listScroller = new JScrollPane(list);
             panel.add(listScroller, "growx, wrap");
         }
@@ -117,17 +121,17 @@ public class DataFieldUI implements DataUI{
             comboBox.setBackground(Color.WHITE);
             ContainerItem<Object> defaultItem = new ContainerItem<Object>("Select a field", "Select a field");
             comboBox.addItem(defaultItem);
-            comboBox.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+            comboBox.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
             comboBox.putClientProperty(DATA_FIELD_PROPERTY, dataField);
             comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
             comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
             comboBox.putClientProperty(DEFAULT_ITEM_PROPERTY, defaultItem);
-            comboBox.putClientProperty(FIELD_TITLE_PROPERTY, inputOrOutput.getTitle());
+            comboBox.putClientProperty(FIELD_TITLE_PROPERTY, URI.create(inputOrOutput.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_")));
             comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
             comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
             comboBox.addPopupMenuListener(EventHandler.create(PopupMenuListener.class, this, "onComboBoxEntered", "source"));
             comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
-            comboBox.setToolTipText(inputOrOutput.getResume());
+            comboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
             panel.add(comboBox, "growx, wrap");
 
             if (isOptional) {
@@ -179,7 +183,7 @@ public class DataFieldUI implements DataUI{
     public void onComboBoxEntered(Object source){
         if(source instanceof JComboBox) {
             JComboBox<ContainerItem<Object>> comboBox = (JComboBox) source;
-            DataFieldOld dataField = (DataFieldOld) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
+            DataField dataField = (DataField) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
             HashMap<URI, Object> dataMap = (HashMap) comboBox.getClientProperty(DATA_MAP_PROPERTY);
             boolean isOptional = (boolean) comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
             //If the DataStore related to the DataField has been modified, reload the dataField values
@@ -224,7 +228,7 @@ public class DataFieldUI implements DataUI{
         }
         else if(source instanceof JList){
             JList<ContainerItem<Object>> list = (JList) source;
-            DataFieldOld dataField = (DataFieldOld) list.getClientProperty(DATA_FIELD_PROPERTY);
+            DataField dataField = (DataField) list.getClientProperty(DATA_FIELD_PROPERTY);
             HashMap<URI, Object> dataMap = (HashMap) list.getClientProperty(DATA_MAP_PROPERTY);
             DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
             //If the DataStore related to the DataField has been modified, reload the dataField values
@@ -285,7 +289,7 @@ public class DataFieldUI implements DataUI{
             JComboBox<ContainerItem<Object>> comboBox = (JComboBox)source;
             if(comboBox.getSelectedItem() != null) {
                 ContainerItem<Object> selectedItem = (ContainerItem<Object>)comboBox.getSelectedItem();
-                DataFieldOld dataField = (DataFieldOld) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
+                DataField dataField = (DataField) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
                 Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
                 URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
                 boolean isOptional = (boolean)comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
@@ -297,8 +301,10 @@ public class DataFieldUI implements DataUI{
                     dataMap.put(uri, selectedItem.getLabel());
                 }
                 //Tells to the fieldValues that the datafield has been modified
-                for (FieldValueOld fieldValue : dataField.getListFieldValue()) {
-                    fieldValue.setDataFieldModified(true);
+                if(dataField.getListFieldValue() != null) {
+                    for (FieldValue fieldValue : dataField.getListFieldValue()) {
+                        fieldValue.setDataFieldModified(true);
+                    }
                 }
             }
         }
@@ -315,7 +321,7 @@ public class DataFieldUI implements DataUI{
                         fieldList += ","+model.getElementAt(i).getLabel();
                     }
                 }
-                DataFieldOld dataField = (DataFieldOld) list.getClientProperty(DATA_FIELD_PROPERTY);
+                DataField dataField = (DataField) list.getClientProperty(DATA_FIELD_PROPERTY);
                 Map<URI, Object> dataMap = (Map<URI, Object>) list.getClientProperty(DATA_MAP_PROPERTY);
                 URI uri = (URI) list.getClientProperty(URI_PROPERTY);
                 boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
@@ -334,7 +340,7 @@ public class DataFieldUI implements DataUI{
      * Populate the given comboBox with the table fields name list.
      * Also display the fields information like if it is spatial or not, the SRID, the dimension ...
      */
-    private List<ContainerItem<Object>> populateWithFields(DataFieldOld dataField, HashMap<URI, Object> dataMap){
+    private List<ContainerItem<Object>> populateWithFields(DataField dataField, HashMap<URI, Object> dataMap){
         //Retrieve the table name list
         List<ContainerItem<Object>> listContainer = new ArrayList<>();
         String tableName = null;

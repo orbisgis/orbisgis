@@ -19,6 +19,7 @@
 
 package org.orbisgis.wpsclient.view.utils.editor.process;
 
+import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
@@ -43,7 +44,7 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
     public static final String STATE_PROPERTY = "STATE_PROPERTY";
     public static final String LOG_PROPERTY = "LOG_PROPERTY";
     public static final String CANCEL = "CANCEL";
-    private Process process;
+    private ProcessDescriptionType process;
     private boolean isOpen;
 
     /** Map of input data (URI of the corresponding input) */
@@ -59,13 +60,13 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
     private ProcessExecutionListener.ProcessState state;
     private long startTime;
 
-    public ProcessEditableElement(Process process){
+    public ProcessEditableElement(ProcessDescriptionType process){
         this.process = process;
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
         this.logMap = new LinkedHashMap<>();
         this.propertyChangeListenerList = new ArrayList<>();
-        this.ID = process.getTitle()+System.currentTimeMillis();
+        this.ID = UUID.randomUUID().toString();
     }
 
     @Override
@@ -132,7 +133,7 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
     }
 
     public String getProcessReference(){
-        return process.getTitle();
+        return process.getTitle().get(0).getValue();
     }
 
     public Map<String, Color> getLogMap(){
@@ -155,7 +156,7 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
         this.outputDataMap = outputDataMap;
     }
 
-    public Process getProcess() {
+    public ProcessDescriptionType getProcess() {
         return process;
     }
     public ProcessExecutionListener.ProcessState getProcessState() {
