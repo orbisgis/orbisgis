@@ -104,7 +104,8 @@ public class ActionAddRow extends AbstractAction {
                 if(UIFactory.showDialog(rowInput)) {
                     if(wpsService != null){
                         //Firs try to retrieve the process corresponding to the process title.
-                        Process p = null;
+                        /** Would be updates later once the WPS client will be fully updated **/
+                        /*Process p = null;
                         for(ProcessIdentifier pi : wpsService.getCapabilities()){
                             if(pi.getProcess().getTitle().equals(PROCESS_TITLE)){
                                 p = pi.getProcess();
@@ -151,7 +152,7 @@ public class ActionAddRow extends AbstractAction {
                         }
                         else{
                             LOGGER.error(I18N.tr("Unable to get the process '{0}' from the WpsService.", PROCESS_TITLE));
-                        }
+                        }*/
                     }
                 }
             } catch (Exception ex) {

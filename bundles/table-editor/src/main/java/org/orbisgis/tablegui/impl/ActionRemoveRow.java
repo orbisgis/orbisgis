@@ -116,7 +116,8 @@ public class ActionRemoveRow extends AbstractAction {
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
             if(response == JOptionPane.YES_OPTION) {
                 if(wpsService != null){
-                    Process p = null;
+                    /** Would be updates later once the WPS client will be fully updated **/
+                    /*Process p = null;
                     for(ProcessIdentifier pi : wpsService.getCapabilities()){
                         if(pi.getProcess().getTitle().equals(PROCESS_TITLE)){
                             p = pi.getProcess();
@@ -166,7 +167,7 @@ public class ActionRemoveRow extends AbstractAction {
                     }
                     else{
                         LOGGER.error(I18N.tr("Unable to get the process '{0}' from the WpsService.", PROCESS_TITLE));
-                    }
+                    }*/
                 }
             }
         }

@@ -231,12 +231,12 @@ public class ProcessManager {
         }
         for(ProcessIdentifier pi : processIdList){
             for(InputDescriptionType input : pi.getProcessDescriptionType().getInput()) {
-                if (URI.create(input.getIdentifier().getValue()).equals(identifier)) {
+                if (input.getIdentifier().getValue().equals(identifier.toString())) {
                     return pi.getProcessDescriptionType();
                 }
             }
             for(OutputDescriptionType output : pi.getProcessDescriptionType().getOutput()) {
-                if (URI.create(output.getIdentifier().getValue()).equals(identifier)) {
+                if (output.getIdentifier().getValue().equals(identifier.toString())) {
                     return pi.getProcessDescriptionType();
                 }
             }
