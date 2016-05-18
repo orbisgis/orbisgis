@@ -45,10 +45,7 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
-import javax.swing.text.Position;
-import javax.swing.text.Segment;
 import javax.swing.text.StringContent;
-import javax.swing.undo.UndoableEdit;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
@@ -70,17 +67,20 @@ public class ExecuteScriptProcess extends SwingWorkerPM {
         private static final int MAX_PRINTED_ROWS = 100;
         private static final int MAX_FIELD_LENGTH = 30;
         private int timeOut =0;
+        private final boolean onlySelected;
+        
         /**
          * @param panel Console panel (Can be null)
          * @param ds DataSource to acquire DBMS Connection
          * @param splitterFactory Sql Parser
          * @param timeOut in seconds to execute the statement
          */
-        public ExecuteScriptProcess(SQLConsolePanel panel, DataSource ds, ScriptSplitterFactory splitterFactory, int timeOut) {
+        public ExecuteScriptProcess(SQLConsolePanel panel, DataSource ds, ScriptSplitterFactory splitterFactory, int timeOut, boolean onlySelected) {
                 this.ds = ds; 
                 this.panel = panel;
                 this.splitterFactory = splitterFactory;
                 this.timeOut=timeOut;
+                this.onlySelected=onlySelected;
                 setTaskName(I18N.tr("Executing script"));
         }
 
@@ -95,11 +95,25 @@ public class ExecuteScriptProcess extends SwingWorkerPM {
                 }
         }
 
+        /**
+         * Parse the script and execute each sql statements.
+         * The script is cloned to avoid user modifications during its execution.
+         * 
+         * @param pm
+         * @param st
+         * @throws SQLException 
+         */
         private void parseAndExecuteScript(ProgressMonitor pm, Statement st) throws SQLException {
             // Clone SQL script
             AbstractDocument.Content sqlScript = new StringContent(panel.getScriptPanel().getDocument().getLength());
             try {
-                sqlScript.insertString(0, panel.getScriptPanel().getText());
+                if (onlySelected) {                    
+                    sqlScript.insertString(0, panel.getScriptPanel().getSelectedText());                    
+                }
+                else{
+                    sqlScript.insertString(0, panel.getScriptPanel().getText());
+                }
+                
             } catch (BadLocationException ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
                 return;
@@ -145,7 +159,14 @@ public class ExecuteScriptProcess extends SwingWorkerPM {
                 if(splitterFactory != null) {
                     parseAndExecuteScript(pm, st);
                 } else {
-                    st.execute(panel.getScriptPanel().getText().trim());
+                    if (onlySelected) {   
+                        String selectedText = panel.getScriptPanel().getSelectedText();
+                        if (selectedText != null) {
+                            st.execute(selectedText.trim());
+                        }
+                    } else {
+                        st.execute(panel.getScriptPanel().getText().trim());
+                    }
                 }
             }
         } catch (SQLException ex) {
