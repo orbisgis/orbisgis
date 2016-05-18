@@ -206,7 +206,12 @@ public class WpsClient implements DockingPanel {
         return new ArrayList<>();
     }
 
-    private List<ProcessOffering> getProcesses(CodeType processIdentifier){
+    /**
+     * Return the list of the ProcessOffering contained by the WpsService corresponding to the given CodeType.
+     * @param processIdentifier CodeType of the processes asked.
+     * @return The list of the ProcessOffering
+     */
+    private List<ProcessOffering> getProcessOffering(CodeType processIdentifier){
         //Sets the describeProcess request
         DescribeProcess describeProcess = new DescribeProcess();
         //Sets the language
@@ -336,14 +341,18 @@ public class WpsClient implements DockingPanel {
      * @return The ProcessEditableElement which contains the running process information (log, state, ...).
      */
     public ProcessEditableElement openProcess(CodeType scriptIdentifier){
-        List<ProcessOffering> listProcess = getProcesses(scriptIdentifier);
+        //Get the list of ProcessOffering
+        List<ProcessOffering> listProcess = getProcessOffering(scriptIdentifier);
         if(listProcess == null || listProcess.isEmpty()){
             LoggerFactory.getLogger(WpsClient.class).warn("Unable to retrieve the process '"+
                     scriptIdentifier.getValue()+".");
             return null;
         }
+        //Get the process
         ProcessDescriptionType process = listProcess.get(0).getProcess();
+        //Link the DataStore with the DataField, with the FieldValue
         link(process);
+        //Open the ProcessEditor
         ProcessEditableElement pee = new ProcessEditableElement(process);
         pe = new ProcessEditor(this, pee);
         //Find if there is already a ProcessEditor open with the same process.
@@ -365,6 +374,11 @@ public class WpsClient implements DockingPanel {
         return pee;
     }
 
+    /**
+     * Link the deiffrents input/output together like the DataStore with its DataFields,
+     * the DataFields with its FieldValues ...
+     * @param p Process to link.
+     */
     private void link(ProcessDescriptionType p){
         //Link the DataField with its DataStore
         for(InputDescriptionType i : p.getInput()){
