@@ -19,12 +19,8 @@
 
 package org.orbisgis.wpsservice.model;
 
-import net.opengis.wps.v_2_0.ComplexDataType;
-import net.opengis.wps.v_2_0.Format;
-import org.jvnet.jaxb2_commons.lang.Equals2;
-import org.jvnet.jaxb2_commons.lang.EqualsStrategy2;
-import org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy;
-import org.jvnet.jaxb2_commons.locator.ObjectLocator;
+import net.opengis.wps._2_0.ComplexDataType;
+import net.opengis.wps._2_0.Format;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -41,7 +37,7 @@ import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "RawData", propOrder = {"isFile", "isDirectory", "multiSelection"})
-public class RawData extends ComplexDataType implements Equals2 {
+public class RawData extends ComplexDataType {
 
     /** True if the RawData can be a file, false otherwise. */
     @XmlAttribute(name = "isFile")
@@ -60,7 +56,7 @@ public class RawData extends ComplexDataType implements Equals2 {
      * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
      */
     public RawData(List<Format> formatList) throws MalformedScriptException {
-        setFormat(formatList);
+        this.format = formatList;
     }
 
     /**
@@ -116,31 +112,5 @@ public class RawData extends ComplexDataType implements Equals2 {
      */
     public void setMultiSelection(boolean multiSelection) {
         this.multiSelection = multiSelection;
-    }
-
-    @Override
-    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
-        if ((object == null)||(this.getClass()!= object.getClass())) {
-            return false;
-        }
-        if (this == object) {
-            return true;
-        }
-        if (!super.equals(thisLocator, thatLocator, object, strategy)) {
-            return false;
-        }
-        final RawData that = ((RawData) object);
-        {
-            if( (this.isDirectory() != that.isDirectory()) ||
-                    (this.isFile() != that.isFile()) ||
-                    (this.multiSelection() != that.multiSelection()) )
-                return false;
-        }
-        return true;
-    }
-
-    public boolean equals(Object object) {
-        final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
-        return equals(null, null, object, strategy);
     }
 }

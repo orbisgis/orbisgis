@@ -20,10 +20,10 @@
 package org.orbisgis.wpsservice.controller.process;
 
 import groovy.lang.GroovyObject;
-import net.opengis.ows.v_2_0.CodeType;
-import net.opengis.wps.v_2_0.InputDescriptionType;
-import net.opengis.wps.v_2_0.OutputDescriptionType;
-import net.opengis.wps.v_2_0.ProcessDescriptionType;
+import net.opengis.ows._2.CodeType;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
+import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsservice.LocalWpsService;
@@ -298,7 +298,7 @@ public class ProcessManager {
      */
     public ProcessIdentifier getProcessIdentifier(CodeType identifier){
         for(ProcessIdentifier pi : processIdList){
-            if(pi.getProcessDescriptionType().getIdentifier().equals(identifier)){
+            if(pi.getProcessDescriptionType().getIdentifier().getValue().equals(identifier.getValue())){
                 return pi;
             }
         }

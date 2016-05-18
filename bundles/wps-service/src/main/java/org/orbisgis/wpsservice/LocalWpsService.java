@@ -29,7 +29,6 @@
 
 package org.orbisgis.wpsservice;
 
-import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.DataType;
 

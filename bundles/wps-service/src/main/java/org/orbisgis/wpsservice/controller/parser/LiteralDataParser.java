@@ -19,9 +19,9 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
-import net.opengis.ows.v_2_0.*;
-import net.opengis.wps.v_2_0.*;
-import net.opengis.wps.v_2_0.LiteralDataType.LiteralDataDomain;
+import net.opengis.ows._2.*;
+import net.opengis.wps._2_0.*;
+import net.opengis.wps._2_0.LiteralDataType.LiteralDataDomain;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.LiteralDataAttribute;
@@ -30,7 +30,6 @@ import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.*;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +68,8 @@ public class LiteralDataParser implements Parser {
 
             rangeType.setSpacing(spacingValue);
             objectList.add(rangeType);
-            allowedValues.setValueOrRange(objectList);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
 
             ValueType valueType = new ValueType();
             valueType.setValue(Integer.toString(0));
@@ -103,7 +103,8 @@ public class LiteralDataParser implements Parser {
 
             rangeType.setSpacing(spacingValue);
             objectList.add(rangeType);
-            allowedValues.setValueOrRange(objectList);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
 
             ValueType valueType = new ValueType();
             valueType.setValue(Double.toString(0));
@@ -148,7 +149,8 @@ public class LiteralDataParser implements Parser {
             ValueType falseValue = new ValueType();
             falseValue.setValue(Boolean.toString(false));
             objectList.add(falseValue);
-            allowedValues.setValueOrRange(objectList);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
             //Adds the allowed values to the literal data domain
             literalDataDomain.setAllowedValues(allowedValues);
             //Sets the default value
@@ -183,7 +185,8 @@ public class LiteralDataParser implements Parser {
 
             rangeType.setSpacing(spacingValue);
             objectList.add(rangeType);
-            allowedValues.setValueOrRange(objectList);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
 
             ValueType valueType = new ValueType();
             valueType.setValue(Integer.toString(0));
@@ -217,7 +220,8 @@ public class LiteralDataParser implements Parser {
 
             rangeType.setSpacing(spacingValue);
             objectList.add(rangeType);
-            allowedValues.setValueOrRange(objectList);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
 
             ValueType valueType = new ValueType();
             valueType.setValue(Float.toString(0));
@@ -251,7 +255,8 @@ public class LiteralDataParser implements Parser {
 
             rangeType.setSpacing(spacingValue);
             objectList.add(rangeType);
-            allowedValues.setValueOrRange(objectList);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
 
             ValueType valueType = new ValueType();
             valueType.setValue(Long.toString(0));
@@ -285,7 +290,8 @@ public class LiteralDataParser implements Parser {
 
             rangeType.setSpacing(spacingValue);
             objectList.add(rangeType);
-            allowedValues.setValueOrRange(objectList);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
 
             ValueType valueType = new ValueType();
             valueType.setValue(Integer.toString(0));
@@ -319,7 +325,8 @@ public class LiteralDataParser implements Parser {
 
             rangeType.setSpacing(spacingValue);
             objectList.add(rangeType);
-            allowedValues.setValueOrRange(objectList);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
 
             ValueType valueType = new ValueType();
             valueType.setValue(Integer.toString(0));
@@ -344,8 +351,7 @@ public class LiteralDataParser implements Parser {
     public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
         InputDescriptionType input = new InputDescriptionType();
         LiteralDataType data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
-        QName qname = new QName("http://orbisgis.org", "enumeration");
-        JAXBElement<LiteralDataType> jaxbElement = new JAXBElement<>(qname, LiteralDataType.class, data);
+        JAXBElement<LiteralDataType> jaxbElement = new net.opengis.wps._2_0.ObjectFactory().createLiteralData(data);
         input.setDataDescription(jaxbElement);
         //Instantiate the returned input
 
@@ -355,7 +361,8 @@ public class LiteralDataParser implements Parser {
         if(data.getLiteralDataDomain().isEmpty()){
             List<LiteralDataDomain> list = new ArrayList<>();
             list.add(getLiteralDataDomain(f, defaultValue));
-            data.setLiteralDataDomain(list);
+            data.getLiteralDataDomain().clear();
+            data.getLiteralDataDomain().addAll(list);
         }
         return input;
     }
@@ -364,8 +371,7 @@ public class LiteralDataParser implements Parser {
     public OutputDescriptionType parseOutput(Field f, String processId) {
         OutputDescriptionType output = new OutputDescriptionType();
         LiteralDataType data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
-        QName qname = new QName("http://orbisgis.org", "enumeration");
-        JAXBElement<LiteralDataType> jaxbElement = new JAXBElement<>(qname, LiteralDataType.class, data);
+        JAXBElement<LiteralDataType> jaxbElement = new net.opengis.wps._2_0.ObjectFactory().createLiteralData(data);
         output.setDataDescription(jaxbElement);
         //Instantiate the returned input
 
@@ -374,7 +380,8 @@ public class LiteralDataParser implements Parser {
         if(data.getLiteralDataDomain().isEmpty()){
             List<LiteralDataDomain> list = new ArrayList<>();
             list.add(getLiteralDataDomain(f, null));
-            data.setLiteralDataDomain(list);
+            data.getLiteralDataDomain().clear();
+            data.getLiteralDataDomain().addAll(list);
         }
         return output;
     }

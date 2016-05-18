@@ -19,11 +19,11 @@
 
 package org.orbisgis.wpsservice;
 
-import net.opengis.ows.v_2_0.*;
-import net.opengis.wps.v_2_0.*;
-import net.opengis.wps.v_2_0.GetCapabilitiesType;
-import net.opengis.wps.v_2_0.DescriptionType;
-import net.opengis.wps.v_2_0.ObjectFactory;
+import net.opengis.ows._2.*;
+import net.opengis.wps._2_0.*;
+import net.opengis.wps._2_0.GetCapabilitiesType;
+import net.opengis.wps._2_0.DescriptionType;
+import net.opengis.wps._2_0.ObjectFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.h2gis.h2spatialapi.DriverFunction;
@@ -80,20 +80,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
 
-    private static final String WPS_VERSION = "2.0.0";
-    private static final String WPS = "WPS";
-    private static final String LANG = "en";
-    private static final String SERVICE_TITLE = "OrbisGIS Local WPS";
-    private static final String SERVICE_ABSTRACT = "OrbisGIS local instance of the WPS Service";
-    private static final String ORBISGIS = "ORBISGIS";
-    private static final String ORBISGIS_WEBSITE = "http://orbisgis.org/";
-    private static final String ORBISGIS_INFO_MAIL = "info@orbisgis.org";
-    private static final String OPERATION_GETCAPABILITIES = "GetCapabilities";
-    private static final String OPERATION_DESCRIBEPROCESS = "DescribeProcess";
-    private static final String OPERATION_EXECUTE = "Execute";
-    private static final String OPERATION_GETSTATUS = "GetStatus";
-    private static final String OPERATION_GETRESULT = "GetResult";
-    private static final String OPERATION_DISMISS = "Dismiss";
     private static final String OPTION_SYNC_EXEC = "sync-execute";
     private static final String OPTION_ASYNC_EXEC = "async-execute";
     /**Array of the table type accepted. */
@@ -127,48 +113,35 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
      * It is used as a buffer to avoid to reload all the table list to save time.
      */
     private List<Map<String, String>> tableList;
-    /** Map containg the WPS Jobs and their UUID */
+    /** Map containing the WPS Jobs and their UUID */
     private Map<UUID, Job> jobMap;
 
+    /** Basic WpsCapabilitiesType object of the Wps Service.
+     * It contains all the basics information about the service excepts the Contents (list of available processes)*/
+    private WPSCapabilitiesType basicCapabilities;
+    /** List of the jobControlOption avaliable (like ASYNC_EXECUTE, SYNC_EXECUTE) */
+    private List<String> jobControlOptions;
+    /** JAXB object factory for the WPS objects. */
+    private static final ObjectFactory wpsObjectFactory = new ObjectFactory();
+
+    /**
+     * Initialization of the LocalWpsServiceImplementation required by OSGI.
+     */
     @Activate
     public void init(){
+        initWpsService();
         processManager = new ProcessManager(dataSourceService, this);
         dataProcessingManager = new DataProcessingManager(this);
+        cancelLoadMap = new HashMap<>();
+        jobMap = new HashMap<>();
         setScriptFolder();
         loadPreviousState();
-
-        //Find if the database used is H2 or not.
-        //If yes, make all the processes wait for the previous one.
-        multiThreaded = testDBForMultiProcess();
-        if(!multiThreaded){
-            if(isH2) {
-                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, because of the H2 configuration," +
-                        " the toolbox won't be able to run more than one process at the same time.\n" +
-                        "Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000;" +
-                        " MULTI_THREADED=TRUE'");
-            }
-            else{
-                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, because of the database configuration," +
-                        " the toolbox won't be able to run more than one process at the same time.");
-            }
-        }
-        cancelLoadMap = new HashMap<>();
-        //Install database listeners
-        dataManager.addDatabaseProgressionListener(this, StateEvent.DB_STATES.STATE_STATEMENT_END);
-        //Call readDatabase when a SourceManager fire an event
-        onDataManagerChange();
-        jobMap = new HashMap<>();
+        initDataBaseLink();
     }
 
     /**
-     * Init method only used for the tests.
+     * Dispose of the LocalWpsServiceImplementation required by OSGI.
      */
-    public void initTest(){
-        processManager = new ProcessManager(dataSourceService, this);
-        dataProcessingManager = new DataProcessingManager(this);
-        jobMap = new HashMap<>();
-    }
-
     @Deactivate
     public void dispose(){
         //Try to save the local files loaded.
@@ -182,7 +155,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to save ToolBox state.");
         }
     }
-
 
     @Reference
     public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
@@ -225,61 +197,158 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     /**
+     * Initialize all the mechanism using the database
+     */
+    private void initDataBaseLink(){
+        if(dataManager != null) {
+            //Find if the database used is H2 or not.
+            //If yes, make all the processes wait for the previous one.
+            multiThreaded = testDBForMultiProcess();
+            if (!multiThreaded) {
+                if (isH2) {
+                    LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, because of the H2 configuration," +
+                            " the toolbox won't be able to run more than one process at the same time.\n" +
+                            "Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000;" +
+                            " MULTI_THREADED=TRUE'");
+                } else {
+                    LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, because of the database configuration," +
+                            " the toolbox won't be able to run more than one process at the same time.");
+                }
+            }
+            //Install database listeners
+            dataManager.addDatabaseProgressionListener(this, StateEvent.DB_STATES.STATE_STATEMENT_END);
+            //Call readDatabase when a SourceManager fire an event
+            onDataManagerChange();
+        }
+        else{
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, no DataManager found.");
+        }
+    }
+
+    /**
+     * Initialize everything about the Wps Service
+     * Generates the basic WPSCapabilitiesType of the WpsService from a resource file
+     */
+    private void initWpsService(){
+        //Get the basic WpsCapabilitiesType from the WpsServiceBasicCapabilities.xml file
+        Unmarshaller unmarshaller = null;
+        WPSCapabilitiesType capabilitiesType = null;
+        try {
+            unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+            File executeFile = new File(this.getClass().getResource("WpsServiceBasicCapabilities.xml").getFile());
+            Object unmarshalledObject = unmarshaller.unmarshal(executeFile);
+            if(unmarshalledObject instanceof JAXBElement) {
+                Object value = ((JAXBElement)unmarshalledObject).getValue();
+                if(value instanceof WPSCapabilitiesType){
+                    capabilitiesType = (WPSCapabilitiesType)value;
+                }
+            }
+        } catch (JAXBException e) {
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class)
+                    .error("Error on using the unmarshaller.\n"+e.getMessage());
+        }
+        if(unmarshaller != null && capabilitiesType != null){
+            basicCapabilities = capabilitiesType;
+        }
+        else{
+            basicCapabilities = wpsObjectFactory.createWPSCapabilitiesType();
+        }
+
+        //Generate the jobControlOption list
+        jobControlOptions = new ArrayList<>();
+        jobControlOptions.add(OPTION_ASYNC_EXEC);
+    }
+
+    /**
      * Sets all the default OrbisGIS WPS script into the script folder of the .OrbisGIS folder.
      */
     private void setScriptFolder(){
-        //Sets the WPS script folder
-        File wpsScriptFolder = new File(coreWorkspace.getApplicationFolder(), WPS_SCRIPT_FOLDER);
-        //Empty the script folder or create it
-        if(wpsScriptFolder.exists()){
-            if(wpsScriptFolder.listFiles() != null) {
-                List<File> toDelete = Arrays.asList(wpsScriptFolder.listFiles());
-                for(File f : toDelete){
-                    f.delete();
+        if(coreWorkspace != null) {
+            //Sets the WPS script folder
+            File wpsScriptFolder = new File(coreWorkspace.getApplicationFolder(), WPS_SCRIPT_FOLDER);
+            //Empty the script folder or create it
+            if (wpsScriptFolder.exists()) {
+                if (wpsScriptFolder.listFiles() != null) {
+                    List<File> toDelete = Arrays.asList(wpsScriptFolder.listFiles());
+                    for (File f : toDelete) {
+                        f.delete();
+                    }
+                }
+            } else {
+                if (!wpsScriptFolder.mkdir()) {
+                    LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to find or create a script folder.\n" +
+                            "No basic script will be available.");
+                }
+            }
+            if (wpsScriptFolder.exists() && wpsScriptFolder.isDirectory()) {
+                try {
+                    //Retrieve all the scripts url
+                    String folderPath = LocalWpsServiceImplementation.class.getResource("scripts").getFile();
+                    Enumeration<URL> enumUrl = FrameworkUtil.getBundle(LocalWpsServiceImplementation.class).findEntries(folderPath, "*", false);
+                    //For each url
+                    while (enumUrl.hasMoreElements()) {
+                        URL scriptUrl = enumUrl.nextElement();
+                        String scriptPath = scriptUrl.getFile();
+                        //Test if it's a groovy file
+                        if (scriptPath.endsWith("." + GROOVY_EXTENSION)) {
+                            //If the script is already in the .OrbisGIS folder, remove it.
+                            for (File existingFile : wpsScriptFolder.listFiles()) {
+                                if (existingFile.getName().endsWith(scriptPath) && existingFile.delete()) {
+                                    LoggerFactory.getLogger(LocalWpsServiceImplementation.class).
+                                            warn("Replacing script " + existingFile.getName() + " by the default one");
+                                }
+                            }
+                            //Copy the script into the .OrbisGIS folder.
+                            OutputStream out = new FileOutputStream(
+                                    new File(wpsScriptFolder.getAbsolutePath(),
+                                            new File(scriptPath).getName()));
+                            InputStream in = scriptUrl.openStream();
+                            IOUtils.copy(in, out);
+                            out.close();
+                            in.close();
+                        }
+                    }
+                    addLocalSource(wpsScriptFolder.toURI(), "orbisgis", true);
+                } catch (IOException e) {
+                    LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to copy the scripts. \n" +
+                            "No basic script will be available. \n" +
+                            "Error : " + e.getMessage());
                 }
             }
         }
         else{
-            if(!wpsScriptFolder.mkdir()){
-                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to find or create a script folder.\n" +
-                        "No basic script will be available.");
-            }
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, no CoreWorkspace found.");
         }
-        if(wpsScriptFolder.exists() && wpsScriptFolder.isDirectory()){
-            try {
-                //Retrieve all the scripts url
-                String folderPath = LocalWpsServiceImplementation.class.getResource("scripts").getFile();
-                Enumeration<URL> enumUrl = FrameworkUtil.getBundle(LocalWpsServiceImplementation.class).findEntries(folderPath, "*", false);
-                //For each url
-                while(enumUrl.hasMoreElements()){
-                    URL scriptUrl = enumUrl.nextElement();
-                    String scriptPath = scriptUrl.getFile();
-                    //Test if it's a groovy file
-                    if(scriptPath.endsWith("."+GROOVY_EXTENSION)){
-                        //If the script is already in the .OrbisGIS folder, remove it.
-                        for(File existingFile : wpsScriptFolder.listFiles()){
-                            if(existingFile.getName().endsWith(scriptPath) && existingFile.delete()){
-                                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).
-                                        warn("Replacing script "+existingFile.getName()+" by the default one");
-                            }
-                        }
-                        //Copy the script into the .OrbisGIS folder.
-                        OutputStream out = new FileOutputStream(
-                                new File(wpsScriptFolder.getAbsolutePath(),
-                                        new File(scriptPath).getName()));
-                        InputStream in = scriptUrl.openStream();
-                        IOUtils.copy(in, out);
-                        out.close();
-                        in.close();
+    }
+
+    /**
+     * Reload the script loaded in the previous session.
+     */
+    private void loadPreviousState(){
+        if(coreWorkspace != null) {
+            Properties tbProperties = new Properties();
+            File propertiesFile = new File(coreWorkspace.getWorkspaceFolder() + File.separator + TOOLBOX_PROPERTIES);
+            if (propertiesFile.exists()) {
+                try {
+                    tbProperties.load(new FileInputStream(propertiesFile));
+                } catch (IOException e) {
+                    LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to restore previous configuration of the ToolBox");
+                    tbProperties = null;
+                }
+            }
+            if(tbProperties != null){
+                Object prop = tbProperties.getProperty(PROPERTY_SOURCES);
+                if(prop != null && !prop.toString().isEmpty()){
+                    String str = prop.toString();
+                    for(String s : str.split(";")){
+                        addLocalScript(new File(URI.create(s)), null, false);
                     }
                 }
-            } catch (IOException e) {
-                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to copy the scripts. \n" +
-                        "No basic script will be available. \n" +
-                        "Error : "+e.getMessage());
             }
         }
-        addLocalSource(wpsScriptFolder.toURI(), "orbisgis", true);
+        else{
+            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, no CoreWorkspace found.");
+        }
     }
 
     public void addLocalSource(URI uri, String iconName, boolean isDefaultScript){
@@ -296,6 +365,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         return processManager.getProcessIdentifierFromParent(parent);
     }
 
+    @Deprecated
     public List<ProcessIdentifier> getCapabilities(){
         return processManager.getAllProcessIdentifier();
     }
@@ -348,135 +418,13 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     @Override
     public WPSCapabilitiesType getCapabilities(GetCapabilitiesType getCapabilities) {
         WPSCapabilitiesType capabilitiesType = new WPSCapabilitiesType();
-        capabilitiesType.setVersion(WPS_VERSION);
-
-        /** Sets the ServiceIdentification **/
-        ServiceIdentification serviceIdentification = new ServiceIdentification();
-
-        //ServiceIdentification title
-        List<LanguageStringType> titleStringTypeList = new ArrayList<>();
-        //EN title language string type
-        LanguageStringType enLanguageTitle = new LanguageStringType();
-        enLanguageTitle.setLang("en");
-        enLanguageTitle.setValue(SERVICE_TITLE);
-        titleStringTypeList.add(enLanguageTitle);
-        serviceIdentification.setTitle(titleStringTypeList);
-
-        //ServiceIdentification abstract
-        List<LanguageStringType> abstractStringTypeList = new ArrayList<>();
-        //EN abstract language string type
-        LanguageStringType enLanguageAbstract = new LanguageStringType();
-        enLanguageAbstract.setLang(LANG);
-        enLanguageAbstract.setValue(SERVICE_ABSTRACT);
-        abstractStringTypeList.add(enLanguageAbstract);
-        serviceIdentification.setAbstract(abstractStringTypeList);
-
-        //ServiceIdentification keywords
-        List<KeywordsType> keywordList = new ArrayList<>();
-        //'toolbox' keyword
-
-        KeywordsType toolboxKeyword = new KeywordsType();
-        List<LanguageStringType> toolboxKeywordStringTypeList = new ArrayList<>();
-        LanguageStringType toolboxEnKeyword = new LanguageStringType();
-        toolboxEnKeyword.setLang(LANG);
-        toolboxEnKeyword.setValue("Toolbox");
-        toolboxKeywordStringTypeList.add(toolboxEnKeyword);
-        toolboxKeyword.setKeyword(toolboxKeywordStringTypeList);
-        keywordList.add(toolboxKeyword);
-        //'WPS' keyword
-        KeywordsType wpsKeyword = new KeywordsType();
-        List<LanguageStringType> wpsKeywordStringTypeList = new ArrayList<>();
-        wpsKeywordStringTypeList = new ArrayList<>();
-        LanguageStringType wpsEnKeyword = new LanguageStringType();
-        wpsEnKeyword.setLang(LANG);
-        wpsEnKeyword.setValue("WPS");
-        wpsKeywordStringTypeList.add(wpsEnKeyword);
-        wpsKeyword.setKeyword(wpsKeywordStringTypeList);
-        keywordList.add(wpsKeyword);
-        //'OrbisGIS' keyword
-        KeywordsType orbisgisKeyword = new KeywordsType();
-        List<LanguageStringType> orbisgisKeywordStringTypeList = new ArrayList<>();
-        orbisgisKeywordStringTypeList = new ArrayList<>();
-        LanguageStringType orbisgisEnKeyword = new LanguageStringType();
-        orbisgisEnKeyword.setLang(LANG);
-        orbisgisEnKeyword.setValue("OrbisGIS");
-        orbisgisKeywordStringTypeList.add(orbisgisEnKeyword);
-        orbisgisKeyword.setKeyword(orbisgisKeywordStringTypeList);
-        keywordList.add(orbisgisKeyword);
-        serviceIdentification.setKeywords(keywordList);
-
-        //ServiceIdentification ServiceType
-        CodeType serviceCodeType = new CodeType();
-        serviceCodeType.setValue(WPS);
-        serviceIdentification.setServiceType(serviceCodeType);
-
-        //ServiceIdentification ServiceTypeVersion
-        List<String> serviceTypeVersionList = new ArrayList<>();
-        serviceTypeVersionList.add(WPS_VERSION);
-        serviceIdentification.setServiceTypeVersion(serviceTypeVersionList);
-
-        capabilitiesType.setServiceIdentification(serviceIdentification);
-
-        /** Sets the ServiceProvider **/
-        ServiceProvider serviceProvider = new ServiceProvider();
-        serviceProvider.setProviderName(ORBISGIS);
-        OnlineResourceType onlineResourceType = new OnlineResourceType();
-        onlineResourceType.setHref(ORBISGIS_WEBSITE);
-        serviceProvider.setProviderSite(onlineResourceType);
-        ResponsiblePartySubsetType responsiblePartySubsetType = new ResponsiblePartySubsetType();
-        ContactType contactType = new ContactType();
-        AddressType addressType = new AddressType();
-        List<String> mailAddressList = new ArrayList<>();
-        mailAddressList.add(ORBISGIS_INFO_MAIL);
-        addressType.setElectronicMailAddress(mailAddressList);
-        contactType.setAddress(addressType);
-        responsiblePartySubsetType.setContactInfo(contactType);
-        serviceProvider.setServiceContact(responsiblePartySubsetType);
-        capabilitiesType.setServiceProvider(serviceProvider);
-
-
-        /** Sets the OperationMetadata **/
-        List<DCP> dcpList = new ArrayList<>();
-        DCP dcp = new DCP();
-        HTTP http = new HTTP();
-        net.opengis.ows.v_2_0.ObjectFactory factory = new net.opengis.ows.v_2_0.ObjectFactory();
-        List<JAXBElement<RequestMethodType>> list = new ArrayList<>();
-        RequestMethodType get = factory.createRequestMethodType();
-        get.setHref("http://orbisgis.org/wps");
-        JAXBElement<RequestMethodType> getElement = factory.createHTTPGet(get);
-        list.add(getElement);
-        RequestMethodType post = factory.createRequestMethodType();
-        post.setHref("http://orbisgis.org/wps");
-        JAXBElement<RequestMethodType> postElement = factory.createHTTPPost(post);
-        list.add(postElement);
-        http.setGetOrPost(list);
-        dcp.setHTTP(http);
-        dcpList.add(dcp);
-
-        OperationsMetadata operationsMetadata = new OperationsMetadata();
-        List<Operation> operationList = new ArrayList<>();
-        Operation getCapaOperation = new Operation();
-        getCapaOperation.setName(OPERATION_GETCAPABILITIES);
-        getCapaOperation.setDCP(dcpList);
-        operationList.add(getCapaOperation);
-        Operation describeOperation = new Operation();
-        describeOperation.setName(OPERATION_DESCRIBEPROCESS);
-        describeOperation.setDCP(dcpList);
-        operationList.add(describeOperation);
-        Operation executeOperation = new Operation();
-        executeOperation.setName(OPERATION_EXECUTE);
-        executeOperation.setDCP(dcpList);
-        operationList.add(executeOperation);
-        Operation getStatusOperation = new Operation();
-        getStatusOperation.setName(OPERATION_GETSTATUS);
-        getStatusOperation.setDCP(dcpList);
-        operationList.add(getStatusOperation);
-        Operation getResultOperation = new Operation();
-        getResultOperation.setName(OPERATION_GETRESULT);
-        getResultOperation.setDCP(dcpList);
-        operationList.add(getResultOperation);
-        operationsMetadata.setOperation(operationList);
-        capabilitiesType.setOperationsMetadata(operationsMetadata);
+        capabilitiesType.setExtension(basicCapabilities.getExtension());
+        capabilitiesType.setLanguages(basicCapabilities.getLanguages());
+        capabilitiesType.setOperationsMetadata(basicCapabilities.getOperationsMetadata());
+        capabilitiesType.setServiceIdentification(basicCapabilities.getServiceIdentification());
+        capabilitiesType.setServiceProvider(basicCapabilities.getServiceProvider());
+        capabilitiesType.setUpdateSequence(basicCapabilities.getUpdateSequence());
+        capabilitiesType.setVersion(basicCapabilities.getVersion());
 
         /** Sets the Contents **/
         Contents contents = new Contents();
@@ -484,25 +432,24 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         List<ProcessDescriptionType> processList = getProcessList();
         for(ProcessDescriptionType process : processList) {
             ProcessSummaryType processSummaryType = new ProcessSummaryType();
-            List<String> options = new ArrayList<>();
-            options.add(OPTION_ASYNC_EXEC);
-            processSummaryType.setJobControlOptions(options);
-            processSummaryType.setAbstract(process.getAbstract());
+            processSummaryType.getJobControlOptions().clear();
+            processSummaryType.getJobControlOptions().addAll(jobControlOptions);
+            processSummaryType.getAbstract().clear();
+            processSummaryType.getAbstract().addAll(process.getAbstract());
             processSummaryType.setIdentifier(process.getIdentifier());
-            processSummaryType.setKeywords(process.getKeywords());
-            processSummaryType.setMetadata(process.getMetadata());
-            processSummaryType.setTitle(process.getTitle());
+            processSummaryType.getKeywords().clear();
+            processSummaryType.getKeywords().addAll(process.getKeywords());
+            processSummaryType.getMetadata().clear();
+            processSummaryType.getMetadata().addAll(process.getMetadata());
+            processSummaryType.getTitle().clear();
+            processSummaryType.getTitle().addAll(process.getTitle());
 
             processSummaryTypeList.add(processSummaryType);
         }
-        contents.setProcessSummary(processSummaryTypeList);
+        contents.getProcessSummary().clear();
+        contents.getProcessSummary().addAll(processSummaryTypeList);
         capabilitiesType.setContents(contents);
-        /** Sets the UpdateSequence **/
-        //No UpdateSequence
-        //capabilitiesType.setUpdateSequence();
-        /** Sets the Extension **/
-        //No Extension
-        //capabilitiesType.setExtension();
+
         return capabilitiesType;
     }
 
@@ -514,19 +461,19 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         List<ProcessOffering> processOfferingList = new ArrayList<>();
         for(CodeType id : idList) {
             ProcessOffering processOffering = new ProcessOffering();
-            List<String> jobOption = new ArrayList<>();
-            jobOption.add(OPTION_ASYNC_EXEC);
-            jobOption.add(OPTION_SYNC_EXEC);
-            processOffering.setJobControlOptions(jobOption);
+            processOffering.getJobControlOptions().clear();
+            processOffering.getJobControlOptions().addAll(jobControlOptions);
             //Get the translated process and add it to the ProcessOffering
             ProcessDescriptionType process = getProcessFromIdentifier(id);
             List<DataTransmissionModeType> listTransmission = new ArrayList<>();
             listTransmission.add(DataTransmissionModeType.VALUE);
-            processOffering.setOutputTransmission(listTransmission);
+            processOffering.getOutputTransmission().clear();
+            processOffering.getOutputTransmission().addAll(listTransmission);
             processOffering.setProcess(getTranslatedProcess(process, describeProcess.getLang()));
             processOfferingList.add(processOffering);
         }
-        processOfferings.setProcessOffering(processOfferingList);
+        processOfferings.getProcessOffering().clear();
+        processOfferings.getProcessOffering().addAll(processOfferingList);
         return processOfferings;
     }
 
@@ -590,6 +537,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     public Result getResult(GetResult getResult) {
         Result result = new Result();
         //generate the XMLGregorianCalendar Object to put in the Result Object
+        //TODO make the service be able to set the expiration date
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(new Date());
         XMLGregorianCalendar date = null;
@@ -624,12 +572,14 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 //TODO make the difference between the different data type from the map.
                 List<Serializable> serializableList = new ArrayList<>();
                 serializableList.add(entry.getValue().toString());
-                data.setContent(serializableList);
+                data.getContent().clear();
+                data.getContent().addAll(serializableList);
                 output.setData(data);
                 listOutput.add(output);
             }
         }
-        result.setOutput(listOutput);
+        result.getOutput().clear();
+        result.getOutput().addAll(listOutput);
         return result;
     }
 
@@ -961,29 +911,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         return isH2;
     }
 
-
-    private void loadPreviousState(){
-        Properties tbProperties = new Properties();
-        File propertiesFile = new File(coreWorkspace.getWorkspaceFolder() + File.separator + TOOLBOX_PROPERTIES);
-        if (propertiesFile.exists()) {
-            try {
-                tbProperties.load(new FileInputStream(propertiesFile));
-            } catch (IOException e) {
-                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to restore previous configuration of the ToolBox");
-                tbProperties = null;
-            }
-        }
-        if(tbProperties != null){
-            Object prop = tbProperties.getProperty(PROPERTY_SOURCES);
-            if(prop != null && !prop.toString().isEmpty()){
-                String str = prop.toString();
-                for(String s : str.split(";")){
-                    addLocalScript(new File(URI.create(s)), null, false);
-                }
-            }
-        }
-    }
-
     private boolean testDBForMultiProcess(){
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             if(dataManager != null){
@@ -1195,7 +1122,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             translateDescriptionType(translatedInput, input, language);
             inputList.add(translatedInput);
         }
-        translatedProcess.setInput(inputList);
+        translatedProcess.getInput().clear();
+        translatedProcess.getInput().addAll(inputList);
         List<OutputDescriptionType> outputList = new ArrayList<>();
         for(OutputDescriptionType output : process.getOutput()){
             OutputDescriptionType translatedOutput = new OutputDescriptionType();
@@ -1203,7 +1131,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             translateDescriptionType(translatedOutput, output, language);
             outputList.add(translatedOutput);
         }
-        translatedProcess.setOutput(outputList);
+        translatedProcess.getOutput().clear();
+        translatedProcess.getOutput().addAll(outputList);
         translateDescriptionType(translatedProcess, process, language);
         return translatedProcess;
     }
@@ -1219,7 +1148,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     private void translateDescriptionType(DescriptionType translatedDescriptionType, DescriptionType descriptionType, String language){
         String enLanguage = "en";
         translatedDescriptionType.setIdentifier(descriptionType.getIdentifier());
-        translatedDescriptionType.setMetadata(descriptionType.getMetadata());
+        translatedDescriptionType.getMetadata().clear();
+        translatedDescriptionType.getMetadata().addAll(descriptionType.getMetadata());
         //Find the good abstract
         LanguageStringType translatedAbstract = new LanguageStringType();
         boolean defaultAbstrFound = false;
@@ -1238,7 +1168,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         }
         List<LanguageStringType> abstrList = new ArrayList<>();
         abstrList.add(translatedAbstract);
-        translatedDescriptionType.setAbstract(abstrList);
+        translatedDescriptionType.getAbstract().clear();
+        translatedDescriptionType.getAbstract().addAll(abstrList);
         //Find the good title
         LanguageStringType translatedTitle = new LanguageStringType();
         boolean defaultTitleFound = false;
@@ -1257,7 +1188,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         }
         List<LanguageStringType> titleList = new ArrayList<>();
         titleList.add(translatedTitle);
-        translatedDescriptionType.setTitle(titleList);
+        translatedDescriptionType.getTitle().clear();
+        translatedDescriptionType.getTitle().addAll(titleList);
         //Find the good keywords
         List<KeywordsType> keywordsList = new ArrayList<>();
         KeywordsType translatedKeywords = new KeywordsType();
@@ -1278,8 +1210,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             }
             keywordList.add(translatedKeyword);
         }
-        translatedKeywords.setKeyword(keywordList);
+        translatedKeywords.getKeyword().clear();
+        translatedKeywords.getKeyword().addAll(keywordList);
         keywordsList.add(translatedKeywords);
-        translatedDescriptionType.setKeywords(keywordsList);
+        translatedDescriptionType.getKeywords().clear();
+        translatedDescriptionType.getKeywords().addAll(keywordsList);
     }
 }

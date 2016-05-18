@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservice.controller.utils;
 
-import net.opengis.wps.v_2_0.ProcessDescriptionType;
+import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.ProcessAttribute;

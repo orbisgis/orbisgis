@@ -1,7 +1,6 @@
 package org.orbisgis.wpsservice.controller.utils;
 
-import net.opengis.ows.v_2_0.MetadataType;
-import org.hisrc.w3c.xlink.v_1_0.TypeType;
+import net.opengis.ows._2.MetadataType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute;
@@ -64,7 +63,6 @@ public class MetadataConvertTest {
             toTest.setHref("href");
             toTest.setRole("role");
             toTest.setTitle("title");
-            toTest.setTYPE(TypeType.SIMPLE);
 
 
             ////////////////////////////////
@@ -88,12 +86,6 @@ public class MetadataConvertTest {
                     metadata.getTitle() + " instead of " + toTest.getTitle();
             boolean conditionTitle = metadata.getTitle().equals(toTest.getTitle());
             Assert.assertTrue(messageTitle, conditionTitle);
-
-            //Test the TYPE
-            String messageTYPE = "The TYPE value is not the one expected (" +
-                    metadata.getTYPE() + " instead of " + toTest.getTYPE();
-            boolean conditionTYPE = metadata.getTYPE().equals(toTest.getTYPE());
-            Assert.assertTrue(messageTYPE, conditionTYPE);
 
 
         } catch (NoSuchFieldException e) {
@@ -151,7 +143,6 @@ public class MetadataConvertTest {
             toTest.setHref("href");
             toTest.setRole("role");
             toTest.setTitle("title");
-            toTest.setTYPE(TypeType.SIMPLE);
 
 
             ////////////////////////////////
@@ -175,12 +166,6 @@ public class MetadataConvertTest {
                     metadata.getTitle() + " instead of " + toTest.getTitle();
             boolean conditionTitle = metadata.getTitle().equals(toTest.getTitle());
             Assert.assertTrue(messageTitle, conditionTitle);
-
-            //Test the TYPE
-            String messageTYPE = "The TYPE value is not the one expected (" +
-                    metadata.getTYPE() + " instead of " + toTest.getTYPE();
-            boolean conditionTYPE = metadata.getTYPE().equals(toTest.getTYPE());
-            Assert.assertTrue(messageTYPE, conditionTYPE);
 
 
         } catch (NoSuchFieldException e) {

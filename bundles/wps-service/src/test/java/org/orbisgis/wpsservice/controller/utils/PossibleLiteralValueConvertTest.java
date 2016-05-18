@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservice.controller.utils;
 
-import net.opengis.ows.v_2_0.*;
+import net.opengis.ows._2.*;
 import net.opengis.wfs._2_1.PropertyType;
 import org.junit.Assert;
 import org.junit.Test;

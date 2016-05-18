@@ -1,7 +1,7 @@
 package org.orbisgis.wpsservice.controller.utils;
 
-import net.opengis.ows.v_2_0.RangeType;
-import net.opengis.ows.v_2_0.ValueType;
+import net.opengis.ows._2.RangeType;
+import net.opengis.ows._2.ValueType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.*;

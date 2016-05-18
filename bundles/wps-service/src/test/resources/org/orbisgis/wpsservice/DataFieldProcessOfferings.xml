@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns3:ProcessOfferings xmlns:ns1="http://www.opengis.net/ows/2.0" xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:ns3="http://www.opengis.net/wps/2.0" xmlns:ns5="http://orbisgis.org">
-    <ns3:ProcessOffering jobControlOptions="async-execute sync-execute" outputTransmission="value">
+    <ns3:ProcessOffering jobControlOptions="async-execute" outputTransmission="value">
         <ns3:Process xml:lang="fr">
             <ns1:Title xml:lang="fr">Test du DataField</ns1:Title>
             <ns1:Abstract xml:lang="fr">Scripts test pour l'usage du DataField DataField.</ns1:Abstract>

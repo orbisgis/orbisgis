@@ -19,12 +19,8 @@
 
 package org.orbisgis.wpsservice.model;
 
-import net.opengis.wps.v_2_0.ComplexDataType;
-import net.opengis.wps.v_2_0.Format;
-import org.jvnet.jaxb2_commons.lang.Equals2;
-import org.jvnet.jaxb2_commons.lang.EqualsStrategy2;
-import org.jvnet.jaxb2_commons.lang.JAXBEqualsStrategy;
-import org.jvnet.jaxb2_commons.locator.ObjectLocator;
+import net.opengis.wps._2_0.ComplexDataType;
+import net.opengis.wps._2_0.Format;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -40,7 +36,7 @@ import java.util.List;
  **/
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DataStore", propOrder = {"isSpatial", "isGeocatalog", "isFile", "isDataBase", "listDataField", "isAutoImport"})
-public class DataStore extends ComplexDataType implements Equals2 {
+public class DataStore extends ComplexDataType {
     /**DataStore types.*/
     public static final String DATASTORE_TYPE_GEOCATALOG = "DATASTORE_TYPE_GEOCATALOG";
     public static final String DATASTORE_TYPE_FILE = "DATASTORE_TYPE_FILE";
@@ -70,7 +66,7 @@ public class DataStore extends ComplexDataType implements Equals2 {
      * @throws MalformedScriptException
      */
     public DataStore(List<Format> formatList) throws MalformedScriptException {
-        super.setFormat(formatList);
+        format = formatList;
         listDataField = new ArrayList<>();
     }
 
@@ -190,33 +186,5 @@ public class DataStore extends ComplexDataType implements Equals2 {
         uri += dataSource;
         uri += "#"+tableName;
         return URI.create(uri);
-    }
-
-    @Override
-    public boolean equals(ObjectLocator thisLocator, ObjectLocator thatLocator, Object object, EqualsStrategy2 strategy) {
-        if ((object == null)||(this.getClass()!= object.getClass())) {
-            return false;
-        }
-        if (this == object) {
-            return true;
-        }
-        if (!super.equals(thisLocator, thatLocator, object, strategy)) {
-            return false;
-        }
-        final DataStore that = ((DataStore) object);
-        {
-            if( (this.isAutoImport() != that.isAutoImport()) ||
-                    (this.isDataBase() != that.isDataBase()) ||
-                    (this.isFile() != that.isFile()) ||
-                    (this.isGeocatalog() != that.isGeocatalog()) ||
-                    (this.isSpatial() != that.isSpatial()) )
-                return false;
-        }
-        return true;
-    }
-
-    public boolean equals(Object object) {
-        final EqualsStrategy2 strategy = JAXBEqualsStrategy.INSTANCE;
-        return equals(null, null, object, strategy);
     }
 }

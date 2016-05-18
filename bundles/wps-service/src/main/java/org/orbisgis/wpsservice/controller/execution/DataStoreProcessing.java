@@ -19,8 +19,8 @@
 
 package org.orbisgis.wpsservice.controller.execution;
 
-import net.opengis.wps.v_2_0.*;
-import net.opengis.wps.v_2_0.DescriptionType;
+import net.opengis.wps._2_0.*;
+import net.opengis.wps._2_0.DescriptionType;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener.LogType;
 import org.orbisgis.wpsservice.model.*;

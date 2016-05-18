@@ -19,7 +19,7 @@
 
 package org.orbisgis.wpsservice.controller.utils;
 
-import net.opengis.wps.v_2_0.Format;
+import net.opengis.wps._2_0.Format;
 import java.util.ArrayList;
 import java.util.List;
 

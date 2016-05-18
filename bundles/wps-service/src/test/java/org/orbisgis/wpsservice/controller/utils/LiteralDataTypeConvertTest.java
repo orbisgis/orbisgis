@@ -1,7 +1,7 @@
 package org.orbisgis.wpsservice.controller.utils;
 
-import net.opengis.wps.v_2_0.Format;
-import net.opengis.wps.v_2_0.LiteralDataType;
+import net.opengis.wps._2_0.Format;
+import net.opengis.wps._2_0.LiteralDataType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.*;

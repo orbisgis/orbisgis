@@ -1,9 +1,9 @@
 package org.orbisgis.wpsservice.controller.utils;
 
-import net.opengis.ows.v_2_0.AnyValue;
-import net.opengis.ows.v_2_0.DomainMetadataType;
-import net.opengis.ows.v_2_0.ValueType;
-import net.opengis.wps.v_2_0.LiteralDataType.LiteralDataDomain;
+import net.opengis.ows._2.AnyValue;
+import net.opengis.ows._2.DomainMetadataType;
+import net.opengis.ows._2.ValueType;
+import net.opengis.wps._2_0.LiteralDataType.LiteralDataDomain;
 import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.LiteralDataDomainAttribute;

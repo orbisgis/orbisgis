@@ -1,14 +1,13 @@
 package org.orbisgis.wpsservice.controller.utils;
 
-import net.opengis.ows.v_2_0.CodeType;
-import net.opengis.ows.v_2_0.KeywordsType;
-import net.opengis.ows.v_2_0.LanguageStringType;
-import net.opengis.ows.v_2_0.MetadataType;
-import org.hisrc.w3c.xlink.v_1_0.TypeType;
+import net.opengis.ows._2.CodeType;
+import net.opengis.ows._2.KeywordsType;
+import net.opengis.ows._2.LanguageStringType;
+import net.opengis.ows._2.MetadataType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
-import net.opengis.wps.v_2_0.DescriptionType;
+import net.opengis.wps._2_0.DescriptionType;
 import org.orbisgis.wpsgroovyapi.attributes.Keyword;
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString;
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute;
@@ -109,7 +108,8 @@ public class DescriptionTypeConvertTest {
             titleFR.setLang("fr");
             titleList.add(titleFR);
 
-            toTest.setTitle(titleList);
+            toTest.getTitle().clear();
+            toTest.getTitle().addAll(titleList);
 
             //Build the resume
             List<LanguageStringType> resumeList = new ArrayList<>();
@@ -122,7 +122,8 @@ public class DescriptionTypeConvertTest {
             resumeFR.setLang("fr");
             resumeList.add(resumeFR);
 
-            toTest.setAbstract(resumeList);
+            toTest.getAbstract().clear();
+            toTest.getAbstract().addAll(resumeList);
 
             //Build the keywords
             List<KeywordsType> keywordsTypeList = new ArrayList<>();
@@ -137,7 +138,8 @@ public class DescriptionTypeConvertTest {
             descriptionTypeFR.setValue("DescriptionType fr");
             descriptionTypeFR.setLang("fr");
             descriptionTypeList.add(descriptionTypeFR);
-            descriptionTypeKeyword.setKeyword(descriptionTypeList);
+            descriptionTypeKeyword.getKeyword().clear();
+            descriptionTypeKeyword.getKeyword().addAll(descriptionTypeList);
             keywordsTypeList.add(descriptionTypeKeyword);
 
             KeywordsType attributeKeyword = new KeywordsType();
@@ -150,10 +152,12 @@ public class DescriptionTypeConvertTest {
             attributeFR.setValue("Attribute fr");
             attributeFR.setLang("fr");
             attributeList.add(attributeFR);
-            attributeKeyword.setKeyword(attributeList);
+            attributeKeyword.getKeyword().clear();
+            attributeKeyword.getKeyword().addAll(attributeList);
             keywordsTypeList.add(attributeKeyword);
 
-            toTest.setKeywords(keywordsTypeList);
+            toTest.getKeywords().clear();
+            toTest.getKeywords().addAll(keywordsTypeList);
 
             //Build the identifier
             CodeType identifier = new CodeType();
@@ -162,22 +166,20 @@ public class DescriptionTypeConvertTest {
             toTest.setIdentifier(identifier);
 
             //Build the metadata
-            List<JAXBElement<? extends MetadataType>> metadataList = new ArrayList<>();
-            QName qname = new QName("http://orbisgis.org", "metadata");
+            List<MetadataType> metadataList = new ArrayList<>();
             MetadataType metadata1 = new MetadataType();
             metadata1.setTitle("metadata1");
             metadata1.setHref("href1");
             metadata1.setRole("role1");
-            metadata1.setTYPE(TypeType.SIMPLE);
-            metadataList.add(new JAXBElement<>(qname, MetadataType.class, metadata1));
+            metadataList.add(metadata1);
             MetadataType metadata2 = new MetadataType();
             metadata2.setTitle("metadata2");
             metadata2.setHref("href2");
             metadata2.setRole("role2");
-            metadata2.setTYPE(TypeType.SIMPLE);
-            metadataList.add(new JAXBElement<>(qname, MetadataType.class, metadata2));
+            metadataList.add(metadata2);
 
-            toTest.setMetadata(metadataList);
+            toTest.getMetadata().clear();
+            toTest.getMetadata().addAll(metadataList);
 
             ///////////////////////////////
             // Tests the DescriptionType //
@@ -268,15 +270,12 @@ public class DescriptionTypeConvertTest {
             Assert.assertTrue(messageMetadataNumber, sameSizeMetadata);
 
             boolean areAllMetadataPresent = true;
-            for(JAXBElement element1 : toTest.getMetadata()){
-                MetadataType meta1 = (MetadataType)element1.getValue();
+            for(MetadataType meta1 : toTest.getMetadata()){
                 boolean isMetadataPresent = false;
-                for(JAXBElement element2 : descriptionType.getMetadata()){
-                    MetadataType meta2 = (MetadataType)element2.getValue();
+                for(MetadataType meta2 : descriptionType.getMetadata()){
                     if(meta1.getHref().equals(meta2.getHref()) &&
                             meta1.getRole().equals(meta2.getRole()) &&
-                            meta1.getTitle().equals(meta2.getTitle()) &&
-                            meta1.getTYPE().equals(meta2.getTYPE())){
+                            meta1.getTitle().equals(meta2.getTitle())){
                         isMetadataPresent = true;
                     }
                 }
@@ -346,7 +345,8 @@ public class DescriptionTypeConvertTest {
             title.setValue("DescriptionType attribute title");
             titleList.add(title);
 
-            toTest.setTitle(titleList);
+            toTest.getTitle().clear();
+            toTest.getTitle().addAll(titleList);
 
             //Build the resume
             List<LanguageStringType> resumeList = new ArrayList<>();
@@ -354,7 +354,8 @@ public class DescriptionTypeConvertTest {
             resume.setValue("DescriptionType attribute resume");
             resumeList.add(resume);
 
-            toTest.setAbstract(resumeList);
+            toTest.getAbstract().clear();
+            toTest.getAbstract().addAll(resumeList);
 
             //Build the keywords
             List<KeywordsType> keywordsTypeList = new ArrayList<>();
@@ -364,7 +365,8 @@ public class DescriptionTypeConvertTest {
             LanguageStringType descriptionTypeKeyword1 = new LanguageStringType();
             descriptionTypeKeyword1.setValue("DescriptionType");
             descriptionTypeList.add(descriptionTypeKeyword1);
-            descriptionTypeKeyword.setKeyword(descriptionTypeList);
+            descriptionTypeKeyword.getKeyword().clear();
+            descriptionTypeKeyword.getKeyword().addAll(descriptionTypeList);
             keywordsTypeList.add(descriptionTypeKeyword);
 
             descriptionTypeKeyword = new KeywordsType();
@@ -372,16 +374,18 @@ public class DescriptionTypeConvertTest {
             LanguageStringType descriptionTypeKeyword2 = new LanguageStringType();
             descriptionTypeKeyword2.setValue("Attribute");
             descriptionTypeList.add(descriptionTypeKeyword2);
-            descriptionTypeKeyword.setKeyword(descriptionTypeList);
+            descriptionTypeKeyword.getKeyword().clear();
+            descriptionTypeKeyword.getKeyword().addAll(descriptionTypeList);
             keywordsTypeList.add(descriptionTypeKeyword);
 
-            toTest.setKeywords(keywordsTypeList);
+            toTest.getKeywords().clear();
+            toTest.getKeywords().addAll(keywordsTypeList);
 
             //Build the identifier
             toTest.setIdentifier(null);
 
             //Build the metadata
-            toTest.setMetadata(null);
+            toTest.getMetadata().clear();
 
             ///////////////////////////////
             // Tests the DescriptionType //
@@ -474,15 +478,12 @@ public class DescriptionTypeConvertTest {
             Assert.assertTrue(messageMetadataNumber, sameSizeMetadata);
 
             boolean areAllMetadataPresent = true;
-            for(JAXBElement element1 : toTest.getMetadata()){
-                MetadataType meta1 = (MetadataType)element1.getValue();
+            for(MetadataType meta1 : toTest.getMetadata()){
                 boolean isMetadataPresent = false;
-                for(JAXBElement element2 : descriptionType.getMetadata()){
-                    MetadataType meta2 = (MetadataType)element2.getValue();
+                for(MetadataType meta2 : descriptionType.getMetadata()){
                     if(meta1.getHref().equals(meta2.getHref()) &&
                             meta1.getRole().equals(meta2.getRole()) &&
-                            meta1.getTitle().equals(meta2.getTitle()) &&
-                            meta1.getTYPE().equals(meta2.getTYPE())){
+                            meta1.getTitle().equals(meta2.getTitle())){
                         isMetadataPresent = true;
                     }
                 }
@@ -551,19 +552,20 @@ public class DescriptionTypeConvertTest {
             title.setValue("DescriptionType attribute title");
             titleList.add(title);
 
-            toTest.setTitle(titleList);
+            toTest.getTitle().clear();
+            toTest.getTitle().addAll(titleList);
 
             //Build the resume
-            toTest.setAbstract(null);
+            toTest.getAbstract().clear();
 
             //Build the keywords
-            toTest.setKeywords(null);
+            toTest.getKeywords().clear();
 
             //Build the identifier
             toTest.setIdentifier(null);
 
             //Build the metadata
-            toTest.setMetadata(null);
+            toTest.getMetadata().clear();
 
             ///////////////////////////////
             // Tests the DescriptionType //
@@ -656,15 +658,12 @@ public class DescriptionTypeConvertTest {
             Assert.assertTrue(messageMetadataNumber, sameSizeMetadata);
 
             boolean areAllMetadataPresent = true;
-            for(JAXBElement element1 : toTest.getMetadata()){
-                MetadataType meta1 = (MetadataType)element1.getValue();
+            for(MetadataType meta1 : toTest.getMetadata()){
                 boolean isMetadataPresent = false;
-                for(JAXBElement element2 : descriptionType.getMetadata()){
-                    MetadataType meta2 = (MetadataType)element2.getValue();
+                for(MetadataType meta2 : descriptionType.getMetadata()){
                     if(meta1.getHref().equals(meta2.getHref()) &&
                             meta1.getRole().equals(meta2.getRole()) &&
-                            meta1.getTitle().equals(meta2.getTitle()) &&
-                            meta1.getTYPE().equals(meta2.getTYPE())){
+                            meta1.getTitle().equals(meta2.getTitle())){
                         isMetadataPresent = true;
                     }
                 }

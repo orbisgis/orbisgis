@@ -1,8 +1,8 @@
 package org.orbisgis.wpsservice.controller.execution;
 
-import net.opengis.wps.v_2_0.DataDescriptionType;
-import net.opengis.wps.v_2_0.DescriptionType;
-import net.opengis.wps.v_2_0.OutputDescriptionType;
+import net.opengis.wps._2_0.DataDescriptionType;
+import net.opengis.wps._2_0.DescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.RawData;
 

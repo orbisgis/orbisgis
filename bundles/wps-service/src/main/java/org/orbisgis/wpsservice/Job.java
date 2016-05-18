@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservice;
 
-import net.opengis.wps.v_2_0.ProcessDescriptionType;
+import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 
 import java.net.URI;
