@@ -31,7 +31,6 @@ import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUI;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUIManager;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.wpsservice.model.Process;
 
 import javax.swing.*;
 import javax.swing.plaf.LayerUI;
@@ -105,7 +104,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      */
     public void cancelLoad(MouseEvent me){
         if(me.getClickCount() >= 2){
-            wpsClient.cancelLoadURI(((Process)pee.getObject()).getIdentifier());
+            wpsClient.cancelLoadURI(URI.create(((ProcessDescriptionType)pee.getObject()).getIdentifier().getValue()));
             endWaiting();
         }
     }

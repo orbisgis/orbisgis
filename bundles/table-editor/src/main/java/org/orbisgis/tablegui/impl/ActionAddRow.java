@@ -29,7 +29,6 @@
 
 package org.orbisgis.tablegui.impl;
 
-import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.editorjdbc.AskValidRow;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.actions.ActionTools;
@@ -37,10 +36,6 @@ import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.wpsservice.WpsService;
-import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
-import org.orbisgis.wpsservice.model.DataStoreOld;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -48,13 +43,9 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
 import javax.swing.AbstractAction;
-import javax.swing.event.TableModelEvent;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Add a row in the DataSource.

@@ -1,15 +1,10 @@
 package org.orbisgis.wpsservice;
 
 import net.opengis.wps._2_0.*;
-import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
-import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
-import org.orbisgis.wpsservice.model.Process;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Sylvain PALOMINOS

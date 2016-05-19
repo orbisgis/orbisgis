@@ -29,35 +29,22 @@
 
 package org.orbisgis.tablegui.impl;
 
-import org.h2gis.utilities.JDBCUtilities;
-import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.wpsservice.model.DataStoreOld;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.Process;
 import org.orbisgis.wpsservice.WpsService;
-import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.net.URI;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 
 /**
  * Remove selected rows in the DataSource.

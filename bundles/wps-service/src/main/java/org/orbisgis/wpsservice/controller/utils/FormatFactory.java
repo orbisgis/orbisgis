@@ -136,26 +136,4 @@ public class FormatFactory {
                 return format.getMimeType();
         }
     }
-
-    /**
-     * Return the extension from a Format.
-     * @param format Format to decode.
-     * @return File extension.
-     */
-    public static String getFormatExtension(org.orbisgis.wpsservice.model.Format format){
-        switch(format.getMimeType()){
-            case SHAPEFILE_MIMETYPE:
-                return SHAPEFILE_EXTENSION;
-            case GEOJSON_MIMETYPE:
-                return GEOJSON_EXTENSION;
-            case SQL_MIMETYPE:
-                return SQL_DESCRIPTION;
-            case WKT_MIMETYPE:
-                return WKT_DESCRIPTION;
-            case TEXT_MIMETYPE:
-                return TEXT_EXTENSION;
-            default:
-                return format.getMimeType();
-        }
-    }
 }
