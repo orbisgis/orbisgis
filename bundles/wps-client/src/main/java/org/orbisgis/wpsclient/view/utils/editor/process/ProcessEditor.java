@@ -90,23 +90,11 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         contentPanel = new JPanel(new BorderLayout());
         layerUI = new WaitLayerUI();
         layer = new JLayer<>(contentPanel, layerUI);
-        //Adds a mouse listener to listen the double click by the user to cancel the loading
-        contentPanel.addMouseListener(EventHandler.create(MouseListener.class, this, "cancelLoad", "", "mouseClicked"));
         this.add (layer);
 
         buildUI();
         tabbedPane.setSelectedIndex(0);
         this.revalidate();
-    }
-
-    /**
-     * Cancel the current loading.
-     */
-    public void cancelLoad(MouseEvent me){
-        if(me.getClickCount() >= 2){
-            wpsClient.cancelLoadURI(URI.create(((ProcessDescriptionType)pee.getObject()).getIdentifier().getValue()));
-            endWaiting();
-        }
     }
 
     /**

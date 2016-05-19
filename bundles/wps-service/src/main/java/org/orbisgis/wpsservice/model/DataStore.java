@@ -35,7 +35,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  **/
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DataStore", propOrder = {"isSpatial", "isGeocatalog", "isFile", "isDataBase", "listDataField", "isAutoImport"})
+@XmlType(name = "DataStore", propOrder = {"isSpatial", "listDataField", "isAutoImport"})
 public class DataStore extends ComplexDataType {
     /**DataStore types.*/
     public static final String DATASTORE_TYPE_GEOCATALOG = "DATASTORE_TYPE_GEOCATALOG";
@@ -44,15 +44,6 @@ public class DataStore extends ComplexDataType {
     /** True if the data is spatial, false otherwise **/
     @XmlAttribute(name = "isSpatial")
     private boolean isSpatial;
-    /** True if the data can come from the OrbisGIS geocatalog spatial, false otherwise **/
-    @XmlAttribute(name = "isGeocatalog")
-    private boolean isGeocatalog;
-    /** True if the data can be a file, false otherwise **/
-    @XmlAttribute(name = "isFile")
-    private boolean isFile;
-    /** True if the data can come from an external dataBase, false otherwise **/
-    @XmlAttribute(name = "isDataBase")
-    private boolean isDataBase;
     /** List of DataField liked to the DataStore */
     @XmlElement(name = "DataField", namespace = "http://orbisgis.org")
     private List<DataField> listDataField;
@@ -100,54 +91,6 @@ public class DataStore extends ComplexDataType {
      */
     public boolean isSpatial(){
         return isSpatial;
-    }
-
-    /**
-     * Tells if the data can come from the OrbisGIS geocatalog.
-     * @return True if the data can come from the geocatalog, false otherwise.
-     */
-    public boolean isGeocatalog() {
-        return isGeocatalog;
-    }
-
-    /**
-     * Sets if the data can come from the geocatalog or not.
-     * @param isGeocatalog True if the data can come from the geocatalog, false otherwise.
-     */
-    public void setIsGeocatalog(boolean isGeocatalog) {
-        this.isGeocatalog = isGeocatalog;
-    }
-
-    /**
-     * Tells if the data can be a file.
-     * @return True if the data can be a file.
-     */
-    public boolean isFile() {
-        return isFile;
-    }
-
-    /**
-     * Sets if the data can be a file.
-     * @param isFile True if the data can be a file, false otherwise.
-     */
-    public void setIsFile(boolean isFile) {
-        this.isFile = isFile;
-    }
-
-    /**
-     * Tells if the data can come from an external database.
-     * @return True if the data can come from an external database.
-     */
-    public boolean isDataBase() {
-        return isDataBase;
-    }
-
-    /**
-     * Sets if the data can come from an external database or not.
-     * @param isDataBase True if the data can come from an external database, false otherwise.
-     */
-    public void setIsDataBase(boolean isDataBase) {
-        this.isDataBase = isDataBase;
     }
 
     /**

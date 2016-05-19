@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.net.URI;
 
 /**
+ * This interface describe all the capabilities that should be implemented by a WPS service.
+ *
  * @author Sylvain PALOMINOS
  */
 public interface WpsService {
@@ -26,9 +28,6 @@ public interface WpsService {
      *             without the updateSequence parameter.
      */
     WPSCapabilitiesType getCapabilities(GetCapabilitiesType getCapabilities);
-
-    @Deprecated
-    Process describeProcess(URI uri);
 
     /**
      * The DescribeProcess operation allows WPS clients to query detailed process descriptions for the process

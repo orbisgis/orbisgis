@@ -1,9 +1,9 @@
 package org.orbisgis.wpsservice.scripts
 
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
+import org.orbisgis.wpsgroovyapi.input.RawDataInput
 import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 
@@ -63,11 +63,8 @@ def processing() {
  * |1 |1|1|
  * ........
  * */
-@DataStoreInput(title="Input csv",
-        resume="The input CSV file containing the point data.",
-        extensions = "csv",
-        isSpatial = false,
-        isCreateTable = false)
+@RawDataInput(title="Input csv",
+        resume="The input CSV file containing the point data.")
 String csvDataInput
 
 
@@ -116,7 +113,9 @@ Integer outputEPSG
 )
 String dataStoreOutputName
 
+/************/
 /** OUTPUT **/
+/************/
 @DataStoreOutput(title="Output point layer",
         resume="The output point layer.")
 String dataStoreOutput

@@ -4,6 +4,7 @@ import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
+import org.orbisgis.wpsgroovyapi.output.RawDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 
 /********************/
@@ -111,7 +112,6 @@ String dataStoreOutputFilePath
 String dataStoreOutput
 
 /** The CSV output containing only the region and the population. */
-@DataStoreOutput(title="CSV output",
-        resume="The CSV output containing only the region and the population.",
-        extensions="csv")
+@RawDataOutput(title="CSV output",
+        resume="The CSV output containing only the region and the population.")
 String csvDataOutput

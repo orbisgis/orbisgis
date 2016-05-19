@@ -360,13 +360,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         return null;
     }
 
-    /** Will be removed when the WPS Client will use the WPS Request */
-    @Deprecated
-    public Process describeProcess(URI uri){
-        //return processManager.getProcess(uri);
-        return null;
-    }
-
     public void removeProcess(URI uri){
         processManager.removeProcess(processManager.getProcess(uri));
     }
