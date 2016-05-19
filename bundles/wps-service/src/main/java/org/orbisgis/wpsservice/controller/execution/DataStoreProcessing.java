@@ -55,20 +55,20 @@ public class DataStoreProcessing implements DataProcessing {
     }
 
     @Override
-    public Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap,
+    public Map<URI, Object> preProcessData(DescriptionType input, Map<URI, Object> dataMap,
                                            ProcessExecutionListener pel) {
         Map<URI, Object> stash = new HashMap<>();
-        URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
-        URI dataStoreURI = (URI)dataMap.get(uri);
+        URI uri = URI.create(input.getIdentifier().getValue());
+        URI dataStoreURI = URI.create(dataMap.get(uri).toString());
         String tableName;
-        if(inputOrOutput instanceof InputDescriptionType){
+        if(input instanceof InputDescriptionType){
             if(dataStoreURI.getScheme().equals("geocatalog")){
                 tableName = dataStoreURI.getSchemeSpecificPart();
                 dataMap.put(uri, tableName);
                 stash.put(uri, "geocatalog");
             }
             else if(dataStoreURI.getScheme().equals("file")){
-                DataStore dataStore = (DataStore) ((InputDescriptionType) inputOrOutput).getDataDescription().getValue();
+                DataStore dataStore = (DataStore) ((InputDescriptionType) input).getDataDescription().getValue();
                 String path = dataStoreURI.getSchemeSpecificPart();
                 boolean keep = path.endsWith("$");
                 if(dataStore.isAutoImport()) {
@@ -88,32 +88,20 @@ public class DataStoreProcessing implements DataProcessing {
                 }
             }
         }
-        if(inputOrOutput instanceof OutputDescriptionType){
-            if(dataStoreURI.getScheme().equals("geocatalog")){
-                stash.put(uri, dataStoreURI);
-                tableName = dataStoreURI.getSchemeSpecificPart();
-                dataMap.put(uri, tableName);
-            }
-            else if(dataStoreURI.getScheme().equals("file")){
-                stash.put(uri, dataStoreURI);
-                tableName = dataStoreURI.getFragment();
-                dataMap.put(uri, tableName);
-            }
-        }
         return stash;
     }
 
     @Override
-    public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
+    public void postProcessData(DescriptionType input, Map<URI, Object> dataMap, Map<URI, Object> stash,
                                 ProcessExecutionListener pel) {
-        if(inputOrOutput instanceof InputDescriptionType){
-            URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
+        if(input instanceof InputDescriptionType){
+            URI uri = URI.create(input.getIdentifier().getValue());
             if(stash.get(uri) != null && stash.get(uri).equals("file")){
                 wpsService.removeTempTable(dataMap.get(uri).toString());
             }
         }
-        if(inputOrOutput instanceof OutputDescriptionType){
-            URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
+        if(input instanceof OutputDescriptionType){
+            URI uri = URI.create(input.getIdentifier().getValue());
             URI dataStoreURI = (URI)stash.get(uri);
             if(dataStoreURI.getScheme().equals("file")){
                 String path = dataStoreURI.getSchemeSpecificPart();

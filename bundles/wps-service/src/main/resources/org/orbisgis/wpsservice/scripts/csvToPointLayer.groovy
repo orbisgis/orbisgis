@@ -3,6 +3,7 @@ package org.orbisgis.wpsservice.scripts
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
+import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 
@@ -35,7 +36,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
         resume = "Creates a point layer from a CSV file containing the id of the point, its X and Y coordinate.",
         keywords = "OrbisGIS,ST_Transform,ST_SetSRID,ST_MakePoint,example")
 def processing() {
-    outputTableName = dataStoreOutput
+    outputTableName = dataStoreOutputName
     //Open the CSV file
     File csvFile = new File(csvDataInput)
     String csvRead = "CSVRead('"+csvFile.absolutePath+"', NULL, 'fieldSeparator="+separator+"')";
@@ -48,6 +49,8 @@ def processing() {
     else{
         sql.execute(create + " AS SELECT "+idField+", ST_MakePoint("+xField+", "+yField+") THE_GEOM FROM "+csvRead+";");
     }
+
+    dataStoreOutput = dataStoreOutputName;
 }
 
 /****************/
@@ -100,11 +103,18 @@ String yField
         minOccurs=0)
 Integer inputEPSG
 
-@EnumerationInput(title="Output EPSG"
-        , resume="The output .csv EPSG code",
+@EnumerationInput(title="Output EPSG",
+        resume="The output .csv EPSG code",
         values=["4326", "2154"],
         minOccurs=0)
 Integer outputEPSG
+
+/** Output DataStore name. */
+@LiteralDataInput(
+        title="DataStore name",
+        resume="The DataStore name"
+)
+String dataStoreOutputName
 
 /** OUTPUT **/
 @DataStoreOutput(title="Output point layer",

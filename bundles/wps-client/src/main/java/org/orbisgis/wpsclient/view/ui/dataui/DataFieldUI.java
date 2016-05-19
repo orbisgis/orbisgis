@@ -90,6 +90,7 @@ public class DataFieldUI implements DataUI{
         }
         else if(inputOrOutput instanceof OutputDescriptionType){
             dataField = (DataField)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            return panel;
         }
 
         if(dataField == null){

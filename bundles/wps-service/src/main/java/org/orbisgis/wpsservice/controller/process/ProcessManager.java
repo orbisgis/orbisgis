@@ -200,7 +200,8 @@ public class ProcessManager {
                 Field f = getField(pi.getClazz(), i.getIdentifier().getValue());
                 if(f != null) {
                     f.setAccessible(true);
-                    f.set(groovyObject, dataMap.get(URI.create(i.getIdentifier().getValue())));
+
+                    f.set(groovyObject, f.getType().cast(dataMap.get(URI.create(i.getIdentifier().getValue()))));
                 }
             }
             for(OutputDescriptionType o : process.getOutput()) {
@@ -257,9 +258,10 @@ public class ProcessManager {
                     if(((DescriptionTypeAttribute)a).identifier().equals(identifier)){
                         return f;
                     }
-                }
-                if(identifier.endsWith(":input:"+f.getName()) || identifier.endsWith(":output:"+f.getName())){
-                    return f;
+                    if(identifier.endsWith(":input:"+((DescriptionTypeAttribute) a).title().replaceAll("[^a-zA-Z0-9_]", "_")) ||
+                            identifier.endsWith(":output:"+f.getName().replaceAll("[^a-zA-Z0-9_]", "_"))){
+                        return f;
+                    }
                 }
             }
         }

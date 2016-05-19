@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Class implementing the Runnable interface is dedicated to the WPS process execution.
@@ -66,9 +67,6 @@ public class ProcessWorker implements Runnable {
             if(pel != null) {
                 pel.appendLog(ProcessExecutionListener.LogType.INFO, "Pre-processing");
             }
-            for(DescriptionType inputOrOutput : process.getOutput()){
-                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
-            }
             for(DescriptionType inputOrOutput : process.getInput()){
                 stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
             }
@@ -98,6 +96,7 @@ public class ProcessWorker implements Runnable {
         }
         catch (Exception e) {
             if(pel != null) {
+                LoggerFactory.getLogger(ProcessWorker.class).error(e.getLocalizedMessage());
                 //Print in the log the process execution error
                 pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
                 //Post-process the data

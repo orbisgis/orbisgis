@@ -22,16 +22,16 @@ public class LiteralDataProcessing implements DataProcessing {
     }
 
     @Override
-    public Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, ProcessExecutionListener pel) {
+    public Map<URI, Object> preProcessData(DescriptionType input, Map<URI, Object> dataMap, ProcessExecutionListener pel) {
         return new HashMap<>();
     }
 
     @Override
-    public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash, ProcessExecutionListener pel) {
-        if(inputOrOutput instanceof OutputDescriptionType) {
+    public void postProcessData(DescriptionType input, Map<URI, Object> dataMap, Map<URI, Object> stash, ProcessExecutionListener pel) {
+        if(input instanceof OutputDescriptionType) {
             if(pel != null) {
                 pel.appendLog(ProcessExecutionListener.LogType.INFO, "Literal output : '" +
-                        dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue())) + "'");
+                        dataMap.get(URI.create(input.getIdentifier().getValue())) + "'");
             }
         }
     }

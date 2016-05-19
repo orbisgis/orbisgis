@@ -64,6 +64,7 @@ import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -580,5 +581,42 @@ public class WpsClient implements DockingPanel {
         for(String tag : tags){
             toolBoxPanel.openNode(tag, ToolBoxPanel.TAG_MODEL);
         }
+    }
+
+    /**
+     * Build the Execution request, set it and then launch it in the WpsService.
+     *
+     * @param process The process to execute.
+     * @param inputDataMap Map containing the inputs.
+     * @param outputDataMap Map containing the outputs.
+     */
+    public void executeProcess(ProcessDescriptionType process,
+                               Map<URI,Object> inputDataMap,
+                               Map<URI, Object> outputDataMap) {
+        //Build the ExecuteRequest object
+        ExecuteRequestType executeRequest = new ExecuteRequestType();
+        executeRequest.setIdentifier(process.getIdentifier());
+        List<DataInputType> inputList = executeRequest.getInput();
+        //Sets the inputs
+        for(Map.Entry<URI, Object> entry : inputDataMap.entrySet()){
+            DataInputType dataInput = new DataInputType();
+            dataInput.setId(entry.getKey().toString());
+            Data data = new Data();
+            data.getContent().add(entry.getValue().toString());
+            dataInput.setData(data);
+            inputList.add(dataInput);
+        }
+        //Sets the outputs
+        List<OutputDefinitionType> outputList = executeRequest.getOutput();
+        for(Map.Entry<URI, Object> entry : outputDataMap.entrySet()){
+            OutputDefinitionType output = new OutputDefinitionType();
+            output.setId(entry.getKey().toString());
+            output.setTransmission(DataTransmissionModeType.VALUE);
+            output.setMimeType("text/plain");
+            outputList.add(output);
+        }
+        //Launch the execution on the server
+        JAXBElement<ExecuteRequestType> jaxbElement = new ObjectFactory().createExecute(executeRequest);
+        StatusInfo result = (StatusInfo)askService(jaxbElement);
     }
 }

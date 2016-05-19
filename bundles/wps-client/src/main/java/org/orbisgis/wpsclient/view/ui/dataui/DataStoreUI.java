@@ -120,6 +120,7 @@ public class DataStoreUI implements DataUI{
         else if(inputOrOutput instanceof OutputDescriptionType){
             OutputDescriptionType output = (OutputDescriptionType)inputOrOutput;
             dataStore = (DataStore)output.getDataDescription().getValue();
+            return panel;
         }
         else {
             //If inputOrOutput is not a input and not an output, exit

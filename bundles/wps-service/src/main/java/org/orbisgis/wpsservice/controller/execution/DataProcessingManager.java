@@ -48,20 +48,14 @@ public class DataProcessingManager {
         listDataProcessing.add(new RawDataProcessing());
     }
 
-    public Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap,
+    public Map<URI, Object> preProcessData(DescriptionType input, Map<URI, Object> dataMap,
                                            ProcessExecutionListener pel){
         Map<URI, Object> stash = new HashMap<>();
         for(DataProcessing dp : listDataProcessing){
-            if(inputOrOutput instanceof InputDescriptionType) {
-                DataDescriptionType dataDescription = ((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            if(input instanceof InputDescriptionType) {
+                DataDescriptionType dataDescription = ((InputDescriptionType)input).getDataDescription().getValue();
                 if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    stash.putAll(dp.preProcessData(inputOrOutput, dataMap, pel));
-                }
-            }
-            if(inputOrOutput instanceof OutputDescriptionType) {
-                DataDescriptionType dataDescription = ((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
-                if (dp.getDataClass().isAssignableFrom(dataDescription.getClass())) {
-                    stash.putAll(dp.preProcessData(inputOrOutput, dataMap, pel));
+                    stash.putAll(dp.preProcessData(input, dataMap, pel));
                 }
             }
         }
