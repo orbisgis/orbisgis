@@ -48,7 +48,7 @@ def processing() {
 
     //Build the query
     String query =
-            "CREATE TABLE "+dataStoreOutput+" AS " +
+            "CREATE TABLE "+dataStoreOutputName+" AS " +
                     "SELECT "+buildingDataInput+".* " +
                     "FROM "+riverDataInput+","+buildingDataInput+" " +
                     "WHERE ("+condition+
@@ -81,6 +81,8 @@ def processing() {
         query += ",'"+optionalParameter+"'";
     }
     query += "));";
+
+    dataStoreOutput = dataStoreOutputName;
 
     //Execute the query
     sql.execute(query)
@@ -164,7 +166,15 @@ String endcapStyle
         minOccurs = 0)
 String joinStyle
 
+/** Output DataStore name. */
+@LiteralDataInput(
+        title="DataStore name",
+        resume="The DataStore name"
+)
+String dataStoreOutputName
+/************/
 /** OUTPUT **/
+/************/
 @DataStoreOutput(title="Output Data",
         resume="The output data source",
         isSpatial = true)

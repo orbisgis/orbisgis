@@ -3,6 +3,7 @@ package org.orbisgis.wpsservice.scripts
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.input.FieldValueInput
+import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 
@@ -41,12 +42,14 @@ def processing() {
         }
     }
     String query =
-            "CREATE TABLE "+dataStoreOutput+" AS SELECT "+vegetationDataInput+".* " +
+            "CREATE TABLE "+dataStoreOutputName+" AS SELECT "+vegetationDataInput+".* " +
                     "FROM "+cityDataInput+","+vegetationDataInput+" " +
                     "WHERE ST_INTERSECTS("+cityDataInput+"."+cityGeometricField+", "+vegetationDataInput+"."+vegetationGeometricField+")" +
                     " AND ("+condition+");"
     //Execute the query
     sql.execute(query)
+
+    dataStoreOutput = dataStoreOutputName;
 }
 
 
@@ -90,6 +93,13 @@ String cityNameField
         dataField="City name field",
         multiSelection = true)
 String[] cityNameValue
+
+/** Output DataStore name. */
+@LiteralDataInput(
+        title="DataStore name",
+        resume="The DataStore name"
+)
+String dataStoreOutputName
 
 /*****************/
 /** OUTPUT Data **/

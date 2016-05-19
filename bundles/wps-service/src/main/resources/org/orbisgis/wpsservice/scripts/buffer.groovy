@@ -36,7 +36,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
 
     //Build the start of the query
-    String query = "CREATE TABLE "+dataStoreOutput+" AS SELECT ST_Buffer("+geometricField+","+bufferSize
+    String query = "CREATE TABLE "+dataStoreOutputName+" AS SELECT ST_Buffer("+geometricField+","+bufferSize
     //Build the third optional parameter
     String optionalParameter = "";
     //If quadSegs is defined
@@ -61,6 +61,8 @@ def processing() {
     }
     //Build the end of the query
     query += ") AS the_geom FROM "+inputDataStore+";"
+
+    dataStoreOutput = dataStoreOutputName;
 
     //Execute the query
     sql.execute(query)
@@ -127,6 +129,13 @@ String endcapStyle
         defaultValues=["round"],
         minOccurs = 0)
 String joinStyle
+
+/** Output DataStore name. */
+@LiteralDataInput(
+        title="DataStore name",
+        resume="The DataStore name"
+)
+String dataStoreOutputName
 
 /*****************/
 /** OUTPUT Data **/

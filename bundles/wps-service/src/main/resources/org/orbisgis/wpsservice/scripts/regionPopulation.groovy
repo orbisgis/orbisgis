@@ -2,6 +2,7 @@ package org.orbisgis.wpsservice.scripts
 
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 
@@ -31,7 +32,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
         keywords = "OrbisGIS,ST_Union,ST_Accum,example")
 def processing() {
     //Build the query
-    String query = "CREATE TABLE "+dataStoreOutput+" AS" +
+    String query = "CREATE TABLE "+dataStoreOutputName+" AS" +
             " SELECT "+regionDataInput+"."+regionField+
             ", ST_Union(ST_Accum("+regionDataInput+"."+regionGeometricField+")) AS "+regionGeometricField+" " +
             ", SUM("+regionDataInput+"."+populationField+") AS "+populationField+" " +
@@ -40,7 +41,7 @@ def processing() {
     //Execute the query
     sql.execute(query)
     //Generate the second output
-    query = "CREATE TABLE "+csvDataOutput+" AS" +
+    query = "CREATE TABLE "+dataStoreOutputFilePath+" AS" +
             " SELECT "+regionDataInput+"."+regionField+
             ", SUM("+regionDataInput+"."+populationField+") " +
             " FROM "+regionDataInput+" " +
@@ -83,6 +84,20 @@ String regionField
         dataStore="Input municipality data",
         fieldTypes = ["NUMBER"])
 String populationField
+
+/** Output DataStore name. */
+@LiteralDataInput(
+        title="DataStore name",
+        resume="The DataStore name"
+)
+String dataStoreOutputName
+
+/** Output DataStore file path. */
+@LiteralDataInput(
+        title="DataStore file path",
+        resume="The DataStore file path"
+)
+String dataStoreOutputFilePath
 
 
 /*****************/
