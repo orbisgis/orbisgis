@@ -171,13 +171,13 @@ public class SQLConsolePanel extends JPanel {
                         ).setLogicalGroup("custom");
                 actions.addAction(executeAction);
                 //Execute Selected SQL
-                executeSelectedAction = new DefaultAction(SQLAction.A_EXECUTE,
+                executeSelectedAction = new DefaultAction(SQLAction.A_EXECUTE_SELECTION,
                         I18N.tr("Execute selected"),
                         I18N.tr("Run selected SQL statements"),
-                        SQLConsoleIcon.getIcon("execute"),
+                        SQLConsoleIcon.getIcon("execute_selection"),
                         EventHandler.create(ActionListener.class,this,"onExecuteSelected"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK)
-                        ).setLogicalGroup("custom");
+                        ).setLogicalGroup("custom").setAfter(SQLAction.A_EXECUTE);
                 actions.addAction(executeSelectedAction);
                 //Clear action
                 clearAction = new DefaultAction(SQLAction.A_CLEAR,
@@ -186,7 +186,7 @@ public class SQLConsolePanel extends JPanel {
                         SQLConsoleIcon.getIcon("erase"),
                         EventHandler.create(ActionListener.class,this,"onClear"),
                         null
-                       ).setLogicalGroup("custom").setAfter(SQLAction.A_EXECUTE);
+                       ).setLogicalGroup("custom").setAfter(SQLAction.A_EXECUTE_SELECTION);
                 actions.addAction(clearAction);
                 //Find action
                 findAction=new DefaultAction(SQLAction.A_SEARCH,
