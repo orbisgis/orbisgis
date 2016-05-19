@@ -583,11 +583,22 @@ public class WpsClient implements DockingPanel {
         }
     }
 
-    public void executeProcess(ProcessEditableElement pee) {
+    /**
+     * Build the Execution request, set it and then launch it in the WpsService.
+     *
+     * @param process The process to execute.
+     * @param inputDataMap Map containing the inputs.
+     * @param outputDataMap Map containing the outputs.
+     */
+    public void executeProcess(ProcessDescriptionType process,
+                               Map<URI,Object> inputDataMap,
+                               Map<URI, Object> outputDataMap) {
+        //Build the ExecuteRequest object
         ExecuteRequestType executeRequest = new ExecuteRequestType();
-        executeRequest.setIdentifier(pee.getProcess().getIdentifier());
+        executeRequest.setIdentifier(process.getIdentifier());
         List<DataInputType> inputList = executeRequest.getInput();
-        for(Map.Entry<URI, Object> entry : pee.getInputDataMap().entrySet()){
+        //Sets the inputs
+        for(Map.Entry<URI, Object> entry : inputDataMap.entrySet()){
             DataInputType dataInput = new DataInputType();
             dataInput.setId(entry.getKey().toString());
             Data data = new Data();
@@ -595,16 +606,17 @@ public class WpsClient implements DockingPanel {
             dataInput.setData(data);
             inputList.add(dataInput);
         }
+        //Sets the outputs
         List<OutputDefinitionType> outputList = executeRequest.getOutput();
-        for(Map.Entry<URI, Object> entry : pee.getOutputDataMap().entrySet()){
+        for(Map.Entry<URI, Object> entry : outputDataMap.entrySet()){
             OutputDefinitionType output = new OutputDefinitionType();
             output.setId(entry.getKey().toString());
             output.setTransmission(DataTransmissionModeType.VALUE);
             output.setMimeType("text/plain");
             outputList.add(output);
         }
+        //Launch the execution on the server
         JAXBElement<ExecuteRequestType> jaxbElement = new ObjectFactory().createExecute(executeRequest);
         StatusInfo result = (StatusInfo)askService(jaxbElement);
-        System.out.println(result.getStatus());
     }
 }

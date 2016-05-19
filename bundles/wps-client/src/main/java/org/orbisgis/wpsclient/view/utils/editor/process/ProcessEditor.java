@@ -181,7 +181,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         pee.setProcessState(ProcessEditableElement.ProcessState.RUNNING);
 
         //Run the process in a separated thread
-        wpsClient.executeProcess(pee);
+        wpsClient.executeProcess(pee.getProcess(), pee.getInputDataMap(), pee.getOutputDataMap());
         return false;
     }
 
