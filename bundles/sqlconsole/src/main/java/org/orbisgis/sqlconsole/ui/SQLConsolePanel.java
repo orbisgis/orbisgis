@@ -102,6 +102,7 @@ public class SQLConsolePanel extends JPanel {
         private ActionCommands actions = new ActionCommands();
         private SQLFunctionsPanel sqlFunctionsPanel;
         private DefaultAction executeAction;
+        private DefaultAction executeSelectedAction;
         private DefaultAction clearAction;
         private DefaultAction findAction;
         private DefaultAction quoteAction;
@@ -169,6 +170,15 @@ public class SQLConsolePanel extends JPanel {
                         KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)
                         ).setLogicalGroup("custom");
                 actions.addAction(executeAction);
+                //Execute Selected SQL
+                executeSelectedAction = new DefaultAction(SQLAction.A_EXECUTE,
+                        I18N.tr("Execute selected"),
+                        I18N.tr("Run selected SQL statements"),
+                        SQLConsoleIcon.getIcon("execute"),
+                        EventHandler.create(ActionListener.class,this,"onExecuteSelected"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK)
+                        ).setLogicalGroup("custom");
+                actions.addAction(executeSelectedAction);
                 //Clear action
                 clearAction = new DefaultAction(SQLAction.A_CLEAR,
                         I18N.tr("Clear"),
@@ -337,8 +347,17 @@ public class SQLConsolePanel extends JPanel {
          */
         public void onExecute() {      
                 if (scriptPanel.getDocument().getLength() > 0) {
-                    execute(new ExecuteScriptProcess(this, dataSource, splitterFactory, timeOut));
+                    execute(new ExecuteScriptProcess(this, dataSource, splitterFactory, timeOut, false));
                 }
+        }
+        
+         /**
+         * Run the selected Sql commands stored in the editor
+         */
+        public void onExecuteSelected(){
+            if (scriptPanel.getDocument().getLength() > 0) {
+                execute(new ExecuteScriptProcess(this, dataSource, splitterFactory, timeOut, true));
+            }
         }
 
 
@@ -709,6 +728,7 @@ public class SQLConsolePanel extends JPanel {
                 String text = scriptPanel.getText().trim();
                 if (text.isEmpty()) {
                         executeAction.setEnabled(false);
+                        executeSelectedAction.setEnabled(false);
                         clearAction.setEnabled(false);
                         saveAction.setEnabled(false);
                         findAction.setEnabled(false);
@@ -720,6 +740,7 @@ public class SQLConsolePanel extends JPanel {
                 }
                 else{
                         executeAction.setEnabled(true);
+                        executeSelectedAction.setEnabled(true);
                         clearAction.setEnabled(true);
                         saveAction.setEnabled(true);
                         findAction.setEnabled(true);
