@@ -392,10 +392,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         return false;
     }
 
-    /** Will be removed when the WPS Client will use the WPS Request */
-    @Deprecated
-    public void execute(Process process, Map<URI, Object> dataMap, ProcessExecutionListener pel){}
-
     @Override
     public WPSCapabilitiesType getCapabilities(GetCapabilitiesType getCapabilities) {
         WPSCapabilitiesType capabilitiesType = new WPSCapabilitiesType();

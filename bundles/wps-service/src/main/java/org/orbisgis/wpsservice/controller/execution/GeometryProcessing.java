@@ -132,15 +132,15 @@ public class GeometryProcessing implements DataProcessing {
     }
 
     @Override
-    public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
+    public void postProcessData(DescriptionType input, Map<URI, Object> dataMap, Map<URI, Object> stash,
                                 ProcessExecutionListener pel) {
         //Check if it is an output
-        if(inputOrOutput instanceof OutputDescriptionType) {
-            OutputDescriptionType output = (OutputDescriptionType) inputOrOutput;
+        if(input instanceof OutputDescriptionType) {
+            OutputDescriptionType output = (OutputDescriptionType) input;
             //Check if the input is a GeometryData
             if(output.getDataDescription().getValue() instanceof GeometryData) {
                 GeometryData geometryData = (GeometryData) output.getDataDescription().getValue();
-                Object obj = dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue()));
+                Object obj = dataMap.get(URI.create(input.getIdentifier().getValue()));
                 if(obj instanceof Geometry) {
                     Geometry geometry = (Geometry) obj;
                     //Check the Geometry has the good type
@@ -160,7 +160,7 @@ public class GeometryProcessing implements DataProcessing {
                             LOGGER.error("The geometry '" + output.getTitle() + "' type is not accepted ('" +
                                     geometry.getGeometryType() + "' not allowed).");
                         }
-                        dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
+                        dataMap.put(URI.create(input.getIdentifier().getValue()), null);
                         return;
                     }
                     //Check the Geometry has not an excluded type
@@ -179,7 +179,7 @@ public class GeometryProcessing implements DataProcessing {
                             LOGGER.error("The geometry '" + output.getTitle() + "' type is not accepted ('" +
                                     geometry.getGeometryType() + "' not allowed).");
                         }
-                        dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
+                        dataMap.put(URI.create(input.getIdentifier().getValue()), null);
                         return;
                     }
                     //Read the string to retrieve the Geometry
@@ -192,10 +192,10 @@ public class GeometryProcessing implements DataProcessing {
                         else{
                             LOGGER.error("Unable to read the geometry '" + output.getTitle() + "'.");
                         }
-                        dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
+                        dataMap.put(URI.create(input.getIdentifier().getValue()), null);
                         return;
                     }
-                    dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), wkt);
+                    dataMap.put(URI.create(input.getIdentifier().getValue()), wkt);
 
                     if(pel != null) {
                         pel.appendLog(ProcessExecutionListener.LogType.INFO, "Output geometry '" +

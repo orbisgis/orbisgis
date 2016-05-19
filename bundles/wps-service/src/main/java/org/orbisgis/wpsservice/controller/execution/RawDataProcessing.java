@@ -28,19 +28,19 @@ public class RawDataProcessing implements DataProcessing {
     }
 
     @Override
-    public Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap,
+    public Map<URI, Object> preProcessData(DescriptionType input, Map<URI, Object> dataMap,
                                            ProcessExecutionListener pel) {
         Map<URI, Object> map = new HashMap<>();
-        map.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
+        map.put(URI.create(input.getIdentifier().getValue()), null);
         return map;
     }
 
     @Override
-    public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
+    public void postProcessData(DescriptionType input, Map<URI, Object> dataMap, Map<URI, Object> stash,
                                 ProcessExecutionListener pel) {
         //Check if it is an output
-        if(inputOrOutput instanceof OutputDescriptionType) {
-            OutputDescriptionType output = (OutputDescriptionType) inputOrOutput;
+        if(input instanceof OutputDescriptionType) {
+            OutputDescriptionType output = (OutputDescriptionType) input;
             //Check if the input is a GeometryData
             if(output.getDataDescription().getValue() instanceof RawData) {
                 if(pel != null) {

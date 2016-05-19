@@ -64,6 +64,7 @@ import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -580,5 +581,30 @@ public class WpsClient implements DockingPanel {
         for(String tag : tags){
             toolBoxPanel.openNode(tag, ToolBoxPanel.TAG_MODEL);
         }
+    }
+
+    public void executeProcess(ProcessEditableElement pee) {
+        ExecuteRequestType executeRequest = new ExecuteRequestType();
+        executeRequest.setIdentifier(pee.getProcess().getIdentifier());
+        List<DataInputType> inputList = executeRequest.getInput();
+        for(Map.Entry<URI, Object> entry : pee.getInputDataMap().entrySet()){
+            DataInputType dataInput = new DataInputType();
+            dataInput.setId(entry.getKey().toString());
+            Data data = new Data();
+            data.getContent().add(entry.getValue().toString());
+            dataInput.setData(data);
+            inputList.add(dataInput);
+        }
+        List<OutputDefinitionType> outputList = executeRequest.getOutput();
+        for(Map.Entry<URI, Object> entry : pee.getOutputDataMap().entrySet()){
+            OutputDefinitionType output = new OutputDefinitionType();
+            output.setId(entry.getKey().toString());
+            output.setTransmission(DataTransmissionModeType.VALUE);
+            output.setMimeType("text/plain");
+            outputList.add(output);
+        }
+        JAXBElement<ExecuteRequestType> jaxbElement = new ObjectFactory().createExecute(executeRequest);
+        StatusInfo result = (StatusInfo)askService(jaxbElement);
+        System.out.println(result.getStatus());
     }
 }
