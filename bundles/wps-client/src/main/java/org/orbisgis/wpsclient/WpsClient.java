@@ -48,7 +48,6 @@ import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.DataField;
 import org.orbisgis.wpsservice.model.DataStore;
 import org.orbisgis.wpsservice.model.FieldValue;
-import org.orbisgis.wpsservice.model.Process;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -317,7 +316,8 @@ public class WpsClient implements DockingPanel {
         if(file.isFile()){
             ProcessIdentifier pi = wpsService.addLocalScript(file, iconName, isDefaultScript);
             if(pi != null) {
-                toolBoxPanel.addLocalSource(pi);
+                //TODO Implements the addLocalSource method for a user script
+                //toolBoxPanel.addLocalSource(pi);
             }
         }
         else if(file.isDirectory()){
@@ -326,7 +326,8 @@ public class WpsClient implements DockingPanel {
                 if(f.isFile()){
                     ProcessIdentifier pi = wpsService.addLocalScript(f, iconName, isDefaultScript);
                     if(pi != null) {
-                        toolBoxPanel.addLocalSource(pi);
+                        //TODO Implements the addLocalSource method for a user script
+                        //toolBoxPanel.addLocalSource(pi);
                     }
                 }
                 else if(f.isDirectory()){

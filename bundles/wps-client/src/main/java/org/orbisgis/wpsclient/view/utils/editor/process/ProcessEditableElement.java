@@ -24,7 +24,6 @@ import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
-import org.orbisgis.wpsservice.model.Process;
 
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
