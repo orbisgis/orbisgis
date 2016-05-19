@@ -37,6 +37,7 @@ import org.orbisgis.sif.components.actions.ActionFactoryService;
 public interface SQLAction extends ActionFactoryService<SQLConsoleEditor> {
     // Action, MENU IDs
     public static final String A_EXECUTE = "M_EXECUTE";
+    public static final String A_EXECUTE_SELECTION = "M_EXECUTE_SELECTION";
     public static final String A_CLEAR = "M_CLEAR";
     public static final String A_OPEN = "M_OPEN";
     public static final String A_SAVE = "M_SAVE";
