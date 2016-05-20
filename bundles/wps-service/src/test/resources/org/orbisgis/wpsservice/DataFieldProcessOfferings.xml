@@ -16,7 +16,7 @@
                 <ns1:Abstract/>
                 <ns1:Keywords/>
                 <ns1:Identifier>orbisgis:test:datastore:input</ns1:Identifier>
-                <ns5:DataStore isSpatial="false" isGeocatalog="true" isFile="true" isDataBase="true" isAutoImport="true">
+                <ns5:DataStore isSpatial="false" isAutoImport="true">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                     <ns5:DataField isMultipleField="false">
                         <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
@@ -44,7 +44,7 @@
                 <ns1:Abstract/>
                 <ns1:Keywords/>
                 <ns1:Identifier>orbisgis:test:datastore:output</ns1:Identifier>
-                <ns5:DataStore isSpatial="false" isGeocatalog="true" isFile="true" isDataBase="true" isAutoImport="true">
+                <ns5:DataStore isSpatial="false" isAutoImport="true">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                     <ns5:DataField isMultipleField="true">
                         <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>

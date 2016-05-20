@@ -75,7 +75,6 @@ def processing() {
         ],
         isSpatial = true,
         isCreateTable = false,
-        extensions = ["geocatalog", "shp", "dbf"],
         minOccurs = 0,
         maxOccurs = 2,
         identifier = "orbisgis:test:datastore:input",
@@ -110,7 +109,6 @@ String inputDataStore
         ],
         isSpatial = false,
         isCreateTable = true,
-        extensions = ["geocatalog", "shp", "dbf"],
         identifier = "orbisgis:test:datastore:output",
         metadata = [
                 @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")

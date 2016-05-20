@@ -63,8 +63,6 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *      Minimum number of times that values for this parameter are required. 0 means the input is optional.
  *  - maxOccurs : int
  *      Maximum number of times that this parameter may be present.
- *  - extensions : String[]
- *      File extension accepted. If no extension are specified, all the format are accepted.
  *  - isSpatial : boolean
  *      Indicates if the data represented is spatial or not.
  *  - isCreateTable : boolean

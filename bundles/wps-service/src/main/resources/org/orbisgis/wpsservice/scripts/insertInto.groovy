@@ -66,8 +66,7 @@ def processing() {
 /** This DataStore is the input data source table. */
 @DataStoreInput(
         title = "Table",
-        resume = "The table to edit",
-        extensions = ["geocatalog"])
+        resume = "The table to edit")
 String tableName
 
 /**********************/

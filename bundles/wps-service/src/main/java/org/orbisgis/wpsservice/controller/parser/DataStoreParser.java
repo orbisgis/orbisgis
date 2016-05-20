@@ -31,7 +31,6 @@ import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.DataStore;
 import org.orbisgis.wpsservice.model.ObjectFactory;
-import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBElement;
 import java.lang.reflect.Field;
@@ -56,61 +55,12 @@ public class DataStoreParser implements Parser{
     public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
         //Instantiate the DataStore and its formats
         DataStoreAttribute dataStoreAttribute = f.getAnnotation(DataStoreAttribute.class);
-        List<Format> formatList;
-        List<String> importableFormat;
-        boolean isFile = false;
-        boolean isGeocatalog = false;
-        boolean isDataBase = false;
-
-        if(dataStoreAttribute.isSpatial()){
-            importableFormat = new ArrayList<>(wpsService.getImportableFormat(true).keySet());
-        }
-        else{
-            importableFormat = new ArrayList<>(wpsService.getImportableFormat(false).keySet());
-        }
-        //If there is extension, test if it is recognized by OrbisGIS and register it.
-        if(dataStoreAttribute.extensions().length!=0) {
-            List<String> validFormats = new ArrayList<>();
-            for(String extension : dataStoreAttribute.extensions()){
-                boolean validFormat = false;
-                if(extension.equals(FormatFactory.GEOCATALOG_EXTENSION)){
-                    isGeocatalog = true;
-                    validFormat = true;
-                }
-                if(extension.equals(FormatFactory.DATABASE_EXTENSION)){
-                    isDataBase = true;
-                    validFormat = true;
-                }
-                if(importableFormat.contains(extension)){
-                    isFile = true;
-                    validFormat = true;
-                    validFormats.add(extension);
-                }
-                if(!validFormat){
-                    LoggerFactory.getLogger(DataStoreParser.class).warn("The format '" + extension + "' is not supported");
-                }
-            }
-            formatList = FormatFactory.getFormatsFromExtensions(validFormats);
-        }
-        //Else add all the extensions.
-        else{
-            isGeocatalog = true;
-            isDataBase = true;
-            isFile = true;
-            formatList = FormatFactory.getFormatsFromExtensions(importableFormat);
-        }
-
-        //If there is no file format enable, add the "other" format to the format list but it won't be visible.
-        if(formatList.isEmpty()) {
-            formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
-        }
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
         formatList.get(0).setDefault(true);
 
         //Instantiate the DataStore
         DataStore dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
-        dataStore.setIsDataBase(isDataBase);
-        dataStore.setIsGeocatalog(isGeocatalog);
-        dataStore.setIsFile(isFile);
 
         InputDescriptionType input = new InputDescriptionType();
         JAXBElement<DataStore> jaxbElement = new ObjectFactory().createDataStore(dataStore);
@@ -132,56 +82,12 @@ public class DataStoreParser implements Parser{
     public OutputDescriptionType parseOutput(Field f, String processId) {
         //Instantiate the DataStore and its formats
         DataStoreAttribute dataStoreAttribute = f.getAnnotation(DataStoreAttribute.class);
-        List<Format> formatList;
-        List<String> exportableGeoFormat;
-        boolean isFile = false;
-        boolean isGeocatalog = false;
-        boolean isDataBase = false;
-
-        if(dataStoreAttribute.isSpatial()){
-            exportableGeoFormat = new ArrayList<>(wpsService.getExportableFormat(true).keySet());
-        }
-        else{
-            exportableGeoFormat = new ArrayList<>(wpsService.getExportableFormat(false).keySet());
-        }
-
-        //If there is extension, test if it is recognized by OrbisGIS and register it.
-        if(dataStoreAttribute.extensions().length!=0) {
-            List<String> validFormats = new ArrayList<>();
-            for(String extension : dataStoreAttribute.extensions()){
-                if(extension.equals(FormatFactory.GEOCATALOG_EXTENSION)){
-                    isGeocatalog = true;
-                }
-                else if(extension.equals(FormatFactory.DATABASE_EXTENSION)){
-                    isDataBase = true;
-                }
-                else if(exportableGeoFormat.contains(extension)){
-                    isFile = true;
-                    validFormats.add(extension);
-                }
-                else{
-                    LoggerFactory.getLogger(DataStoreParser.class).warn("The format '" + extension + "' is not supported");
-                }
-            }
-            formatList = FormatFactory.getFormatsFromExtensions(validFormats);
-        }
-        //Else add all the extensions.
-        else{
-            isGeocatalog = true;
-            isDataBase = true;
-            isFile = true;
-            formatList = FormatFactory.getFormatsFromExtensions(exportableGeoFormat);
-        }
-        if(formatList.isEmpty()){
-            formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
-        }
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
         formatList.get(0).setDefault(true);
 
         //Instantiate the DataStore
         DataStore dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
-        dataStore.setIsDataBase(isDataBase);
-        dataStore.setIsGeocatalog(isGeocatalog);
-        dataStore.setIsFile(isFile);
 
         OutputDescriptionType output = new OutputDescriptionType();
         JAXBElement<DataStore> jaxbElement = new ObjectFactory().createDataStore(dataStore);
