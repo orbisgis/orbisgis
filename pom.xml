@@ -55,6 +55,7 @@
                 <module>bundles/wps-groovy-api</module>
                 <module>bundles/wps-service</module>
                 <module>bundles/wps-client</module>
+                <module>bundles/wps-orbisgis-scripts</module>
         </modules>
         <profiles>
             <profile>
