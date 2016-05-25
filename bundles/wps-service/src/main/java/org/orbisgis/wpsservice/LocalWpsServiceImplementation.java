@@ -44,6 +44,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
@@ -82,6 +83,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     private static final String OPTION_ASYNC_EXEC = "async-execute";
     /**Array of the table type accepted. */
     private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL"};
+    /** Logger */
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalWpsServiceImplementation.class);
 
     /** CoreWorkspace of OrbisGIS */
     private CoreWorkspace coreWorkspace;
@@ -144,7 +147,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                     new FileOutputStream(coreWorkspace.getWorkspaceFolder() + File.separator + TOOLBOX_PROPERTIES),
                     "Save of the OrbisGIS toolBox");
         } catch (IOException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to save ToolBox state.");
+            LOGGER.warn("Unable to save ToolBox state.");
         }
     }
 
@@ -198,12 +201,12 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             multiThreaded = testDBForMultiProcess();
             if (!multiThreaded) {
                 if (isH2) {
-                    LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, because of the H2 configuration," +
+                    LOGGER.warn("Warning, because of the H2 configuration," +
                             " the toolbox won't be able to run more than one process at the same time.\n" +
                             "Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000;" +
                             " MULTI_THREADED=TRUE'");
                 } else {
-                    LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, because of the database configuration," +
+                    LOGGER.warn("Warning, because of the database configuration," +
                             " the toolbox won't be able to run more than one process at the same time.");
                 }
             }
@@ -213,7 +216,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             onDataManagerChange();
         }
         else{
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, no DataManager found.");
+            LOGGER.warn("Warning, no DataManager found.");
         }
     }
 
@@ -226,17 +229,24 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         WPSCapabilitiesType capabilitiesType = null;
         try {
             unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
-            File executeFile = new File(this.getClass().getResource("WpsServiceBasicCapabilities.xml").getFile());
-            Object unmarshalledObject = unmarshaller.unmarshal(executeFile);
-            if(unmarshalledObject instanceof JAXBElement) {
-                Object value = ((JAXBElement)unmarshalledObject).getValue();
-                if(value instanceof WPSCapabilitiesType){
-                    capabilitiesType = (WPSCapabilitiesType)value;
+            URL url = this.getClass().getResource("WpsServiceBasicCapabilities.xml");
+            if(url != null) {
+                Object unmarshalledObject = unmarshaller.unmarshal(url.openStream());
+                if (unmarshalledObject instanceof JAXBElement) {
+                    Object value = ((JAXBElement) unmarshalledObject).getValue();
+                    if (value instanceof WPSCapabilitiesType) {
+                        capabilitiesType = (WPSCapabilitiesType) value;
+                    }
                 }
             }
+            else{
+                LOGGER.error("Unable to load the WpsServiceBasicCapabilities.xml file containing the " +
+                        "service basic capabilities.");
+            }
         } catch (JAXBException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class)
-                    .error("Error on using the unmarshaller.\n"+e.getMessage());
+            LOGGER.error("Error on using the unmarshaller.\n"+e.getMessage());
+        } catch (IOException e) {
+            LOGGER.error("Error on using the unmarshaller.\n"+e.getMessage());
         }
         if(unmarshaller != null && capabilitiesType != null){
             basicCapabilities = capabilitiesType;
@@ -267,8 +277,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 }
             } else {
                 if (!wpsScriptFolder.mkdir()) {
-                    LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to find or create a script folder.\n" +
-                            "No basic script will be available.");
+                    LOGGER.warn("Unable to find or create a script folder.\nNo basic script will be available.");
                 }
             }
             if (wpsScriptFolder.exists() && wpsScriptFolder.isDirectory()) {
@@ -285,8 +294,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                             //If the script is already in the .OrbisGIS folder, remove it.
                             for (File existingFile : wpsScriptFolder.listFiles()) {
                                 if (existingFile.getName().endsWith(scriptPath) && existingFile.delete()) {
-                                    LoggerFactory.getLogger(LocalWpsServiceImplementation.class).
-                                            warn("Replacing script " + existingFile.getName() + " by the default one");
+                                    LOGGER.warn("Replacing script " + existingFile.getName() + " by the default one");
                                 }
                             }
                             //Copy the script into the .OrbisGIS folder.
@@ -301,14 +309,14 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                     }
                     addLocalSource(wpsScriptFolder.toURI(), "orbisgis", true);
                 } catch (IOException e) {
-                    LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to copy the scripts. \n" +
+                    LOGGER.warn("Unable to copy the scripts. \n" +
                             "No basic script will be available. \n" +
                             "Error : " + e.getMessage());
                 }
             }
         }
         else{
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, no CoreWorkspace found.");
+            LOGGER.warn("Warning, no CoreWorkspace found.");
         }
     }
 
@@ -320,7 +328,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 try {
                     tbProperties.load(new FileInputStream(propertiesFile));
                 } catch (IOException e) {
-                    LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Unable to restore previous configuration of the ToolBox");
+                    LOGGER.warn("Unable to restore previous configuration of the ToolBox");
                     tbProperties = null;
                 }
             }
@@ -335,7 +343,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             }
         }
         else{
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Warning, no CoreWorkspace found.");
+            LOGGER.warn("Warning, no CoreWorkspace found.");
         }
     }
 
@@ -371,8 +379,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         File f = new File(uri);
         if(!f.exists()){
             processManager.removeProcess(pi.getProcessDescriptionType());
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("The script '"+f.getAbsolutePath()+
-                    "' does not exist anymore.");
+            LOGGER.error("The script '"+f.getAbsolutePath()+"' does not exist anymore.");
             return false;
         }
         //If the URI correspond to a ProcessIdentifier remove it before adding it again
@@ -512,8 +519,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         try {
             date = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
         } catch (DatatypeConfigurationException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class)
-                    .error("Unable to generate the XMLGregorianCalendar object.\n"+e.getMessage());
+            LOGGER.error("Unable to generate the XMLGregorianCalendar object.\n"+e.getMessage());
         }
         result.setExpirationDate(date);
         //Get the concerned Job
@@ -578,8 +584,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 result = getResult((GetResult)o);
             }
         } catch (JAXBException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to parse the incoming xml\n"+
-                e.getMessage());
+            LOGGER.error("Unable to parse the incoming xml\n" + e.getMessage());
             return new ByteArrayOutputStream();
         }
         //Write the request answer in an ByteArrayOutputStream
@@ -591,8 +596,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
                 marshaller.marshal(result, out);
             } catch (JAXBException e) {
-                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to parse the outcoming xml\n"+
-                        e.getMessage());
+                LOGGER.error("Unable to parse the outcoming xml\n" + e.getMessage());
             }
         }
         return out;
@@ -717,8 +721,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 map.put(TABLE_DIMENSION, dimension);
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to the the field '"+
-                    tableName+"."+fieldName+"' information.\n"+ e.getMessage());
+            LOGGER.error("Unable to the the field '" + tableName+"."+fieldName+"' information.\n"+ e.getMessage());
         }
         return map;
     }
@@ -759,8 +762,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 }
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the table '"+tableName+
-                    "' field list.\n"+e.getMessage());
+            LOGGER.error("Unable to get the table '"+tableName+"' field list.\n"+e.getMessage());
         }
         return fieldList;
     }
@@ -784,8 +786,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                     tableName,
                     fieldName));
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to get the field '"+tableName+
-                    "."+fieldName+"' value list.\n"+e.getMessage());
+            LOGGER.error("Unable to get the field '"+tableName+"."+fieldName+"' value list.\n"+e.getMessage());
         }
         return fieldValues;
     }
@@ -797,8 +798,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             Statement statement = connection.createStatement();
             statement.execute("DROP TABLE IF EXISTS " + tableName);
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Cannot remove the table '"+tableName+
-                    "'.\n"+e.getMessage());
+            LOGGER.error("Cannot remove the table '"+tableName+"'.\n"+e.getMessage());
         }
     }
 
@@ -817,8 +817,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             driver.exportTable(dataManager.getDataSource().getConnection(), tableName,
                     f, new EmptyProgressVisitor());
         } catch (SQLException|IOException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Cannot save the table '"+tableName+
-                    "'\n"+e.getMessage());
+            LOGGER.error("Cannot save the table '"+tableName+"'\n"+e.getMessage());
         }
     }
 
@@ -856,7 +855,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             }
             return tableName;
         } catch (SQLException|IOException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
         return null;
     }
@@ -870,8 +869,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 ((Statement)object).cancel();
                 ((Statement)object).close();
             } catch (SQLException e) {
-                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Unable to cancel the lodaing of '"+
-                        uri+"'.\n"+e.getMessage());
+                LOGGER.error("Unable to cancel the lodaing of '"+uri+"'.\n"+e.getMessage());
             }
         }
         //If the object from the map is a ProgressVisitor, cancel it.
@@ -905,7 +903,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 return true;
             }
         } catch (SQLException e) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
         return false;
     }
@@ -959,7 +957,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                             rs.getString("F_TABLE_SCHEMA"), rs.getString("F_TABLE_NAME")).toString(), rs.getString("TYPE"));
                 }
             } catch (SQLException ex) {
-                LoggerFactory.getLogger(LocalWpsServiceImplementation.class).warn("Geometry columns information of tables are not available", ex);
+                LOGGER.warn("Geometry columns information of tables are not available", ex);
             }
             // Fetch all tables
             try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {
@@ -1004,7 +1002,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             }
             tableList = newTables;
         } catch (SQLException ex) {
-            LoggerFactory.getLogger(LocalWpsServiceImplementation.class).error("Cannot read the table list", ex);
+            LOGGER.error("Cannot read the table list", ex);
         }
     }
 
