@@ -274,7 +274,7 @@ public class ProcessManager {
                         return f;
                     }
                     if(identifier.endsWith(":input:"+((DescriptionTypeAttribute) a).title().replaceAll("[^a-zA-Z0-9_]", "_")) ||
-                            identifier.endsWith(":output:"+f.getName().replaceAll("[^a-zA-Z0-9_]", "_"))){
+                            identifier.endsWith(":output:"+((DescriptionTypeAttribute) a).title().replaceAll("[^a-zA-Z0-9_]", "_"))){
                         return f;
                     }
                 }

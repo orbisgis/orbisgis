@@ -94,7 +94,7 @@ public class DataStoreProcessing implements DataProcessing {
     @Override
     public void postProcessData(DescriptionType input, Map<URI, Object> dataMap, Map<URI, Object> stash,
                                 ProcessExecutionListener pel) {
-        if(input instanceof InputDescriptionType){
+        /*if(input instanceof InputDescriptionType){
             URI uri = URI.create(input.getIdentifier().getValue());
             if(stash.get(uri) != null && stash.get(uri).equals("file")){
                 wpsService.removeTempTable(dataMap.get(uri).toString());
@@ -103,7 +103,7 @@ public class DataStoreProcessing implements DataProcessing {
         if(input instanceof OutputDescriptionType){
             URI uri = URI.create(input.getIdentifier().getValue());
             URI dataStoreURI = (URI)stash.get(uri);
-            if(dataStoreURI.getScheme().equals("file")){
+            if(dataStoreURI != null && dataStoreURI.getScheme().equals("file")){
                 String path = dataStoreURI.getSchemeSpecificPart();
                 boolean keep = path.endsWith("$");
                 path = path.replace("$", "");
@@ -121,6 +121,6 @@ public class DataStoreProcessing implements DataProcessing {
                     pel.appendLog(LogType.INFO, "Table '" + dataMap.get(uri).toString() + "' successfully created.");
                 }
             }
-        }
+        }*/
     }
 }

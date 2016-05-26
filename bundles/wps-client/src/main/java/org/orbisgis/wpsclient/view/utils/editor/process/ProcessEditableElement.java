@@ -25,7 +25,11 @@ import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+import javax.swing.Timer;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URI;
@@ -43,6 +47,7 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
     public static final String STATE_PROPERTY = "STATE_PROPERTY";
     public static final String LOG_PROPERTY = "LOG_PROPERTY";
     public static final String CANCEL = "CANCEL";
+    public static final String REFRESH_STATUS = "REFRESH_STATUS";
     private ProcessDescriptionType process;
     private boolean isOpen;
 
@@ -58,6 +63,8 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
     private final String ID;
     private ProcessExecutionListener.ProcessState state;
     private long startTime;
+    private UUID jobID;
+    private Timer statusTimer;
 
     public ProcessEditableElement(ProcessDescriptionType process){
         this.process = process;
@@ -166,6 +173,26 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
         startTime = time + 3600000;
     }
 
+    public void setRefreshDate(XMLGregorianCalendar date){
+        if(statusTimer != null && statusTimer.isRunning()){
+            statusTimer.stop();
+        }
+        if(date != null) {
+            long delta = date.toGregorianCalendar().getTime().getTime() - new Date().getTime();
+            if (delta <= 0) {
+                delta = 1;
+            }
+            statusTimer = new Timer((int) delta, EventHandler.create(ActionListener.class, this, "askStatusRefresh"));
+            statusTimer.setRepeats(false);
+            statusTimer.start();
+        }
+    }
+
+    public void askStatusRefresh(){
+        PropertyChangeEvent event = new PropertyChangeEvent(this, REFRESH_STATUS, null, null);
+        firePropertyChangeEvent(event);
+    }
+
     /**
      * Append to the log a new entry.
      * @param logType Type of the message (INFO, WARN, FAILED ...).
@@ -196,6 +223,12 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
         this.state = processState;
         firePropertyChangeEvent(new PropertyChangeEvent(
                 this, STATE_PROPERTY, null, processState));
+        if(state.equals(ProcessState.FAILED)){
+            appendLog(LogType.ERROR, state.toString());
+        }
+        else{
+            appendLog(LogType.INFO, state.toString());
+        }
     }
 
     public void firePropertyChangeEvent(PropertyChangeEvent event){
@@ -208,5 +241,13 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
         for(Map.Entry<URI, Object> entry : defaultInputValues.entrySet()){
             inputDataMap.put(entry.getKey(), entry.getValue());
         }
+    }
+
+    public void setJobID(UUID jobID) {
+        this.jobID = jobID;
+    }
+
+    public UUID getJobID(){
+        return jobID;
     }
 }

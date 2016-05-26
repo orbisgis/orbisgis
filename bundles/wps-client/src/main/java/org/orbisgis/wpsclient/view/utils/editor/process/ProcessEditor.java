@@ -23,6 +23,7 @@ import net.miginfocom.swing.MigLayout;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
+import net.opengis.wps._2_0.StatusInfo;
 import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
@@ -31,13 +32,13 @@ import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUI;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUIManager;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
+import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 
 import javax.swing.*;
 import javax.swing.plaf.LayerUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
@@ -46,6 +47,7 @@ import java.beans.PropertyChangeListener;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.AbstractMap;
+import java.util.UUID;
 
 /**
  * UI for the configuration and the run of a WPS process.
@@ -146,6 +148,11 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.CANCEL)){
             wpsClient.getWpsService().cancelProcess(URI.create(pee.getProcess().getIdentifier().getValue()));
         }
+        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.REFRESH_STATUS)){
+            StatusInfo statusInfo = wpsClient.getJobStatus(pee.getJobID());
+            pee.setProcessState(ProcessExecutionListener.ProcessState.valueOf(statusInfo.getStatus().toUpperCase()));
+            pee.setRefreshDate(statusInfo.getNextPoll());
+        }
     }
 
     /**
@@ -168,7 +175,11 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         pee.setProcessState(ProcessEditableElement.ProcessState.RUNNING);
 
         //Run the process in a separated thread
-        wpsClient.executeProcess(pee.getProcess(), pee.getInputDataMap(), pee.getOutputDataMap());
+        StatusInfo statusInfo = wpsClient.executeProcess(pee.getProcess(),
+                pee.getInputDataMap(),
+                pee.getOutputDataMap());
+        pee.setRefreshDate(statusInfo.getNextPoll());
+        pee.setJobID(UUID.fromString(statusInfo.getJobID()));
         return false;
     }
 

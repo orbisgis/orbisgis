@@ -36,6 +36,7 @@ import org.orbisgis.corejdbc.*;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
+import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.model.DataType;
@@ -55,6 +56,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.*;
 import java.io.ByteArrayOutputStream;
@@ -85,6 +87,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL"};
     /** Logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalWpsServiceImplementation.class);
+    /** Process polling time in milliseconds. */
+    private static final long PROCESS_POLLING_MILLIS = 10000;
 
     /** CoreWorkspace of OrbisGIS */
     private CoreWorkspace coreWorkspace;
@@ -493,6 +497,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             worker.run();
         }
         statusInfo.setStatus(job.getState().name());
+        XMLGregorianCalendar date = getXMLGregorianCalendar(PROCESS_POLLING_MILLIS);
+        statusInfo.setNextPoll(date);
         return statusInfo;
     }
 
@@ -505,6 +511,11 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         StatusInfo statusInfo = new StatusInfo();
         statusInfo.setJobID(jobId.toString());
         statusInfo.setStatus(job.getState().name());
+        if(!job.getState().equals(ProcessExecutionListener.ProcessState.FAILED) &&
+                !job.getState().equals(ProcessExecutionListener.ProcessState.SUCCEEDED)) {
+            XMLGregorianCalendar date = getXMLGregorianCalendar(PROCESS_POLLING_MILLIS);
+            statusInfo.setNextPoll(date);
+        }
         return statusInfo;
     }
 
@@ -513,14 +524,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         Result result = new Result();
         //generate the XMLGregorianCalendar Object to put in the Result Object
         //TODO make the service be able to set the expiration date
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.setTime(new Date());
-        XMLGregorianCalendar date = null;
-        try {
-            date = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
-        } catch (DatatypeConfigurationException e) {
-            LOGGER.error("Unable to generate the XMLGregorianCalendar object.\n"+e.getMessage());
-        }
+        XMLGregorianCalendar date = getXMLGregorianCalendar(0);
         result.setExpirationDate(date);
         //Get the concerned Job
         UUID jobId = UUID.fromString(getResult.getJobID());
@@ -1187,5 +1191,25 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         keywordsList.add(translatedKeywords);
         translatedDescriptionType.getKeywords().clear();
         translatedDescriptionType.getKeywords().addAll(keywordsList);
+    }
+
+    /**
+     * Creates a XMLGregorianCalendar object which represent the date of now + durationInMillis.
+     * @param durationInMillis Duration in milliseconds to add to thenow date.
+     * @return A XMLGregorianCalendar object which represent the date of now + durationInMillis.
+     */
+    private XMLGregorianCalendar getXMLGregorianCalendar(long durationInMillis){
+        GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setTime(new Date());
+        XMLGregorianCalendar date = null;
+        try {
+            DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
+            date = datatypeFactory.newXMLGregorianCalendar(calendar);
+            Duration duration = datatypeFactory.newDuration(durationInMillis);
+            date.add(duration);
+        } catch (DatatypeConfigurationException e) {
+            LOGGER.error("Unable to generate the XMLGregorianCalendar object.\n"+e.getMessage());
+        }
+        return date;
     }
 }
