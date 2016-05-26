@@ -173,10 +173,16 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
         startTime = time + 3600000;
     }
 
+    /**
+     * Set the date when it should ask again the process execution job status to the WpsService.
+     * @param date Date when the state should be asked.
+     */
     public void setRefreshDate(XMLGregorianCalendar date){
+        //If the time is already running stop it
         if(statusTimer != null && statusTimer.isRunning()){
             statusTimer.stop();
         }
+        //If there is a new date, launch a timer
         if(date != null) {
             long delta = date.toGregorianCalendar().getTime().getTime() - new Date().getTime();
             if (delta <= 0) {
@@ -188,6 +194,9 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
         }
     }
 
+    /**
+     * Fire an event to ask the refreshing of the status.
+     */
     public void askStatusRefresh(){
         PropertyChangeEvent event = new PropertyChangeEvent(this, REFRESH_STATUS, null, null);
         firePropertyChangeEvent(event);
@@ -243,10 +252,18 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
         }
     }
 
+    /**
+     * Sets the jobID of the running process.
+     * @param jobID The job ID.
+     */
     public void setJobID(UUID jobID) {
         this.jobID = jobID;
     }
 
+    /**
+     * Returns the job ID of the running process.
+     * @return The job ID.
+     */
     public UUID getJobID(){
         return jobID;
     }

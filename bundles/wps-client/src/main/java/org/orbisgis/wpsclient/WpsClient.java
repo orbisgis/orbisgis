@@ -570,6 +570,11 @@ public class WpsClient implements DockingPanel {
         return result;
     }
 
+    /**
+     * Ask the WpsService the status of the job corresponding to the given ID.
+     * @param jobID UUID of the job.
+     * @return The status of a job.
+     */
     public StatusInfo getJobStatus(UUID jobID) {
         GetStatus getStatus = new GetStatus();
         getStatus.setJobID(jobID.toString());
