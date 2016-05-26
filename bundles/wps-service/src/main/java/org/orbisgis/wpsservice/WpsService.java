@@ -4,7 +4,6 @@ import net.opengis.wps._2_0.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
 
 /**
  * This interface describe all the capabilities that should be implemented by a WPS service.

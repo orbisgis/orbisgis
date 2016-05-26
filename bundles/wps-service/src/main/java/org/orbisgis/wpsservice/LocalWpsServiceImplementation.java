@@ -129,6 +129,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     /** JAXB object factory for the WPS objects. */
     private static final ObjectFactory wpsObjectFactory = new ObjectFactory();
 
+    /**
+     * Initialization of the LocalWpsServiceImplementation required by OSGI.
+     */
     @Activate
     public void init(){
         initWpsService();
@@ -141,6 +144,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         initDataBaseLink();
     }
 
+    /**
+     * Dispose of the LocalWpsServiceImplementation required by OSGI.
+     */
     @Deactivate
     public void dispose(){
         //Try to save the local files loaded.
@@ -226,6 +232,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
     /**
      * Initialize everything about the Wps Service
+     * Generates the basic WPSCapabilitiesType of the WpsService from a resource file
      */
     private void initWpsService(){
         //Get the basic WpsCapabilitiesType from the WpsServiceBasicCapabilities.xml file
@@ -324,6 +331,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         }
     }
 
+    /**
+     * Reload the script loaded in the previous session.
+     */
     private void loadPreviousState(){
         if(coreWorkspace != null) {
             Properties tbProperties = new Properties();

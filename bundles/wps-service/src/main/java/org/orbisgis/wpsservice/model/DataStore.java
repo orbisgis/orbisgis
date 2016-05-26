@@ -108,26 +108,4 @@ public class DataStore extends ComplexDataType {
     public List<DataField> getListDataField(){
         return listDataField;
     }
-
-    /**
-     * Build an URI usable in the wps service from the dataStore information.
-     * @param dataStoreType Type of the dataStore, can be DATASTORE_TYPE_GEOCATALOG or DATASTORE_TYPE_FILE.
-     * @param dataSource Body of the uri. If it is a file, dataSource is the file absolute path, if it is a geocatalog,
-     *                   dataSource is the table name.
-     * @param tableName Table name.
-     * @return
-     */
-    public static URI buildUriDataStore(String dataStoreType, String dataSource, String tableName){
-        String uri = "";
-        switch(dataStoreType){
-            case DATASTORE_TYPE_GEOCATALOG:
-                uri += "geocatalog:";
-                break;
-            case DATASTORE_TYPE_FILE:
-                uri += "file:";
-        }
-        uri += dataSource;
-        uri += "#"+tableName;
-        return URI.create(uri);
-    }
 }

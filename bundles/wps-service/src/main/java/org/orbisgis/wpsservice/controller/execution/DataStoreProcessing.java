@@ -22,7 +22,6 @@ package org.orbisgis.wpsservice.controller.execution;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.DescriptionType;
 import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener.LogType;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,34 +92,5 @@ public class DataStoreProcessing implements DataProcessing {
 
     @Override
     public void postProcessData(DescriptionType input, Map<URI, Object> dataMap, Map<URI, Object> stash,
-                                ProcessExecutionListener pel) {
-        /*if(input instanceof InputDescriptionType){
-            URI uri = URI.create(input.getIdentifier().getValue());
-            if(stash.get(uri) != null && stash.get(uri).equals("file")){
-                wpsService.removeTempTable(dataMap.get(uri).toString());
-            }
-        }
-        if(input instanceof OutputDescriptionType){
-            URI uri = URI.create(input.getIdentifier().getValue());
-            URI dataStoreURI = (URI)stash.get(uri);
-            if(dataStoreURI != null && dataStoreURI.getScheme().equals("file")){
-                String path = dataStoreURI.getSchemeSpecificPart();
-                boolean keep = path.endsWith("$");
-                path = path.replace("$", "");
-                wpsService.saveURI(URI.create(dataStoreURI.getScheme()+":"+path), dataMap.get(uri).toString());
-                if(pel != null) {
-                    pel.appendLog(LogType.INFO, "Table '" + dataMap.get(uri).toString() + "' successfully exported into '" +
-                            path + "'.");
-                }
-                if(!keep){
-                    wpsService.removeTempTable(dataMap.get(uri).toString());
-                }
-            }
-            else if(dataStoreURI.getScheme().equals("geocatalog")){
-                if(pel != null) {
-                    pel.appendLog(LogType.INFO, "Table '" + dataMap.get(uri).toString() + "' successfully created.");
-                }
-            }
-        }*/
-    }
+                                ProcessExecutionListener pel) {}
 }
