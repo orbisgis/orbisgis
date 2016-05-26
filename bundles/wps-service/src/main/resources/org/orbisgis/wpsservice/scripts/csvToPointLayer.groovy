@@ -79,19 +79,16 @@ String csvDataInput
         isEditable = true)
 String separator
 
-@DataFieldInput(title="Id field",
-        resume="The point id field",
-        dataStore="Input csv")
+@LiteralDataInput(title="Id field",
+        resume="The point id field")
 String idField
 
-@DataFieldInput(title="X field",
-        resume="The X coordinate field",
-        dataStore="Input csv")
+@LiteralDataInput(title="X field",
+        resume="The X coordinate field")
 String xField
 
-@DataFieldInput(title="Y field",
-        resume="The Y coordinate field",
-        dataStore="Input csv")
+@LiteralDataInput(title="Y field",
+        resume="The Y coordinate field")
 String yField
 
 @EnumerationInput(title="Input EPSG",

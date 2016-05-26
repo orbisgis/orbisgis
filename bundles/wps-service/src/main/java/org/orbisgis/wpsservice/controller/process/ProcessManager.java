@@ -26,6 +26,7 @@ import net.opengis.wps._2_0.OutputDescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
+import org.orbisgis.wpsgroovyapi.process.Process;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
 import org.orbisgis.wpsservice.controller.utils.CancelClosure;
@@ -36,6 +37,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.*;
 
@@ -200,8 +203,20 @@ public class ProcessManager {
                 Field f = getField(pi.getClazz(), i.getIdentifier().getValue());
                 if(f != null) {
                     f.setAccessible(true);
-
-                    f.set(groovyObject, f.getType().cast(dataMap.get(URI.create(i.getIdentifier().getValue()))));
+                    Object data = dataMap.get(URI.create(i.getIdentifier().getValue()));
+                    if(Number.class.isAssignableFrom(f.getType()) && data != null) {
+                        try {
+                            Method valueOf = f.getType().getMethod("valueOf", String.class);
+                            if (valueOf != null) {
+                                valueOf.setAccessible(true);
+                                data = valueOf.invoke(this, data.toString());
+                            }
+                        } catch (NoSuchMethodException | InvocationTargetException e) {
+                            LoggerFactory.getLogger(ProcessManager.class)
+                                    .warn("Unable to convert the LiteralData to the good script type");
+                        }
+                    }
+                    f.set(groovyObject, data);
                 }
             }
             for(OutputDescriptionType o : process.getOutput()) {
@@ -259,7 +274,7 @@ public class ProcessManager {
                         return f;
                     }
                     if(identifier.endsWith(":input:"+((DescriptionTypeAttribute) a).title().replaceAll("[^a-zA-Z0-9_]", "_")) ||
-                            identifier.endsWith(":output:"+f.getName().replaceAll("[^a-zA-Z0-9_]", "_"))){
+                            identifier.endsWith(":output:"+((DescriptionTypeAttribute) a).title().replaceAll("[^a-zA-Z0-9_]", "_"))){
                         return f;
                     }
                 }

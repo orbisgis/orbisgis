@@ -54,6 +54,7 @@ public class ProcessWorker implements Runnable {
     public void run() {
         if(pel != null) {
             pel.setStartTime(System.currentTimeMillis());
+            pel.setProcessState(ProcessExecutionListener.ProcessState.RUNNING);
         }
         Map<URI, Object> stash = new HashMap<>();
         //Catch all the Exception that can be thrown during the script execution.
@@ -96,12 +97,12 @@ public class ProcessWorker implements Runnable {
         }
         catch (Exception e) {
             if(pel != null) {
+                pel.setProcessState(ProcessExecutionListener.ProcessState.FAILED);
                 LoggerFactory.getLogger(ProcessWorker.class).error(e.getLocalizedMessage());
                 //Print in the log the process execution error
                 pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
                 //Post-process the data
                 pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
-                pel.setProcessState(ProcessExecutionListener.ProcessState.FAILED);
             }
             else{
                 LoggerFactory.getLogger(ProcessWorker.class).error("Error on execution the WPS " +

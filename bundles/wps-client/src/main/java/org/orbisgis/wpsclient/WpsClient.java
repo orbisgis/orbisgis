@@ -64,6 +64,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -448,6 +449,7 @@ public class WpsClient implements DockingPanel {
             dockingManager.addDockingPanel(le);
             openEditorList.add(le);
         }
+        le.addNewLog(pee);
 
         lee.addProcessEditableElement(pee);
         dockingManager.removeDockingPanel(pe.getDockingParameters().getName());
@@ -537,7 +539,7 @@ public class WpsClient implements DockingPanel {
      * @param inputDataMap Map containing the inputs.
      * @param outputDataMap Map containing the outputs.
      */
-    public void executeProcess(ProcessDescriptionType process,
+    public StatusInfo executeProcess(ProcessDescriptionType process,
                                Map<URI,Object> inputDataMap,
                                Map<URI, Object> outputDataMap) {
         //Build the ExecuteRequest object
@@ -565,5 +567,19 @@ public class WpsClient implements DockingPanel {
         //Launch the execution on the server
         JAXBElement<ExecuteRequestType> jaxbElement = new ObjectFactory().createExecute(executeRequest);
         StatusInfo result = (StatusInfo)askService(jaxbElement);
+        return result;
+    }
+
+    /**
+     * Ask the WpsService the status of the job corresponding to the given ID.
+     * @param jobID UUID of the job.
+     * @return The status of a job.
+     */
+    public StatusInfo getJobStatus(UUID jobID) {
+        GetStatus getStatus = new GetStatus();
+        getStatus.setJobID(jobID.toString());
+        //Launch the execution on the server
+        StatusInfo result = (StatusInfo)askService(getStatus);
+        return result;
     }
 }
