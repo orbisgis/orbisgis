@@ -26,7 +26,6 @@ import net.opengis.wps._2_0.OutputDescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
-import org.orbisgis.wpsgroovyapi.process.Process;
 import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
 import org.orbisgis.wpsservice.controller.utils.CancelClosure;
@@ -299,15 +298,6 @@ public class ProcessManager {
         }
     }
 
-    public ProcessIdentifier getProcessIdentifier(URI processURI){
-        for(ProcessIdentifier pi : processIdList){
-            if(pi.getURI().equals(processURI)){
-                return pi;
-            }
-        }
-        return null;
-    }
-
     /**
      * Returns the ProcessIdentifier containing the process with the given CodeType.
      * @param identifier CodeType used as identifier of a process.
@@ -325,17 +315,6 @@ public class ProcessManager {
     public List<ProcessIdentifier> getAllProcessIdentifier(){
         return processIdList;
     }
-
-    public List<ProcessIdentifier> getProcessIdentifierFromParent(URI parent){
-        List<ProcessIdentifier> piList = new ArrayList<>();
-        for(ProcessIdentifier pi : processIdList){
-            if(pi.getParent().equals(parent)){
-                piList.add(pi);
-            }
-        }
-        return piList;
-    }
-
 
     public String getListSourcesAsString(){
         String str = "";
