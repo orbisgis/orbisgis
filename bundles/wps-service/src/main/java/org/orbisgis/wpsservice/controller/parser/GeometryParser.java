@@ -26,14 +26,12 @@ import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
-import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.GeometryData;
 import org.orbisgis.wpsservice.model.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 import java.lang.reflect.Field;
 
 /**
@@ -43,12 +41,6 @@ import java.lang.reflect.Field;
  **/
 
 public class GeometryParser implements Parser {
-
-    private LocalWpsService wpsService;
-
-    public void setLocalWpsService(LocalWpsService wpsService){
-        this.wpsService = wpsService;
-    }
 
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {

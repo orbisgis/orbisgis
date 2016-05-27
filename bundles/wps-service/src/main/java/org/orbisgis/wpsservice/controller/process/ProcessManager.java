@@ -62,7 +62,7 @@ public class ProcessManager {
      */
     public ProcessManager(DataSourceService dataSourceService, LocalWpsService wpsService){
         processIdList = new ArrayList<>();
-        parserController = new ParserController(wpsService);
+        parserController = new ParserController();
         this.dataSourceService = dataSourceService;
         this.wpsService = wpsService;
         this.closureMap = new HashMap<>();

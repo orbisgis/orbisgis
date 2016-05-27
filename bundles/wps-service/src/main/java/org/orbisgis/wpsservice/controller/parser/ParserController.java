@@ -27,7 +27,6 @@ import net.opengis.wps._2_0.OutputDescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute;
-import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +51,7 @@ public class ParserController {
     private ProcessParser processParser;
     private GroovyClassLoader groovyClassLoader;
 
-    public ParserController(LocalWpsService wpsService){
+    public ParserController(){
         //Instantiate the parser list
         parserList = new ArrayList<>();
         parserList.add(new LiteralDataParser());
@@ -63,9 +62,6 @@ public class ParserController {
         parserList.add(new EnumerationParser());
         parserList.add(new RawDataParser());
         parserList.add(new GeometryParser());
-        for(Parser parser : parserList){
-            parser.setLocalWpsService(wpsService);
-        }
         processParser = new ProcessParser();
         groovyClassLoader = new GroovyShell().getClassLoader();
     }
