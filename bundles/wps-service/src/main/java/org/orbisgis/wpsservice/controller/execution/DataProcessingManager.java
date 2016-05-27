@@ -41,9 +41,7 @@ public class DataProcessingManager {
 
     public DataProcessingManager(){
         listDataProcessing = new ArrayList<>();
-        listDataProcessing.add(new LiteralDataProcessing());
         listDataProcessing.add(new GeometryProcessing());
-        listDataProcessing.add(new RawDataProcessing());
     }
 
     public Map<URI, Object> preProcessData(DescriptionType input, Map<URI, Object> dataMap,

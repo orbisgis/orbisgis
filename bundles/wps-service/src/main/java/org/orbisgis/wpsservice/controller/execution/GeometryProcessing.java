@@ -26,13 +26,6 @@ public class GeometryProcessing implements DataProcessing {
     /**Logger */
     private Logger LOGGER = LoggerFactory.getLogger(GeometryProcessing.class);
 
-    private LocalWpsService wpsService;
-
-    @Override
-    public void setLocalWpsService(LocalWpsService wpsService) {
-        this.wpsService = wpsService;
-    }
-
     @Override
     public Class<? extends DataDescriptionType> getDataClass() {
         return GeometryData.class;
