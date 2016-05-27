@@ -39,8 +39,6 @@ import java.lang.annotation.RetentionPolicy
  * The following fields can be defined (optional) :
  *  - isSpatial : boolean
  *      Indicates if the data represented is spatial or not.
- *  - isCreateTable : boolean
- *      Indicates if the toolbox should load the file and give back the table name or just give the file name.
  *
  * @author Sylvain PALOMINOS
  */
@@ -50,14 +48,10 @@ import java.lang.annotation.RetentionPolicy
     /** Indicates if the data represented is spatial or not.*/
     boolean isSpatial() default false
 
-    /** Indicates if the toolbox should load the file and give back the table name or just give the file name.*/
-    boolean isCreateTable() default true
-
 
 
     /********************/
     /** default values **/
     /********************/
     public static final boolean defaultIsSpatial = false
-    public static final boolean defaultIsCreateTable = true
 }
