@@ -590,4 +590,12 @@ public class WpsClient implements DockingPanel {
         Result result = (Result)askService(getResult);
         return result;
     }
+
+    public StatusInfo dismissJob(UUID jobID) {
+        Dismiss dismiss = new Dismiss();
+        dismiss.setJobID(jobID.toString());
+        //Launch the execution on the server
+        StatusInfo result = (StatusInfo)askService(dismiss);
+        return result;
+    }
 }

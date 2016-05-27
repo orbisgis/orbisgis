@@ -148,7 +148,7 @@ public interface LocalWpsService extends WpsService {
 
     /**
      * Cancel the running process corresponding to the given URI.
-     * @param uri URI of the process to cancel.
+     * @param jobId Id of the job to cancel.
      */
-    void cancelProcess(URI uri);
+    void cancelProcess(UUID jobId);
 }

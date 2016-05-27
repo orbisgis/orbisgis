@@ -74,4 +74,8 @@ public class Job implements ProcessExecutionListener {
     public ProcessDescriptionType getProcess(){
         return process;
     }
+
+    public UUID getId() {
+        return id;
+    }
 }

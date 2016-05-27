@@ -143,7 +143,9 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             AbstractMap.Entry<String, Color> entry = (AbstractMap.Entry)propertyChangeEvent.getNewValue();
         }
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.CANCEL)){
-            wpsClient.getWpsService().cancelProcess(URI.create(pee.getProcess().getIdentifier().getValue()));
+            StatusInfo statusInfo = wpsClient.dismissJob(pee.getJobID());
+            pee.setProcessState(ProcessExecutionListener.ProcessState.valueOf(statusInfo.getStatus().toUpperCase()));
+            pee.setRefreshDate(statusInfo.getNextPoll());
         }
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.REFRESH_STATUS)){
             StatusInfo statusInfo = wpsClient.getJobStatus(pee.getJobID());
