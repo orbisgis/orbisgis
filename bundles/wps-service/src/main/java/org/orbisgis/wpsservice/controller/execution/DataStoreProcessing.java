@@ -77,10 +77,7 @@ public class DataStoreProcessing implements DataProcessing {
                     }
                 }
                 else{
-                    if(!keep) {
-                        wpsService.removeTempTable(dataStoreURI.getFragment());
-                    }
-                    else{
+                    if(keep) {
                         path = path.replace("$", "");
                     }
                     dataMap.put(uri, path);

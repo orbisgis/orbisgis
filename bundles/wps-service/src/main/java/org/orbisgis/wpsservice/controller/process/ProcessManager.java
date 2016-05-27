@@ -93,17 +93,18 @@ public class ProcessManager {
         //Test that the script name is not only '.groovy'
         if (f.getName().endsWith(".groovy") && f.getName().length()>7) {
             //Ensure that the process does not already exists.
-            if(getProcess(uri) == null) {
-                //Parse the process
-                AbstractMap.SimpleEntry<ProcessDescriptionType, Class> entry;
-                try {
-                    entry = parserController.parseProcess(f.getAbsolutePath());
-                } catch (MalformedScriptException e) {
-                    LoggerFactory.getLogger(ProcessManager.class).error("Unable to parse the process '"+uri+"'.", e);
-                    return null;
-                }
+            //Parse the process
+            AbstractMap.SimpleEntry<ProcessDescriptionType, Class> entry;
+            try {
+                entry = parserController.parseProcess(f.getAbsolutePath());
+            } catch (MalformedScriptException e) {
+                LoggerFactory.getLogger(ProcessManager.class).error("Unable to parse the process '"+uri+"'.", e);
+                return null;
+            }
+            //If the process is not already registered
+            if(entry != null && entry.getKey() != null && getProcess(entry.getKey().getIdentifier()) == null) {
                 //Check if the process has been well parsed
-                if (entry != null && entry.getKey() != null && entry.getValue() != null) {
+                if (entry.getValue() != null) {
                     //Save the process in a ProcessIdentifier
                     ProcessIdentifier pi = new ProcessIdentifier(entry.getValue(), entry.getKey(), uri,
                             f.getParentFile().toURI());
@@ -238,20 +239,20 @@ public class ProcessManager {
      * @param identifier Identifier of the desired process.
      * @return The process.
      */
-    public ProcessDescriptionType getProcess(URI identifier){
+    public ProcessDescriptionType getProcess(CodeType identifier){
         for(ProcessIdentifier pi : processIdList){
-            if(pi.getURI().equals(identifier)){
+            if(pi.getProcessDescriptionType().getIdentifier().equals(identifier)){
                 return pi.getProcessDescriptionType();
             }
         }
         for(ProcessIdentifier pi : processIdList){
             for(InputDescriptionType input : pi.getProcessDescriptionType().getInput()) {
-                if (input.getIdentifier().getValue().equals(identifier.toString())) {
+                if (input.getIdentifier().equals(identifier)) {
                     return pi.getProcessDescriptionType();
                 }
             }
             for(OutputDescriptionType output : pi.getProcessDescriptionType().getOutput()) {
-                if (output.getIdentifier().getValue().equals(identifier.toString())) {
+                if (output.getIdentifier().equals(identifier)) {
                     return pi.getProcessDescriptionType();
                 }
             }

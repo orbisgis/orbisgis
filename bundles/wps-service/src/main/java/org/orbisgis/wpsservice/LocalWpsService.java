@@ -29,11 +29,10 @@
 
 package org.orbisgis.wpsservice;
 
-import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
+import net.opengis.ows._2.CodeType;
 import org.orbisgis.wpsservice.model.DataType;
 
 import java.io.*;
-import java.net.URI;
 import java.util.*;
 
 /**
@@ -48,51 +47,26 @@ public interface LocalWpsService extends WpsService {
     String TABLE_LOCATION = "TABLE_LOCATION";
     String TABLE_LABEL = "TABLE_LABEL";
 
-    void addLocalSource(URI uri, String iconName, boolean isDefaultScript);
-
-    ProcessIdentifier addLocalScript(File f, String iconName, boolean isDefaultScript);
-
-    void removeProcess(URI uri);
-
-    boolean checkProcess(URI uri);
+    /**
+     * Add a local groovy file or directory of processes to the wps service.
+     * @param f  File object to add to the service.
+     * @param iconName Icon file name associated to the script
+     * @param isDefaultScript True if the scripts are default scripts (unremovable). False otherwise
+     */
+    void addLocalSource(File f, String iconName, boolean isDefaultScript);
 
     /**
-     * Save a geocatalog table into a file.
-     * @param uri URI where the table will be saved.
-     * @param tableName Name of the table to save.
+     * Remove the process corresponding to the given codeType.
+     * @param identifier CodeType identifier of the process.
      */
-    void saveURI(URI uri, String tableName);
-
+    void removeProcess(CodeType identifier);
 
     /**
-     * Verify if the given file is a well formed script.
-     * @param uri URI to check.
-     * @return True if the file is well formed, false otherwise.
+     * Verify if the process corresponding to the identifier is a valid and well formed groovy wps script.
+     * @param identifier CodeType identifier of the process to check.
+     * @return True if the script is valid, false otherwise.
      */
-    boolean checkFolder(URI uri);
-
-
-    /**
-     * Returns a map of the importable format.
-     * The map key is the format extension and the value is the format description.
-     * @param onlySpatial If true, returns only the spatial table.
-     * @return a map of the importable  format.
-     */
-    Map<String, String> getImportableFormat(boolean onlySpatial);
-
-    /**
-     * Returns a map of the exportable spatial format.
-     * The map key is the format extension and the value is the format description.
-     * @param onlySpatial If true, returns only the spatial table.
-     * @return a map of the exportable spatial format.
-     */
-    Map<String, String> getExportableFormat(boolean onlySpatial);
-
-    /**
-     * Removes a table from the database.
-     * @param tableName Table to remove from the dataBase.
-     */
-    void removeTempTable(String tableName);
+    boolean checkProcess(CodeType identifier);
 
     /**
      * Returns a map containing the sql table from OrbisGIS as key and if it is spatial or not as value.
@@ -125,20 +99,6 @@ public interface LocalWpsService extends WpsService {
      * @return The list of distinct values of the field.
      */
     List<String> getFieldValueList(String tableName, String fieldName);
-
-    /**
-     * Loads the given file into the geocatalog and return its table name.
-     * @param uri URI to load.
-     * @return Table name of the loaded file. Returns null if the file can't be loaded.
-     */
-    String loadURI(URI uri, boolean copyInBase);
-
-
-    /**
-     * Cancel the loading of the given uri
-     * @param uri Uri load to cancel.
-     */
-    void cancelLoadUri(URI uri);
 
     /**
      * Returns true if the data base is H2, false otherwise.

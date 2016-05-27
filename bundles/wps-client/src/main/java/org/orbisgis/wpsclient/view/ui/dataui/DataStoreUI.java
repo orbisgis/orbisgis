@@ -334,13 +334,6 @@ public class DataStoreUI implements DataUI{
                 dataField.setSourceModified(true);
             }
         }
-        Object oldValue = dataMap.get(uri);
-        if(oldValue != null && oldValue instanceof URI){
-            URI oldUri = ((URI)oldValue);
-            if(oldUri.getScheme().equals("file")){
-                wpsClient.getWpsService().removeTempTable(oldUri.getFragment());
-            }
-        }
         dataMap.put(uri, URI.create("geocatalog:"+tableName+"#"+tableName));
     }
 

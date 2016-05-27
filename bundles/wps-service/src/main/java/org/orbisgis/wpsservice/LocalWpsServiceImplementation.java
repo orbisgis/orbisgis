@@ -24,11 +24,7 @@ import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.ObjectFactory;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.h2gis.h2spatialapi.DriverFunction;
-import org.h2gis.h2spatialapi.EmptyProgressVisitor;
-import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -322,7 +318,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                             in.close();
                         }
                     }
-                    addLocalSource(wpsScriptFolder.toURI(), "orbisgis", true);
+                    addLocalSource(wpsScriptFolder, "orbisgis", true);
                 } catch (IOException e) {
                     LOGGER.warn("Unable to copy the scripts. \n" +
                             "No basic script will be available. \n" +
@@ -355,7 +351,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 if(prop != null && !prop.toString().isEmpty()){
                     String str = prop.toString();
                     for(String s : str.split(";")){
-                        addLocalScript(new File(URI.create(s)), null, false);
+                        addLocalSource(new File(URI.create(s)), null, false);
                     }
                 }
             }
@@ -365,36 +361,26 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         }
     }
 
-    public void addLocalSource(URI uri, String iconName, boolean isDefaultScript){
-        File file = new File(uri);
-        if(file.isFile()){
-            return;
-        }
-        for(File f : file.listFiles()) {
-            addLocalScript(f, iconName, isDefaultScript);
-        }
-    }
-
-    public ProcessIdentifier addLocalScript(File f, String iconName, boolean isDefaultScript){
+    @Override
+    public void addLocalSource(File f, String iconName, boolean isDefaultScript){
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
             processManager.addLocalScript(f.toURI(), iconName, isDefaultScript);
-            ProcessIdentifier pi = processManager.getProcessIdentifier(f.toURI());
-            if(pi != null) {
-                return pi;
-            }
         }
-        return null;
-    }
-
-    public void removeProcess(URI uri){
-        processManager.removeProcess(processManager.getProcess(uri));
+        else if(f.isDirectory()){
+            processManager.addLocalSource(f.toURI(), iconName, isDefaultScript);
+        }
     }
 
     @Override
-    public boolean checkProcess(URI uri){
-        ProcessIdentifier pi = processManager.getProcessIdentifier(uri);
+    public void removeProcess(CodeType identifier){
+        processManager.removeProcess(processManager.getProcess(identifier));
+    }
+
+    @Override
+    public boolean checkProcess(CodeType identifier){
+        ProcessIdentifier pi = processManager.getProcessIdentifier(identifier);
         //If the file corresponding to the URI does not exist anymore, remove if and warn the user.
-        File f = new File(uri);
+        File f = new File(pi.getURI());
         if(!f.exists()){
             processManager.removeProcess(pi.getProcessDescriptionType());
             LOGGER.error("The script '"+f.getAbsolutePath()+"' does not exist anymore.");
@@ -403,7 +389,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         //If the URI correspond to a ProcessIdentifier remove it before adding it again
         if(pi != null){
             processManager.removeProcess(pi.getProcessDescriptionType());
-            return (processManager.addLocalScript(uri, pi.getCategory(), pi.isDefault()) != null);
+            return (processManager.addLocalScript(pi.getURI(), pi.getCategory(), pi.isDefault()) != null);
         }
         return false;
     }
@@ -641,51 +627,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     @Override
-    public boolean checkFolder(URI uri){
-        File f = new File(uri);
-        if(f.exists() && f.isDirectory()){
-            for(File file : f.listFiles()){
-                if(file.getAbsolutePath().endsWith("."+GROOVY_EXTENSION)){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public Map<String, String> getImportableFormat(boolean onlySpatial){
-        Map<String, String> formatMap = new HashMap<>();
-        //Try to get the available import format
-        if(driverFunctionContainer != null) {
-            for (DriverFunction df : driverFunctionContainer.getDriverFunctionList()) {
-                for (String ext : df.getImportFormats()) {
-                    if (df.isSpatialFormat(ext) || !onlySpatial) {
-                        formatMap.put(ext, df.getFormatDescription(ext));
-                    }
-                }
-            }
-        }
-        return formatMap;
-    }
-
-    @Override
-    public Map<String, String> getExportableFormat(boolean onlySpatial){
-        Map<String, String> formatMap = new HashMap<>();
-        //Try to get the available export format
-        if(driverFunctionContainer != null) {
-            for (DriverFunction df : driverFunctionContainer.getDriverFunctionList()) {
-                for (String ext : df.getExportFormats()) {
-                    if (df.isSpatialFormat(ext) || !onlySpatial) {
-                        formatMap.put(ext, df.getFormatDescription(ext));
-                    }
-                }
-            }
-        }
-        return formatMap;
-    }
-
-    @Override
     public Map<String, Boolean> getGeocatalogTableList(boolean onlySpatial) {
         Map<String, Boolean> mapTable = new HashMap<>();
         String defaultSchema = (isH2)?"PUBLIC":"public";
@@ -827,93 +768,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             LOGGER.error("Unable to get the field '"+tableName+"."+fieldName+"' value list.\n"+e.getMessage());
         }
         return fieldValues;
-    }
-
-    @Override
-    public void removeTempTable(String tableName){
-        try(Connection connection = dataManager.getDataSource().getConnection()) {
-            tableName = TableLocation.parse(tableName, isH2).getTable();
-            Statement statement = connection.createStatement();
-            statement.execute("DROP TABLE IF EXISTS " + tableName);
-        } catch (SQLException e) {
-            LOGGER.error("Cannot remove the table '"+tableName+"'.\n"+e.getMessage());
-        }
-    }
-
-    @Override
-    public void saveURI(URI uri, String tableName){
-        try {
-            tableName = TableLocation.parse(tableName, isH2).getTable();
-            File f = new File(uri);
-            if(!f.exists()){
-                f.createNewFile();
-            }
-            //Find the good driver and save the file.
-            String extension = FilenameUtils.getExtension(f.getAbsolutePath());
-            DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
-                    extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-            driver.exportTable(dataManager.getDataSource().getConnection(), tableName,
-                    f, new EmptyProgressVisitor());
-        } catch (SQLException|IOException e) {
-            LOGGER.error("Cannot save the table '"+tableName+"'\n"+e.getMessage());
-        }
-    }
-
-    @Override
-    public String loadURI(URI uri, boolean copyInBase) {
-        try(Connection connection = dataManager.getDataSource().getConnection()) {
-            File f = new File(uri);
-            //Get the table name of the file
-            String baseName = TableLocation.capsIdentifier(FilenameUtils.getBaseName(f.getName()), isH2);
-            String tableName = dataManager.findUniqueTableName(baseName).replaceAll("\"", "");
-            //Find the corresponding driver and load the file
-            String extension = FilenameUtils.getExtension(f.getAbsolutePath());
-            Statement statement = connection.createStatement();
-            if(extension.equalsIgnoreCase("csv")){
-                //Save the statement to be able to cancel it.
-                cancelLoadMap.put(uri, statement);
-                statement.execute("CREATE TEMPORARY TABLE "+tableName+" AS SELECT * FROM CSVRead('"+f.getAbsolutePath()+"', NULL, 'fieldSeparator=;');");
-                cancelLoadMap.remove(uri);
-            }
-            else {
-                ProgressVisitor pv = new EmptyProgressVisitor();
-                //Save the progress visitor to be able to cancel it.
-                cancelLoadMap.put(uri, pv);
-                if(copyInBase || !isH2){
-                    DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
-                            extension, DriverFunction.IMPORT_DRIVER_TYPE.COPY);
-                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, pv);
-                }
-                else {
-                    DriverFunction driver = driverFunctionContainer.getImportDriverFromExt(
-                            extension, DriverFunction.IMPORT_DRIVER_TYPE.LINK);
-                    driver.importFile(dataManager.getDataSource().getConnection(), tableName, f, pv);
-                }
-                cancelLoadMap.remove(uri);
-            }
-            return tableName;
-        } catch (SQLException|IOException e) {
-            LOGGER.error(e.getMessage());
-        }
-        return null;
-    }
-
-    @Override
-    public void cancelLoadUri(URI uri){
-        Object object = cancelLoadMap.get(uri);
-        //If the object from the map is a Statement, cancel and close it.
-        if(object instanceof Statement){
-            try {
-                ((Statement)object).cancel();
-                ((Statement)object).close();
-            } catch (SQLException e) {
-                LOGGER.error("Unable to cancel the lodaing of '"+uri+"'.\n"+e.getMessage());
-            }
-        }
-        //If the object from the map is a ProgressVisitor, cancel it.
-        else if(object instanceof ProgressVisitor){
-            ((ProgressVisitor)object).cancel();
-        }
     }
 
     @Override

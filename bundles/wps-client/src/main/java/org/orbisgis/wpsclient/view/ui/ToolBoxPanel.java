@@ -402,7 +402,7 @@ public class ToolBoxPanel extends JPanel {
                                     }
                                 }
                             }
-                            wpsClient.removeProcess(URI.create(leaf.getIdentifier().getValue()));
+                            wpsClient.removeProcess(leaf.getIdentifier());
                             break;
                     }
                 }
@@ -480,7 +480,7 @@ public class ToolBoxPanel extends JPanel {
     public void refresh(TreeNodeWps node){
         if(node != null) {
             if (node.getNodeType().equals(TreeNodeWps.NodeType.PROCESS)) {
-                if(!wpsClient.checkProcess(URI.create(node.getIdentifier().getValue()))){
+                if(!wpsClient.checkProcess(node.getIdentifier())){
                     remove(node);
                 }
             } else {
