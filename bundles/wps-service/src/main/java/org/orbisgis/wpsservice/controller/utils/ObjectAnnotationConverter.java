@@ -28,9 +28,6 @@ import org.orbisgis.wpsgroovyapi.attributes.*;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.ArrayList;
@@ -430,20 +427,6 @@ public class ObjectAnnotationConverter {
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;
-        }
-    }
-
-    /**
-     * Returns the process identifier and if their is not, return an URI build around its title.
-     * @return String process identifier.
-     */
-    public static String getProcessIdentifier(Method method){
-        DescriptionTypeAttribute annot = method.getAnnotation(DescriptionTypeAttribute.class);
-        if(annot != null && !annot.identifier().equals(DescriptionTypeAttribute.defaultIdentifier)){
-            return annot.identifier();
-        }
-        else{
-            return annot.title();
         }
     }
 }
