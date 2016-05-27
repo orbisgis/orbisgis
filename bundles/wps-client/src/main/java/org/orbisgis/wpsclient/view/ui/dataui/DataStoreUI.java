@@ -75,14 +75,8 @@ public class DataStoreUI implements DataUI{
     private static final String INITIAL_DELAY_PROPERTY = "INITIAL_DELAY_PROPERTY";
     private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
     private static final String FILE_COMPONENT_PROPERTY = "FILE_COMPONENT_PROPERTY";
-    private static final String KEEP_SOURCE_PROPERTY = "KEEP_SOURCE_PROPERTY";
-    private static final String LOAD_SOURCE_PROPERTY = "LOAD_SOURCE_PROPERTY";
-    private static final String FILE_OPTIONS_PROPERTY = "FILE_OPTIONS_PROPERTY";
-    private static final String DESCRIPTION_TYPE_PROPERTY = "DESCRIPTION_TYPE_PROPERTY";
     private static final String GEOCATALOG_COMBO_BOX_PROPERTY = "GEOCATALOG_COMBO_BOX_PROPERTY";
-    private static final String FILE_PANEL_PROPERTY = "FILE_PANEL_PROPERTY";
     private static final String IS_OUTPUT_PROPERTY = "IS_OUTPUT_PROPERTY";
-    private static final String POPUP_MENU_PROPERTY = "POPUP_MENU_PROPERTY";
 
     /** WpsClient using the generated UI. */
     private WpsClient wpsClient;
@@ -334,7 +328,7 @@ public class DataStoreUI implements DataUI{
                 dataField.setSourceModified(true);
             }
         }
-        dataMap.put(uri, URI.create("geocatalog:"+tableName+"#"+tableName));
+        dataMap.put(uri, tableName);
     }
 
     /**
@@ -349,7 +343,7 @@ public class DataStoreUI implements DataUI{
             String text = document.getText(0, document.getLength());
             text = text.replaceAll(" ", "_");
             if(!text.isEmpty()){
-                dataMap.put(uri, URI.create("geocatalog:"+text.toUpperCase()+"#"+text.toUpperCase()));
+                dataMap.put(uri, text.toUpperCase());
             }
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(DataStoreUI.class).error(e.getMessage());
