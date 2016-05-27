@@ -20,10 +20,7 @@
 package org.orbisgis.wpsclient.view.utils.editor.process;
 
 import net.miginfocom.swing.MigLayout;
-import net.opengis.wps._2_0.InputDescriptionType;
-import net.opengis.wps._2_0.OutputDescriptionType;
-import net.opengis.wps._2_0.ProcessDescriptionType;
-import net.opengis.wps._2_0.StatusInfo;
+import net.opengis.wps._2_0.*;
 import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
@@ -152,6 +149,10 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             StatusInfo statusInfo = wpsClient.getJobStatus(pee.getJobID());
             pee.setProcessState(ProcessExecutionListener.ProcessState.valueOf(statusInfo.getStatus().toUpperCase()));
             pee.setRefreshDate(statusInfo.getNextPoll());
+        }
+        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.GET_RESULTS)){
+            Result result = wpsClient.getJobResult(pee.getJobID());
+            pee.setResult(result);
         }
     }
 

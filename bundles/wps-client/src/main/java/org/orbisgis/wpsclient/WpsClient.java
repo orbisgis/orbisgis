@@ -582,4 +582,12 @@ public class WpsClient implements DockingPanel {
         StatusInfo result = (StatusInfo)askService(getStatus);
         return result;
     }
+
+    public Result getJobResult(UUID jobID) {
+        GetResult getResult = new GetResult();
+        getResult.setJobID(jobID.toString());
+        //Launch the execution on the server
+        Result result = (Result)askService(getResult);
+        return result;
+    }
 }
