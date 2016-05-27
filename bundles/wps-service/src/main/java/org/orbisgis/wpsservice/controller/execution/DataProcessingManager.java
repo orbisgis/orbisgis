@@ -23,7 +23,6 @@ import net.opengis.wps._2_0.DataDescriptionType;
 import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
-import org.orbisgis.wpsservice.LocalWpsService;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class DataProcessingManager {
 
     private List<DataProcessing> listDataProcessing;
 
-    public DataProcessingManager(LocalWpsService wpsService){
+    public DataProcessingManager(){
         listDataProcessing = new ArrayList<>();
         listDataProcessing.add(new LiteralDataProcessing());
         listDataProcessing.add(new GeometryProcessing());

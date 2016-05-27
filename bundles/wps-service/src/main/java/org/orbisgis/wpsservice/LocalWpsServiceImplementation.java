@@ -22,20 +22,19 @@ package org.orbisgis.wpsservice;
 import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
-import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.ObjectFactory;
 import org.apache.commons.io.IOUtils;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.*;
-import org.orbisgis.dbjobs.api.DriverFunctionContainer;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.model.DataType;
+import org.orbisgis.wpsservice.utils.ProcessTranslator;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -76,7 +75,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     private static final String WPS_SCRIPT_FOLDER = "Scripts";
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
-
     private static final String OPTION_SYNC_EXEC = "sync-execute";
     private static final String OPTION_ASYNC_EXEC = "async-execute";
     /**Array of the table type accepted. */
@@ -98,14 +96,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     private DataManager dataManager;
     /** Class managing the DataProcessing classes */
     private DataProcessingManager dataProcessingManager;
-    /** OrbisGIS DriverFunctionContainer. */
-    private DriverFunctionContainer driverFunctionContainer;
     /** Process manager which contains all the loaded scripts. */
     private ProcessManager processManager;
     /** DataSource Service from OrbisGIS */
     private DataSourceService dataSourceService;
-    /** Map containing object that can be used to cancel the loading of an URI. */
-    private Map<URI, Object> cancelLoadMap;
     /** True if a swing runnable is pending to refresh the content of the table list, false otherwise. */
     private AtomicBoolean awaitingRefresh=new AtomicBoolean(false);
     /** True if an updates happen while another on is running. */
@@ -116,7 +110,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     private List<Map<String, String>> tableList;
     /** Map containing the WPS Jobs and their UUID */
     private Map<UUID, Job> jobMap;
-
     /** Basic WpsCapabilitiesType object of the Wps Service.
      * It contains all the basics information about the service excepts the Contents (list of available processes)*/
     private WPSCapabilitiesType basicCapabilities;
@@ -125,6 +118,11 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     /** JAXB object factory for the WPS objects. */
     private static final ObjectFactory wpsObjectFactory = new ObjectFactory();
 
+
+    /**********************************************/
+    /** Initialisation method of the WPS service **/
+    /**********************************************/
+
     /**
      * Initialization of the LocalWpsServiceImplementation required by OSGI.
      */
@@ -132,73 +130,11 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     public void init(){
         initWpsService();
         processManager = new ProcessManager(dataSourceService, this);
-        dataProcessingManager = new DataProcessingManager(this);
-        cancelLoadMap = new HashMap<>();
+        dataProcessingManager = new DataProcessingManager();
         jobMap = new HashMap<>();
         setScriptFolder();
         loadPreviousState();
         initDataBaseLink();
-    }
-
-    /**
-     * Dispose of the LocalWpsServiceImplementation required by OSGI.
-     */
-    @Deactivate
-    public void dispose(){
-        //Cancel all running job
-        for(Map.Entry<UUID, Job> entry : jobMap.entrySet()){
-            cancelProcess(entry.getKey());
-        }
-        //Try to save the local files loaded.
-        try {
-            Properties tbProperties = new Properties();
-            tbProperties.setProperty(PROPERTY_SOURCES, processManager.getListSourcesAsString());
-            tbProperties.store(
-                    new FileOutputStream(coreWorkspace.getWorkspaceFolder() + File.separator + TOOLBOX_PROPERTIES),
-                    "Save of the OrbisGIS toolBox");
-        } catch (IOException e) {
-            LOGGER.warn("Unable to save ToolBox state.");
-        }
-    }
-
-    @Reference
-    public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
-        this.coreWorkspace = coreWorkspace;
-    }
-    public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
-        this.coreWorkspace = null;
-    }
-
-    @Reference
-    public void setDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
-        this.driverFunctionContainer = driverFunctionContainer;
-    }
-    public void unsetDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
-        this.driverFunctionContainer = null;
-    }
-
-    @Reference
-    public void setDataSource(DataSource ds) {
-        dataSourceService = (DataSourceService)ds;
-    }
-    public void unsetDataSource(DataSource ds) {
-        dataSourceService = null;
-    }
-
-    @Reference
-    public void setDataManager(DataManager dataManager) {
-        this.dataManager = dataManager;
-    }
-    public void unsetDataManager(DataManager dataManager) {
-        this.dataManager = null;
-    }
-
-    @Reference
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
-    public void unsetExecutorService(ExecutorService executorService) {
-        this.executorService = null;
     }
 
     /**
@@ -254,9 +190,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 LOGGER.error("Unable to load the WpsServiceBasicCapabilities.xml file containing the " +
                         "service basic capabilities.");
             }
-        } catch (JAXBException e) {
-            LOGGER.error("Error on using the unmarshaller.\n"+e.getMessage());
-        } catch (IOException e) {
+        } catch (JAXBException | IOException e) {
             LOGGER.error("Error on using the unmarshaller.\n"+e.getMessage());
         }
         if(unmarshaller != null && capabilitiesType != null){
@@ -361,6 +295,69 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         }
     }
 
+
+    /**********************************************/
+    /** Deactivation methods of the WPS service. **/
+    /**********************************************/
+
+    /**
+     * Dispose of the LocalWpsServiceImplementation required by OSGI.
+     */
+    @Deactivate
+    public void dispose(){
+        //Cancel all running job
+        for(Map.Entry<UUID, Job> entry : jobMap.entrySet()){
+            cancelProcess(entry.getKey());
+        }
+        //Try to save the local files loaded.
+        try {
+            Properties tbProperties = new Properties();
+            tbProperties.setProperty(PROPERTY_SOURCES, processManager.getListSourcesAsString());
+            tbProperties.store(
+                    new FileOutputStream(coreWorkspace.getWorkspaceFolder() + File.separator + TOOLBOX_PROPERTIES),
+                    "Save of the OrbisGIS toolBox");
+        } catch (IOException e) {
+            LOGGER.warn("Unable to save ToolBox state.");
+        }
+    }
+
+
+    /******************************************************************/
+    /** Set and Unset methods to get services from OrbisGIS via OSGI **/
+    /******************************************************************/
+
+    @Reference
+    public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
+        this.coreWorkspace = coreWorkspace;
+    }
+    public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
+        this.coreWorkspace = null;
+    }
+
+    @Reference
+    public void setDataSource(DataSource ds) {
+        dataSourceService = (DataSourceService)ds;
+    }
+    public void unsetDataSource(DataSource ds) {
+        dataSourceService = null;
+    }
+
+    @Reference
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
+    }
+    public void unsetDataManager(DataManager dataManager) {
+        this.dataManager = null;
+    }
+
+    @Reference
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+    public void unsetExecutorService(ExecutorService executorService) {
+        this.executorService = null;
+    }
+
     @Override
     public void addLocalSource(File f, String iconName, boolean isDefaultScript){
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
@@ -379,20 +376,344 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     @Override
     public boolean checkProcess(CodeType identifier){
         ProcessIdentifier pi = processManager.getProcessIdentifier(identifier);
-        //If the file corresponding to the URI does not exist anymore, remove if and warn the user.
-        File f = new File(pi.getURI());
-        if(!f.exists()){
-            processManager.removeProcess(pi.getProcessDescriptionType());
-            LOGGER.error("The script '"+f.getAbsolutePath()+"' does not exist anymore.");
-            return false;
-        }
         //If the URI correspond to a ProcessIdentifier remove it before adding it again
         if(pi != null){
+            //If the file corresponding to the URI does not exist anymore, remove if and warn the user.
+            File f = new File(pi.getURI());
+            if(!f.exists()){
+                processManager.removeProcess(pi.getProcessDescriptionType());
+                LOGGER.error("The script '"+f.getAbsolutePath()+"' does not exist anymore.");
+                return false;
+            }
             processManager.removeProcess(pi.getProcessDescriptionType());
             return (processManager.addLocalScript(pi.getURI(), pi.getCategory(), pi.isDefault()) != null);
         }
         return false;
     }
+
+    @Override
+    public Map<String, Boolean> getGeocatalogTableList(boolean onlySpatial) {
+        Map<String, Boolean> mapTable = new HashMap<>();
+        String defaultSchema = (isH2)?"PUBLIC":"public";
+        //Read the tableList to get the desired tables
+        for(Map<String, String> map : tableList){
+            if(onlySpatial){
+                //Test if the table contains a geometrical field (if the table is spatial)
+                if(map.containsKey(GEOMETRY_TYPE)){
+                    if(map.containsKey(TABLE_LOCATION)) {
+                        TableLocation tablelocation = TableLocation.parse(map.get(TABLE_LOCATION), isH2);
+                        //If the table is in the default schema, just add its name
+                        if (tablelocation.getSchema(defaultSchema).equals(defaultSchema)) {
+                            mapTable.put(tablelocation.getTable(), map.containsKey(GEOMETRY_TYPE));
+                        }
+                        //If not, add the schema name '.' the table name (SCHEMA.TABLE)
+                        else {
+                            mapTable.put(tablelocation.getSchema() + "." + tablelocation.getTable(),
+                                    map.containsKey(GEOMETRY_TYPE));
+                        }
+                    }
+                }
+            }
+            //Else add all the tables
+            else{
+                if(map.containsKey(TABLE_LOCATION)) {
+                    TableLocation tablelocation = TableLocation.parse(map.get(TABLE_LOCATION), isH2);
+                    //If the table is in the default schema, just add its name
+                    if (tablelocation.getSchema(defaultSchema).equals(defaultSchema)) {
+                        mapTable.put(tablelocation.getTable(), map.containsKey(GEOMETRY_TYPE));
+                    }
+                    //If not, add the schema name '.' the table name (SCHEMA.TABLE)
+                    else {
+                        mapTable.put(tablelocation.getSchema() + "." + tablelocation.getTable(), map.containsKey(GEOMETRY_TYPE));
+                    }
+                }
+            }
+        }
+        return mapTable;
+    }
+
+    @Override
+    public Map<String, Object> getFieldInformation(String tableName, String fieldName){
+        Map<String, Object> map = new HashMap<>();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            TableLocation tableLocation = TableLocation.parse(tableName);
+            List<String> geometricFields = SFSUtilities.getGeometryFields(connection, tableLocation);
+            boolean isGeometric = false;
+            for(String field : geometricFields){
+                if(field.equals(fieldName)){
+                    isGeometric = true;
+                }
+            }
+            if(isGeometric) {
+                int geometryId = SFSUtilities.getGeometryType(connection, tableLocation, fieldName);
+                String geometryType = SFSUtilities.getGeometryTypeNameFromCode(geometryId);
+                int srid = SFSUtilities.getSRID(connection, tableLocation);
+                //TODO : move this statement to SFSUtilities or JDBCUtilities to request the table dimension.
+                Statement statement = connection.createStatement();
+                String query = "SELECT COORD_DIMENSION FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '" +
+                        TableLocation.parse(tableName).getTable() + "' AND F_GEOMETRY_COLUMN LIKE '" +
+                        TableLocation.quoteIdentifier(fieldName) + "';";
+                ResultSet rs = statement.executeQuery(query);
+                int dimension;
+                if (rs.next()) {
+                    dimension = rs.getInt(1);
+                } else {
+                    dimension = 0;
+                }
+                map.put(GEOMETRY_TYPE, geometryType);
+                map.put(TABLE_SRID, srid);
+                map.put(TABLE_DIMENSION, dimension);
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to the the field '" + tableName+"."+fieldName+"' information.\n"+ e.getMessage());
+        }
+        return map;
+    }
+
+    @Override
+    public List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
+        if(dataTypes == null){
+            dataTypes = new ArrayList<>();
+        }
+        if(excludedTypes == null){
+            excludedTypes = new ArrayList<>();
+        }
+        List<String> fieldList = new ArrayList<>();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            DatabaseMetaData dmd = connection.getMetaData();
+            TableLocation tablelocation = TableLocation.parse(tableName, isH2);
+            ResultSet result = dmd.getColumns(tablelocation.getCatalog(), tablelocation.getSchema(),
+                    tablelocation.getTable(), "%");
+            while(result.next()){
+                if (!dataTypes.isEmpty()) {
+                    for (DataType dataType : dataTypes) {
+                        if (DataType.testDBType(dataType, result.getObject(6).toString())) {
+                            fieldList.add(result.getObject(4).toString());
+                        }
+                    }
+                } else if(!excludedTypes.isEmpty()){
+                    boolean accepted = true;
+                    for (DataType dataType : excludedTypes) {
+                        if (DataType.testDBType(dataType, result.getObject(6).toString())) {
+                            accepted = false;
+                        }
+                    }
+                    if(accepted) {
+                        fieldList.add(result.getObject(4).toString());
+                    }
+                }else{
+                    fieldList.add(result.getObject(4).toString());
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the table '"+tableName+"' field list.\n"+e.getMessage());
+        }
+        return fieldList;
+    }
+
+    @Override
+    public List<String> getFieldValueList(String tableName, String fieldName) {
+        List<String> fieldValues = new ArrayList<>();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            tableName = TableLocation.parse(tableName, isH2).toString();
+            List<String> fieldNames = JDBCUtilities.getFieldNames(connection.getMetaData(), tableName);
+            if(fieldNames.isEmpty()){
+                return fieldValues;
+            }
+            for(String field : fieldNames){
+                if(field.equalsIgnoreCase(fieldName)){
+                    fieldName = field;
+                    break;
+                }
+            }
+            fieldValues.addAll(JDBCUtilities.getUniqueFieldValues(connection,
+                    tableName,
+                    fieldName));
+        } catch (SQLException e) {
+            LOGGER.error("Unable to get the field '"+tableName+"."+fieldName+"' value list.\n"+e.getMessage());
+        }
+        return fieldValues;
+    }
+
+    @Override
+    public boolean isH2(){
+        return isH2;
+    }
+
+    private boolean testDBForMultiProcess(){
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            if(dataManager != null){
+                isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                if(isH2) {
+                    Statement statement = connection.createStatement();
+                    ResultSet result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MVCC';");
+                    result.next();
+                    if (!result.getString(1).equals("TRUE")) {
+                        return false;
+                    }
+                    result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MULTI_THREADED';");
+                    result.next();
+                    if (!result.getString(1).equals("1")) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+        return false;
+    }
+
+
+    /*******************************************************/
+    /** Methods for the listening of the database update. **/
+    /*******************************************************/
+
+    @Override
+    public void cancelProcess(UUID jobId){
+        processManager.cancelProcess(jobId);
+    }
+
+    /**
+     * Method called when a change happens in the DataManager (i.e. a table suppression, a table add ...)
+     */
+    public void onDataManagerChange() {
+        //If not actually doing a refresh, do it.
+        if(!awaitingRefresh.getAndSet(true)) {
+            ReadDataManagerOnSwingThread worker = new ReadDataManagerOnSwingThread(this);
+            worker.execute();
+        } else {
+            updateWhileAwaitingRefresh = true;
+        }
+    }
+
+    @Override
+    public void progressionUpdate(StateEvent state) {
+        if (state.isUpdateDatabaseStructure()) {
+            onDataManagerChange();
+        }
+    }
+
+    /**
+     * Read the table list in the database
+     */
+    protected void readDatabase() {
+        List<Map<String, String>> newTables = new ArrayList<>();
+        try (Connection connection = dataManager.getDataSource().getConnection()) {
+            final String defaultCatalog = connection.getCatalog();
+            String defaultSchema = "PUBLIC";
+            try {
+                if (connection.getSchema() != null) {
+                    defaultSchema = connection.getSchema();
+                }
+            } catch (AbstractMethodError | Exception ex) {
+                // Driver has been compiled with JAVA 6, or is not implemented
+            }
+            // Fetch Geometry tables
+            Map<String,String> tableGeometry = new HashMap<>();
+            try(Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery("SELECT * FROM "+defaultSchema+".geometry_columns")) {
+                while(rs.next()) {
+                    tableGeometry.put(new TableLocation(rs.getString("F_TABLE_CATALOG"),
+                            rs.getString("F_TABLE_SCHEMA"), rs.getString("F_TABLE_NAME")).toString(), rs.getString("TYPE"));
+                }
+            } catch (SQLException ex) {
+                LOGGER.warn("Geometry columns information of tables are not available", ex);
+            }
+            // Fetch all tables
+            try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {
+                while(rs.next()) {
+                    Map<String, String> tableAttr = new HashMap<>();
+                    TableLocation location = new TableLocation(rs);
+                    if(location.getCatalog().isEmpty()) {
+                        // PostGIS return empty catalog on metadata
+                        location = new TableLocation(defaultCatalog, location.getSchema(), location.getTable());
+                    }
+                    // Make Label
+                    StringBuilder label = new StringBuilder(addQuotesIfNecessary(location.getTable()));
+                    if(!location.getSchema().isEmpty() && !location.getSchema().equalsIgnoreCase(defaultSchema)) {
+                        label.insert(0, ".");
+                        label.insert(0, addQuotesIfNecessary(location.getSchema()));
+                    }
+                    if(!location.getCatalog().isEmpty() && !location.getCatalog().equalsIgnoreCase(defaultCatalog)) {
+                        label.insert(0, ".");
+                        label.insert(0, addQuotesIfNecessary(location.getCatalog()));
+                    }
+                    // Shortcut location for H2 database
+                    TableLocation shortLocation;
+                    if(isH2) {
+                        shortLocation = new TableLocation("",
+                                location.getSchema().equals(defaultSchema) ? "" : location.getSchema(),
+                                location.getTable());
+                    } else {
+                        shortLocation = new TableLocation(location.getCatalog().equalsIgnoreCase(defaultCatalog) ?
+                                "" : location.getCatalog(),
+                                location.getCatalog().equalsIgnoreCase(defaultCatalog) &&
+                                        location.getSchema().equalsIgnoreCase(defaultSchema) ? "" : location.getSchema(),
+                                location.getTable());
+                    }
+                    tableAttr.put(TABLE_LOCATION, shortLocation.toString(isH2));
+                    tableAttr.put(TABLE_LABEL, label.toString());
+                    String type = tableGeometry.get(location.toString());
+                    if(type != null) {
+                        tableAttr.put(GEOMETRY_TYPE, type);
+                    }
+                    newTables.add(tableAttr);
+                }
+            }
+            tableList = newTables;
+        } catch (SQLException ex) {
+            LOGGER.error("Cannot read the table list", ex);
+        }
+    }
+
+    /**
+     * If needed, quote the table location part
+     * @param tableLocationPart Table location part to quote.
+     * @return Quoted table location part.
+     */
+    private static String addQuotesIfNecessary(String tableLocationPart) {
+        if(tableLocationPart.contains(".")) {
+            return "\""+tableLocationPart+"\"";
+        } else {
+            return tableLocationPart;
+        }
+    }
+
+    /**
+     * Refresh the JList on the swing thread
+     */
+    private static class ReadDataManagerOnSwingThread extends SwingWorker<Boolean, Boolean> {
+        private LocalWpsServiceImplementation wpsService;
+
+        private ReadDataManagerOnSwingThread(LocalWpsServiceImplementation wpsService) {
+            this.wpsService = wpsService;
+        }
+
+        @Override
+        protected Boolean doInBackground() throws Exception {
+            wpsService.readDatabase();
+            return true;
+        }
+
+        @Override
+        protected void done() {
+            //Refresh the JList on the swing thread
+            wpsService.awaitingRefresh.set(false);
+            // An update occurs during fetching tables
+            if(wpsService.updateWhileAwaitingRefresh) {
+                wpsService.updateWhileAwaitingRefresh = false;
+                wpsService.onDataManagerChange();
+            }
+        }
+    }
+
+
+    /*******************************************************************/
+    /** Methods from the WpsService class.                            **/
+    /** All of these methods are definied by the WPS 2.0 OGC standard **/
+    /*******************************************************************/
 
     @Override
     public WPSCapabilitiesType getCapabilities(GetCapabilitiesType getCapabilities) {
@@ -448,7 +769,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             listTransmission.add(DataTransmissionModeType.VALUE);
             processOffering.getOutputTransmission().clear();
             processOffering.getOutputTransmission().addAll(listTransmission);
-            processOffering.setProcess(getTranslatedProcess(process, describeProcess.getLang()));
+            processOffering.setProcess(ProcessTranslator.getTranslatedProcess(process, describeProcess.getLang()));
             processOfferingList.add(processOffering);
         }
         processOfferings.getProcessOffering().clear();
@@ -626,318 +947,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         return out;
     }
 
-    @Override
-    public Map<String, Boolean> getGeocatalogTableList(boolean onlySpatial) {
-        Map<String, Boolean> mapTable = new HashMap<>();
-        String defaultSchema = (isH2)?"PUBLIC":"public";
-        //Read the tableList to get the desired tables
-        for(Map<String, String> map : tableList){
-            if(onlySpatial){
-                //Test if the table contains a geometrical field (if the table is spatial)
-                if(map.containsKey(GEOMETRY_TYPE)){
-                    if(map.containsKey(TABLE_LOCATION)) {
-                        TableLocation tablelocation = TableLocation.parse(map.get(TABLE_LOCATION), isH2);
-                        //If the table is in the default schema, just add its name
-                        if (tablelocation.getSchema(defaultSchema).equals(defaultSchema)) {
-                            mapTable.put(tablelocation.getTable(), map.containsKey(GEOMETRY_TYPE));
-                        }
-                        //If not, add the schema name '.' the table name (SCHEMA.TABLE)
-                        else {
-                            mapTable.put(tablelocation.getSchema() + "." + tablelocation.getTable(),
-                                    map.containsKey(GEOMETRY_TYPE));
-                        }
-                    }
-                }
-            }
-            //Else add all the tables
-            else{
-                if(map.containsKey(TABLE_LOCATION)) {
-                    TableLocation tablelocation = TableLocation.parse(map.get(TABLE_LOCATION), isH2);
-                    //If the table is in the default schema, just add its name
-                    if (tablelocation.getSchema(defaultSchema).equals(defaultSchema)) {
-                        mapTable.put(tablelocation.getTable(), map.containsKey(GEOMETRY_TYPE));
-                    }
-                    //If not, add the schema name '.' the table name (SCHEMA.TABLE)
-                    else {
-                        mapTable.put(tablelocation.getSchema() + "." + tablelocation.getTable(), map.containsKey(GEOMETRY_TYPE));
-                    }
-                }
-            }
-        }
-        return mapTable;
-    }
 
-    @Override
-    public Map<String, Object> getFieldInformation(String tableName, String fieldName){
-        Map<String, Object> map = new HashMap<>();
-        try(Connection connection = dataManager.getDataSource().getConnection()) {
-            TableLocation tableLocation = TableLocation.parse(tableName);
-            List<String> geometricFields = SFSUtilities.getGeometryFields(connection, tableLocation);
-            boolean isGeometric = false;
-            for(String field : geometricFields){
-                if(field.equals(fieldName)){
-                    isGeometric = true;
-                }
-            }
-            if(isGeometric) {
-                int geometryId = SFSUtilities.getGeometryType(connection, tableLocation, fieldName);
-                String geometryType = SFSUtilities.getGeometryTypeNameFromCode(geometryId);
-                int srid = SFSUtilities.getSRID(connection, tableLocation);
-                //TODO : move this statement to SFSUtilities or JDBCUtilities to request the table dimension.
-                Statement statement = connection.createStatement();
-                String query = "SELECT COORD_DIMENSION FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '" +
-                        TableLocation.parse(tableName).getTable() + "' AND F_GEOMETRY_COLUMN LIKE '" +
-                        TableLocation.quoteIdentifier(fieldName) + "';";
-                ResultSet rs = statement.executeQuery(query);
-                int dimension;
-                if (rs.next()) {
-                    dimension = rs.getInt(1);
-                } else {
-                    dimension = 0;
-                }
-                map.put(GEOMETRY_TYPE, geometryType);
-                map.put(TABLE_SRID, srid);
-                map.put(TABLE_DIMENSION, dimension);
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to the the field '" + tableName+"."+fieldName+"' information.\n"+ e.getMessage());
-        }
-        return map;
-    }
-
-    @Override
-    public List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
-        if(dataTypes == null){
-            dataTypes = new ArrayList<>();
-        }
-        if(excludedTypes == null){
-            excludedTypes = new ArrayList<>();
-        }
-        List<String> fieldList = new ArrayList<>();
-        try(Connection connection = dataManager.getDataSource().getConnection()) {
-            DatabaseMetaData dmd = connection.getMetaData();
-            TableLocation tablelocation = TableLocation.parse(tableName, isH2);
-            ResultSet result = dmd.getColumns(tablelocation.getCatalog(), tablelocation.getSchema(),
-                    tablelocation.getTable(), "%");
-            while(result.next()){
-                if (!dataTypes.isEmpty()) {
-                    for (DataType dataType : dataTypes) {
-                        if (DataType.testDBType(dataType, result.getObject(6).toString())) {
-                            fieldList.add(result.getObject(4).toString());
-                        }
-                    }
-                } else if(!excludedTypes.isEmpty()){
-                    boolean accepted = true;
-                    for (DataType dataType : excludedTypes) {
-                        if (DataType.testDBType(dataType, result.getObject(6).toString())) {
-                            accepted = false;
-                        }
-                    }
-                    if(accepted) {
-                        fieldList.add(result.getObject(4).toString());
-                    }
-                }else{
-                    fieldList.add(result.getObject(4).toString());
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the table '"+tableName+"' field list.\n"+e.getMessage());
-        }
-        return fieldList;
-    }
-
-    @Override
-    public List<String> getFieldValueList(String tableName, String fieldName) {
-        List<String> fieldValues = new ArrayList<>();
-        try(Connection connection = dataManager.getDataSource().getConnection()) {
-            tableName = TableLocation.parse(tableName, isH2).toString();
-            List<String> fieldNames = JDBCUtilities.getFieldNames(connection.getMetaData(), tableName);
-            if(fieldNames.isEmpty()){
-                return fieldValues;
-            }
-            for(String field : fieldNames){
-                if(field.equalsIgnoreCase(fieldName)){
-                    fieldName = field;
-                    break;
-                }
-            }
-            fieldValues.addAll(JDBCUtilities.getUniqueFieldValues(connection,
-                    tableName,
-                    fieldName));
-        } catch (SQLException e) {
-            LOGGER.error("Unable to get the field '"+tableName+"."+fieldName+"' value list.\n"+e.getMessage());
-        }
-        return fieldValues;
-    }
-
-    @Override
-    public boolean isH2(){
-        return isH2;
-    }
-
-    private boolean testDBForMultiProcess(){
-        try(Connection connection = dataManager.getDataSource().getConnection()) {
-            if(dataManager != null){
-                isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-                if(isH2) {
-                    Statement statement = connection.createStatement();
-                    ResultSet result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MVCC';");
-                    result.next();
-                    if (!result.getString(1).equals("TRUE")) {
-                        return false;
-                    }
-                    result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MULTI_THREADED';");
-                    result.next();
-                    if (!result.getString(1).equals("1")) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage());
-        }
-        return false;
-    }
-
-    @Override
-    public void cancelProcess(UUID jobId){
-        processManager.cancelProcess(jobId);
-    }
-
-    /**
-     * Method called when a change happens in the DataManager (i.e. a table suppression, a table add ...)
-     */
-    public void onDataManagerChange() {
-        //If not actually doing a refresh, do it.
-        if(!awaitingRefresh.getAndSet(true)) {
-            ReadDataManagerOnSwingThread worker = new ReadDataManagerOnSwingThread(this);
-            worker.execute();
-        } else {
-            updateWhileAwaitingRefresh = true;
-        }
-    }
-
-    @Override
-    public void progressionUpdate(StateEvent state) {
-        if (state.isUpdateDatabaseStructure()) {
-            onDataManagerChange();
-        }
-    }
-
-    /**
-     * Read the table list in the database
-     */
-    protected void readDatabase() {
-        List<Map<String, String>> newTables = new ArrayList<>();
-        try (Connection connection = dataManager.getDataSource().getConnection()) {
-            final String defaultCatalog = connection.getCatalog();
-            String defaultSchema = "PUBLIC";
-            try {
-                if (connection.getSchema() != null) {
-                    defaultSchema = connection.getSchema();
-                }
-            } catch (AbstractMethodError | Exception ex) {
-                // Driver has been compiled with JAVA 6, or is not implemented
-            }
-            // Fetch Geometry tables
-            Map<String,String> tableGeometry = new HashMap<>();
-            try(Statement st = connection.createStatement();
-                ResultSet rs = st.executeQuery("SELECT * FROM "+defaultSchema+".geometry_columns")) {
-                while(rs.next()) {
-                    tableGeometry.put(new TableLocation(rs.getString("F_TABLE_CATALOG"),
-                            rs.getString("F_TABLE_SCHEMA"), rs.getString("F_TABLE_NAME")).toString(), rs.getString("TYPE"));
-                }
-            } catch (SQLException ex) {
-                LOGGER.warn("Geometry columns information of tables are not available", ex);
-            }
-            // Fetch all tables
-            try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {
-                while(rs.next()) {
-                    Map<String, String> tableAttr = new HashMap<>();
-                    TableLocation location = new TableLocation(rs);
-                    if(location.getCatalog().isEmpty()) {
-                        // PostGIS return empty catalog on metadata
-                        location = new TableLocation(defaultCatalog, location.getSchema(), location.getTable());
-                    }
-                    // Make Label
-                    StringBuilder label = new StringBuilder(addQuotesIfNecessary(location.getTable()));
-                    if(!location.getSchema().isEmpty() && !location.getSchema().equalsIgnoreCase(defaultSchema)) {
-                        label.insert(0, ".");
-                        label.insert(0, addQuotesIfNecessary(location.getSchema()));
-                    }
-                    if(!location.getCatalog().isEmpty() && !location.getCatalog().equalsIgnoreCase(defaultCatalog)) {
-                        label.insert(0, ".");
-                        label.insert(0, addQuotesIfNecessary(location.getCatalog()));
-                    }
-                    // Shortcut location for H2 database
-                    TableLocation shortLocation;
-                    if(isH2) {
-                        shortLocation = new TableLocation("",
-                                location.getSchema().equals(defaultSchema) ? "" : location.getSchema(),
-                                location.getTable());
-                    } else {
-                        shortLocation = new TableLocation(location.getCatalog().equalsIgnoreCase(defaultCatalog) ?
-                                "" : location.getCatalog(),
-                                location.getCatalog().equalsIgnoreCase(defaultCatalog) &&
-                                        location.getSchema().equalsIgnoreCase(defaultSchema) ? "" : location.getSchema(),
-                                location.getTable());
-                    }
-                    tableAttr.put(TABLE_LOCATION, shortLocation.toString(isH2));
-                    tableAttr.put(TABLE_LABEL, label.toString());
-                    String type = tableGeometry.get(location.toString());
-                    if(type != null) {
-                        tableAttr.put(GEOMETRY_TYPE, type);
-                    }
-                    newTables.add(tableAttr);
-                }
-            }
-            tableList = newTables;
-        } catch (SQLException ex) {
-            LOGGER.error("Cannot read the table list", ex);
-        }
-    }
-
-    /**
-     * If needed, quote the table location part
-     * @param tableLocationPart Table location part to quote.
-     * @return Quoted table location part.
-     */
-    private static String addQuotesIfNecessary(String tableLocationPart) {
-        if(tableLocationPart.contains(".")) {
-            return "\""+tableLocationPart+"\"";
-        } else {
-            return tableLocationPart;
-        }
-    }
-
-    /**
-     * Refresh the JList on the swing thread
-     */
-    private static class ReadDataManagerOnSwingThread extends SwingWorker<Boolean, Boolean> {
-        private LocalWpsServiceImplementation wpsService;
-
-        private ReadDataManagerOnSwingThread(LocalWpsServiceImplementation wpsService) {
-            this.wpsService = wpsService;
-        }
-
-        @Override
-        protected Boolean doInBackground() throws Exception {
-            wpsService.readDatabase();
-            return true;
-        }
-
-        @Override
-        protected void done() {
-            //Refresh the JList on the swing thread
-            wpsService.awaitingRefresh.set(false);
-            // An update occurs during fetching tables
-            if(wpsService.updateWhileAwaitingRefresh) {
-                wpsService.updateWhileAwaitingRefresh = false;
-                wpsService.onDataManagerChange();
-            }
-        }
-    }
+    /************************/
+    /** Utilities methods. **/
+    /************************/
 
     /**
      * Returns the list of processes managed by the wpsService.
@@ -965,120 +978,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             }
         }
         return null;
-    }
-
-    /**
-     * Return the process with the given language translation.
-     * If the asked translation doesn't exists, use the english one. If it doesn't exists too, uses one of the others.
-     * @param process Process to traduce.
-     * @param language Language asked.
-     * @return The traduced process.
-     */
-    private ProcessDescriptionType getTranslatedProcess(ProcessDescriptionType process, String language){
-        ProcessDescriptionType translatedProcess = new ProcessDescriptionType();
-        translatedProcess.setLang(language);
-        List<InputDescriptionType> inputList = new ArrayList<>();
-        for(InputDescriptionType input : process.getInput()){
-            InputDescriptionType translatedInput = new InputDescriptionType();
-            translatedInput.setDataDescription(input.getDataDescription());
-            translatedInput.setMaxOccurs(input.getMaxOccurs());
-            translatedInput.setMinOccurs(input.getMinOccurs());
-            translateDescriptionType(translatedInput, input, language);
-            inputList.add(translatedInput);
-        }
-        translatedProcess.getInput().clear();
-        translatedProcess.getInput().addAll(inputList);
-        List<OutputDescriptionType> outputList = new ArrayList<>();
-        for(OutputDescriptionType output : process.getOutput()){
-            OutputDescriptionType translatedOutput = new OutputDescriptionType();
-            translatedOutput.setDataDescription(output.getDataDescription());
-            translateDescriptionType(translatedOutput, output, language);
-            outputList.add(translatedOutput);
-        }
-        translatedProcess.getOutput().clear();
-        translatedProcess.getOutput().addAll(outputList);
-        translateDescriptionType(translatedProcess, process, language);
-        return translatedProcess;
-    }
-
-    /**
-     * Sets the given translatedDescriptionType with the traduced elements of the source descriptionType.
-     * If the asked translation doesn't exists, use the english one. If it doesn't exists too, uses one of the others.
-     *
-     * @param translatedDescriptionType Translated DescriptionType.
-     * @param descriptionType Source DescriptionType.
-     * @param language Language asked.
-     */
-    private void translateDescriptionType(DescriptionType translatedDescriptionType, DescriptionType descriptionType, String language){
-        String enLanguage = "en";
-        translatedDescriptionType.setIdentifier(descriptionType.getIdentifier());
-        translatedDescriptionType.getMetadata().clear();
-        translatedDescriptionType.getMetadata().addAll(descriptionType.getMetadata());
-        //Find the good abstract
-        LanguageStringType translatedAbstract = new LanguageStringType();
-        boolean defaultAbstrFound = false;
-        for(LanguageStringType abstr : descriptionType.getAbstract()){
-            if(abstr.getLang() != null && abstr.getLang().equals(language)){
-                translatedAbstract = abstr;
-                break;
-            }
-            else if(abstr.getLang() != null && abstr.getLang().equals(enLanguage)){
-                translatedAbstract = abstr;
-                defaultAbstrFound = true;
-            }
-            else if(!defaultAbstrFound){
-                translatedAbstract = abstr;
-            }
-        }
-        List<LanguageStringType> abstrList = new ArrayList<>();
-        abstrList.add(translatedAbstract);
-        translatedDescriptionType.getAbstract().clear();
-        translatedDescriptionType.getAbstract().addAll(abstrList);
-        //Find the good title
-        LanguageStringType translatedTitle = new LanguageStringType();
-        boolean defaultTitleFound = false;
-        for(LanguageStringType title : descriptionType.getTitle()){
-            if(title.getLang() != null && title.getLang().equals(language)){
-                translatedTitle = title;
-                break;
-            }
-            else if(title.getLang() != null && title.getLang().equals(enLanguage)){
-                translatedTitle = title;
-                defaultTitleFound = true;
-            }
-            else if(!defaultTitleFound){
-                translatedTitle = title;
-            }
-        }
-        List<LanguageStringType> titleList = new ArrayList<>();
-        titleList.add(translatedTitle);
-        translatedDescriptionType.getTitle().clear();
-        translatedDescriptionType.getTitle().addAll(titleList);
-        //Find the good keywords
-        List<KeywordsType> keywordsList = new ArrayList<>();
-        KeywordsType translatedKeywords = new KeywordsType();
-        List<LanguageStringType> keywordList = new ArrayList<>();
-        for(KeywordsType keywords : descriptionType.getKeywords()) {
-            LanguageStringType translatedKeyword = new LanguageStringType();
-            boolean defaultKeywordFound = false;
-            for (LanguageStringType keyword : keywords.getKeyword()) {
-                if (keyword.getLang() != null && keyword.getLang().equals(language)) {
-                    translatedKeyword = keyword;
-                    break;
-                } else if (keyword.getLang() != null && keyword.getLang().equals(enLanguage)) {
-                    translatedKeyword = keyword;
-                    defaultKeywordFound = true;
-                } else if (!defaultKeywordFound) {
-                    translatedKeyword = keyword;
-                }
-            }
-            keywordList.add(translatedKeyword);
-        }
-        translatedKeywords.getKeyword().clear();
-        translatedKeywords.getKeyword().addAll(keywordList);
-        keywordsList.add(translatedKeywords);
-        translatedDescriptionType.getKeywords().clear();
-        translatedDescriptionType.getKeywords().addAll(keywordsList);
     }
 
     /**
