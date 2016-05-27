@@ -124,7 +124,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     /** Basic WpsCapabilitiesType object of the Wps Service.
      * It contains all the basics information about the service excepts the Contents (list of available processes)*/
     private WPSCapabilitiesType basicCapabilities;
-    /** List of the jobControlOption avaliable (like ASYNC_EXECUTE, SYNC_EXECUTE) */
+    /** List of the jobControlOption available (like ASYNC_EXECUTE, SYNC_EXECUTE) */
     private List<String> jobControlOptions;
     /** JAXB object factory for the WPS objects. */
     private static final ObjectFactory wpsObjectFactory = new ObjectFactory();
@@ -149,6 +149,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
      */
     @Deactivate
     public void dispose(){
+        //Cancel all running job
+        for(Map.Entry<UUID, Job> entry : jobMap.entrySet()){
+            cancelProcess(entry.getKey());
+        }
         //Try to save the local files loaded.
         try {
             Properties tbProperties = new Properties();

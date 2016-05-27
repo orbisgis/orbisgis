@@ -24,7 +24,6 @@ import net.opengis.wps._2_0.*;
 import net.opengis.ows._2.GetCapabilitiesType.AcceptLanguages;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
-import net.opengis.wps._2_0.DescriptionType;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
@@ -122,13 +121,17 @@ public class WpsClient implements DockingPanel {
         lee = new LogEditableElement();
         le = null;
 
-        for(ProcessSummaryType processSummary : getAvailableProcesses()) {
-            toolBoxPanel.addProcess(processSummary);
-        }
+        refreshAvailableScripts();
     }
 
     public LocalWpsService getWpsService(){
         return wpsService;
+    }
+
+    public void refreshAvailableScripts(){
+        for(ProcessSummaryType processSummary : getAvailableProcesses()) {
+            toolBoxPanel.addProcess(processSummary);
+        }
     }
 
     /**
@@ -336,6 +339,7 @@ public class WpsClient implements DockingPanel {
                 }
             }
         }
+        refreshAvailableScripts();
     }
 
     /**
