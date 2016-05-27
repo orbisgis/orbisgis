@@ -349,6 +349,10 @@ public class ProcessManager {
         return str;
     }
 
+    /**
+     * Cancel the job corresponding to the jobID.
+     * @param jobId Id of the job to cancel.
+     */
     public void cancelProcess(UUID jobId){
         closureMap.get(jobId).cancel();
     }

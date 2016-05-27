@@ -277,11 +277,18 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
         return jobID;
     }
 
+    /**
+     * Throw a property change event to ask the result of the job.
+     */
     public void askResults() {
         PropertyChangeEvent event = new PropertyChangeEvent(this, GET_RESULTS, null, null);
         firePropertyChangeEvent(event);
     }
 
+    /**
+     * Sets the Result of the process job.
+     * @param result Result object.
+     */
     public void setResult(Result result) {
         appendLog(LogType.INFO, "");
         appendLog(LogType.INFO, "Process result :");
