@@ -540,6 +540,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         return isH2;
     }
 
+    /**
+     * Test the database an returns if it allows the wps service to run more than one process at the same time.
+     * @return True if more than one process can be run at the same time, false otherwise.
+     */
     private boolean testDBForMultiProcess(){
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             if(dataManager != null){

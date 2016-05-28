@@ -312,10 +312,18 @@ public class ProcessManager {
         return null;
     }
 
+    /**
+     * Returns all the process identifiers.
+     * @return All the process identifiers.
+     */
     public List<ProcessIdentifier> getAllProcessIdentifier(){
         return processIdList;
     }
 
+    /**
+     * Returns a string containing all the sources add to the service with all the URI separated by a ;.
+     * @return A string containing all the sources add to the service with all the URI separated by a ;.
+     */
     public String getListSourcesAsString(){
         String str = "";
         for(ProcessIdentifier pi : processIdList){
