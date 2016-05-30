@@ -91,6 +91,8 @@ public class ToolBoxPanel extends JPanel {
     private FileTreeModel filteredModel;
     /** Model of the JTree*/
     private FileTreeModel selectedModel;
+    /** Last selected node */
+    private TreeNodeWps lastSelectedNode;
 
     /** Action available in the right click popup on selecting the panel */
     private ActionCommands popupGlobalActions;
@@ -256,7 +258,7 @@ public class ToolBoxPanel extends JPanel {
                     }
                 }
                 //If a double click is done
-                if (event.getClickCount() == 2) {
+                if (event.getClickCount() == 2 && lastSelectedNode.equals(selectedNode)) {
                     if (selectedNode.isValidNode()) {
                         //if the selected node is a PROCESS node, open a new instance.
                         if(selectedNode.getNodeType().equals(TreeNodeWps.NodeType.PROCESS)) {
@@ -265,6 +267,7 @@ public class ToolBoxPanel extends JPanel {
                     }
                 }
             }
+            lastSelectedNode = selectedNode;
         }
     }
 

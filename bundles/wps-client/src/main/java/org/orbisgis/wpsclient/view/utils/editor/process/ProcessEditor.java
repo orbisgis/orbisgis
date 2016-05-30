@@ -191,16 +191,26 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      * @return The UI for the configuration of the process.
      */
     private JComponent buildUIConf(){
+        ProcessDescriptionType process = pee.getProcess();
+
         JPanel panel = new JPanel(new MigLayout("fill"));
         JScrollPane scrollPane = new JScrollPane(panel);
+
+        JPanel processPanel = new JPanel(new MigLayout("fill"));
+        processPanel.setBorder(BorderFactory.createTitledBorder(process.getTitle().get(0).getValue()));
+        JLabel abstractLabel = new JLabel(process.getAbstract().get(0).getValue());
+        abstractLabel.setFont(abstractLabel.getFont().deriveFont(Font.ITALIC));
+        processPanel.add(abstractLabel);
+        panel.add(processPanel, "growx, span");
+
         // Put all the default values in the datamap
-        pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(pee.getProcess()));
+        pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
         JPanel inputPanel = new JPanel(new MigLayout("fill"));
         inputPanel.setBorder(BorderFactory.createTitledBorder("Inputs"));
         boolean isInputs = false;
 
-        for(InputDescriptionType i : pee.getProcess().getInput()){
+        for(InputDescriptionType i : process.getInput()){
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getValue().getClass());
 
             if(dataUI!=null) {
@@ -253,7 +263,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JPanel outputPanel = new JPanel(new MigLayout("fill"));
         outputPanel.setBorder(BorderFactory.createTitledBorder("Outputs"));
         boolean isOutputs = false;
-        for(OutputDescriptionType o : pee.getProcess().getOutput()){
+        for(OutputDescriptionType o : process.getOutput()){
             DataUI dataUI = dataUIManager.getDataUI(o.getDataDescription().getValue().getClass());
             if(dataUI!=null) {
                 JComponent component = dataUI.createUI(o, pee.getOutputDataMap());

@@ -60,8 +60,8 @@ import java.util.Map;
 public class LiteralDataUI implements DataUI {
 
     /** Size constants **/
-    private static final int MAX_ROW_NUMBER = 10;
-    private static final int MIN_ROW_NUMBER = 3;
+    private static final int MAX_ROW_NUMBER = 5;
+    private static final int MIN_ROW_NUMBER = 1;
 
     /** Constant used to pass object as client property throw JComponents **/
     private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
