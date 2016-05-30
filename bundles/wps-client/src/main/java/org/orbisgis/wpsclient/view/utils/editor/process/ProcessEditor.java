@@ -44,6 +44,7 @@ import java.beans.PropertyChangeListener;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.AbstractMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -71,6 +72,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private WaitLayerUI layerUI;
     private JLayer<JPanel> layer;
     private JLabel waitLabel;
+    /** Error label displayed when the process inputs and output are all defined. */
+    private JLabel errorMessage;
 
     public ProcessEditor(WpsClient wpsClient, ProcessEditableElement pee){
         this.alive = true;
@@ -170,20 +173,34 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     }
 
     /**
-     * Run the process.
-     * @return True if the process has already been launch, false otherwise.
+     * Run the process if all the mandatory process inputs are defined.
      */
-    public boolean runProcess(){
-        wpsClient.validateInstance(this);
-        pee.setProcessState(ProcessEditableElement.ProcessState.RUNNING);
+    public void runProcess(){
+        //First check if all the inputs are defined.
+        boolean allDefined = true;
+        Map<URI, Object> inputDataMap = pee.getInputDataMap();
+        for(InputDescriptionType input : pee.getProcess().getInput()){
+            URI identifier = URI.create(input.getIdentifier().getValue());
+            if(!input.getMinOccurs().equals(new BigInteger("0")) && !inputDataMap.containsKey(identifier)){
+                allDefined = false;
+            }
+        }
 
-        //Run the process in a separated thread
-        StatusInfo statusInfo = wpsClient.executeProcess(pee.getProcess(),
-                pee.getInputDataMap(),
-                pee.getOutputDataMap());
-        pee.setRefreshDate(statusInfo.getNextPoll());
-        pee.setJobID(UUID.fromString(statusInfo.getJobID()));
-        return false;
+        if(allDefined) {
+            //Then launch the process execution
+            wpsClient.validateInstance(this);
+            pee.setProcessState(ProcessEditableElement.ProcessState.RUNNING);
+
+            //Run the process in a separated thread
+            StatusInfo statusInfo = wpsClient.executeProcess(pee.getProcess(),
+                    pee.getInputDataMap(),
+                    pee.getOutputDataMap());
+            pee.setRefreshDate(statusInfo.getNextPoll());
+            pee.setJobID(UUID.fromString(statusInfo.getJobID()));
+        }
+        else{
+            errorMessage.setText("Please, configure all the inputs/outputs before executing.");
+        }
     }
 
     /**
@@ -198,9 +215,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
         JPanel processPanel = new JPanel(new MigLayout("fill"));
         processPanel.setBorder(BorderFactory.createTitledBorder(process.getTitle().get(0).getValue()));
-        JLabel abstractLabel = new JLabel(process.getAbstract().get(0).getValue());
-        abstractLabel.setFont(abstractLabel.getFont().deriveFont(Font.ITALIC));
-        processPanel.add(abstractLabel);
+        processPanel.add(createResumeLabel(process.getAbstract().get(0).getValue()));
         panel.add(processPanel, "growx, span");
 
         // Put all the default values in the datamap
@@ -278,6 +293,9 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         if(isOutputs) {
             panel.add(outputPanel, "growx, span");
         }
+        errorMessage = new JLabel();
+        errorMessage.setForeground(Color.RED);
+        panel.add(errorMessage, "growx, wrap");
         JButton runButton = new JButton("Run", ToolBoxIcon.getIcon("execute"));
         runButton.setBorderPainted(false);
         runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
@@ -402,8 +420,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         label.setCursor(null);
         label.setOpaque(false);
         label.setFocusable(false);
-        label.setWrapStyleWord(true);
-        label.setLineWrap(true);
+        //label.setWrapStyleWord(true);
+        //label.setLineWrap(true);
         label.setFont(UIManager.getFont("Label.font").deriveFont(Font.ITALIC));
         return label;
     }
