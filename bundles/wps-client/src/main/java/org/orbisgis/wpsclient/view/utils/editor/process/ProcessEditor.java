@@ -198,7 +198,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         //Creates the panel that will contains all the inputs.
         JPanel inputPanel = new JPanel(new MigLayout("fill"));
         inputPanel.setBorder(BorderFactory.createTitledBorder("Inputs"));
-        panel.add(inputPanel, "growx, span");
+        boolean isInputs = false;
 
         for(InputDescriptionType i : pee.getProcess().getInput()){
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getValue().getClass());
@@ -207,6 +207,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 //Retrieve the component containing all the UI components.
                 JComponent uiComponent = dataUI.createUI(i, pee.getInputDataMap());
                 if(uiComponent != null) {
+                    isInputs = true;
                     //If the input is optional, hide it
                     if(i.getMinOccurs().equals(new BigInteger("0"))) {
                         uiComponent.setVisible(false);
@@ -244,12 +245,14 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 }
             }
         }
+        if(isInputs) {
+            panel.add(inputPanel, "growx, span");
+        }
 
         //Creates the panel that will contains all the inputs.
         JPanel outputPanel = new JPanel(new MigLayout("fill"));
         outputPanel.setBorder(BorderFactory.createTitledBorder("Outputs"));
-        panel.add(outputPanel, "growx, span");
-
+        boolean isOutputs = false;
         for(OutputDescriptionType o : pee.getProcess().getOutput()){
             DataUI dataUI = dataUIManager.getDataUI(o.getDataDescription().getValue().getClass());
             if(dataUI!=null) {
@@ -257,9 +260,13 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 if(component != null) {
                     outputPanel.add(new JLabel(o.getTitle().get(0).getValue()), "growx, span");
                     outputPanel.add(component, "growx, span");
+                    isOutputs = true;
                 }
                 outputPanel.add(new JSeparator(), "growx, span");
             }
+        }
+        if(isOutputs) {
+            panel.add(outputPanel, "growx, span");
         }
         JButton runButton = new JButton("Run", ToolBoxIcon.getIcon("execute"));
         runButton.setBorderPainted(false);

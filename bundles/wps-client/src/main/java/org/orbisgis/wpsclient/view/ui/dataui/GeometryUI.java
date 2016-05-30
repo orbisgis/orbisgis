@@ -87,7 +87,7 @@ public class GeometryUI implements DataUI {
         }
         //If the DescriptionType is an output, there is nothing to show, so exit
         if(geometryData == null){
-            return component;
+            return null;
         }
 
         component.add(jtf, "growx");

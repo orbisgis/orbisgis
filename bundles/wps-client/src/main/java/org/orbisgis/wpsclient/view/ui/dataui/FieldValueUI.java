@@ -89,8 +89,7 @@ public class FieldValueUI implements DataUI{
             }
         }
         else if(inputOrOutput instanceof OutputDescriptionType){
-            fieldValue = (FieldValue)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
-            return panel;
+            return null;
         }
 
         if(fieldValue == null){

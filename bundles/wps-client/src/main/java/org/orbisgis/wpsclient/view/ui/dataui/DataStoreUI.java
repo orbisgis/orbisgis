@@ -94,7 +94,7 @@ public class DataStoreUI implements DataUI{
         }
         else {
             //If inputOrOutput is not a input and not an output, exit
-            return panel;
+            return null;
         }
 
         /**Instantiate the geocatalog optionPanel. **/

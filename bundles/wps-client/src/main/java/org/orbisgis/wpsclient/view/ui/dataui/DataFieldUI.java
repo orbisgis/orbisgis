@@ -89,7 +89,7 @@ public class DataFieldUI implements DataUI{
             }
         }
         else if(inputOrOutput instanceof OutputDescriptionType){
-            return panel;
+            return null;
         }
 
         if(dataField == null){

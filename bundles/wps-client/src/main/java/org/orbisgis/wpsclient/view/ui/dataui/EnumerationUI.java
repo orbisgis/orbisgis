@@ -80,8 +80,7 @@ public class EnumerationUI implements DataUI{
             }
         }
         else if(inputOrOutput instanceof OutputDescriptionType){
-            enumeration = (Enumeration)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
-            return panel;
+            return null;
         }
 
         if(enumeration == null){
