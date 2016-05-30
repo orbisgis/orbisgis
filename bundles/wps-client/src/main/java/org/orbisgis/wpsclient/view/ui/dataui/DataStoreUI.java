@@ -21,34 +21,22 @@ package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
 import net.opengis.wps._2_0.DescriptionType;
-import net.opengis.wps._2_0.Format;
 import net.opengis.wps._2_0.InputDescriptionType;
-import net.opengis.wps._2_0.OutputDescriptionType;
-import org.apache.commons.io.FilenameUtils;
-import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.ContainerItem;
-import org.orbisgis.sif.components.OpenFilePanel;
-import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.sif.JPanelListRenderer;
-import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.EventHandler;
-import java.io.File;
 import java.math.BigInteger;
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 
@@ -63,19 +51,12 @@ import java.util.List;
 public class DataStoreUI implements DataUI{
 
     /** Constant used to pass object as client property throw JComponents **/
-    private static final String GEOCATALOG = "GEOCATALOG";
-    private static final String FILE = "FILE";
-    private static final String NONE = "NONE";
-    private static final String COMPONENT_PROPERTY = "COMPONENT_PROPERTY";
     private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
     private static final String URI_PROPERTY = "URI_PROPERTY";
     private static final String DATA_STORE_PROPERTY = "DATA_STORE_PROPERTY";
     private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
-    private static final String GEOCATALOG_COMPONENT_PROPERTY = "GEOCATALOG_COMPONENT_PROPERTY";
     private static final String INITIAL_DELAY_PROPERTY = "INITIAL_DELAY_PROPERTY";
     private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
-    private static final String FILE_COMPONENT_PROPERTY = "FILE_COMPONENT_PROPERTY";
-    private static final String GEOCATALOG_COMBO_BOX_PROPERTY = "GEOCATALOG_COMBO_BOX_PROPERTY";
     private static final String IS_OUTPUT_PROPERTY = "IS_OUTPUT_PROPERTY";
 
     /** WpsClient using the generated UI. */
@@ -111,42 +92,10 @@ public class DataStoreUI implements DataUI{
                 isOptional = true;
             }
         }
-        else if(inputOrOutput instanceof OutputDescriptionType){
-            OutputDescriptionType output = (OutputDescriptionType)inputOrOutput;
-            dataStore = (DataStore)output.getDataDescription().getValue();
-            return panel;
-        }
         else {
             //If inputOrOutput is not a input and not an output, exit
             return panel;
         }
-
-        /** Build the ComboBox which contains all the DataStore available types. **/
-        //The combo box will contains ContainerItems linking a JPanel with a table name
-        JComboBox<ContainerItem<Object>> dataStoreTypeBox = new JComboBox<>();
-        //This custom renderer will display in the comboBox a JLabel containing the type icon and the type name.
-        dataStoreTypeBox.setRenderer(new JPanelListRenderer());
-        //Adds all the available type to the comboBox
-        dataStoreTypeBox.addItem(new ContainerItem<Object>(
-                new JLabel("Geocatalog", ToolBoxIcon.getIcon(ToolBoxIcon.GEOCATALOG), SwingConstants.LEFT),
-                GEOCATALOG));
-        if(isOptional) {
-            dataStoreTypeBox.addItem(new ContainerItem<Object>(
-                    new JLabel(""), NONE));
-        }
-        //Adds all the properties used on the type selection
-        dataStoreTypeBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
-        dataStoreTypeBox.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
-        //Panel that will contain the JComponent belonging to the selected type (geocatalog, file ...)
-        JComponent component  = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-        dataStoreTypeBox.putClientProperty(COMPONENT_PROPERTY, component);
-        //Adds the item selection listener to the comboBox
-        dataStoreTypeBox.addItemListener(
-                EventHandler.create(ItemListener.class, this, "onDataStoreTypeSelected", "source"));
-        //Adds the comboBox to the main panel
-        panel.add(dataStoreTypeBox, "dock west");
-        //Add the component panel to the main panel
-        panel.add(component, "grow");
 
         /**Instantiate the geocatalog optionPanel. **/
         //Instantiate the comboBox containing the table list
@@ -171,14 +120,15 @@ public class DataStoreUI implements DataUI{
         geocatalogComboBox.setBackground(Color.WHITE);
         geocatalogComboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
         geocatalogComponent.add(geocatalogComboBox, "span, grow");
+        //Adds the optional value
+        if(isOptional){
+            geocatalogComboBox.add(new JPanel());
+        }
         //Register the geocatalog combo box as a property in the DataStore type box
-        dataStoreTypeBox.putClientProperty(GEOCATALOG_COMPONENT_PROPERTY, geocatalogComponent);
         if(geocatalogComboBox.getItemCount() > 0) {
             geocatalogComboBox.setSelectedIndex(0);
         }
-
-        /** Return the UI panel. **/
-        onDataStoreTypeSelected(dataStoreTypeBox);
+        panel.add(geocatalogComboBox, "grow");
         return panel;
     }
 
@@ -329,51 +279,5 @@ public class DataStoreUI implements DataUI{
             }
         }
         dataMap.put(uri, tableName);
-    }
-
-    /**
-     * When a new table name is set, save the table name into the data map.
-     * @param document JComboBox document containing the new table name.
-     */
-    public void onNewTable(Document document){
-        try {
-            JComboBox<String> comboBox = (JComboBox<String>)document.getProperty(GEOCATALOG_COMBO_BOX_PROPERTY);
-            Map<URI, Object> dataMap = (Map<URI, Object>)document.getProperty(DATA_MAP_PROPERTY);
-            URI uri = (URI)document.getProperty(URI_PROPERTY);
-            String text = document.getText(0, document.getLength());
-            text = text.replaceAll(" ", "_");
-            if(!text.isEmpty()){
-                dataMap.put(uri, text.toUpperCase());
-            }
-        } catch (BadLocationException e) {
-            LoggerFactory.getLogger(DataStoreUI.class).error(e.getMessage());
-        }
-    }
-
-    /**
-     * When a type is selected in the DataStore comboBox, show the corresponding panel.
-     * @param source JComboBox containing the DataStore types.
-     */
-    public void onDataStoreTypeSelected(Object source){
-        JComboBox<ContainerItem> comboBox = (JComboBox<ContainerItem>)source;
-        JPanel component = (JPanel) comboBox.getClientProperty(COMPONENT_PROPERTY);
-        component.removeAll();
-        ContainerItem<Object> container = (ContainerItem)comboBox.getSelectedItem();
-
-        if(container.getLabel().equals(GEOCATALOG)) {
-            JPanel optionPanel = (JPanel) comboBox.getClientProperty(GEOCATALOG_COMPONENT_PROPERTY);
-            component.add(optionPanel, "grow");
-            component.repaint();
-        }
-        else if(container.getLabel().equals(FILE)) {
-            HashMap<URI, Object> dataMap = (HashMap<URI, Object>)comboBox.getClientProperty(DATA_MAP_PROPERTY);
-            URI uri = (URI)comboBox.getClientProperty(URI_PROPERTY);
-            dataMap.put(uri, null);
-            JPanel optionPanel = (JPanel) comboBox.getClientProperty(FILE_COMPONENT_PROPERTY);
-            ((JTextField) optionPanel.getClientProperty(TEXT_FIELD_PROPERTY)).setText("");
-            component.add(optionPanel, "growx");
-            component.repaint();
-        }
-        component.revalidate();
     }
 }
