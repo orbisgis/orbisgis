@@ -107,18 +107,11 @@ public class Process extends DescriptionType {
      * @throws MalformedScriptException Exception thrown if the parameters is null or empty or containing a null value.
      */
     public void setInput(List<Input> inputList) throws MalformedScriptException {
-        if(inputList == null){
-            throw new MalformedScriptException(this.getClass(), "inputList", "can not be null");
-        }
-        if(inputList.isEmpty()){
-            throw new MalformedScriptException(this.getClass(), "inputList", "can not be empty");
-        }
-        if(inputList.contains(null)){
-            throw new MalformedScriptException(this.getClass(), "inputList", "can not contain a null value");
-        }
         this.input = new ArrayList<>();
-        for(Input i : inputList) {
-            this.addInput(i);
+        if(inputList != null){
+            for(Input i : inputList) {
+                this.addInput(i);
+            }
         }
     }
 
