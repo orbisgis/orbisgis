@@ -32,12 +32,9 @@ import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 
 import javax.swing.*;
-import javax.swing.plaf.LayerUI;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -62,16 +59,10 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private ProcessEditableElement pee;
     private WpsClient wpsClient;
     private DockingPanelParameters dockingPanelParameters;
-    /** TabbedPane containing the configuration panel, the info panel and the execution panel */
-    private JTabbedPane tabbedPane;
     /** DataUIManager used to create the UI corresponding the the data */
     private DataUIManager dataUIManager;
     /** Tells if the this editor has been open or not. */
     private boolean alive;
-    private JPanel contentPanel;
-    private WaitLayerUI layerUI;
-    private JLayer<JPanel> layer;
-    private JLabel waitLabel;
     /** Error label displayed when the process inputs and output are all defined. */
     private JLabel errorMessage;
 
@@ -89,13 +80,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         this.setLayout(new BorderLayout());
         dataUIManager = wpsClient.getDataUIManager();
 
-        contentPanel = new JPanel(new BorderLayout());
-        layerUI = new WaitLayerUI();
-        layer = new JLayer<>(contentPanel, layerUI);
-        this.add (layer);
-
-        buildUI();
-        tabbedPane.setSelectedIndex(0);
+        this.add(buildUI(), BorderLayout.CENTER);
         this.revalidate();
     }
 
@@ -162,17 +147,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     }
 
     /**
-     * Build the UI of the ProcessFrame with the data of the processUIData.
-     */
-    private void buildUI(){
-        //Adds to the tabbedPane the 3 panels
-        tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Configuration", buildUIConf());
-        tabbedPane.addTab("Information", buildUIInfo());
-        contentPanel.add(tabbedPane, BorderLayout.CENTER);
-    }
-
-    /**
      * Run the process if all the mandatory process inputs are defined.
      */
     public void runProcess(){
@@ -207,7 +181,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      * Build the UI of the given process according to the given data.
      * @return The UI for the configuration of the process.
      */
-    private JComponent buildUIConf(){
+    private JComponent buildUI(){
         ProcessDescriptionType process = pee.getProcess();
 
         JPanel panel = new JPanel(new MigLayout("fill"));
@@ -215,7 +189,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
         JPanel processPanel = new JPanel(new MigLayout("fill"));
         processPanel.setBorder(BorderFactory.createTitledBorder(process.getTitle().get(0).getValue()));
-        processPanel.add(createResumeLabel(process.getAbstract().get(0).getValue()));
+        processPanel.add(createResumeLabel(process.getAbstract().get(0).getValue()), "growx, span");
         panel.add(processPanel, "growx, span");
 
         // Put all the default values in the datamap
@@ -346,228 +320,15 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         parent.revalidate();
     }
 
-    /**
-     * Build the UI of the given process according to the given data.
-     * @return The UI for the configuration of the process.
-     */
-    private JComponent buildUIInfo(){
-        JPanel panel = new JPanel(new MigLayout("fill"));
-        ProcessDescriptionType p  = pee.getProcess();
-        //Process info
-        JLabel titleContentLabel = new JLabel(p.getTitle().get(0).getValue());
-        JTextArea resumeContentLabel;
-        if(p.getAbstract().get(0).getValue() != null) {
-            resumeContentLabel = createResumeLabel(p.getAbstract().get(0).getValue());
-        }
-        else{
-            resumeContentLabel = createResumeLabel("-");
-        }
-        resumeContentLabel.setFont(resumeContentLabel.getFont().deriveFont(Font.ITALIC));
-
-        JPanel processPanel = new JPanel(new MigLayout("fill"));
-        processPanel.setBorder(BorderFactory.createTitledBorder("Process :"));
-        processPanel.add(titleContentLabel, "wrap, align left");
-        processPanel.add(resumeContentLabel, "growx, wrap, align left");
-
-        //Input info
-        JPanel inputPanel = new JPanel(new MigLayout("fill"));
-        inputPanel.setBorder(BorderFactory.createTitledBorder("Inputs :"));
-
-        for(InputDescriptionType i : p.getInput()){
-            JPanel title = new JPanel(new BorderLayout());
-            title.add(new JLabel(dataUIManager.getIconFromData(i)), BorderLayout.LINE_START);
-            title.add(new JLabel(i.getTitle().get(0).getValue()), BorderLayout.CENTER);
-            inputPanel.add(title, "align left, growx, wrap");
-            if(i.getAbstract().get(0).getValue() != null) {
-                JTextArea resume = createResumeLabel(i.getAbstract().get(0).getValue());
-                inputPanel.add(resume, "growx, wrap");
-            }
-            else {
-                inputPanel.add(new JLabel("-"), "growx, wrap");
-            }
-        }
-
-        //Output info
-        JPanel outputPanel = new JPanel(new MigLayout("fill"));
-        outputPanel.setBorder(BorderFactory.createTitledBorder("Outputs :"));
-
-        for(OutputDescriptionType o : p.getOutput()){
-            JPanel title = new JPanel(new BorderLayout());
-            title.add(new JLabel(dataUIManager.getIconFromData(o)), BorderLayout.LINE_START);
-            title.add(new JLabel(o.getTitle().get(0).getValue()), BorderLayout.CENTER);
-            outputPanel.add(title, "align left, growx, wrap");
-            if(o.getAbstract().get(0).getValue() != null) {
-                JTextArea resume = createResumeLabel(o.getAbstract().get(0).getValue());
-                outputPanel.add(resume, "growx, wrap");
-            }
-            else {
-                outputPanel.add(new JLabel("-"), "growx, wrap");
-            }
-        }
-
-        panel.add(processPanel, "growx, wrap");
-        panel.add(inputPanel, "growx, wrap");
-        panel.add(outputPanel, "growx, wrap");
-
-        JScrollPane scrollPane = new JScrollPane(panel);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
-        return scrollPane;
-    }
-
     private JTextArea createResumeLabel(String text){
         JTextArea label = new JTextArea(text);
         label.setEditable(false);
         label.setCursor(null);
         label.setOpaque(false);
         label.setFocusable(false);
-        //label.setWrapStyleWord(true);
-        //label.setLineWrap(true);
+        label.setWrapStyleWord(true);
+        label.setLineWrap(true);
         label.setFont(UIManager.getFont("Label.font").deriveFont(Font.ITALIC));
         return label;
-    }
-
-    /**
-     * Start the waiting layer and desactivate the user interface.
-     */
-    public void startWaiting(){
-        //Creates a copy of the UI
-        int w = contentPanel.getWidth();
-        int h = contentPanel.getHeight();
-        BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = bi.createGraphics();
-        contentPanel.paint(g);
-        //Write the copy in a JLabel
-        waitLabel = new JLabel(new ImageIcon(bi));
-        //Replace the UI by the JLabel
-        contentPanel.remove(tabbedPane);
-        contentPanel.add(waitLabel, BorderLayout.CENTER);
-        //Start the waiting layer
-        layerUI.start();
-    }
-
-    public void endWaiting(){
-        //Stop the waiting layer
-        layerUI.stop();
-        //Remove the JLabel and add the UI
-        contentPanel.remove(waitLabel);
-        contentPanel.add(tabbedPane, BorderLayout.CENTER);
-    }
-
-    class WaitLayerUI extends LayerUI<JPanel> implements ActionListener {
-        private boolean mIsRunning;
-        private boolean mIsFadingOut;
-        private Timer mTimer;
-
-        private int mAngle;
-        private int mFadeCount;
-        private int mFadeLimit = 15;
-
-        @Override
-        public void paint(Graphics g, JComponent c) {
-            int w = c.getWidth();
-            int h = c.getHeight();
-
-            // Paint the view.
-            super.paint (g, c);
-
-            if (!mIsRunning) {
-                return;
-            }
-
-            Graphics2D g2 = (Graphics2D)g.create();
-
-            float fade = (float)mFadeCount / (float)mFadeLimit;
-            // Gray it out.
-            Composite urComposite = g2.getComposite();
-            g2.setComposite(AlphaComposite.getInstance(
-                    AlphaComposite.SRC_OVER, .5f * fade));
-            g2.fillRect(0, 0, w, h);
-            g2.setComposite(urComposite);
-
-            // Paint the wait indicator.
-            int s = Math.min(w, h) / 5;
-            int cx = w / 2;
-            int cy = h / 2;
-            g2.setPaint(Color.white);
-            //"Loading source" painting
-            Font font = g2.getFont().deriveFont(Font.PLAIN, s / 3);
-            g2.setFont(font);
-            FontMetrics metrics = g2.getFontMetrics(font);
-            int w1 = metrics.stringWidth("Loading");
-            int w2 = metrics.stringWidth("source");
-            int h1 = metrics.getHeight();
-            g2.drawString("Loading", cx - w1 / 2, cy - h1 / 2);
-            g2.drawString("source", cx - w2 / 2, cy + h1 / 2);
-            int space = h1;
-            //"double-click to cancel" painting
-            font = g2.getFont().deriveFont(Font.PLAIN, s / 10);
-            g2.setFont(font);
-            metrics = g2.getFontMetrics(font);
-            w1 = metrics.stringWidth("Double-click");
-            w2 = metrics.stringWidth("to cancel");
-            h1 = metrics.getHeight();
-            g2.drawString("Double-click", cx - w1 / 2, cy + space - h1 / 2);
-            g2.drawString("to cancel", cx - w2 / 2, cy + space + h1 / 2);
-            //waiter painting
-            g2.setStroke(new BasicStroke(s / 4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
-
-            g2.rotate(Math.PI * mAngle / 180, cx, cy);
-            for (int i = 1; i < 12; i++) {
-                float scale = (11.0f - (float)i) / 11.0f;
-                g2.drawLine(cx + s, cy, cx + s * 2, cy);
-                g2.rotate(-Math.PI / 6, cx, cy);
-                g2.setComposite(AlphaComposite.getInstance(
-                        AlphaComposite.SRC_OVER, scale * fade));
-            }
-            Toolkit.getDefaultToolkit().sync();
-            g2.dispose();
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            if (mIsRunning) {
-                firePropertyChange("tick", 0, 1);
-                mAngle += 3;
-                if (mAngle >= 360) {
-                    mAngle = 0;
-                }
-                if (mIsFadingOut) {
-                    if (--mFadeCount <= 0) {
-                        mIsRunning = false;
-                        mTimer.stop();
-                    }
-                }
-                else if (mFadeCount < mFadeLimit) {
-                    mFadeCount++;
-                }
-            }
-        }
-
-        public void start() {
-            if (mIsRunning) {
-                return;
-            }
-
-            // Run a thread for animation.
-            mIsRunning = true;
-            mIsFadingOut = false;
-            mFadeCount = 0;
-            int fps = 24;
-            int tick = 1000 / fps;
-            mTimer = new Timer(tick, this);
-            mTimer.start();
-        }
-
-        public void stop() {
-            mIsFadingOut = true;
-        }
-
-        @Override
-        public void applyPropertyChange(PropertyChangeEvent pce, JLayer l) {
-            if ("tick".equals(pce.getPropertyName())) {
-                l.repaint();
-            }
-        }
     }
 }
