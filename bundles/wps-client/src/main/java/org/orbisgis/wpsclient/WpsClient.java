@@ -127,6 +127,9 @@ public class WpsClient implements DockingPanel {
         return wpsService;
     }
 
+    /**
+     * Refresh the WPS processes displayed in the interface.
+     */
     public void refreshAvailableScripts(){
         for(ProcessSummaryType processSummary : getAvailableProcesses()) {
             toolBoxPanel.addProcess(processSummary);
