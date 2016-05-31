@@ -361,10 +361,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     @Override
     public void addLocalSource(File f, String iconName, boolean isDefaultScript){
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
-            processManager.addLocalScript(f.toURI(), iconName, isDefaultScript);
+            processManager.addScript(f.toURI(), iconName, !isDefaultScript);
         }
         else if(f.isDirectory()){
-            processManager.addLocalSource(f.toURI(), iconName, isDefaultScript);
+            processManager.addLocalSource(f.toURI(), iconName);
         }
     }
 
@@ -379,14 +379,16 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         //If the URI correspond to a ProcessIdentifier remove it before adding it again
         if(pi != null){
             //If the file corresponding to the URI does not exist anymore, remove if and warn the user.
-            File f = new File(pi.getURI());
+            File f = new File(pi.getSourceFileURI());
             if(!f.exists()){
                 processManager.removeProcess(pi.getProcessDescriptionType());
                 LOGGER.error("The script '"+f.getAbsolutePath()+"' does not exist anymore.");
                 return false;
             }
             processManager.removeProcess(pi.getProcessDescriptionType());
-            return (processManager.addLocalScript(pi.getURI(), pi.getCategory(), pi.isDefault()) != null);
+            processManager.addScript(pi.getSourceFileURI(), pi.getCategory(), pi.isRemovable());
+
+            return (processManager.getProcess(pi.getProcessDescriptionType().getIdentifier()) != null);
         }
         return false;
     }
@@ -716,7 +718,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
     /*******************************************************************/
     /** Methods from the WpsService class.                            **/
-    /** All of these methods are definied by the WPS 2.0 OGC standard **/
+    /** All of these methods are defined by the WPS 2.0 OGC standard **/
     /*******************************************************************/
 
     @Override
@@ -764,17 +766,28 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         ProcessOfferings processOfferings = new ProcessOfferings();
         List<ProcessOffering> processOfferingList = new ArrayList<>();
         for(CodeType id : idList) {
-            ProcessOffering processOffering = new ProcessOffering();
-            processOffering.getJobControlOptions().clear();
-            processOffering.getJobControlOptions().addAll(jobControlOptions);
-            //Get the translated process and add it to the ProcessOffering
-            ProcessDescriptionType process = getProcessFromIdentifier(id);
-            List<DataTransmissionModeType> listTransmission = new ArrayList<>();
-            listTransmission.add(DataTransmissionModeType.VALUE);
-            processOffering.getOutputTransmission().clear();
-            processOffering.getOutputTransmission().addAll(listTransmission);
-            processOffering.setProcess(ProcessTranslator.getTranslatedProcess(process, describeProcess.getLang()));
-            processOfferingList.add(processOffering);
+            ProcessOffering processOffering = null;
+            List<ProcessIdentifier> piList = processManager.getAllProcessIdentifier();
+            for(ProcessIdentifier pi : piList){
+                if(pi.getProcessDescriptionType().getIdentifier().getValue().equals(id.getValue())){
+                    processOffering = pi.getProcessOffering();
+                }
+            }
+            if(processOffering != null) {
+                //Build the new ProcessOffering which will be return
+                ProcessOffering po = new ProcessOffering();
+                po.setProcessVersion(processOffering.getProcessVersion());
+                po.getJobControlOptions().clear();
+                po.getJobControlOptions().addAll(jobControlOptions);
+                //Get the translated process and add it to the ProcessOffering
+                List<DataTransmissionModeType> listTransmission = new ArrayList<>();
+                listTransmission.add(DataTransmissionModeType.VALUE);
+                po.getOutputTransmission().clear();
+                po.getOutputTransmission().addAll(listTransmission);
+                ProcessDescriptionType process = processOffering.getProcess();
+                po.setProcess(ProcessTranslator.getTranslatedProcess(process, describeProcess.getLang()));
+                processOfferingList.add(po);
+            }
         }
         processOfferings.getProcessOffering().clear();
         processOfferings.getProcessOffering().addAll(processOfferingList);
@@ -810,7 +823,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
         //Process execution in new thread
         ProcessWorker worker = new ProcessWorker(job,
-                processIdentifier.getProcessDescriptionType(),
+                processIdentifier,
                 dataProcessingManager,
                 processManager,
                 dataMap);
@@ -967,21 +980,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             processList.add(pi.getProcessDescriptionType());
         }
         return processList;
-    }
-
-    /**
-     * Returns the process containing the given identifier.
-     * @param identifier Identifier contained by the needed process.
-     * @return The process containing the identifier.
-     */
-    private ProcessDescriptionType getProcessFromIdentifier(CodeType identifier){
-        List<ProcessIdentifier> piList = processManager.getAllProcessIdentifier();
-        for(ProcessIdentifier pi : piList){
-            if(pi.getProcessDescriptionType().getIdentifier().getValue().equals(identifier.getValue())){
-                return pi.getProcessDescriptionType();
-            }
-        }
-        return null;
     }
 
     /**

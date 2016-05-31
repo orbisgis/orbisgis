@@ -20,20 +20,25 @@
 package org.orbisgis.wpsservice.controller.parser;
 
 import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyObject;
 import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
+import net.opengis.wps._2_0.ProcessOffering;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute;
+import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.*;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +50,8 @@ import java.util.List;
  **/
 
 public class ParserController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ParserController.class);
 
     /** Parser list */
     private List<Parser> parserList;
@@ -66,22 +73,27 @@ public class ParserController {
         groovyClassLoader = new GroovyShell().getClassLoader();
     }
 
+    public Class getProcessClass(URI sourceFileURI){
+        try {
+            File groovyFile = new File(sourceFileURI);
+            return groovyClassLoader.parseClass(groovyFile);
+        } catch (IOException e) {
+            LOGGER.error("Can not parse the process : '"+sourceFileURI+"'");
+        }
+        return null;
+    }
+
     /**
      * Parse a groovy file under a wps process and the groovy class representing the script.
      * @param processPath String path of the file to parse.
      * @return An entry with the process and the class object.
      * @throws MalformedScriptException
      */
-    public AbstractMap.SimpleEntry<ProcessDescriptionType, Class> parseProcess(String processPath) throws MalformedScriptException {
+    public ProcessOffering parseProcess(String processPath) throws MalformedScriptException {
         //Retrieve the class corresponding to the Groovy script.
-        Class clazz;
         File process = new File(processPath);
-        try {
-            groovyClassLoader.clearCache();
-            clazz = groovyClassLoader.parseClass(process);
-        } catch (IOException|GroovyRuntimeException e) {
-            LoggerFactory.getLogger(ParserController.class).error("Can not parse the process : '"+processPath+"'");
-            LoggerFactory.getLogger(ParserController.class).error(e.getMessage());
+        Class clazz = getProcessClass(process.toURI());
+        if(clazz == null){
             return null;
         }
         //Retrieve the list of input and output of the script.
@@ -156,12 +168,12 @@ public class ParserController {
         }
         //Then parse the process
         try {
-            ProcessDescriptionType p = processParser.parseProcess(inputList,
+            ProcessOffering p = processParser.parseProcess(inputList,
                     outputList,
                     clazz.getDeclaredMethod("processing"),
                     process.toURI());
-            link(p);
-            return new AbstractMap.SimpleEntry<>(p, clazz);
+            link(p.getProcess());
+            return p;
         } catch (NoSuchMethodException e) {
             return null;
         }

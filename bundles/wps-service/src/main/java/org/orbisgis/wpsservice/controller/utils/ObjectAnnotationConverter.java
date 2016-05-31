@@ -337,8 +337,9 @@ public class ObjectAnnotationConverter {
         return new AnyValue();
     }
 
-    public static void annotationToObject(ProcessAttribute processAttribute, ProcessDescriptionType process){
-        process.setLang(Locale.forLanguageTag(processAttribute.language()).toString());
+    public static void annotationToObject(ProcessAttribute processAttribute, ProcessOffering processOffering){
+        processOffering.getProcess().setLang(Locale.forLanguageTag(processAttribute.language()).toString());
+        processOffering.setProcessVersion(processAttribute.version());
     }
 
     public static DataStore annotationToObject(DataStoreAttribute dataStoreAttribute, List<Format> formatList) {

@@ -23,6 +23,7 @@ import net.opengis.ows._2.CodeType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
+import net.opengis.wps._2_0.ProcessOffering;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.ProcessAttribute;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
@@ -36,14 +37,12 @@ import java.util.List;
 
 public class ProcessParser {
 
-    public ProcessDescriptionType parseProcess(List<InputDescriptionType> inputList,
-                                               List<OutputDescriptionType> outputList,
-                                               Method processingMethod,
-                                               URI processURI){
+    public ProcessOffering parseProcess(List<InputDescriptionType> inputList,
+                                        List<OutputDescriptionType> outputList,
+                                        Method processingMethod,
+                                        URI processURI){
         ProcessDescriptionType process = new ProcessDescriptionType();
         ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(DescriptionTypeAttribute.class),
-                process);
-        ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(ProcessAttribute.class),
                 process);
         process.getOutput().clear();
         process.getOutput().addAll(outputList);
@@ -55,6 +54,10 @@ public class ProcessParser {
             codeType.setValue(processURI.toString());
             process.setIdentifier(codeType);
         }
-        return process;
+        ProcessOffering processOffering = new ProcessOffering();
+        processOffering.setProcess(process);
+        ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(ProcessAttribute.class),
+                processOffering);
+        return processOffering;
     }
 }

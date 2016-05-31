@@ -190,6 +190,9 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JPanel processPanel = new JPanel(new MigLayout("fill"));
         processPanel.setBorder(BorderFactory.createTitledBorder(process.getTitle().get(0).getValue()));
         processPanel.add(createResumeLabel(process.getAbstract().get(0).getValue()), "growx, span");
+        JLabel version = new JLabel("Version : "+pee.getProcessOffering().getProcessVersion());
+        version.setFont(version.getFont().deriveFont(Font.ITALIC));
+        processPanel.add(version, "growx, span");
         panel.add(processPanel, "growx, span");
 
         // Put all the default values in the datamap

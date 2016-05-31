@@ -1,6 +1,7 @@
 package org.orbisgis.wpsservice.controller.utils;
 
 import net.opengis.wps._2_0.ProcessDescriptionType;
+import net.opengis.wps._2_0.ProcessOffering;
 import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.ProcessAttribute;
@@ -33,6 +34,8 @@ public class ProcessConvertTest {
             boolean annotationFound = false;
             //Retrieve the Values object
             ProcessDescriptionType process = new ProcessDescriptionType();
+            ProcessOffering processOffering = new ProcessOffering();
+            processOffering.setProcess(process);
             //Inspect all the annotation of the field to get the ValuesAttribute one
             Field valuesField = this.getClass().getDeclaredField(FULL_PROCESS_ATTRIBUTE_FIELD_NAME);
             for (Annotation annotation : valuesField.getDeclaredAnnotations()) {
@@ -40,7 +43,7 @@ public class ProcessConvertTest {
                 if (annotation instanceof ProcessAttribute) {
                     annotationFound = true;
                     ProcessAttribute processAnnotation = (ProcessAttribute) annotation;
-                    ObjectAnnotationConverter.annotationToObject(processAnnotation, process);
+                    ObjectAnnotationConverter.annotationToObject(processAnnotation, processOffering);
                 }
             }
 
@@ -57,7 +60,7 @@ public class ProcessConvertTest {
             String language = "en";
 
             //Test the maximum
-            String messageLanguage = "The process language is not the one exprected (" + process.getLang() +
+            String messageLanguage = "The process language is not the one expected (" + process.getLang() +
                     " instead of " + language;
             boolean conditionLanguage = process.getLang().equals(language);
             Assert.assertTrue(messageLanguage, conditionLanguage);

@@ -351,7 +351,7 @@ public class WpsClient implements DockingPanel {
         //Link the DataStore with the DataField, with the FieldValue
         link(process);
         //Open the ProcessEditor
-        ProcessEditableElement pee = new ProcessEditableElement(process);
+        ProcessEditableElement pee = new ProcessEditableElement(listProcess.get(0));
         pe = new ProcessEditor(this, pee);
         //Find if there is already a ProcessEditor open with the same process.
         //If not, add the new one.
