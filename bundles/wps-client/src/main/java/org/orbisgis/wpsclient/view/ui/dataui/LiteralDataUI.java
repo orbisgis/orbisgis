@@ -22,6 +22,7 @@ package org.orbisgis.wpsclient.view.ui.dataui;
 import net.miginfocom.swing.MigLayout;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.DescriptionType;
+import org.orbisgis.commons.utils.UnsignedByteUtils;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
@@ -33,6 +34,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -248,7 +250,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
-                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                    ((JSpinner) dataComponent).setValue(Byte.parseByte(dataMap.get(uri).toString()));
                 }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
@@ -266,7 +268,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
-                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                    ((JSpinner) dataComponent).setValue(Integer.parseInt(dataMap.get(uri).toString()));
                 }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
@@ -284,7 +286,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
-                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                    ((JSpinner) dataComponent).setValue(Long.parseLong(dataMap.get(uri).toString()));
                 }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
@@ -302,7 +304,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
-                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                    ((JSpinner) dataComponent).setValue(Short.parseShort(dataMap.get(uri).toString()));
                 }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
@@ -320,7 +322,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
-                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                    ((JSpinner) dataComponent).setValue(dataMap.get(uri).toString().charAt(0));
                 }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
@@ -338,7 +340,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty(URI_PROPERTY, comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
-                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                    ((JSpinner) dataComponent).setValue(Double.parseDouble(dataMap.get(uri).toString()));
                 }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
@@ -356,7 +358,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null) {
-                    ((JSpinner) dataComponent).setValue(dataMap.get(uri));
+                    ((JSpinner) dataComponent).setValue(Float.parseFloat(dataMap.get(uri).toString()));
                 }
                 ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
                         ChangeListener.class,
