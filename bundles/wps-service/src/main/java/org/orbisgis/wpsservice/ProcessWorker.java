@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Class implementing the Runnable interface is dedicated to the WPS process execution.
@@ -20,7 +19,7 @@ import java.util.logging.Logger;
 public class ProcessWorker implements Runnable {
 
     /** Process execution listener which will be watching the execution */
-    private ProcessExecutionListener pel;
+    private Job job;
     /** Process to execute */
     private ProcessDescriptionType process;
     /** The class managing the DataProcessing classes */
@@ -30,12 +29,12 @@ public class ProcessWorker implements Runnable {
     /** Map containing the process execution output/input data and URI */
     private Map<URI, Object> dataMap;
 
-    public ProcessWorker(ProcessExecutionListener pel,
+    public ProcessWorker(Job job,
                          ProcessDescriptionType process,
                          DataProcessingManager dataProcessingManager,
                          ProcessManager processManager,
                          Map<URI, Object> dataMap){
-        this.pel = pel;
+        this.job = job;
         this.process = process;
         this.dataProcessingManager = dataProcessingManager;
         this.processManager = processManager;
@@ -52,64 +51,64 @@ public class ProcessWorker implements Runnable {
 
     @Override
     public void run() {
-        if(pel != null) {
-            pel.setStartTime(System.currentTimeMillis());
-            pel.setProcessState(ProcessExecutionListener.ProcessState.RUNNING);
+        if(job != null) {
+            job.setStartTime(System.currentTimeMillis());
+            job.setProcessState(ProcessExecutionListener.ProcessState.RUNNING);
         }
         Map<URI, Object> stash = new HashMap<>();
         //Catch all the Exception that can be thrown during the script execution.
         try {
             //Print in the log the process execution start
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Start the process");
+            if(job != null) {
+                job.appendLog(ProcessExecutionListener.LogType.INFO, "Start the process");
             }
 
             //Pre-process the data
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Pre-processing");
+            if(job != null) {
+                job.appendLog(ProcessExecutionListener.LogType.INFO, "Pre-processing");
             }
             for(DescriptionType inputOrOutput : process.getInput()){
-                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, pel));
+                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, job));
             }
 
             //Execute the process and retrieve the groovy object.
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Execute the script");
+            if(job != null) {
+                job.appendLog(ProcessExecutionListener.LogType.INFO, "Execute the script");
             }
-            processManager.executeProcess(process, dataMap);
+            processManager.executeProcess(job.getId(), process, dataMap);
 
             //Post-process the data
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
+            if(job != null) {
+                job.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
             }
             for(DescriptionType inputOrOutput : process.getOutput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
+                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, job);
             }
             for(DescriptionType inputOrOutput : process.getInput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
+                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, job);
             }
 
             //Print in the log the process execution end
-            if(pel != null) {
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "End of the process");
-                pel.setProcessState(ProcessExecutionListener.ProcessState.SUCCEEDED);
+            if(job != null) {
+                job.appendLog(ProcessExecutionListener.LogType.INFO, "End of the process");
+                job.setProcessState(ProcessExecutionListener.ProcessState.SUCCEEDED);
             }
         }
         catch (Exception e) {
-            if(pel != null) {
-                pel.setProcessState(ProcessExecutionListener.ProcessState.FAILED);
+            if(job != null) {
+                job.setProcessState(ProcessExecutionListener.ProcessState.FAILED);
                 LoggerFactory.getLogger(ProcessWorker.class).error(e.getLocalizedMessage());
                 //Print in the log the process execution error
-                pel.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
+                job.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
                 //Post-process the data
-                pel.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
+                job.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
             }
             else{
                 LoggerFactory.getLogger(ProcessWorker.class).error("Error on execution the WPS " +
                         "process '"+process.getTitle()+"'.\n"+e.getMessage());
             }
             for(DescriptionType inputOrOutput : process.getInput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, pel);
+                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, job);
             }
         }
     }

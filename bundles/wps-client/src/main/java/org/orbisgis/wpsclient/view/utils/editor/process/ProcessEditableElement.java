@@ -19,7 +19,9 @@
 
 package org.orbisgis.wpsclient.view.utils.editor.process;
 
+import net.opengis.wps._2_0.DataOutputType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
+import net.opengis.wps._2_0.Result;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
@@ -48,6 +50,7 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
     public static final String LOG_PROPERTY = "LOG_PROPERTY";
     public static final String CANCEL = "CANCEL";
     public static final String REFRESH_STATUS = "REFRESH_STATUS";
+    public static final String GET_RESULTS = "GET_RESULTS";
     private ProcessDescriptionType process;
     private boolean isOpen;
 
@@ -228,15 +231,21 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
                 this, LOG_PROPERTY, null, new AbstractMap.SimpleEntry<>(log, color)));
     }
 
-    public void setProcessState(ProcessExecutionListener.ProcessState processState){
+    public void setProcessState(ProcessExecutionListener.ProcessState processState) {
         this.state = processState;
-        firePropertyChangeEvent(new PropertyChangeEvent(
-                this, STATE_PROPERTY, null, processState));
-        if(state.equals(ProcessState.FAILED)){
+        if (state.equals(ProcessState.FAILED)) {
             appendLog(LogType.ERROR, state.toString());
-        }
-        else{
+        } else {
             appendLog(LogType.INFO, state.toString());
+        }
+        //If the process has ended with success, retrieve the results.
+        //The firing of the process state change will be done later
+        if (state.equals(ProcessState.SUCCEEDED)) {
+            askResults();
+        }
+        //Else, fire the change of the process state.
+        else {
+            firePropertyChangeEvent(new PropertyChangeEvent(this, STATE_PROPERTY, null, state));
         }
     }
 
@@ -266,5 +275,27 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
      */
     public UUID getJobID(){
         return jobID;
+    }
+
+    /**
+     * Throw a property change event to ask the result of the job.
+     */
+    public void askResults() {
+        PropertyChangeEvent event = new PropertyChangeEvent(this, GET_RESULTS, null, null);
+        firePropertyChangeEvent(event);
+    }
+
+    /**
+     * Sets the Result of the process job.
+     * @param result Result object.
+     */
+    public void setResult(Result result) {
+        appendLog(LogType.INFO, "");
+        appendLog(LogType.INFO, "Process result :");
+        for(DataOutputType output : result.getOutput()){
+            Object o = output.getData().getContent().get(0);
+            appendLog(LogType.INFO, output.getId()+" = "+o.toString());
+        }
+        firePropertyChangeEvent(new PropertyChangeEvent(this, STATE_PROPERTY, null, state));
     }
 }

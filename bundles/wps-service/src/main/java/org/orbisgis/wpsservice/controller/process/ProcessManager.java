@@ -56,7 +56,7 @@ public class ProcessManager {
     private ParserController parserController;
     private DataSourceService dataSourceService;
     private LocalWpsService wpsService;
-    private Map<ProcessDescriptionType, CancelClosure> closureMap;
+    private Map<UUID, CancelClosure> closureMap;
 
     /**
      * Main constructor.
@@ -124,14 +124,13 @@ public class ProcessManager {
      * @param dataMap Map containing the data for the process.
      * @return The groovy object on which the 'processing' method will be called.
      */
-    public GroovyObject executeProcess(ProcessDescriptionType process,
-                                       Map<URI, Object> dataMap){
+    public GroovyObject executeProcess(UUID jobId, ProcessDescriptionType process, Map<URI, Object> dataMap){
         GroovyObject groovyObject = createProcess(process, dataMap);
         if(groovyObject != null) {
             if (dataSourceService != null) {
                 WpsSql sql = new WpsSql(dataSourceService);
                 CancelClosure closure = new CancelClosure(this);
-                closureMap.put(process, closure);
+                closureMap.put(jobId, closure);
                 sql.withStatement(closure);
                 groovyObject.setProperty("sql", sql);
             }
@@ -350,7 +349,11 @@ public class ProcessManager {
         return str;
     }
 
-    public void cancelProcess(ProcessDescriptionType process){
-        closureMap.get(process).cancel();
+    /**
+     * Cancel the job corresponding to the jobID.
+     * @param jobId Id of the job to cancel.
+     */
+    public void cancelProcess(UUID jobId){
+        closureMap.get(jobId).cancel();
     }
 }

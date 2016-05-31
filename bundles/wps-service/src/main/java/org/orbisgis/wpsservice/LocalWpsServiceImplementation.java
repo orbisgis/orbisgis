@@ -572,6 +572,23 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     @Override
+    public StatusInfo dismiss(Dismiss dismiss) {
+        UUID jobId = UUID.fromString(dismiss.getJobID());
+        cancelProcess(jobId);
+        Job job = jobMap.get(jobId);
+        //Generate the StatusInfo to return
+        StatusInfo statusInfo = new StatusInfo();
+        statusInfo.setJobID(jobId.toString());
+        statusInfo.setStatus(job.getState().name());
+        if(!job.getState().equals(ProcessExecutionListener.ProcessState.FAILED) &&
+                !job.getState().equals(ProcessExecutionListener.ProcessState.SUCCEEDED)) {
+            XMLGregorianCalendar date = getXMLGregorianCalendar(PROCESS_POLLING_MILLIS);
+            statusInfo.setNextPoll(date);
+        }
+        return statusInfo;
+    }
+
+    @Override
     public OutputStream callOperation(InputStream xml) {
         Object result = null;
         ObjectFactory factory = new ObjectFactory();
@@ -596,6 +613,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
             }
             else if(o instanceof GetResult){
                 result = getResult((GetResult)o);
+            }
+            else if(o instanceof Dismiss){
+                result = dismiss((Dismiss)o);
             }
         } catch (JAXBException e) {
             LOGGER.error("Unable to parse the incoming xml\n" + e.getMessage());
@@ -923,8 +943,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     @Override
-    public void cancelProcess(URI uri){
-        processManager.cancelProcess(processManager.getProcess(uri));
+    public void cancelProcess(UUID jobId){
+        processManager.cancelProcess(jobId);
     }
 
     /**

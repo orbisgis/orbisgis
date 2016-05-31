@@ -84,6 +84,17 @@ public interface WpsService {
     Result getResult(GetResult getResult);
 
     /**
+     * The dismiss operation allow a client to communicate that he is no longer interested in the results of a job.
+     * In this case, the server may free all associated resources and “forget” the JobID.
+     * For jobs that are still running, the server may cancel the execution at any time.
+     * For jobs that were already finished, the associated status information and the stored results may be deleted
+     * without further notice, regardless of the expiration time given in the last status report.
+     * @param dismiss Dismiss request.
+     * @return StatusInfo document.
+     */
+    StatusInfo dismiss(Dismiss dismiss);
+
+    /**
      * Ask the WPS Service to execute the operation contained in the xml argument an returns the xml answer.
      * The xml is parsed and then the correct WPSService method is called.
      *
