@@ -24,7 +24,6 @@ import net.opengis.wps._2_0.*;
 import net.opengis.ows._2.GetCapabilitiesType.AcceptLanguages;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
-import net.opengis.wps._2_0.DescriptionType;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
@@ -44,7 +43,6 @@ import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
 import org.orbisgis.wpsservice.JaxbContainer;
 import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.DataField;
 import org.orbisgis.wpsservice.model.DataStore;
 import org.orbisgis.wpsservice.model.FieldValue;
@@ -122,13 +120,20 @@ public class WpsClient implements DockingPanel {
         lee = new LogEditableElement();
         le = null;
 
-        for(ProcessSummaryType processSummary : getAvailableProcesses()) {
-            toolBoxPanel.addProcess(processSummary);
-        }
+        refreshAvailableScripts();
     }
 
     public LocalWpsService getWpsService(){
         return wpsService;
+    }
+
+    /**
+     * Refresh the WPS processes displayed in the interface.
+     */
+    public void refreshAvailableScripts(){
+        for(ProcessSummaryType processSummary : getAvailableProcesses()) {
+            toolBoxPanel.addProcess(processSummary);
+        }
     }
 
     /**
@@ -315,27 +320,20 @@ public class WpsClient implements DockingPanel {
     public void addLocalSource(URI uri, String iconName, boolean isDefaultScript){
         File file = new File(uri);
         if(file.isFile()){
-            ProcessIdentifier pi = wpsService.addLocalScript(file, iconName, isDefaultScript);
-            if(pi != null) {
-                //TODO Implements the addLocalSource method for a user script
-                //toolBoxPanel.addLocalSource(pi);
-            }
+            wpsService.addLocalSource(file, iconName, isDefaultScript);
         }
         else if(file.isDirectory()){
             toolBoxPanel.addFolder(file.toURI(), file.getParentFile().toURI());
             for (File f : file.listFiles()) {
                 if(f.isFile()){
-                    ProcessIdentifier pi = wpsService.addLocalScript(f, iconName, isDefaultScript);
-                    if(pi != null) {
-                        //TODO Implements the addLocalSource method for a user script
-                        //toolBoxPanel.addLocalSource(pi);
-                    }
+                    wpsService.addLocalSource(f, iconName, isDefaultScript);
                 }
                 else if(f.isDirectory()){
                     toolBoxPanel.addFolder(f.toURI(), f.getParentFile().toURI());
                 }
             }
         }
+        refreshAvailableScripts();
     }
 
     /**
@@ -457,28 +455,19 @@ public class WpsClient implements DockingPanel {
     }
 
     /**
-     * Verify if the given file is a well formed script.
-     * @param uri URI to check.
+     * Verify if the given process is a well formed script.
+     * @param identifier Identifier of the process.
      * @return True if the file is well formed, false otherwise.
      */
-    public boolean checkProcess(URI uri){
-        return wpsService.checkProcess(uri);
-    }
-
-    /**
-     * Verify if the given file is a well formed script.
-     * @param uri URI to check.
-     * @return True if the file is well formed, false otherwise.
-     */
-    public boolean checkFolder(URI uri){
-        return wpsService.checkFolder(uri);
+    public boolean checkProcess(CodeType identifier){
+        return wpsService.checkProcess(identifier);
     }
 
     /**
      * Remove the selected process in the tree.
      */
-    public void removeProcess(URI uri){
-        wpsService.removeProcess(uri);
+    public void removeProcess(CodeType codeType){
+        wpsService.removeProcess(codeType);
     }
 
     /**

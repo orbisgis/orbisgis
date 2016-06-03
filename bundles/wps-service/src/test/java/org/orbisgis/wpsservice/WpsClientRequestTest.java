@@ -3,7 +3,6 @@ package org.orbisgis.wpsservice;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Objects;
 import java.util.UUID;
 import javax.xml.bind.*;
 
@@ -332,32 +331,32 @@ public class WpsClientRequestTest {
                 URL url = this.getClass().getResource("DataStore.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalScript(f, null, false);
+                    localWpsService.addLocalSource(f, null, false);
                 }
                 url = this.getClass().getResource("DataField.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalScript(f, null, false);
+                    localWpsService.addLocalSource(f, null, false);
                 }
                 url = this.getClass().getResource("FieldValue.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalScript(f, null, false);
+                    localWpsService.addLocalSource(f, null, false);
                 }
                 url = this.getClass().getResource("Enumeration.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalScript(f, null, false);
+                    localWpsService.addLocalSource(f, null, false);
                 }
                 url = this.getClass().getResource("GeometryData.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalScript(f, null, false);
+                    localWpsService.addLocalSource(f, null, false);
                 }
                 url = this.getClass().getResource("RawData.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalScript(f, null, false);
+                    localWpsService.addLocalSource(f, null, false);
                 }
             } catch (URISyntaxException e) {
                 e.printStackTrace();

@@ -355,7 +355,7 @@ public class DataFieldUI implements DataUI{
             }
         }
         else{
-            tableName = ((URI) dataMap.get(dataField.getDataStoreIdentifier())).getFragment();
+            tableName = dataMap.get(dataField.getDataStoreIdentifier()).toString();
         }
         if(tableName == null){
             return listContainer;
