@@ -20,9 +20,11 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import net.opengis.ows._2.AllowedValues;
+import net.opengis.ows._2.RangeType;
+import net.opengis.ows._2.ValueType;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.DescriptionType;
-import org.orbisgis.commons.utils.UnsignedByteUtils;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
@@ -34,7 +36,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -42,13 +43,13 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.beans.EventHandler;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -75,6 +76,7 @@ public class LiteralDataUI implements DataUI {
     private static final String BOOLEAN_PROPERTY = "BOOLEAN_PROPERTY";
     private static final String TEXT_AREA_PROPERTY = "TEXT_AREA_PROPERTY";
     private static final String VERTICAL_BAR_PROPERTY = "VERTICAL_BAR_PROPERTY";
+    private static final String LITERAL_DATA_PROPERTY = "LITERAL_DATA_PROPERTY";
 
     /** WpsClient using the generated UI. */
     private WpsClient wpsClient;
@@ -165,6 +167,7 @@ public class LiteralDataUI implements DataUI {
             //JPanel containing the component to set the input value
             JComponent dataField = new JPanel(new MigLayout("fill, ins 0, gap 0"));
 
+            comboBox.putClientProperty(LITERAL_DATA_PROPERTY, literalData);
             comboBox.putClientProperty(DATA_FIELD_PROPERTY, dataField);
             comboBox.putClientProperty(URI_PROPERTY, URI.create(input.getIdentifier().getValue()));
             comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
@@ -195,6 +198,7 @@ public class LiteralDataUI implements DataUI {
         Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
         URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
         boolean isOptional = (boolean)comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
+        LiteralDataType literalData = (LiteralDataType)comboBox.getClientProperty(LITERAL_DATA_PROPERTY);
         String s = (String) comboBox.getSelectedItem();
         JComponent dataComponent;
         switch(DataType.valueOf(s.toUpperCase())){
@@ -260,22 +264,77 @@ public class LiteralDataUI implements DataUI {
                 onDataChanged(dataComponent);
                 break;
             case INTEGER:
+                dataComponent = new JPanel(new MigLayout("ins 0, gap 0"));
+                int defaultValue = 0;
+                int minValue = Integer.MIN_VALUE;
+                int maxValue = Integer.MAX_VALUE;
+                int spacing = 1;
+
                 //Instantiate the component
-                dataComponent = new JSpinner(new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
+                JSpinner spinner = new JSpinner(new SpinnerNumberModel(defaultValue, minValue, maxValue, spacing));
                 //Put the data type, the dataMap and the uri as properties
-                dataComponent.putClientProperty(TYPE_PROPERTY, DataType.INTEGER);
-                dataComponent.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
-                dataComponent.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
+                spinner.putClientProperty(TYPE_PROPERTY, DataType.INTEGER);
+                spinner.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
+                spinner.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
-                if(dataMap.get(uri)!=null) {
-                    ((JSpinner) dataComponent).setValue(Integer.parseInt(dataMap.get(uri).toString()));
+                if(dataMap.get(uri)!=null && !dataMap.get(uri).toString().isEmpty()) {
+                    spinner.setValue(Integer.parseInt(dataMap.get(uri).toString()));
                 }
-                ((JSpinner)dataComponent).addChangeListener(EventHandler.create(
+                else{
+                    spinner.setValue(0);
+                }
+                spinner.addChangeListener(EventHandler.create(
                         ChangeListener.class,
                         this,
                         "onDataChanged",
                         "source"));
-                onDataChanged(dataComponent);
+
+                if(!literalData.getLiteralDataDomain().isEmpty()){
+                    for(LiteralDataType.LiteralDataDomain literalDataDomain : literalData.getLiteralDataDomain()){
+                        if(literalDataDomain != null && literalDataDomain.isDefault()){
+                            if(literalDataDomain.getDefaultValue().isSetValue() &&
+                                    !literalDataDomain.getDefaultValue().getValue().isEmpty()){
+                                defaultValue = Integer.parseInt(literalDataDomain.getDefaultValue().getValue());
+                                spinner.setValue(defaultValue);
+                            }
+                            if(literalDataDomain.getAllowedValues() != null){
+                                AllowedValues allowedValues = literalDataDomain.getAllowedValues();
+                                if(!allowedValues.getValueOrRange().isEmpty()) {
+                                    JComboBox<String> allowedValuesBox = new JComboBox<>();
+                                    for(Object value : allowedValues.getValueOrRange()){
+                                        if(value instanceof ValueType){
+                                            String str = ((ValueType)value).getValue();
+                                            SpinnerNumberModel model = new SpinnerNumberModel(Integer.parseInt(str),
+                                                    Integer.parseInt(str), Integer.parseInt(str), 0);
+                                            allowedValuesBox.putClientProperty(str, model);
+                                            allowedValuesBox.addItem(str);
+                                            System.out.println(str);
+                                        }
+                                        if(value instanceof RangeType){
+                                            RangeType range = (RangeType)value;
+                                            String str = range.getMinimumValue().getValue()+";"+
+                                                    range.getSpacing().getValue()+";"+
+                                                    range.getMaximumValue().getValue();
+                                            SpinnerNumberModel model = new SpinnerNumberModel(
+                                                    Integer.parseInt(range.getMinimumValue().getValue()),
+                                                    Integer.parseInt(range.getMinimumValue().getValue()),
+                                                    Integer.parseInt(range.getMaximumValue().getValue()),
+                                                    Integer.parseInt(range.getSpacing().getValue()));
+                                            allowedValuesBox.putClientProperty(str, model);
+                                            allowedValuesBox.addItem(str);
+                                            System.out.println(str);
+                                        }
+                                    }
+                                    allowedValuesBox.putClientProperty("spinner", spinner);
+                                    allowedValuesBox.addItemListener(EventHandler.create(ItemListener.class, this, "actionOnItem", ""));
+                                    dataComponent.add(allowedValuesBox);
+                                }
+                            }
+                        }
+                    }
+                }
+                dataComponent.add(spinner, "wrap");
+                onDataChanged(spinner);
                 break;
             case LONG:
                 //Instantiate the component
@@ -484,8 +543,8 @@ public class LiteralDataUI implements DataUI {
             case BOOLEAN:
                 dataMap.put(uri, ((JComponent)source).getClientProperty(BOOLEAN_PROPERTY));
                 break;
-            case BYTE:
             case INTEGER:
+            case BYTE:
             case LONG:
             case SHORT:
             case UNSIGNED_BYTE:
@@ -494,6 +553,21 @@ public class LiteralDataUI implements DataUI {
                 JSpinner spinner = (JSpinner)source;
                 dataMap.put(uri, spinner.getValue());
                 break;
+        }
+    }
+
+    public void actionOnItem(ItemEvent event){
+        if(event.getSource() instanceof JComboBox){
+            JComboBox domainSpinner = (JComboBox)event.getSource();
+            Object object = domainSpinner.getClientProperty("spinner");
+            if(object instanceof JSpinner){
+                JSpinner valueSpinner = (JSpinner)object;
+                System.out.println(event.getItem().toString());
+                System.out.println(domainSpinner.getClientProperty(event.getItem().toString()));
+                SpinnerModel model = (SpinnerModel)domainSpinner.getClientProperty(event.getItem().toString());
+                valueSpinner.setModel(model);
+                onDataChanged(valueSpinner);
+            }
         }
     }
 }

@@ -27,12 +27,12 @@ public class LiteralDataTypeConvertTest {
                     @LiteralDataDomainAttribute(
                             possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(),
                             dataType = "STRING",
-                            defaultValue = @ValuesAttribute(value = "value")
+                            defaultValue = "value"
                     ),
                     @LiteralDataDomainAttribute(
                             possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(),
                             dataType = "STRING",
-                            defaultValue = @ValuesAttribute(value = "value")
+                            defaultValue = "value"
                     )
             }
     )

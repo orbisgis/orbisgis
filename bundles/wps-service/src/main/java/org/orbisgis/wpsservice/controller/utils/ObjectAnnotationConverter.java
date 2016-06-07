@@ -167,7 +167,7 @@ public class ObjectAnnotationConverter {
     }
 
     public static Object annotationToObject(ValuesAttribute valueAttribute){
-        if(valueAttribute.type().equals(ValuesType.VALUE)){
+        if(valueAttribute.type().toUpperCase().equals(ValuesType.VALUE.name())){
             if(valueAttribute.value().equals(ValuesAttribute.defaultValue)){
                 return null;
             }
@@ -175,7 +175,7 @@ public class ObjectAnnotationConverter {
             value.setValue(valueAttribute.value());
             return value;
         }
-        else if(valueAttribute.type().equals(ValuesType.RANGE)){
+        else if(valueAttribute.type().toUpperCase().equals(ValuesType.RANGE.name())){
             RangeType range = new RangeType();
             if(!valueAttribute.spacing().equals(ValuesAttribute.defaultSpacing)) {
                 ValueType spacing = new ValueType();
@@ -223,9 +223,9 @@ public class ObjectAnnotationConverter {
         else if(value instanceof ValuesReference){
             literalDataDomain.setValuesReference((ValuesReference) value);
         }
-        Object defaultValue = ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute.defaultValue());
-        literalDataDomain.setDefaultValue((ValueType) defaultValue);
-
+        ValueType defaultValue = new ValueType();
+        defaultValue.setValue(literalDataDomainAttribute.defaultValue());
+        literalDataDomain.setDefaultValue(defaultValue);
 
         return literalDataDomain;
     }

@@ -351,10 +351,12 @@ public class LiteralDataParser implements Parser {
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
 
-        List<LiteralDataDomain> list = new ArrayList<>();
-        list.add(getLiteralDataDomain(f, defaultValue));
-        data.getLiteralDataDomain().clear();
-        data.getLiteralDataDomain().addAll(list);
+        if(data.getLiteralDataDomain().isEmpty()) {
+            List<LiteralDataDomain> list = new ArrayList<>();
+            list.add(getLiteralDataDomain(f, defaultValue));
+            data.getLiteralDataDomain().clear();
+            data.getLiteralDataDomain().addAll(list);
+        }
 
         if(input.getIdentifier() == null){
             CodeType codeType = new CodeType();

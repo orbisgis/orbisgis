@@ -21,7 +21,7 @@ public class ValuesConvertTest {
 
     /** Field containing the full annotation. */
     @ValuesAttribute(
-            type = ValuesType.RANGE,
+            type = "RANGE",
             maximum = "maximum",
             minimum = "minimum",
             spacing = "spacing",
@@ -116,7 +116,7 @@ public class ValuesConvertTest {
 
     /** Field containing the minimal Range annotation. */
     @ValuesAttribute(
-            type = ValuesType.RANGE
+            type = "RANGE"
     )
     public Object minimalRangeAttribute;
     /** Name of the field containing the minimalRangeAttribute annotation. */
@@ -195,7 +195,7 @@ public class ValuesConvertTest {
 
     /** Field containing the full Values annotation. */
     @ValuesAttribute(
-            type = ValuesType.VALUE,
+            type = "VALUE",
             maximum = "maximum",
             minimum = "minimum",
             spacing = "spacing",
@@ -267,7 +267,7 @@ public class ValuesConvertTest {
 
     /** Field containing the minimal Value annotation. */
     @ValuesAttribute(
-            type = ValuesType.VALUE
+            type = "VALUE"
     )
     public Object minimalValueAttribute;
     /** Name of the field containing the minimalValueAttribute annotation. */

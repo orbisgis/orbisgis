@@ -28,15 +28,15 @@ public class LiteralDataDomainConvertTest {
     @LiteralDataDomainAttribute(
             possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(
                     allowedValues = {
-                            @ValuesAttribute(value = "value", type = ValuesType.VALUE),
-                            @ValuesAttribute(maximum = "maximum", minimum = "minimum", type = ValuesType.RANGE)
+                            @ValuesAttribute(value = "value", type = "VALUE"),
+                            @ValuesAttribute(maximum = "maximum", minimum = "minimum", type = "RANGE")
                     },
                     reference = "reference",
                     anyValues = true
             ),
             dataType = "STRING",
             uom = "uom://test/uom",
-            defaultValue = @ValuesAttribute(value = "value"),
+            defaultValue = "value",
             isDefault = true
     )
     public Object fullLiteralDataDomainAttribute;
@@ -143,7 +143,7 @@ public class LiteralDataDomainConvertTest {
     @LiteralDataDomainAttribute(
             possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(),
             dataType = "STRING",
-            defaultValue = @ValuesAttribute(value = "value")
+            defaultValue = "value"
     )
     public Object minimalLiteralDataDomainAttribute;
     /** Name of the field containing the minimalLiteralDataDomainAttribute annotation. */
