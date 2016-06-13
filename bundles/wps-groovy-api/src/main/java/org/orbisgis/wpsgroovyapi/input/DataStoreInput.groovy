@@ -65,8 +65,6 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *      Maximum number of times that this parameter may be present.
  *  - isSpatial : boolean
  *      Indicates if the data represented is spatial or not.
- *  - isCreateTable : boolean
- *      Indicates if the toolbox should load the file and give back the table name or just give the file name.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *

@@ -74,7 +74,6 @@ def processing() {
                 ])
         ],
         isSpatial = true,
-        isCreateTable = false,
         minOccurs = 0,
         maxOccurs = 2,
         identifier = "orbisgis:test:datastore:input",
@@ -108,7 +107,6 @@ String inputDataStore
                 ])
         ],
         isSpatial = false,
-        isCreateTable = true,
         identifier = "orbisgis:test:datastore:output",
         metadata = [
                 @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")

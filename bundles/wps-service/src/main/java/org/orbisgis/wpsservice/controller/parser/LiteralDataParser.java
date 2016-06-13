@@ -25,7 +25,6 @@ import net.opengis.wps._2_0.LiteralDataType.LiteralDataDomain;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.LiteralDataAttribute;
-import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.*;
 
@@ -39,12 +38,6 @@ import java.util.List;
  **/
 
 public class LiteralDataParser implements Parser {
-
-    private LocalWpsService wpsService;
-
-    public void setLocalWpsService(LocalWpsService wpsService){
-        this.wpsService = wpsService;
-    }
 
     public LiteralDataDomain getLiteralDataDomain(Field f, Object defaultValue){
         LiteralDataDomain literalDataDomain = new LiteralDataDomain();

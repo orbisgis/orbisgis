@@ -25,7 +25,6 @@ import net.opengis.wps._2_0.Format;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,21 +34,14 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  **/
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DataStore", propOrder = {"isSpatial", "listDataField", "isAutoImport"})
+@XmlType(name = "DataStore", propOrder = {"isSpatial", "listDataField"})
 public class DataStore extends ComplexDataType {
-    /**DataStore types.*/
-    public static final String DATASTORE_TYPE_GEOCATALOG = "DATASTORE_TYPE_GEOCATALOG";
-    public static final String DATASTORE_TYPE_FILE = "DATASTORE_TYPE_FILE";
-
     /** True if the data is spatial, false otherwise **/
     @XmlAttribute(name = "isSpatial")
     private boolean isSpatial;
     /** List of DataField liked to the DataStore */
     @XmlElement(name = "DataField", namespace = "http://orbisgis.org")
     private List<DataField> listDataField;
-    /** True if the toolBox should load the file or just give the file path. */
-    @XmlAttribute(name = "isAutoImport")
-    private boolean isAutoImport;
 
     /**
      * Main constructor
@@ -67,14 +59,6 @@ public class DataStore extends ComplexDataType {
     protected DataStore(){
         super();
         listDataField = null;
-    }
-
-    public void setAutoImport(boolean isAutoImport){
-        this.isAutoImport = isAutoImport;
-    }
-
-    public boolean isAutoImport(){
-        return isAutoImport;
     }
 
     /**

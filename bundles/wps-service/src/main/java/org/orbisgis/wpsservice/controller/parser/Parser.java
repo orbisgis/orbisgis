@@ -35,8 +35,6 @@ import java.lang.reflect.Field;
 
 public interface Parser {
 
-    void setLocalWpsService(LocalWpsService wpsService);
-
     /**
      * Parse the given field as an input and returns the corresponding DataDescription.
      * @param f Field to parse.

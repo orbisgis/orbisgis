@@ -21,7 +21,6 @@ package org.orbisgis.wpsservice.controller.execution;
 
 import net.opengis.wps._2_0.DataDescriptionType;
 import net.opengis.wps._2_0.DescriptionType;
-import org.orbisgis.wpsservice.LocalWpsService;
 
 import java.net.URI;
 import java.util.Map;
@@ -35,7 +34,6 @@ import java.util.Map;
  */
 public interface DataProcessing {
 
-    void setLocalWpsService(LocalWpsService wpsService);
     Class<? extends DataDescriptionType> getDataClass();
 
     /**

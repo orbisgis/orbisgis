@@ -21,7 +21,6 @@ package org.orbisgis.wpsservice.controller.parser;
 
 import net.opengis.wps._2_0.*;
 import org.orbisgis.wpsgroovyapi.attributes.BoundingBoxAttribute;
-import org.orbisgis.wpsservice.LocalWpsService;
 
 import java.lang.reflect.Field;
 
@@ -32,12 +31,6 @@ import java.lang.reflect.Field;
  **/
 
 public class BoundingBoxParser implements Parser {
-
-    private LocalWpsService wpsService;
-
-    public void setLocalWpsService(LocalWpsService wpsService){
-        this.wpsService = wpsService;
-    }
 
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {

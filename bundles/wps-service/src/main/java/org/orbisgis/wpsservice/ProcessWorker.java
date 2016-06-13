@@ -100,8 +100,6 @@ public class ProcessWorker implements Runnable {
                 LoggerFactory.getLogger(ProcessWorker.class).error(e.getLocalizedMessage());
                 //Print in the log the process execution error
                 job.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
-                //Post-process the data
-                job.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
             }
             else{
                 LoggerFactory.getLogger(ProcessWorker.class).error("Error on execution the WPS " +

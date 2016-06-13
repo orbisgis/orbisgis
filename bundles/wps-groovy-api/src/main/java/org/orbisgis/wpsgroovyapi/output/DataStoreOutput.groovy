@@ -51,8 +51,6 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
  *      Reference to additional metadata about this item.
  *  - isSpatial : boolean
  *      Indicates if the data represented is spatial or not.
- *  - isCreateTable : boolean
- *      Indicates if the toolbox should load the file and give back the table name or just give the file name.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
