@@ -45,39 +45,42 @@ public class LiteralDataParser implements Parser {
 
         //Get the type of the field to use it as the input type
         if(f.getType().equals(Integer.class)){
-            AllowedValues allowedValues = new AllowedValues();
-            List<Object> objectList = new ArrayList<>();
-            RangeType rangeType = new RangeType();
-            ValueType maxValue = new ValueType();
-            maxValue.setValue(Integer.toString(Integer.MAX_VALUE));
+            if(defaultValue != null){
+                ValueType valueType = new ValueType();
+                valueType.setValue(defaultValue.toString());
+                literalDataDomain.setDefaultValue(valueType);
+            }
+            else {
+                AllowedValues allowedValues = new AllowedValues();
+                List<Object> objectList = new ArrayList<>();
+                RangeType rangeType = new RangeType();
 
-            rangeType.setMaximumValue(maxValue);
-            ValueType minValue = new ValueType();
-            minValue.setValue(Integer.toString(Integer.MIN_VALUE));
+                ValueType maxValue = new ValueType();
+                maxValue.setValue(Integer.toString(Integer.MAX_VALUE));
+                rangeType.setMaximumValue(maxValue);
 
-            rangeType.setMaximumValue(minValue);
-            ValueType spacingValue = new ValueType();
-            spacingValue.setValue(Integer.toString(1));
+                ValueType minValue = new ValueType();
+                minValue.setValue(Integer.toString(Integer.MIN_VALUE));
+                rangeType.setMinimumValue(minValue);
 
-            rangeType.setSpacing(spacingValue);
-            objectList.add(rangeType);
-            allowedValues.getValueOrRange().clear();
-            allowedValues.getValueOrRange().addAll(objectList);
+                ValueType spacingValue = new ValueType();
+                spacingValue.setValue(Integer.toString(1));
+                rangeType.setSpacing(spacingValue);
 
-            ValueType valueType = new ValueType();
-            valueType.setValue(Integer.toString(0));
-            literalDataDomain.setDefaultValue(valueType);
+                objectList.add(rangeType);
+                allowedValues.getValueOrRange().clear();
+                allowedValues.getValueOrRange().addAll(objectList);
+                literalDataDomain.setAllowedValues(allowedValues);
+
+                ValueType value = new ValueType();
+                value.setValue("0");
+                literalDataDomain.setDefaultValue(value);
+            }
+
             DomainMetadataType domainMetadataType = new DomainMetadataType();
             domainMetadataType.setValue(DataType.INTEGER.name());
             domainMetadataType.setReference(DataType.INTEGER.getUri().toString());
             literalDataDomain.setDataType(domainMetadataType);
-
-            //Sets the default value
-            if(defaultValue != null) {
-                ValueType defaultValueType = new ValueType();
-                defaultValueType.setValue(defaultValue.toString());
-                literalDataDomain.setDefaultValue(defaultValueType);
-            }
         }
         else if(f.getType().equals(Double.class)){
             AllowedValues allowedValues = new AllowedValues();
@@ -343,20 +346,14 @@ public class LiteralDataParser implements Parser {
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
         InputDescriptionType input = new InputDescriptionType();
-        LiteralDataType data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
+        LiteralDataType data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class),
+                getLiteralDataDomain(f, defaultValue));
         JAXBElement<LiteralDataType> jaxbElement = new net.opengis.wps._2_0.ObjectFactory().createLiteralData(data);
         input.setDataDescription(jaxbElement);
         //Instantiate the returned input
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
-
-        if(data.getLiteralDataDomain().isEmpty()) {
-            List<LiteralDataDomain> list = new ArrayList<>();
-            list.add(getLiteralDataDomain(f, defaultValue));
-            data.getLiteralDataDomain().clear();
-            data.getLiteralDataDomain().addAll(list);
-        }
 
         if(input.getIdentifier() == null){
             CodeType codeType = new CodeType();
@@ -369,19 +366,14 @@ public class LiteralDataParser implements Parser {
     @Override
     public OutputDescriptionType parseOutput(Field f, String processId) {
         OutputDescriptionType output = new OutputDescriptionType();
-        LiteralDataType data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
+        LiteralDataType data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class),
+                getLiteralDataDomain(f, null));
         JAXBElement<LiteralDataType> jaxbElement = new net.opengis.wps._2_0.ObjectFactory().createLiteralData(data);
         output.setDataDescription(jaxbElement);
         //Instantiate the returned input
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
 
-        if(data.getLiteralDataDomain().isEmpty()){
-            List<LiteralDataDomain> list = new ArrayList<>();
-            list.add(getLiteralDataDomain(f, null));
-            data.getLiteralDataDomain().clear();
-            data.getLiteralDataDomain().addAll(list);
-        }
         if(output.getIdentifier() == null){
             CodeType codeType = new CodeType();
             codeType.setValue(processId+":output:"+output.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));

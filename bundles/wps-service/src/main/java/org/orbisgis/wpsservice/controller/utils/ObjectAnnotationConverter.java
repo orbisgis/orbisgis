@@ -230,7 +230,8 @@ public class ObjectAnnotationConverter {
         return literalDataDomain;
     }
 
-    public static LiteralDataType annotationToObject(LiteralDataAttribute literalDataAttribute) {
+    public static LiteralDataType annotationToObject(LiteralDataAttribute literalDataAttribute,
+                                                     LiteralDataDomain defaultDomain) {
         LiteralDataType literalDataType = new LiteralDataType();
 
         List<Format> formatList = new ArrayList<>();
@@ -256,18 +257,23 @@ public class ObjectAnnotationConverter {
 
         List<LiteralDataType.LiteralDataDomain> lddList = new ArrayList<>();
         if(literalDataAttribute.validDomains().length == 0){
-            LiteralDataDomain literalDataDomain = new LiteralDataDomain();
-            literalDataDomain.setDefault(true);
-            AnyValue anyValue = new AnyValue();
-            literalDataDomain.setAnyValue(anyValue);
-            ValueType defaultValue = new ValueType();
-            defaultValue.setValue("");
-            literalDataDomain.setDefaultValue(defaultValue);
-            DomainMetadataType domainMetadataType = new DomainMetadataType();
-            domainMetadataType.setReference(DataType.STRING.getUri().toString());
-            domainMetadataType.setValue(DataType.STRING.name());
-            literalDataDomain.setDataType(domainMetadataType);
-            lddList.add(literalDataDomain);
+            if(defaultDomain != null){
+                lddList.add(defaultDomain);
+            }
+            else {
+                LiteralDataDomain literalDataDomain = new LiteralDataDomain();
+                literalDataDomain.setDefault(true);
+                AnyValue anyValue = new AnyValue();
+                literalDataDomain.setAnyValue(anyValue);
+                ValueType defaultValue = new ValueType();
+                defaultValue.setValue("");
+                literalDataDomain.setDefaultValue(defaultValue);
+                DomainMetadataType domainMetadataType = new DomainMetadataType();
+                domainMetadataType.setReference(DataType.STRING.getUri().toString());
+                domainMetadataType.setValue(DataType.STRING.name());
+                literalDataDomain.setDataType(domainMetadataType);
+                lddList.add(literalDataDomain);
+            }
         }
         else {
             boolean isDefault = false;
