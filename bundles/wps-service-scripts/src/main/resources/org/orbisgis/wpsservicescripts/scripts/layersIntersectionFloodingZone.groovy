@@ -1,4 +1,4 @@
-package org.orbisgis.wpsservice.scripts
+package org.orbisgis.wpsservicescripts.scripts
 
 import org.orbisgis.wpsgroovyapi.input.*
 import org.orbisgis.wpsgroovyapi.output.DataStoreOutput

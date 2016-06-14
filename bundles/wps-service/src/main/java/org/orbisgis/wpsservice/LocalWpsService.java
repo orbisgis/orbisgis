@@ -30,6 +30,7 @@
 package org.orbisgis.wpsservice;
 
 import net.opengis.ows._2.CodeType;
+import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.DataType;
 
 import java.io.*;
@@ -53,7 +54,7 @@ public interface LocalWpsService extends WpsService {
      * @param iconName Icon file name associated to the script
      * @param isDefaultScript True if the scripts are default scripts (unremovable). False otherwise
      */
-    void addLocalSource(File f, String[] iconName, boolean isDefaultScript, String nodePath);
+    List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isDefaultScript, String nodePath);
 
     /**
      * Remove the process corresponding to the given codeType.

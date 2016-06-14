@@ -54,6 +54,7 @@
                 <module>bundles/orbisgis-omanager-plugin</module>
                 <module>bundles/wps-groovy-api</module>
                 <module>bundles/wps-service</module>
+                <module>bundles/wps-service-scripts</module>
                 <module>bundles/wps-client</module>
         </modules>
         <profiles>
