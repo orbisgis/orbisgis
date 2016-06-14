@@ -93,9 +93,7 @@ public class RawDataUI implements DataUI {
             action = OpenPanel.ACTION_OPEN;
         }
         else if(inputOrOutput instanceof OutputDescriptionType){
-            rawData = (RawData) ((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
-            action = OpenPanel.ACTION_SAVE;
-            return component;
+            return null;
         }
         if(rawData == null){
             return component;

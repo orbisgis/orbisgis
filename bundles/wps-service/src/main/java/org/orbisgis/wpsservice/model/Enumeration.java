@@ -119,10 +119,18 @@ public class Enumeration extends ComplexDataType{
         isEditable = editable;
     }
 
+    /**
+     * Sets the names of the values. The names will be only used for the displaying.
+     * @param names String array of the names. It should have the same size of the values array.
+     */
     public void setValuesNames(String[] names){
         this.names = names;
     }
 
+    /**
+     * Returns the array of the values name.
+     * @return The array of the values name.
+     */
     public String[] getValuesNames(){
         return names;
     }

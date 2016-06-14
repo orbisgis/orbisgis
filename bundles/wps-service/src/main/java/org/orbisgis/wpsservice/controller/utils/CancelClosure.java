@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Groovy closure used to ba able to cancel a running process.
+ *
  * @author Sylvain PALOMINOS
  */
 public class CancelClosure extends Closure {

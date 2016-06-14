@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This
+ * This class contains methods which does the translation of a process.
  *
  * @author Sylvain PALOMINOS
  */

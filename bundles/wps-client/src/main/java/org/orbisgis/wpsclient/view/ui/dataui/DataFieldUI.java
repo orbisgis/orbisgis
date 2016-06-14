@@ -89,8 +89,7 @@ public class DataFieldUI implements DataUI{
             }
         }
         else if(inputOrOutput instanceof OutputDescriptionType){
-            dataField = (DataField)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
-            return panel;
+            return null;
         }
 
         if(dataField == null){
@@ -354,10 +353,11 @@ public class DataFieldUI implements DataUI{
                 tableName = split[1];
             }
         }
-        else{
+        else if(dataMap.get(dataField.getDataStoreIdentifier()) != null){
             tableName = dataMap.get(dataField.getDataStoreIdentifier()).toString();
         }
         if(tableName == null){
+            listContainer.add(new ContainerItem<Object>("Select a field", "Select a field"));
             return listContainer;
         }
         List<String> fieldNameList = wpsClient.getWpsService().getTableFieldList(tableName,

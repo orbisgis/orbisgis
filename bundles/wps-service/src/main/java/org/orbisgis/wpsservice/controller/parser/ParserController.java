@@ -66,6 +66,12 @@ public class ParserController {
         groovyClassLoader = new GroovyShell().getClassLoader();
     }
 
+    /**
+     * Parse a groovy file under a wps process and the groovy class representing the script.
+     * @param processPath String path of the file to parse.
+     * @return An entry with the process and the class object.
+     * @throws MalformedScriptException
+     */
     public AbstractMap.SimpleEntry<ProcessDescriptionType, Class> parseProcess(String processPath) throws MalformedScriptException {
         //Retrieve the class corresponding to the Groovy script.
         Class clazz;
@@ -164,7 +170,7 @@ public class ParserController {
     /**
      * Links the input and output with the 'parent'.
      * i.e. : The DataStore contains a list of DataField related.
-     * @param p
+     * @param p Process to link.
      */
     private void link(ProcessDescriptionType p){
         //Link the DataField with its DataStore
