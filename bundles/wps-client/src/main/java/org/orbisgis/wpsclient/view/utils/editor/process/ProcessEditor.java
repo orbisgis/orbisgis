@@ -26,6 +26,7 @@ import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUI;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUIManager;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
@@ -57,7 +58,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     public static final String NAME = "PROCESS_EDITOR";
 
     private ProcessEditableElement pee;
-    private WpsClient wpsClient;
+    private WpsClientImpl wpsClient;
     private DockingPanelParameters dockingPanelParameters;
     /** DataUIManager used to create the UI corresponding the the data */
     private DataUIManager dataUIManager;
@@ -66,7 +67,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     /** Error label displayed when the process inputs and output are all defined. */
     private JLabel errorMessage;
 
-    public ProcessEditor(WpsClient wpsClient, ProcessEditableElement pee){
+    public ProcessEditor(WpsClientImpl wpsClient, ProcessEditableElement pee){
         this.alive = true;
         this.wpsClient = wpsClient;
         this.pee = pee;
@@ -75,7 +76,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         dockingPanelParameters.setName(NAME+"_"+pee.getProcess().getTitle());
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("process"));
         dockingPanelParameters.setDefaultDockingLocation(
-                new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClient.TOOLBOX_REFERENCE));
+                new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClientImpl.TOOLBOX_REFERENCE));
         dockingPanelParameters.setTitle(pee.getProcessReference());
         this.setLayout(new BorderLayout());
         dataUIManager = wpsClient.getDataUIManager();

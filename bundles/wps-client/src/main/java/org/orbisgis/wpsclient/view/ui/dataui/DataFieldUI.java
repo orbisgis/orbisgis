@@ -25,6 +25,7 @@ import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.sif.JPanelListRenderer;
 import org.orbisgis.wpsservice.LocalWpsService;
@@ -69,9 +70,9 @@ public class DataFieldUI implements DataUI{
     private static final String NULL_ITEM = "NULL_ITEM";
 
     /** WpsClient using the generated UI. */
-    private WpsClient wpsClient;
+    private WpsClientImpl wpsClient;
 
-    public void setWpsClient(WpsClient wpsClient){
+    public void setWpsClient(WpsClientImpl wpsClient){
         this.wpsClient = wpsClient;
     }
 
@@ -360,14 +361,14 @@ public class DataFieldUI implements DataUI{
             listContainer.add(new ContainerItem<Object>("Select a field", "Select a field"));
             return listContainer;
         }
-        List<String> fieldNameList = wpsClient.getWpsService().getTableFieldList(tableName,
+        List<String> fieldNameList = wpsClient.getLocalWpsService().getTableFieldList(tableName,
                 dataField.getFieldTypeList(), dataField.getExcludedTypeList());
         //If there is tables, retrieve their information to format the display in the comboBox
         if(fieldNameList != null && !fieldNameList.isEmpty()){
             for (String fieldName : fieldNameList) {
                 //Retrieve the table information
                 Map<String, Object> informationMap =
-                        wpsClient.getWpsService().getFieldInformation(tableName, fieldName);
+                        wpsClient.getLocalWpsService().getFieldInformation(tableName, fieldName);
                 //If there is information, use it to improve the table display in the comboBox
                 JPanel fieldPanel = new JPanel(new MigLayout("ins 0, gap 0"));
                 if (!informationMap.isEmpty()) {

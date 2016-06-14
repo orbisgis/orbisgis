@@ -24,14 +24,12 @@ import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.sif.JPanelListRenderer;
 import org.orbisgis.wpsservice.model.*;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.EventHandler;
@@ -60,10 +58,10 @@ public class DataStoreUI implements DataUI{
     private static final String IS_OUTPUT_PROPERTY = "IS_OUTPUT_PROPERTY";
 
     /** WpsClient using the generated UI. */
-    private WpsClient wpsClient;
+    private WpsClientImpl wpsClient;
 
     @Override
-    public void setWpsClient(WpsClient wpsClient){
+    public void setWpsClient(WpsClientImpl wpsClient){
         this.wpsClient = wpsClient;
     }
 
@@ -145,10 +143,10 @@ public class DataStoreUI implements DataUI{
         //Retrieve the table map
         Map<String, Boolean> tableMap;
         if(isSpatialDataStore) {
-            tableMap = wpsClient.getWpsService().getGeocatalogTableList(true);
+            tableMap = wpsClient.getLocalWpsService().getGeocatalogTableList(true);
         }
         else {
-            tableMap = wpsClient.getWpsService().getGeocatalogTableList(false);
+            tableMap = wpsClient.getLocalWpsService().getGeocatalogTableList(false);
         }
         //If there is tables, build all the ContainerItem containing the JPanel representing a table
         ContainerItem<Object> selectedItem = (ContainerItem<Object>)geocatalogComboBox.getSelectedItem();

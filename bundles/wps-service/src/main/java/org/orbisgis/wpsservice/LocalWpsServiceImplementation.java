@@ -252,7 +252,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                             in.close();
                         }
                     }
-                    addLocalSource(wpsScriptFolder, "orbisgis", true);
+                    addLocalSource(wpsScriptFolder, new String[]{"orbisgis"}, true, "OrbisGIS");
                 } catch (IOException e) {
                     LOGGER.warn("Unable to copy the scripts. \n" +
                             "No basic script will be available. \n" +
@@ -285,7 +285,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 if(prop != null && !prop.toString().isEmpty()){
                     String str = prop.toString();
                     for(String s : str.split(";")){
-                        addLocalSource(new File(URI.create(s)), null, false);
+                        File f = new File(URI.create(s));
+                        addLocalSource(f, null, false, new File(f.getParent()).getName());
                     }
                 }
             }
@@ -359,9 +360,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     @Override
-    public void addLocalSource(File f, String iconName, boolean isDefaultScript){
+    public void addLocalSource(File f, String[] iconName, boolean isDefaultScript, String nodePath){
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
-            processManager.addScript(f.toURI(), iconName, !isDefaultScript);
+            processManager.addScript(f.toURI(), iconName, !isDefaultScript, nodePath);
         }
         else if(f.isDirectory()){
             processManager.addLocalSource(f.toURI(), iconName);
@@ -386,7 +387,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 return false;
             }
             processManager.removeProcess(pi.getProcessDescriptionType());
-            processManager.addScript(pi.getSourceFileURI(), pi.getCategory(), pi.isRemovable());
+            processManager.addScript(pi.getSourceFileURI(), pi.getCategory(), pi.isRemovable(), pi.getNodePath());
 
             return (processManager.getProcess(pi.getProcessDescriptionType().getIdentifier()) != null);
         }

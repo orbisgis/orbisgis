@@ -53,7 +53,7 @@ public interface LocalWpsService extends WpsService {
      * @param iconName Icon file name associated to the script
      * @param isDefaultScript True if the scripts are default scripts (unremovable). False otherwise
      */
-    void addLocalSource(File f, String iconName, boolean isDefaultScript);
+    void addLocalSource(File f, String[] iconName, boolean isDefaultScript, String nodePath);
 
     /**
      * Remove the process corresponding to the given codeType.

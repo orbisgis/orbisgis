@@ -69,7 +69,7 @@ public class ProcessManager {
         this.closureMap = new HashMap<>();
     }
 
-    public void addScript(URI scriptUri, String category, boolean isRemovable){
+    public void addScript(URI scriptUri, String[] category, boolean isRemovable, String nodePath){
         File f = new File(scriptUri);
         //Test that the script name is not only '.groovy'
         if (f.getName().endsWith(".groovy") && f.getName().length()>7) {
@@ -84,7 +84,8 @@ public class ProcessManager {
             //If the process is not already registered
             if(processOffering != null) {
                 //Save the process in a ProcessIdentifier
-                ProcessIdentifier pi = new ProcessIdentifier(processOffering, scriptUri, f.getParentFile().toURI());
+                ProcessIdentifier pi = new ProcessIdentifier(processOffering, scriptUri, f.getParentFile().toURI(),
+                        nodePath);
                 pi.setCategory(category);
                 pi.setRemovable(isRemovable);
                 processIdList.add(pi);
@@ -96,13 +97,13 @@ public class ProcessManager {
      * Adds a local source to the toolbox and get all the groovy script.
      * @param uri URI to the local source.
      */
-    public void addLocalSource(URI uri, String category){
+    public void addLocalSource(URI uri, String[] category){
         File folder = new File(uri);
         if(!folder.exists() || !folder.isDirectory()){
             return;
         }
         for(File f : folder.listFiles()){
-            addScript(f.toURI(), category, true);
+            addScript(f.toURI(), category, true, "localhost");
         }
     }
 

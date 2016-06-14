@@ -26,6 +26,7 @@ import net.opengis.ows._2.ValueType;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.DescriptionType;
 import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
@@ -81,9 +82,9 @@ public class LiteralDataUI implements DataUI {
     private static final String LITERAL_DATA_PROPERTY = "LITERAL_DATA_PROPERTY";
 
     /** WpsClient using the generated UI. */
-    private WpsClient wpsClient;
+    private WpsClientImpl wpsClient;
 
-    public void setWpsClient(WpsClient wpsClient){
+    public void setWpsClient(WpsClientImpl wpsClient){
         this.wpsClient = wpsClient;
     }
 

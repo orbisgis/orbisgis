@@ -22,6 +22,7 @@ package org.orbisgis.wpsclient.view.ui.dataui;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.DataDescriptionType;
 import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
 
@@ -44,7 +45,7 @@ public class DataUIManager {
     /**
      * Main constructor.
      */
-    public DataUIManager(WpsClient wpsClient){
+    public DataUIManager(WpsClientImpl wpsClient){
         dataUIMap = new HashMap<>();
         linkClassUI(LiteralDataType.class, new LiteralDataUI(), wpsClient);
         linkClassUI(RawData.class, new RawDataUI(), wpsClient);
@@ -60,7 +61,7 @@ public class DataUIManager {
      * @param clazz Class to link.
      * @param dataUI UI corresponding to the class.
      */
-    public void linkClassUI(Class<? extends DataDescriptionType> clazz, DataUI dataUI, WpsClient wpsClient){
+    public void linkClassUI(Class<? extends DataDescriptionType> clazz, DataUI dataUI, WpsClientImpl wpsClient){
         dataUI.setWpsClient(wpsClient);
         dataUIMap.put(clazz, dataUI);
     }
