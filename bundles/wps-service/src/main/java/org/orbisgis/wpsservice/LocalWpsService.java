@@ -112,4 +112,6 @@ public interface LocalWpsService extends WpsService {
      * @param jobId Id of the job to cancel.
      */
     void cancelProcess(UUID jobId);
+
+    enum ProcessProperty{IS_REMOVABLE, NODE_PATH, ICON_ARRAY, ROLE}
 }

@@ -24,7 +24,6 @@ import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.net.URI;
 
 /**
  * Node of the process tree displayed in the ToolBox.
@@ -55,7 +54,7 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
     /** Indicates if the node is a valid folder, script, host ... or not. */
     private boolean isValid = true;
     /** Indicates if the node is a default process from OrbisGIS. */
-    private boolean isDefaultOrbisGIS = false;
+    private boolean isRemovable = false;
     /** Name of the icon to use when the node is open. */
     private String customOpenIconName = null;
     /** Name of the icon to use when the node is closed. */
@@ -319,7 +318,7 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         copy.customClosedIconName = this.customClosedIconName;
         copy.customLeafIconName = this.customLeafIconName;
         copy.customInvalidIconName = this.customInvalidIconName;
-        copy.isDefaultOrbisGIS = this.isDefaultOrbisGIS;
+        copy.isRemovable = this.isRemovable;
 
         return copy;
     }
@@ -337,16 +336,16 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
      * Tells if this node is a default node from OrbisGIS
      * @return True if the node is a default node from OrbisGIS, false otherwise.
      */
-    public boolean isDefaultOrbisGIS() {
-        return isDefaultOrbisGIS;
+    public boolean isRemovable() {
+        return isRemovable;
     }
 
     /**
      * Sets if the node is a default node from OrbisGIS or not.
-     * @param defaultOrbisGIS True if the node is a default node from OrbisGIS, false otherwise.
+     * @param isRemovable True if the node is a default node from OrbisGIS, false otherwise.
      */
-    public void setDefaultOrbisGIS(boolean defaultOrbisGIS) {
-        isDefaultOrbisGIS = defaultOrbisGIS;
+    public void setIsRemovable(boolean isRemovable) {
+        this.isRemovable = isRemovable;
     }
 
     /**

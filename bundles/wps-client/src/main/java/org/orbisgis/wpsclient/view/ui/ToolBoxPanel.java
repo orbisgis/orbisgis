@@ -21,7 +21,7 @@ package org.orbisgis.wpsclient.view.ui;
 
 import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.KeywordsType;
-import net.opengis.wps._2_0.ProcessDescriptionType;
+import net.opengis.ows._2.MetadataType;
 import net.opengis.wps._2_0.ProcessSummaryType;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
@@ -36,7 +36,7 @@ import org.orbisgis.wpsclient.view.utils.Filter.IFilter;
 import org.orbisgis.wpsclient.view.utils.Filter.SearchFilter;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.TreeNodeWps;
-import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
+import org.orbisgis.wpsservice.LocalWpsService;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -47,10 +47,8 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Main panel of the ToolBox.
@@ -210,7 +208,7 @@ public class ToolBoxPanel extends JPanel {
                 }
                 else {
                     TreeNodeWps node = (TreeNodeWps) tree.getLastSelectedPathComponent();
-                    if(node.isDefaultOrbisGIS()){
+                    if(!node.isRemovable()){
                         if (node.isLeaf() && !node.getNodeType().equals(TreeNodeWps.NodeType.FOLDER)) {
                             popupOrbisGISLeafActions.copyEnabledActions(popupMenu);
                         } else {
@@ -387,29 +385,27 @@ public class ToolBoxPanel extends JPanel {
             List<TreeNodeWps> leafList = new ArrayList<>();
             leafList.addAll(getAllChild(node));
             for(TreeNodeWps leaf : leafList){
-                if(!node.isDefaultOrbisGIS()) {
-                    if(!node.isDefaultOrbisGIS()) {
-                        switch(leaf.getNodeType()) {
-                            case FOLDER:
+                if(node.isRemovable()) {
+                    switch(leaf.getNodeType()) {
+                        case FOLDER:
+                            for (TreeNodeWps child : getChildrenWithUri(URI.create(leaf.getIdentifier().getValue()),
+                                    (TreeNodeWps) selectedModel.getRoot())) {
+                                if (!child.isRemovable()) {
+                                    cleanParentNode(child, selectedModel);
+                                }
+                            }
+                            break;
+                        case PROCESS:
+                            for (FileTreeModel model : modelList) {
                                 for (TreeNodeWps child : getChildrenWithUri(URI.create(leaf.getIdentifier().getValue()),
-                                        (TreeNodeWps) selectedModel.getRoot())) {
-                                    if (!child.isDefaultOrbisGIS()) {
-                                        cleanParentNode(child, selectedModel);
+                                        (TreeNodeWps) model.getRoot())) {
+                                    if (child != null && !child.isRemovable()) {
+                                        cleanParentNode(child, model);
                                     }
                                 }
-                                break;
-                            case PROCESS:
-                                for (FileTreeModel model : modelList) {
-                                    for (TreeNodeWps child : getChildrenWithUri(URI.create(leaf.getIdentifier().getValue()),
-                                            (TreeNodeWps) model.getRoot())) {
-                                        if (child != null && !child.isDefaultOrbisGIS()) {
-                                            cleanParentNode(child, model);
-                                        }
-                                    }
-                                }
-                                wpsClient.removeProcess(leaf.getIdentifier());
-                                break;
-                        }
+                            }
+                            wpsClient.removeProcess(leaf.getIdentifier());
+                            break;
                     }
                 }
             }
@@ -533,7 +529,6 @@ public class ToolBoxPanel extends JPanel {
                 nodeList.addAll(getAllChild(child));
             }
         }
-        nodeList.add(node);
         return nodeList;
     }
 
@@ -709,21 +704,33 @@ public class ToolBoxPanel extends JPanel {
         selectedModel = model;
     }
 
-    //TODO get the parent URI to add it as a subnode
-    //TODO get if the process is a default one or not
-    //TODO get the category
-    //TODO get the URI (identifier ?)
     public void addProcess(ProcessSummaryType processSummary) {
-        addLocalSourceInFileModel(LOCALHOST_URI, mapHostNode.get(LOCALHOST_URI), null, processSummary, "localhost");
+        boolean isRemovable = true;
+        String nodePath = "localhost";
+        String[] iconArray = null;
+        //Retrieve the process metadata
+        for (MetadataType metadata : processSummary.getMetadata()) {
+            if (metadata.getTitle().equals(LocalWpsService.ProcessProperty.IS_REMOVABLE.name())) {
+                isRemovable = (boolean) metadata.getAbstractMetaData();
+            }
+            if (metadata.getTitle().equals(LocalWpsService.ProcessProperty.NODE_PATH.name())) {
+                nodePath = (String) metadata.getAbstractMetaData();
+            }
+            if (metadata.getTitle().equals(LocalWpsService.ProcessProperty.ICON_ARRAY.name())) {
+                String iconStr = metadata.getAbstractMetaData().toString();
+                if(iconStr != null) {
+                    iconArray = iconStr.split(";");
+                }
+            }
+        }
+        addLocalSourceInFileModel(LOCALHOST_URI, mapHostNode.get(LOCALHOST_URI), iconArray, processSummary, nodePath);
         addScriptInTagModel(processSummary, null);
-        TreeNodeWps scriptFileModel = getChildrenWithUri(LOCALHOST_URI, (TreeNodeWps)fileModel.getRoot()).get(0);
-        scriptFileModel.setDefaultOrbisGIS(false);
-        for(TreeNodeWps node : getAllChild(scriptFileModel)){
-            node.setDefaultOrbisGIS(false);
+        for(TreeNodeWps node : getAllChild((TreeNodeWps)fileModel.getRoot())){
+            node.setIsRemovable(isRemovable);
             List<TreeNodeWps> tagNodeList = getChildrenWithUri(URI.create(node.getIdentifier().getValue()),
                     (TreeNodeWps)tagModel.getRoot());
             for(TreeNodeWps tagNode : tagNodeList){
-                tagNode.setDefaultOrbisGIS(false);
+                tagNode.setIsRemovable(isRemovable);
             }
         }
         refresh();

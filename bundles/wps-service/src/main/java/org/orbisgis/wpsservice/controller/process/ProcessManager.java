@@ -21,6 +21,7 @@ package org.orbisgis.wpsservice.controller.process;
 
 import groovy.lang.GroovyObject;
 import net.opengis.ows._2.CodeType;
+import net.opengis.ows._2.MetadataType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
@@ -78,6 +79,32 @@ public class ProcessManager {
             ProcessOffering processOffering = null;
             try {
                 processOffering = parserController.parseProcess(f.getAbsolutePath());
+                MetadataType isRemovableMetadata = new MetadataType();
+                isRemovableMetadata.setTitle(LocalWpsService.ProcessProperty.IS_REMOVABLE.name());
+                isRemovableMetadata.setRole(LocalWpsService.ProcessProperty.ROLE.name());
+                isRemovableMetadata.setAbstractMetaData(isRemovable);
+                processOffering.getProcess().getMetadata().add(isRemovableMetadata);
+                if(nodePath != null) {
+                    MetadataType nodePathMetadata = new MetadataType();
+                    nodePathMetadata.setTitle(LocalWpsService.ProcessProperty.NODE_PATH.name());
+                    nodePathMetadata.setRole(LocalWpsService.ProcessProperty.ROLE.name());
+                    nodePathMetadata.setAbstractMetaData(nodePath);
+                    processOffering.getProcess().getMetadata().add(nodePathMetadata);
+                }
+                if(category != null) {
+                    MetadataType iconArrayMetadata = new MetadataType();
+                    iconArrayMetadata.setTitle(LocalWpsService.ProcessProperty.ICON_ARRAY.name());
+                    iconArrayMetadata.setRole(LocalWpsService.ProcessProperty.ROLE.name());
+                    String iconString = "";
+                    for (String icon : category) {
+                        if (!iconString.isEmpty()) {
+                            iconString += ";";
+                        }
+                        iconString += icon;
+                    }
+                    iconArrayMetadata.setAbstractMetaData(iconString);
+                    processOffering.getProcess().getMetadata().add(iconArrayMetadata);
+                }
             } catch (MalformedScriptException e) {
                 LoggerFactory.getLogger(ProcessManager.class).error("Unable to parse the process '"+scriptUri+"'.", e);
             }
@@ -321,11 +348,12 @@ public class ProcessManager {
     public String getListSourcesAsString(){
         String str = "";
         for(ProcessIdentifier pi : processIdList){
-            if(str.isEmpty()){
-                str+=pi.getSourceFileURI();
-            }
-            else{
-                str+=";"+pi.getSourceFileURI();
+            if(pi.isRemovable()) {
+                if (str.isEmpty()) {
+                    str += pi.getSourceFileURI();
+                } else {
+                    str += ";" + pi.getSourceFileURI();
+                }
             }
         }
         return str;
