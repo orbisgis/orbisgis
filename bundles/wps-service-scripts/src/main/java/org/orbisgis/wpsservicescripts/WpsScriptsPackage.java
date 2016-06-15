@@ -103,7 +103,7 @@ public class WpsScriptsPackage {
                         IOUtils.copy(scriptUrl.openStream(), out);
                     }
                     //Add the temporary file to the WpsService an get back the ProcessIdentifier object
-                    List<ProcessIdentifier> piList = localWpsService.addLocalSource(tempFile, iconArrayName, true, nodePath);
+                    List<ProcessIdentifier> piList = localWpsService.addLocalSource(tempFile, iconArrayName, false, nodePath);
                     //Save the process id to be able to remove the process later.
                     for(ProcessIdentifier pi : piList) {
                         listIdProcess.add(pi.getProcessDescriptionType().getIdentifier());
@@ -135,7 +135,7 @@ public class WpsScriptsPackage {
             }
             List<ProcessIdentifier> piList = localWpsService.addLocalSource(tempFile,
                     new String[]{loadIcon("icon.png")},
-                    true,
+                    false,
                     "wps/script/sample");
             for(ProcessIdentifier pi : piList){
                 listIdProcess.add(pi.getProcessDescriptionType().getIdentifier());

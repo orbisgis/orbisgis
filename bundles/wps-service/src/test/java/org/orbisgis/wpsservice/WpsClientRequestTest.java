@@ -331,32 +331,32 @@ public class WpsClientRequestTest {
                 URL url = this.getClass().getResource("DataStore.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, false, "test");
+                    localWpsService.addLocalSource(f, null, true, "test");
                 }
                 url = this.getClass().getResource("DataField.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, false, "test");
+                    localWpsService.addLocalSource(f, null, true, "test");
                 }
                 url = this.getClass().getResource("FieldValue.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, false, "test");
+                    localWpsService.addLocalSource(f, null, true, "test");
                 }
                 url = this.getClass().getResource("Enumeration.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, false, "test");
+                    localWpsService.addLocalSource(f, null, true, "test");
                 }
                 url = this.getClass().getResource("GeometryData.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, false, "test");
+                    localWpsService.addLocalSource(f, null, true, "test");
                 }
                 url = this.getClass().getResource("RawData.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, false, "test");
+                    localWpsService.addLocalSource(f, null, true, "test");
                 }
             } catch (URISyntaxException e) {
                 e.printStackTrace();

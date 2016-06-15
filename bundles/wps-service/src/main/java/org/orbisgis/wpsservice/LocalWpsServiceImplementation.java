@@ -223,7 +223,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                     String str = prop.toString();
                     for(String s : str.split(";")){
                         File f = new File(URI.create(s));
-                        addLocalSource(f, null, false, new File(f.getParent()).getName());
+                        addLocalSource(f, null, true, new File(f.getParent()).getName());
                     }
                 }
             }
@@ -297,10 +297,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     @Override
-    public List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isDefaultScript, String nodePath){
+    public List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isRemovable, String nodePath){
         List<ProcessIdentifier> piList = new ArrayList<>();
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
-            piList.add(processManager.addScript(f.toURI(), iconName, !isDefaultScript, nodePath));
+            piList.add(processManager.addScript(f.toURI(), iconName, isRemovable, nodePath));
         }
         else if(f.isDirectory()){
             piList.addAll(processManager.addLocalSource(f.toURI(), iconName));
@@ -310,7 +310,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
     @Override
     public void removeProcess(CodeType identifier){
-        processManager.removeProcess(processManager.getProcess(identifier));
+        ProcessDescriptionType process = processManager.getProcess(identifier);
+        if(process != null) {
+            processManager.removeProcess(process);
+        }
     }
 
     @Override

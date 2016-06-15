@@ -583,7 +583,7 @@ public class LiteralDataUI implements DataUI {
                             // If there is no "value" defined, uses the "min".
                             if(value instanceof RangeType){
                                 RangeType range = (RangeType)value;
-                                String defaultValue = range.getMinimumValue().getValue();
+                                String defaultValue = range.getMinimumValue().getValue()+";";
                                 if(!literalDataDomain.getDefaultValue().getValue().isEmpty()){
                                     defaultValue = literalDataDomain.getDefaultValue().getValue()+";";
                                 }

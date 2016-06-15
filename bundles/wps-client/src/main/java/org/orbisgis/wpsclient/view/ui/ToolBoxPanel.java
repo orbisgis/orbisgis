@@ -383,6 +383,7 @@ public class ToolBoxPanel extends JPanel {
     public void remove(TreeNodeWps node){
         if(!node.equals(fileModel.getRoot()) && !node.equals(tagModel.getRoot())){
             List<TreeNodeWps> leafList = new ArrayList<>();
+            leafList.add(node);
             leafList.addAll(getAllChild(node));
             for(TreeNodeWps leaf : leafList){
                 if(node.isRemovable()) {
@@ -390,7 +391,7 @@ public class ToolBoxPanel extends JPanel {
                         case FOLDER:
                             for (TreeNodeWps child : getChildrenWithUri(URI.create(leaf.getIdentifier().getValue()),
                                     (TreeNodeWps) selectedModel.getRoot())) {
-                                if (!child.isRemovable()) {
+                                if (child.isRemovable()) {
                                     cleanParentNode(child, selectedModel);
                                 }
                             }
@@ -399,7 +400,7 @@ public class ToolBoxPanel extends JPanel {
                             for (FileTreeModel model : modelList) {
                                 for (TreeNodeWps child : getChildrenWithUri(URI.create(leaf.getIdentifier().getValue()),
                                         (TreeNodeWps) model.getRoot())) {
-                                    if (child != null && !child.isRemovable()) {
+                                    if (child != null && child.isRemovable()) {
                                         cleanParentNode(child, model);
                                     }
                                 }
@@ -461,7 +462,13 @@ public class ToolBoxPanel extends JPanel {
      * @param model Model containing the node.
      */
     private void cleanParentNode(TreeNodeWps node, FileTreeModel model){
-        model.removeNodeFromParent(node);
+        //If the node is the last one from its parent, call 'cleanParentNode()' on it
+        if(node.getParent().getChildCount() == 1){
+            cleanParentNode((TreeNodeWps)node.getParent(), model);
+        }
+        else {
+            model.removeNodeFromParent(node);
+        }
     }
 
     /**
@@ -723,16 +730,9 @@ public class ToolBoxPanel extends JPanel {
                 }
             }
         }
-        addLocalSourceInFileModel(LOCALHOST_URI, mapHostNode.get(LOCALHOST_URI), iconArray, processSummary, nodePath);
-        addScriptInTagModel(processSummary, null);
-        for(TreeNodeWps node : getAllChild((TreeNodeWps)fileModel.getRoot())){
-            node.setIsRemovable(isRemovable);
-            List<TreeNodeWps> tagNodeList = getChildrenWithUri(URI.create(node.getIdentifier().getValue()),
-                    (TreeNodeWps)tagModel.getRoot());
-            for(TreeNodeWps tagNode : tagNodeList){
-                tagNode.setIsRemovable(isRemovable);
-            }
-        }
+        addLocalSourceInFileModel(LOCALHOST_URI, mapHostNode.get(LOCALHOST_URI),
+                iconArray, processSummary, nodePath, isRemovable);
+        addScriptInTagModel(processSummary, null, isRemovable);
         refresh();
     }
 
@@ -741,7 +741,7 @@ public class ToolBoxPanel extends JPanel {
      * @param iconName Name of the icon to use for the node representing the process to add to the tree
      */
     private void addLocalSourceInFileModel(URI parentUri, TreeNodeWps hostNode, String[] iconName,
-                                           ProcessSummaryType processSummary, String nodePath){
+                                           ProcessSummaryType processSummary, String nodePath, boolean isRemovable){
         String[] split;
         if(parentUri.toString().startsWith("file:/") || parentUri.toString().startsWith("/")){
             split = new String[]{new File(parentUri).getName()};
@@ -783,6 +783,7 @@ public class ToolBoxPanel extends JPanel {
             script.setIdentifier(codeType);
             script.setValidNode(processSummary != null);
             script.setNodeType(TreeNodeWps.NodeType.PROCESS);
+            script.setIsRemovable(isRemovable);
             if(processSummary != null){
                 if(processSummary.getTitle() != null && !processSummary.getTitle().isEmpty()) {
                     script.setUserObject(processSummary.getTitle().get(0).getValue());
@@ -799,12 +800,13 @@ public class ToolBoxPanel extends JPanel {
     /**
      * Adds a process in the tag model.
      */
-    public void addScriptInTagModel(ProcessSummaryType processSummary, String iconName){
+    public void addScriptInTagModel(ProcessSummaryType processSummary, String iconName, boolean isRemovable){
         TreeNodeWps root = (TreeNodeWps) tagModel.getRoot();
         TreeNodeWps script = new TreeNodeWps();
         URI uri = URI.create(processSummary.getIdentifier().getValue());
         script.setIdentifier(processSummary.getIdentifier());
         script.setNodeType(TreeNodeWps.NodeType.PROCESS);
+        script.setIsRemovable(isRemovable);
 
         script.setValidNode(processSummary!=null);
         if(iconName != null){
