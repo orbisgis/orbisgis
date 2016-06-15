@@ -37,7 +37,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -51,7 +50,6 @@ import java.beans.EventHandler;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -268,11 +266,18 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                //If there is more than one literal data domain, adds a JComboBox to allow the user to select the
+                // desired one.
                 JComboBox allowedValuesBox = createDomainComboBox(literalData);
                 if(allowedValuesBox != null && allowedValuesBox.getItemCount()>0) {
                     allowedValuesBox.putClientProperty("spinner", byteSpinner);
-                    allowedValuesBox.addItemListener(EventHandler.create(ItemListener.class, this, "actionOnItem", ""));
+                    allowedValuesBox.addItemListener(
+                            EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
                     dataComponent.add(allowedValuesBox);
+                    //Run a false event to simulated the selection of the selected value of the JComboBox
+                    ItemEvent event = new ItemEvent(
+                            allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
+                    onDomainSelected(event);
                 }
                 dataComponent.add(byteSpinner, "wrap");
                 onDataChanged(byteSpinner);
@@ -298,13 +303,18 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                //If there is more than one literal data domain, adds a JComboBox to allow the user to select the
+                // desired one.
                 allowedValuesBox = createDomainComboBox(literalData);
                 if(allowedValuesBox != null && allowedValuesBox.getItemCount()>1) {
                     allowedValuesBox.putClientProperty("spinner", intSpinner);
-                    allowedValuesBox.addItemListener(EventHandler.create(ItemListener.class, this, "actionOnItem", ""));
+                    allowedValuesBox.addItemListener(
+                            EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
                     dataComponent.add(allowedValuesBox);
-                    ItemEvent event = new ItemEvent(allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
-                    actionOnItem(event);
+                    //Run a false event to simulated the selection of the selected value of the JComboBox
+                    ItemEvent event = new ItemEvent(
+                            allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
+                    onDomainSelected(event);
                 }
                 dataComponent.add(intSpinner, "wrap");
                 onDataChanged(intSpinner);
@@ -329,13 +339,18 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                //If there is more than one literal data domain, adds a JComboBox to allow the user to select the
+                // desired one.
                 allowedValuesBox = createDomainComboBox(literalData);
                 if(allowedValuesBox != null && allowedValuesBox.getItemCount()>1) {
                     allowedValuesBox.putClientProperty("spinner", longSpinner);
-                    allowedValuesBox.addItemListener(EventHandler.create(ItemListener.class, this, "actionOnItem", ""));
+                    allowedValuesBox.addItemListener(
+                            EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
                     dataComponent.add(allowedValuesBox);
-                    ItemEvent event = new ItemEvent(allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
-                    actionOnItem(event);
+                    //Run a false event to simulated the selection of the selected value of the JComboBox
+                    ItemEvent event = new ItemEvent(
+                            allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
+                    onDomainSelected(event);
                 }
                 dataComponent.add(longSpinner, "wrap");
                 onDataChanged(longSpinner);
@@ -360,13 +375,18 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                //If there is more than one literal data domain, adds a JComboBox to allow the user to select the
+                // desired one.
                 allowedValuesBox = createDomainComboBox(literalData);
                 if(allowedValuesBox != null && allowedValuesBox.getItemCount()>1) {
                     allowedValuesBox.putClientProperty("spinner", shortSpinner);
-                    allowedValuesBox.addItemListener(EventHandler.create(ItemListener.class, this, "actionOnItem", ""));
+                    allowedValuesBox.addItemListener(
+                            EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
                     dataComponent.add(allowedValuesBox);
-                    ItemEvent event = new ItemEvent(allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
-                    actionOnItem(event);
+                    //Run a false event to simulated the selection of the selected value of the JComboBox
+                    ItemEvent event = new ItemEvent(
+                            allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
+                    onDomainSelected(event);
                 }
                 dataComponent.add(shortSpinner, "wrap");
                 onDataChanged(shortSpinner);
@@ -391,13 +411,18 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                //If there is more than one literal data domain, adds a JComboBox to allow the user to select the
+                // desired one.
                 allowedValuesBox = createDomainComboBox(literalData);
                 if(allowedValuesBox != null && allowedValuesBox.getItemCount()>1) {
                     allowedValuesBox.putClientProperty("spinner", uByteSpinner);
-                    allowedValuesBox.addItemListener(EventHandler.create(ItemListener.class, this, "actionOnItem", ""));
+                    allowedValuesBox.addItemListener(
+                            EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
                     dataComponent.add(allowedValuesBox);
-                    ItemEvent event = new ItemEvent(allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
-                    actionOnItem(event);
+                    //Run a false event to simulated the selection of the selected value of the JComboBox
+                    ItemEvent event = new ItemEvent(
+                            allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
+                    onDomainSelected(event);
                 }
                 dataComponent.add(uByteSpinner, "wrap");
                 onDataChanged(uByteSpinner);
@@ -422,13 +447,18 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                //If there is more than one literal data domain, adds a JComboBox to allow the user to select the
+                // desired one.
                 allowedValuesBox = createDomainComboBox(literalData);
                 if(allowedValuesBox != null && allowedValuesBox.getItemCount()>1) {
                     allowedValuesBox.putClientProperty("spinner", doubleSpinner);
-                    allowedValuesBox.addItemListener(EventHandler.create(ItemListener.class, this, "actionOnItem", ""));
+                    allowedValuesBox.addItemListener(
+                            EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
                     dataComponent.add(allowedValuesBox);
-                    ItemEvent event = new ItemEvent(allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
-                    actionOnItem(event);
+                    //Run a false event to simulated the selection of the selected value of the JComboBox
+                    ItemEvent event = new ItemEvent(
+                            allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
+                    onDomainSelected(event);
                 }
                 dataComponent.add(doubleSpinner, "wrap");
                 onDataChanged(doubleSpinner);
@@ -453,13 +483,18 @@ public class LiteralDataUI implements DataUI {
                         this,
                         "onDataChanged",
                         "source"));
+                //If there is more than one literal data domain, adds a JComboBox to allow the user to select the
+                // desired one.
                 allowedValuesBox = createDomainComboBox(literalData);
                 if(allowedValuesBox != null && allowedValuesBox.getItemCount()>1) {
                     allowedValuesBox.putClientProperty("spinner", floatSpinner);
-                    allowedValuesBox.addItemListener(EventHandler.create(ItemListener.class, this, "actionOnItem", ""));
+                    allowedValuesBox.addItemListener(
+                            EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
                     dataComponent.add(allowedValuesBox);
-                    ItemEvent event = new ItemEvent(allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
-                    actionOnItem(event);
+                    //Run a false event to simulated the selection of the selected value of the JComboBox
+                    ItemEvent event = new ItemEvent(
+                            allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
+                    onDomainSelected(event);
                 }
                 dataComponent.add(floatSpinner, "wrap");
                 onDataChanged(floatSpinner);
@@ -516,39 +551,54 @@ public class LiteralDataUI implements DataUI {
         }
     }
 
+    /**
+     * Create a JComboBox containing all the available literal data domain to allow the user to select the desired one.
+     * The JComboBox contains strings which are composed this way :
+     * - In the case of a ValueType : "value"
+     * - In the case of a RangeType : "min;value;max;spacing". If there is no "value" defined, uses the "min".
+     * @param literalData LiteralData used to build the JComboBox.
+     * @return A JComboBox containing the literalData domain.
+     */
     private JComboBox<String> createDomainComboBox(LiteralDataType literalData){
-        if(!literalData.getLiteralDataDomain().isEmpty()){
-            JComboBox<String> allowedValuesBox = new JComboBox<>();
-            for(LiteralDataType.LiteralDataDomain literalDataDomain : literalData.getLiteralDataDomain()){
-                if(literalDataDomain != null && literalDataDomain.isDefault()){
-                    if(literalDataDomain.getAllowedValues() != null){
-                        AllowedValues allowedValues = literalDataDomain.getAllowedValues();
-                        if(!allowedValues.getValueOrRange().isEmpty()) {
-                            for(Object value : allowedValues.getValueOrRange()){
-                                if(value instanceof ValueType){
-                                    String str = ((ValueType)value).getValue();
-                                    allowedValuesBox.addItem(str);
+        //If there is no domain, return null;
+        if(literalData.getLiteralDataDomain().isEmpty()) {
+            return null;
+        }
+        JComboBox<String> allowedValuesBox = new JComboBox<>();
+        //For each domain, add an item to the JComboBox
+        for(LiteralDataType.LiteralDataDomain literalDataDomain : literalData.getLiteralDataDomain()){
+            if(literalDataDomain != null){
+                if(literalDataDomain.getAllowedValues() != null){
+                    //For each allowed values, if there are not empty, add the item to the JComboBox
+                    AllowedValues allowedValues = literalDataDomain.getAllowedValues();
+                    if(!allowedValues.getValueOrRange().isEmpty()) {
+                        //Test each value
+                        for(Object value : allowedValues.getValueOrRange()){
+                            //If the value is a ValueType, add the item "value"
+                            if(value instanceof ValueType){
+                                String str = ((ValueType)value).getValue();
+                                allowedValuesBox.addItem(str);
+                            }
+                            //If the value is a RangeType, add the item "min;value;max;spacing".
+                            // If there is no "value" defined, uses the "min".
+                            if(value instanceof RangeType){
+                                RangeType range = (RangeType)value;
+                                String defaultValue = range.getMinimumValue().getValue();
+                                if(!literalDataDomain.getDefaultValue().getValue().isEmpty()){
+                                    defaultValue = literalDataDomain.getDefaultValue().getValue()+";";
                                 }
-                                if(value instanceof RangeType){
-                                    String defaultValue = "";
-                                    if(!literalDataDomain.getDefaultValue().getValue().isEmpty()){
-                                        defaultValue = literalDataDomain.getDefaultValue().getValue()+";";
-                                    }
-                                    RangeType range = (RangeType)value;
-                                    String str = range.getMinimumValue().getValue()+";"+
-                                            defaultValue +
-                                            range.getMaximumValue().getValue()+";"+
-                                            range.getSpacing().getValue();
-                                    allowedValuesBox.addItem(str);
-                                }
+                                String str = range.getMinimumValue().getValue()+";"+
+                                        defaultValue +
+                                        range.getMaximumValue().getValue()+";"+
+                                        range.getSpacing().getValue();
+                                allowedValuesBox.addItem(str);
                             }
                         }
                     }
                 }
             }
-            return allowedValuesBox;
         }
-        return null;
+        return allowedValuesBox;
     }
 
 
@@ -630,20 +680,25 @@ public class LiteralDataUI implements DataUI {
         }
     }
 
-    public void actionOnItem(ItemEvent event){
+    /**
+     * When a domain is selected, sets the JSpinner model with the min, max, spacing and value from the domein.
+     * @param event Event thrown when a domain is selected.
+     */
+    public void onDomainSelected(ItemEvent event){
+        //Get the domain JComboBox
         if(event.getSource() instanceof JComboBox){
             JComboBox domainSpinner = (JComboBox)event.getSource();
             Object object = domainSpinner.getClientProperty("spinner");
+            //Get the value JSpinner
             if(object instanceof JSpinner){
                 JSpinner valueSpinner = (JSpinner)object;
                 SpinnerModel model = null;
+                //If there is only one value (in case of a ValueType), use it as value, min and max.
                 String[] parsed = event.getItem().toString().split(";");
                 if(parsed.length == 1){
                     parsed = new String[]{parsed[0],parsed[0],parsed[0],parsed[0]};
                 }
-                if(parsed.length == 3){
-                    parsed = new String[]{parsed[0],parsed[0],parsed[1],parsed[2]};
-                }
+                //According to the data type, create the model for the spinner
                 switch((DataType)valueSpinner.getClientProperty(TYPE_PROPERTY)){
                     case INTEGER:
                         model = new SpinnerNumberModel(
