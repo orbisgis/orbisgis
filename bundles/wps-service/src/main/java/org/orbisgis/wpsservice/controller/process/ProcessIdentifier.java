@@ -20,6 +20,7 @@
 package org.orbisgis.wpsservice.controller.process;
 
 import net.opengis.wps._2_0.ProcessDescriptionType;
+import net.opengis.wps._2_0.ProcessOffering;
 
 import java.net.URI;
 
@@ -29,44 +30,38 @@ import java.net.URI;
 
 public class ProcessIdentifier {
 
-    private Class clazz;
-    private ProcessDescriptionType process;
-    private URI uri;
+    private ProcessOffering processOffering;
+    private URI sourceFileURI;
     private URI parent;
     private String category;
-    private boolean isDefault;
+    private boolean isRemovable;
 
-    public ProcessIdentifier(Class clazz, ProcessDescriptionType process, URI uri, URI parent){
-        this.clazz = clazz;
-        this.process = process;
-        this.uri = uri;
+    public ProcessIdentifier(ProcessOffering processOffering, URI sourceFileURI, URI parent){
+        this.processOffering = processOffering;
+        this.sourceFileURI = sourceFileURI;
         this.parent = parent;
         this.category = null;
-        this.isDefault = false;
+        this.isRemovable = false;
     }
 
     public void setCategory(String category){
         this.category = category;
     }
 
-    public void setDefault(boolean isDefault){
-        this.isDefault = isDefault;
-    }
-
-    public Class getClazz() {
-        return clazz;
+    public void setRemovable(boolean isRemovable){
+        this.isRemovable = isRemovable;
     }
 
     public ProcessDescriptionType getProcessDescriptionType() {
-        return process;
+        return processOffering.getProcess();
     }
     @Deprecated
     public Process getProcess() {
         return null;
     }
 
-    public URI getURI() {
-        return uri;
+    public URI getSourceFileURI() {
+        return sourceFileURI;
     }
 
     public URI getParent(){
@@ -77,7 +72,11 @@ public class ProcessIdentifier {
         return category;
     }
 
-    public boolean isDefault(){
-        return isDefault;
+    public boolean isRemovable(){
+        return isRemovable;
+    }
+
+    public ProcessOffering getProcessOffering(){
+        return processOffering;
     }
 }

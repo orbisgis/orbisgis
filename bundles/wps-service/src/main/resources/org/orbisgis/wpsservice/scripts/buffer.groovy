@@ -2,6 +2,11 @@
 
 package org.orbisgis.wpsservice.scripts
 
+import org.orbisgis.wpsgroovyapi.attributes.LiteralDataAttribute
+import org.orbisgis.wpsgroovyapi.attributes.LiteralDataDomainAttribute
+import org.orbisgis.wpsgroovyapi.attributes.PossibleLiteralValuesChoiceAttribute
+import org.orbisgis.wpsgroovyapi.attributes.ValuesAttribute
+import org.orbisgis.wpsgroovyapi.attributes.ValuesType
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
@@ -95,8 +100,18 @@ String geometricField
 /** Size of the buffer. */
 @LiteralDataInput(
         title="Buffer Size",
-        resume="The buffer size")
-Double bufferSize
+        resume="The buffer size",
+        validDomains=[
+                @LiteralDataDomainAttribute(possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(
+                        allowedValues = [
+                                @ValuesAttribute(type = "RANGE", value = "5", minimum="1", maximum="10", spacing="2"),
+                                @ValuesAttribute(type = "VALUE", value = "20")
+                        ]
+                ),
+                        dataType = "INTEGER")
+        ]
+)
+Integer bufferSize
 
 /** Mitre ratio limit (only affects mitered join style). */
 @LiteralDataInput(

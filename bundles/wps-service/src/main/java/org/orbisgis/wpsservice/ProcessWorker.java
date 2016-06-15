@@ -4,6 +4,7 @@ import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ public class ProcessWorker implements Runnable {
     /** Process execution listener which will be watching the execution */
     private Job job;
     /** Process to execute */
-    private ProcessDescriptionType process;
+    private ProcessIdentifier processIdentifier;
     /** The class managing the DataProcessing classes */
     private DataProcessingManager dataProcessingManager;
     /** The process manager */
@@ -30,12 +31,12 @@ public class ProcessWorker implements Runnable {
     private Map<URI, Object> dataMap;
 
     public ProcessWorker(Job job,
-                         ProcessDescriptionType process,
+                         ProcessIdentifier processIdentifier,
                          DataProcessingManager dataProcessingManager,
                          ProcessManager processManager,
                          Map<URI, Object> dataMap){
         this.job = job;
-        this.process = process;
+        this.processIdentifier = processIdentifier;
         this.dataProcessingManager = dataProcessingManager;
         this.processManager = processManager;
         this.dataMap = dataMap;
@@ -56,6 +57,7 @@ public class ProcessWorker implements Runnable {
             job.setProcessState(ProcessExecutionListener.ProcessState.RUNNING);
         }
         Map<URI, Object> stash = new HashMap<>();
+        ProcessDescriptionType process = processIdentifier.getProcessDescriptionType();
         //Catch all the Exception that can be thrown during the script execution.
         try {
             //Print in the log the process execution start
@@ -75,7 +77,7 @@ public class ProcessWorker implements Runnable {
             if(job != null) {
                 job.appendLog(ProcessExecutionListener.LogType.INFO, "Execute the script");
             }
-            processManager.executeProcess(job.getId(), process, dataMap);
+            processManager.executeProcess(job.getId(), processIdentifier, dataMap);
 
             //Post-process the data
             if(job != null) {

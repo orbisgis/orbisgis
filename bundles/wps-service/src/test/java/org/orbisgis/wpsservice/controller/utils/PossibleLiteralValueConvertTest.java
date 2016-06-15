@@ -203,7 +203,7 @@ public class PossibleLiteralValueConvertTest {
 
     /** Field containing the plvc annotation. */
     @PossibleLiteralValuesChoiceAttribute(
-            allowedValues = {@ValuesAttribute(type = ValuesType.RANGE),@ValuesAttribute()}
+            allowedValues = {@ValuesAttribute(type = "RANGE"),@ValuesAttribute()}
     )
     public Object allowedValuesPLVCAttribute;
     /** Name of the field containing the allowedValuesPLVCAttribute annotation. */

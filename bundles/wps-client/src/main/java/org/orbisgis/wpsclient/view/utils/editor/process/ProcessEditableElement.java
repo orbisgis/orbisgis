@@ -21,6 +21,7 @@ package org.orbisgis.wpsclient.view.utils.editor.process;
 
 import net.opengis.wps._2_0.DataOutputType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
+import net.opengis.wps._2_0.ProcessOffering;
 import net.opengis.wps._2_0.Result;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
@@ -51,7 +52,7 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
     public static final String CANCEL = "CANCEL";
     public static final String REFRESH_STATUS = "REFRESH_STATUS";
     public static final String GET_RESULTS = "GET_RESULTS";
-    private ProcessDescriptionType process;
+    private ProcessOffering processOffering;
     private boolean isOpen;
 
     /** Map of input data (URI of the corresponding input) */
@@ -69,8 +70,8 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
     private UUID jobID;
     private Timer statusTimer;
 
-    public ProcessEditableElement(ProcessDescriptionType process){
-        this.process = process;
+    public ProcessEditableElement(ProcessOffering processOffering){
+        this.processOffering = processOffering;
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
         this.logMap = new LinkedHashMap<>();
@@ -138,11 +139,11 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
 
     @Override
     public Object getObject() throws UnsupportedOperationException {
-        return process;
+        return processOffering;
     }
 
     public String getProcessReference(){
-        return process.getTitle().get(0).getValue();
+        return processOffering.getProcess().getTitle().get(0).getValue();
     }
 
     public Map<String, Color> getLogMap(){
@@ -166,8 +167,13 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
     }
 
     public ProcessDescriptionType getProcess() {
-        return process;
+        return processOffering.getProcess();
     }
+
+    public ProcessOffering getProcessOffering() {
+        return processOffering;
+    }
+
     public ProcessExecutionListener.ProcessState getProcessState() {
         return state;
     }

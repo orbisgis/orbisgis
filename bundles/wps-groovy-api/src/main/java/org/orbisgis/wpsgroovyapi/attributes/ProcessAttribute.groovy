@@ -48,10 +48,13 @@ import java.lang.annotation.RetentionPolicy
     /** Language of the process. */
     String language() default "en"
 
+    String version() default ""
+
 
 
     /********************/
     /** default values **/
     /********************/
     public static final String defaultLanguage = "en"
+    public static final String defaultVersion = ""
 }

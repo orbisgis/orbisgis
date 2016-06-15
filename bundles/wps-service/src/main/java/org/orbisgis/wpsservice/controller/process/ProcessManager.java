@@ -24,6 +24,7 @@ import net.opengis.ows._2.CodeType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
+import net.opengis.wps._2_0.ProcessOffering;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsservice.LocalWpsService;
@@ -68,64 +69,53 @@ public class ProcessManager {
         this.closureMap = new HashMap<>();
     }
 
+    public void addScript(URI scriptUri, String category, boolean isRemovable){
+        File f = new File(scriptUri);
+        //Test that the script name is not only '.groovy'
+        if (f.getName().endsWith(".groovy") && f.getName().length()>7) {
+            //Ensure that the process does not already exists.
+            //Parse the process
+            ProcessOffering processOffering = null;
+            try {
+                processOffering = parserController.parseProcess(f.getAbsolutePath());
+            } catch (MalformedScriptException e) {
+                LoggerFactory.getLogger(ProcessManager.class).error("Unable to parse the process '"+scriptUri+"'.", e);
+            }
+            //If the process is not already registered
+            if(processOffering != null) {
+                //Save the process in a ProcessIdentifier
+                ProcessIdentifier pi = new ProcessIdentifier(processOffering, scriptUri, f.getParentFile().toURI());
+                pi.setCategory(category);
+                pi.setRemovable(isRemovable);
+                processIdList.add(pi);
+            }
+        }
+    }
+
     /**
      * Adds a local source to the toolbox and get all the groovy script.
      * @param uri URI to the local source.
      */
-    public void addLocalSource(URI uri, String category, boolean isDefault){
+    public void addLocalSource(URI uri, String category){
         File folder = new File(uri);
         if(!folder.exists() || !folder.isDirectory()){
             return;
         }
         for(File f : folder.listFiles()){
-            addLocalScript(f.toURI(), category, isDefault);
+            addScript(f.toURI(), category, true);
         }
-    }
-
-    /**
-     * Add a local script.
-     * @param uri URI of the local script.
-     * @return The process corresponding to the script.
-     */
-    public ProcessDescriptionType addLocalScript(URI uri, String category, boolean isDefault){
-        File f = new File(uri);
-        //Test that the script name is not only '.groovy'
-        if (f.getName().endsWith(".groovy") && f.getName().length()>7) {
-            //Ensure that the process does not already exists.
-            //Parse the process
-            AbstractMap.SimpleEntry<ProcessDescriptionType, Class> entry;
-            try {
-                entry = parserController.parseProcess(f.getAbsolutePath());
-            } catch (MalformedScriptException e) {
-                LoggerFactory.getLogger(ProcessManager.class).error("Unable to parse the process '"+uri+"'.", e);
-                return null;
-            }
-            //If the process is not already registered
-            if(entry != null && entry.getKey() != null && getProcess(entry.getKey().getIdentifier()) == null) {
-                //Check if the process has been well parsed
-                if (entry.getValue() != null) {
-                    //Save the process in a ProcessIdentifier
-                    ProcessIdentifier pi = new ProcessIdentifier(entry.getValue(), entry.getKey(), uri,
-                            f.getParentFile().toURI());
-                    pi.setCategory(category);
-                    pi.setDefault(isDefault);
-                    processIdList.add(pi);
-                    //return the process
-                    return entry.getKey();
-                }
-            }
-        }
-        return null;
     }
 
     /**
      * Execute the given process with the given data.
-     * @param process Process to execute.
+     * @param processIdentifier ProcessIdentifier of the process to execute.
      * @param dataMap Map containing the data for the process.
      * @return The groovy object on which the 'processing' method will be called.
      */
-    public GroovyObject executeProcess(UUID jobId, ProcessDescriptionType process, Map<URI, Object> dataMap){
-        GroovyObject groovyObject = createProcess(process, dataMap);
+    public GroovyObject executeProcess(UUID jobId, ProcessIdentifier processIdentifier, Map<URI, Object> dataMap){
+        ProcessDescriptionType process = processIdentifier.getProcessDescriptionType();
+        Class clazz = parserController.getProcessClass(processIdentifier.getSourceFileURI());
+        GroovyObject groovyObject = createProcess(process, clazz, dataMap);
         if(groovyObject != null) {
             if (dataSourceService != null) {
                 WpsSql sql = new WpsSql(dataSourceService);
@@ -137,7 +127,7 @@ public class ProcessManager {
             groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
             groovyObject.setProperty("isH2", wpsService.isH2());
             groovyObject.invokeMethod("processing", null);
-            retrieveData(process, groovyObject, dataMap);
+            retrieveData(process, clazz, groovyObject, dataMap);
         }
         return groovyObject;
     }
@@ -148,7 +138,7 @@ public class ProcessManager {
      * @param groovyObject GroovyObject containing the processed data.
      * @param dataMap Map linking the data and their identifier.
      */
-    private void retrieveData(ProcessDescriptionType process, GroovyObject groovyObject, Map<URI, Object> dataMap){
+    private void retrieveData(ProcessDescriptionType process, Class clazz, GroovyObject groovyObject, Map<URI, Object> dataMap){
         ProcessIdentifier pi = null;
         for(ProcessIdentifier proId : processIdList){
             if(proId.getProcessDescriptionType().getIdentifier().equals(process.getIdentifier())){
@@ -160,12 +150,12 @@ public class ProcessManager {
         }
         try {
             for(InputDescriptionType i : process.getInput()) {
-                Field f = getField(pi.getClazz(), i.getIdentifier().getValue());
+                Field f = getField(clazz, i.getIdentifier().getValue());
                 f.setAccessible(true);
                 dataMap.put(URI.create(i.getIdentifier().getValue()), f.get(groovyObject));
             }
             for(OutputDescriptionType o : process.getOutput()) {
-                Field f = getField(pi.getClazz(), o.getIdentifier().getValue());
+                Field f = getField(clazz, o.getIdentifier().getValue());
                 f.setAccessible(true);
                 dataMap.put(URI.create(o.getIdentifier().getValue()), f.get(groovyObject));
             }
@@ -180,7 +170,7 @@ public class ProcessManager {
      * @param dataMap Map of the data for the process.
      * @return A groovy object representing the process with the given data.
      */
-    private GroovyObject createProcess(ProcessDescriptionType process, Map<URI, Object> dataMap){
+    private GroovyObject createProcess(ProcessDescriptionType process, Class clazz, Map<URI, Object> dataMap){
         ProcessIdentifier pi = null;
         for(ProcessIdentifier proId : processIdList){
             if(proId.getProcessDescriptionType().getIdentifier().equals(process.getIdentifier())){
@@ -192,14 +182,14 @@ public class ProcessManager {
         }
         GroovyObject groovyObject;
         try {
-            groovyObject = (GroovyObject) pi.getClazz().newInstance();
+            groovyObject = (GroovyObject) clazz.newInstance();
         } catch (InstantiationException|IllegalAccessException e) {
             LoggerFactory.getLogger(ProcessManager.class).error(e.getMessage());
             return null;
         }
         try {
             for(InputDescriptionType i : process.getInput()) {
-                Field f = getField(pi.getClazz(), i.getIdentifier().getValue());
+                Field f = getField(clazz, i.getIdentifier().getValue());
                 if(f != null) {
                     f.setAccessible(true);
                     Object data = dataMap.get(URI.create(i.getIdentifier().getValue()));
@@ -219,7 +209,7 @@ public class ProcessManager {
                 }
             }
             for(OutputDescriptionType o : process.getOutput()) {
-                Field f = getField(pi.getClazz(), o.getIdentifier().getValue());
+                Field f = getField(clazz, o.getIdentifier().getValue());
                 if(f != null) {
                     f.setAccessible(true);
                     f.set(groovyObject, dataMap.get(URI.create(o.getIdentifier().getValue())));
@@ -328,10 +318,10 @@ public class ProcessManager {
         String str = "";
         for(ProcessIdentifier pi : processIdList){
             if(str.isEmpty()){
-                str+=pi.getURI();
+                str+=pi.getSourceFileURI();
             }
             else{
-                str+=";"+pi.getURI();
+                str+=";"+pi.getSourceFileURI();
             }
         }
         return str;

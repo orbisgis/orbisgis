@@ -167,7 +167,7 @@ public class ObjectAnnotationConverter {
     }
 
     public static Object annotationToObject(ValuesAttribute valueAttribute){
-        if(valueAttribute.type().equals(ValuesType.VALUE)){
+        if(valueAttribute.type().toUpperCase().equals(ValuesType.VALUE.name())){
             if(valueAttribute.value().equals(ValuesAttribute.defaultValue)){
                 return null;
             }
@@ -175,7 +175,7 @@ public class ObjectAnnotationConverter {
             value.setValue(valueAttribute.value());
             return value;
         }
-        else if(valueAttribute.type().equals(ValuesType.RANGE)){
+        else if(valueAttribute.type().toUpperCase().equals(ValuesType.RANGE.name())){
             RangeType range = new RangeType();
             if(!valueAttribute.spacing().equals(ValuesAttribute.defaultSpacing)) {
                 ValueType spacing = new ValueType();
@@ -223,14 +223,15 @@ public class ObjectAnnotationConverter {
         else if(value instanceof ValuesReference){
             literalDataDomain.setValuesReference((ValuesReference) value);
         }
-        Object defaultValue = ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute.defaultValue());
-        literalDataDomain.setDefaultValue((ValueType) defaultValue);
-
+        ValueType defaultValue = new ValueType();
+        defaultValue.setValue(literalDataDomainAttribute.defaultValue());
+        literalDataDomain.setDefaultValue(defaultValue);
 
         return literalDataDomain;
     }
 
-    public static LiteralDataType annotationToObject(LiteralDataAttribute literalDataAttribute) {
+    public static LiteralDataType annotationToObject(LiteralDataAttribute literalDataAttribute,
+                                                     LiteralDataDomain defaultDomain) {
         LiteralDataType literalDataType = new LiteralDataType();
 
         List<Format> formatList = new ArrayList<>();
@@ -256,18 +257,23 @@ public class ObjectAnnotationConverter {
 
         List<LiteralDataType.LiteralDataDomain> lddList = new ArrayList<>();
         if(literalDataAttribute.validDomains().length == 0){
-            LiteralDataDomain literalDataDomain = new LiteralDataDomain();
-            literalDataDomain.setDefault(true);
-            AnyValue anyValue = new AnyValue();
-            literalDataDomain.setAnyValue(anyValue);
-            ValueType defaultValue = new ValueType();
-            defaultValue.setValue("");
-            literalDataDomain.setDefaultValue(defaultValue);
-            DomainMetadataType domainMetadataType = new DomainMetadataType();
-            domainMetadataType.setReference(DataType.STRING.getUri().toString());
-            domainMetadataType.setValue(DataType.STRING.name());
-            literalDataDomain.setDataType(domainMetadataType);
-            lddList.add(literalDataDomain);
+            if(defaultDomain != null){
+                lddList.add(defaultDomain);
+            }
+            else {
+                LiteralDataDomain literalDataDomain = new LiteralDataDomain();
+                literalDataDomain.setDefault(true);
+                AnyValue anyValue = new AnyValue();
+                literalDataDomain.setAnyValue(anyValue);
+                ValueType defaultValue = new ValueType();
+                defaultValue.setValue("");
+                literalDataDomain.setDefaultValue(defaultValue);
+                DomainMetadataType domainMetadataType = new DomainMetadataType();
+                domainMetadataType.setReference(DataType.STRING.getUri().toString());
+                domainMetadataType.setValue(DataType.STRING.name());
+                literalDataDomain.setDataType(domainMetadataType);
+                lddList.add(literalDataDomain);
+            }
         }
         else {
             boolean isDefault = false;
@@ -337,8 +343,9 @@ public class ObjectAnnotationConverter {
         return new AnyValue();
     }
 
-    public static void annotationToObject(ProcessAttribute processAttribute, ProcessDescriptionType process){
-        process.setLang(Locale.forLanguageTag(processAttribute.language()).toString());
+    public static void annotationToObject(ProcessAttribute processAttribute, ProcessOffering processOffering){
+        processOffering.getProcess().setLang(Locale.forLanguageTag(processAttribute.language()).toString());
+        processOffering.setProcessVersion(processAttribute.version());
     }
 
     public static DataStore annotationToObject(DataStoreAttribute dataStoreAttribute, List<Format> formatList) {

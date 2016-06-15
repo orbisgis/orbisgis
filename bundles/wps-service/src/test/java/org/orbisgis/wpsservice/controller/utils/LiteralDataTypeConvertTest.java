@@ -27,12 +27,12 @@ public class LiteralDataTypeConvertTest {
                     @LiteralDataDomainAttribute(
                             possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(),
                             dataType = "STRING",
-                            defaultValue = @ValuesAttribute(value = "value")
+                            defaultValue = "value"
                     ),
                     @LiteralDataDomainAttribute(
                             possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(),
                             dataType = "STRING",
-                            defaultValue = @ValuesAttribute(value = "value")
+                            defaultValue = "value"
                     )
             }
     )
@@ -56,7 +56,7 @@ public class LiteralDataTypeConvertTest {
                 if (annotation instanceof LiteralDataAttribute) {
                     annotationFound = true;
                     LiteralDataAttribute literalDataAnnotation = (LiteralDataAttribute) annotation;
-                    literalDataType = ObjectAnnotationConverter.annotationToObject(literalDataAnnotation);
+                    literalDataType = ObjectAnnotationConverter.annotationToObject(literalDataAnnotation, null);
                 }
             }
 
@@ -133,7 +133,7 @@ public class LiteralDataTypeConvertTest {
                 if (annotation instanceof LiteralDataAttribute) {
                     annotationFound = true;
                     LiteralDataAttribute literalDataAnnotation = (LiteralDataAttribute) annotation;
-                    literalDataType = ObjectAnnotationConverter.annotationToObject(literalDataAnnotation);
+                    literalDataType = ObjectAnnotationConverter.annotationToObject(literalDataAnnotation, null);
                 }
             }
 
