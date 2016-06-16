@@ -261,18 +261,18 @@ public class ProcessManager {
      */
     public ProcessDescriptionType getProcess(CodeType identifier){
         for(ProcessIdentifier pi : processIdList){
-            if(pi.getProcessDescriptionType().getIdentifier().equals(identifier)){
+            if(pi.getProcessDescriptionType().getIdentifier().getValue().equals(identifier.getValue())){
                 return pi.getProcessDescriptionType();
             }
         }
         for(ProcessIdentifier pi : processIdList){
             for(InputDescriptionType input : pi.getProcessDescriptionType().getInput()) {
-                if (input.getIdentifier().equals(identifier)) {
+                if (input.getIdentifier().getValue().equals(identifier.getValue())) {
                     return pi.getProcessDescriptionType();
                 }
             }
             for(OutputDescriptionType output : pi.getProcessDescriptionType().getOutput()) {
-                if (output.getIdentifier().equals(identifier)) {
+                if (output.getIdentifier().getValue().equals(identifier.getValue())) {
                     return pi.getProcessDescriptionType();
                 }
             }

@@ -37,7 +37,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = "Buffer",
         resume = "Execute a buffer on a geometric field.",
-        keywords = "OrbisGIS,ST_Buffer,example")
+        keywords = ["OrbisGIS","ST_Buffer","example"])
 def processing() {
 
     //Build the start of the query

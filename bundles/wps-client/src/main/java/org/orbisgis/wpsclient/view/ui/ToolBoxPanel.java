@@ -382,31 +382,28 @@ public class ToolBoxPanel extends JPanel {
      */
     public void remove(TreeNodeWps node){
         if(!node.equals(fileModel.getRoot()) && !node.equals(tagModel.getRoot())){
-            List<TreeNodeWps> leafList = new ArrayList<>();
-            leafList.addAll(getAllChild(node));
-            for(TreeNodeWps leaf : leafList){
-                if(node.isRemovable()) {
-                    switch(leaf.getNodeType()) {
-                        case FOLDER:
-                            for (TreeNodeWps child : getChildrenWithUri(URI.create(leaf.getIdentifier().getValue()),
-                                    (TreeNodeWps) selectedModel.getRoot())) {
-                                if (!child.isRemovable()) {
-                                    cleanParentNode(child, selectedModel);
+            if(node.isRemovable()) {
+                switch(node.getNodeType()) {
+                    case FOLDER:
+                        for (TreeNodeWps child : getChildrenWithUri(URI.create(node.getIdentifier().getValue()),
+                                (TreeNodeWps) selectedModel.getRoot())) {
+                            if (child.isRemovable()) {
+                                cleanParentNode(child, selectedModel);
+                            }
+                        }
+                        break;
+                    case PROCESS:
+                        for (FileTreeModel model : modelList) {
+                            for (TreeNodeWps child : getChildrenWithUri(URI.create(node.getIdentifier().getValue()),
+                                    (TreeNodeWps) model.getRoot())) {
+                                if (child != null && child.isRemovable()) {
+                                    cleanParentNode(child, model);
+                                    model.removeNodeFromParent(child);
                                 }
                             }
-                            break;
-                        case PROCESS:
-                            for (FileTreeModel model : modelList) {
-                                for (TreeNodeWps child : getChildrenWithUri(URI.create(leaf.getIdentifier().getValue()),
-                                        (TreeNodeWps) model.getRoot())) {
-                                    if (child != null && !child.isRemovable()) {
-                                        cleanParentNode(child, model);
-                                    }
-                                }
-                            }
-                            wpsClient.removeProcess(leaf.getIdentifier());
-                            break;
-                    }
+                        }
+                        wpsClient.removeProcess(node.getIdentifier());
+                        break;
                 }
             }
         }
@@ -814,14 +811,14 @@ public class ToolBoxPanel extends JPanel {
             if(processSummary.getTitle() != null && !processSummary.getTitle().isEmpty()) {
                 script.setUserObject(processSummary.getTitle().get(0).getValue());
             }
-            if(processSummary.getKeywords() != null) {
+            if(!processSummary.getKeywords().isEmpty()) {
                 for (KeywordsType tag : processSummary.getKeywords()) {
-                    TreeNodeWps tagNode = getChildWithUserObject(tag, root);
+                    TreeNodeWps tagNode = getChildWithUserObject(tag.getKeyword().get(0).getValue(), root);
                     if (tagNode == null) {
                         tagNode = new TreeNodeWps();
                         tagNode.setNodeType(TreeNodeWps.NodeType.FOLDER);
                         if(tag.getKeyword()!= null && !tag.getKeyword().isEmpty()) {
-                            tagNode.setUserObject(tag.getKeyword().get(0));
+                            tagNode.setUserObject(tag.getKeyword().get(0).getValue());
                         }
                         tagNode.setValidNode(true);
                         tagModel.insertNodeInto(tagNode, root, 0);

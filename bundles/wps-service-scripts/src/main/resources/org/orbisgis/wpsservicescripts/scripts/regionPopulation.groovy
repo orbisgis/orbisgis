@@ -30,7 +30,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = "Population region",
         resume = "Union of municipality by their region, summing the population and doing the union of the geometry ",
-        keywords = "OrbisGIS,ST_Union,ST_Accum,example")
+        keywords = ["OrbisGIS","ST_Union","ST_Accum","example"])
 def processing() {
     //Build the query
     String query = "CREATE TABLE "+dataStoreOutputName+" AS" +

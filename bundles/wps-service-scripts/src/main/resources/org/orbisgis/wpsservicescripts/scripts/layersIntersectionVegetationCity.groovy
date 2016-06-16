@@ -29,7 +29,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = "Intersection vegetation city",
         resume = "Intersection of a vegetation with a city.",
-        keywords = "OrbisGIS,ST_Intersects,example,layerIntersection")
+        keywords = ["OrbisGIS","ST_Intersects","example","layerIntersection"])
 def processing() {
     //Build the query
     String condition = ""

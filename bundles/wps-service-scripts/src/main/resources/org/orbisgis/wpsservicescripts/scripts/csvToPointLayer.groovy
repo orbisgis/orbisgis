@@ -34,7 +34,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = "Point layer from CSV",
         resume = "Creates a point layer from a CSV file containing the id of the point, its X and Y coordinate.",
-        keywords = "OrbisGIS,ST_Transform,ST_SetSRID,ST_MakePoint,example")
+        keywords = ["OrbisGIS","ST_Transform","ST_SetSRID","ST_MakePoint","example"])
 def processing() {
     outputTableName = dataStoreOutputName
     //Open the CSV file
