@@ -502,7 +502,7 @@ public class LiteralDataUI implements DataUI {
             case STRING:
             default:
                 //Instantiate the component
-                JTextArea textArea = new JTextArea();
+                CustomTextArea textArea = new CustomTextArea();
                 textArea.setLineWrap(true);
                 textArea.setRows(MIN_ROW_NUMBER);
                 //Put the data type, the dataMap and the uri as properties
@@ -528,7 +528,7 @@ public class LiteralDataUI implements DataUI {
                         ChangeListener.class, this, "onViewportStateChange", ""));
                 scrollPane.getViewport().putClientProperty(TEXT_AREA_PROPERTY, textArea);
                 scrollPane.getViewport().putClientProperty(VERTICAL_BAR_PROPERTY, scrollPane.getVerticalScrollBar());
-                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                //scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
                 JPanel panel = new JPanel(new BorderLayout());
                 panel.add(scrollPane, BorderLayout.CENTER);
                 JButton paste = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
@@ -549,6 +549,16 @@ public class LiteralDataUI implements DataUI {
         if(isOptional) {
             dataMap.remove(uri);
         }
+    }
+
+    private class CustomTextArea extends JTextArea {
+
+        @Override
+        public Dimension getPreferredScrollableViewportSize() {
+            return new Dimension(1, (int)super.getPreferredScrollableViewportSize().getHeight()); }
+
+        @Override
+        public boolean getScrollableTracksViewportWidth() { return true; }
     }
 
     /**
@@ -585,10 +595,10 @@ public class LiteralDataUI implements DataUI {
                                 RangeType range = (RangeType)value;
                                 String defaultValue = range.getMinimumValue().getValue();
                                 if(!literalDataDomain.getDefaultValue().getValue().isEmpty()){
-                                    defaultValue = literalDataDomain.getDefaultValue().getValue()+";";
+                                    defaultValue = literalDataDomain.getDefaultValue().getValue();
                                 }
                                 String str = range.getMinimumValue().getValue()+";"+
-                                        defaultValue +
+                                        defaultValue+";"+
                                         range.getMaximumValue().getValue()+";"+
                                         range.getSpacing().getValue();
                                 allowedValuesBox.addItem(str);
@@ -631,7 +641,7 @@ public class LiteralDataUI implements DataUI {
         JTextArea textArea = (JTextArea)vp.getClientProperty(TEXT_AREA_PROPERTY);
         JScrollBar vertical = (JScrollBar)vp.getClientProperty(VERTICAL_BAR_PROPERTY);
         if(textArea.getRows()<MAX_ROW_NUMBER && vertical.getValue()>0 && vertical.getMaximum()>vertical.getVisibleAmount()){
-            textArea.setRows(textArea.getRows()+1);
+            textArea.setRows(MAX_ROW_NUMBER);
         }
     }
 

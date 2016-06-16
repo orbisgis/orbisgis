@@ -111,7 +111,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
         //Check the WpsService
         if(localWpsService != null){
             //Default method to load the scripts
-            defaultLoadScript("wps/script/sample", new String[]{"icon.png"});
+            defaultLoadScript("OrbisGIS/script", new String[]{"orbisgis.png"});
 
             //Check the WpsClient
             if(wpsClient != null){

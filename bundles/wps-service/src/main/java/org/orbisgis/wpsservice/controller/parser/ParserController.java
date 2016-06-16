@@ -76,6 +76,7 @@ public class ParserController {
     public Class getProcessClass(URI sourceFileURI){
         try {
             File groovyFile = new File(sourceFileURI);
+            groovyClassLoader.clearCache();
             return groovyClassLoader.parseClass(groovyFile);
         } catch (IOException e) {
             LOGGER.error("Can not parse the process : '"+sourceFileURI+"'");
