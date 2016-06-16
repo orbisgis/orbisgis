@@ -113,5 +113,5 @@ public interface LocalWpsService extends WpsService {
      */
     void cancelProcess(UUID jobId);
 
-    enum ProcessProperty{IS_REMOVABLE, NODE_PATH, ICON_ARRAY, ROLE}
+    enum ProcessProperty{IS_REMOVABLE, NODE_PATH, ICON_ARRAY, ROLE, DBMS}
 }

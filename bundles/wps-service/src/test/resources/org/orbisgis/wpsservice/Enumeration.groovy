@@ -76,7 +76,7 @@ def processing() {
         multiSelection = true,
         isEditable = true,
         values = ["value1", "value2"],
-        defaultValues = ["value2"],
+        selectedValues = ["value2"],
         names = ["name1", "name2"],
         minOccurs = 0,
         maxOccurs = 2,

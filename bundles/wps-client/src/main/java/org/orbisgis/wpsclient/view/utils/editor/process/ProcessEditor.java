@@ -202,7 +202,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
         JPanel inputPanel = new JPanel(new MigLayout("fill"));
-        inputPanel.setBorder(BorderFactory.createTitledBorder("Inputs"));
+        inputPanel.setBorder(BorderFactory.createTitledBorder("Input(s)"));
         boolean isInputs = false;
 
         for(InputDescriptionType i : process.getInput()){
@@ -256,7 +256,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
         //Creates the panel that will contains all the inputs.
         JPanel outputPanel = new JPanel(new MigLayout("fill"));
-        outputPanel.setBorder(BorderFactory.createTitledBorder("Outputs"));
+        outputPanel.setBorder(BorderFactory.createTitledBorder("Output(s)"));
         boolean isOutputs = false;
         for(OutputDescriptionType o : process.getOutput()){
             DataUI dataUI = dataUIManager.getDataUI(o.getDataDescription().getValue().getClass());

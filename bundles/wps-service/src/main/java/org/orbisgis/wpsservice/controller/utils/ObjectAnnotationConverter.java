@@ -25,6 +25,7 @@ import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.Format;
 import net.opengis.wps._2_0.LiteralDataType.LiteralDataDomain;
 import org.orbisgis.wpsgroovyapi.attributes.*;
+import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
 
@@ -224,7 +225,7 @@ public class ObjectAnnotationConverter {
             literalDataDomain.setValuesReference((ValuesReference) value);
         }
         ValueType defaultValue = new ValueType();
-        defaultValue.setValue(literalDataDomainAttribute.defaultValue());
+        defaultValue.setValue(literalDataDomainAttribute.selectedValues());
         literalDataDomain.setDefaultValue(defaultValue);
 
         return literalDataDomain;
@@ -346,6 +347,13 @@ public class ObjectAnnotationConverter {
     public static void annotationToObject(ProcessAttribute processAttribute, ProcessOffering processOffering){
         processOffering.getProcess().setLang(Locale.forLanguageTag(processAttribute.language()).toString());
         processOffering.setProcessVersion(processAttribute.version());
+        if(!processAttribute.dbms().equals(ProcessAttribute.defaultDbms)) {
+            MetadataType metadata = new MetadataType();
+            metadata.setTitle(LocalWpsService.ProcessProperty.DBMS.name());
+            metadata.setRole(LocalWpsService.ProcessProperty.ROLE.name());
+            metadata.setAbstractMetaData(processAttribute.dbms());
+            processOffering.getProcess().getMetadata().add(metadata);
+        }
     }
 
     public static DataStore annotationToObject(DataStoreAttribute dataStoreAttribute, List<Format> formatList) {
@@ -401,7 +409,7 @@ public class ObjectAnnotationConverter {
             format.setDefault(true);
             List<Format> formatList = new ArrayList<>();
             formatList.add(format);
-            Enumeration enumeration = new Enumeration(formatList, enumAttribute.values(), enumAttribute.defaultValues());
+            Enumeration enumeration = new Enumeration(formatList, enumAttribute.values(), enumAttribute.selectedValues());
             enumeration.setEditable(enumAttribute.isEditable());
             enumeration.setMultiSelection(enumAttribute.multiSelection());
             enumeration.setValuesNames(enumAttribute.names());

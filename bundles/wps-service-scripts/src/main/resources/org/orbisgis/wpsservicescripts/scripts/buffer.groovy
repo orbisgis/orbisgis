@@ -2,11 +2,9 @@
 
 package org.orbisgis.wpsservicescripts.scripts
 
-import org.orbisgis.wpsgroovyapi.attributes.LiteralDataAttribute
 import org.orbisgis.wpsgroovyapi.attributes.LiteralDataDomainAttribute
 import org.orbisgis.wpsgroovyapi.attributes.PossibleLiteralValuesChoiceAttribute
 import org.orbisgis.wpsgroovyapi.attributes.ValuesAttribute
-import org.orbisgis.wpsgroovyapi.attributes.ValuesType
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
@@ -132,7 +130,7 @@ Integer quadSegs = 8
         title="Endcap style",
         resume="The endcap style",
         values=["round", "flat", "butt", "square"],
-        defaultValues=["round"],
+        selectedValues=["round"],
         minOccurs = 0)
 String endcapStyle
 
@@ -141,7 +139,7 @@ String endcapStyle
         title="Join style",
         resume="The join style",
         values=["round", "mitre", "miter", "bevel"],
-        defaultValues=["round"],
+        selectedValues=["round"],
         minOccurs = 0)
 String joinStyle
 

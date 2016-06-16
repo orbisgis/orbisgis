@@ -64,7 +64,7 @@ import java.lang.annotation.RetentionPolicy
     String uom() default ""
 
     /** Default value for this quantity. */
-    String defaultValue() default ""
+    String selectedValues() default ""
 
     /** Indicates that this is the default/native domain. */
     boolean isDefault() default false
@@ -75,6 +75,6 @@ import java.lang.annotation.RetentionPolicy
     /** default values **/
     /********************/
     public static final String defaultUOM = ""
-    public static final String defaultDefaultValue = ""
+    public static final String defaultSelectedValues = ""
     public static final boolean[] defaultIsDefault = false
 }

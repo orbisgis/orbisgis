@@ -208,6 +208,8 @@ public class LiteralDataUI implements DataUI {
                 dataComponent = new JPanel(new MigLayout("ins 0, gap 0"));
                 JRadioButton falseButton = new JRadioButton("FALSE");
                 JRadioButton trueButton = new JRadioButton("TRUE");
+                falseButton.setToolTipText(comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY).toString());
+                trueButton.setToolTipText(comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY).toString());
                 ButtonGroup group = new ButtonGroup();
                 group.add(falseButton);
                 group.add(trueButton);
@@ -227,7 +229,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty(URI_PROPERTY, uri);
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri) != null){
-                    if((Boolean)dataMap.get(uri)){
+                    if(Boolean.parseBoolean(dataMap.get(uri).toString())){
                         trueButton.setSelected(true);
                     }
                     else{
@@ -536,6 +538,7 @@ public class LiteralDataUI implements DataUI {
                 paste.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
                 paste.setBorderPainted(false);
                 paste.setContentAreaFilled(false);
+                paste.setToolTipText("Paste the clipboard");
                 panel.add(paste, BorderLayout.LINE_END);
                 dataComponent = panel;
                 textArea.setText("");

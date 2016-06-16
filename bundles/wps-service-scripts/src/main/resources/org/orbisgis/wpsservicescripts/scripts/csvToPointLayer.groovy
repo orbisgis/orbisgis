@@ -1,6 +1,5 @@
 package org.orbisgis.wpsservicescripts.scripts
 
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.input.RawDataInput
@@ -75,7 +74,7 @@ String csvDataInput
         resume="The CSV separator.",
         values=[",", "\t", " ", ";"],
         names=["coma", "tabulation", "space", "semicolon"],
-        defaultValues = ";",
+        selectedValues = ";",
         isEditable = true)
 String separator
 
