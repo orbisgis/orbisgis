@@ -32,10 +32,16 @@ import java.lang.annotation.RetentionPolicy
  *       Title of a process, input, and output. Normally available for display to a human.
  *
  * The following fields can be defined (optional) :
+ *  - traducedTitles : LanguageString[]
+ *      List of LanguageString containing the traduced titles.
  *  - resume : String
- *      Brief narrative description of a process, input, and output. Normally available for display to a human..
+ *      Brief narrative description of a process, input, and output. Normally available for display to a human.
+ *  - traducedResumes : LanguageString[]
+ *      List of LanguageString containing the traduced description.
  *  - keywords : String
- *      Coma separated keywords that characterize a process, its inputs, and outputs.
+ *      Array of keywords that characterize a process, its inputs, and outputs.
+ *  - traducedKeywords : Keyword[]
+ *      List of Keyword containing the keywords translations.
  *  - identifier : String
  *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
  *  - metadata : MetaData[]
@@ -49,11 +55,20 @@ import java.lang.annotation.RetentionPolicy
     /** Title of a process, input, and output. Normally available for display to a human. */
     String title()
 
+    /** List of LanguageString containing the traduced titles. */
+    LanguageString[] traducedTitles() default []
+
     /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
     String resume() default ""
 
-    /** Coma separated keywords that characterize a process, its inputs, and outputs. */
-    String keywords() default ""
+    /** List of LanguageString containing the traduced description. */
+    LanguageString[] traducedResumes() default []
+
+    /** Array of keywords that characterize a process, its inputs, and outputs. */
+    String[] keywords() default []
+
+    /** List of Keyword containing the keywords translations. */
+    Keyword[] traducedKeywords() default []
 
     /** Unambiguous identifier of a process, input, and output. */
     String identifier() default ""
@@ -66,8 +81,11 @@ import java.lang.annotation.RetentionPolicy
     /********************/
     /** default values **/
     /********************/
+    public static final LanguageString[] defaultTraducedTitles = []
     public static final String defaultResume = ""
-    public static final String defaultKeywords = ""
+    public static final LanguageString[] defaultTraducedResumes = []
+    public static final String[] defaultKeywords = []
+    public static final Keyword[] defaultTraducedKeywords = []
     public static final String defaultIdentifier = ""
     public static final MetadataAttribute[] defaultMetadata = []
 }

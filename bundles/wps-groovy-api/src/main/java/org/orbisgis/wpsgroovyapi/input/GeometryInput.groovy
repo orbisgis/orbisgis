@@ -45,10 +45,16 @@ import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute
  *       Title of the input. Normally available for display to a human.
  *
  * The following fields can be defined (optional) :
+ *  - traducedTitles : LanguageString[]
+ *      List of LanguageString containing the traduced titles.
  *  - resume : String
  *      Brief narrative description of the input. Normally available for display to a human.
+ *  - traducedResumes : LanguageString[]
+ *      List of LanguageString containing the traduced description.
  *  - keywords : String
- *      Coma separated keywords that characterize the input.
+ *      Array of keywords that characterize the input.
+ *  - traducedKeywords : Keyword[]
+ *      List of Keyword containing the keywords translations.
  *  - identifier : String
  *      Unambiguous identifier of the input. It should be a valid URI.
  *  - metadata : MetaData[]

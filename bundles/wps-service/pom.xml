@@ -101,6 +101,11 @@
             <artifactId>wkgui-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ogc-custom</artifactId>
+            <version>${ogc-commons-version}</version>
+        </dependency>
     </dependencies>
 
     <properties>

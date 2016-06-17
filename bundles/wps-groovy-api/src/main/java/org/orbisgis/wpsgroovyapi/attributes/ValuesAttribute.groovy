@@ -56,7 +56,7 @@ import java.lang.annotation.RetentionPolicy
     /** Only used if the type is VALUE Value represented. */
     String value() default ""
     /** Type of the value, it can be a simple value, or a range. */
-    ValuesType type() default ValuesType.VALUE
+    String type() default "VALUE"
     /** Only used if the type is RANGE, indicates the range maximum. */
     String maximum() default ""
     /** Only used if the type is RANGE, indicates the range minimum. */
@@ -73,7 +73,7 @@ import java.lang.annotation.RetentionPolicy
     /** default values **/
     /********************/
     public static final String defaultValue = ""
-    public static final ValuesType defaultType = ValuesType.VALUE
+    public static final String defaultType = "VALUE"
     public static final String defaultMaximum = ""
     public static final String defaultMinimum = ""
     public static final String defaultSpacing = ""

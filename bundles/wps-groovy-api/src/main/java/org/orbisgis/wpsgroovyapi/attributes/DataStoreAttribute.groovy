@@ -37,41 +37,21 @@ import java.lang.annotation.RetentionPolicy
  * The DataStore complex data represents any data source (database, file ...).
  *
  * The following fields can be defined (optional) :
- *  - extensions : String[]
- *      File extension accepted. If no extension are specified, all the format are accepted.
  *  - isSpatial : boolean
  *      Indicates if the data represented is spatial or not.
- *  - isCreateTable : boolean
- *      Indicates if the toolbox should load the file and give back the table name or just give the file name.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface DataStoreAttribute {
 
-    /**
-     * Files extension accepted. If no extension are specified, all the format are accepted.
-     *
-     * - geocatalog : accepts the geocatalog table
-     * - dbTable : accepts external database table
-     * - shp : accepts shapeFiles
-     * - csv
-     * - ...
-     **/
-    String[] extensions() default []
-
     /** Indicates if the data represented is spatial or not.*/
     boolean isSpatial() default false
-
-    /** Indicates if the toolbox should load the file and give back the table name or just give the file name.*/
-    boolean isCreateTable() default true
 
 
 
     /********************/
     /** default values **/
     /********************/
-    public static final String[] defaultExtensions = []
     public static final boolean defaultIsSpatial = false
-    public static final boolean defaultIsCreateTable = true
 }

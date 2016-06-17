@@ -367,6 +367,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>wps-service-scripts</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>wps-client</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>

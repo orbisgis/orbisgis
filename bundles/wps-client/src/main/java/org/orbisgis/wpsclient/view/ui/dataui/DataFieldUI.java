@@ -20,11 +20,14 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import net.opengis.wps._2_0.DescriptionType;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.sif.JPanelListRenderer;
-import org.orbisgis.wpsservice.LocalWpsService;
+import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.model.*;
 
 import javax.swing.*;
@@ -35,6 +38,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
 import java.util.List;
@@ -78,14 +82,14 @@ public class DataFieldUI implements DataUI{
         boolean isOptional = false;
         //Retrieve the DataField
         //If it is an input, find if it is optional.
-        if(inputOrOutput instanceof Input){
-            dataField = (DataField)((Input)inputOrOutput).getDataDescription();
-            if(((Input)inputOrOutput).getMinOccurs() == 0){
+        if(inputOrOutput instanceof InputDescriptionType){
+            dataField = (DataField)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            if(((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"))){
                 isOptional = true;
             }
         }
-        else if(inputOrOutput instanceof Output){
-            dataField = (DataField)((Output)inputOrOutput).getDataDescription();
+        else if(inputOrOutput instanceof OutputDescriptionType){
+            return null;
         }
 
         if(dataField == null){
@@ -98,15 +102,15 @@ public class DataFieldUI implements DataUI{
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
             list.setLayoutOrientation(JList.VERTICAL);
             list.setVisibleRowCount(MIN_JLIST_ROW_COUNT);
-            list.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+            list.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
             list.putClientProperty(DATA_FIELD_PROPERTY, dataField);
             list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
             list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
-            list.putClientProperty(FIELD_TITLE_PROPERTY, inputOrOutput.getTitle());
+            list.putClientProperty(FIELD_TITLE_PROPERTY, URI.create(inputOrOutput.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_")));
             list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onItemSelected", "source"));
             list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
             list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
-            list.setToolTipText(inputOrOutput.getResume());
+            list.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
             JScrollPane listScroller = new JScrollPane(list);
             panel.add(listScroller, "growx, wrap");
         }
@@ -117,17 +121,17 @@ public class DataFieldUI implements DataUI{
             comboBox.setBackground(Color.WHITE);
             ContainerItem<Object> defaultItem = new ContainerItem<Object>("Select a field", "Select a field");
             comboBox.addItem(defaultItem);
-            comboBox.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+            comboBox.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
             comboBox.putClientProperty(DATA_FIELD_PROPERTY, dataField);
             comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
             comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
             comboBox.putClientProperty(DEFAULT_ITEM_PROPERTY, defaultItem);
-            comboBox.putClientProperty(FIELD_TITLE_PROPERTY, inputOrOutput.getTitle());
+            comboBox.putClientProperty(FIELD_TITLE_PROPERTY, URI.create(inputOrOutput.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_")));
             comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
             comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
             comboBox.addPopupMenuListener(EventHandler.create(PopupMenuListener.class, this, "onComboBoxEntered", "source"));
             comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
-            comboBox.setToolTipText(inputOrOutput.getResume());
+            comboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
             panel.add(comboBox, "growx, wrap");
 
             if (isOptional) {
@@ -297,8 +301,10 @@ public class DataFieldUI implements DataUI{
                     dataMap.put(uri, selectedItem.getLabel());
                 }
                 //Tells to the fieldValues that the datafield has been modified
-                for (FieldValue fieldValue : dataField.getListFieldValue()) {
-                    fieldValue.setDataFieldModified(true);
+                if(dataField.getListFieldValue() != null) {
+                    for (FieldValue fieldValue : dataField.getListFieldValue()) {
+                        fieldValue.setDataFieldModified(true);
+                    }
                 }
             }
         }
@@ -347,34 +353,35 @@ public class DataFieldUI implements DataUI{
                 tableName = split[1];
             }
         }
-        else{
-            tableName = ((URI) dataMap.get(dataField.getDataStoreIdentifier())).getFragment();
+        else if(dataMap.get(dataField.getDataStoreIdentifier()) != null){
+            tableName = dataMap.get(dataField.getDataStoreIdentifier()).toString();
         }
         if(tableName == null){
+            listContainer.add(new ContainerItem<Object>("Select a field", "Select a field"));
             return listContainer;
         }
-        List<String> fieldNameList = wpsClient.getWpsService().getTableFieldList(tableName,
+        List<String> fieldNameList = wpsClient.getLocalWpsService().getTableFieldList(tableName,
                 dataField.getFieldTypeList(), dataField.getExcludedTypeList());
         //If there is tables, retrieve their information to format the display in the comboBox
         if(fieldNameList != null && !fieldNameList.isEmpty()){
             for (String fieldName : fieldNameList) {
                 //Retrieve the table information
                 Map<String, Object> informationMap =
-                        wpsClient.getWpsService().getFieldInformation(tableName, fieldName);
+                        wpsClient.getLocalWpsService().getFieldInformation(tableName, fieldName);
                 //If there is information, use it to improve the table display in the comboBox
                 JPanel fieldPanel = new JPanel(new MigLayout("ins 0, gap 0"));
                 if (!informationMap.isEmpty()) {
                     //Sets the spatial icon
-                    String geometryType = (String)informationMap.get(LocalWpsService.GEOMETRY_TYPE);
+                    String geometryType = (String)informationMap.get(LocalWpsServer.GEOMETRY_TYPE);
                     fieldPanel.add(new JLabel(ToolBoxIcon.getIcon(geometryType.toLowerCase())));
                     fieldPanel.add(new JLabel(fieldName));
                     //Sets the SRID label
-                    int srid = (int) informationMap.get(LocalWpsService.TABLE_SRID);
+                    int srid = (int) informationMap.get(LocalWpsServer.TABLE_SRID);
                     if (srid != 0) {
                         fieldPanel.add(new JLabel(" [EPSG:" + srid + "]"));
                     }
                     //Sets the dimension label
-                    int dimension = (int) informationMap.get(LocalWpsService.TABLE_DIMENSION);
+                    int dimension = (int) informationMap.get(LocalWpsServer.TABLE_DIMENSION);
                     if (dimension != 2 && dimension != 0) {
                         fieldPanel.add(new JLabel(" "+dimension + "D"));
                     }

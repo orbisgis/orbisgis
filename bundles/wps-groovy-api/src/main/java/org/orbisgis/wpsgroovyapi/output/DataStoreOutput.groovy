@@ -35,20 +35,22 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
  *       Title of the output. Normally available for display to a human.
  *
  * The following fields can be defined (optional) :
+ *  - traducedTitles : LanguageString[]
+ *      List of LanguageString containing the traduced titles.
  *  - resume : String
- *      Brief narrative description of the output. Normally available for display to a human..
+ *      Brief narrative description of the output. Normally available for display to a human.
+ *  - traducedResumes : LanguageString[]
+ *      List of LanguageString containing the traduced description.
  *  - keywords : String
- *      Coma separated keywords that characterize the output.
+ *      Array of keywords that characterize the output.
+ *  - traducedKeywords : Keyword[]
+ *      List of Keyword containing the keywords translations.
  *  - identifier : String
  *      Unambiguous identifier of the output. It should be a valid URI.
  *  - metadata : MetaData[]
  *      Reference to additional metadata about this item.
- *  - extensions : String[]
- *      File extension accepted. If no extension are specified, all the format are accepted.
  *  - isSpatial : boolean
  *      Indicates if the data represented is spatial or not.
- *  - isCreateTable : boolean
- *      Indicates if the toolbox should load the file and give back the table name or just give the file name.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *

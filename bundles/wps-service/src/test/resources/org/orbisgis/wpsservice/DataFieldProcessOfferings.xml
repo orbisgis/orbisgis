@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns3:ProcessOfferings xmlns:ns1="http://www.opengis.net/ows/2.0" xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:ns3="http://www.opengis.net/wps/2.0" xmlns:ns5="http://orbisgis.org">
+    <ns3:ProcessOffering jobControlOptions="async-execute" outputTransmission="value">
+        <ns3:Process xml:lang="fr">
+            <ns1:Title xml:lang="fr">Test du DataField</ns1:Title>
+            <ns1:Abstract xml:lang="fr">Scripts test pour l'usage du DataField DataField.</ns1:Abstract>
+            <ns1:Keywords>
+                <ns1:Keyword xml:lang="fr">test</ns1:Keyword>
+                <ns1:Keyword xml:lang="fr">scripte</ns1:Keyword>
+                <ns1:Keyword xml:lang="fr">wps</ns1:Keyword>
+            </ns1:Keywords>
+            <ns1:Identifier>orbisgis:test:datafield</ns1:Identifier>
+            <ns1:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
+            <ns3:Input minOccurs="1" maxOccurs="1">
+                <ns1:Title>DataStore for the DataField</ns1:Title>
+                <ns1:Abstract/>
+                <ns1:Keywords/>
+                <ns1:Identifier>orbisgis:test:datastore:input</ns1:Identifier>
+                <ns5:DataStore isSpatial="false" isAutoImport="true">
+                    <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <ns5:DataField isMultipleField="false">
+                        <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                        <ns5:DataStoreId>orbisgis:test:datastore:input</ns5:DataStoreId>
+                        <ns5:ExcludedType>BOOLEAN</ns5:ExcludedType>
+                    </ns5:DataField>
+                </ns5:DataStore>
+            </ns3:Input>
+            <ns3:Input minOccurs="0" maxOccurs="2">
+                <ns1:Title xml:lang="fr">Entrée DataField</ns1:Title>
+                <ns1:Abstract xml:lang="fr">Une entrée DataField.</ns1:Abstract>
+                <ns1:Keywords>
+                    <ns1:Keyword xml:lang="fr">entrée</ns1:Keyword>
+                </ns1:Keywords>
+                <ns1:Identifier>orbisgis:test:datafield:input</ns1:Identifier>
+                <ns1:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
+                <ns5:DataField isMultipleField="false">
+                    <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <ns5:DataStoreId>orbisgis:test:datastore:input</ns5:DataStoreId>
+                    <ns5:ExcludedType>BOOLEAN</ns5:ExcludedType>
+                </ns5:DataField>
+            </ns3:Input>
+            <ns3:Output>
+                <ns1:Title>DataStore for the DataField</ns1:Title>
+                <ns1:Abstract/>
+                <ns1:Keywords/>
+                <ns1:Identifier>orbisgis:test:datastore:output</ns1:Identifier>
+                <ns5:DataStore isSpatial="false" isAutoImport="true">
+                    <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <ns5:DataField isMultipleField="true">
+                        <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                        <ns5:DataStoreId>orbisgis:test:datastore:output</ns5:DataStoreId>
+                        <ns5:FieldType>GEOMETRY</ns5:FieldType>
+                        <ns5:FieldType>NUMBER</ns5:FieldType>
+                    </ns5:DataField>
+                </ns5:DataStore>
+            </ns3:Output>
+            <ns3:Output>
+                <ns1:Title xml:lang="fr">Sortie DataField</ns1:Title>
+                <ns1:Abstract xml:lang="fr">Une sortie DataField.</ns1:Abstract>
+                <ns1:Keywords>
+                    <ns1:Keyword xml:lang="fr">sortie</ns1:Keyword>
+                </ns1:Keywords>
+                <ns1:Identifier>orbisgis:test:datafield:output</ns1:Identifier>
+                <ns1:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
+                <ns5:DataField isMultipleField="true">
+                    <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <ns5:DataStoreId>orbisgis:test:datastore:output</ns5:DataStoreId>
+                    <ns5:FieldType>GEOMETRY</ns5:FieldType>
+                    <ns5:FieldType>NUMBER</ns5:FieldType>
+                </ns5:DataField>
+            </ns3:Output>
+        </ns3:Process>
+    </ns3:ProcessOffering>
+</ns3:ProcessOfferings>

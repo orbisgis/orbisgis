@@ -19,18 +19,20 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
+import net.opengis.ows._2.CodeType;
+import net.opengis.wps._2_0.Format;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.wpsgroovyapi.attributes.DataStoreAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
-import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
-import org.orbisgis.wpsservice.model.*;
-import org.slf4j.LoggerFactory;
+import org.orbisgis.wpsservice.model.DataStore;
+import org.orbisgis.wpsservice.model.ObjectFactory;
 
+import javax.xml.bind.JAXBElement;
 import java.lang.reflect.Field;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,149 +44,55 @@ import java.util.List;
 
 public class DataStoreParser implements Parser{
 
-    private LocalWpsService wpsService;
-
-    public void setLocalWpsService(LocalWpsService wpsService){
-        this.wpsService = wpsService;
-    }
-
     @Override
-    public Input parseInput(Field f, Object defaultValue, URI processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
         //Instantiate the DataStore and its formats
         DataStoreAttribute dataStoreAttribute = f.getAnnotation(DataStoreAttribute.class);
-        List<Format> formatList;
-        List<String> importableFormat;
-        boolean isFile = false;
-        boolean isGeocatalog = false;
-        boolean isDataBase = false;
-
-        if(dataStoreAttribute.isSpatial()){
-            importableFormat = new ArrayList<>(wpsService.getImportableFormat(true).keySet());
-        }
-        else{
-            importableFormat = new ArrayList<>(wpsService.getImportableFormat(false).keySet());
-        }
-        //If there is extension, test if it is recognized by OrbisGIS and register it.
-        if(dataStoreAttribute.extensions().length!=0) {
-            List<String> validFormats = new ArrayList<>();
-            for(String extension : dataStoreAttribute.extensions()){
-                if(extension.equals(FormatFactory.GEOCATALOG_EXTENSION)){
-                    isGeocatalog = true;
-                }
-                else if(extension.equals(FormatFactory.DATABASE_EXTENSION)){
-                    isDataBase = true;
-                }
-                else if(importableFormat.contains(extension)){
-                    isFile = true;
-                    validFormats.add(extension);
-                }
-                else{
-                    LoggerFactory.getLogger(DataStoreParser.class).warn("The format '" + extension + "' is not supported");
-                }
-            }
-            formatList = FormatFactory.getFormatsFromExtensions(validFormats);
-        }
-        //Else add all the extensions.
-        else{
-            isGeocatalog = true;
-            isDataBase = true;
-            isFile = true;
-            formatList = FormatFactory.getFormatsFromExtensions(importableFormat);
-        }
-
-        //If there is no file format enable, add the "other" format to the format list but it won't be visible.
-        if(formatList.isEmpty()) {
-            formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION));
-        }
-        formatList.get(0).setDefaultFormat(true);
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
+        formatList.get(0).setDefault(true);
 
         //Instantiate the DataStore
         DataStore dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
-        dataStore.setIsDataBase(isDataBase);
-        dataStore.setIsGeocatalog(isGeocatalog);
-        dataStore.setIsFile(isFile);
 
-        Input input;
-        try {
-            //Instantiate the returned input
-            input = new Input(f.getName(),
-                    URI.create(processId + ":input:" + f.getName()),
-                    dataStore);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(DataStoreParser.class).error(e.getMessage());
-            return null;
-        }
+        InputDescriptionType input = new InputDescriptionType();
+        JAXBElement<DataStore> jaxbElement = new ObjectFactory().createDataStore(dataStore);
+        input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
+
+        if(input.getIdentifier() == null){
+            CodeType codeType = new CodeType();
+            codeType.setValue(processId+":input:"+input.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
+            input.setIdentifier(codeType);
+        }
 
         return input;
     }
 
     @Override
-    public Output parseOutput(Field f, URI processId) {
+    public OutputDescriptionType parseOutput(Field f, String processId) {
         //Instantiate the DataStore and its formats
         DataStoreAttribute dataStoreAttribute = f.getAnnotation(DataStoreAttribute.class);
-        List<Format> formatList;
-        List<String> exportableGeoFormat;
-        boolean isFile = false;
-        boolean isGeocatalog = false;
-        boolean isDataBase = false;
-
-        if(dataStoreAttribute.isSpatial()){
-            exportableGeoFormat = new ArrayList<>(wpsService.getExportableFormat(true).keySet());
-        }
-        else{
-            exportableGeoFormat = new ArrayList<>(wpsService.getExportableFormat(false).keySet());
-        }
-
-        //If there is extension, test if it is recognized by OrbisGIS and register it.
-        if(dataStoreAttribute.extensions().length!=0) {
-            List<String> validFormats = new ArrayList<>();
-            for(String extension : dataStoreAttribute.extensions()){
-                if(extension.equals(FormatFactory.GEOCATALOG_EXTENSION)){
-                    isGeocatalog = true;
-                }
-                else if(extension.equals(FormatFactory.DATABASE_EXTENSION)){
-                    isDataBase = true;
-                }
-                else if(exportableGeoFormat.contains(extension)){
-                    isFile = true;
-                    validFormats.add(extension);
-                }
-                else{
-                    LoggerFactory.getLogger(DataStoreParser.class).warn("The format '" + extension + "' is not supported");
-                }
-            }
-            formatList = FormatFactory.getFormatsFromExtensions(validFormats);
-        }
-        //Else add all the extensions.
-        else{
-            isGeocatalog = true;
-            isDataBase = true;
-            isFile = true;
-            formatList = FormatFactory.getFormatsFromExtensions(exportableGeoFormat);
-        }
-        formatList.get(0).setDefaultFormat(true);
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
+        formatList.get(0).setDefault(true);
 
         //Instantiate the DataStore
         DataStore dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
-        dataStore.setIsDataBase(isDataBase);
-        dataStore.setIsGeocatalog(isGeocatalog);
-        dataStore.setIsFile(isFile);
 
-        Output output;
-        try {
-            //Instantiate the returned output
-            output = new Output(f.getName(),
-                    URI.create(processId + ":output:" + f.getName()),
-                    dataStore);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(DataStoreParser.class).error(e.getMessage());
-            return null;
-        }
+        OutputDescriptionType output = new OutputDescriptionType();
+        JAXBElement<DataStore> jaxbElement = new ObjectFactory().createDataStore(dataStore);
+        output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
+
+        if(output.getIdentifier() == null){
+            CodeType codeType = new CodeType();
+            codeType.setValue(processId+":output:"+output.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
+            output.setIdentifier(codeType);
+        }
 
         return output;
     }

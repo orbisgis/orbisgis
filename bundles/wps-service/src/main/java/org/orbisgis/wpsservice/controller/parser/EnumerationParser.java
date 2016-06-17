@@ -19,17 +19,20 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
+import net.opengis.ows._2.CodeType;
+import net.opengis.wps._2_0.Format;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.EnumerationAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
-import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
-import org.orbisgis.wpsservice.model.*;
-import org.slf4j.LoggerFactory;
+import org.orbisgis.wpsservice.model.Enumeration;
+import org.orbisgis.wpsservice.model.ObjectFactory;
 
+import javax.xml.bind.JAXBElement;
 import java.lang.reflect.Field;
-import java.net.URI;
 
 /**
  * Parser for the groovy Enumeration annotations.
@@ -39,55 +42,47 @@ import java.net.URI;
 
 public class EnumerationParser implements Parser{
 
-    private LocalWpsService wpsService;
-
-    public void setLocalWpsService(LocalWpsService wpsService){
-        this.wpsService = wpsService;
-    }
-
     @Override
-    public Input parseInput(Field f, Object defaultValue, URI processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
         //Instantiate the DataStore and its formats
         EnumerationAttribute enumerationAttribute = f.getAnnotation(EnumerationAttribute.class);
-        Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
+        Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         Enumeration enumeration = ObjectAnnotationConverter.annotationToObject(enumerationAttribute, format);
 
-        Input input;
-        try {
-            //Instantiate the returned input
-            input = new Input(f.getName(),
-                    URI.create(processId + ":input:" + f.getName()),
-                    enumeration);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(DataStoreParser.class).error(e.getMessage());
-            return null;
-        }
+        InputDescriptionType input = new InputDescriptionType();
+        JAXBElement<Enumeration> jaxbElement = new ObjectFactory().createEnumeration(enumeration);
+        input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
+
+        if(input.getIdentifier() == null){
+            CodeType codeType = new CodeType();
+            codeType.setValue(processId+":input:"+input.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
+            input.setIdentifier(codeType);
+        }
 
         return input;
     }
 
     @Override
-    public Output parseOutput(Field f, URI processId) {
+    public OutputDescriptionType parseOutput(Field f, String processId) {
         //Instantiate the DataStore and its formats
         EnumerationAttribute enumerationAttribute = f.getAnnotation(EnumerationAttribute.class);
-        Format format = FormatFactory.getFormatFromExtension(FormatFactory.OTHER_EXTENSION);
+        Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         Enumeration enumeration = ObjectAnnotationConverter.annotationToObject(enumerationAttribute, format);
 
-        Output output;
-        try {
-            //Instantiate the returned input
-            output = new Output(f.getName(),
-                    URI.create(processId + ":output:" + f.getName()),
-                    enumeration);
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(DataStoreParser.class).error(e.getMessage());
-            return null;
-        }
+        OutputDescriptionType output = new OutputDescriptionType();
+        JAXBElement<Enumeration> jaxbElement = new ObjectFactory().createEnumeration(enumeration);
+        output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
+
+        if(output.getIdentifier() == null){
+            CodeType codeType = new CodeType();
+            codeType.setValue(processId+":output:"+output.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
+            output.setIdentifier(codeType);
+        }
 
         return output;
     }

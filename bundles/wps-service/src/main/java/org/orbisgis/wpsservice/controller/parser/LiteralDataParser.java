@@ -19,16 +19,19 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
+import net.opengis.ows._2.*;
+import net.opengis.wps._2_0.*;
+import net.opengis.wps._2_0.LiteralDataType.LiteralDataDomain;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.LiteralDataAttribute;
-import org.orbisgis.wpsservice.LocalWpsService;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.*;
-import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.JAXBElement;
 import java.lang.reflect.Field;
-import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Sylvain PALOMINOS
@@ -36,105 +39,347 @@ import java.net.URI;
 
 public class LiteralDataParser implements Parser {
 
-    private LocalWpsService wpsService;
+    public LiteralDataDomain getLiteralDataDomain(Field f, Object defaultValue){
+        LiteralDataDomain literalDataDomain = new LiteralDataDomain();
+        literalDataDomain.setDefault(true);
 
-    public void setLocalWpsService(LocalWpsService wpsService){
-        this.wpsService = wpsService;
+        //Get the type of the field to use it as the input type
+        if(f.getType().equals(Integer.class)){
+            if(defaultValue != null){
+                ValueType valueType = new ValueType();
+                valueType.setValue(defaultValue.toString());
+                literalDataDomain.setDefaultValue(valueType);
+            }
+            else {
+                AllowedValues allowedValues = new AllowedValues();
+                List<Object> objectList = new ArrayList<>();
+                RangeType rangeType = new RangeType();
+
+                ValueType maxValue = new ValueType();
+                maxValue.setValue(Integer.toString(Integer.MAX_VALUE));
+                rangeType.setMaximumValue(maxValue);
+
+                ValueType minValue = new ValueType();
+                minValue.setValue(Integer.toString(Integer.MIN_VALUE));
+                rangeType.setMinimumValue(minValue);
+
+                ValueType spacingValue = new ValueType();
+                spacingValue.setValue(Integer.toString(1));
+                rangeType.setSpacing(spacingValue);
+
+                objectList.add(rangeType);
+                allowedValues.getValueOrRange().clear();
+                allowedValues.getValueOrRange().addAll(objectList);
+                literalDataDomain.setAllowedValues(allowedValues);
+
+                ValueType value = new ValueType();
+                value.setValue("0");
+                literalDataDomain.setDefaultValue(value);
+            }
+
+            DomainMetadataType domainMetadataType = new DomainMetadataType();
+            domainMetadataType.setValue(DataType.INTEGER.name());
+            domainMetadataType.setReference(DataType.INTEGER.getUri().toString());
+            literalDataDomain.setDataType(domainMetadataType);
+        }
+        else if(f.getType().equals(Double.class)){
+            AllowedValues allowedValues = new AllowedValues();
+            List<Object> objectList = new ArrayList<>();
+            RangeType rangeType = new RangeType();
+            ValueType maxValue = new ValueType();
+            maxValue.setValue(Double.toString(Double.MAX_VALUE));
+
+            rangeType.setMaximumValue(maxValue);
+            ValueType minValue = new ValueType();
+            minValue.setValue(Double.toString(-Double.MAX_VALUE));
+
+            rangeType.setMaximumValue(minValue);
+            ValueType spacingValue = new ValueType();
+            spacingValue.setValue(Double.toString(1));
+
+            rangeType.setSpacing(spacingValue);
+            objectList.add(rangeType);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
+
+            ValueType valueType = new ValueType();
+            valueType.setValue(Double.toString(0));
+            literalDataDomain.setDefaultValue(valueType);
+            DomainMetadataType domainMetadataType = new DomainMetadataType();
+            domainMetadataType.setValue(DataType.DOUBLE.name());
+            domainMetadataType.setReference(DataType.DOUBLE.getUri().toString());
+            literalDataDomain.setDataType(domainMetadataType);
+
+            //Sets the default value
+            if(defaultValue != null) {
+                ValueType defaultValueType = new ValueType();
+                defaultValueType.setValue(defaultValue.toString());
+                literalDataDomain.setDefaultValue(defaultValueType);
+            }
+        }
+        else if(f.getType().equals(String.class)){
+            AnyValue anyValue = new AnyValue();
+            literalDataDomain.setAnyValue(anyValue);
+            //Creates the domain metadata object
+            DomainMetadataType domainMetadataType = new DomainMetadataType();
+            domainMetadataType.setValue(DataType.STRING.name());
+            domainMetadataType.setReference(DataType.STRING.getUri().toString());
+            //Sets the domain metadata
+            literalDataDomain.setDataType(domainMetadataType);
+
+            //Sets the default value
+            if(defaultValue != null) {
+                ValueType defaultValueType = new ValueType();
+                defaultValueType.setValue(defaultValue.toString());
+                literalDataDomain.setDefaultValue(defaultValueType);
+            }
+        }
+        else if(f.getType().equals(Boolean.class)){
+
+            //Create the allowed values object
+            AllowedValues allowedValues = new AllowedValues();
+            List<Object> objectList = new ArrayList<>();
+            ValueType trueValue = new ValueType();
+            trueValue.setValue(Boolean.toString(true));
+            objectList.add(trueValue);
+            ValueType falseValue = new ValueType();
+            falseValue.setValue(Boolean.toString(false));
+            objectList.add(falseValue);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
+            //Adds the allowed values to the literal data domain
+            literalDataDomain.setAllowedValues(allowedValues);
+            //Sets the default value
+            if(defaultValue != null && (Boolean) defaultValue) {
+                literalDataDomain.setDefaultValue(trueValue);
+            }
+            else{
+                literalDataDomain.setDefaultValue(falseValue);
+            }
+
+            //Creates the domain metadata object
+            DomainMetadataType domainMetadataType = new DomainMetadataType();
+            domainMetadataType.setValue(DataType.BOOLEAN.name());
+            domainMetadataType.setReference(DataType.BOOLEAN.getUri().toString());
+            //Sets the domain metadata
+            literalDataDomain.setDataType(domainMetadataType);
+        }
+        else if(f.getType().equals(Byte.class)){
+            AllowedValues allowedValues = new AllowedValues();
+            List<Object> objectList = new ArrayList<>();
+            RangeType rangeType = new RangeType();
+            ValueType maxValue = new ValueType();
+            maxValue.setValue(Byte.toString(Byte.MAX_VALUE));
+
+            rangeType.setMaximumValue(maxValue);
+            ValueType minValue = new ValueType();
+            minValue.setValue(Byte.toString(Byte.MIN_VALUE));
+
+            rangeType.setMaximumValue(minValue);
+            ValueType spacingValue = new ValueType();
+            spacingValue.setValue(Integer.toString(1));
+
+            rangeType.setSpacing(spacingValue);
+            objectList.add(rangeType);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
+
+            ValueType valueType = new ValueType();
+            valueType.setValue(Integer.toString(0));
+            literalDataDomain.setDefaultValue(valueType);
+            DomainMetadataType domainMetadataType = new DomainMetadataType();
+            domainMetadataType.setValue(DataType.BYTE.name());
+            domainMetadataType.setReference(DataType.BYTE.getUri().toString());
+            literalDataDomain.setDataType(domainMetadataType);
+
+            //Sets the default value
+            if(defaultValue != null) {
+                ValueType defaultValueType = new ValueType();
+                defaultValueType.setValue(defaultValue.toString());
+                literalDataDomain.setDefaultValue(defaultValueType);
+            }
+        }
+        else if(f.getType().equals(Float.class)){
+            AllowedValues allowedValues = new AllowedValues();
+            List<Object> objectList = new ArrayList<>();
+            RangeType rangeType = new RangeType();
+            ValueType maxValue = new ValueType();
+            maxValue.setValue(Float.toString(Float.MAX_VALUE));
+
+            rangeType.setMaximumValue(maxValue);
+            ValueType minValue = new ValueType();
+            minValue.setValue(Float.toString(-Float.MAX_VALUE));
+
+            rangeType.setMaximumValue(minValue);
+            ValueType spacingValue = new ValueType();
+            spacingValue.setValue(Float.toString(1));
+
+            rangeType.setSpacing(spacingValue);
+            objectList.add(rangeType);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
+
+            ValueType valueType = new ValueType();
+            valueType.setValue(Float.toString(0));
+            literalDataDomain.setDefaultValue(valueType);
+            DomainMetadataType domainMetadataType = new DomainMetadataType();
+            domainMetadataType.setValue(DataType.FLOAT.name());
+            domainMetadataType.setReference(DataType.FLOAT.getUri().toString());
+            literalDataDomain.setDataType(domainMetadataType);
+
+            //Sets the default value
+            if(defaultValue != null) {
+                ValueType defaultValueType = new ValueType();
+                defaultValueType.setValue(defaultValue.toString());
+                literalDataDomain.setDefaultValue(defaultValueType);
+            }
+        }
+        else if(f.getType().equals(Long.class)){
+            AllowedValues allowedValues = new AllowedValues();
+            List<Object> objectList = new ArrayList<>();
+            RangeType rangeType = new RangeType();
+            ValueType maxValue = new ValueType();
+            maxValue.setValue(Long.toString(Long.MAX_VALUE));
+
+            rangeType.setMaximumValue(maxValue);
+            ValueType minValue = new ValueType();
+            minValue.setValue(Long.toString(Long.MIN_VALUE));
+
+            rangeType.setMaximumValue(minValue);
+            ValueType spacingValue = new ValueType();
+            spacingValue.setValue(Long.toString(1));
+
+            rangeType.setSpacing(spacingValue);
+            objectList.add(rangeType);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
+
+            ValueType valueType = new ValueType();
+            valueType.setValue(Long.toString(0));
+            literalDataDomain.setDefaultValue(valueType);
+            DomainMetadataType domainMetadataType = new DomainMetadataType();
+            domainMetadataType.setValue(DataType.LONG.name());
+            domainMetadataType.setReference(DataType.LONG.getUri().toString());
+            literalDataDomain.setDataType(domainMetadataType);
+
+            //Sets the default value
+            if(defaultValue != null) {
+                ValueType defaultValueType = new ValueType();
+                defaultValueType.setValue(defaultValue.toString());
+                literalDataDomain.setDefaultValue(defaultValueType);
+            }
+        }
+        else if(f.getType().equals(Short.class)){
+            AllowedValues allowedValues = new AllowedValues();
+            List<Object> objectList = new ArrayList<>();
+            RangeType rangeType = new RangeType();
+            ValueType maxValue = new ValueType();
+            maxValue.setValue(Short.toString(Short.MAX_VALUE));
+
+            rangeType.setMaximumValue(maxValue);
+            ValueType minValue = new ValueType();
+            minValue.setValue(Short.toString(Short.MIN_VALUE));
+
+            rangeType.setMaximumValue(minValue);
+            ValueType spacingValue = new ValueType();
+            spacingValue.setValue(Integer.toString(1));
+
+            rangeType.setSpacing(spacingValue);
+            objectList.add(rangeType);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
+
+            ValueType valueType = new ValueType();
+            valueType.setValue(Integer.toString(0));
+            literalDataDomain.setDefaultValue(valueType);
+            DomainMetadataType domainMetadataType = new DomainMetadataType();
+            domainMetadataType.setValue(DataType.INTEGER.name());
+            domainMetadataType.setReference(DataType.INTEGER.getUri().toString());
+            literalDataDomain.setDataType(domainMetadataType);
+
+            //Sets the default value
+            if(defaultValue != null) {
+                ValueType defaultValueType = new ValueType();
+                defaultValueType.setValue(defaultValue.toString());
+                literalDataDomain.setDefaultValue(defaultValueType);
+            }
+        }
+        else if(f.getType().equals(Character.class)){
+            AllowedValues allowedValues = new AllowedValues();
+            List<Object> objectList = new ArrayList<>();
+            RangeType rangeType = new RangeType();
+            ValueType maxValue = new ValueType();
+            maxValue.setValue(Character.toString(Character.MAX_VALUE));
+
+            rangeType.setMaximumValue(maxValue);
+            ValueType minValue = new ValueType();
+            minValue.setValue(Character.toString(Character.MIN_VALUE));
+
+            rangeType.setMaximumValue(minValue);
+            ValueType spacingValue = new ValueType();
+            spacingValue.setValue(Integer.toString(1));
+
+            rangeType.setSpacing(spacingValue);
+            objectList.add(rangeType);
+            allowedValues.getValueOrRange().clear();
+            allowedValues.getValueOrRange().addAll(objectList);
+
+            ValueType valueType = new ValueType();
+            valueType.setValue(Integer.toString(0));
+            literalDataDomain.setDefaultValue(valueType);
+            DomainMetadataType domainMetadataType = new DomainMetadataType();
+            domainMetadataType.setValue(DataType.UNSIGNED_BYTE.name());
+            domainMetadataType.setReference(DataType.UNSIGNED_BYTE.getUri().toString());
+            literalDataDomain.setDataType(domainMetadataType);
+
+            //Sets the default value
+            if(defaultValue != null) {
+                ValueType defaultValueType = new ValueType();
+                defaultValueType.setValue(defaultValue.toString());
+                literalDataDomain.setDefaultValue(defaultValueType);
+            }
+        }
+
+        return literalDataDomain;
     }
 
     @Override
-    public Input parseInput(Field f, Object defaultValue, URI processId) {
-        LiteralData data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
+    public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
+        InputDescriptionType input = new InputDescriptionType();
+        LiteralDataType data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class),
+                getLiteralDataDomain(f, defaultValue));
+        JAXBElement<LiteralDataType> jaxbElement = new net.opengis.wps._2_0.ObjectFactory().createLiteralData(data);
+        input.setDataDescription(jaxbElement);
+        //Instantiate the returned input
 
-        try {
-            //Instantiate the returned input
-            Input input = new Input(f.getName(),
-                    URI.create(processId + ":input:" + f.getName()),
-                    data);
+        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
+        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
 
-            ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
-            ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
-
-            //Get the type of the field to use it as the input type
-            if(f.getType().equals(Integer.class)){
-                if(defaultValue != null && data != null) {
-                    data.setValue(new LiteralValue(new Value<>((Integer) defaultValue)));
-                }
-                data.getValue().setDataType(DataType.INTEGER);
-            }
-            else if(f.getType().equals(Double.class)){
-                if(defaultValue != null && data != null) {
-                    data.setValue(new LiteralValue(new Value<>((Double) defaultValue)));
-                }
-                data.getValue().setDataType(DataType.DOUBLE);
-            }
-            else if(f.getType().equals(String.class)){
-                if(defaultValue != null && data != null) {
-                    data.setValue(new LiteralValue(new Value<>((String) defaultValue)));
-                }
-                data.getValue().setDataType(DataType.STRING);
-            }
-            else if(f.getType().equals(Boolean.class)){
-                if(defaultValue != null && data != null) {
-                    data.setValue(new LiteralValue(new Value<>((Boolean) defaultValue)));
-                }
-                data.getValue().setDataType(DataType.BOOLEAN);
-            }
-            else if(f.getType().equals(Byte.class)){
-                if(defaultValue != null && data != null) {
-                    data.setValue(new LiteralValue(new Value<>((Byte) defaultValue)));
-                }
-                data.getValue().setDataType(DataType.BYTE);
-            }
-            else if(f.getType().equals(Float.class)){
-                if(defaultValue != null && data != null) {
-                    data.setValue(new LiteralValue(new Value<>((Float) defaultValue)));
-                }
-                data.getValue().setDataType(DataType.FLOAT);
-            }
-            else if(f.getType().equals(Long.class)){
-                if(defaultValue != null && data != null) {
-                    data.setValue(new LiteralValue(new Value<>((Long) defaultValue)));
-                }
-                data.getValue().setDataType(DataType.LONG);
-            }
-            else if(f.getType().equals(Short.class)){
-                if(defaultValue != null && data != null) {
-                    data.setValue(new LiteralValue(new Value<>((Short) defaultValue)));
-                }
-                data.getValue().setDataType(DataType.SHORT);
-            }
-            else if(f.getType().equals(Character.class)){
-                if(defaultValue != null && data != null) {
-                    data.setValue(new LiteralValue(new Value<>((Character) defaultValue)));
-                }
-                data.getValue().setDataType(DataType.UNSIGNED_BYTE);
-            }
-
-            return input;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(LiteralDataParser.class).error(e.getMessage());
-            return null;
+        if(input.getIdentifier() == null){
+            CodeType codeType = new CodeType();
+            codeType.setValue(processId+":input:"+input.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
+            input.setIdentifier(codeType);
         }
+        return input;
     }
 
     @Override
-    public Output parseOutput(Field f, URI processId) {
-        DataDescription data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class));
+    public OutputDescriptionType parseOutput(Field f, String processId) {
+        OutputDescriptionType output = new OutputDescriptionType();
+        LiteralDataType data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class),
+                getLiteralDataDomain(f, null));
+        JAXBElement<LiteralDataType> jaxbElement = new net.opengis.wps._2_0.ObjectFactory().createLiteralData(data);
+        output.setDataDescription(jaxbElement);
+        //Instantiate the returned input
 
-        try {
-            //Instantiate the returned output
-            Output output = new Output(f.getName(),
-                    URI.create(processId + ":output:" + f.getName()),
-                    data);
+        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
 
-            ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
-
-            return output;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(LiteralDataParser.class).error(e.getMessage());
-            return null;
+        if(output.getIdentifier() == null){
+            CodeType codeType = new CodeType();
+            codeType.setValue(processId+":output:"+output.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
+            output.setIdentifier(codeType);
         }
+        return output;
     }
 
     @Override

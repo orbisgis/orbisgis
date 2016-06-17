@@ -1,6 +1,12 @@
 package org.orbisgis.wpsservice.model;
 
+import net.opengis.wps._2_0.ComplexDataType;
+import net.opengis.wps._2_0.Format;
+
+
+import javax.xml.bind.annotation.*;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * GeometryData extends the ComplexData class.
@@ -8,24 +14,36 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  */
-public class GeometryData extends ComplexData {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Geometry", propOrder = {"geometryTypeList", "excludedTypeList", "dimension"})
+public class GeometryData extends ComplexDataType {
 
     /** List of type accepted for the geometry.*/
+    @XmlElement(name = "GeometryType", namespace = "http://orbisgis.org")
     private List<DataType> geometryTypeList;
     /** List of type excluded for the geometry.*/
+    @XmlElement(name = "ExcludedType", namespace = "http://orbisgis.org")
     private List<DataType> excludedTypeList;
     /** Dimension of the geometry. Can be 2(D) or 3(D). */
+    @XmlAttribute(name = "dimension")
     private int dimension;
 
     /**
      * Main Constructor.
-     * @param format Format allowed.
+     * @param formatList Format allowed.
      * @param geometryTypeList List of the type accepted for this geometry.
      * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
      */
-    public GeometryData(Format format, List<DataType> geometryTypeList) throws MalformedScriptException {
-        super(format);
+    public GeometryData(List<Format> formatList, List<DataType> geometryTypeList) throws MalformedScriptException {
+        format = formatList;
         this.geometryTypeList = geometryTypeList;
+    }
+
+    /**
+     * Protected empty constructor used in the ObjectFactory class for JAXB.
+     */
+    protected GeometryData(){
+        super();
     }
 
     /**

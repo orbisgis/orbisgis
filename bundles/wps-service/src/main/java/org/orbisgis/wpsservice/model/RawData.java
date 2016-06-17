@@ -19,6 +19,13 @@
 
 package org.orbisgis.wpsservice.model;
 
+import net.opengis.wps._2_0.ComplexDataType;
+import net.opengis.wps._2_0.Format;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
 /**
@@ -28,24 +35,19 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 
-public class RawData extends ComplexData {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "RawData", propOrder = {"isFile", "isDirectory", "multiSelection"})
+public class RawData extends ComplexDataType {
 
     /** True if the RawData can be a file, false otherwise. */
+    @XmlAttribute(name = "isFile")
     private boolean isFile;
     /** True if the RawData can be a directory, false otherwise. */
+    @XmlAttribute(name = "isDirectory")
     private boolean isDirectory;
     /** True if the user can select more than one file/directory, false otherwise. */
+    @XmlAttribute(name = "multiSelection")
     private boolean multiSelection;
-
-    /**
-     * Constructor giving the default format.
-     * The Format can not be null and should be set as the default one.
-     * @param format Not null default format.
-     * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
-     */
-    public RawData(Format format) throws MalformedScriptException {
-        super(format);
-    }
 
     /**
      * Constructor giving a list of format.
@@ -54,7 +56,14 @@ public class RawData extends ComplexData {
      * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
      */
     public RawData(List<Format> formatList) throws MalformedScriptException {
-        super(formatList);
+        this.format = formatList;
+    }
+
+    /**
+     * Protected empty constructor used in the ObjectFactory class for JAXB.
+     */
+    protected RawData(){
+        super();
     }
 
     /**

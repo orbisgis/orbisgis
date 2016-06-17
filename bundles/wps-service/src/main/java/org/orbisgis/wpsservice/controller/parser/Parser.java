@@ -19,12 +19,10 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
-import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.Output;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
 
 import java.lang.reflect.Field;
-import java.net.URI;
 
 /**
  * Interface to define a Parser associated to a data from the model (i.e. LiteralData or RawData).
@@ -36,15 +34,13 @@ import java.net.URI;
 
 public interface Parser {
 
-    void setLocalWpsService(LocalWpsService wpsService);
-
     /**
      * Parse the given field as an input and returns the corresponding DataDescription.
      * @param f Field to parse.
      * @param processId The process identifier.
      * @return Parsed DataDescription.
      */
-    Input parseInput(Field f, Object defaultValue, URI processId);
+    InputDescriptionType parseInput(Field f, Object defaultValue, String processId);
 
     /**
      * Parse the given field as an output and returns the corresponding DataDescription.
@@ -52,7 +48,7 @@ public interface Parser {
      * @param processId The process identifier.
      * @return Parsed DataDescription.
      */
-    Output parseOutput(Field f, URI processId);
+    OutputDescriptionType parseOutput(Field f, String processId);
 
     /**
      * Returns the groovy annotation associated to this parser.

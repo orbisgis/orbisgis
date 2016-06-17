@@ -100,8 +100,8 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
      * Its log will be displayed dynamically.
      * @param pee ProcessEditableElement of the running process to add.
      */
-    private void addNewLog(ProcessEditableElement pee){
-        LogPanel panel = new LogPanel(pee.getProcess().getTitle(), this);
+    public void addNewLog(ProcessEditableElement pee){
+        LogPanel panel = new LogPanel(pee.getProcess().getTitle().get(0).getValue(), this);
         panel.setState(ProcessEditableElement.ProcessState.RUNNING);
         componentMap.put(pee.getId(), panel);
         contentPanel.add(panel, "growx, span");
@@ -124,9 +124,12 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
      * @param successful True if the process has been successfully run, false otherwise.
      */
     private void removeLog(ProcessEditableElement pee, boolean successful){
+        if(endProcessFIFO.contains(pee)){
+            return;
+        }
         LogPanel lp = componentMap.get(pee.getId());
         String log = "\n=====================================\n"+
-                "WPS Process : "+pee.getProcess().getTitle() +"\n"+
+                "WPS Process : "+pee.getProcess().getTitle().get(0).getValue() +"\n"+
                 "=====================================\n"+
                 "Result : "+pee.getProcessState()+"\n"+
                 "Log : \n";
@@ -135,11 +138,9 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         }
         if(successful) {
             LoggerFactory.getLogger(LogEditor.class).info(log);
-            lp.setState(ProcessEditableElement.ProcessState.COMPLETED);
         }
         else{
             LoggerFactory.getLogger(LogEditor.class).error(log);
-            lp.setState(ProcessEditableElement.ProcessState.ERROR);
         }
         lp.stop();
         lp.addLogText("(This window will be automatically closed in 5 seconds)\n" +
@@ -202,14 +203,11 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         if(event.getPropertyName().equals(ProcessEditableElement.STATE_PROPERTY)){
             ProcessEditableElement pee = (ProcessEditableElement)event.getSource();
             switch((ProcessEditableElement.ProcessState)event.getNewValue()){
-                case COMPLETED:
+                case SUCCEEDED:
                     removeLog(pee, true);
                     break;
-                case ERROR:
+                case FAILED:
                     removeLog(pee, false);
-                    break;
-                case RUNNING:
-                    addNewLog(pee);
                     break;
             }
         }

@@ -19,35 +19,56 @@
 
 package org.orbisgis.wpsservice.model;
 
+import net.opengis.wps._2_0.ComplexDataType;
+import net.opengis.wps._2_0.Format;
+
+import javax.xml.bind.annotation.*;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Enumeration model class
  * @author Sylvain PALOMINOS
  **/
 
-public class Enumeration extends ComplexData{
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Enumeration", propOrder = {"values", "names", "defaultValues", "multiSelection", "isEditable"})
+public class Enumeration extends ComplexDataType{
 
     /** List of values.*/
+    @XmlElement(name = "Value", namespace = "http://orbisgis.org")
     private String[] values;
     /** List of values names.*/
+    @XmlElement(name = "Name", namespace = "http://orbisgis.org")
     private String[] names;
     /** Default values.*/
+    @XmlElement(name = "DefaultValue", namespace = "http://orbisgis.org")
     private String[] defaultValues;
     /** Enable or not the selection of more than one value.*/
+    @XmlAttribute(name = "multiSelection")
     private boolean multiSelection = false;
     /** Enable or not the user to use its own value.*/
+    @XmlAttribute(name = "isEditable")
     private boolean isEditable = false;
 
     /**
      * Main constructor.
-     * @param format Format of the data accepted.
+     * @param formatList Formats of the data accepted.
      * @param valueList List of values.
      * @param defaultValues Default value. If null, no default value.
      * @throws MalformedScriptException
      */
-    public Enumeration(Format format, String[] valueList, String[] defaultValues) throws MalformedScriptException {
-        super(format);
+    public Enumeration(List<Format> formatList, String[] valueList, String[] defaultValues) throws MalformedScriptException {
+        format = formatList;
         this.values = valueList;
         this.defaultValues = defaultValues;
+    }
+
+    /**
+     * Protected empty constructor used in the ObjectFactory class for JAXB.
+     */
+    protected Enumeration(){
+        super();
     }
 
     /**
@@ -98,10 +119,18 @@ public class Enumeration extends ComplexData{
         isEditable = editable;
     }
 
+    /**
+     * Sets the names of the values. The names will be only used for the displaying.
+     * @param names String array of the names. It should have the same size of the values array.
+     */
     public void setValuesNames(String[] names){
         this.names = names;
     }
 
+    /**
+     * Returns the array of the values name.
+     * @return The array of the values name.
+     */
     public String[] getValuesNames(){
         return names;
     }

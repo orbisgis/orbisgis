@@ -19,36 +19,58 @@
 
 package org.orbisgis.wpsservice.model;
 
+import net.opengis.wps._2_0.ComplexDataType;
+import net.opengis.wps._2_0.Format;
+
+import javax.xml.bind.annotation.*;
 import java.net.URI;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * FieldValue represent one or more values from a DataField.
  * @author Sylvain PALOMINOS
  */
-public class FieldValue extends ComplexData{
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "FieldValue", propOrder = {"dataFieldIdentifier", "dataStoreIdentifier", "multiSelection"})
+public class FieldValue extends ComplexDataType {
 
     /** Identifier of the 'parent' DataField */
+    @XmlElement(name = "DataFieldId", namespace = "http://orbisgis.org")
     private URI dataFieldIdentifier;
     /** Indicates if the FieldValue should be reloaded because of a modification of the parent DataField.*/
+    @XmlTransient
     private boolean isDataFieldModified = true;
     /** Identifier of the 'parent' DataStore */
+    @XmlElement(name = "DataStoreId", namespace = "http://orbisgis.org")
     private URI dataStoreIdentifier;
     /** Indicates if the FieldValue should be reloaded because of a modification of the parent DataStore.*/
+    @XmlTransient
     private boolean isDataStoreModified = true;
     /** Enable the selection of more than one value if true.*/
+    @XmlAttribute(name = "multiSelection")
     private boolean multiSelection;
 
     /**
      * Main constructor
-     * @param format Format of the data accepted.
+     * @param formatList Formats of the data accepted.
      * @param dataFieldIdentifier Identifier of the 'parent' dataField.
      * @param multiSelection Enable or not the selection of more than one value.
      * @throws MalformedScriptException
      */
-    public FieldValue(Format format, URI dataFieldIdentifier, boolean multiSelection) throws MalformedScriptException {
-        super(format);
+    public FieldValue(List<Format> formatList, URI dataFieldIdentifier, boolean multiSelection) throws MalformedScriptException {
+        format = formatList;
         this.multiSelection = multiSelection;
         this.dataFieldIdentifier = dataFieldIdentifier;
+    }
+
+    /**
+     * Protected empty constructor used in the ObjectFactory class for JAXB.
+     */
+    protected FieldValue(){
+        super();
+        dataFieldIdentifier = null;
+        dataStoreIdentifier = null;
     }
 
     /**
