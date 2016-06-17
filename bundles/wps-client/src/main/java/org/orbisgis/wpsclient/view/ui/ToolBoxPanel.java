@@ -36,7 +36,7 @@ import org.orbisgis.wpsclient.view.utils.Filter.IFilter;
 import org.orbisgis.wpsclient.view.utils.Filter.SearchFilter;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.TreeNodeWps;
-import org.orbisgis.wpsservice.LocalWpsService;
+import org.orbisgis.wpsservice.LocalWpsServer;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -713,13 +713,13 @@ public class ToolBoxPanel extends JPanel {
         String[] iconArray = null;
         //Retrieve the process metadata
         for (MetadataType metadata : processSummary.getMetadata()) {
-            if (metadata.getTitle().equals(LocalWpsService.ProcessProperty.IS_REMOVABLE.name())) {
+            if (metadata.getTitle().equals(LocalWpsServer.ProcessProperty.IS_REMOVABLE.name())) {
                 isRemovable = (boolean) metadata.getAbstractMetaData();
             }
-            if (metadata.getTitle().equals(LocalWpsService.ProcessProperty.NODE_PATH.name())) {
+            if (metadata.getTitle().equals(LocalWpsServer.ProcessProperty.NODE_PATH.name())) {
                 nodePath = (String) metadata.getAbstractMetaData();
             }
-            if (metadata.getTitle().equals(LocalWpsService.ProcessProperty.ICON_ARRAY.name())) {
+            if (metadata.getTitle().equals(LocalWpsServer.ProcessProperty.ICON_ARRAY.name())) {
                 String iconStr = metadata.getAbstractMetaData().toString();
                 if(iconStr != null) {
                     iconArray = iconStr.split(";");

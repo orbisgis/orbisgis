@@ -33,7 +33,7 @@ import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.wpsservice.WpsService;
+import org.orbisgis.wpsservice.WpsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;

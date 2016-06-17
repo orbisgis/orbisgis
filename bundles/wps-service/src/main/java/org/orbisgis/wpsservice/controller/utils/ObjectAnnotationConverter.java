@@ -25,7 +25,7 @@ import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.Format;
 import net.opengis.wps._2_0.LiteralDataType.LiteralDataDomain;
 import org.orbisgis.wpsgroovyapi.attributes.*;
-import org.orbisgis.wpsservice.LocalWpsService;
+import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
 
@@ -349,8 +349,8 @@ public class ObjectAnnotationConverter {
         processOffering.setProcessVersion(processAttribute.version());
         if(!processAttribute.dbms().equals(ProcessAttribute.defaultDbms)) {
             MetadataType metadata = new MetadataType();
-            metadata.setTitle(LocalWpsService.ProcessProperty.DBMS.name());
-            metadata.setRole(LocalWpsService.ProcessProperty.ROLE.name());
+            metadata.setTitle(LocalWpsServer.ProcessProperty.DBMS.name());
+            metadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
             metadata.setAbstractMetaData(processAttribute.dbms());
             processOffering.getProcess().getMetadata().add(metadata);
         }

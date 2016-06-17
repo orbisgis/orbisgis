@@ -10,7 +10,7 @@ import java.io.OutputStream;
  *
  * @author Sylvain PALOMINOS
  */
-public interface WpsService {
+public interface WpsServer {
 
     /**
      * This operation allows a client to retrieve service metadata, basic process offerings, and the available

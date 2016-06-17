@@ -28,7 +28,7 @@ import net.opengis.wps._2_0.ProcessDescriptionType;
 import net.opengis.wps._2_0.ProcessOffering;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
-import org.orbisgis.wpsservice.LocalWpsService;
+import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
 import org.orbisgis.wpsservice.controller.utils.CancelClosure;
 import org.orbisgis.wpsservice.controller.utils.WpsSql;
@@ -56,13 +56,13 @@ public class ProcessManager {
     /** Controller used to parse process */
     private ParserController parserController;
     private DataSourceService dataSourceService;
-    private LocalWpsService wpsService;
+    private LocalWpsServer wpsService;
     private Map<UUID, CancelClosure> closureMap;
 
     /**
      * Main constructor.
      */
-    public ProcessManager(DataSourceService dataSourceService, LocalWpsService wpsService){
+    public ProcessManager(DataSourceService dataSourceService, LocalWpsServer wpsService){
         processIdList = new ArrayList<>();
         parserController = new ParserController();
         this.dataSourceService = dataSourceService;
@@ -80,21 +80,21 @@ public class ProcessManager {
             try {
                 processOffering = parserController.parseProcess(f.getAbsolutePath());
                 MetadataType isRemovableMetadata = new MetadataType();
-                isRemovableMetadata.setTitle(LocalWpsService.ProcessProperty.IS_REMOVABLE.name());
-                isRemovableMetadata.setRole(LocalWpsService.ProcessProperty.ROLE.name());
+                isRemovableMetadata.setTitle(LocalWpsServer.ProcessProperty.IS_REMOVABLE.name());
+                isRemovableMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
                 isRemovableMetadata.setAbstractMetaData(isRemovable);
                 processOffering.getProcess().getMetadata().add(isRemovableMetadata);
                 if(nodePath != null) {
                     MetadataType nodePathMetadata = new MetadataType();
-                    nodePathMetadata.setTitle(LocalWpsService.ProcessProperty.NODE_PATH.name());
-                    nodePathMetadata.setRole(LocalWpsService.ProcessProperty.ROLE.name());
+                    nodePathMetadata.setTitle(LocalWpsServer.ProcessProperty.NODE_PATH.name());
+                    nodePathMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
                     nodePathMetadata.setAbstractMetaData(nodePath);
                     processOffering.getProcess().getMetadata().add(nodePathMetadata);
                 }
                 if(category != null) {
                     MetadataType iconArrayMetadata = new MetadataType();
-                    iconArrayMetadata.setTitle(LocalWpsService.ProcessProperty.ICON_ARRAY.name());
-                    iconArrayMetadata.setRole(LocalWpsService.ProcessProperty.ROLE.name());
+                    iconArrayMetadata.setTitle(LocalWpsServer.ProcessProperty.ICON_ARRAY.name());
+                    iconArrayMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
                     String iconString = "";
                     for (String icon : category) {
                         if (!iconString.isEmpty()) {

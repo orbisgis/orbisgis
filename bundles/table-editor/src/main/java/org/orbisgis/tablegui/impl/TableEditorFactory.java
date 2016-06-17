@@ -36,12 +36,10 @@ import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.sif.edition.EditorFactory;
 import org.orbisgis.tablegui.api.TableEditableElement;
-import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.WpsService;
+import org.orbisgis.wpsservice.LocalWpsServer;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -99,11 +97,11 @@ public class TableEditorFactory implements EditorFactory {
         }
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL)
-    public void setLocalWpsService(LocalWpsService wpsService) {
+    public void setLocalWpsService(LocalWpsServer wpsService) {
         this.wpsService = wpsService;
     }
 
-    public void unsetLocalWpsService(LocalWpsService wpsService) {
+    public void unsetLocalWpsService(LocalWpsServer wpsService) {
         this.wpsService = null;
     }
 

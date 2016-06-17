@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservicescripts;
 
-import org.orbisgis.wpsservice.LocalWpsService;
+import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsclient.WpsClient;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -55,7 +55,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
      * @param localWpsService
      */
     @Reference
-    public void setLocalWpsService(LocalWpsService localWpsService) {
+    public void setLocalWpsService(LocalWpsServer localWpsService) {
         this.localWpsService = localWpsService;
     }
 
@@ -63,7 +63,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
      * OSGI method used to remove from the plugin the WpsService. (Be careful before any modification)
      * @param localWpsService
      */
-    public void unsetLocalWpsService(LocalWpsService localWpsService) {
+    public void unsetLocalWpsService(LocalWpsServer localWpsService) {
         this.localWpsService = null;
     }
 
