@@ -2,7 +2,7 @@ package org.orbisgis.wpsservicescripts;
 
 import net.opengis.ows._2.CodeType;
 import org.apache.commons.io.IOUtils;
-import org.orbisgis.wpsservice.LocalWpsService;
+import org.orbisgis.wpsservice.LocalWpsServer;
 
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsclient.WpsClient;
@@ -57,7 +57,7 @@ public class WpsScriptsPackage {
      * The WPS service of OrbisGIS.
      * The WPS service contains all the declared processes available for the client (in OrbisGIS the toolbox).
      */
-    protected LocalWpsService localWpsService;
+    protected LocalWpsServer localWpsService;
 
     /**
      * The WPS client of OrbisGIS.
@@ -103,7 +103,7 @@ public class WpsScriptsPackage {
                         IOUtils.copy(scriptUrl.openStream(), out);
                     }
                     //Add the temporary file to the WpsService an get back the ProcessIdentifier object
-                    List<ProcessIdentifier> piList = localWpsService.addLocalSource(tempFile, iconArrayName, true, nodePath);
+                    List<ProcessIdentifier> piList = localWpsService.addLocalSource(tempFile, iconArrayName, false, nodePath);
                     //Save the process id to be able to remove the process later.
                     for(ProcessIdentifier pi : piList) {
                         listIdProcess.add(pi.getProcessDescriptionType().getIdentifier());
@@ -135,7 +135,7 @@ public class WpsScriptsPackage {
             }
             List<ProcessIdentifier> piList = localWpsService.addLocalSource(tempFile,
                     new String[]{loadIcon("icon.png")},
-                    true,
+                    false,
                     "wps/script/sample");
             for(ProcessIdentifier pi : piList){
                 listIdProcess.add(pi.getProcessDescriptionType().getIdentifier());

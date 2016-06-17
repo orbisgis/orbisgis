@@ -21,7 +21,6 @@ package org.orbisgis.wpsservice.controller.parser;
 
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
-import org.orbisgis.wpsservice.LocalWpsService;
 
 import java.lang.reflect.Field;
 

@@ -35,7 +35,7 @@ import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.wpsservice.WpsService;
+import org.orbisgis.wpsservice.WpsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -62,13 +62,13 @@ public class ActionAddRow extends AbstractAction {
     private static final I18n I18N = I18nFactory.getI18n(ActionAddRow.class);
     private final Logger LOGGER = LoggerFactory.getLogger(ActionAddRow.class);
     private TableEditor tableEditor;
-    private WpsService wpsService;
+    private WpsServer wpsServer;
 
     /**
      * Constructor
      * @param editable Table editable instance
      */
-    public ActionAddRow(TableEditableElement editable, TableEditor tableEditor, WpsService wpsService) {
+    public ActionAddRow(TableEditableElement editable, TableEditor tableEditor, WpsServer wpsServer) {
         super(I18N.tr("Add a row"), TableEditorIcon.getIcon("add_row"));
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
         putValue(ActionTools.MENU_ID, TableEditorActions.A_ADD_ROW);
@@ -77,7 +77,7 @@ public class ActionAddRow extends AbstractAction {
         editable.addPropertyChangeListener(TableEditableElement.PROP_EDITING,
                 EventHandler.create(PropertyChangeListener.class, this, "updateEnabledState"));
         this.tableEditor = tableEditor;
-        this.wpsService = wpsService;
+        this.wpsServer = wpsServer;
     }
 
     /**
@@ -93,7 +93,7 @@ public class ActionAddRow extends AbstractAction {
             try {
                 AskValidRow rowInput = new AskValidRow(I18N.tr("New row"), source, editable.getTableReference());
                 if(UIFactory.showDialog(rowInput)) {
-                    if(wpsService != null){
+                    if(wpsServer != null){
                         //Firs try to retrieve the process corresponding to the process title.
                         /** Would be updates later once the WPS client will be fully updated **/
                         /*Process p = null;

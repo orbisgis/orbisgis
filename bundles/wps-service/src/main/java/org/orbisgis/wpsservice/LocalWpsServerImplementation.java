@@ -66,8 +66,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * It gives all the methods needed by the a WPS client to be able to get a process, to configure it and to run it.
  * It also implements the DatabaseProgressionListener to be able to know the table list in the database.
  */
-@Component(service = {LocalWpsService.class})
-public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseProgressionListener {
+@Component(service = {LocalWpsServer.class})
+public class LocalWpsServerImplementation implements LocalWpsServer, DatabaseProgressionListener {
     /** String of the Groovy file extension. */
     public static final String GROOVY_EXTENSION = "groovy";
     private static final String WPS_SCRIPT_FOLDER = "Scripts";
@@ -78,7 +78,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     /**Array of the table type accepted. */
     private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL"};
     /** Logger */
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalWpsServiceImplementation.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalWpsServerImplementation.class);
     /** Process polling time in milliseconds. */
     private static final long PROCESS_POLLING_MILLIS = 10000;
 
@@ -223,7 +223,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                     String str = prop.toString();
                     for(String s : str.split(";")){
                         File f = new File(URI.create(s));
-                        addLocalSource(f, null, false, new File(f.getParent()).getName());
+                        addLocalSource(f, null, true, new File(f.getParent()).getName());
                     }
                 }
             }
@@ -297,10 +297,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     @Override
-    public List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isDefaultScript, String nodePath){
+    public List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isRemovable, String nodePath){
         List<ProcessIdentifier> piList = new ArrayList<>();
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
-            piList.add(processManager.addScript(f.toURI(), iconName, !isDefaultScript, nodePath));
+            piList.add(processManager.addScript(f.toURI(), iconName, isRemovable, nodePath));
         }
         else if(f.isDirectory()){
             piList.addAll(processManager.addLocalSource(f.toURI(), iconName));
@@ -310,7 +310,10 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
 
     @Override
     public void removeProcess(CodeType identifier){
-        processManager.removeProcess(processManager.getProcess(identifier));
+        ProcessDescriptionType process = processManager.getProcess(identifier);
+        if(process != null) {
+            processManager.removeProcess(process);
+        }
     }
 
     @Override
@@ -631,9 +634,9 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
      * Refresh the JList on the swing thread
      */
     private static class ReadDataManagerOnSwingThread extends SwingWorker<Boolean, Boolean> {
-        private LocalWpsServiceImplementation wpsService;
+        private LocalWpsServerImplementation wpsService;
 
-        private ReadDataManagerOnSwingThread(LocalWpsServiceImplementation wpsService) {
+        private ReadDataManagerOnSwingThread(LocalWpsServerImplementation wpsService) {
             this.wpsService = wpsService;
         }
 

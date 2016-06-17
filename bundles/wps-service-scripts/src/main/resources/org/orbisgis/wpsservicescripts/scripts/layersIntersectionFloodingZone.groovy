@@ -33,7 +33,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = "Intersection buildings flooding zone",
         resume = "Intersection of building with a flooding zone.",
-        keywords = "OrbisGIS,ST_Intersects,ST_Buffer,ST_Accum,example,layerIntersection")
+        keywords = ["OrbisGIS","ST_Intersects","ST_Buffer","ST_Accum","example","layerIntersection"])
 def processing() {
 
     String condition = ""
@@ -153,7 +153,7 @@ Integer quadSegs = 8
         title="Endcap style",
         resume="The endcap style",
         values=["round", "flat", "butt", "square"],
-        defaultValues=["round"],
+        selectedValues=["round"],
         minOccurs = 0)
 String endcapStyle
 
@@ -162,7 +162,7 @@ String endcapStyle
         title="Join style",
         resume="The join style",
         values=["round", "mitre", "miter", "bevel"],
-        defaultValues=["round"],
+        selectedValues=["round"],
         minOccurs = 0)
 String joinStyle
 

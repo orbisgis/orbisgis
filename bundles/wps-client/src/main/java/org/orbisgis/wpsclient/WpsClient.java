@@ -1,6 +1,6 @@
 package org.orbisgis.wpsclient;
 
-import org.orbisgis.wpsservice.LocalWpsService;
+import org.orbisgis.wpsservice.LocalWpsServer;
 
 /**
  * Interface that should be implemented by the OrbisGIS wps client.
@@ -18,5 +18,5 @@ public interface WpsClient {
      * Returns the instance of the localWpsService of OrbisGIS.
      * @return The local instance of the wps service.
      */
-    LocalWpsService getLocalWpsService();
+    LocalWpsServer getLocalWpsService();
 }

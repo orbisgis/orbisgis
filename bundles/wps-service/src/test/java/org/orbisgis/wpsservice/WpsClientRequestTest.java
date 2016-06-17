@@ -17,7 +17,7 @@ import org.junit.Test;
  * @author Sylvain PALOMINOS
  */
 public class WpsClientRequestTest {
-    WpsService wpsService;
+    WpsServer wpsServer;
 
     /**
      * Test the DataStore script DescribeProcess request.
@@ -37,7 +37,7 @@ public class WpsClientRequestTest {
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
@@ -72,7 +72,7 @@ public class WpsClientRequestTest {
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
@@ -106,7 +106,7 @@ public class WpsClientRequestTest {
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
@@ -140,7 +140,7 @@ public class WpsClientRequestTest {
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
@@ -174,7 +174,7 @@ public class WpsClientRequestTest {
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
@@ -208,7 +208,7 @@ public class WpsClientRequestTest {
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
@@ -242,7 +242,7 @@ public class WpsClientRequestTest {
         marshaller.marshal(element, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
@@ -273,7 +273,7 @@ public class WpsClientRequestTest {
         marshaller.marshal(element, outExecute);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         InputStream in = new DataInputStream(new ByteArrayInputStream(outExecute.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultExecXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
@@ -291,7 +291,7 @@ public class WpsClientRequestTest {
         marshaller.marshal(getStatus, outStatus);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         in = new DataInputStream(new ByteArrayInputStream(outStatus.toByteArray()));
-        xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultStatusXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
@@ -308,7 +308,7 @@ public class WpsClientRequestTest {
         marshaller.marshal(getResult, outResult);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
         in = new DataInputStream(new ByteArrayInputStream(outResult.toByteArray()));
-        xml = (ByteArrayOutputStream)wpsService.callOperation(in);
+        xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultResultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
@@ -322,46 +322,46 @@ public class WpsClientRequestTest {
      * The initialised wpsService can't execute the processes.
      */
     private void initWpsService() {
-        if (wpsService == null) {
+        if (wpsServer == null) {
             //Start the WpsService
-            LocalWpsServiceImplementation localWpsService = new LocalWpsServiceImplementation();
+            LocalWpsServerImplementation localWpsService = new LocalWpsServerImplementation();
             localWpsService.init();
             //Try to load the groovy scripts
             try {
                 URL url = this.getClass().getResource("DataStore.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, false, "test");
+                    localWpsService.addLocalSource(f, null, true, "test");
                 }
                 url = this.getClass().getResource("DataField.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, false, "test");
+                    localWpsService.addLocalSource(f, null, true, "test");
                 }
                 url = this.getClass().getResource("FieldValue.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, false, "test");
+                    localWpsService.addLocalSource(f, null, true, "test");
                 }
                 url = this.getClass().getResource("Enumeration.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, false, "test");
+                    localWpsService.addLocalSource(f, null, true, "test");
                 }
                 url = this.getClass().getResource("GeometryData.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, false, "test");
+                    localWpsService.addLocalSource(f, null, true, "test");
                 }
                 url = this.getClass().getResource("RawData.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, false, "test");
+                    localWpsService.addLocalSource(f, null, true, "test");
                 }
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-            wpsService = localWpsService;
+            wpsServer = localWpsService;
         }
     }
 }

@@ -111,12 +111,17 @@ public class EnumerationUI implements DataUI{
         //Select the default values
         List<Integer> selectedIndex = new ArrayList<>();
         if(!isOptional) {
-            for (String defaultValue : enumeration.getDefaultValues()) {
-                for(int i=0; i<model.getSize(); i++){
-                    if(model.get(i).getKey().equals(defaultValue)){
-                        selectedIndex.add(i);
+            if(enumeration.getDefaultValues() != null) {
+                for (String defaultValue : enumeration.getDefaultValues()) {
+                    for (int i = 0; i < model.getSize(); i++) {
+                        if (model.get(i).getKey().equals(defaultValue)) {
+                            selectedIndex.add(i);
+                        }
                     }
                 }
+            }
+            else{
+                selectedIndex.add(0);
             }
         }
         int[] array = new int[selectedIndex.size()];
@@ -178,7 +183,7 @@ public class EnumerationUI implements DataUI{
             enumeration = (Enumeration)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
         }
         if(!isOptional) {
-            if(enumeration.getDefaultValues().length != 0) {
+            if(enumeration.getDefaultValues() != null && enumeration.getDefaultValues().length != 0) {
                 if (enumeration.isMultiSelection()) {
                     map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getDefaultValues());
                 } else {

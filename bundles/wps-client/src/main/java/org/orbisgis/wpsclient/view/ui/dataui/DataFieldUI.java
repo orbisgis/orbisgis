@@ -24,11 +24,10 @@ import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.sif.common.ContainerItem;
-import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.sif.JPanelListRenderer;
-import org.orbisgis.wpsservice.LocalWpsService;
+import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.model.*;
 
 import javax.swing.*;
@@ -373,16 +372,16 @@ public class DataFieldUI implements DataUI{
                 JPanel fieldPanel = new JPanel(new MigLayout("ins 0, gap 0"));
                 if (!informationMap.isEmpty()) {
                     //Sets the spatial icon
-                    String geometryType = (String)informationMap.get(LocalWpsService.GEOMETRY_TYPE);
+                    String geometryType = (String)informationMap.get(LocalWpsServer.GEOMETRY_TYPE);
                     fieldPanel.add(new JLabel(ToolBoxIcon.getIcon(geometryType.toLowerCase())));
                     fieldPanel.add(new JLabel(fieldName));
                     //Sets the SRID label
-                    int srid = (int) informationMap.get(LocalWpsService.TABLE_SRID);
+                    int srid = (int) informationMap.get(LocalWpsServer.TABLE_SRID);
                     if (srid != 0) {
                         fieldPanel.add(new JLabel(" [EPSG:" + srid + "]"));
                     }
                     //Sets the dimension label
-                    int dimension = (int) informationMap.get(LocalWpsService.TABLE_DIMENSION);
+                    int dimension = (int) informationMap.get(LocalWpsServer.TABLE_DIMENSION);
                     if (dimension != 2 && dimension != 0) {
                         fieldPanel.add(new JLabel(" "+dimension + "D"));
                     }
