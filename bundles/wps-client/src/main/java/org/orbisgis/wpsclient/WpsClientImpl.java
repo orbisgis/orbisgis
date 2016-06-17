@@ -43,7 +43,7 @@ import org.orbisgis.wpsclient.view.utils.editor.log.LogEditor;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
 import org.orbisgis.wpsservice.JaxbContainer;
-import org.orbisgis.wpsservice.LocalWpsService;
+import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.model.DataField;
 import org.orbisgis.wpsservice.model.DataStore;
 import org.orbisgis.wpsservice.model.FieldValue;
@@ -101,7 +101,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
     private ExecutorService executorService;
     /** OrbisGIS DataManager. */
     private static DataManager dataManager;
-    private LocalWpsService wpsService;
+    private LocalWpsServer wpsService;
     private ProcessEditor pe;
 
     @Activate
@@ -139,7 +139,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         }
     }
 
-    public LocalWpsService getLocalWpsService(){
+    public LocalWpsServer getLocalWpsService(){
         return wpsService;
     }
 
@@ -493,10 +493,10 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
 
 
     @Reference
-    public void setLocalWpsService(LocalWpsService wpsService) {
+    public void setLocalWpsService(LocalWpsServer wpsService) {
         this.wpsService = wpsService;
     }
-    public void unsetLocalWpsService(LocalWpsService wpsService) {
+    public void unsetLocalWpsService(LocalWpsServer wpsService) {
         this.wpsService = null;
     }
 

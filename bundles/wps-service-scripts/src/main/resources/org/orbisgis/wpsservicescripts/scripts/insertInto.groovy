@@ -25,7 +25,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = "InsertInto",
         resume = "Insert values into a table.",
-        keywords = "OrbisGIS,table_editor")
+        keywords = ["OrbisGIS","table_editor"])
 def processing() {
     //Build the query
     String queryBase = "INSERT INTO " + tableName;

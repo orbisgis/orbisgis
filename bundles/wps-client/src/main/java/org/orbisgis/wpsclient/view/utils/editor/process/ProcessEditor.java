@@ -25,7 +25,6 @@ import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
-import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUI;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUIManager;
@@ -184,23 +183,26 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      */
     private JComponent buildUI(){
         ProcessDescriptionType process = pee.getProcess();
-
-        JPanel panel = new JPanel(new MigLayout("fill"));
-        JScrollPane scrollPane = new JScrollPane(panel);
+        JPanel returnPanel = new JPanel(new BorderLayout());
 
         JPanel processPanel = new JPanel(new MigLayout("fill"));
         processPanel.setBorder(BorderFactory.createTitledBorder(process.getTitle().get(0).getValue()));
-        processPanel.add(createResumeLabel(process.getAbstract().get(0).getValue()), "growx, span");
+        JLabel label = new JLabel("<html>"+process.getAbstract().get(0).getValue()+"</html>");
+        label.setFont(label.getFont().deriveFont(Font.ITALIC));
+        processPanel.add(label, "growx, span");
         JLabel version = new JLabel("Version : "+pee.getProcessOffering().getProcessVersion());
         version.setFont(version.getFont().deriveFont(Font.ITALIC));
         processPanel.add(version, "growx, span");
-        panel.add(processPanel, "growx, span");
+        returnPanel.add(processPanel, BorderLayout.PAGE_START);
+
+        JPanel panel = new JPanel(new MigLayout("fill"));
+        JScrollPane scrollPane = new JScrollPane(panel);
 
         // Put all the default values in the datamap
         pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
         JPanel inputPanel = new JPanel(new MigLayout("fill"));
-        inputPanel.setBorder(BorderFactory.createTitledBorder("Inputs"));
+        inputPanel.setBorder(BorderFactory.createTitledBorder("Input(s)"));
         boolean isInputs = false;
 
         for(InputDescriptionType i : process.getInput()){
@@ -254,7 +256,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
         //Creates the panel that will contains all the inputs.
         JPanel outputPanel = new JPanel(new MigLayout("fill"));
-        outputPanel.setBorder(BorderFactory.createTitledBorder("Outputs"));
+        outputPanel.setBorder(BorderFactory.createTitledBorder("Output(s)"));
         boolean isOutputs = false;
         for(OutputDescriptionType o : process.getOutput()){
             DataUI dataUI = dataUIManager.getDataUI(o.getDataDescription().getValue().getClass());
@@ -280,7 +282,9 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         panel.add(runButton, "growx, wrap");
         scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
-        return scrollPane;
+
+        returnPanel.add(scrollPane, BorderLayout.CENTER);
+        return returnPanel;
     }
 
     /**
@@ -322,17 +326,5 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             scrollPane.scrollRectToVisible(body.getBounds());
         }
         parent.revalidate();
-    }
-
-    private JTextArea createResumeLabel(String text){
-        JTextArea label = new JTextArea(text);
-        label.setEditable(false);
-        label.setCursor(null);
-        label.setOpaque(false);
-        label.setFocusable(false);
-        label.setWrapStyleWord(true);
-        label.setLineWrap(true);
-        label.setFont(UIManager.getFont("Label.font").deriveFont(Font.ITALIC));
-        return label;
     }
 }

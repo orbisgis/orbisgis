@@ -2,7 +2,7 @@ package org.orbisgis.wpsservicescripts;
 
 import net.opengis.ows._2.CodeType;
 import org.apache.commons.io.IOUtils;
-import org.orbisgis.wpsservice.LocalWpsService;
+import org.orbisgis.wpsservice.LocalWpsServer;
 
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsclient.WpsClient;
@@ -57,7 +57,7 @@ public class WpsScriptsPackage {
      * The WPS service of OrbisGIS.
      * The WPS service contains all the declared processes available for the client (in OrbisGIS the toolbox).
      */
-    protected LocalWpsService localWpsService;
+    protected LocalWpsServer localWpsService;
 
     /**
      * The WPS client of OrbisGIS.

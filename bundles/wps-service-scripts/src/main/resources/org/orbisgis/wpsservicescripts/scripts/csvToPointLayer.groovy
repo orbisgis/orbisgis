@@ -1,6 +1,5 @@
 package org.orbisgis.wpsservicescripts.scripts
 
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.input.RawDataInput
@@ -34,7 +33,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = "Point layer from CSV",
         resume = "Creates a point layer from a CSV file containing the id of the point, its X and Y coordinate.",
-        keywords = "OrbisGIS,ST_Transform,ST_SetSRID,ST_MakePoint,example")
+        keywords = ["OrbisGIS","ST_Transform","ST_SetSRID","ST_MakePoint","example"])
 def processing() {
     outputTableName = dataStoreOutputName
     //Open the CSV file
@@ -75,7 +74,7 @@ String csvDataInput
         resume="The CSV separator.",
         values=[",", "\t", " ", ";"],
         names=["coma", "tabulation", "space", "semicolon"],
-        defaultValues = ";",
+        selectedValues = ";",
         isEditable = true)
 String separator
 

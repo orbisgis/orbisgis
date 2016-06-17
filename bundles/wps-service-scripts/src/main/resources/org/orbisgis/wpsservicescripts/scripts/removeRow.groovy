@@ -23,7 +23,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = "RemoveRow",
         resume = "Remove rows from a table.",
-        keywords = "OrbisGIS,table_editor")
+        keywords = ["OrbisGIS","table_editor"])
 def processing() {
     //Build the start of the query
     for (String s : pkToRemove) {

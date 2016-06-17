@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.LiteralDataDomainAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.PossibleLiteralValuesChoiceAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.ValuesAttribute;
-import org.orbisgis.wpsgroovyapi.attributes.ValuesType;
 import org.orbisgis.wpsservice.model.DataType;
 
 import java.lang.annotation.Annotation;
@@ -36,7 +35,7 @@ public class LiteralDataDomainConvertTest {
             ),
             dataType = "STRING",
             uom = "uom://test/uom",
-            defaultValue = "value",
+            selectedValues = "value",
             isDefault = true
     )
     public Object fullLiteralDataDomainAttribute;
@@ -143,7 +142,7 @@ public class LiteralDataDomainConvertTest {
     @LiteralDataDomainAttribute(
             possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(),
             dataType = "STRING",
-            defaultValue = "value"
+            selectedValues = "value"
     )
     public Object minimalLiteralDataDomainAttribute;
     /** Name of the field containing the minimalLiteralDataDomainAttribute annotation. */

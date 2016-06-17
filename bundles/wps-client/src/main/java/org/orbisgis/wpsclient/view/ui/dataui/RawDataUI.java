@@ -82,7 +82,7 @@ public class RawDataUI implements DataUI {
         JTextField jtf = new JTextField();
         //"Save" the CA inside the JTextField
         jtf.getDocument().putProperty(DATA_MAP_PROPERTY, dataMap);
-        jtf.getDocument().putProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        jtf.getDocument().putProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
         //add the listener for the text changes in the JTextField
         jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this,
                 "saveDocumentText", "document"));
