@@ -23,6 +23,7 @@ import org.orbisgis.sif.icons.BaseIcon;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.io.File;
 import java.awt.*;
 import java.io.File;
 
@@ -61,8 +62,12 @@ public class ToolBoxIcon {
     }
 
     /**
+<<<<<<< HEAD
      * Retrieve icon by its name or its full file path.     *
      *
+=======
+     * Retrieve icon by its name
+>>>>>>> dev/wps
      * @param iconName The icon name, without extension or icon file path. All icons are stored in the png format.
      * @return The ImageIcon requested, or an ImageIcon corresponding to a Missing Resource
      */

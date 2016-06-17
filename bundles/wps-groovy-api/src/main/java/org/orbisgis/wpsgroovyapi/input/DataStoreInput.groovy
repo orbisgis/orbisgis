@@ -45,10 +45,16 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *       Title of the input. Normally available for display to a human.
  *
  * The following fields can be defined (optional) :
+ *  - traducedTitles : LanguageString[]
+ *      List of LanguageString containing the traduced titles.
  *  - resume : String
  *      Brief narrative description of the input. Normally available for display to a human.
+ *  - traducedResumes : LanguageString[]
+ *      List of LanguageString containing the traduced description.
  *  - keywords : String
- *      Coma separated keywords that characterize the input.
+ *      Array of keywords that characterize the input.
+ *  - traducedKeywords : Keyword[]
+ *      List of Keyword containing the keywords translations.
  *  - identifier : String
  *      Unambiguous identifier of the input. It should be a valid URI.
  *  - metadata : MetaData[]
@@ -57,12 +63,8 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *      Minimum number of times that values for this parameter are required. 0 means the input is optional.
  *  - maxOccurs : int
  *      Maximum number of times that this parameter may be present.
- *  - extensions : String[]
- *      File extension accepted. If no extension are specified, all the format are accepted.
  *  - isSpatial : boolean
  *      Indicates if the data represented is spatial or not.
- *  - isCreateTable : boolean
- *      Indicates if the toolbox should load the file and give back the table name or just give the file name.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *

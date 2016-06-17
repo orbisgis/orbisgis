@@ -19,7 +19,12 @@
 
 package org.orbisgis.wpsservice.model;
 
-import java.net.URI;
+import net.opengis.wps._2_0.ComplexDataType;
+import net.opengis.wps._2_0.Format;
+
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,24 +33,15 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  **/
-
-public class DataStore extends ComplexData{
-    /**DataStore types.*/
-    public static final String DATASTORE_TYPE_GEOCATALOG = "DATASTORE_TYPE_GEOCATALOG";
-    public static final String DATASTORE_TYPE_FILE = "DATASTORE_TYPE_FILE";
-
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "DataStore", propOrder = {"isSpatial", "listDataField"})
+public class DataStore extends ComplexDataType {
     /** True if the data is spatial, false otherwise **/
+    @XmlAttribute(name = "isSpatial")
     private boolean isSpatial;
-    /** True if the data can come from the OrbisGIS geocatalog spatial, false otherwise **/
-    private boolean isGeocatalog;
-    /** True if the data can be a file, false otherwise **/
-    private boolean isFile;
-    /** True if the data can come from an external dataBase, false otherwise **/
-    private boolean isDataBase;
     /** List of DataField liked to the DataStore */
+    @XmlElement(name = "DataField", namespace = "http://orbisgis.org")
     private List<DataField> listDataField;
-    /** True if the toolBox should load the file or just give the file path. */
-    private boolean autoImport;
 
     /**
      * Main constructor
@@ -53,16 +49,16 @@ public class DataStore extends ComplexData{
      * @throws MalformedScriptException
      */
     public DataStore(List<Format> formatList) throws MalformedScriptException {
-        super(formatList);
+        format = formatList;
         listDataField = new ArrayList<>();
     }
 
-    public void setAutoImport(boolean autoImport){
-        this.autoImport = autoImport;
-    }
-
-    public boolean isAutoImport(){
-        return autoImport;
+    /**
+     * Protected empty constructor used in the ObjectFactory class for JAXB.
+     */
+    protected DataStore(){
+        super();
+        listDataField = null;
     }
 
     /**
@@ -82,54 +78,6 @@ public class DataStore extends ComplexData{
     }
 
     /**
-     * Tells if the data can come from the OrbisGIS geocatalog.
-     * @return True if the data can come from the geocatalog, false otherwise.
-     */
-    public boolean isGeocatalog() {
-        return isGeocatalog;
-    }
-
-    /**
-     * Sets if the data can come from the geocatalog or not.
-     * @param isGeocatalog True if the data can come from the geocatalog, false otherwise.
-     */
-    public void setIsGeocatalog(boolean isGeocatalog) {
-        this.isGeocatalog = isGeocatalog;
-    }
-
-    /**
-     * Tells if the data can be a file.
-     * @return True if the data can be a file.
-     */
-    public boolean isFile() {
-        return isFile;
-    }
-
-    /**
-     * Sets if the data can be a file.
-     * @param isFile True if the data can be a file, false otherwise.
-     */
-    public void setIsFile(boolean isFile) {
-        this.isFile = isFile;
-    }
-
-    /**
-     * Tells if the data can come from an external database.
-     * @return True if the data can come from an external database.
-     */
-    public boolean isDataBase() {
-        return isDataBase;
-    }
-
-    /**
-     * Sets if the data can come from an external database or not.
-     * @param isDataBase True if the data can come from an external database, false otherwise.
-     */
-    public void setIsDataBase(boolean isDataBase) {
-        this.isDataBase = isDataBase;
-    }
-
-    /**
      * Adds a DataField as a 'child' of the DataStore.
      * @param dataField DataField to add.
      */
@@ -143,27 +91,5 @@ public class DataStore extends ComplexData{
      */
     public List<DataField> getListDataField(){
         return listDataField;
-    }
-
-    /**
-     * Build an URI usable in the wps service from the dataStore information.
-     * @param dataStoreType Type of the dataStore, can be DATASTORE_TYPE_GEOCATALOG or DATASTORE_TYPE_FILE.
-     * @param dataSource Body of the uri. If it is a file, dataSource is the file absolute path, if it is a geocatalog,
-     *                   dataSource is the table name.
-     * @param tableName Table name.
-     * @return
-     */
-    public static URI buildUriDataStore(String dataStoreType, String dataSource, String tableName){
-        String uri = "";
-        switch(dataStoreType){
-            case DATASTORE_TYPE_GEOCATALOG:
-                uri += "geocatalog:";
-                break;
-            case DATASTORE_TYPE_FILE:
-                uri += "file:";
-        }
-        uri += dataSource;
-        uri += "#"+tableName;
-        return URI.create(uri);
     }
 }

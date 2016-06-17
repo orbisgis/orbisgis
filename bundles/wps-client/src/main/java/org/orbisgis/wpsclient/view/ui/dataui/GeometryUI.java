@@ -20,6 +20,8 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import net.opengis.wps._2_0.DescriptionType;
+import net.opengis.wps._2_0.InputDescriptionType;
 import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
@@ -79,12 +81,12 @@ public class GeometryUI implements DataUI {
                 "saveDocumentText", "document"));
 
         GeometryData geometryData = null;
-        if(inputOrOutput instanceof Input){
-            geometryData = (GeometryData) ((Input)inputOrOutput).getDataDescription();
+        if(inputOrOutput instanceof InputDescriptionType){
+            geometryData = (GeometryData) ((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
         }
         //If the DescriptionType is an output, there is nothing to show, so exit
         if(geometryData == null){
-            return component;
+            return null;
         }
 
         component.add(jtf, "growx");
@@ -147,7 +149,7 @@ public class GeometryUI implements DataUI {
             URI uri = (URI) document.getProperty(URI_PROPERTY);
             dataMap.put(uri, name);
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(RawData.class).error(e.getMessage());
+            LoggerFactory.getLogger(GeometryUI.class).error(e.getMessage());
         }
     }
 }

@@ -20,19 +20,25 @@
 package org.orbisgis.wpsservice.controller.parser;
 
 import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyObject;
 import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
+import net.opengis.wps._2_0.ProcessDescriptionType;
+import net.opengis.wps._2_0.ProcessOffering;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute;
-import org.orbisgis.wpsservice.LocalWpsService;
+import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.*;
-import org.orbisgis.wpsservice.model.Process;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,13 +51,14 @@ import java.util.List;
 
 public class ParserController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ParserController.class);
+
     /** Parser list */
     private List<Parser> parserList;
-    private DefaultParser defaultParser;
     private ProcessParser processParser;
     private GroovyClassLoader groovyClassLoader;
 
-    public ParserController(LocalWpsService wpsService){
+    public ParserController(){
         //Instantiate the parser list
         parserList = new ArrayList<>();
         parserList.add(new LiteralDataParser());
@@ -62,29 +69,37 @@ public class ParserController {
         parserList.add(new EnumerationParser());
         parserList.add(new RawDataParser());
         parserList.add(new GeometryParser());
-        for(Parser parser : parserList){
-            parser.setLocalWpsService(wpsService);
-        }
-        defaultParser = new DefaultParser();
         processParser = new ProcessParser();
         groovyClassLoader = new GroovyShell().getClassLoader();
     }
 
-    public AbstractMap.SimpleEntry<Process, Class> parseProcess(String processPath){
-        //Retrieve the class corresponding to the Groovy script.
-        Class clazz;
-        File process = new File(processPath);
+    public Class getProcessClass(URI sourceFileURI){
         try {
+            File groovyFile = new File(sourceFileURI);
             groovyClassLoader.clearCache();
-            clazz = groovyClassLoader.parseClass(process);
-        } catch (IOException|GroovyRuntimeException e) {
-            LoggerFactory.getLogger(ParserController.class).error("Can not parse the process : '"+processPath+"'");
-            LoggerFactory.getLogger(ParserController.class).error(e.getMessage());
+            return groovyClassLoader.parseClass(groovyFile);
+        } catch (IOException e) {
+            LOGGER.error("Can not parse the process : '"+sourceFileURI+"'");
+        }
+        return null;
+    }
+
+    /**
+     * Parse a groovy file under a wps process and the groovy class representing the script.
+     * @param processPath String path of the file to parse.
+     * @return An entry with the process and the class object.
+     * @throws MalformedScriptException
+     */
+    public ProcessOffering parseProcess(String processPath) throws MalformedScriptException {
+        //Retrieve the class corresponding to the Groovy script.
+        File process = new File(processPath);
+        Class clazz = getProcessClass(process.toURI());
+        if(clazz == null){
             return null;
         }
         //Retrieve the list of input and output of the script.
-        List<Input> inputList = new ArrayList<>();
-        List<Output> outputList = new ArrayList<>();
+        List<InputDescriptionType> inputList = new ArrayList<>();
+        List<OutputDescriptionType> outputList = new ArrayList<>();
         Object scriptObject = null;
         try {
             scriptObject = clazz.newInstance();
@@ -111,9 +126,9 @@ public class ParserController {
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                             Input input = parser.parseInput(f, defaultValue, process.toURI());
-                            if(input.getInputs() != null){
-                                for(Input in : input.getInputs()){
+                             InputDescriptionType input = parser.parseInput(f, defaultValue, process.getAbsolutePath());
+                            if(input.getInput() != null && !input.getInput().isEmpty()){
+                                for(InputDescriptionType in : input.getInput()){
                                     inputList.add(in);
                                 }
                             }
@@ -124,7 +139,8 @@ public class ParserController {
                         }
                     }
                     if(!parsed){
-                        inputList.add(defaultParser.parseInput(f, defaultValue, process.toURI()));
+                        throw new MalformedScriptException(ParserController.class, a.toString(),
+                                "Unable to find the Parser fo the annotation "+a.toString());
                     }
                 }
                 if(a instanceof OutputAttribute){
@@ -132,9 +148,9 @@ public class ParserController {
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                            Output output = parser.parseOutput(f, process.toURI());
-                            if(output.getOutputs() != null){
-                                for(Output out : output.getOutputs()){
+                            OutputDescriptionType output = parser.parseOutput(f, process.getAbsolutePath());
+                            if(output.getOutput() != null && !output.getOutput().isEmpty()){
+                                for(OutputDescriptionType out : output.getOutput()){
                                     outputList.add(out);
                                 }
                             }
@@ -145,19 +161,20 @@ public class ParserController {
                         }
                     }
                     if(!parsed){
-                        outputList.add(defaultParser.parseOutput(f, process.toURI()));
+                        throw new MalformedScriptException(ParserController.class, a.toString(),
+                                "Unable to find the Parser fo the annotation "+a.toString());
                     }
                 }
             }
         }
         //Then parse the process
         try {
-            Process p = processParser.parseProcess(inputList,
+            ProcessOffering p = processParser.parseProcess(inputList,
                     outputList,
                     clazz.getDeclaredMethod("processing"),
                     process.toURI());
-            link(p);
-            return new AbstractMap.SimpleEntry<>(p, clazz);
+            link(p.getProcess());
+            return p;
         } catch (NoSuchMethodException e) {
             return null;
         }
@@ -166,27 +183,51 @@ public class ParserController {
     /**
      * Links the input and output with the 'parent'.
      * i.e. : The DataStore contains a list of DataField related.
-     * @param p
+     * @param p Process to link.
      */
-    private void link(Process p){
+    private void link(ProcessDescriptionType p){
         //Link the DataField with its DataStore
-        for(Input i : p.getInput()){
-            if(i.getDataDescription() instanceof DataField){
-                DataField dataField = (DataField)i.getDataDescription();
-                for(Input dataStore : p.getInput()){
-                    if(dataStore.getIdentifier().equals(dataField.getDataStoreIdentifier())){
-                        ((DataStore)dataStore.getDataDescription()).addDataField(dataField);
+        for(InputDescriptionType i : p.getInput()){
+            if(i.getDataDescription().getValue() instanceof DataField){
+                DataField dataField = (DataField)i.getDataDescription().getValue();
+                for(InputDescriptionType dataStore : p.getInput()){
+                    if(dataStore.getIdentifier().getValue().equals(dataField.getDataStoreIdentifier().toString())){
+                        ((DataStore)dataStore.getDataDescription().getValue()).addDataField(dataField);
                     }
                 }
             }
         }
         //Link the FieldValue with its DataField and its DataStore
-        for(Input i : p.getInput()){
-            if(i.getDataDescription() instanceof FieldValue){
-                FieldValue fieldValue = (FieldValue)i.getDataDescription();
-                for(Input input : p.getInput()){
-                    if(input.getIdentifier().equals(fieldValue.getDataFieldIdentifier())){
-                        DataField dataField = (DataField)input.getDataDescription();
+        for(InputDescriptionType i : p.getInput()){
+            if(i.getDataDescription().getValue() instanceof FieldValue){
+                FieldValue fieldValue = (FieldValue)i.getDataDescription().getValue();
+                for(InputDescriptionType input : p.getInput()){
+                    if(input.getIdentifier().getValue().equals(fieldValue.getDataFieldIdentifier().toString())){
+                        DataField dataField = (DataField)input.getDataDescription().getValue();
+                        dataField.addFieldValue(fieldValue);
+                        fieldValue.setDataStoredIdentifier(dataField.getDataStoreIdentifier());
+                    }
+                }
+            }
+        }
+        //Link the DataField with its DataStore
+        for(OutputDescriptionType o : p.getOutput()){
+            if(o.getDataDescription().getValue() instanceof DataField){
+                DataField dataField = (DataField)o.getDataDescription().getValue();
+                for(OutputDescriptionType dataStore : p.getOutput()){
+                    if(dataStore.getIdentifier().getValue().equals(dataField.getDataStoreIdentifier().toString())){
+                        ((DataStore)dataStore.getDataDescription().getValue()).addDataField(dataField);
+                    }
+                }
+            }
+        }
+        //Link the FieldValue with its DataField and its DataStore
+        for(OutputDescriptionType o : p.getOutput()){
+            if(o.getDataDescription().getValue() instanceof FieldValue){
+                FieldValue fieldValue = (FieldValue)o.getDataDescription().getValue();
+                for(OutputDescriptionType output : p.getOutput()){
+                    if(output.getIdentifier().getValue().equals(fieldValue.getDataFieldIdentifier().toString())){
+                        DataField dataField = (DataField)output.getDataDescription().getValue();
                         dataField.addFieldValue(fieldValue);
                         fieldValue.setDataStoredIdentifier(dataField.getDataStoreIdentifier());
                     }

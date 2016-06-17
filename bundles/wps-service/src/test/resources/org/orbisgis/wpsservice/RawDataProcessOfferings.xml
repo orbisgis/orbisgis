@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns4:ProcessOfferings xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:ns3="http://www.opengis.net/ows/2.0" xmlns:ns4="http://www.opengis.net/wps/2.0" xmlns:ns5="http://orbisgis.org">
+    <ns4:ProcessOffering jobControlOptions="async-execute" outputTransmission="value">
+        <ns4:Process xml:lang="fr">
+            <ns3:Title xml:lang="fr">Test du RawData</ns3:Title>
+            <ns3:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData RawData.</ns3:Abstract>
+            <ns3:Keywords>
+                <ns3:Keyword xml:lang="fr">test</ns3:Keyword>
+                <ns3:Keyword xml:lang="fr">scripte</ns3:Keyword>
+                <ns3:Keyword xml:lang="fr">wps</ns3:Keyword>
+            </ns3:Keywords>
+            <ns3:Identifier>orbisgis:test:rawdata</ns3:Identifier>
+            <ns3:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
+            <ns4:Input minOccurs="0" maxOccurs="2">
+                <ns3:Title xml:lang="fr">Entrée RawData</ns3:Title>
+                <ns3:Abstract xml:lang="fr">Une entrée RawData.</ns3:Abstract>
+                <ns3:Keywords>
+                    <ns3:Keyword xml:lang="fr">entrée</ns3:Keyword>
+                </ns3:Keywords>
+                <ns3:Identifier>orbisgis:test:rawdata:input</ns3:Identifier>
+                <ns3:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
+                <ns5:RawData isFile="true" isDirectory="false" multiSelection="false">
+                    <ns4:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                </ns5:RawData>
+            </ns4:Input>
+            <ns4:Output>
+                <ns3:Title xml:lang="fr">Sortie RawData</ns3:Title>
+                <ns3:Abstract xml:lang="fr">Une sortie RawData.</ns3:Abstract>
+                <ns3:Keywords>
+                    <ns3:Keyword xml:lang="fr">sortie</ns3:Keyword>
+                </ns3:Keywords>
+                <ns3:Identifier>orbisgis:test:rawdata:output</ns3:Identifier>
+                <ns3:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
+                <ns5:RawData isFile="false" isDirectory="true" multiSelection="true">
+                    <ns4:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                </ns5:RawData>
+            </ns4:Output>
+        </ns4:Process>
+    </ns4:ProcessOffering>
+</ns4:ProcessOfferings>

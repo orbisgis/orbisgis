@@ -19,41 +19,40 @@
 
 package org.orbisgis.wpsservice.controller.execution;
 
-import org.orbisgis.wpsservice.LocalWpsService;
-import org.orbisgis.wpsservice.LocalWpsServiceImplementation;
-import org.orbisgis.wpsservice.model.DataDescription;
-import org.orbisgis.wpsservice.model.DescriptionType;
+import net.opengis.wps._2_0.DataDescriptionType;
+import net.opengis.wps._2_0.DescriptionType;
 
 import java.net.URI;
 import java.util.Map;
 
 /**
  * Interface to define the DataProcessing classes.
+ * The method contained by this interface will be called before and after the process to adapt the input and
+ * output data to the execution
  *
  * @author Sylvain PALOMINOS
  */
 public interface DataProcessing {
 
-    void setLocalWpsService(LocalWpsService wpsService);
-    Class<? extends DataDescription> getDataClass();
+    Class<? extends DataDescriptionType> getDataClass();
 
     /**
      * Preprocess the input/output to adapt it to the process (i.e. convert a File into a table name).
-     * @param inputOrOutput The DescriptionType representing the input or output.
+     * @param input The DescriptionType representing the input or output.
      * @param dataMap DataMap containing the input or output values.
      * @param pel ProcessExecutionListener to log the preprocessing (can be null).
      * @return Return a stash map containing information for post processing.
      */
-    Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap,
+    Map<URI, Object> preProcessData(DescriptionType input, Map<URI, Object> dataMap,
                                     ProcessExecutionListener pel);
 
     /**
      * Postprocess the input/output to adapt it to the process (i.e. convert a File into a table name).
-     * @param inputOrOutput The DescriptionType representing the input or output.
+     * @param input The DescriptionType representing the input or output.
      * @param dataMap DataMap containing the input or output values.
      * @param stash DataMap containing the information coming from the preprocessing.
      * @param pel ProcessExecutionListener to log the postprocessing (can be null).
      */
-    void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
+    void postProcessData(DescriptionType input, Map<URI, Object> dataMap, Map<URI, Object> stash,
                          ProcessExecutionListener pel);
 }

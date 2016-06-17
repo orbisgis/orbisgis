@@ -29,35 +29,22 @@
 
 package org.orbisgis.tablegui.impl;
 
-import org.h2gis.utilities.JDBCUtilities;
-import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.wpsservice.model.DataStore;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.Process;
-import org.orbisgis.wpsservice.WpsService;
-import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
+import org.orbisgis.wpsservice.WpsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.net.URI;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 
 /**
  * Remove selected rows in the DataSource.
@@ -77,13 +64,13 @@ public class ActionRemoveRow extends AbstractAction {
     private static final I18n I18N = I18nFactory.getI18n(ActionRemoveRow.class);
     private TableEditor tableEditor;
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionRemoveRow.class);
-    private WpsService wpsService;
+    private WpsServer wpsServer;
 
     /**
      * Constructor
      * @param editable Table editable instance
      */
-    public ActionRemoveRow(TableEditableElement editable, TableEditor tableEditor, WpsService wpsService) {
+    public ActionRemoveRow(TableEditableElement editable, TableEditor tableEditor, WpsServer wpsServer) {
         super(I18N.tr("Delete selected rows"), TableEditorIcon.getIcon("delete_row"));
         this.tableEditor = tableEditor;
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
@@ -91,7 +78,7 @@ public class ActionRemoveRow extends AbstractAction {
         this.editable = editable;
         updateEnabledState();
         editable.addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class, this, "onEditableUpdate",""));
-        this.wpsService = wpsService;
+        this.wpsServer = wpsServer;
     }
 
     /**
@@ -115,8 +102,9 @@ public class ActionRemoveRow extends AbstractAction {
                 I18N.tr("Delete selected rows"),
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
             if(response == JOptionPane.YES_OPTION) {
-                if(wpsService != null){
-                    Process p = null;
+                if(wpsServer != null){
+                    /** Would be updates later once the WPS client will be fully updated **/
+                    /*Process p = null;
                     for(ProcessIdentifier pi : wpsService.getCapabilities()){
                         if(pi.getProcess().getTitle().equals(PROCESS_TITLE)){
                             p = pi.getProcess();
@@ -140,7 +128,7 @@ public class ActionRemoveRow extends AbstractAction {
                             Map<URI, Object> dataMap = new HashMap<>();
                             for (Input input : p.getInput()) {
                                 if (input.getTitle().equals(INPUT_TABLE)) {
-                                    URI uri = DataStore.buildUriDataStore(DataStore.DATASTORE_TYPE_GEOCATALOG,
+                                    URI uri = DataStoreOld.buildUriDataStore(DataStoreOld.DATASTORE_TYPE_GEOCATALOG,
                                             editable.getTableReference(),
                                             editable.getTableReference());
                                     dataMap.put(input.getIdentifier(), uri);
@@ -166,7 +154,7 @@ public class ActionRemoveRow extends AbstractAction {
                     }
                     else{
                         LOGGER.error(I18N.tr("Unable to get the process '{0}' from the WpsService.", PROCESS_TITLE));
-                    }
+                    }*/
                 }
             }
         }

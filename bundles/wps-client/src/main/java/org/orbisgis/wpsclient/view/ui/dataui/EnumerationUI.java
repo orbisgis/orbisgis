@@ -20,10 +20,12 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import net.opengis.wps._2_0.DescriptionType;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsservice.model.Enumeration;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.beans.EventHandler;
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
 
@@ -70,14 +73,14 @@ public class EnumerationUI implements DataUI{
         //Get the enumeration object
         Enumeration enumeration = null;
         boolean isOptional = false;
-        if(inputOrOutput instanceof Input){
-            enumeration = (Enumeration)((Input)inputOrOutput).getDataDescription();
-            if(((Input)inputOrOutput).getMinOccurs() == 0){
+        if(inputOrOutput instanceof InputDescriptionType){
+            enumeration = (Enumeration)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            if(((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"))){
                 isOptional = true;
             }
         }
-        else if(inputOrOutput instanceof Output){
-            enumeration = (Enumeration)((Output)inputOrOutput).getDataDescription();
+        else if(inputOrOutput instanceof OutputDescriptionType){
+            return null;
         }
 
         if(enumeration == null){
@@ -85,7 +88,8 @@ public class EnumerationUI implements DataUI{
         }
         //Build the JList containing the data
         DefaultListModel<ContainerItem<String>> model = new DefaultListModel<>();
-        if(enumeration.getValuesNames().length > 0 &&
+        if(enumeration.getValuesNames() != null &&
+                enumeration.getValuesNames().length > 0 &&
                 enumeration.getValuesNames().length == enumeration.getValues().length){
             for(int i=0; i<enumeration.getValues().length; i++){
                 model.addElement(new ContainerItem<>(enumeration.getValues()[i], enumeration.getValuesNames()[i]));
@@ -106,12 +110,17 @@ public class EnumerationUI implements DataUI{
         //Select the default values
         List<Integer> selectedIndex = new ArrayList<>();
         if(!isOptional) {
-            for (String defaultValue : enumeration.getDefaultValues()) {
-                for(int i=0; i<model.getSize(); i++){
-                    if(model.get(i).getKey().equals(defaultValue)){
-                        selectedIndex.add(i);
+            if(enumeration.getDefaultValues() != null) {
+                for (String defaultValue : enumeration.getDefaultValues()) {
+                    for (int i = 0; i < model.getSize(); i++) {
+                        if (model.get(i).getKey().equals(defaultValue)) {
+                            selectedIndex.add(i);
+                        }
                     }
                 }
+            }
+            else{
+                selectedIndex.add(0);
             }
         }
         int[] array = new int[selectedIndex.size()];
@@ -130,20 +139,20 @@ public class EnumerationUI implements DataUI{
         JScrollPane listScroller = new JScrollPane(list);
         panel.add(listScroller, "growx, wrap");
         //Sets the List properties
-        list.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        list.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
         list.putClientProperty(ENUMERATION_PROPERTY, enumeration);
         list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
         list.putClientProperty(IS_MULTISELECTION_PROPERTY, enumeration.isMultiSelection());
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
-        list.setToolTipText(inputOrOutput.getResume());
+        list.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
 
         //case of the editable value
         if(enumeration.isEditable()){
             //Sets the text field
             JTextField textField = new JTextField();
             textField.getDocument().putProperty(DATA_MAP_PROPERTY, dataMap);
-            textField.getDocument().putProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+            textField.getDocument().putProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
             textField.getDocument().putProperty(ENUMERATION_PROPERTY, enumeration);
             textField.getDocument().putProperty(LIST_PROPERTY, list);
             textField.getDocument().putProperty(IS_MULTISELECTION_PROPERTY, enumeration.isMultiSelection());
@@ -165,24 +174,24 @@ public class EnumerationUI implements DataUI{
         Map<URI, Object> map = new HashMap<>();
         Enumeration enumeration = null;
         boolean isOptional = false;
-        if(inputOrOutput instanceof Input){
-            enumeration = (Enumeration)((Input)inputOrOutput).getDataDescription();
-            isOptional = ((Input)inputOrOutput).getMinOccurs()==0;
+        if(inputOrOutput instanceof InputDescriptionType){
+            enumeration = (Enumeration)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
         }
-        else if(inputOrOutput instanceof Output){
-            enumeration = (Enumeration)((Output)inputOrOutput).getDataDescription();
+        else if(inputOrOutput instanceof OutputDescriptionType){
+            enumeration = (Enumeration)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
         }
         if(!isOptional) {
-            if(enumeration.getDefaultValues().length != 0) {
+            if(enumeration.getDefaultValues() != null && enumeration.getDefaultValues().length != 0) {
                 if (enumeration.isMultiSelection()) {
-                    map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues());
+                    map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getDefaultValues());
                 } else {
-                    map.put(inputOrOutput.getIdentifier(), enumeration.getDefaultValues()[0]);
+                    map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getDefaultValues()[0]);
                 }
             }
             else{
                 if(enumeration.getValues().length != 0) {
-                    map.put(inputOrOutput.getIdentifier(), enumeration.getValues()[0]);
+                    map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getValues()[0]);
                 }
             }
         }
@@ -277,7 +286,7 @@ public class EnumerationUI implements DataUI{
             }
             dataMap.put(uri, listValues);
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(DataStore.class).error(e.getMessage());
+            LoggerFactory.getLogger(EnumerationUI.class).error(e.getMessage());
         }
     }
 }

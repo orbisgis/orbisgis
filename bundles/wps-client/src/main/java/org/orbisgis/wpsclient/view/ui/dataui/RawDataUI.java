@@ -20,13 +20,13 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.miginfocom.swing.MigLayout;
+import net.opengis.wps._2_0.DescriptionType;
+import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenPanel;
 import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.wpsservice.model.DescriptionType;
-import org.orbisgis.wpsservice.model.Input;
-import org.orbisgis.wpsservice.model.Output;
 import org.orbisgis.wpsservice.model.RawData;
 import org.slf4j.LoggerFactory;
 
@@ -81,20 +81,19 @@ public class RawDataUI implements DataUI {
         JTextField jtf = new JTextField();
         //"Save" the CA inside the JTextField
         jtf.getDocument().putProperty(DATA_MAP_PROPERTY, dataMap);
-        jtf.getDocument().putProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        jtf.getDocument().putProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
         //add the listener for the text changes in the JTextField
         jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this,
                 "saveDocumentText", "document"));
 
         RawData rawData = null;
         String action = null;
-        if(inputOrOutput instanceof Input){
-            rawData = (RawData) ((Input)inputOrOutput).getDataDescription();
+        if(inputOrOutput instanceof InputDescriptionType){
+            rawData = (RawData) ((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
             action = OpenPanel.ACTION_OPEN;
         }
-        else if(inputOrOutput instanceof Output){
-            rawData = (RawData) ((Output)inputOrOutput).getDataDescription();
-            action = OpenPanel.ACTION_SAVE;
+        else if(inputOrOutput instanceof OutputDescriptionType){
+            return null;
         }
         if(rawData == null){
             return component;
@@ -228,7 +227,7 @@ public class RawDataUI implements DataUI {
                 dataMap.put(uri, name);
             }
         } catch (BadLocationException e) {
-            LoggerFactory.getLogger(RawData.class).error(e.getMessage());
+            LoggerFactory.getLogger(RawDataUI.class).error(e.getMessage());
         }
     }
 }

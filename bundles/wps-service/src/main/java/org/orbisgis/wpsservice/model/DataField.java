@@ -19,41 +19,66 @@
 
 package org.orbisgis.wpsservice.model;
 
+import net.opengis.wps._2_0.ComplexDataType;
+import net.opengis.wps._2_0.Format;
+
+import javax.xml.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Sylvain PALOMINOS
  **/
 
-public class DataField extends ComplexData{
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "DataField", propOrder = {"dataStoreIdentifier", "fieldTypeList",
+        "excludedTypeList", "listFieldValue", "isMultipleField"})
+public class DataField extends ComplexDataType {
 
     /** Identifier of the parent DataStore */
+    @XmlElement(name = "DataStoreId", namespace = "http://orbisgis.org")
     private URI dataStoreIdentifier;
     /** Indicates if the DataField should be reloaded because of a modification of the parent DataStore.*/
+    @XmlTransient
     private boolean isSourceModified = true;
     /** List of type accepted for the field.*/
+    @XmlElement(name = "FieldType", namespace = "http://orbisgis.org")
     private List<DataType> fieldTypeList;
     /** List of type excluded for the field.*/
+    @XmlElement(name = "ExcludedType", namespace = "http://orbisgis.org")
     private List<DataType> excludedTypeList;
     /** List of FieldValue liked to the DataField */
+    @XmlElement(name = "FieldValue", namespace = "http://orbisgis.org")
     private List<FieldValue> listFieldValue;
     /** Indicates if the use can choose more than one field*/
+    @XmlAttribute(name = "isMultipleField")
     private boolean isMultipleField = false;
 
     /**
      * Main constructor.
-     * @param format Format of the data accepted.
+     * @param formatList Formats of the data accepted.
      * @param fieldTypeList List of the type accepted for this field.
      * @param dataStoreURI Identifier of the parent dataStore.
      * @throws MalformedScriptException
      */
-    public DataField(Format format, List<DataType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
-        super(format);
+    public DataField(List<Format> formatList, List<DataType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
+        format = formatList;
         listFieldValue = new ArrayList<>();
         this.fieldTypeList = fieldTypeList;
         this.dataStoreIdentifier = dataStoreURI;
+    }
+
+    /**
+     * Protected empty constructor used in the ObjectFactory class for JAXB.
+     */
+    protected DataField(){
+        super();
+        fieldTypeList = null;
+        excludedTypeList = null;
+        listFieldValue = null;
+        dataStoreIdentifier = null;
     }
 
     /**
@@ -78,8 +103,10 @@ public class DataField extends ComplexData{
      */
     public void setSourceModified(boolean isSourceModified) {
         this.isSourceModified = isSourceModified;
-        for(FieldValue fieldValue : listFieldValue){
-            fieldValue.setDataStoreModified(isSourceModified);
+        if(listFieldValue != null) {
+            for (FieldValue fieldValue : listFieldValue) {
+                fieldValue.setDataStoreModified(isSourceModified);
+            }
         }
     }
 
@@ -141,7 +168,7 @@ public class DataField extends ComplexData{
 
     /**
      * Sets if the user can select more than one field or not.
-     * @@param True if the user can select more than one field, false otherwise.
+     * @param multipleField True if the user can select more than one field, false otherwise.
      */
     public void setMultipleField(boolean multipleField) {
         isMultipleField = multipleField;

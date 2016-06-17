@@ -33,7 +33,6 @@ import java.net.URISyntaxException;
  * @author Sylvain PALOMINOS
  */
 
-
 public enum DataType {
     //LiteralData types
     NUMBER("number"),
