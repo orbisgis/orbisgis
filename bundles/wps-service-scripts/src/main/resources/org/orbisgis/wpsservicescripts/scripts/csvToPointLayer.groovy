@@ -1,4 +1,4 @@
-package org.orbisgis.wpsservice.scripts
+package org.orbisgis.wpsservicescripts.scripts
 
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput

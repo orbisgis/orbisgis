@@ -23,7 +23,6 @@ import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
-import org.apache.commons.io.IOUtils;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -35,7 +34,6 @@ import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.model.DataType;
 import org.orbisgis.wpsservice.utils.ProcessTranslator;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -132,7 +130,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
         processManager = new ProcessManager(dataSourceService, this);
         dataProcessingManager = new DataProcessingManager();
         jobMap = new HashMap<>();
-        setScriptFolder();
         loadPreviousState();
         initDataBaseLink();
     }
@@ -206,66 +203,6 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     /**
-     * Sets all the default OrbisGIS WPS script into the script folder of the .OrbisGIS folder.
-     */
-    private void setScriptFolder(){
-        if(coreWorkspace != null) {
-            //Sets the WPS script folder
-            File wpsScriptFolder = new File(coreWorkspace.getApplicationFolder(), WPS_SCRIPT_FOLDER);
-            //Empty the script folder or create it
-            if (wpsScriptFolder.exists()) {
-                if (wpsScriptFolder.listFiles() != null) {
-                    List<File> toDelete = Arrays.asList(wpsScriptFolder.listFiles());
-                    for (File f : toDelete) {
-                        f.delete();
-                    }
-                }
-            } else {
-                if (!wpsScriptFolder.mkdir()) {
-                    LOGGER.warn("Unable to find or create a script folder.\nNo basic script will be available.");
-                }
-            }
-            if (wpsScriptFolder.exists() && wpsScriptFolder.isDirectory()) {
-                try {
-                    //Retrieve all the scripts url
-                    String folderPath = LocalWpsServiceImplementation.class.getResource("scripts").getFile();
-                    Enumeration<URL> enumUrl = FrameworkUtil.getBundle(LocalWpsServiceImplementation.class).findEntries(folderPath, "*", false);
-                    //For each url
-                    while (enumUrl.hasMoreElements()) {
-                        URL scriptUrl = enumUrl.nextElement();
-                        String scriptPath = scriptUrl.getFile();
-                        //Test if it's a groovy file
-                        if (scriptPath.endsWith("." + GROOVY_EXTENSION)) {
-                            //If the script is already in the .OrbisGIS folder, remove it.
-                            for (File existingFile : wpsScriptFolder.listFiles()) {
-                                if (existingFile.getName().endsWith(scriptPath) && existingFile.delete()) {
-                                    LOGGER.warn("Replacing script " + existingFile.getName() + " by the default one");
-                                }
-                            }
-                            //Copy the script into the .OrbisGIS folder.
-                            OutputStream out = new FileOutputStream(
-                                    new File(wpsScriptFolder.getAbsolutePath(),
-                                            new File(scriptPath).getName()));
-                            InputStream in = scriptUrl.openStream();
-                            IOUtils.copy(in, out);
-                            out.close();
-                            in.close();
-                        }
-                    }
-                    addLocalSource(wpsScriptFolder, "orbisgis", true);
-                } catch (IOException e) {
-                    LOGGER.warn("Unable to copy the scripts. \n" +
-                            "No basic script will be available. \n" +
-                            "Error : " + e.getMessage());
-                }
-            }
-        }
-        else{
-            LOGGER.warn("Warning, no CoreWorkspace found.");
-        }
-    }
-
-    /**
      * Reload the script loaded in the previous session.
      */
     private void loadPreviousState(){
@@ -285,7 +222,8 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 if(prop != null && !prop.toString().isEmpty()){
                     String str = prop.toString();
                     for(String s : str.split(";")){
-                        addLocalSource(new File(URI.create(s)), null, false);
+                        File f = new File(URI.create(s));
+                        addLocalSource(f, null, false, new File(f.getParent()).getName());
                     }
                 }
             }
@@ -359,13 +297,15 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
     }
 
     @Override
-    public void addLocalSource(File f, String iconName, boolean isDefaultScript){
+    public List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isDefaultScript, String nodePath){
+        List<ProcessIdentifier> piList = new ArrayList<>();
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
-            processManager.addScript(f.toURI(), iconName, !isDefaultScript);
+            piList.add(processManager.addScript(f.toURI(), iconName, !isDefaultScript, nodePath));
         }
         else if(f.isDirectory()){
-            processManager.addLocalSource(f.toURI(), iconName);
+            piList.addAll(processManager.addLocalSource(f.toURI(), iconName));
         }
+        return piList;
     }
 
     @Override
@@ -386,7 +326,7 @@ public class LocalWpsServiceImplementation implements LocalWpsService, DatabaseP
                 return false;
             }
             processManager.removeProcess(pi.getProcessDescriptionType());
-            processManager.addScript(pi.getSourceFileURI(), pi.getCategory(), pi.isRemovable());
+            processManager.addScript(pi.getSourceFileURI(), pi.getCategory(), pi.isRemovable(), pi.getNodePath());
 
             return (processManager.getProcess(pi.getProcessDescriptionType().getIdentifier()) != null);
         }

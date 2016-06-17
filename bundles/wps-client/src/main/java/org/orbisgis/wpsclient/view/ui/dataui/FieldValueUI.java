@@ -25,6 +25,7 @@ import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
 
@@ -69,10 +70,10 @@ public class FieldValueUI implements DataUI{
     private static final String LAYERUI_PROPERTY = "LAYERUI_PROPERTY";
 
     /** WpsClient using the generated UI. */
-    private WpsClient wpsClient;
+    private WpsClientImpl wpsClient;
 
     @Override
-    public void setWpsClient(WpsClient wpsClient){
+    public void setWpsClient(WpsClientImpl wpsClient){
         this.wpsClient = wpsClient;
     }
 
@@ -227,7 +228,7 @@ public class FieldValueUI implements DataUI{
                 if(tableName != null && fieldName != null) {
                     layerUI.start();
                     //First retrieve the good field name with the good case.
-                    List<String> fieldList = wpsClient.getWpsService().getTableFieldList(tableName,
+                    List<String> fieldList = wpsClient.getLocalWpsService().getTableFieldList(tableName,
                             new ArrayList<DataType>(), new ArrayList<DataType>());
                     for(String field : fieldList){
                         if(field.equalsIgnoreCase(fieldName)){
@@ -237,7 +238,7 @@ public class FieldValueUI implements DataUI{
                     //Retrieve the rowSet reading the table from the wpsService.
                     DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
                     model.removeAllElements();
-                    List<String> listFields = wpsClient.getWpsService().getFieldValueList(tableName, fieldName);
+                    List<String> listFields = wpsClient.getLocalWpsService().getFieldValueList(tableName, fieldName);
                     Collections.sort(listFields);
                     for (String field : listFields) {
                         model.addElement(field);

@@ -1,6 +1,6 @@
 //TODO : header
 
-package org.orbisgis.wpsservice.scripts
+package org.orbisgis.wpsservicescripts.scripts
 
 import org.orbisgis.wpsgroovyapi.attributes.LiteralDataAttribute
 import org.orbisgis.wpsgroovyapi.attributes.LiteralDataDomainAttribute

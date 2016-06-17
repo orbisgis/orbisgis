@@ -20,7 +20,7 @@
 package org.orbisgis.wpsclient.view.ui.dataui;
 
 import net.opengis.wps._2_0.DescriptionType;
-import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 
 import javax.swing.*;
 import java.net.URI;
@@ -61,5 +61,5 @@ public interface DataUI {
      * Sets the ToolBox associated to the DataUI.
      * @param wpsClient ToolBox
      */
-    void setWpsClient(WpsClient wpsClient);
+    void setWpsClient(WpsClientImpl wpsClient);
 }

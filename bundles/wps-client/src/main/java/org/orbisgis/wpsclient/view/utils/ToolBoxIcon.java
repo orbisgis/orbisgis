@@ -23,6 +23,7 @@ import org.orbisgis.sif.icons.BaseIcon;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import java.io.File;
 import java.awt.*;
 
 /**
@@ -60,10 +61,18 @@ public class ToolBoxIcon {
     }
     /**
      * Retrieve icon by its name
-     * @param iconName The icon name, without extension. All icons are stored in the png format.
+     * @param iconName The icon name, without extension or icon file path. All icons are stored in the png format.
      * @return The ImageIcon requested, or an ImageIcon corresponding to a Missing Resource
      */
     public static ImageIcon getIcon(String iconName) {
-        return iconManager.getIcon(ToolBoxIcon.class, iconName);
+        //If the iconName is a file path, load it
+        File f = new File(iconName);
+        if(f.exists() && f.isFile()){
+            return new ImageIcon(iconName);
+        }
+        //It the iconName is the icon name, load it
+        else {
+            return iconManager.getIcon(ToolBoxIcon.class, iconName);
+        }
     }
 }

@@ -33,18 +33,20 @@ public class ProcessIdentifier {
     private ProcessOffering processOffering;
     private URI sourceFileURI;
     private URI parent;
-    private String category;
+    private String[] category;
     private boolean isRemovable;
+    private String nodePath;
 
-    public ProcessIdentifier(ProcessOffering processOffering, URI sourceFileURI, URI parent){
+    public ProcessIdentifier(ProcessOffering processOffering, URI sourceFileURI, URI parent, String nodePath){
         this.processOffering = processOffering;
         this.sourceFileURI = sourceFileURI;
         this.parent = parent;
         this.category = null;
         this.isRemovable = false;
+        this.nodePath = nodePath;
     }
 
-    public void setCategory(String category){
+    public void setCategory(String[] category){
         this.category = category;
     }
 
@@ -68,7 +70,7 @@ public class ProcessIdentifier {
         return parent;
     }
 
-    public String getCategory(){
+    public String[] getCategory(){
         return category;
     }
 
@@ -78,5 +80,10 @@ public class ProcessIdentifier {
 
     public ProcessOffering getProcessOffering(){
         return processOffering;
+    }
+
+    public String getNodePath(){
+        return nodePath;
+
     }
 }
