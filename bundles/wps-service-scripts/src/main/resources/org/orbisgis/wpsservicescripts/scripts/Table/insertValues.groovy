@@ -1,12 +1,14 @@
-//TODO : header
-
-package org.orbisgis.wpsservicescripts.scripts
+package org.orbisgis.wpsservice.scripts
 
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.EnumerationInput
+import org.orbisgis.wpsgroovyapi.input.FieldValueInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
+import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
+import org.orbisgis.wpsservice.model.LiteralData
 
 /********************/
 /** Process method **/
@@ -23,9 +25,9 @@ import org.orbisgis.wpsgroovyapi.process.Process
  *
  * @author Sylvain PALOMINOS
  */
-@Process(title = "InsertInto",
+@Process(title = "Insert values",
         resume = "Insert values into a table.",
-        keywords = ["OrbisGIS","table_editor"])
+        keywords = "Table,Insert,Values")
 def processing() {
     //Build the query
     String queryBase = "INSERT INTO " + tableName;
@@ -66,7 +68,8 @@ def processing() {
 /** This DataStore is the input data source table. */
 @DataStoreInput(
         title = "Table",
-        resume = "The table to edit")
+        resume = "The table to edit",
+        extensions = ["geocatalog"])
 String tableName
 
 /**********************/
@@ -77,7 +80,7 @@ String tableName
 @DataFieldInput(
         title = "Fields",
         resume = "The field concerned by the value insertion",
-        dataStore = "Table",
+        dataStore = "tableName",
         isMultipleField = true,
         minOccurs = 0)
 String fields

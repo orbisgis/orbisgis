@@ -1,12 +1,14 @@
-//TODO : header
-
-package org.orbisgis.wpsservicescripts.scripts
+package org.orbisgis.wpsservice.scripts
 
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.FieldValueInput
+import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
+import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
+import org.orbisgis.wpsservice.model.LiteralData
 
 /********************/
 /** Process method **/
@@ -21,9 +23,9 @@ import org.orbisgis.wpsgroovyapi.process.Process
  *
  * @author Sylvain PALOMINOS
  */
-@Process(title = "RemoveRow",
-        resume = "Remove rows from a table.",
-        keywords = ["OrbisGIS","table_editor"])
+@Process(title = "Delete rows",
+        resume = "Delete rows from a table.",
+        keywords = "Table,Delete")
 def processing() {
     //Build the start of the query
     for (String s : pkToRemove) {
@@ -31,7 +33,7 @@ def processing() {
         //Execute the query
         sql.execute(query)
     }
-    literalOutput = "Remove done."
+    literalOutput = "Delete done."
 }
 
 
@@ -42,7 +44,8 @@ def processing() {
 /** This DataStore is the input data source table. */
 @DataStoreInput(
         title = "Table",
-        resume = "The table to edit")
+        resume = "The table to edit",
+        extensions = ["geocatalog"])
 String tableName
 
 /**********************/
@@ -53,14 +56,14 @@ String tableName
 @DataFieldInput(
         title = "PKField",
         resume = "The primary key field",
-        dataStore = "Table")
+        dataStore = "tableName")
 String pkField
 
 /** List of primary keys to remove from the table. */
 @FieldValueInput(
         title = "PKArray",
         resume = "The array of the primary keys of the rows to remove",
-        dataField = "PKField",
+        dataField = "pkField",
         multiSelection = true)
 String[] pkToRemove
 
