@@ -94,12 +94,12 @@ def processing() {
 
 @DataStoreInput(title="Input building",
         resume="The input building data source",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String buildingDataInput
 
 @DataStoreInput(title="Input river",
         resume="The input river data source",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String riverDataInput
 
 /** INPUT Parameters **/
@@ -177,5 +177,5 @@ String dataStoreOutputName
 /************/
 @DataStoreOutput(title="Output Data",
         resume="The output data source",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String dataStoreOutput

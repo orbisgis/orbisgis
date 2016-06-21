@@ -58,7 +58,7 @@ def processing() {
 /** This DataStore is the input data source which conatins all the informations about the municipalities. */
 @DataStoreInput(title="Input municipality data",
         resume="The input data source containing the municipalities, their geometry, their region and their population.",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String regionDataInput
 
 /**********************/
@@ -108,7 +108,7 @@ String dataStoreOutputFilePath
 /** The spatial data output containing the region, its geometry and the population. */
 @DataStoreOutput(title="Spatial output data",
         resume="The spatial output data, containing the region, its geometry and the population.",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String dataStoreOutput
 
 /** The CSV output containing only the region and the population. */

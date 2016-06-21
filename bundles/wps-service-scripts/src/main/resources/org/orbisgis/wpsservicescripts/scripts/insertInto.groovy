@@ -78,7 +78,7 @@ String tableName
         title = "Fields",
         resume = "The field concerned by the value insertion",
         dataStoreTitle = "Table",
-        isMultipleField = true,
+        multiSelection = true,
         minOccurs = 0)
 String fields
 
