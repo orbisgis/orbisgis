@@ -611,13 +611,16 @@ public class ToolBoxPanel extends JPanel {
         popupGlobalActions = new ActionCommands();
         popupGlobalActions.addAction(addSource);
         popupGlobalActions.addAction(addFile);
+        popupGlobalActions.addAction(refresh_source);
 
         popupOrbisGISLeafActions = new ActionCommands();
         popupOrbisGISLeafActions.addAction(runScript);
+        popupOrbisGISLeafActions.addAction(refresh_source);
 
 
         popupLeafActions = new ActionCommands();
         popupLeafActions.addAction(runScript);
+        popupLeafActions.addAction(refresh_source);
         popupLeafActions.addAction(remove);
 
         popupNodeActions = new ActionCommands();
@@ -629,6 +632,7 @@ public class ToolBoxPanel extends JPanel {
         popupOrbisGISNodeActions = new ActionCommands();
         popupOrbisGISNodeActions.addAction(addSource);
         popupOrbisGISNodeActions.addAction(addFile);
+        popupOrbisGISNodeActions.addAction(refresh_source);
     }
 
     /**

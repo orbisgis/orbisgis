@@ -55,6 +55,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.beans.EventHandler;
 import java.net.URI;
 import java.util.ArrayList;
@@ -122,8 +123,10 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         dockingActions.addAction(
                 new DefaultAction("ACTION_REFRESH",
                         "ACTION_REFRESH",
+                        "Refresh the selected node",
                         ToolBoxIcon.getIcon("refresh"),
-                        EventHandler.create(ActionListener.class, this, "refreshAvailableScripts"))
+                        EventHandler.create(ActionListener.class, this, "refreshAvailableScripts"),
+                        null)
         );
 
         openEditorList = new ArrayList<>();
