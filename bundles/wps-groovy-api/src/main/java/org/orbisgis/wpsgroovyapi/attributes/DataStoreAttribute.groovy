@@ -37,21 +37,29 @@ import java.lang.annotation.RetentionPolicy
  * The DataStore complex data represents any data source (database, file ...).
  *
  * The following fields can be defined (optional) :
- *  - isSpatial : boolean
- *      Indicates if the data represented is spatial or not.
+ * - dataStoreTypes : String[]
+ *      List of field type that should be contained by the DataStore.
+ * - excludedTypes : String[]
+ *      List of field type forbidden for the DataSTore. If the DataStore contains the type, it won't be available.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface DataStoreAttribute {
 
-    /** Indicates if the data represented is spatial or not.*/
-    boolean isSpatial() default false
+    /** List of field type that should be contained by the DataStore. The type can be "GEOMETRY" */
+    String[] dataStoreTypes() default []
+
+    /** List of field type forbidden for the DataSTore. If the DataStore contains the type, it won't be available.
+     *  The type can be "GEOMETRY"
+     */
+    String[] excludedTypes() default []
 
 
 
     /********************/
     /** default values **/
     /********************/
-    public static final boolean defaultIsSpatial = false
+    public static final String[] defaultDataStoreType = []
+    public static final String[] defaultExcludedType = []
 }

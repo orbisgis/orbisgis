@@ -68,21 +68,21 @@ String regionDataInput
 /** Geometric field of the municipalities. */
 @DataFieldInput(title="Municipality geometric field",
         resume="The geometric field of the municipalities",
-        dataStore="Input municipality data",
+        dataStoreTitle="Input municipality data",
         fieldTypes = ["GEOMETRY"])
 String regionGeometricField
 
 /** Region field which will be used to group the municipalities. */
 @DataFieldInput(title="Region field",
         resume="The field which contains the region used to group the municipalities.",
-        dataStore="Input municipality data",
+        dataStoreTitle="Input municipality data",
         fieldTypes = ["STRING"])
 String regionField
 
 /** Population field. */
 @DataFieldInput(title="Population field",
         resume="The population field",
-        dataStore="Input municipality data",
+        dataStoreTitle="Input municipality data",
         fieldTypes = ["NUMBER"])
 String populationField
 

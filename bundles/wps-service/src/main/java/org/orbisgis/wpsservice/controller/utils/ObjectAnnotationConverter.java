@@ -225,7 +225,7 @@ public class ObjectAnnotationConverter {
             literalDataDomain.setValuesReference((ValuesReference) value);
         }
         ValueType defaultValue = new ValueType();
-        defaultValue.setValue(literalDataDomainAttribute.selectedValues());
+        defaultValue.setValue(literalDataDomainAttribute.defaultValue());
         literalDataDomain.setDefaultValue(defaultValue);
 
         return literalDataDomain;
@@ -347,19 +347,21 @@ public class ObjectAnnotationConverter {
     public static void annotationToObject(ProcessAttribute processAttribute, ProcessOffering processOffering){
         processOffering.getProcess().setLang(Locale.forLanguageTag(processAttribute.language()).toString());
         processOffering.setProcessVersion(processAttribute.version());
-        if(!processAttribute.dbms().equals(ProcessAttribute.defaultDbms)) {
-            MetadataType metadata = new MetadataType();
-            metadata.setTitle(LocalWpsServer.ProcessProperty.DBMS.name());
-            metadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
-            metadata.setAbstractMetaData(processAttribute.dbms());
-            processOffering.getProcess().getMetadata().add(metadata);
-        }
     }
 
     public static DataStore annotationToObject(DataStoreAttribute dataStoreAttribute, List<Format> formatList) {
         try {
             DataStore dataStore = new DataStore(formatList);
-            dataStore.setIsSpatial(dataStoreAttribute.isSpatial());
+            List<DataType> dataTypeList = new ArrayList<>();
+            for(String type : Arrays.asList(dataStoreAttribute.dataStoreTypes())){
+                dataTypeList.add(DataType.getDataTypeFromFieldType(type));
+            }
+            dataStore.setDataStoreTypeList(dataTypeList);
+            List<DataType> excludedTypeList = new ArrayList<>();
+            for(String type : Arrays.asList(dataStoreAttribute.excludedTypes())){
+                excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
+            }
+            dataStore.setDataStoreTypeList(excludedTypeList);
             return dataStore;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
@@ -371,12 +373,10 @@ public class ObjectAnnotationConverter {
         try {
             format.setDefault(true);
             List<DataType> dataTypeList = new ArrayList<>();
-            //For each field type value from the groovy annotation, test if it is contain in the FieldType enumeration.
             for(String type : Arrays.asList(dataFieldAttribute.fieldTypes())){
                 dataTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
             List<DataType> excludedTypeList = new ArrayList<>();
-            //For each excluded type value from the groovy annotation, test if it is contain in the FieldType enumeration.
             for(String type : Arrays.asList(dataFieldAttribute.excludedTypes())){
                 excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
@@ -384,7 +384,7 @@ public class ObjectAnnotationConverter {
             formatList.add(format);
             DataField dataField = new DataField(formatList, dataTypeList, dataStoreUri);
             dataField.setExcludedTypeList(excludedTypeList);
-            dataField.setMultipleField(dataFieldAttribute.isMultipleField());
+            dataField.setMultiSelection(dataFieldAttribute.multiSelection());
             return dataField;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());

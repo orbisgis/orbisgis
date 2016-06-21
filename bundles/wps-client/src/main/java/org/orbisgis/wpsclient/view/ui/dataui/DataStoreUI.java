@@ -101,7 +101,8 @@ public class DataStoreUI implements DataUI{
         //If the DataStore is an input, uses a custom comboBox renderer to show an icon, the table name, the SRID ...
         geocatalogComboBox.setRenderer(new JPanelListRenderer());
         //Populate the comboBox with the available tables.
-        populateWithTable(geocatalogComboBox, dataStore.isSpatial(), false);
+        boolean isSpatial = dataStore.getDataStoreTypeList().contains(DataType.GEOMETRY);
+        populateWithTable(geocatalogComboBox, isSpatial, false);
         //Adds the listener on combo box item selection
         geocatalogComboBox.addActionListener(
                 EventHandler.create(ActionListener.class, this, "onGeocatalogTableSelected", "source"));
@@ -200,7 +201,8 @@ public class DataStoreUI implements DataUI{
         DataStore dataStore = (DataStore)comboBox.getClientProperty(DATA_STORE_PROPERTY);
         boolean isOptional = (boolean)comboBox.getClientProperty(IS_OUTPUT_PROPERTY);
         Object selectedItem = comboBox.getSelectedItem();
-        populateWithTable(comboBox, dataStore.isSpatial(), isOptional);
+        boolean isSpatial = dataStore.getDataStoreTypeList().contains(DataType.GEOMETRY);
+        populateWithTable(comboBox, isSpatial, isOptional);
         if(selectedItem != null){
             comboBox.setSelectedItem(selectedItem);
         }

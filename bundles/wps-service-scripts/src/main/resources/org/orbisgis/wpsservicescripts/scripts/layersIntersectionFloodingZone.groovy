@@ -105,25 +105,25 @@ String riverDataInput
 /** INPUT Parameters **/
 @DataFieldInput(title="Building geometric field",
         resume="The building geometric field",
-        dataStore="Input building",
+        dataStoreTitle="Input building",
         fieldTypes = ["GEOMETRY"])
 String buildingGeometricField
 
 @DataFieldInput(title="River geometric field",
         resume="The river geometric field",
-        dataStore="Input river",
+        dataStoreTitle="Input river",
         fieldTypes = ["GEOMETRY"])
 String riverGeometricField
 
 @DataFieldInput(title="River name field",
         resume="The river name field",
-        dataStore="Input river",
+        dataStoreTitle="Input river",
         fieldTypes = ["STRING"])
 String riverNameField
 
 @FieldValueInput(title="River name",
         resume="The river name",
-        dataField = "River name field",
+        dataFieldTitle = "River name field",
         multiSelection = true)
 String[] riverNameValue
 

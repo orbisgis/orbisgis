@@ -18,7 +18,7 @@
                 <ns1:Identifier>orbisgis:test:datastore:input</ns1:Identifier>
                 <ns5:DataStore isSpatial="false" isAutoImport="true">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
-                    <ns5:DataField isMultipleField="false">
+                    <ns5:DataField multiSelection="false">
                         <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                         <ns5:DataStoreId>orbisgis:test:datastore:input</ns5:DataStoreId>
                         <ns5:FieldValue multiSelection="false">
@@ -34,7 +34,7 @@
                 <ns1:Abstract/>
                 <ns1:Keywords/>
                 <ns1:Identifier>orbisgis:test:datafield:input</ns1:Identifier>
-                <ns5:DataField isMultipleField="false">
+                <ns5:DataField multiSelection="false">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                     <ns5:DataStoreId>orbisgis:test:datastore:input</ns5:DataStoreId>
                     <ns5:FieldValue multiSelection="false">
@@ -65,7 +65,7 @@
                 <ns1:Identifier>orbisgis:test:datastore:output</ns1:Identifier>
                 <ns5:DataStore isSpatial="false" isAutoImport="true">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
-                    <ns5:DataField isMultipleField="false">
+                    <ns5:DataField multiSelection="false">
                         <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                         <ns5:DataStoreId>orbisgis:test:datastore:output</ns5:DataStoreId>
                         <ns5:FieldValue multiSelection="true">
@@ -81,7 +81,7 @@
                 <ns1:Abstract/>
                 <ns1:Keywords/>
                 <ns1:Identifier>orbisgis:test:datafield:output</ns1:Identifier>
-                <ns5:DataField isMultipleField="false">
+                <ns5:DataField multiSelection="false">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                     <ns5:DataStoreId>orbisgis:test:datastore:output</ns5:DataStoreId>
                     <ns5:FieldValue multiSelection="true">

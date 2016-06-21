@@ -19,8 +19,9 @@
                 </ns3:Keywords>
                 <ns3:Identifier>orbisgis:test:datastore:input</ns3:Identifier>
                 <ns3:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
-                <ns5:DataStore isSpatial="true" isAutoImport="false">
+                <ns5:DataStore>
                     <ns4:Format mimeType="text/plain" encoding="simple" schema="" default = "true"/>
+                    <ns5:DataStoreType>GEOMETRY</ns5:DataStoreType>
                 </ns5:DataStore>
             </ns4:Input>
             <ns4:Output>
@@ -31,8 +32,9 @@
                 </ns3:Keywords>
                 <ns3:Identifier>orbisgis:test:datastore:output</ns3:Identifier>
                 <ns3:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
-                <ns5:DataStore isSpatial="false" isGeocatalog="true" isFile="false" isDataBase="false" isAutoImport="true">
+                <ns5:DataStore>
                     <ns4:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <ns5:DataStoreType>GEOMETRY</ns5:DataStoreType>
                 </ns5:DataStore>
             </ns4:Output>
         </ns4:Process>

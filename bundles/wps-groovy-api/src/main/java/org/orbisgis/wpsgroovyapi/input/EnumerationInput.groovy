@@ -71,7 +71,7 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *      Enable or not the user to use its own value.
  *  - names : String[]
  *      Displayable name of the values. If not specified, use the values as name.
- *  - defaultValues : String[]
+ *  - selectedValues : String[]
  *      Default selected values, can be empty.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/

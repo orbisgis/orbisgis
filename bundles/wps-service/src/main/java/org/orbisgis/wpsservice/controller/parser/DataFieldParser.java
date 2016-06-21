@@ -50,12 +50,12 @@ public class DataFieldParser implements Parser {
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataStoreUri;
         //If the dataStore attribute is not an URI, autoGenerate one.
-        if(!dataFieldAttribute.dataStore().contains(":")) {
-            dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStore().replaceAll("[^a-zA-Z0-9_]", "_"));
+        if(!dataFieldAttribute.dataStoreTitle().contains(":")) {
+            dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStoreTitle().replaceAll("[^a-zA-Z0-9_]", "_"));
         }
         //else, use it
         else {
-            dataStoreUri = URI.create(dataFieldAttribute.dataStore());
+            dataStoreUri = URI.create(dataFieldAttribute.dataStoreTitle());
         }
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 
@@ -83,12 +83,12 @@ public class DataFieldParser implements Parser {
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataStoreUri;
         //If the dataStore attribute is not an URI, autoGenerate one.
-        if(!dataFieldAttribute.dataStore().contains(":")) {
-            dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.dataStore().replaceAll("[^a-zA-Z0-9_]", "_"));
+        if(!dataFieldAttribute.dataStoreTitle().contains(":")) {
+            dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.dataStoreTitle().replaceAll("[^a-zA-Z0-9_]", "_"));
         }
         //else, use it
         else {
-            dataStoreUri = URI.create(dataFieldAttribute.dataStore());
+            dataStoreUri = URI.create(dataFieldAttribute.dataStoreTitle());
         }
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 
