@@ -32,6 +32,7 @@ import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 
 import javax.swing.*;
+import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
@@ -185,8 +186,9 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         ProcessDescriptionType process = pee.getProcess();
         JPanel returnPanel = new JPanel(new BorderLayout());
 
-        JPanel processPanel = new JPanel(new MigLayout("fill"));
-        processPanel.setBorder(BorderFactory.createTitledBorder(process.getTitle().get(0).getValue()));
+        JPanel processPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+        processPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.DARK_GRAY), "Description"));
         JLabel label = new JLabel("<html>"+process.getAbstract().get(0).getValue()+"</html>");
         label.setFont(label.getFont().deriveFont(Font.ITALIC));
         processPanel.add(label, "growx, span");
@@ -201,9 +203,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         // Put all the default values in the datamap
         pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
-        JPanel inputPanel = new JPanel(new MigLayout("fill"));
-        inputPanel.setBorder(BorderFactory.createTitledBorder("Input(s)"));
-        boolean isInputs = false;
+        JPanel parameterPanel = new JPanel(new MigLayout("fill"));
+        parameterPanel.setBorder(BorderFactory.createTitledBorder("Input(s)"));
 
         for(InputDescriptionType i : process.getInput()){
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getValue().getClass());
@@ -212,7 +213,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 //Retrieve the component containing all the UI components.
                 JComponent uiComponent = dataUI.createUI(i, pee.getInputDataMap());
                 if(uiComponent != null) {
-                    isInputs = true;
                     //If the input is optional, hide it
                     if(i.getMinOccurs().equals(new BigInteger("0"))) {
                         uiComponent.setVisible(false);
@@ -240,46 +240,35 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                         hideShowPanel.addMouseListener(EventHandler.create(MouseListener.class,
                                 this, "onClickHeader", "source", "mouseClicked"));
                         contentPanel.add(hideShowPanel, "growx, span");
-                        inputPanel.add(contentPanel, "growx, span");
+                        parameterPanel.add(contentPanel, "growx, span");
                     }
                     else{
-                        inputPanel.add(new JLabel(i.getTitle().get(0).getValue()), "growx, span");
-                        inputPanel.add(uiComponent, "growx, span");
+                        parameterPanel.add(new JLabel(i.getTitle().get(0).getValue()), "growx, span");
+                        parameterPanel.add(uiComponent, "growx, span");
                     }
-                    inputPanel.add(new JSeparator(), "growx, span");
+                    parameterPanel.add(new JSeparator(), "growx, span");
                 }
             }
         }
-        if(isInputs) {
-            panel.add(inputPanel, "growx, span");
-        }
-
-        //Creates the panel that will contains all the inputs.
-        JPanel outputPanel = new JPanel(new MigLayout("fill"));
-        outputPanel.setBorder(BorderFactory.createTitledBorder("Output(s)"));
-        boolean isOutputs = false;
         for(OutputDescriptionType o : process.getOutput()){
             DataUI dataUI = dataUIManager.getDataUI(o.getDataDescription().getValue().getClass());
             if(dataUI!=null) {
                 JComponent component = dataUI.createUI(o, pee.getOutputDataMap());
                 if(component != null) {
-                    outputPanel.add(new JLabel(o.getTitle().get(0).getValue()), "growx, span");
-                    outputPanel.add(component, "growx, span");
-                    isOutputs = true;
+                    parameterPanel.add(new JLabel(o.getTitle().get(0).getValue()), "growx, span");
+                    parameterPanel.add(component, "growx, span");
                 }
-                outputPanel.add(new JSeparator(), "growx, span");
+                parameterPanel.add(new JSeparator(), "growx, span");
             }
         }
-        if(isOutputs) {
-            panel.add(outputPanel, "growx, span");
-        }
+        panel.add(parameterPanel, "growx, span");
         errorMessage = new JLabel();
         errorMessage.setForeground(Color.RED);
         panel.add(errorMessage, "growx, wrap");
         JButton runButton = new JButton("Run", ToolBoxIcon.getIcon("execute"));
         runButton.setBorderPainted(false);
         runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
-        panel.add(runButton, "growx, wrap");
+        panel.add(runButton, "growx 60, wrap");
         scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
 
