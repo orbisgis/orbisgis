@@ -248,7 +248,7 @@ public class LiteralDataUI implements DataUI {
                 onDataChanged(dataComponent);
                 break;
             case BYTE:
-                dataComponent = new JPanel(new MigLayout("ins 0, gap 0"));
+                dataComponent = new JPanel(new MigLayout("fill"));
                 //Instantiate the component
                 JSpinner byteSpinner = new JSpinner(new SpinnerNumberModel(0, Byte.MIN_VALUE, Byte.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
@@ -274,18 +274,18 @@ public class LiteralDataUI implements DataUI {
                     allowedValuesBox.putClientProperty("spinner", byteSpinner);
                     allowedValuesBox.addItemListener(
                             EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
-                    dataComponent.add(allowedValuesBox);
+                    dataComponent.add(allowedValuesBox, "dock west");
                     //Run a false event to simulated the selection of the selected value of the JComboBox
                     ItemEvent event = new ItemEvent(
                             allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
                     onDomainSelected(event);
                 }
-                dataComponent.add(byteSpinner, "wrap");
+                dataComponent.add(byteSpinner, "growx, wrap");
                 onDataChanged(byteSpinner);
 
                 break;
             case INTEGER:
-                dataComponent = new JPanel(new MigLayout("ins 0, gap 0"));
+                dataComponent = new JPanel(new MigLayout("fill"));
                 //Instantiate the component
                 JSpinner intSpinner = new JSpinner(new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
@@ -311,17 +311,17 @@ public class LiteralDataUI implements DataUI {
                     allowedValuesBox.putClientProperty("spinner", intSpinner);
                     allowedValuesBox.addItemListener(
                             EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
-                    dataComponent.add(allowedValuesBox);
+                    dataComponent.add(allowedValuesBox, "dock west");
                     //Run a false event to simulated the selection of the selected value of the JComboBox
                     ItemEvent event = new ItemEvent(
                             allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
                     onDomainSelected(event);
                 }
-                dataComponent.add(intSpinner, "wrap");
+                dataComponent.add(intSpinner, "growx, span");
                 onDataChanged(intSpinner);
                 break;
             case LONG:
-                dataComponent = new JPanel(new MigLayout("ins 0, gap 0"));
+                dataComponent = new JPanel(new MigLayout("fill"));
                 //Instantiate the component
                 JSpinner longSpinner = new JSpinner(new SpinnerNumberModel(0, Long.MIN_VALUE, Long.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
@@ -347,17 +347,17 @@ public class LiteralDataUI implements DataUI {
                     allowedValuesBox.putClientProperty("spinner", longSpinner);
                     allowedValuesBox.addItemListener(
                             EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
-                    dataComponent.add(allowedValuesBox);
+                    dataComponent.add(allowedValuesBox, "dock west");
                     //Run a false event to simulated the selection of the selected value of the JComboBox
                     ItemEvent event = new ItemEvent(
                             allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
                     onDomainSelected(event);
                 }
-                dataComponent.add(longSpinner, "wrap");
+                dataComponent.add(longSpinner, "growx, wrap");
                 onDataChanged(longSpinner);
                 break;
             case SHORT:
-                dataComponent = new JPanel(new MigLayout("ins 0, gap 0"));
+                dataComponent = new JPanel(new MigLayout("fill"));
                 //Instantiate the component
                 JSpinner shortSpinner = new JSpinner(new SpinnerNumberModel(0, Short.MIN_VALUE, Short.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
@@ -383,17 +383,17 @@ public class LiteralDataUI implements DataUI {
                     allowedValuesBox.putClientProperty("spinner", shortSpinner);
                     allowedValuesBox.addItemListener(
                             EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
-                    dataComponent.add(allowedValuesBox);
+                    dataComponent.add(allowedValuesBox, "dock west");
                     //Run a false event to simulated the selection of the selected value of the JComboBox
                     ItemEvent event = new ItemEvent(
                             allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
                     onDomainSelected(event);
                 }
-                dataComponent.add(shortSpinner, "wrap");
+                dataComponent.add(shortSpinner, "growx, wrap");
                 onDataChanged(shortSpinner);
                 break;
             case UNSIGNED_BYTE:
-                dataComponent = new JPanel(new MigLayout("ins 0, gap 0"));
+                dataComponent = new JPanel(new MigLayout("fill"));
                 //Instantiate the component
                 JSpinner uByteSpinner = new JSpinner(new SpinnerNumberModel(0, 0, Character.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
@@ -419,17 +419,17 @@ public class LiteralDataUI implements DataUI {
                     allowedValuesBox.putClientProperty("spinner", uByteSpinner);
                     allowedValuesBox.addItemListener(
                             EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
-                    dataComponent.add(allowedValuesBox);
+                    dataComponent.add(allowedValuesBox, "dock west");
                     //Run a false event to simulated the selection of the selected value of the JComboBox
                     ItemEvent event = new ItemEvent(
                             allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
                     onDomainSelected(event);
                 }
-                dataComponent.add(uByteSpinner, "wrap");
+                dataComponent.add(uByteSpinner, "growx, wrap");
                 onDataChanged(uByteSpinner);
                 break;
             case DOUBLE:
-                dataComponent = new JPanel(new MigLayout("ins 0, gap 0"));
+                dataComponent = new JPanel(new MigLayout("fill"));
                 //Instantiate the component
                 JSpinner doubleSpinner = new JSpinner(new SpinnerNumberModel(0D, Integer.MIN_VALUE, Integer.MAX_VALUE, 0.1));
                 //Put the data type, the dataMap and the uri as properties
@@ -455,17 +455,17 @@ public class LiteralDataUI implements DataUI {
                     allowedValuesBox.putClientProperty("spinner", doubleSpinner);
                     allowedValuesBox.addItemListener(
                             EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
-                    dataComponent.add(allowedValuesBox);
+                    dataComponent.add(allowedValuesBox, "dock west");
                     //Run a false event to simulated the selection of the selected value of the JComboBox
                     ItemEvent event = new ItemEvent(
                             allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
                     onDomainSelected(event);
                 }
-                dataComponent.add(doubleSpinner, "wrap");
+                dataComponent.add(doubleSpinner, "growx, wrap");
                 onDataChanged(doubleSpinner);
                 break;
             case FLOAT:
-                dataComponent = new JPanel(new MigLayout("ins 0, gap 0"));
+                dataComponent = new JPanel(new MigLayout("fill"));
                 //Instantiate the component
                 JSpinner floatSpinner = new JSpinner(new SpinnerNumberModel(0F, Float.MIN_VALUE, Float.MAX_VALUE, 1));
                 //Put the data type, the dataMap and the uri as properties
@@ -491,13 +491,13 @@ public class LiteralDataUI implements DataUI {
                     allowedValuesBox.putClientProperty("spinner", floatSpinner);
                     allowedValuesBox.addItemListener(
                             EventHandler.create(ItemListener.class, this, "onDomainSelected", ""));
-                    dataComponent.add(allowedValuesBox);
+                    dataComponent.add(allowedValuesBox, "dock west");
                     //Run a false event to simulated the selection of the selected value of the JComboBox
                     ItemEvent event = new ItemEvent(
                             allowedValuesBox, 0, allowedValuesBox.getSelectedItem(), ItemEvent.SELECTED);
                     onDomainSelected(event);
                 }
-                dataComponent.add(floatSpinner, "wrap");
+                dataComponent.add(floatSpinner, "growx, wrap");
                 onDataChanged(floatSpinner);
                 break;
             case STRING:
@@ -530,15 +530,15 @@ public class LiteralDataUI implements DataUI {
                 scrollPane.getViewport().putClientProperty(TEXT_AREA_PROPERTY, textArea);
                 scrollPane.getViewport().putClientProperty(VERTICAL_BAR_PROPERTY, scrollPane.getVerticalScrollBar());
                 //scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-                JPanel panel = new JPanel(new BorderLayout());
-                panel.add(scrollPane, BorderLayout.CENTER);
+                JPanel panel = new JPanel(new MigLayout("fill"));
+                panel.add(scrollPane, "growx");
                 JButton paste = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
                 paste.putClientProperty(TEXT_AREA_PROPERTY, textArea);
                 paste.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
                 paste.setBorderPainted(false);
                 paste.setContentAreaFilled(false);
                 paste.setToolTipText("Paste the clipboard");
-                panel.add(paste, BorderLayout.LINE_END);
+                panel.add(paste, "dock east");
                 dataComponent = panel;
                 textArea.setText("");
                 break;
