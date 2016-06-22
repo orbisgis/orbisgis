@@ -318,7 +318,7 @@ public class DataFieldUI implements DataUI{
                         fieldList = model.getElementAt(i).getLabel();
                     }
                     else{
-                        fieldList += ","+model.getElementAt(i).getLabel();
+                        fieldList += "\t"+model.getElementAt(i).getLabel();
                     }
                 }
                 DataField dataField = (DataField) list.getClientProperty(DATA_FIELD_PROPERTY);
