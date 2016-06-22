@@ -1,4 +1,4 @@
-package org.orbisgis.orbistoolbox.view.utils.scripts;
+package org.orbisgis.wpsservice.scripts
 
 import org.orbisgis.wpsgroovyapi.input.*
 import org.orbisgis.wpsgroovyapi.output.*
@@ -29,46 +29,46 @@ def processing() {
 //Build the start of the query
     String query = "CREATE TABLE "+outputTableName+" AS SELECT "
    
-for (String operation : operations) {
-if(operation.equals("geomtype")){
-query += " ST_GeometryType("+geometricField+") as geomType,"
-} 
-else if(operation.equals("srid")){
-query += " ST_SRID("+geometricField+") as srid,"
-} 
-else if(operation.equals("length")){
-query += " ST_Length("+geometricField+") as length,"
-}
-else if(operation.equals("perimeter")){
-query += " ST_Perimeter("+geometricField+") as perimeter,"
-}          
-else if(operation.equals("area")){
-query += " ST_Area("+geometricField+") as area,"
-}
-
-else if(operation.equals("dimension")){
-query += " ST_Dimension("+geometricField+") as dimension,"
-}
-else if(operation.equals("coorddim")){
-query += " ST_Coorddim("+geometricField+") as coorddim,"
-}
-else if(operation.equals("num_geoms")){
-query += " ST_NumGeometries("+geometricField+") as numGeometries,"
-}
-else if(operation.equals("num_pts")){
-query += " ST_NPoints("+geometricField+") as numPts,"
-}
-else if(operation.equals("issimple")){
-query += " ST_Issimple("+geometricField+") as issimple,"
-}
-else if(operation.equals("isvalid")){
-query += " ST_Isvalid("+geometricField+") as isvalid,"
-}
-else if(operation.equals("isempty")){
-query += " ST_Isempty("+geometricField+") as isempty,"
-}
-else{
-}       }
+    for (String operation : operations) {
+        if(operation.equals("geomtype")){
+            query += " ST_GeometryType("+geometricField+") as geomType,"
+        }
+        else if(operation.equals("srid")){
+            query += " ST_SRID("+geometricField+") as srid,"
+        }
+        else if(operation.equals("length")){
+            query += " ST_Length("+geometricField+") as length,"
+        }
+        else if(operation.equals("perimeter")){
+            query += " ST_Perimeter("+geometricField+") as perimeter,"
+        }
+        else if(operation.equals("area")){
+            query += " ST_Area("+geometricField+") as area,"
+        }
+        else if(operation.equals("dimension")){
+            query += " ST_Dimension("+geometricField+") as dimension,"
+        }
+        else if(operation.equals("coorddim")){
+            query += " ST_Coorddim("+geometricField+") as coorddim,"
+        }
+        else if(operation.equals("num_geoms")){
+            query += " ST_NumGeometries("+geometricField+") as numGeometries,"
+        }
+        else if(operation.equals("num_pts")){
+            query += " ST_NPoints("+geometricField+") as numPts,"
+        }
+        else if(operation.equals("issimple")){
+            query += " ST_Issimple("+geometricField+") as issimple,"
+        }
+        else if(operation.equals("isvalid")){
+            query += " ST_Isvalid("+geometricField+") as isvalid,"
+        }
+        else if(operation.equals("isempty")){
+            query += " ST_Isempty("+geometricField+") as isempty,"
+        }
+        else{
+        }
+    }
 
 
     //Add the field id

@@ -125,18 +125,18 @@ public class WpsScriptsPackage {
      * This method loads the scripts one by one under different node path with different icons.
      * (Be careful before any modification)
      */
-    protected void customLoadScript(){
+    protected void customLoadScript(String processpath, String[] icons, String path){
         try {
-            URL scriptUrl = this.getClass().getResource("scripts/scriptSample.groovy");
+            URL scriptUrl = this.getClass().getResource(processpath);
             final File tempFile = File.createTempFile("wpsprocess", ".groovy");
             tempFile.deleteOnExit();
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 IOUtils.copy(scriptUrl.openStream(), out);
             }
             List<ProcessIdentifier> piList = localWpsService.addLocalSource(tempFile,
-                    new String[]{loadIcon("icon.png")},
+                    icons,
                     false,
-                    "wps/script/sample");
+                    path);
             for(ProcessIdentifier pi : piList){
                 listIdProcess.add(pi.getProcessDescriptionType().getIdentifier());
             }

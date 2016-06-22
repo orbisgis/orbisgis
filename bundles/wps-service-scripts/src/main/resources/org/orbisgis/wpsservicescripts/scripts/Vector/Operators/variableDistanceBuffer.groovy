@@ -4,7 +4,6 @@ import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
-import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 
