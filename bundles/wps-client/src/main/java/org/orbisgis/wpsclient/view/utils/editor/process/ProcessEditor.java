@@ -200,6 +200,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JPanel panel = new JPanel(new MigLayout("fill"));
         JScrollPane scrollPane = new JScrollPane(panel);
 
+        boolean noParameters = true;
         // Put all the default values in the datamap
         pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
@@ -213,6 +214,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 //Retrieve the component containing all the UI components.
                 JComponent uiComponent = dataUI.createUI(i, pee.getInputDataMap());
                 if(uiComponent != null) {
+                    noParameters = false;
                     //If the input is optional, hide it
                     if(i.getMinOccurs().equals(new BigInteger("0"))) {
                         uiComponent.setVisible(false);
@@ -255,13 +257,16 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             if(dataUI!=null) {
                 JComponent component = dataUI.createUI(o, pee.getOutputDataMap());
                 if(component != null) {
+                    noParameters = false;
                     parameterPanel.add(new JLabel(o.getTitle().get(0).getValue()), "growx, span");
                     parameterPanel.add(component, "growx, span");
+                    parameterPanel.add(new JSeparator(), "growx, span");
                 }
-                parameterPanel.add(new JSeparator(), "growx, span");
             }
         }
-        panel.add(parameterPanel, "growx, span");
+        if(!noParameters) {
+            panel.add(parameterPanel, "growx, span");
+        }
         errorMessage = new JLabel();
         errorMessage.setForeground(Color.RED);
         panel.add(errorMessage, "growx, wrap");

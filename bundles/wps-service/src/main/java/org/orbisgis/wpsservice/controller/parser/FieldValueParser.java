@@ -51,7 +51,7 @@ public class FieldValueParser implements Parser {
         URI dataFieldUri;
         //If the dataStore attribute is not an URI, autoGenerate one.
         if(!fieldValueAttribute.dataFieldTitle().contains(":")) {
-            dataFieldUri = URI.create(processId + ":input:" + fieldValueAttribute.dataFieldTitle().replaceAll("[^a-zA-Z0-9_]", "_"));
+            dataFieldUri = URI.create(processId + ":input:" + fieldValueAttribute.dataFieldTitle().replaceAll("[^a-zA-Z0-9_$]", "_"));
         }
         //else, use it
         else {
