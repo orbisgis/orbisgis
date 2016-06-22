@@ -95,7 +95,7 @@ public class DataFieldUI implements DataUI{
         if(dataField == null){
             return panel;
         }
-        if(dataField.isMultipleField()){
+        if(dataField.isMultiSelection()){
             JList<ContainerItem<Object>> list = new JList<>();
             list.setModel(new DefaultListModel<ContainerItem<Object>>());
             list.setCellRenderer(new JPanelListRenderer());

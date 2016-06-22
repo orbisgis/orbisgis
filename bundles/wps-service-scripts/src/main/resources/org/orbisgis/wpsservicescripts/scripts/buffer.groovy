@@ -80,7 +80,7 @@ def processing() {
 @DataStoreInput(
         title = "Input spatial data",
         resume = "The spatial data source for the buffer",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String inputDataStore
 
 /**********************/
@@ -91,7 +91,7 @@ String inputDataStore
 @DataFieldInput(
         title = "Geometric field",
         resume = "The geometric field of the data source",
-        dataStore = "Input spatial data",
+        dataStoreTitle = "Input spatial data",
         fieldTypes = ["GEOMETRY"])
 String geometricField
 
@@ -158,6 +158,6 @@ String dataStoreOutputName
 @DataStoreOutput(
         title="Output Data",
         resume="The output spatial data source of the buffer",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String dataStoreOutput
 

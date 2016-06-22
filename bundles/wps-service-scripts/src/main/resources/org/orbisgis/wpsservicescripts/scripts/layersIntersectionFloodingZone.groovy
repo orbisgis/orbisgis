@@ -94,36 +94,36 @@ def processing() {
 
 @DataStoreInput(title="Input building",
         resume="The input building data source",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String buildingDataInput
 
 @DataStoreInput(title="Input river",
         resume="The input river data source",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String riverDataInput
 
 /** INPUT Parameters **/
 @DataFieldInput(title="Building geometric field",
         resume="The building geometric field",
-        dataStore="Input building",
+        dataStoreTitle="Input building",
         fieldTypes = ["GEOMETRY"])
 String buildingGeometricField
 
 @DataFieldInput(title="River geometric field",
         resume="The river geometric field",
-        dataStore="Input river",
+        dataStoreTitle="Input river",
         fieldTypes = ["GEOMETRY"])
 String riverGeometricField
 
 @DataFieldInput(title="River name field",
         resume="The river name field",
-        dataStore="Input river",
+        dataStoreTitle="Input river",
         fieldTypes = ["STRING"])
 String riverNameField
 
 @FieldValueInput(title="River name",
         resume="The river name",
-        dataField = "River name field",
+        dataFieldTitle = "River name field",
         multiSelection = true)
 String[] riverNameValue
 
@@ -177,5 +177,5 @@ String dataStoreOutputName
 /************/
 @DataStoreOutput(title="Output Data",
         resume="The output data source",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String dataStoreOutput

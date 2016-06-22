@@ -58,7 +58,7 @@ def processing() {
 /** This DataStore is the input data source which conatins all the informations about the municipalities. */
 @DataStoreInput(title="Input municipality data",
         resume="The input data source containing the municipalities, their geometry, their region and their population.",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String regionDataInput
 
 /**********************/
@@ -68,21 +68,21 @@ String regionDataInput
 /** Geometric field of the municipalities. */
 @DataFieldInput(title="Municipality geometric field",
         resume="The geometric field of the municipalities",
-        dataStore="Input municipality data",
+        dataStoreTitle="Input municipality data",
         fieldTypes = ["GEOMETRY"])
 String regionGeometricField
 
 /** Region field which will be used to group the municipalities. */
 @DataFieldInput(title="Region field",
         resume="The field which contains the region used to group the municipalities.",
-        dataStore="Input municipality data",
+        dataStoreTitle="Input municipality data",
         fieldTypes = ["STRING"])
 String regionField
 
 /** Population field. */
 @DataFieldInput(title="Population field",
         resume="The population field",
-        dataStore="Input municipality data",
+        dataStoreTitle="Input municipality data",
         fieldTypes = ["NUMBER"])
 String populationField
 
@@ -108,7 +108,7 @@ String dataStoreOutputFilePath
 /** The spatial data output containing the region, its geometry and the population. */
 @DataStoreOutput(title="Spatial output data",
         resume="The spatial output data, containing the region, its geometry and the population.",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String dataStoreOutput
 
 /** The CSV output containing only the region and the population. */

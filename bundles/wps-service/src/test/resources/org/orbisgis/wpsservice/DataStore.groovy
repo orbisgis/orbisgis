@@ -73,7 +73,7 @@ def processing() {
                         @LanguageString(value = "entrée", lang = "fr")
                 ])
         ],
-        isSpatial = true,
+        dataStoreTypes = ["GEOMETRY"],
         minOccurs = 0,
         maxOccurs = 2,
         identifier = "orbisgis:test:datastore:input",
@@ -106,7 +106,6 @@ String inputDataStore
                         @LanguageString(value = "sortie", lang = "fr")
                 ])
         ],
-        isSpatial = false,
         identifier = "orbisgis:test:datastore:output",
         metadata = [
                 @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")

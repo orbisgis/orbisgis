@@ -59,12 +59,12 @@ def processing() {
 
 @DataStoreInput(title="Input vegetation",
         resume="The input vegetation data source",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String vegetationDataInput
 
 @DataStoreInput(title="Input city",
         resume="The input city data source",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String cityDataInput
 
 /**********************/
@@ -73,24 +73,24 @@ String cityDataInput
 
 @DataFieldInput(title="Vegetation geometric field",
         resume="The vegetation geometric field",
-        dataStore="Input vegetation",
+        dataStoreTitle="Input vegetation",
         fieldTypes = ["GEOMETRY"])
 String vegetationGeometricField
 
 @DataFieldInput(title="City geometric field",
         resume="The city geometric field",
-        dataStore="Input city",
+        dataStoreTitle="Input city",
         fieldTypes = ["GEOMETRY"])
 String cityGeometricField
 
 @DataFieldInput(title="City name field",
         resume="The city name field",
-        dataStore="Input city")
+        dataStoreTitle="Input city")
 String cityNameField
 
 @FieldValueInput(title="City name value",
         resume="The city name value",
-        dataField="City name field",
+        dataFieldTitle="City name field",
         multiSelection = true)
 String[] cityNameValue
 
@@ -107,5 +107,5 @@ String dataStoreOutputName
 
 @DataStoreOutput(title="Output Data",
         resume="The output",
-        isSpatial = true)
+        dataStoreTypes = "GEOMETRY")
 String dataStoreOutput

@@ -23,7 +23,6 @@ import net.opengis.wps._2_0.ComplexDataType;
 import net.opengis.wps._2_0.Format;
 
 import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,11 +33,14 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  **/
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DataStore", propOrder = {"isSpatial", "listDataField"})
+@XmlType(name = "DataStore", propOrder = {"dataStoreTypeList", "excludedTypeList", "listDataField"})
 public class DataStore extends ComplexDataType {
-    /** True if the data is spatial, false otherwise **/
-    @XmlAttribute(name = "isSpatial")
-    private boolean isSpatial;
+    /** List of field type that should be contained by the DataStore.*/
+    @XmlElement(name = "DataStoreType", namespace = "http://orbisgis.org")
+    private List<DataType> dataStoreTypeList;
+    /** List of field type forbidden for the DataSTore. If the DataStore contains the type, it won't be available.*/
+    @XmlElement(name = "ExcludedType", namespace = "http://orbisgis.org")
+    private List<DataType> excludedTypeList;
     /** List of DataField liked to the DataStore */
     @XmlElement(name = "DataField", namespace = "http://orbisgis.org")
     private List<DataField> listDataField;
@@ -50,6 +52,8 @@ public class DataStore extends ComplexDataType {
      */
     public DataStore(List<Format> formatList) throws MalformedScriptException {
         format = formatList;
+        dataStoreTypeList = new ArrayList<>();
+        excludedTypeList = new ArrayList<>();
         listDataField = new ArrayList<>();
     }
 
@@ -59,22 +63,6 @@ public class DataStore extends ComplexDataType {
     protected DataStore(){
         super();
         listDataField = null;
-    }
-
-    /**
-     * Sets if the data should be spatial or no matter.
-     * @param isSpatial True if the data should be spatial, false if no matter.
-     */
-    public void setIsSpatial(boolean isSpatial){
-        this.isSpatial = isSpatial;
-    }
-
-    /**
-     * Tells if the data should be spatial or if no matter.
-     * @return True if the data should be spatial, false if no matter.
-     */
-    public boolean isSpatial(){
-        return isSpatial;
     }
 
     /**
@@ -91,5 +79,53 @@ public class DataStore extends ComplexDataType {
      */
     public List<DataField> getListDataField(){
         return listDataField;
+    }
+
+    /**
+     * Sets the list of types that should be contained by the DataStore.
+     * @param dataStoreTypeList List of DataType.
+     */
+    public void setDataStoreTypeList(List<DataType> dataStoreTypeList) throws MalformedScriptException {
+        for(DataType dataStoreType : dataStoreTypeList){
+            for(DataType excludedType : excludedTypeList){
+                if(dataStoreType.equals(excludedType)){
+                    throw new MalformedScriptException(DataField.class, "dataStoreTypeList", "A same DataType is" +
+                            " accepted and excluded");
+                }
+            }
+        }
+        this.dataStoreTypeList = dataStoreTypeList;
+    }
+
+    /**
+     * Returns the list of types that should be contained by the DataStore.
+     * @return List of DataType.
+     */
+    public List<DataType> getDataStoreTypeList() {
+        return dataStoreTypeList;
+    }
+
+    /**
+     * Sets the list of excluded type for the DataStore.
+     * @param excludedTypeList List of excluded DataType.
+     */
+    public void setExcludedTypeList(List<DataType> excludedTypeList) throws MalformedScriptException {
+        for(DataType excludedType : excludedTypeList){
+            for(DataType dataType : dataStoreTypeList){
+                if(excludedType.equals(dataType)){
+                    throw new MalformedScriptException(DataField.class, "excludedTypeList", "A same DataType is" +
+                            " accepted and excluded");
+                }
+            }
+        }
+        this.excludedTypeList = excludedTypeList;
+    }
+
+    /**
+     * Returns the list of excluded type for the field.
+     * @return List of excluded DataType.
+     */
+    public List<DataType> getExcludedTypeList() {
+        return excludedTypeList;
     }
 }

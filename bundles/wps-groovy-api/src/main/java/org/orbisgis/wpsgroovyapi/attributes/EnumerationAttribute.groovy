@@ -47,7 +47,7 @@ import java.lang.annotation.RetentionPolicy
  *      Enable or not the user to use its own value.
  *  - names : String[]
  *      Displayable name of the values. If not specified, use the values as name.
- *  - defaultValues : String[]
+ *  - selectedValues : String[]
  *      Default selected values, can be empty.
  *
  * @author Sylvain PALOMINOS

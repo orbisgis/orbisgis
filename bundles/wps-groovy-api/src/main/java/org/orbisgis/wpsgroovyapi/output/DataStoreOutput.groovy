@@ -49,8 +49,10 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
  *      Unambiguous identifier of the output. It should be a valid URI.
  *  - metadata : MetaData[]
  *      Reference to additional metadata about this item.
- *  - isSpatial : boolean
- *      Indicates if the data represented is spatial or not.
+ * - dataStoreTypes : String[]
+ *      List of field type that should be contained by the DataStore.
+ * - excludedTypes : String[]
+ *      List of field type forbidden for the DataSTore. If the DataStore contains the type, it won't be available.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *

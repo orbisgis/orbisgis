@@ -43,8 +43,8 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  * The following fields must be defined (mandatory) :
  *  - title : String
  *       Title of the input. Normally available for display to a human.
- *  - dataStore : String
- *      The variable name that contains the DataStore.
+ *  - dataStoreTitle : String
+ *      The title of the DataStore.
  *
  * The following fields can be defined (optional) :
  *  - traducedTitles : LanguageString[]
@@ -66,7 +66,11 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *  - maxOccurs : int
  *      Maximum number of times that this parameter may be present.
  *  - fieldTypes : String[]
- *      Array of the type of the data contained in the column. If no types are specified, accept all.
+ *      Array of the types allowed. If no types are specified, accepts all.
+ *  - excludedTypes : String[]
+ *      Array of the type forbidden. If no types are specified, accept all.
+ *  - multiSelection : boolean
+ *      Enable or not the user to select more than one field. Disabled by default.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *

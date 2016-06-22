@@ -33,8 +33,8 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
  * The following fields must be defined (mandatory) :
  *  - title : String
  *       Title of the output. Normally available for display to a human.
- *  - dataField : String
- *      Name of the variable which is the dataStore.
+ *  - dataFieldTitle : String
+ *      Title of the dataField.
  *
  * The following fields can be defined (optional) :
  *  - traducedTitles : LanguageString[]

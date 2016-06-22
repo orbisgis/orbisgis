@@ -77,8 +77,8 @@ String tableName
 @DataFieldInput(
         title = "Fields",
         resume = "The field concerned by the value insertion",
-        dataStore = "Table",
-        isMultipleField = true,
+        dataStoreTitle = "Table",
+        multiSelection = true,
         minOccurs = 0)
 String fields
 
