@@ -204,7 +204,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
         JPanel parameterPanel = new JPanel(new MigLayout("fill"));
-        parameterPanel.setBorder(BorderFactory.createTitledBorder("Input(s)"));
+        parameterPanel.setBorder(BorderFactory.createTitledBorder("Paramater(s)"));
 
         for(InputDescriptionType i : process.getInput()){
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getValue().getClass());
@@ -268,7 +268,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JButton runButton = new JButton("Run", ToolBoxIcon.getIcon("execute"));
         runButton.setBorderPainted(false);
         runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
-        panel.add(runButton, "growx 60, wrap");
+        panel.add(runButton, "growx, gap 100! 100!");
         scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
 

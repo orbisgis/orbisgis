@@ -175,6 +175,7 @@ public class LiteralDataUI implements DataUI {
             comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, input.getAbstract().get(0).getValue());
             comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onBoxChange", "source"));
             comboBox.setBackground(Color.WHITE);
+            comboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
 
             onBoxChange(comboBox);
 
@@ -199,6 +200,7 @@ public class LiteralDataUI implements DataUI {
         URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
         boolean isOptional = (boolean)comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
         LiteralDataType literalData = (LiteralDataType)comboBox.getClientProperty(LITERAL_DATA_PROPERTY);
+        String tooltip = (String)comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY);
         String s = (String) comboBox.getSelectedItem();
         JComponent dataComponent;
         switch(DataType.valueOf(s.toUpperCase())){
@@ -208,7 +210,9 @@ public class LiteralDataUI implements DataUI {
                 JRadioButton falseButton = new JRadioButton("FALSE");
                 JRadioButton trueButton = new JRadioButton("TRUE");
                 falseButton.setToolTipText(comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY).toString());
+                falseButton.setToolTipText(tooltip);
                 trueButton.setToolTipText(comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY).toString());
+                trueButton.setToolTipText(tooltip);
                 ButtonGroup group = new ButtonGroup();
                 group.add(falseButton);
                 group.add(trueButton);
@@ -255,6 +259,7 @@ public class LiteralDataUI implements DataUI {
                 byteSpinner.putClientProperty(TYPE_PROPERTY, DataType.BYTE);
                 byteSpinner.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
                 byteSpinner.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
+                byteSpinner.setToolTipText(tooltip);
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null && !dataMap.get(uri).toString().isEmpty()) {
                     byteSpinner.setValue(Byte.parseByte(dataMap.get(uri).toString()));
@@ -292,6 +297,7 @@ public class LiteralDataUI implements DataUI {
                 intSpinner.putClientProperty(TYPE_PROPERTY, DataType.INTEGER);
                 intSpinner.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
                 intSpinner.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
+                intSpinner.setToolTipText(tooltip);
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null && !dataMap.get(uri).toString().isEmpty()) {
                     intSpinner.setValue(Integer.parseInt(dataMap.get(uri).toString()));
@@ -328,6 +334,7 @@ public class LiteralDataUI implements DataUI {
                 longSpinner.putClientProperty(TYPE_PROPERTY, DataType.LONG);
                 longSpinner.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
                 longSpinner.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
+                longSpinner.setToolTipText(tooltip);
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null && !dataMap.get(uri).toString().isEmpty()) {
                     longSpinner.setValue(Long.parseLong(dataMap.get(uri).toString()));
@@ -364,6 +371,7 @@ public class LiteralDataUI implements DataUI {
                 shortSpinner.putClientProperty(TYPE_PROPERTY, DataType.SHORT);
                 shortSpinner.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
                 shortSpinner.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
+                shortSpinner.setToolTipText(tooltip);
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null && !dataMap.get(uri).toString().isEmpty()) {
                     shortSpinner.setValue(Short.parseShort(dataMap.get(uri).toString()));
@@ -400,6 +408,7 @@ public class LiteralDataUI implements DataUI {
                 uByteSpinner.putClientProperty(TYPE_PROPERTY, DataType.UNSIGNED_BYTE);
                 uByteSpinner.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
                 uByteSpinner.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
+                uByteSpinner.setToolTipText(tooltip);
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null && !dataMap.get(uri).toString().isEmpty()) {
                     uByteSpinner.setValue(dataMap.get(uri).toString().charAt(0));
@@ -436,6 +445,7 @@ public class LiteralDataUI implements DataUI {
                 doubleSpinner.putClientProperty(TYPE_PROPERTY, DataType.DOUBLE);
                 doubleSpinner.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
                 doubleSpinner.putClientProperty(URI_PROPERTY, comboBox.getClientProperty(URI_PROPERTY));
+                doubleSpinner.setToolTipText(tooltip);
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null && !dataMap.get(uri).toString().isEmpty()) {
                     doubleSpinner.setValue(Double.parseDouble(dataMap.get(uri).toString()));
@@ -472,6 +482,7 @@ public class LiteralDataUI implements DataUI {
                 floatSpinner.putClientProperty(TYPE_PROPERTY, DataType.FLOAT);
                 floatSpinner.putClientProperty(DATA_MAP_PROPERTY,comboBox.getClientProperty(DATA_MAP_PROPERTY));
                 floatSpinner.putClientProperty(URI_PROPERTY,comboBox.getClientProperty(URI_PROPERTY));
+                floatSpinner.setToolTipText(tooltip);
                 //Set the default value and adds the listener for saving the value set by the user
                 if(dataMap.get(uri)!=null && !dataMap.get(uri).toString().isEmpty()) {
                     floatSpinner.setValue(Float.parseFloat(dataMap.get(uri).toString()));
@@ -504,6 +515,7 @@ public class LiteralDataUI implements DataUI {
             default:
                 //Instantiate the component
                 CustomTextArea textArea = new CustomTextArea();
+                textArea.setToolTipText(tooltip);
                 textArea.setLineWrap(true);
                 textArea.setRows(MIN_ROW_NUMBER);
                 //Put the data type, the dataMap and the uri as properties
