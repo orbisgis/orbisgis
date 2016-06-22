@@ -18,7 +18,7 @@
                 <ns1:Identifier>orbisgis:test:datastore:input</ns1:Identifier>
                 <ns5:DataStore isSpatial="false" isAutoImport="true">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
-                    <ns5:DataField isMultipleField="false">
+                    <ns5:DataField multiSelection="false">
                         <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                         <ns5:DataStoreId>orbisgis:test:datastore:input</ns5:DataStoreId>
                         <ns5:ExcludedType>BOOLEAN</ns5:ExcludedType>
@@ -33,7 +33,7 @@
                 </ns1:Keywords>
                 <ns1:Identifier>orbisgis:test:datafield:input</ns1:Identifier>
                 <ns1:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
-                <ns5:DataField isMultipleField="false">
+                <ns5:DataField multiSelection="false">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                     <ns5:DataStoreId>orbisgis:test:datastore:input</ns5:DataStoreId>
                     <ns5:ExcludedType>BOOLEAN</ns5:ExcludedType>
@@ -46,7 +46,7 @@
                 <ns1:Identifier>orbisgis:test:datastore:output</ns1:Identifier>
                 <ns5:DataStore isSpatial="false" isAutoImport="true">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
-                    <ns5:DataField isMultipleField="true">
+                    <ns5:DataField multiSelection="true">
                         <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                         <ns5:DataStoreId>orbisgis:test:datastore:output</ns5:DataStoreId>
                         <ns5:FieldType>GEOMETRY</ns5:FieldType>
@@ -62,7 +62,7 @@
                 </ns1:Keywords>
                 <ns1:Identifier>orbisgis:test:datafield:output</ns1:Identifier>
                 <ns1:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
-                <ns5:DataField isMultipleField="true">
+                <ns5:DataField multiSelection="true">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                     <ns5:DataStoreId>orbisgis:test:datastore:output</ns5:DataStoreId>
                     <ns5:FieldType>GEOMETRY</ns5:FieldType>

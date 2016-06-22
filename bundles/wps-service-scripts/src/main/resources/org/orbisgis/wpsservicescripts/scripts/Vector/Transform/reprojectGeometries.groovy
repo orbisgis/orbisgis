@@ -1,4 +1,4 @@
-package org.orbisgis.orbistoolbox.view.utils.scripts;
+package org.orbisgis.wpsservice.scripts
 
 import org.orbisgis.wpsgroovyapi.input.*
 import org.orbisgis.wpsgroovyapi.output.*
@@ -26,7 +26,7 @@ import org.orbisgis.wpsgroovyapi.process.*
         keywords = "Vector,Geometry,Reproject")
 def processing() {
 //Build the start of the query
-    String query = "CREATE TABLE "+dataStoreOutput+" AS SELECT ST_TRANSFORM("   
+    String query = "CREATE TABLE "+outputTableName+" AS SELECT ST_TRANSFORM("
 query += geometricField+","+srid[0]
    
     //Build the end of the query
@@ -40,6 +40,7 @@ query += ", "+ fieldsList;
 
     //Execute the query
     sql.execute(query)
+	literalOutput = "Process done"
 }
 
 /****************/
@@ -50,7 +51,7 @@ query += ", "+ fieldsList;
 @DataStoreInput(
         title = "Input spatial data",
         resume = "The spatial data source to be reprojected.",
-        isSpatial = true)
+		dataStoreTypes = ["GEOMETRY"])
 String inputDataStore
 
 
@@ -62,16 +63,16 @@ String inputDataStore
 @DataFieldInput(
         title = "Geometric field",
         resume = "The geometric field of the data source",
-        dataStore = "inputDataStore",
+        dataStoreTitle = "Input spatial data",
         fieldTypes = ["GEOMETRY"])
 String geometricField
 
 
 /** The spatial_ref SRID */
 @FieldValueInput(title="SRID",
-resume="The spatial reference system identifier",
-dataField = "\$public\$spatial_ref_sys\$srid\$",
-multiSelection = false)
+		resume="The spatial reference system identifier",
+		dataFieldTitle = "\$public\$spatial_ref_sys\$srid\$",
+		multiSelection = false)
 String[] srid
 
 
@@ -79,22 +80,26 @@ String[] srid
 @DataFieldInput(
         title = "Fields to keep",
         resume = "The fields that will be kept in the ouput",
-	excludedTypes=["GEOMETRY"],
-	isMultipleField=true,
-	minOccurs = 0,
-        dataStore = "inputDataStore")
+		excludedTypes=["GEOMETRY"],
+		multiSelection = true,
+		minOccurs = 0,
+        dataStoreTitle = "Input spatial data")
 String fieldsList
 
+
+@LiteralDataInput(
+		title="Output table name",
+		resume="Name of the table containing the result of the process.")
+String outputTableName
 
 /*****************/
 /** OUTPUT Data **/
 /*****************/
 
-/** This DataStore is the output data source. */
-@DataStoreOutput(
-        title="Reprojected data",
-        resume="The output spatial data source to store the new geometries.",
-        isSpatial = true)
-String dataStoreOutput
+/** String output of the process. */
+@LiteralDataOutput(
+		title="Output message",
+		resume="The output message")
+String literalOutput
 
 

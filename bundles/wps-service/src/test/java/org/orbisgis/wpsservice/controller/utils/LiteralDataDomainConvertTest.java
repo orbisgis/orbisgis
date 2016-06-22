@@ -35,7 +35,7 @@ public class LiteralDataDomainConvertTest {
             ),
             dataType = "STRING",
             uom = "uom://test/uom",
-            selectedValues = "value",
+            defaultValue = "value",
             isDefault = true
     )
     public Object fullLiteralDataDomainAttribute;
@@ -142,7 +142,7 @@ public class LiteralDataDomainConvertTest {
     @LiteralDataDomainAttribute(
             possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(),
             dataType = "STRING",
-            selectedValues = "value"
+            defaultValue = "value"
     )
     public Object minimalLiteralDataDomainAttribute;
     /** Name of the field containing the minimalLiteralDataDomainAttribute annotation. */

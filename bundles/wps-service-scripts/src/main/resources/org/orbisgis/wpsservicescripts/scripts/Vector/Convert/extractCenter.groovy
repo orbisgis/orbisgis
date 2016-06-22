@@ -1,4 +1,4 @@
-package org.orbisgis.orbistoolbox.view.utils.scripts;
+package org.orbisgis.wpsservice.scripts
 
 import org.orbisgis.wpsgroovyapi.input.*
 import org.orbisgis.wpsgroovyapi.output.*
@@ -20,7 +20,7 @@ import org.orbisgis.wpsgroovyapi.process.*
         keywords = "Vector,Geometry,Extract,Center")
 def processing() {
 	//Build the start of the query
-    	String query = "CREATE TEMPORARY TABLE "+dataStoreOutput+" AS SELECT "
+    	String query = "CREATE TEMPORARY TABLE "+outputTableName+" AS SELECT "
    
 
 	if(operation.equalsIgnoreCase("centroid")){
@@ -34,6 +34,7 @@ query += " ST_PointOnSurface("+geometricField+""
 
     //Execute the query
     sql.execute(query)
+	literalOutput = "Process done"
 }
 
 
@@ -45,7 +46,7 @@ query += " ST_PointOnSurface("+geometricField+""
 @DataStoreInput(
         title = "Input spatial data",
         resume = "The spatial data source to extract the centers.",
-        isSpatial = true)
+        dataStoreTypes = ["GEOMETRY"])
 String inputDataStore
 
 /**********************/
@@ -56,7 +57,7 @@ String inputDataStore
 @DataFieldInput(
         title = "Geometric field",
         resume = "The geometric field of the data source",
-        dataStore = "inputDataStore",
+        dataStoreTitle = "Input spatial data",
         fieldTypes = ["GEOMETRY"])
 String geometricField
 
@@ -65,27 +66,29 @@ String geometricField
         title = "Identifier field",
         resume = "A field used as an identifier",
 	excludedTypes=["GEOMETRY"],
-        dataStore = "inputDataStore")
+		dataStoreTitle = "Input spatial data")
 String idField
 
 @EnumerationInput(title="Operation",
         resume="Operation to extract the points.",
         values=["centroid", "interior"],
         names=["Centroid", "Interior"],
-        defaultValues = "centroid")
+        selectedValues = "centroid")
 String operation
 
 
-
+@LiteralDataInput(
+		title="Output table name",
+		resume="Name of the table containing the result of the process.")
+String outputTableName
 
 /*****************/
 /** OUTPUT Data **/
 /*****************/
 
-/** This DataStore is the output data source. */
-@DataStoreOutput(
-        title="Points",
-        resume="The output spatial data source to store the center of the geometries.",
-        isSpatial = true)
-String dataStoreOutput
+/** String output of the process. */
+@LiteralDataOutput(
+		title="Output message",
+		resume="The output message")
+String literalOutput
 

@@ -27,7 +27,7 @@ import org.orbisgis.wpsgroovyapi.process.*
         keywords = "Vector,Geometry,Properties")
 def processing() {
 //Build the start of the query
-    String query = "CREATE TABLE "+dataStoreOutput+" AS SELECT "
+    String query = "CREATE TABLE "+outputTableName+" AS SELECT "
    
 for (String operation : operations) {
 if(operation.equals("geomtype")){
@@ -76,6 +76,7 @@ else{
 
     //Execute the query
     sql.execute(query)
+    literalOutput = "Process done"
 }
 
 
@@ -87,7 +88,7 @@ else{
 @DataStoreInput(
         title = "Input spatial data",
         resume = "The spatial data source to compute the geometry properties.",
-        isSpatial = true)
+        dataStoreTypes = ["GEOMETRY"])
 String inputDataStore
 
 /**********************/
@@ -98,7 +99,7 @@ String inputDataStore
 @DataFieldInput(
         title = "Geometric field",
         resume = "The geometric field of the data source",
-        dataStore = "inputDataStore",
+        dataStoreTitle = "Input spatial data",
         fieldTypes = ["GEOMETRY"])
 String geometricField
 
@@ -107,26 +108,30 @@ String geometricField
         title = "Identifier field",
         resume = "A field used as an identifier",
 	excludedTypes=["GEOMETRY"],
-        dataStore = "inputDataStore")
+        dataStoreTitle = "Input spatial data")
 String idField
 
 @EnumerationInput(title="Operation",
         resume="Operation to compute the properties.",
         values=["geomtype","srid", "length","perimeter","area", "dimension", "coorddim", "num_geoms", "num_pts", "issimple", "isvalid", "isempty"],
         names=["Geometry type","SRID", "Length", "Perimeter", "Area", "Geometry dimension","Coordinate dimension", "Number of geometries", "Number of points", "Is simple", "Is valid", "Is empty" ],
-        defaultValues = "geomtype",
+        selectedValues = "geomtype",
 multiSelection = true)
 String[] operations
 
+
+@LiteralDataInput(
+        title="Output table name",
+        resume="Name of the table containing the result of the process.")
+String outputTableName
 
 /*****************/
 /** OUTPUT Data **/
 /*****************/
 
-/** This DataStore is the output data source. */
-@DataStoreOutput(
-        title="Geometry properties",
-        resume="The output data source to store the geometry properties.",
-        extensions=["geocatalog", "csv", "dbf"])
-String dataStoreOutput
+/** String output of the process. */
+@LiteralDataOutput(
+        title="Output message",
+        resume="The output message")
+String literalOutput
 

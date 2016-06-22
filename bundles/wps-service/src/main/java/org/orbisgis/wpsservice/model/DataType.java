@@ -55,6 +55,7 @@ public enum DataType {
     MULTIPOINT("multipolygon"),
     MULTILINESTRING("multilinestring"),
     MULTIPOLYGON("multipolygon"),
+    RASTER("raster"),
     NONE("none");
 
     /** URI for the data type. */

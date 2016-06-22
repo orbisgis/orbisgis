@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy
  * The Geometry is a complex data that represents a geometry.
  *
  * The following fields can be defined (optional) :
- *  - geometryType : String[]
+ *  - geometryTypes : String[]
  *      Array of geometry type allowed. If no types are specified, accept all.
  *  - excludedTypes : String[]
  *      Array of the type not allowed for the geometry.

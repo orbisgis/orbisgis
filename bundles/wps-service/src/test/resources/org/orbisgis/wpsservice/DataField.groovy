@@ -79,7 +79,7 @@ String dataStoreInput
                         @LanguageString(value = "entrée", lang = "fr")
                 ])
         ],
-        dataStore = "orbisgis:test:datastore:input",
+        dataStoreTitle = "orbisgis:test:datastore:input",
         excludedTypes = ["BOOLEAN"],
         minOccurs = 0,
         maxOccurs = 2,
@@ -117,9 +117,9 @@ String dataStoreOutput
                         @LanguageString(value = "sortie", lang = "fr")
                 ])
         ],
-        dataStore = "orbisgis:test:datastore:output",
+        dataStoreTitle = "orbisgis:test:datastore:output",
         fieldTypes = ["GEOMETRY", "NUMBER"],
-        isMultipleField = true,
+        multiSelection = true,
         identifier = "orbisgis:test:datafield:output",
         metadata = [
                 @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")

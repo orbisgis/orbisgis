@@ -68,8 +68,7 @@ def processing() {
 /** This DataStore is the input data source table. */
 @DataStoreInput(
         title = "Table",
-        resume = "The table to edit",
-        extensions = ["geocatalog"])
+        resume = "The table to edit")
 String tableName
 
 /**********************/
@@ -80,8 +79,8 @@ String tableName
 @DataFieldInput(
         title = "Fields",
         resume = "The field concerned by the value insertion",
-        dataStore = "tableName",
-        isMultipleField = true,
+        dataStoreTitle = "Table",
+        multiSelection = true,
         minOccurs = 0)
 String fields
 

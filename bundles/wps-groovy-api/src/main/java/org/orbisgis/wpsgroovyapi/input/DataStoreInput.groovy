@@ -63,8 +63,10 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *      Minimum number of times that values for this parameter are required. 0 means the input is optional.
  *  - maxOccurs : int
  *      Maximum number of times that this parameter may be present.
- *  - isSpatial : boolean
- *      Indicates if the data represented is spatial or not.
+ * - dataStoreTypes : String[]
+ *      List of field type that should be contained by the DataStore.
+ * - excludedTypes : String[]
+ *      List of field type forbidden for the DataSTore. If the DataStore contains the type, it won't be available.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *

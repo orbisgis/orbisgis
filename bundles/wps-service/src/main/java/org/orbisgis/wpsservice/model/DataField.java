@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Sylvain PALOMINOS
@@ -34,7 +33,7 @@ import java.util.Objects;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DataField", propOrder = {"dataStoreIdentifier", "fieldTypeList",
-        "excludedTypeList", "listFieldValue", "isMultipleField"})
+        "excludedTypeList", "listFieldValue", "multiSelection"})
 public class DataField extends ComplexDataType {
 
     /** Identifier of the parent DataStore */
@@ -53,8 +52,8 @@ public class DataField extends ComplexDataType {
     @XmlElement(name = "FieldValue", namespace = "http://orbisgis.org")
     private List<FieldValue> listFieldValue;
     /** Indicates if the use can choose more than one field*/
-    @XmlAttribute(name = "isMultipleField")
-    private boolean isMultipleField = false;
+    @XmlAttribute(name = "multiSelection")
+    private boolean multiSelection = false;
 
     /**
      * Main constructor.
@@ -162,15 +161,15 @@ public class DataField extends ComplexDataType {
      * Returns true if the user can select more than one field, false otherwise.
      * @return True if the user can select more than one field, false otherwise.
      */
-    public boolean isMultipleField() {
-        return isMultipleField;
+    public boolean isMultiSelection() {
+        return multiSelection;
     }
 
     /**
      * Sets if the user can select more than one field or not.
-     * @param multipleField True if the user can select more than one field, false otherwise.
+     * @param multiSelection True if the user can select more than one field, false otherwise.
      */
-    public void setMultipleField(boolean multipleField) {
-        isMultipleField = multipleField;
+    public void setMultiSelection(boolean multiSelection) {
+        this.multiSelection = multiSelection;
     }
 }

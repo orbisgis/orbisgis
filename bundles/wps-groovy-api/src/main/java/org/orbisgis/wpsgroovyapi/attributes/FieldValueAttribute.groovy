@@ -37,8 +37,8 @@ import java.lang.annotation.RetentionPolicy
  * The FieldValue complex data represents a list of values contained by a DataField.
  *
  * The following fields must be defined (mandatory) :
- *  - dataField : String
- *      Name of the variable which is the dataStore.
+ *  - dataFieldTitle : String
+ *      Title of the dataField.
  *
  * The following fields can be defined (optional) :
  *  - multiSelection : boolean
@@ -49,8 +49,8 @@ import java.lang.annotation.RetentionPolicy
 @Retention(RetentionPolicy.RUNTIME)
 @interface FieldValueAttribute {
 
-    /** Name of the variable which is the dataStore.*/
-    String dataField()
+    /** Title of the dataField.*/
+    String dataFieldTitle()
 
     /** Indicates if more than one value can be selected.*/
     boolean multiSelection() default false

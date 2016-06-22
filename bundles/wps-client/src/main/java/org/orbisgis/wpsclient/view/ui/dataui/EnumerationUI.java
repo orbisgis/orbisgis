@@ -241,7 +241,14 @@ public class EnumerationUI implements DataUI{
         }
         else {
             if(isMultiSelection){
-                dataMap.put(uri, listValues.toArray(new String[listValues.size()]));
+                String str = "";
+                for(String s : listValues){
+                    if(! str.isEmpty()){
+                        str+="\t";
+                    }
+                    str+=s;
+                }
+                dataMap.put(uri, str);
             }
             else {
                 dataMap.put(uri, listValues.get(0));

@@ -5,6 +5,7 @@ import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
+import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 
 /********************/
@@ -23,16 +24,17 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
 
     //Build the start of the query
-    String query = "CREATE TABLE "+dataStoreOutput+" AS SELECT ST_EXTRUDE("+geometricField+","+height+") AS the_geom "
+    String query = "CREATE TABLE "+outputTableName+" AS SELECT ST_EXTRUDE("+geometricField+","+height+") AS the_geom "
     
     if(fieldsList!=null){
-query += ", "+ fieldsList;
-}
+		query += ", "+ fieldsList;
+	}
 
 	query+=" FROM "+inputDataStore+";"
 
     //Execute the query
     sql.execute(query)
+	literalOutput = "Process done"
 }
 
 
@@ -43,7 +45,7 @@ query += ", "+ fieldsList;
 @DataStoreInput(
         title = "Input spatial data",
         resume = "The spatial data source that must be extruded.",
-        isSpatial = true)
+		dataStoreTypes = ["GEOMETRY"])
 String inputDataStore
 
 /**********************/
@@ -53,7 +55,7 @@ String inputDataStore
 @DataFieldInput(
         title = "Geometric field",
         resume = "The geometric field of the data source",
-        dataStore = "inputDataStore",
+		dataStoreTitle = "Input spatial data",
         fieldTypes = ["GEOMETRY"])
 String geometricField
 
@@ -61,7 +63,7 @@ String geometricField
 @DataFieldInput(
         title = "Height of the polygons",
         resume = "A numeric field to specify the height of the polygon.",
-        dataStore = "inputDataStore",
+        dataStoreTitle = "Input spatial data",
         fieldTypes = ["DOUBLE", "INTEGER", "LONG"])
 String height
 
@@ -69,19 +71,25 @@ String height
 @DataFieldInput(
         title = "Fields to keep",
         resume = "The fields that will be kept in the ouput",
-	excludedTypes=["GEOMETRY"],
-	isMultipleField=true,
-	minOccurs = 0,
-        dataStore = "inputDataStore")
+		excludedTypes=["GEOMETRY"],
+		multiSelection = true,
+		minOccurs = 0,
+        dataStoreTitle = "Input spatial data")
 String fieldsList
+
+
+@LiteralDataInput(
+		title="Output table name",
+		resume="Name of the table containing the result of the process.")
+String outputTableName
 
 /*****************/
 /** OUTPUT Data **/
 /*****************/
 
-@DataStoreOutput(
-        title="Output grid",
-        resume="The output grid",
-        isSpatial = true)
-String dataStoreOutput
+/** String output of the process. */
+@LiteralDataOutput(
+		title="Output message",
+		resume="The output message")
+String literalOutput
 

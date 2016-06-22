@@ -1,4 +1,4 @@
-package org.orbisgis.orbistoolbox.view.utils.scripts;
+package org.orbisgis.wpsservice.scripts
 
 import org.orbisgis.wpsgroovyapi.input.*
 import org.orbisgis.wpsgroovyapi.output.*
@@ -20,35 +20,35 @@ import org.orbisgis.wpsgroovyapi.process.*
         keywords = "Table,Join")
 def processing() {
 
-if(createIndex!=null && createIndex==true){
-sql.execute "create index on "+ rightDataStore + "("+ rightField +")"
-sql.execute "create index on "+ leftDataStore + "("+ leftField +")"
-}
+	if(createIndex!=null && createIndex==true){
+		sql.execute "create index on "+ rightDataStore + "("+ rightField +")"
+		sql.execute "create index on "+ leftDataStore + "("+ leftField +")"
+	}
 
-String query = "CREATE TABLE "+dataStoreOutput+" AS SELECT * FROM "
+	String query = "CREATE TABLE "+outputTableName+" AS SELECT * FROM "
 
-if(operation.equals("left")){
-query += leftDataStore + "JOIN " + rightDataStore + " ON " + leftDataStore+ "."+ leftField+ "="+ rightDataStore+"."+ rightField;
-}
-else if (operation.equals("left")){
+	if(operation.equals("left")){
+		query += leftDataStore + "JOIN " + rightDataStore + " ON " + leftDataStore+ "."+ leftField+ "="+ rightDataStore+"."+ rightField;
+	}
+	else if (operation.equals("left")){
 
-}
-//Execute the query
-sql.execute(query);
+	}
+	//Execute the query
+	sql.execute(query);
 
-//SELECT *
-//FROM A
-//LEFT JOIN B ON A.key = B.key
+	//SELECT *
+	//FROM A
+	//LEFT JOIN B ON A.key = B.key
 
-//SELECT *
-//FROM A
-//RIGHT JOIN B ON A.key = B.key
+	//SELECT *
+	//FROM A
+	//RIGHT JOIN B ON A.key = B.key
 
-//INNER JOIN
-//SELECT *
-//FROM A
-//INNER JOIN B ON A.key = B.key
-
+	//INNER JOIN
+	//SELECT *
+	//FROM A
+	//INNER JOIN B ON A.key = B.key
+	literalOutput = "Process done"
 }
 
 
@@ -76,7 +76,7 @@ String rightDataStore
 @DataFieldInput(
         title = "Left field",
         resume = "The field identifier of the left data source",
-        dataStore = "leftDataStore",
+        dataStoreTitle = "Left data source",
         excludedTypes = ["GEOMETRY"])
 String leftField
 
@@ -84,7 +84,7 @@ String leftField
 @DataFieldInput(
         title = "Right field",
         resume = "The field identifier of the right data source",
-        dataStore = "rightDataStore",
+        dataStoreTitle = "Right data source",
         excludedTypes = ["GEOMETRY"])
 String rightField
 
@@ -93,24 +93,30 @@ String rightField
         resume="Types of join.",
         values=["left","right", "union"],
         names=["Left join","Right join", "Union join" ],
-        defaultValues = "left",
+        selectedValues = "left",
 multiSelection = false)
 String operation
 
 
 @LiteralDataInput(
-        title="Create indexes",
-        resume="Create an index on each field identifiers to perform the join.",
-	minOccurs = 0)
+		title="Create indexes",
+		resume="Create an index on each field identifiers to perform the join.",
+		minOccurs = 0)
 Boolean createIndex
+
+
+@LiteralDataInput(
+		title="Output table name",
+		resume="Name of the table containing the result of the process.")
+String outputTableName
 
 /*****************/
 /** OUTPUT Data **/
 /*****************/
 
-/** This DataStore is the output data source. */
-@DataStoreOutput(
-        title="Join table",
-        resume="The output data source to store the result of the join.")
-String dataStoreOutput
+/** String output of the process. */
+@LiteralDataOutput(
+		title="Output message",
+		resume="The output message")
+String literalOutput
 

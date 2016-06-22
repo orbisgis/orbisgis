@@ -38,20 +38,24 @@ import java.lang.annotation.RetentionPolicy
  * It is linked to a DataStore and its allowed types can be specified.
  *
  * The following fields must be defined (mandatory) :
- *  - dataStore : String
- *      The variable name that contains the DataStore.
+ *  - dataStoreTitle : String
+ *      The title of the DataStore.
  *
  * The following fields can be defined (optional) :
  *  - fieldTypes : String[]
- *      Array of the type of the data contained in the column. If no types are specified, accept all.
+ *      Array of the types allowed. If no types are specified, accepts all.
+ *  - excludedTypes : String[]
+ *      Array of the type forbidden. If no types are specified, accept all.
+ *  - multiSelection : boolean
+ *      Enable or not the user to select more than one field. Disabled by default.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface DataFieldAttribute {
 
-    /** The variable name that contains the DataStore.*/
-    String dataStore()
+    /** Title of the DataStore.*/
+    String dataStoreTitle()
 
     /** Array of the type allowed for the data field. If no types are specified, accept all.*/
     String[] fieldTypes() default []
@@ -60,7 +64,7 @@ import java.lang.annotation.RetentionPolicy
     String[] excludedTypes() default []
 
     /** Enable or not the user to select more than one field.*/
-    boolean isMultipleField() default false
+    boolean multiSelection() default false
 
 
 
@@ -69,4 +73,5 @@ import java.lang.annotation.RetentionPolicy
     /********************/
     public static final String[] defaultFieldType = []
     public static final String[] defaultExcludedType = []
+    public static final boolean defaultMultiSelection = []
 }

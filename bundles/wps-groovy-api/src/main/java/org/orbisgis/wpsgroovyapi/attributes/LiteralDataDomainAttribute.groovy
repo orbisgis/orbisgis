@@ -44,7 +44,7 @@ import java.lang.annotation.RetentionPolicy
  * The following fields can be defined (optional) :
  *  - uom : String
  *      Indicates that this quantity has units and provides the unit of measurement.
- *  - defaultValue : ValuesAttribute
+ *  - defaultValue : String
  *      Default value for this quantity.
  *  - isDefault : boolean
  *      Indicates that this is the default/native domain.
@@ -64,7 +64,7 @@ import java.lang.annotation.RetentionPolicy
     String uom() default ""
 
     /** Default value for this quantity. */
-    String selectedValues() default ""
+    String defaultValue() default ""
 
     /** Indicates that this is the default/native domain. */
     boolean isDefault() default false
@@ -75,6 +75,6 @@ import java.lang.annotation.RetentionPolicy
     /** default values **/
     /********************/
     public static final String defaultUOM = ""
-    public static final String defaultSelectedValues = ""
+    public static final String defaultSelectedValue = ""
     public static final boolean[] defaultIsDefault = false
 }

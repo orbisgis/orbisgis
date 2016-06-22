@@ -1,4 +1,4 @@
-package org.orbisgis.orbistoolbox.view.utils.scripts;
+package org.orbisgis.wpsservice.scripts
 
 import org.orbisgis.wpsgroovyapi.input.*
 import org.orbisgis.wpsgroovyapi.output.*
@@ -37,7 +37,7 @@ literalOutput = "The graph network has been created."
 @DataStoreInput(
         title = "Input spatial data",
         resume = "The spatial data source to create the graphe tables.",
-        isSpatial = true)
+        dataStoreTypes = ["GEOMETRY"])
 String inputDataStore
 
 
@@ -49,7 +49,7 @@ String inputDataStore
 @DataFieldInput(
         title = "Geometric field",
         resume = "The geometric field of the data source",
-        dataStore = "inputDataStore",
+        dataStoreTitle = "Input spatial data",
         fieldTypes = ["GEOMETRY"])
 String geometricField
 

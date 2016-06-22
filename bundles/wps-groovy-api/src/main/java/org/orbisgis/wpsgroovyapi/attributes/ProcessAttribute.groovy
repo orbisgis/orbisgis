@@ -39,6 +39,8 @@ import java.lang.annotation.RetentionPolicy
  * The following fields can be defined (optional) :
  *  - language : String
  *      Language of the process.
+ *  - version : String
+ *      Version of the process.
  *
  * @author Sylvain PALOMINOS
  */
@@ -50,8 +52,6 @@ import java.lang.annotation.RetentionPolicy
 
     String version() default ""
 
-    String dbms() default ""
-
 
 
     /********************/
@@ -59,5 +59,4 @@ import java.lang.annotation.RetentionPolicy
     /********************/
     public static final String defaultLanguage = "en"
     public static final String defaultVersion = ""
-    public static final String defaultDbms = ""
 }

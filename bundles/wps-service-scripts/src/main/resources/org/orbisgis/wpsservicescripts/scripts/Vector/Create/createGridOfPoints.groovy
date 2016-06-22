@@ -5,6 +5,7 @@ import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
+import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 
 /********************/
@@ -23,10 +24,11 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
 
     //Build the start of the query
-    String query = "CREATE TABLE "+dataStoreOutput+" AS SELECT * from ST_MakeGridPoints('"+inputDataStore+"',"+x_distance+","+y_distance+")"
+    String query = "CREATE TABLE "+outputTableName+" AS SELECT * from ST_MakeGridPoints('"+inputDataStore+"',"+x_distance+","+y_distance+")"
     
     //Execute the query
     sql.execute(query)
+    literalOutput = "Process done"
 }
 
 
@@ -37,7 +39,7 @@ def processing() {
 @DataStoreInput(
         title = "Input spatial data",
         resume = "The spatial data source to compute the grid. The extend of grid is based on the full extend of the table.",
-        isSpatial = true)
+        dataStoreTypes = ["GEOMETRY"])
 String inputDataStore
 
 /**********************/
@@ -54,13 +56,19 @@ Double x_distance =1
         resume="The Y cell size")
 Double y_distance =1
 
+
+@LiteralDataInput(
+        title="Output table name",
+        resume="Name of the table containing the result of the process.")
+String outputTableName
+
 /*****************/
 /** OUTPUT Data **/
 /*****************/
 
-@DataStoreOutput(
-        title="Output grid",
-        resume="The output grid",
-        isSpatial = true)
-String dataStoreOutput
+/** String output of the process. */
+@LiteralDataOutput(
+        title="Output message",
+        resume="The output message")
+String literalOutput
 

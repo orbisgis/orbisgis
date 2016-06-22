@@ -95,7 +95,7 @@ public class DataFieldUI implements DataUI{
         if(dataField == null){
             return panel;
         }
-        if(dataField.isMultipleField()){
+        if(dataField.isMultiSelection()){
             JList<ContainerItem<Object>> list = new JList<>();
             list.setModel(new DefaultListModel<ContainerItem<Object>>());
             list.setCellRenderer(new JPanelListRenderer());
@@ -318,7 +318,7 @@ public class DataFieldUI implements DataUI{
                         fieldList = model.getElementAt(i).getLabel();
                     }
                     else{
-                        fieldList += ","+model.getElementAt(i).getLabel();
+                        fieldList += "\t"+model.getElementAt(i).getLabel();
                     }
                 }
                 DataField dataField = (DataField) list.getClientProperty(DATA_FIELD_PROPERTY);

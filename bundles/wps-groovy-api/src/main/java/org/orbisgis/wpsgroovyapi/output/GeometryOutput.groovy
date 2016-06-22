@@ -53,7 +53,7 @@ import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute
  *      Indicates that the RawData can be a directory.
  *  - isFile : boolean
  *      Indicates that the RawData can be a file.
- *  - geometryType : String[]
+ *  - geometryTypes : String[]
  *      Array of geometry type allowed. If no types are specified, accept all.
  *  - excludedTypes : String[]
  *      Array of the type not allowed for the geometry.

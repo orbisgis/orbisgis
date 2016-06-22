@@ -22,16 +22,15 @@ package org.orbisgis.wpsservice.controller.process;
 import groovy.lang.GroovyObject;
 import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.MetadataType;
-import net.opengis.wps._2_0.InputDescriptionType;
-import net.opengis.wps._2_0.OutputDescriptionType;
-import net.opengis.wps._2_0.ProcessDescriptionType;
-import net.opengis.wps._2_0.ProcessOffering;
+import net.opengis.wps._2_0.*;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
 import org.orbisgis.wpsservice.controller.utils.CancelClosure;
 import org.orbisgis.wpsservice.controller.utils.WpsSql;
+import org.orbisgis.wpsservice.model.DataField;
+import org.orbisgis.wpsservice.model.FieldValue;
 import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.slf4j.LoggerFactory;
 
@@ -223,6 +222,14 @@ public class ProcessManager {
                 if(f != null) {
                     f.setAccessible(true);
                     Object data = dataMap.get(URI.create(i.getIdentifier().getValue()));
+                    //If the descriptionType contains a FieldValue, a DataField or an Enumeration, parse the value
+                    // which is coma separated.
+                    DataDescriptionType dataDescriptionType = i.getDataDescription().getValue();
+                    if(dataDescriptionType instanceof FieldValue ||
+                            dataDescriptionType instanceof DataField ||
+                            dataDescriptionType instanceof Enumeration){
+                        data = data.toString().split("\\t");
+                    }
                     if(Number.class.isAssignableFrom(f.getType()) && data != null) {
                         try {
                             Method valueOf = f.getType().getMethod("valueOf", String.class);
