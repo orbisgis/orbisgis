@@ -1,6 +1,4 @@
-//TODO : header
-
-package org.orbisgis.wpsservicescripts.scripts
+package org.orbisgis.wpsservice.scripts
 
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
@@ -21,17 +19,17 @@ import org.orbisgis.wpsgroovyapi.process.Process
  *
  * @author Sylvain PALOMINOS
  */
-@Process(title = "RemoveRow",
-        resume = "Remove rows from a table.",
-        keywords = ["OrbisGIS","table_editor"])
+@Process(title = "Delete rows",
+        resume = "Delete rows from a table.",
+        keywords = "Table,Delete")
 def processing() {
     //Build the start of the query
     for (String s : pkToRemove) {
-        String query = "DELETE FROM " + tableName + " WHERE " + pkField + " = " + Long.parseLong(s)
+        String query = "DELETE FROM " + tableName + " WHERE " + pkField[0] + " = " + Long.parseLong(s)
         //Execute the query
         sql.execute(query)
     }
-    literalOutput = "Remove done."
+    literalOutput = "Delete done."
 }
 
 
@@ -54,7 +52,7 @@ String tableName
         title = "PKField",
         resume = "The primary key field",
         dataStoreTitle = "Table")
-String pkField
+String[] pkField
 
 /** List of primary keys to remove from the table. */
 @FieldValueInput(

@@ -1,6 +1,4 @@
-//TODO : header
-
-package org.orbisgis.wpsservicescripts.scripts
+package org.orbisgis.wpsservice.scripts
 
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
@@ -23,15 +21,23 @@ import org.orbisgis.wpsgroovyapi.process.Process
  *
  * @author Sylvain PALOMINOS
  */
-@Process(title = "InsertInto",
+@Process(title = "Insert values",
         resume = "Insert values into a table.",
-        keywords = ["OrbisGIS","table_editor"])
+        keywords = "Table,Insert,Values")
 def processing() {
     //Build the query
     String queryBase = "INSERT INTO " + tableName;
-    if(fields != null){
-        queryBase += " (" + fields + ") ";
+    queryBase += " (";
+    String fieldsStr=""
+    for(String field : fieldList) {
+        if (field != null) {
+            if(!fieldsStr.isEmpty()) {
+                fieldsStr += ", ";
+            }
+            fieldsStr += field;
+        }
     }
+    queryBase += ") ";
     queryBase += " VALUES (";
     //execute the query for each row
     String[] rowArray = values.split(";")
@@ -80,7 +86,7 @@ String tableName
         dataStoreTitle = "Table",
         multiSelection = true,
         minOccurs = 0)
-String fields
+String[] fieldList
 
 /** Coma separated values to insert. */
 @LiteralDataInput(

@@ -1,15 +1,10 @@
-//TODO : header
+package org.orbisgis.wpsservice.scripts
 
-package org.orbisgis.wpsservicescripts.scripts
-
-import org.orbisgis.wpsgroovyapi.attributes.LiteralDataDomainAttribute
-import org.orbisgis.wpsgroovyapi.attributes.PossibleLiteralValuesChoiceAttribute
-import org.orbisgis.wpsgroovyapi.attributes.ValuesAttribute
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
-import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
+import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 
 /********************/
@@ -17,7 +12,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /********************/
 
 /**
- * This process execute a buffer on a spatial data source using the ST_Buffer() function from H2GIS.
+ * This process execute a buffer on a spatial data source using the ST_Buffer() function.
  * The user has to specify (mandatory):
  *  - The input spatial data source (DataStore)
  *  - The BufferSize (LiteralData)
@@ -32,14 +27,15 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @return A datadase table.
  * @see http://www.h2gis.org/docs/dev/ST_Buffer/
  * @author Sylvain PALOMINOS
+ * @author Erwan BOCHER
  */
-@Process(title = "Buffer",
-        resume = "Execute a buffer on a geometric field.",
-        keywords = ["OrbisGIS","ST_Buffer","example"])
+@Process(title = "Fixed distance buffer",
+        resume = "Execute a buffer on a geometric field with a constant distance.",
+        keywords = "Vector,Geometry")
 def processing() {
 
     //Build the start of the query
-    String query = "CREATE TABLE "+dataStoreOutputName+" AS SELECT ST_Buffer("+geometricField+","+bufferSize
+    String query = "CREATE TABLE "+outputTableName+" AS SELECT ST_Buffer("+geometricField+","+bufferSize
     //Build the third optional parameter
     String optionalParameter = "";
     //If quadSegs is defined
@@ -63,12 +59,18 @@ def processing() {
         query += ",'"+optionalParameter+"'";
     }
     //Build the end of the query
-    query += ") AS the_geom FROM "+inputDataStore+";"
+    query += ") AS the_geom";
+    for(String field : fieldList) {
+        if (field != null) {
+            query += ", " + field;
+        }
+    }
 
-    dataStoreOutput = dataStoreOutputName;
+	query+=" FROM "+inputDataStore+";"
 
     //Execute the query
     sql.execute(query)
+    literalOutput = "Process done"
 }
 
 
@@ -98,18 +100,8 @@ String geometricField
 /** Size of the buffer. */
 @LiteralDataInput(
         title="Buffer Size",
-        resume="The buffer size",
-        validDomains=[
-                @LiteralDataDomainAttribute(possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(
-                        allowedValues = [
-                                @ValuesAttribute(type = "RANGE", value = "5", minimum="1", maximum="10", spacing="2"),
-                                @ValuesAttribute(type = "VALUE", value = "20")
-                        ]
-                ),
-                        dataType = "INTEGER")
-        ]
-)
-Integer bufferSize
+        resume="The buffer size")
+Double bufferSize 
 
 /** Mitre ratio limit (only affects mitered join style). */
 @LiteralDataInput(
@@ -130,7 +122,7 @@ Integer quadSegs = 8
         title="Endcap style",
         resume="The endcap style",
         values=["round", "flat", "butt", "square"],
-        selectedValues=["round"],
+        selectedValues = ["round"],
         minOccurs = 0)
 String endcapStyle
 
@@ -139,25 +131,33 @@ String endcapStyle
         title="Join style",
         resume="The join style",
         values=["round", "mitre", "miter", "bevel"],
-        selectedValues=["round"],
+        selectedValues = ["round"],
         minOccurs = 0)
 String joinStyle
 
-/** Output DataStore name. */
+/** Fields to keep. */
+@DataFieldInput(
+        title = "Fields to keep",
+        resume = "The fields that will be kept in the ouput",
+        excludedTypes=["GEOMETRY"],
+        multiSelection = true,
+        minOccurs = 0,
+        dataStoreTitle = "Input spatial data")
+String[] fieldList
+
+
 @LiteralDataInput(
-        title="DataStore name",
-        resume="The DataStore name"
-)
-String dataStoreOutputName
+        title="Output table name",
+        resume="Name of the table containing the result of the process.")
+String outputTableName
 
 /*****************/
 /** OUTPUT Data **/
 /*****************/
 
-/** This DataStore is the output data source for the buffer. */
-@DataStoreOutput(
-        title="Output Data",
-        resume="The output spatial data source of the buffer",
-        dataStoreTypes = "GEOMETRY")
-String dataStoreOutput
+/** String output of the process. */
+@LiteralDataOutput(
+        title="Output message",
+        resume="The output message")
+String literalOutput
 

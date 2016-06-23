@@ -280,18 +280,26 @@ public class EnumerationUI implements DataUI{
             }
             List<String> listValues = new ArrayList<>();
             if(!isMultiSelection && !text.isEmpty()){
+                text = text.replaceAll(",", "\t");
                 listValues.add(text.split(",")[0]);
             }
             else {
                 dataMap.remove(uri);
                 if(!text.isEmpty()) {
+                    text = text.replaceAll(",", "\t");
                     Collections.addAll(listValues, text.split(","));
                 }
                 for (int i : list.getSelectedIndices()) {
                     listValues.add(list.getModel().getElementAt(i).getKey());
                 }
             }
-            dataMap.put(uri, listValues);
+            String str = "";
+            for(String value : listValues){
+                if(!str.isEmpty()){
+                    str += value;
+                }
+            }
+            dataMap.put(uri, str);
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(EnumerationUI.class).error(e.getMessage());
         }

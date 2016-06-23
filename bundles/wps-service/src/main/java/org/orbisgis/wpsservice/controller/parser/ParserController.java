@@ -69,6 +69,7 @@ public class ParserController {
         parserList.add(new EnumerationParser());
         parserList.add(new RawDataParser());
         parserList.add(new GeometryParser());
+        parserList.add(new PasswordParser());
         processParser = new ProcessParser();
         groovyClassLoader = new GroovyShell().getClassLoader();
     }

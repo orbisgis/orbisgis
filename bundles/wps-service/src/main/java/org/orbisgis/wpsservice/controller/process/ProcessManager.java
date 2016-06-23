@@ -31,6 +31,7 @@ import org.orbisgis.wpsservice.controller.utils.CancelClosure;
 import org.orbisgis.wpsservice.controller.utils.WpsSql;
 import org.orbisgis.wpsservice.model.DataField;
 import org.orbisgis.wpsservice.model.FieldValue;
+import org.orbisgis.wpsservice.model.Enumeration;
 import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.slf4j.LoggerFactory;
 
@@ -228,7 +229,9 @@ public class ProcessManager {
                     if(dataDescriptionType instanceof FieldValue ||
                             dataDescriptionType instanceof DataField ||
                             dataDescriptionType instanceof Enumeration){
-                        data = data.toString().split("\\t");
+                        if(data != null) {
+                            data = data.toString().split("\\t");
+                        }
                     }
                     if(Number.class.isAssignableFrom(f.getType()) && data != null) {
                         try {

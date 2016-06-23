@@ -111,7 +111,21 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
         //Check the WpsService
         if(localWpsService != null){
             //Default method to load the scripts
-            defaultLoadScript("OrbisGIS/script", new String[]{"orbisgis.png"});
+            String[] icons = loadIcons(new String[]{"orbisgis.png"});
+            customLoadScript("scripts/IO/csvToPointLayer.groovy", icons, "OrbisGIS/IO");
+            customLoadScript("scripts/Network/createGraph.groovy", icons, "OrbisGIS/Network");
+            customLoadScript("scripts/Table/deleteRows.groovy", icons, "OrbisGIS/Table");
+            customLoadScript("scripts/Table/insertValues.groovy", icons, "OrbisGIS/Table");
+            customLoadScript("scripts/Table/joinTables.groovy", icons, "OrbisGIS/Table");
+            customLoadScript("scripts/Vector/Convert/extractCenter.groovy", icons, "OrbisGIS/Vector/Convert");
+            customLoadScript("scripts/Vector/Create/createGridOfPoints.groovy", icons, "OrbisGIS/Vector/Create");
+            customLoadScript("scripts/Vector/Create/createGridOfPolygons.groovy", icons, "OrbisGIS/Vector/Create");
+            customLoadScript("scripts/Vector/Create/fixedExtrudePolygons.groovy", icons, "OrbisGIS/Vector/Create");
+            customLoadScript("scripts/Vector/Create/variableExtrudePolygons.groovy", icons, "OrbisGIS/Vector/Create");
+            customLoadScript("scripts/Vector/Operators/fixedDistanceBuffer.groovy", icons, "OrbisGIS/Vector/Operators");
+            customLoadScript("scripts/Vector/Operators/variableDistanceBuffer.groovy", icons, "OrbisGIS/Vector/Operators");
+            customLoadScript("scripts/Vector/Properties/geometryProperties.groovy", icons, "OrbisGIS/Vector/Properties");
+            customLoadScript("scripts/Vector/Transform/reprojectGeometries.groovy", icons, "OrbisGIS/Vector/Transform");
 
             //Check the WpsClient
             if(wpsClient != null){
