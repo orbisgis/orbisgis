@@ -21,14 +21,14 @@ import org.orbisgis.wpsgroovyapi.process.*
 def processing() {
 
 	if(createIndex!=null && createIndex==true){
-		sql.execute "create index on "+ rightDataStore + "("+ rightField +")"
-		sql.execute "create index on "+ leftDataStore + "("+ leftField +")"
+		sql.execute "create index on "+ rightDataStore + "("+ rightField[0] +")"
+		sql.execute "create index on "+ leftDataStore + "("+ leftField[0] +")"
 	}
 
 	String query = "CREATE TABLE "+outputTableName+" AS SELECT * FROM "
 
 	if(operation.equals("left")){
-		query += leftDataStore + "JOIN " + rightDataStore + " ON " + leftDataStore+ "."+ leftField+ "="+ rightDataStore+"."+ rightField;
+		query += leftDataStore + "JOIN " + rightDataStore + " ON " + leftDataStore+ "."+ leftField[0]+ "="+ rightDataStore+"."+ rightField[0];
 	}
 	else if (operation.equals("left")){
 
@@ -78,7 +78,7 @@ String rightDataStore
         resume = "The field identifier of the left data source",
         dataStoreTitle = "Left data source",
         excludedTypes = ["GEOMETRY"])
-String leftField
+String[] leftField
 
 /** Name of the identifier field of the right dataStore. */
 @DataFieldInput(
@@ -86,7 +86,7 @@ String leftField
         resume = "The field identifier of the right data source",
         dataStoreTitle = "Right data source",
         excludedTypes = ["GEOMETRY"])
-String rightField
+String[] rightField
 
 
 @EnumerationInput(title="Operation",

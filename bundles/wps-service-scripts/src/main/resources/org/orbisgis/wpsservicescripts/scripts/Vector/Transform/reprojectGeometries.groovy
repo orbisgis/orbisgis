@@ -25,19 +25,22 @@ import org.orbisgis.wpsgroovyapi.process.*
         resume = "Reproject geometries from one Coordinate Reference System to another.",
         keywords = "Vector,Geometry,Reproject")
 def processing() {
-//Build the start of the query
-    String query = "CREATE TABLE "+outputTableName+" AS SELECT ST_TRANSFORM("
-query += geometricField+","+srid[0]
-   
-    //Build the end of the query
-    query += ") AS the_geom ";
+	logger.warn("test")
+	//Build the start of the query
+	String query = "CREATE TABLE " + outputTableName + " AS SELECT ST_TRANSFORM("
+	query += geometricField[0] + "," + srid[0]
 
-if(fieldsList!=null){
-query += ", "+ fieldsList;
-}
+	//Build the end of the query
+	query += ") AS the_geom ";
+
+	for (String field : fieldList) {
+		if (field != null) {
+			query += ", " + field;
+		}
+	}
 
  	query +=  " FROM "+inputDataStore+";"
-
+	logger.warn(query)
     //Execute the query
     sql.execute(query)
 	literalOutput = "Process done"
@@ -65,7 +68,7 @@ String inputDataStore
         resume = "The geometric field of the data source",
         dataStoreTitle = "Input spatial data",
         fieldTypes = ["GEOMETRY"])
-String geometricField
+String[] geometricField
 
 
 /** The spatial_ref SRID */
@@ -84,7 +87,7 @@ String[] srid
 		multiSelection = true,
 		minOccurs = 0,
         dataStoreTitle = "Input spatial data")
-String fieldsList
+String[] fieldList
 
 
 @LiteralDataInput(

@@ -22,10 +22,12 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
 
     //Build the start of the query
-    String query = "CREATE TABLE "+outputTableName+" AS SELECT ST_EXTRUDE("+geometricField+","+height+") AS the_geom "
-    
-    if(fieldsList!=null){
-		query += ", "+ fieldsList;
+    String query = "CREATE TABLE "+outputTableName+" AS SELECT ST_EXTRUDE("+geometricField[0]+","+height+") AS the_geom "
+
+	for(String field : fieldList) {
+		if (field != null) {
+			query += ", " + field;
+		}
 	}
 
 	query+=" FROM "+inputDataStore+";"
@@ -55,7 +57,7 @@ String inputDataStore
         resume = "The geometric field of the data source",
 		dataStoreTitle = "Input spatial data",
         fieldTypes = ["GEOMETRY"])
-String geometricField
+String[] geometricField
 
 
 @LiteralDataInput(
@@ -71,7 +73,7 @@ Double height = 1
 		multiSelection = true,
 		minOccurs = 0,
         dataStoreTitle = "Input spatial data")
-String fieldsList
+String[] fieldList
 
 
 @LiteralDataInput(

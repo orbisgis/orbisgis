@@ -31,48 +31,46 @@ def processing() {
    
     for (String operation : operations) {
         if(operation.equals("geomtype")){
-            query += " ST_GeometryType("+geometricField+") as geomType,"
+            query += " ST_GeometryType("+geometricField[0]+") as geomType,"
         }
         else if(operation.equals("srid")){
-            query += " ST_SRID("+geometricField+") as srid,"
+            query += " ST_SRID("+geometricField[0]+") as srid,"
         }
         else if(operation.equals("length")){
-            query += " ST_Length("+geometricField+") as length,"
+            query += " ST_Length("+geometricField[0]+") as length,"
         }
         else if(operation.equals("perimeter")){
-            query += " ST_Perimeter("+geometricField+") as perimeter,"
+            query += " ST_Perimeter("+geometricField[0]+") as perimeter,"
         }
         else if(operation.equals("area")){
-            query += " ST_Area("+geometricField+") as area,"
+            query += " ST_Area("+geometricField[0]+") as area,"
         }
         else if(operation.equals("dimension")){
-            query += " ST_Dimension("+geometricField+") as dimension,"
+            query += " ST_Dimension("+geometricField[0]+") as dimension,"
         }
         else if(operation.equals("coorddim")){
-            query += " ST_Coorddim("+geometricField+") as coorddim,"
+            query += " ST_Coorddim("+geometricField[0]+") as coorddim,"
         }
         else if(operation.equals("num_geoms")){
-            query += " ST_NumGeometries("+geometricField+") as numGeometries,"
+            query += " ST_NumGeometries("+geometricField[0]+") as numGeometries,"
         }
         else if(operation.equals("num_pts")){
-            query += " ST_NPoints("+geometricField+") as numPts,"
+            query += " ST_NPoints("+geometricField[0]+") as numPts,"
         }
         else if(operation.equals("issimple")){
-            query += " ST_Issimple("+geometricField+") as issimple,"
+            query += " ST_Issimple("+geometricField[0]+") as issimple,"
         }
         else if(operation.equals("isvalid")){
-            query += " ST_Isvalid("+geometricField+") as isvalid,"
+            query += " ST_Isvalid("+geometricField[0]+") as isvalid,"
         }
         else if(operation.equals("isempty")){
-            query += " ST_Isempty("+geometricField+") as isempty,"
-        }
-        else{
+            query += " ST_Isempty("+geometricField[0]+") as isempty,"
         }
     }
 
 
     //Add the field id
-    query += idField + " FROM "+inputDataStore+";"
+    query += idField[0] + " FROM "+inputDataStore+";"
 
     //Execute the query
     sql.execute(query)
@@ -101,7 +99,7 @@ String inputDataStore
         resume = "The geometric field of the data source",
         dataStoreTitle = "Input spatial data",
         fieldTypes = ["GEOMETRY"])
-String geometricField
+String[] geometricField
 
 /** Name of the identifier field of the DataStore inputDataStore. */
 @DataFieldInput(
@@ -109,7 +107,7 @@ String geometricField
         resume = "A field used as an identifier",
 	excludedTypes=["GEOMETRY"],
         dataStoreTitle = "Input spatial data")
-String idField
+String[] idField
 
 @EnumerationInput(title="Operation",
         resume="Operation to compute the properties.",

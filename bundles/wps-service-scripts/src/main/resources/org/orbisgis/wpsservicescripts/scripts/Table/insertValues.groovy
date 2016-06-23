@@ -27,9 +27,17 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
     //Build the query
     String queryBase = "INSERT INTO " + tableName;
-    if(fields != null){
-        queryBase += " (" + fields + ") ";
+    queryBase += " (";
+    String fieldsStr=""
+    for(String field : fieldList) {
+        if (field != null) {
+            if(!fieldsStr.isEmpty()) {
+                fieldsStr += ", ";
+            }
+            fieldsStr += field;
+        }
     }
+    queryBase += ") ";
     queryBase += " VALUES (";
     //execute the query for each row
     String[] rowArray = values.split(";")
@@ -78,7 +86,7 @@ String tableName
         dataStoreTitle = "Table",
         multiSelection = true,
         minOccurs = 0)
-String fields
+String[] fieldList
 
 /** Coma separated values to insert. */
 @LiteralDataInput(

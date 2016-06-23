@@ -4,6 +4,7 @@ import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.input.RawDataInput
 import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
+import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 
 /********************/
@@ -49,7 +50,7 @@ def processing() {
         sql.execute(create + " AS SELECT "+idField+", ST_MakePoint("+xField+", "+yField+") THE_GEOM FROM "+csvRead+";");
     }
 
-    dataStoreOutput = dataStoreOutputName;
+    literalOutput = "Process done"
 }
 
 /****************/
@@ -112,6 +113,7 @@ String dataStoreOutputName
 /************/
 /** OUTPUT **/
 /************/
-@DataStoreOutput(title="Output point layer",
-        resume="The output point layer.")
-String dataStoreOutput
+@LiteralDataOutput(
+        title="Output message",
+        resume="The output message")
+String literalDataOutput

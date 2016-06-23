@@ -35,7 +35,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
 
     //Build the start of the query
-    String query = "CREATE TABLE "+outputTableName+" AS SELECT ST_Buffer("+geometricField+","+bufferSize
+    String query = "CREATE TABLE "+outputTableName+" AS SELECT ST_Buffer("+geometricField[0]+","+bufferSize[0]
     //Build the third optional parameter
     String optionalParameter = "";
     //If quadSegs is defined
@@ -61,9 +61,11 @@ def processing() {
     //Build the end of the query
     query += ") AS the_geom";
 
-if(fieldsList!=null){
-query += ", "+ fieldsList;
-}
+    for(String field : fieldList) {
+        if (field != null) {
+            query += ", " + field;
+        }
+    }
 
 	query+=" FROM "+inputDataStore+";"
 
@@ -93,7 +95,7 @@ String inputDataStore
         resume = "The geometric field of the data source",
         dataStoreTitle = "Input spatial data",
         fieldTypes = ["GEOMETRY"])
-String geometricField
+String[] geometricField
 
 
 @DataFieldInput(
@@ -101,7 +103,7 @@ String geometricField
         resume = "A numeric field to specify the size of the buffer",
         dataStoreTitle = "Input spatial data",
         fieldTypes = ["DOUBLE", "INTEGER", "LONG"])
-String bufferSize
+String[] bufferSize
 
 /** Mitre ratio limit (only affects mitered join style). */
 @LiteralDataInput(
@@ -143,7 +145,7 @@ String joinStyle
         multiSelection = true,
         minOccurs = 0,
         dataStoreTitle = "Input spatial data")
-String fieldsList
+String[] fieldList
 
 
 @LiteralDataInput(

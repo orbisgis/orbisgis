@@ -228,7 +228,7 @@ public class FieldValueUI implements DataUI{
                     }
                 }
                 else if (dataMap.get(fieldValue.getDataStoreIdentifier()) != null){
-                    tableName = ((URI) dataMap.get(fieldValue.getDataStoreIdentifier())).getSchemeSpecificPart();
+                    tableName = dataMap.get(fieldValue.getDataStoreIdentifier()).toString();
                     fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
                 }
                 if(tableName != null && fieldName != null) {

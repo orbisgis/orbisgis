@@ -20,17 +20,17 @@ import org.orbisgis.wpsgroovyapi.process.*
         keywords = "Vector,Geometry,Extract,Center")
 def processing() {
 	//Build the start of the query
-    	String query = "CREATE TEMPORARY TABLE "+outputTableName+" AS SELECT "
+	String query = "CREATE TEMPORARY TABLE "+outputTableName+" AS SELECT "
    
 
-	if(operation.equalsIgnoreCase("centroid")){
-query += " ST_Centroid("+geometricField+""
-}
-else{
-query += " ST_PointOnSurface("+geometricField+""
-}    
+	if(operation[0].equalsIgnoreCase("centroid")){
+		query += " ST_Centroid("+geometricField[0]+""
+	}
+	else{
+		query += " ST_PointOnSurface("+geometricField[0]+""
+	}
     //Build the end of the query
-    query += ") AS the_geom ,"+ idField+ " FROM "+inputDataStore+";"
+    query += ") AS the_geom ,"+ idField[0]+ " FROM "+inputDataStore+";"
 
     //Execute the query
     sql.execute(query)
@@ -59,7 +59,7 @@ String inputDataStore
         resume = "The geometric field of the data source",
         dataStoreTitle = "Input spatial data",
         fieldTypes = ["GEOMETRY"])
-String geometricField
+String[] geometricField
 
 /** Name of the identifier field of the DataStore inputDataStore. */
 @DataFieldInput(
@@ -67,14 +67,14 @@ String geometricField
         resume = "A field used as an identifier",
 	excludedTypes=["GEOMETRY"],
 		dataStoreTitle = "Input spatial data")
-String idField
+String[] idField
 
 @EnumerationInput(title="Operation",
         resume="Operation to extract the points.",
         values=["centroid", "interior"],
         names=["Centroid", "Interior"],
         selectedValues = "centroid")
-String operation
+String[] operation
 
 
 @LiteralDataInput(

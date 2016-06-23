@@ -60,10 +60,11 @@ def processing() {
     }
     //Build the end of the query
     query += ") AS the_geom";
-
-if(fieldsList!=null){
-query += ", "+ fieldsList;
-}
+    for(String field : fieldList) {
+        if (field != null) {
+            query += ", " + field;
+        }
+    }
 
 	query+=" FROM "+inputDataStore+";"
 
@@ -142,7 +143,7 @@ String joinStyle
         multiSelection = true,
         minOccurs = 0,
         dataStoreTitle = "Input spatial data")
-String fieldsList
+String[] fieldList
 
 
 @LiteralDataInput(

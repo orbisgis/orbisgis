@@ -19,7 +19,7 @@ import org.orbisgis.wpsgroovyapi.process.*
         keywords = "Network,Geometry")
 def processing() {
 	
-    String query = " SELECT ST_GRAPH('"   + inputDataStore + "', '"+geometricField+"',"+tolerance+ ", "+ slope+ ")"
+    String query = " SELECT ST_GRAPH('"   + inputDataStore + "', '"+geometricField[0]+"',"+tolerance+ ", "+ slope+ ")"
 
 println(query);
 
@@ -51,7 +51,7 @@ String inputDataStore
         resume = "The geometric field of the data source",
         dataStoreTitle = "Input spatial data",
         fieldTypes = ["GEOMETRY"])
-String geometricField
+String[] geometricField
 
 /** Snapping tolerance. */
 @LiteralDataInput(

@@ -25,7 +25,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
     //Build the start of the query
     for (String s : pkToRemove) {
-        String query = "DELETE FROM " + tableName + " WHERE " + pkField + " = " + Long.parseLong(s)
+        String query = "DELETE FROM " + tableName + " WHERE " + pkField[0] + " = " + Long.parseLong(s)
         //Execute the query
         sql.execute(query)
     }
@@ -52,7 +52,7 @@ String tableName
         title = "PKField",
         resume = "The primary key field",
         dataStoreTitle = "Table")
-String pkField
+String[] pkField
 
 /** List of primary keys to remove from the table. */
 @FieldValueInput(
