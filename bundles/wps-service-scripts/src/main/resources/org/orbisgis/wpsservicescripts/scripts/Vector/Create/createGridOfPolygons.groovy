@@ -17,7 +17,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = "Create a grid of polygons.",
         resume = "Create a grid of polygons.",
-        keywords = "Vector,Geometry,Create")
+        keywords = ["Vector","Geometry","Create"])
 def processing() {
 
     //Build the start of the query

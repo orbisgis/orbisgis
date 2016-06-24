@@ -30,7 +30,6 @@ import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
-import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.Filter.IFilter;
 import org.orbisgis.wpsclient.view.utils.Filter.SearchFilter;
@@ -458,12 +457,16 @@ public class ToolBoxPanel extends JPanel {
      * @param model Model containing the node.
      */
     private void cleanParentNode(TreeNodeWps node, FileTreeModel model){
-        //If the node is the last one from its parent, call 'cleanParentNode()' on it
-        if(node.getParent().getChildCount() == 1){
-            cleanParentNode((TreeNodeWps)node.getParent(), model);
+        if(node.getParent() != null) {
+            //If the node is the last one from its parent, call 'cleanParentNode()' on it
+            if (node.getParent() != null && node.getParent().getChildCount() == 1) {
+                cleanParentNode((TreeNodeWps) node.getParent(), model);
+            } else {
+                model.removeNodeFromParent(node);
+            }
         }
-        else {
-            model.removeNodeFromParent(node);
+        else{
+            model.removeNodeFromParent((TreeNodeWps)node.getChildAt(0));
         }
     }
 
@@ -483,6 +486,20 @@ public class ToolBoxPanel extends JPanel {
             refresh(node);
         }
     }
+
+    public void cleanAll(){
+        if(selectedModel != tagModel) {
+            List<TreeNodeWps> leafList = getAllLeaf((TreeNodeWps) fileModel.getRoot());
+            for (TreeNodeWps node : leafList) {
+                cleanParentNode(node, fileModel);
+            }
+            leafList = getAllLeaf((TreeNodeWps) tagModel.getRoot());
+            for (TreeNodeWps node : leafList) {
+                cleanParentNode(node, tagModel);
+            }
+        }
+    }
+
     /**
      * Refresh the given node.
      * If the node is a process (a leaf), check if it is valid or not,

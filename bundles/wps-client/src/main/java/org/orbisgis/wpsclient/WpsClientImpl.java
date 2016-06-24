@@ -137,6 +137,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
 
     @Override
     public void refreshAvailableScripts(){
+        toolBoxPanel.cleanAll();
         for(ProcessSummaryType processSummary : getAvailableProcesses()) {
             toolBoxPanel.addProcess(processSummary);
         }

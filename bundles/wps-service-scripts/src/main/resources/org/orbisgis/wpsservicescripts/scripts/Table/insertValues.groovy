@@ -23,7 +23,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = "Insert values",
         resume = "Insert values into a table.",
-        keywords = "Table,Insert,Values")
+        keywords = ["Table","Insert","Values"])
 def processing() {
     //Build the query
     String queryBase = "INSERT INTO " + tableName;

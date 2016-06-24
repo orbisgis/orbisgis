@@ -18,7 +18,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = "Fixed extrude polygons.",
         resume = "Extrude a polygon and extends it to a 3D representation, returning a geometry collection containing floor, ceiling and wall geometries.",
-        keywords = "Vector,Geometry,Create")
+        keywords = ["Vector","Geometry","Create"])
 def processing() {
 
     //Build the start of the query

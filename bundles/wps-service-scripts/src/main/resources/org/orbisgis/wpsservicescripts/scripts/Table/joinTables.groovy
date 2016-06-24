@@ -17,7 +17,7 @@ import org.orbisgis.wpsgroovyapi.process.*
  */
 @Process(title = "Table join",
         resume = "Join two tables.",
-        keywords = "Table,Join")
+        keywords = ["Table","Join"])
 def processing() {
 
 	if(createIndex!=null && createIndex==true){

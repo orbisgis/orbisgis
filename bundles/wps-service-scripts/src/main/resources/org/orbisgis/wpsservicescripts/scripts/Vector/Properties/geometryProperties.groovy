@@ -24,7 +24,7 @@ import org.orbisgis.wpsgroovyapi.process.*
  */
 @Process(title = "Geometry properties",
         resume = "Compute some basic geometry properties.",
-        keywords = "Vector,Geometry,Properties")
+        keywords = ["Vector","Geometry","Properties"])
 def processing() {
 //Build the start of the query
     String query = "CREATE TABLE "+outputTableName+" AS SELECT "

@@ -31,7 +31,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = "Variable distance buffer",
         resume = "Execute a buffer on a geometric field using another field to specify the distance.",
-        keywords = "Vector,Geometry")
+        keywords = ["Vector","Geometry"])
 def processing() {
 
     //Build the start of the query

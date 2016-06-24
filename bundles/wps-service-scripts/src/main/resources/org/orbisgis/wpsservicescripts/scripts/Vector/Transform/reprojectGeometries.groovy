@@ -23,7 +23,7 @@ import org.orbisgis.wpsgroovyapi.process.*
  */
 @Process(title = "Reproject geometries",
         resume = "Reproject geometries from one Coordinate Reference System to another.",
-        keywords = "Vector,Geometry,Reproject")
+        keywords = ["Vector","Geometry","Reproject"])
 def processing() {
 	logger.warn("test")
 	//Build the start of the query
