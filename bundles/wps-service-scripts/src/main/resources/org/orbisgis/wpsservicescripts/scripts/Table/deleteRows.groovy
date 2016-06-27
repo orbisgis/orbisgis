@@ -21,7 +21,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = "Delete rows",
         resume = "Delete rows from a table.",
-        keywords = "Table,Delete")
+        keywords = ["Table","Delete"])
 def processing() {
     //Build the start of the query
     for (String s : pkToRemove) {

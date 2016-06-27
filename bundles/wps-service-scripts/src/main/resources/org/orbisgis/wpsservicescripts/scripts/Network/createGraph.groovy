@@ -16,7 +16,7 @@ import org.orbisgis.wpsgroovyapi.process.*
  */
 @Process(title = "Create a graph",
         resume = "Create a graph stored in two tables nodes and edges from an input table that contains Multi or LineString.\nIf the input table has name 'input', then the output tables are named 'input_nodes' and 'input_edges'.",
-        keywords = "Network,Geometry")
+        keywords = ["Network","Geometry"])
 def processing() {
 	
     String query = " SELECT ST_GRAPH('"   + inputDataStore + "', '"+geometricField[0]+"',"+tolerance+ ", "+ slope+ ")"

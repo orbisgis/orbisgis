@@ -17,7 +17,7 @@ import org.orbisgis.wpsgroovyapi.process.*
  */
 @Process(title = "Extract center",
         resume = "Extract the center of a geometry.",
-        keywords = "Vector,Geometry,Extract,Center")
+        keywords = ["Vector","Geometry","Extract","Center"])
 def processing() {
 	//Build the start of the query
 	String query = "CREATE TEMPORARY TABLE "+outputTableName+" AS SELECT "
