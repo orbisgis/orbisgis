@@ -41,7 +41,6 @@ public class ProcessParser {
                                         List<OutputDescriptionType> outputList,
                                         Method processingMethod,
                                         URI processURI){
-        System.out.println("\t0");
         ProcessDescriptionType process = new ProcessDescriptionType();
         ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(DescriptionTypeAttribute.class),
                 process);
@@ -49,19 +48,16 @@ public class ProcessParser {
         process.getOutput().addAll(outputList);
         process.getInput().clear();
         process.getInput().addAll(inputList);
-        System.out.println("\t1");
 
         if(process.getIdentifier() == null){
             CodeType codeType = new CodeType();
             codeType.setValue(processURI.toString());
             process.setIdentifier(codeType);
         }
-        System.out.println("\t2");
         ProcessOffering processOffering = new ProcessOffering();
         processOffering.setProcess(process);
         ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(ProcessAttribute.class),
                 processOffering);
-        System.out.println("\t3");
         return processOffering;
     }
 }

@@ -112,11 +112,8 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
         if(localWpsService != null){
             //Default method to load the scripts
             String[] icons = loadIcons(new String[]{"orbisgis.png"});
-            System.out.println("load scripts/IO/csvToPointLayer.groovy");
             customLoadScript("scripts/IO/csvToPointLayer.groovy", icons, "OrbisGIS/IO");
-            System.out.println("load scripts/Network/createGraph.groovy");
             customLoadScript("scripts/Network/createGraph.groovy", icons, "OrbisGIS/Network");
-            System.out.println("load scripts/Table/deleteRows.groovy");
             customLoadScript("scripts/Table/deleteRows.groovy", icons, "OrbisGIS/Table");
             customLoadScript("scripts/Table/insertValues.groovy", icons, "OrbisGIS/Table");
             customLoadScript("scripts/Table/joinTables.groovy", icons, "OrbisGIS/Table");

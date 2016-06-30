@@ -45,30 +45,18 @@ public class DataFieldParser implements Parser {
 
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
-        System.out.println("0");
         //Instantiate the DataField object
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
-        System.out.println("1");
         URI dataStoreUri;
-        System.out.println("2");
         //If the dataStore attribute is not an URI, autoGenerate one.
-        System.out.println(dataFieldAttribute.dataStoreTitle());
         if(!dataFieldAttribute.dataStoreTitle().contains(":")) {
-            System.out.println("00");
-            System.out.println(dataFieldAttribute.dataStoreTitle().replaceAll("[^a-zA-Z0-9_$]", "_"));
-            System.out.println(processId + ":input:" + dataFieldAttribute.dataStoreTitle().replaceAll("[^a-zA-Z0-9_$]", "_"));
-            System.out.println("01");
             dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStoreTitle().replaceAll("[^a-zA-Z0-9_$]", "_"));
-            System.out.println("02");
         }
         //else, use it
         else {
-            System.out.println("10");
             dataStoreUri = URI.create(dataFieldAttribute.dataStoreTitle());
-            System.out.println("11");
         }
-        System.out.println("3");
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 
         //Instantiate the returned input
@@ -76,17 +64,14 @@ public class DataFieldParser implements Parser {
         JAXBElement<DataField> jaxbElement = new ObjectFactory().createDataField(dataField);
         input.setDataDescription(jaxbElement);
 
-        System.out.println("4");
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
 
-        System.out.println("5");
         if(input.getIdentifier() == null){
             CodeType codeType = new CodeType();
             codeType.setValue(processId+":input:"+input.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
             input.setIdentifier(codeType);
         }
-        System.out.println("6");
 
         return input;
     }
