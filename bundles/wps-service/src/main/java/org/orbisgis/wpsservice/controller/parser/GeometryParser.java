@@ -33,6 +33,7 @@ import org.orbisgis.wpsservice.model.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
 import java.lang.reflect.Field;
+import java.net.URI;
 
 /**
  * Parser dedicated to the Geometry parsing.
@@ -43,7 +44,7 @@ import java.lang.reflect.Field;
 public class GeometryParser implements Parser {
 
     @Override
-    public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);
@@ -65,7 +66,7 @@ public class GeometryParser implements Parser {
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, String processId) {
+    public OutputDescriptionType parseOutput(Field f, URI processId) {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);

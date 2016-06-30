@@ -31,6 +31,7 @@ import org.orbisgis.wpsservice.model.Password;
 
 import javax.xml.bind.JAXBElement;
 import java.lang.reflect.Field;
+import java.net.URI;
 
 /**
  * Password parser
@@ -41,7 +42,7 @@ import java.lang.reflect.Field;
 public class PasswordParser implements Parser {
 
     @Override
-    public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
 
         //Instantiate the DataStore and its formats
         Password password = new Password();
@@ -62,7 +63,7 @@ public class PasswordParser implements Parser {
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, String processId) {
+    public OutputDescriptionType parseOutput(Field f, URI processId) {
 
         //Instantiate the DataStore and its formats
         Password password = new Password();

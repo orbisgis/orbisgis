@@ -127,7 +127,7 @@ public class ParserController {
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                             InputDescriptionType input = parser.parseInput(f, defaultValue, process.getAbsolutePath());
+                            InputDescriptionType input = parser.parseInput(f, defaultValue, process.toURI());
                             if(input.getInput() != null && !input.getInput().isEmpty()){
                                 for(InputDescriptionType in : input.getInput()){
                                     inputList.add(in);
@@ -149,7 +149,7 @@ public class ParserController {
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                            OutputDescriptionType output = parser.parseOutput(f, process.getAbsolutePath());
+                            OutputDescriptionType output = parser.parseOutput(f, process.toURI());
                             if(output.getOutput() != null && !output.getOutput().isEmpty()){
                                 for(OutputDescriptionType out : output.getOutput()){
                                     outputList.add(out);

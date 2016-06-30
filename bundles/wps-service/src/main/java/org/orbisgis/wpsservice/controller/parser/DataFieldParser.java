@@ -44,7 +44,7 @@ import java.net.URI;
 public class DataFieldParser implements Parser {
 
     @Override
-    public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
         //Instantiate the DataField object
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
@@ -77,7 +77,7 @@ public class DataFieldParser implements Parser {
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, String processId) {
+    public OutputDescriptionType parseOutput(Field f, URI processId) {
         //Instantiate the DataField object
         DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);

@@ -44,7 +44,7 @@ import java.net.URI;
 public class FieldValueParser implements Parser {
 
     @Override
-    public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
         //Instantiate the FieldValue object
         FieldValueAttribute fieldValueAttribute = f.getAnnotation(FieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
@@ -77,7 +77,7 @@ public class FieldValueParser implements Parser {
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, String processId) {
+    public OutputDescriptionType parseOutput(Field f, URI processId) {
         //Instantiate the FieldValue object
         FieldValueAttribute fieldValueAttribute = f.getAnnotation(FieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);

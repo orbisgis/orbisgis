@@ -33,6 +33,7 @@ import org.orbisgis.wpsservice.model.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +46,7 @@ import java.util.List;
 public class DataStoreParser implements Parser{
 
     @Override
-    public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
         //Instantiate the DataStore and its formats
         DataStoreAttribute dataStoreAttribute = f.getAnnotation(DataStoreAttribute.class);
         List<Format> formatList = new ArrayList<>();
@@ -72,7 +73,7 @@ public class DataStoreParser implements Parser{
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, String processId) {
+    public OutputDescriptionType parseOutput(Field f, URI processId) {
         //Instantiate the DataStore and its formats
         DataStoreAttribute dataStoreAttribute = f.getAnnotation(DataStoreAttribute.class);
         List<Format> formatList = new ArrayList<>();
