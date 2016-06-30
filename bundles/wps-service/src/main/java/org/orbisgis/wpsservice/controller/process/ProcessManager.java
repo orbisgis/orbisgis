@@ -77,7 +77,9 @@ public class ProcessManager {
             //Parse the process
             ProcessOffering processOffering = null;
             try {
+                System.out.println("before parse");
                 processOffering = parserController.parseProcess(f.getAbsolutePath());
+                System.out.println("after parse");
                 MetadataType isRemovableMetadata = new MetadataType();
                 isRemovableMetadata.setTitle(LocalWpsServer.ProcessProperty.IS_REMOVABLE.name());
                 isRemovableMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());

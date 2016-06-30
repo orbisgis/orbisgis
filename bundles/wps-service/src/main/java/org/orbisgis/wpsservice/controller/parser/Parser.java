@@ -23,6 +23,7 @@ import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 
 import java.lang.reflect.Field;
+import java.net.URI;
 
 /**
  * Interface to define a Parser associated to a data from the model (i.e. LiteralData or RawData).
@@ -40,7 +41,7 @@ public interface Parser {
      * @param processId The process identifier.
      * @return Parsed DataDescription.
      */
-    InputDescriptionType parseInput(Field f, Object defaultValue, String processId);
+    InputDescriptionType parseInput(Field f, Object defaultValue, URI processId);
 
     /**
      * Parse the given field as an output and returns the corresponding DataDescription.
@@ -48,7 +49,7 @@ public interface Parser {
      * @param processId The process identifier.
      * @return Parsed DataDescription.
      */
-    OutputDescriptionType parseOutput(Field f, String processId);
+    OutputDescriptionType parseOutput(Field f, URI processId);
 
     /**
      * Returns the groovy annotation associated to this parser.

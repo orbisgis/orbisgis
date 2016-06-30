@@ -93,21 +93,27 @@ public class ParserController {
      */
     public ProcessOffering parseProcess(String processPath) throws MalformedScriptException {
         //Retrieve the class corresponding to the Groovy script.
+        System.out.println("0");
         File process = new File(processPath);
+        System.out.println("1");
         Class clazz = getProcessClass(process.toURI());
+        System.out.println("2");
         if(clazz == null){
             return null;
         }
+        System.out.println("3");
         //Retrieve the list of input and output of the script.
         List<InputDescriptionType> inputList = new ArrayList<>();
         List<OutputDescriptionType> outputList = new ArrayList<>();
         Object scriptObject = null;
+        System.out.println("4");
         try {
             scriptObject = clazz.newInstance();
         } catch (InstantiationException|IllegalAccessException e) {
             LoggerFactory.getLogger(ParserController.class).error(
                     "Unable to create a new instance of the groovy script.\n" + e.getMessage());
         }
+        System.out.println("5");
 
         for(Field f : clazz.getDeclaredFields()){
             f.setAccessible(true);
@@ -127,7 +133,10 @@ public class ParserController {
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                             InputDescriptionType input = parser.parseInput(f, defaultValue, process.getAbsolutePath());
+                            System.out.println("before parse input");
+                            System.out.println(process.getAbsolutePath());
+                            InputDescriptionType input = parser.parseInput(f, defaultValue, process.toURI());
+                            System.out.println("after parse input");
                             if(input.getInput() != null && !input.getInput().isEmpty()){
                                 for(InputDescriptionType in : input.getInput()){
                                     inputList.add(in);
@@ -149,7 +158,9 @@ public class ParserController {
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                            OutputDescriptionType output = parser.parseOutput(f, process.getAbsolutePath());
+                            System.out.println("before parse output");
+                            OutputDescriptionType output = parser.parseOutput(f, process.toURI());
+                            System.out.println("after parse output");
                             if(output.getOutput() != null && !output.getOutput().isEmpty()){
                                 for(OutputDescriptionType out : output.getOutput()){
                                     outputList.add(out);
@@ -168,13 +179,16 @@ public class ParserController {
                 }
             }
         }
+        System.out.println("6");
         //Then parse the process
         try {
             ProcessOffering p = processParser.parseProcess(inputList,
                     outputList,
                     clazz.getDeclaredMethod("processing"),
                     process.toURI());
+            System.out.println("7");
             link(p.getProcess());
+            System.out.println("8");
             return p;
         } catch (NoSuchMethodException e) {
             return null;

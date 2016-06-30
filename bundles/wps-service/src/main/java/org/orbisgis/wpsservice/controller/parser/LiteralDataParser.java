@@ -30,6 +30,7 @@ import org.orbisgis.wpsservice.model.*;
 
 import javax.xml.bind.JAXBElement;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -344,7 +345,7 @@ public class LiteralDataParser implements Parser {
     }
 
     @Override
-    public InputDescriptionType parseInput(Field f, Object defaultValue, String processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
         InputDescriptionType input = new InputDescriptionType();
         LiteralDataType data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class),
                 getLiteralDataDomain(f, defaultValue));
@@ -364,7 +365,7 @@ public class LiteralDataParser implements Parser {
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, String processId) {
+    public OutputDescriptionType parseOutput(Field f, URI processId) {
         OutputDescriptionType output = new OutputDescriptionType();
         LiteralDataType data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class),
                 getLiteralDataDomain(f, null));
