@@ -10,7 +10,7 @@
     <packaging>bundle</packaging>
 
     <parent>
-        <artifactId>orbisgis</artifactId>
+        <artifactId>wps</artifactId>
         <groupId>org.orbisgis</groupId>
         <version>5.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -34,7 +34,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.7</version>
+                <version>${maven-bundle-plugin-version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -50,13 +50,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.10</version>
+            <version>${junit-version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>2.3.6</version>
+            <version>${groovy-all-version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -66,19 +66,19 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.enterprise</artifactId>
-            <version>5.0.0</version>
+            <version>${org.osgi.enterprise-version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.3.1</version>
+            <version>${org.osgi.core-version}</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.scr.ds-annotations</artifactId>
-            <version>1.2.4</version>
+            <version>${org.apache.felix.scr.ds-annotations-version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -107,11 +107,5 @@
             <version>${ogc-commons-version}</version>
         </dependency>
     </dependencies>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-    </properties>
 
 </project>

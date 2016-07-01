@@ -20,6 +20,18 @@
         <module>wps-client</module>
     </modules>
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <groovy-all-version>2.3.6</groovy-all-version>
+        <groovy-eclipse-compiler-version>2.7.0-01</groovy-eclipse-compiler-version>
+        <maven-compiler-plugin-version>2.3.2</maven-compiler-plugin-version>
+        <maven-bundle-plugin-version>2.3.7</maven-bundle-plugin-version>
+        <common-cli-version>1.2</common-cli-version>
+        <junit-version>4.10</junit-version>
+        <org.osgi.enterprise-version>5.0.0</org.osgi.enterprise-version>
+        <org.osgi.core-version>4.3.1</org.osgi.core-version>
+        <org.apache.felix.scr.ds-annotations-version>1.2.4</org.apache.felix.scr.ds-annotations-version>
     </properties>
     <build>
         <plugins>
