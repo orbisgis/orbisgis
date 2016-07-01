@@ -52,10 +52,7 @@
                 <module>bundles/toc</module>
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
-                <module>bundles/wps-groovy-api</module>
-                <module>bundles/wps-service</module>
-                <module>bundles/wps-service-scripts</module>
-                <module>bundles/wps-client</module>
+                <module>bundles/wps</module>
         </modules>
         <profiles>
             <profile>
