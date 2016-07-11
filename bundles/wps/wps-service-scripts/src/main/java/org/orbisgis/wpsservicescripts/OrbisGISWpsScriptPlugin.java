@@ -1,5 +1,6 @@
 package org.orbisgis.wpsservicescripts;
 
+import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsclient.WpsClient;
 import org.osgi.service.component.annotations.Activate;
@@ -82,6 +83,23 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
      */
     public void unsetWpsClient(WpsClient wpsClient) {
         this.wpsClient = null;
+    }
+
+    /**
+     * OSGI method used to give to the plugin the CoreWorkspace. (Be careful before any modification)
+     * @param coreWorkspace
+     */
+    @Reference
+    public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
+        this.coreWorkspace = coreWorkspace;
+    }
+
+    /**
+     * OSGI method used to remove from the plugin the CoreWorkspace. (Be careful before any modification)
+     * @param coreWorkspace
+     */
+    public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
+        this.coreWorkspace = null;
     }
 
     /**

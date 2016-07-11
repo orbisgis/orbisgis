@@ -1,7 +1,10 @@
 package org.orbisgis.wpsservicescripts;
 
+import com.sun.corba.se.spi.ior.iiop.IIOPProfileTemplate;
 import net.opengis.ows._2.CodeType;
 import org.apache.commons.io.IOUtils;
+import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.orbisgis.wkguiapi.ViewWorkspace;
 import org.orbisgis.wpsservice.LocalWpsServer;
 
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
@@ -9,12 +12,16 @@ import org.orbisgis.wpsclient.WpsClient;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.List;
+
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
 
 /**
  * In the WpsService, the script are organized in a tree, which has the WpsService as root.
@@ -52,6 +59,8 @@ import java.util.List;
  *
  */
 public class WpsScriptsPackage {
+
+    protected CoreWorkspace coreWorkspace;
 
     /**
      * The WPS service of OrbisGIS.
@@ -96,8 +105,15 @@ public class WpsScriptsPackage {
                 //If the url if a groovy file,
                 if(scriptUrl.getFile().endsWith(".groovy")) {
                     //Create a temporary File object
-                    final File tempFile = File.createTempFile("wpsprocess", ".groovy");
-                    tempFile.deleteOnExit();
+                    String tempFolderPath = coreWorkspace.getApplicationFolder();
+                    File tempFolder = new File(tempFolderPath, "wpsscripts");
+                    if(!tempFolder.exists()) {
+                        tempFolder.mkdirs();
+                    }
+                    final File tempFile = new File(tempFolder.getAbsolutePath(), new File(scriptUrl.getFile()).getName());
+                    if(!tempFile.exists()) {
+                        tempFile.createNewFile();
+                    }
                     //Copy the content of the resource file in the temporary file.
                     try (FileOutputStream out = new FileOutputStream(tempFile)) {
                         IOUtils.copy(scriptUrl.openStream(), out);
@@ -127,9 +143,16 @@ public class WpsScriptsPackage {
      */
     protected void customLoadScript(String processpath, String[] icons, String path){
         try {
+            String tempFolderPath = coreWorkspace.getApplicationFolder();
+            File tempFolder = new File(tempFolderPath, "wpsscripts");
+            if(!tempFolder.exists()) {
+                tempFolder.mkdirs();
+            }
             URL scriptUrl = this.getClass().getResource(processpath);
-            final File tempFile = File.createTempFile("wpsprocess", ".groovy");
-            tempFile.deleteOnExit();
+            final File tempFile = new File(tempFolder.getAbsolutePath(), new File(scriptUrl.getFile()).getName());
+            if(!tempFile.exists()) {
+                tempFile.createNewFile();
+            }
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 IOUtils.copy(scriptUrl.openStream(), out);
             }
