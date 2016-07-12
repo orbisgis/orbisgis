@@ -89,7 +89,7 @@ public class WpsScriptsPackage {
         final File tempFile = new File(tempFolder.getAbsolutePath(), new File(scriptUrl.getFile()).getName());
         if(!tempFile.exists()) {
             try{
-                if(tempFile.createNewFile()){
+                if(!tempFile.createNewFile()){
                     LOGGER.error("Unable to create the script file.");
                     return;
                 }
@@ -139,7 +139,7 @@ public class WpsScriptsPackage {
         final File tempFile = new File(tempFolder.getAbsolutePath(), iconName);
         if(!tempFile.exists()) {
             try{
-                if(tempFile.createNewFile()){
+                if(!tempFile.createNewFile()){
                     LOGGER.error("Unable to create the icon file.");
                     return null;
                 }
