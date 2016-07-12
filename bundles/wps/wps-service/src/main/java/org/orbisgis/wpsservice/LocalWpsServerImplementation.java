@@ -300,7 +300,11 @@ public class LocalWpsServerImplementation implements LocalWpsServer, DatabasePro
     public List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isRemovable, String nodePath){
         List<ProcessIdentifier> piList = new ArrayList<>();
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
-            piList.add(processManager.addScript(f.toURI(), iconName, isRemovable, nodePath));
+            ProcessIdentifier pi = processManager.addScript(f.toURI(), iconName, isRemovable, nodePath);
+            if(pi == null) {
+                LOGGER.error("The process identifier get from the script '"+f.getName()+"' is null.");
+            }
+            piList.add(pi);
         }
         else if(f.isDirectory()){
             piList.addAll(processManager.addLocalSource(f.toURI(), iconName));

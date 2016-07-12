@@ -33,6 +33,7 @@ import org.orbisgis.wpsservice.model.DataField;
 import org.orbisgis.wpsservice.model.FieldValue;
 import org.orbisgis.wpsservice.model.Enumeration;
 import org.orbisgis.wpsservice.model.MalformedScriptException;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -58,6 +59,7 @@ public class ProcessManager {
     private DataSourceService dataSourceService;
     private LocalWpsServer wpsService;
     private Map<UUID, CancelClosure> closureMap;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessManager.class);
 
     /**
      * Main constructor.
@@ -69,8 +71,13 @@ public class ProcessManager {
         this.wpsService = wpsService;
         this.closureMap = new HashMap<>();
     }
+
     public ProcessIdentifier addScript(URI scriptUri, String[] category, boolean isRemovable, String nodePath){
         File f = new File(scriptUri);
+        if(!f.exists()){
+            LOGGER.error("The script file doesn't exists.");
+            return null;
+        }
         //Test that the script name is not only '.groovy'
         if (f.getName().endsWith(".groovy") && f.getName().length()>7) {
             //Ensure that the process does not already exists.

@@ -1,27 +1,18 @@
 package org.orbisgis.wpsservicescripts;
 
-import com.sun.corba.se.spi.ior.iiop.IIOPProfileTemplate;
 import net.opengis.ows._2.CodeType;
 import org.apache.commons.io.IOUtils;
 import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.orbisgis.wkguiapi.ViewWorkspace;
 import org.orbisgis.wpsservice.LocalWpsServer;
 
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsclient.WpsClient;
-import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Enumeration;
 import java.util.List;
-
-import static java.nio.file.StandardOpenOption.APPEND;
-import static java.nio.file.StandardOpenOption.CREATE;
 
 /**
  * In the WpsService, the script are organized in a tree, which has the WpsService as root.
@@ -44,12 +35,7 @@ import static java.nio.file.StandardOpenOption.CREATE;
  * should be kept to be able to remove it later.
  *
  *
- * There is two method already implemented in this class to add the processes :
- *      Default method : the 'defaultLoadScript('nodePath')' methods which take as argument the nodePath and adds all
- *              the scripts from the 'resources' folder, keeping the file tree structure. All the script have the same
- *              icons.
- *      Custom method : the 'customLoadScript()' method load the scripts one by one under different file path with
- *              different icons.
+ * The 'customLoadScript()' method load the scripts one by one under different file path with  different icons.
  *
  *
  * When the plugin is launched , the 'activate()' method is call. This method load the scripts in the
@@ -60,6 +46,14 @@ import static java.nio.file.StandardOpenOption.CREATE;
  */
 public class WpsScriptsPackage {
 
+    /**
+     * Logger instance.
+     */
+    protected static final Logger LOGGER = LoggerFactory.getLogger(WpsScriptsPackage.class);
+
+    /**
+     * OrbisGIS core workspace.
+     */
     protected CoreWorkspace coreWorkspace;
 
     /**
@@ -79,92 +73,43 @@ public class WpsScriptsPackage {
     protected List<CodeType> listIdProcess;
 
     /**
-     * This method load the script contained in the 'scripts' folder of the resources an put the under the given a
-     * node with the given name. (Be careful before any modification)
-     *
-     * @param nodePath Name of the node containing the loaded scripts.
+     * This method loads the scripts one by one under different node path with different icons.
+     * (Be careful before any modification)
      */
-    protected void defaultLoadScript(String nodePath, String[] iconArrayName){
-        //Retrieve the 'scripts' folder path.
-        String folderPath = this.getClass().getResource("scripts").getFile();
-        //Load the icon and get back the corresponding array with file path (in the same order)
-        String[] array = loadIcons(iconArrayName);
-        //Recursively add the scripts.
-        recursiveScriptLoad(nodePath, folderPath, array);
-
-    }
-
-    protected void recursiveScriptLoad(String nodePath, String folderPath, String[] iconArrayName){
-        //Get the URL of all the files contained in the 'script' folder.
-        Enumeration<URL> enumUrl = FrameworkUtil.getBundle(this.getClass()).findEntries(folderPath, "*", false);
-        //For each url, if it is a file, load it, if it is a directory, check its content.
-        while(enumUrl.hasMoreElements()){
-            try {
-                //Get the URL
-                URL scriptUrl = enumUrl.nextElement();
-                //If the url if a groovy file,
-                if(scriptUrl.getFile().endsWith(".groovy")) {
-                    //Create a temporary File object
-                    String tempFolderPath = coreWorkspace.getApplicationFolder();
-                    File tempFolder = new File(tempFolderPath, "wpsscripts");
-                    if(!tempFolder.exists()) {
-                        tempFolder.mkdirs();
-                    }
-                    final File tempFile = new File(tempFolder.getAbsolutePath(), new File(scriptUrl.getFile()).getName());
-                    if(!tempFile.exists()) {
-                        tempFile.createNewFile();
-                    }
-                    //Copy the content of the resource file in the temporary file.
-                    try (FileOutputStream out = new FileOutputStream(tempFile)) {
-                        IOUtils.copy(scriptUrl.openStream(), out);
-                    }
-                    //Add the temporary file to the WpsService an get back the ProcessIdentifier object
-                    List<ProcessIdentifier> piList = localWpsService.addLocalSource(tempFile, iconArrayName, false, nodePath);
-                    //Save the process id to be able to remove the process later.
-                    for(ProcessIdentifier pi : piList) {
-                        listIdProcess.add(pi.getProcessDescriptionType().getIdentifier());
-                    }
-                }
-                //If the url is a folder,
-                else if(!scriptUrl.getFile().contains("")){
-                    String folderName = new File(scriptUrl.getFile()).getName();
-                    //Recursively add the scripts.
-                    recursiveScriptLoad(nodePath+"/"+folderName, folderPath+File.separator+folderName, iconArrayName);
+    protected void customLoadScript(String processpath, String[] icons, String path){
+        String tempFolderPath = coreWorkspace.getApplicationFolder();
+        File tempFolder = new File(tempFolderPath, "wpsscripts");
+        if(!tempFolder.exists()) {
+            if(!tempFolder.mkdirs()){
+                LOGGER.error("Unable to create the OrbisGIS temporary folder.");
+                return;
+            }
+        }
+        URL scriptUrl = this.getClass().getResource(processpath);
+        final File tempFile = new File(tempFolder.getAbsolutePath(), new File(scriptUrl.getFile()).getName());
+        if(!tempFile.exists()) {
+            try{
+                if(tempFile.createNewFile()){
+                    LOGGER.error("Unable to create the script file.");
+                    return;
                 }
             } catch (IOException e) {
                 LoggerFactory.getLogger(WpsScriptsPackage.class).error(e.getMessage());
             }
         }
-    }
-
-    /**
-     * This method loads the scripts one by one under different node path with different icons.
-     * (Be careful before any modification)
-     */
-    protected void customLoadScript(String processpath, String[] icons, String path){
-        try {
-            String tempFolderPath = coreWorkspace.getApplicationFolder();
-            File tempFolder = new File(tempFolderPath, "wpsscripts");
-            if(!tempFolder.exists()) {
-                tempFolder.mkdirs();
-            }
-            URL scriptUrl = this.getClass().getResource(processpath);
-            final File tempFile = new File(tempFolder.getAbsolutePath(), new File(scriptUrl.getFile()).getName());
-            if(!tempFile.exists()) {
-                tempFile.createNewFile();
-            }
-            try (FileOutputStream out = new FileOutputStream(tempFile)) {
-                IOUtils.copy(scriptUrl.openStream(), out);
-            }
-            List<ProcessIdentifier> piList = localWpsService.addLocalSource(tempFile,
-                    icons,
-                    false,
-                    path);
-            for(ProcessIdentifier pi : piList){
-                listIdProcess.add(pi.getProcessDescriptionType().getIdentifier());
-            }
-        } catch (IOException e) {
-            LoggerFactory.getLogger(WpsScriptsPackage.class).error(e.getMessage());
+        try (FileOutputStream out = new FileOutputStream(tempFile)) {
+            IOUtils.copy(scriptUrl.openStream(), out);
+        }
+        catch (Exception e){
+            LOGGER.error("Unable to copy the content of the script to the temporary file.");
+            return;
+        }
+        List<ProcessIdentifier> piList = localWpsService.addLocalSource(tempFile,
+                icons,
+                false,
+                path);
+        for(ProcessIdentifier pi : piList){
+            listIdProcess.add(pi.getProcessDescriptionType().getIdentifier());
         }
     }
 
@@ -178,56 +123,38 @@ public class WpsScriptsPackage {
     }
 
     /**
-     * This method copy the icons into the temporary system folder to make them accessible by the WpsClient
+     * This method copy the an icon into the temporary system folder to make it accessible by the WpsClient
      */
-    protected String[] loadIcons(String[] iconArrayName){
-        String iconPath = this.getClass().getResource("icons").getFile();
-        String[] names = new String[iconArrayName.length];
-        Enumeration<URL> enumUrl = FrameworkUtil.getBundle(this.getClass()).findEntries(iconPath, "*", false);
-        while(enumUrl.hasMoreElements()){
-            try {
-                //Get the URL
-                URL scriptUrl = enumUrl.nextElement();
-                File f = new File(scriptUrl.getFile());
-                //If the url if a png file,
-                if(scriptUrl.getFile().endsWith(".png")) {
-                    //Create a temporary File object
-                    final File tempFile = File.createTempFile("wpsprocessicon", ".png");
-                    tempFile.deleteOnExit();
-                    //Copy the content of the resource file in the temporary file.
-                    try (FileOutputStream out = new FileOutputStream(tempFile)) {
-                        IOUtils.copy(scriptUrl.openStream(), out);
-                    }
-                    for(int i=0; i<iconArrayName.length; i++){
-                        if(iconArrayName[i].equals(f.getName())){
-                            names[i] = tempFile.getAbsolutePath();
-                        }
-                    }
+    protected String loadIcon(String iconName){
+        URL iconUrl = this.getClass().getResource("icons/"+iconName);
+        String tempFolderPath = coreWorkspace.getApplicationFolder();
+        File tempFolder = new File(tempFolderPath, "wpsscripts");
+        if(!tempFolder.exists()) {
+            if(!tempFolder.mkdirs()){
+                LOGGER.error("Unable to create the OrbisGIS temporary folder.");
+                return null;
+            }
+        }
+        //Create a temporary File object
+        final File tempFile = new File(tempFolder.getAbsolutePath(), iconName);
+        if(!tempFile.exists()) {
+            try{
+                if(tempFile.createNewFile()){
+                    LOGGER.error("Unable to create the icon file.");
+                    return null;
                 }
             } catch (IOException e) {
                 LoggerFactory.getLogger(WpsScriptsPackage.class).error(e.getMessage());
             }
         }
-        return names;
-    }
-
-    /**
-     * This method copy the an icon into the temporary system folder to make it accessible by the WpsClient
-     */
-    protected String loadIcon(String iconName){
-        URL iconUrl = this.getClass().getResource("icons"+File.separator+iconName);
-        try {
-            //Create a temporary File object
-            final File tempFile = File.createTempFile("wpsprocessicon", ".png");
-            tempFile.deleteOnExit();
-            //Copy the content of the resource file in the temporary file.
-            try (FileOutputStream out = new FileOutputStream(tempFile)) {
-                IOUtils.copy(iconUrl.openStream(), out);
-            }
-            return tempFile.getAbsolutePath();
-        } catch (IOException e) {
-            LoggerFactory.getLogger(WpsScriptsPackage.class).error(e.getMessage());
+        //Copy the content of the resource file in the temporary file.
+        try (FileOutputStream out = new FileOutputStream(tempFile)) {
+            IOUtils.copy(iconUrl.openStream(), out);
         }
-        return null;
+        catch (Exception e){
+            LOGGER.error("Unable to copy the content of the icon to the temporary file.");
+            return null;
+        }
+        return tempFile.getAbsolutePath();
     }
 }
