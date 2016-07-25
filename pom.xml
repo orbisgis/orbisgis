@@ -55,27 +55,27 @@
                 <module>bundles/wps</module>
         </modules>
         <profiles>
-            <profile>
-                <id>default</id>
-                <activation>
-                    <activeByDefault>true</activeByDefault>
-                </activation>
-                <modules>
-                    <module>external/mig-layout</module>
-                    <module>external/rsyntax-osgi</module>
-                    <module>external/rsyntax-language-support</module>
-                    <module>external/jts-core-osgi</module>
-                    <module>external/jts-io-osgi</module>
-                    <module>external/json-simple-osgi</module>
-                    <module>external/svg-salamander</module>
-                    <module>external/itextpdf</module>
-                    <module>external/jai</module>
-                    <module>orbisgis-dist</module>
-                </modules>
-            </profile>
-            <profile>
-                <id>no-dist</id>
-            </profile>
+                <profile>
+                        <id>default</id>
+                        <activation>
+                                <activeByDefault>true</activeByDefault>
+                        </activation>
+                        <modules>
+                                <module>external/mig-layout</module>
+                                <module>external/rsyntax-osgi</module>
+                                <module>external/rsyntax-language-support</module>
+                                <module>external/jts-core-osgi</module>
+                                <module>external/jts-io-osgi</module>
+                                <module>external/json-simple-osgi</module>
+                                <module>external/svg-salamander</module>
+                                <module>external/itextpdf</module>
+                                <module>external/jai</module>
+                                <module>orbisgis-dist</module>
+                        </modules>
+                </profile>
+                <profile>
+                        <id>no-dist</id>
+                </profile>
         </profiles>
         <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
