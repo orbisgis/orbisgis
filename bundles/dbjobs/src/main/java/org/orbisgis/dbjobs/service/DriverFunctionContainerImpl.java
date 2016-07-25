@@ -30,7 +30,7 @@ package org.orbisgis.dbjobs.service;
 
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
-import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.api.DriverFunction;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.dbjobs.api.DatabaseView;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;

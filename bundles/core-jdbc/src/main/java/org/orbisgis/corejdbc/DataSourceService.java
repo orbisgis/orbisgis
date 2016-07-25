@@ -46,13 +46,11 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
-import javax.swing.SwingWorker;
 import java.io.PrintWriter;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -130,9 +128,9 @@ public class DataSourceService implements DataSource {
                     Statement st = connection.createStatement()) {
                     if (JDBCUtilities.isH2DataBase(connection.getMetaData()) &&
                             !JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS")) {
-                        st.execute("CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR\n" +
-                                "    \"org.h2gis.h2spatial.CreateSpatialExtension.initSpatialExtension\";\n" +
-                                "CALL SPATIAL_INIT();");
+                        st.execute("CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR\n" +
+                                "    \"org.h2gis.functions.factory.H2GISFunctions.load\";\n" +
+                                "CALL H2GIS_SPATIAL();");
                     }
                 }
             } else {

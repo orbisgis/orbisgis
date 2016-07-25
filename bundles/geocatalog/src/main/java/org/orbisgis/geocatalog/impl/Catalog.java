@@ -27,7 +27,7 @@
  */
 package org.orbisgis.geocatalog.impl;
 
-import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.api.DriverFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.commons.utils.CollectionUtils;
 import org.orbisgis.corejdbc.DataManager;

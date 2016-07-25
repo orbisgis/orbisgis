@@ -114,7 +114,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>spatial-utilities</artifactId>
+            <artifactId>h2gis-utilities</artifactId>
             <version>${h2-gis-version}</version>
         </dependency>
         <dependency>

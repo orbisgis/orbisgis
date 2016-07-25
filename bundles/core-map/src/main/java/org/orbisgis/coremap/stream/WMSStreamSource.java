@@ -28,7 +28,7 @@
  */
 package org.orbisgis.coremap.stream;
 
-import org.h2gis.utilities.URIUtility;
+import org.h2gis.utilities.URIUtilities;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -219,7 +219,7 @@ public final class WMSStreamSource implements Serializable {
                     port = DEFAULT_PORT;
                 }
             }
-            feedParameters(URIUtility.getQueryKeyValuePairs(uri));
+            feedParameters(URIUtilities.getQueryKeyValuePairs(uri));
             // If version is not set in the URI, find the appropriate one by using the projection system variable
             String vers = wmsParameters.get(VERSION_PARAMETER);
             if(vers==null) {
@@ -260,7 +260,7 @@ public final class WMSStreamSource implements Serializable {
         private String getOtherParameters(){
             Set<String> keys = otherParameters.keySet();
             String[] toArray = keys.toArray(new String[keys.size()]);
-            return URIUtility.getConcatenatedParameters( otherParameters, toArray);
+            return URIUtilities.getConcatenatedParameters( otherParameters, toArray);
         }
 
         /**
@@ -270,10 +270,10 @@ public final class WMSStreamSource implements Serializable {
          */
         private String getQuery() {
             if(version.equals(WMSVersion.VERSION_1_3_0)) {
-                return URIUtility.getConcatenatedParameters(
+                return URIUtilities.getConcatenatedParameters(
                         wmsParameters, SERVICE_PARAMETER, LAYER_PARAMETER, CRS_PARAMETER, VERSION_PARAMETER, OUTPUTFORMAT_PARAMETER);
             } else {
-                return URIUtility.getConcatenatedParameters(
+                return URIUtilities.getConcatenatedParameters(
                         wmsParameters, SERVICE_PARAMETER, LAYER_PARAMETER, SRS_PARAMETER, VERSION_PARAMETER, OUTPUTFORMAT_PARAMETER);
             }
         }

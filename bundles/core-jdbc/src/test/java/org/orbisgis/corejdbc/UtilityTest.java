@@ -28,7 +28,7 @@
  */
 package org.orbisgis.corejdbc;
 
-import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.BeforeClass;
@@ -58,7 +58,7 @@ public class UtilityTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        dataSource = SFSUtilities.wrapSpatialDataSource(SpatialH2UT.createDataSource(UtilityTest.class.getSimpleName(), true));
+        dataSource = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(UtilityTest.class.getSimpleName(), true));
     }
 
     @Test

@@ -41,8 +41,8 @@ import java.sql.SQLException;
 import javax.imageio.ImageIO;
 import javax.sql.DataSource;
 
-import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.TableLocation;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -68,9 +68,9 @@ public class Gallery {
 
     @BeforeClass
     public static void tearUpClass() throws Exception {
-        DataSource dataSource = SpatialH2UT.createDataSource(Gallery.class.getSimpleName(), false);
+        DataSource dataSource = H2GISDBFactory.createDataSource(Gallery.class.getSimpleName(), false);
         connection = dataSource.getConnection();
-        CreateSpatialExtension.initSpatialExtension(connection);
+        H2GISFunctions.load(connection);
         dataManager = new DataManagerImpl(dataSource);
     }
 

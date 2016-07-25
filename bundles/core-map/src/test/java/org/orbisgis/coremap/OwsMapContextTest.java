@@ -33,7 +33,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.net.URI;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Locale;
@@ -41,10 +40,10 @@ import java.util.Locale;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.h2gis.drivers.shp.SHPDriverFunction;
-import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialapi.EmptyProgressVisitor;
-import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.h2gis.functions.io.shp.SHPDriverFunction;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.utilities.TableLocation;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -68,9 +67,9 @@ public class OwsMapContextTest  {
 
     @BeforeClass
     public static void tearUpClass() throws Exception {
-        DataSource dataSource = SpatialH2UT.createDataSource(OwsMapContextTest.class.getSimpleName(), false);
+        DataSource dataSource = H2GISDBFactory.createDataSource(OwsMapContextTest.class.getSimpleName(), false);
         connection = dataSource.getConnection();
-        CreateSpatialExtension.initSpatialExtension(connection);
+        H2GISFunctions.load(connection);
         dataManager = new DataManagerImpl(dataSource);
     }
 

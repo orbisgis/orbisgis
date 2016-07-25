@@ -28,8 +28,8 @@
  */
 package org.orbisgis.core_export;
 
-import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -53,9 +53,9 @@ public class ExportTest {
 
     @BeforeClass
     public static void tearUpClass() throws Exception {
-        DataSource dataSource = SFSUtilities.wrapSpatialDataSource(SpatialH2UT.createDataSource(ExportTest.class.getSimpleName(), false));
+        DataSource dataSource = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(ExportTest.class.getSimpleName(), false));
         connection = dataSource.getConnection();
-        CreateSpatialExtension.initSpatialExtension(connection);
+        H2GISFunctions.load(connection);
         dataManager = new DataManagerImpl(dataSource);
     }
 

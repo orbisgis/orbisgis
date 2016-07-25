@@ -93,7 +93,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>spatial-utilities</artifactId>
+            <artifactId>h2gis-utilities</artifactId>
             <version>${h2-gis-version}</version>
         </dependency>
         <dependency>
@@ -108,7 +108,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>h2spatial-ext</artifactId>
+            <artifactId>h2gis-ext</artifactId>
             <version>${h2-gis-version}</version>
             <scope>test</scope>
         </dependency>
@@ -131,7 +131,7 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
-            <artifactId>h2drivers</artifactId>
+            <artifactId>h2gis-functions</artifactId>
             <version>${h2-gis-version}</version>
             <scope>test</scope>
         </dependency>
