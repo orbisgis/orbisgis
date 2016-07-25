@@ -1,7 +1,7 @@
 package org.orbisgis.coremap.renderer.se;
 
-import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,9 +27,9 @@ public class DefaultStyleTest {
 
     @BeforeClass
     public static void tearUpClass() throws Exception {
-        DataSource dataSource = SpatialH2UT.createDataSource(DefaultStyleTest.class.getSimpleName(), false);
+        DataSource dataSource = H2GISDBFactory.createDataSource(DefaultStyleTest.class.getSimpleName(), false);
         connection = dataSource.getConnection();
-        CreateSpatialExtension.initSpatialExtension(connection);
+        H2GISFunctions.load(connection);
         dataManager = new DataManagerImpl(dataSource);
     }
 

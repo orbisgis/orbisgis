@@ -28,8 +28,8 @@
  */
 package org.orbisgis.editorjdbc.jobs;
 
-import org.h2gis.h2spatial.CreateSpatialExtension;
-import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,7 +37,6 @@ import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
-import org.orbisgis.corejdbc.internal.ReversibleRowSetImpl;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -52,10 +51,10 @@ public class DeleteSelectedRowsTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        dataSource = SFSUtilities.wrapSpatialDataSource(SpatialH2UT.createDataSource(DeleteSelectedRowsTest.class.getSimpleName()
+        dataSource = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(DeleteSelectedRowsTest.class.getSimpleName()
                 , false));
         try(Connection connection = dataSource.getConnection()) {
-            CreateSpatialExtension.initSpatialExtension(connection);
+            H2GISFunctions.load(connection);
         }
     }
 

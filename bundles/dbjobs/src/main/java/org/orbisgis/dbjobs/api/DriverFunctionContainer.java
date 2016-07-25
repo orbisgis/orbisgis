@@ -28,7 +28,7 @@
  */
 package org.orbisgis.dbjobs.api;
 
-import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.api.DriverFunction;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@ package org.orbisgis.corejdbc.internal;
 
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.URIUtility;
+import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DatabaseProgressionListener;
 import org.orbisgis.corejdbc.TableEditEvent;
@@ -138,7 +138,7 @@ public class DataManagerImpl implements DataManager {
                     while(tablesRs.next()) {
                         String remarks = tablesRs.getString("REMARKS");
                         if(remarks!= null && !remarks.isEmpty()) {
-                            File filePath = URIUtility.fileFromString(remarks);
+                            File filePath = URIUtilities.fileFromString(remarks);
                             try {
                                 if(filePath.equals(path) && filePath.exists()) {
                                     return new TableLocation(tablesRs.getString("TABLE_CAT"), tablesRs.getString("TABLE_SCHEM"), tablesRs.getString("TABLE_NAME")).toString();
@@ -166,7 +166,7 @@ public class DataManagerImpl implements DataManager {
                     String withoutQuery = uriStr.substring(0,uriStr.indexOf("?"));
                     if(connection.getMetaData().getURL().startsWith(withoutQuery)) {
                         // Extract catalog, schema and table name
-                        Map<String,String> query = URIUtility.getQueryKeyValuePairs(new URI(uri.getRawSchemeSpecificPart()));
+                        Map<String,String> query = URIUtilities.getQueryKeyValuePairs(new URI(uri.getRawSchemeSpecificPart()));
                         return new TableLocation(query.get("catalog"),query.get("schema"),query.get("table")).toString();
                     }
                 }

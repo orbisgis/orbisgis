@@ -27,8 +27,8 @@ package org.orbisgis.corejdbc;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.BeforeClass;
@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -66,9 +65,9 @@ public class RowSetTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        dataSource = SFSUtilities.wrapSpatialDataSource(SpatialH2UT.createDataSource(RowSetTest.class.getSimpleName(), false));
+        dataSource = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(RowSetTest.class.getSimpleName(), false));
         try(Connection connection = dataSource.getConnection()) {
-            CreateSpatialExtension.initSpatialExtension(connection);
+            H2GISFunctions.load(connection);
         }
     }
 

@@ -1,6 +1,6 @@
 package org.orbisgis.h2triggerosgi;
 
-import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class TriggerTest {
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        dataSource = SpatialH2UT.createDataSource(TriggerTest.class.getSimpleName(), true);
+        dataSource = H2GISDBFactory.createDataSource(TriggerTest.class.getSimpleName(), true);
     }
 
     @Test

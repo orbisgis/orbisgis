@@ -31,13 +31,12 @@ package org.orbisgis.coremap;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.net.URI;
 import java.net.URL;
 import java.sql.Connection;
 
 import org.apache.commons.io.FileUtils;
-import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -62,9 +61,9 @@ public class MapContextTest {
 
     @BeforeClass
     public static void tearUpClass() throws Exception {
-        DataSource dataSource = SpatialH2UT.createDataSource(MapContextTest.class.getSimpleName(), false);
+        DataSource dataSource = H2GISDBFactory.createDataSource(MapContextTest.class.getSimpleName(), false);
         connection = dataSource.getConnection();
-        CreateSpatialExtension.initSpatialExtension(connection);
+		H2GISFunctions.load(connection);
         dataManager = new DataManagerImpl(dataSource);
     }
 

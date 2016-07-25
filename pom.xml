@@ -64,7 +64,8 @@
                     <module>external/mig-layout</module>
                     <module>external/rsyntax-osgi</module>
                     <module>external/rsyntax-language-support</module>
-                    <module>external/jts-osgi</module>
+                    <module>external/jts-core-osgi</module>
+                    <module>external/jts-io-osgi</module>
                     <module>external/svg-salamander</module>
                     <module>external/itextpdf</module>
                     <module>external/jai</module>
@@ -81,21 +82,23 @@
                 <default-main-class>org.orbisgis.framework.Main</default-main-class>
                 <!-- Common Dependencies version -->
                 <commons-io-version>2.4</commons-io-version>
-                <jts-version>1.13</jts-version>
+                <jts-core-version>1.14.0</jts-core-version>
+                <jts-io-version>1.14.0</jts-io-version>
+                <json-simple-version>1.1</json-simple-version>
                 <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
                 <felix-version>1.4.1</felix-version>
                 <org.apache.felix.scr.annotations-version>1.9.10</org.apache.felix.scr.annotations-version>
                 <maven-scr-plugin-version>1.15.0</maven-scr-plugin-version>
-                <h2-version>1.4.188</h2-version>
+                <h2-version>1.4.192</h2-version>
                 <h2-package>com.h2database</h2-package>
-                <h2-gis-version>1.2.4-SNAPSHOT</h2-gis-version>
+                <h2-gis-version>1.3.1-SNAPSHOT</h2-gis-version>
                 <sl4j-version>1.6.0</sl4j-version>
                 <rsyntax-version>2.5.8</rsyntax-version>
                 <rsyntax-ls-version>2.5.8</rsyntax-ls-version>
                 <rsyntax-autocomplete-version>2.5.8</rsyntax-autocomplete-version>
                 <gettext-commons-version>0.9.8</gettext-commons-version>
                 <gettext-maven-plugin-version>1.2.4</gettext-maven-plugin-version>
-                <cts-version>1.3.3</cts-version>
+                <cts-version>1.4.0</cts-version>
                 <org.osgi.service.obr-version>1.0.2</org.osgi.service.obr-version>
                 <ogc-commons-version>1.3-SNAPSHOT</ogc-commons-version>
                 <miglayout-version>4.2</miglayout-version>

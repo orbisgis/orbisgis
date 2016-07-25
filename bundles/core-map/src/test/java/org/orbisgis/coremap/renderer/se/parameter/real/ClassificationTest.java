@@ -1,7 +1,7 @@
 package org.orbisgis.coremap.renderer.se.parameter.real;
 
-import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -23,9 +23,9 @@ public class ClassificationTest {
 
     @BeforeClass
     public static void tearUpClass() throws Exception {
-        DataSource dataSource = SpatialH2UT.createDataSource(ClassificationTest.class.getSimpleName(), false);
+        DataSource dataSource = H2GISDBFactory.createDataSource(ClassificationTest.class.getSimpleName(), false);
         connection = dataSource.getConnection();
-        CreateSpatialExtension.initSpatialExtension(connection);
+        H2GISFunctions.load(connection);
     }
 
     @AfterClass

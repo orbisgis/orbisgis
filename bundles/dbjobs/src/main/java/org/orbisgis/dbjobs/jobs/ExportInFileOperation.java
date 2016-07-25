@@ -37,7 +37,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.apache.commons.io.FilenameUtils;
-import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.api.DriverFunction;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.H2GISProgressMonitor;
 import org.orbisgis.dbjobs.api.DriverFunctionContainer;

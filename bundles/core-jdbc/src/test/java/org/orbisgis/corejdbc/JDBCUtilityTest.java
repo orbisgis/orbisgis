@@ -38,11 +38,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 import javax.sql.DataSource;
-import javax.sql.rowset.JdbcRowSet;
-import javax.sql.rowset.RowSetFactory;
 
-import org.h2gis.h2spatial.CreateSpatialExtension;
-import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.h2gis.functions.io.DriverManager;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
@@ -55,8 +54,6 @@ import org.junit.Test;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.commons.progress.NullProgressMonitor;
-import org.h2gis.drivers.DriverManager;
-import org.orbisgis.corejdbc.internal.ReadRowSetImpl;
 
 /**
  * @author Nicolas Fortin
@@ -67,9 +64,9 @@ public class JDBCUtilityTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        dataSource = SFSUtilities.wrapSpatialDataSource(SpatialH2UT.createDataSource(JDBCUtilityTest.class.getSimpleName(), true));
+        dataSource = SFSUtilities.wrapSpatialDataSource(H2GISDBFactory.createDataSource(JDBCUtilityTest.class.getSimpleName(), true));
         connection = dataSource.getConnection();
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new DriverManager(), "");
+        H2GISFunctions.registerFunction(connection.createStatement(), new DriverManager(), "");
     }
 
     @AfterClass

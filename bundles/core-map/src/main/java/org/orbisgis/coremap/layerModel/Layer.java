@@ -29,9 +29,6 @@
 package org.orbisgis.coremap.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -40,7 +37,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +46,7 @@ import javax.swing.SwingWorker;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.URIUtility;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.coremap.renderer.se.Rule;
 import org.orbisgis.coremap.renderer.se.Style;
@@ -60,12 +54,6 @@ import org.orbisgis.coremap.stream.GeoStream;
 import org.orbisgis.coremap.stream.SimpleWMSDriver;
 import org.orbisgis.coremap.stream.WMSStreamSource;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 public class Layer extends BeanLayer {
     // When dataURI is not specified, this layer use the tableReference instead of external URI
@@ -90,7 +78,7 @@ public class Layer extends BeanLayer {
         this.dataManager = dataManager;
         if (JDBC_REFERENCE_SCHEME.equalsIgnoreCase(dataURI.getScheme())) {
             try {
-                Map<String, String> query = URIUtility.getQueryKeyValuePairs(URI.create(dataURI.getSchemeSpecificPart()));
+                Map<String, String> query = URIUtilities.getQueryKeyValuePairs(URI.create(dataURI.getSchemeSpecificPart()));
                 tableReference = new TableLocation(query.get("catalog"), query.get("schema"), query.get("table")).toString();
             } catch (UnsupportedEncodingException ex) {
                 LOGGER.trace(ex.getLocalizedMessage(), ex);

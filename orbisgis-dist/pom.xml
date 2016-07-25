@@ -295,7 +295,19 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>jts-osgi</artifactId>
+            <artifactId>jts-core-osgi</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jts-io-osgi</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>json-simple-osgi</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -331,7 +343,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>h2spatial-ext-osgi</artifactId>
+            <artifactId>h2gis-ext-osgi</artifactId>
             <version>${h2-gis-version}</version>
             <scope>provided</scope>
         </dependency>
@@ -349,7 +361,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>h2spatial-osgi</artifactId>
+            <artifactId>h2gis-functions-osgi</artifactId>
             <version>${h2-gis-version}</version>
             <scope>provided</scope>
         </dependency>

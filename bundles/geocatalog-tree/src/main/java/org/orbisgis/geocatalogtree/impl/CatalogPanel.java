@@ -65,7 +65,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.api.DriverFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.jooq.impl.DSL;
