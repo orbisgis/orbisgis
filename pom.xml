@@ -66,6 +66,7 @@
                     <module>external/rsyntax-language-support</module>
                     <module>external/jts-core-osgi</module>
                     <module>external/jts-io-osgi</module>
+                    <module>external/json-simple-osgi</module>
                     <module>external/svg-salamander</module>
                     <module>external/itextpdf</module>
                     <module>external/jai</module>
