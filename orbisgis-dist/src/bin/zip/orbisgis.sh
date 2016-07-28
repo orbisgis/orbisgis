@@ -1,3 +1,4 @@
+#! /bin/bash
 #
 # OrbisGIS is a GIS application dedicated to scientific spatial simulation.
 # This cross-platform GIS is developed at French IRSTV institute and is able to
@@ -27,4 +28,5 @@
 # info_at_ orbisgis.org
 #
 
+cd $(dirname "$0")
 java -Xmx1024M -jar orbisgis.jar $*
