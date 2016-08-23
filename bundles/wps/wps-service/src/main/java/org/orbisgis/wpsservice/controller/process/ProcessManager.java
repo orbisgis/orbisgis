@@ -26,6 +26,7 @@ import net.opengis.wps._2_0.*;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsservice.LocalWpsServer;
+import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
 import org.orbisgis.wpsservice.controller.utils.CancelClosure;
 import org.orbisgis.wpsservice.controller.utils.WpsSql;
@@ -57,14 +58,14 @@ public class ProcessManager {
     /** Controller used to parse process */
     private ParserController parserController;
     private DataSourceService dataSourceService;
-    private LocalWpsServer wpsService;
+    private WpsServer wpsService;
     private Map<UUID, CancelClosure> closureMap;
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessManager.class);
 
     /**
      * Main constructor.
      */
-    public ProcessManager(DataSourceService dataSourceService, LocalWpsServer wpsService){
+    public ProcessManager(DataSourceService dataSourceService, WpsServer wpsService){
         processIdList = new ArrayList<>();
         parserController = new ParserController();
         this.dataSourceService = dataSourceService;
@@ -162,7 +163,7 @@ public class ProcessManager {
                 groovyObject.setProperty("sql", sql);
             }
             groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
-            groovyObject.setProperty("isH2", wpsService.isH2());
+            groovyObject.setProperty("isH2", wpsService.getDatabase().equals(WpsServer.Database.H2));
             groovyObject.invokeMethod("processing", null);
             retrieveData(process, clazz, groovyObject, dataMap);
         }

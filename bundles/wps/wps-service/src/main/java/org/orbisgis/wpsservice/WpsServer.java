@@ -33,6 +33,7 @@ import net.opengis.wps._2_0.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.UUID;
 
 /**
  * This interface describe all the capabilities that should be implemented by a WPS server.
@@ -133,4 +134,21 @@ public interface WpsServer {
      * @return The xml answer.
      */
     OutputStream callOperation(InputStream xml);
+
+    /**
+     * Cancel the running process corresponding to the given URI.
+     * @param jobId Id of the job to cancel.
+     */
+    void cancelProcess(UUID jobId);
+
+    /**
+     * Enumeration of the supported databases
+     */
+    enum Database {H2, POSTGRESQL}
+
+    /**
+     * Returns the database which is connected to the WPS server.
+     * @return The database which is connected to the WPS server.
+     */
+    Database getDatabase();
 }

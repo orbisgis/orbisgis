@@ -101,17 +101,5 @@ public interface LocalWpsServer extends WpsServer {
      */
     List<String> getFieldValueList(String tableName, String fieldName);
 
-    /**
-     * Returns true if the data base is H2, false otherwise.
-     * @return True if the data base is H2, false otherwise.
-     */
-    boolean isH2();
-
-    /**
-     * Cancel the running process corresponding to the given URI.
-     * @param jobId Id of the job to cancel.
-     */
-    void cancelProcess(UUID jobId);
-
     enum ProcessProperty{IS_REMOVABLE, NODE_PATH, ICON_ARRAY, ROLE, DBMS}
 }

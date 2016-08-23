@@ -324,7 +324,7 @@ public class WpsClientRequestTest {
     private void initWpsService() {
         if (wpsServer == null) {
             //Start the WpsService
-            LocalWpsServerImplementation localWpsService = new LocalWpsServerImplementation();
+            LocalWpsServerImpl localWpsService = new LocalWpsServerImpl();
             localWpsService.init();
             //Try to load the groovy scripts
             try {

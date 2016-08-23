@@ -21,19 +21,14 @@ package org.orbisgis.wpsservice;
 
 import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.*;
-import net.opengis.wps._2_0.GetCapabilitiesType;
-import net.opengis.wps._2_0.ObjectFactory;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.*;
 import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
-import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.model.DataType;
-import org.orbisgis.wpsservice.utils.ProcessTranslator;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -42,22 +37,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import javax.swing.*;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.Duration;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.*;
-import java.io.ByteArrayOutputStream;
 import java.net.URI;
-import java.net.URL;
 import java.sql.*;
 import java.util.*;
-import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -67,54 +50,36 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * It also implements the DatabaseProgressionListener to be able to know the table list in the database.
  */
 @Component(service = {LocalWpsServer.class})
-public class LocalWpsServerImplementation implements LocalWpsServer, DatabaseProgressionListener {
-    /** String of the Groovy file extension. */
-    public static final String GROOVY_EXTENSION = "groovy";
+public class LocalWpsServerImpl
+        extends WpsServerImpl
+        implements LocalWpsServer, DatabaseProgressionListener {
+
     private static final String WPS_SCRIPT_FOLDER = "Scripts";
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
-    private static final String OPTION_SYNC_EXEC = "sync-execute";
-    private static final String OPTION_ASYNC_EXEC = "async-execute";
+    /** String of the Groovy file extension. */
+    public static final String GROOVY_EXTENSION = "groovy";
     /**Array of the table type accepted. */
     private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL"};
     /** Logger */
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalWpsServerImplementation.class);
-    /** Process polling time in milliseconds. */
-    private static final long PROCESS_POLLING_MILLIS = 10000;
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalWpsServerImpl.class);
 
-    /** CoreWorkspace of OrbisGIS */
-    private CoreWorkspace coreWorkspace;
-    /** ExecutorService of OrbisGIS */
-    private ExecutorService executorService;
-    /** True if the H2 configuration allows the multiThread, false otherwise */
-    private boolean multiThreaded;
     /** True if the database is H2, false otherwise. */
     private boolean isH2;
-    /** OrbisGIS DataManager. */
-    private DataManager dataManager;
-    /** Class managing the DataProcessing classes */
-    private DataProcessingManager dataProcessingManager;
-    /** Process manager which contains all the loaded scripts. */
-    private ProcessManager processManager;
-    /** DataSource Service from OrbisGIS */
-    private DataSourceService dataSourceService;
-    /** True if a swing runnable is pending to refresh the content of the table list, false otherwise. */
-    private AtomicBoolean awaitingRefresh=new AtomicBoolean(false);
+    /** True if the H2 configuration allows the multiThread, false otherwise */
+    private boolean multiThreaded;
     /** True if an updates happen while another on is running. */
     private boolean updateWhileAwaitingRefresh = false;
+    /** True if a swing runnable is pending to refresh the content of the table list, false otherwise. */
+    private AtomicBoolean awaitingRefresh=new AtomicBoolean(false);
+    /** CoreWorkspace of OrbisGIS */
+    private CoreWorkspace coreWorkspace;
+    /** OrbisGIS DataManager. */
+    private DataManager dataManager;
     /** List of map containing the table with their basic information.
      * It is used as a buffer to avoid to reload all the table list to save time.
      */
     private List<Map<String, String>> tableList;
-    /** Map containing the WPS Jobs and their UUID */
-    private Map<UUID, Job> jobMap;
-    /** Basic WpsCapabilitiesType object of the Wps Service.
-     * It contains all the basics information about the service excepts the Contents (list of available processes)*/
-    private WPSCapabilitiesType basicCapabilities;
-    /** List of the jobControlOption available (like ASYNC_EXECUTE, SYNC_EXECUTE) */
-    private List<String> jobControlOptions;
-    /** JAXB object factory for the WPS objects. */
-    private static final ObjectFactory wpsObjectFactory = new ObjectFactory();
 
 
     /**********************************************/
@@ -126,12 +91,44 @@ public class LocalWpsServerImplementation implements LocalWpsServer, DatabasePro
      */
     @Activate
     public void init(){
-        initWpsService();
-        processManager = new ProcessManager(dataSourceService, this);
-        dataProcessingManager = new DataProcessingManager();
-        jobMap = new HashMap<>();
+        //Call the initialisation of the WpsServer
+        super.init();
+        //Restore the last saved state of the wps server
         loadPreviousState();
+        //Start the listening of the database
         initDataBaseLink();
+    }
+
+    /**
+     * Reload the script loaded in the previous session.
+     */
+    private void loadPreviousState(){
+        if(coreWorkspace != null) {
+            Properties tbProperties = new Properties();
+            //Load the property file
+            File propertiesFile = new File(coreWorkspace.getWorkspaceFolder() + File.separator + TOOLBOX_PROPERTIES);
+            if (propertiesFile.exists()) {
+                try {
+                    tbProperties.load(new FileInputStream(propertiesFile));
+                } catch (IOException e) {
+                    LOGGER.warn("Unable to restore previous configuration of the ToolBox");
+                    tbProperties = new Properties();
+                }
+            }
+
+            //Properties loading
+            Object prop = tbProperties.getProperty(PROPERTY_SOURCES);
+            if(prop != null && !prop.toString().isEmpty()){
+                String str = prop.toString();
+                for(String s : str.split(";")){
+                    File f = new File(URI.create(s));
+                    addLocalSource(f, null, true, new File(f.getParent()).getName());
+                }
+            }
+        }
+        else{
+            LOGGER.warn("Warning, no CoreWorkspace found. Unable to load the previous state.");
+        }
     }
 
     /**
@@ -163,76 +160,6 @@ public class LocalWpsServerImplementation implements LocalWpsServer, DatabasePro
         }
     }
 
-    /**
-     * Initialize everything about the Wps Service
-     * Generates the basic WPSCapabilitiesType of the WpsService from a resource file
-     */
-    private void initWpsService(){
-        //Get the basic WpsCapabilitiesType from the WpsServiceBasicCapabilities.xml file
-        Unmarshaller unmarshaller = null;
-        WPSCapabilitiesType capabilitiesType = null;
-        try {
-            unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
-            URL url = this.getClass().getResource("WpsServiceBasicCapabilities.xml");
-            if(url != null) {
-                Object unmarshalledObject = unmarshaller.unmarshal(url.openStream());
-                if (unmarshalledObject instanceof JAXBElement) {
-                    Object value = ((JAXBElement) unmarshalledObject).getValue();
-                    if (value instanceof WPSCapabilitiesType) {
-                        capabilitiesType = (WPSCapabilitiesType) value;
-                    }
-                }
-            }
-            else{
-                LOGGER.error("Unable to load the WpsServiceBasicCapabilities.xml file containing the " +
-                        "service basic capabilities.");
-            }
-        } catch (JAXBException | IOException e) {
-            LOGGER.error("Error on using the unmarshaller.\n"+e.getMessage());
-        }
-        if(unmarshaller != null && capabilitiesType != null){
-            basicCapabilities = capabilitiesType;
-        }
-        else{
-            basicCapabilities = wpsObjectFactory.createWPSCapabilitiesType();
-        }
-
-        //Generate the jobControlOption list
-        jobControlOptions = new ArrayList<>();
-        jobControlOptions.add(OPTION_ASYNC_EXEC);
-    }
-
-    /**
-     * Reload the script loaded in the previous session.
-     */
-    private void loadPreviousState(){
-        if(coreWorkspace != null) {
-            Properties tbProperties = new Properties();
-            File propertiesFile = new File(coreWorkspace.getWorkspaceFolder() + File.separator + TOOLBOX_PROPERTIES);
-            if (propertiesFile.exists()) {
-                try {
-                    tbProperties.load(new FileInputStream(propertiesFile));
-                } catch (IOException e) {
-                    LOGGER.warn("Unable to restore previous configuration of the ToolBox");
-                    tbProperties = null;
-                }
-            }
-            if(tbProperties != null){
-                Object prop = tbProperties.getProperty(PROPERTY_SOURCES);
-                if(prop != null && !prop.toString().isEmpty()){
-                    String str = prop.toString();
-                    for(String s : str.split(";")){
-                        File f = new File(URI.create(s));
-                        addLocalSource(f, null, true, new File(f.getParent()).getName());
-                    }
-                }
-            }
-        }
-        else{
-            LOGGER.warn("Warning, no CoreWorkspace found.");
-        }
-    }
-
 
     /**********************************************/
     /** Deactivation methods of the WPS service. **/
@@ -244,13 +171,14 @@ public class LocalWpsServerImplementation implements LocalWpsServer, DatabasePro
     @Deactivate
     public void dispose(){
         //Cancel all running job
-        for(Map.Entry<UUID, Job> entry : jobMap.entrySet()){
+        for(Map.Entry<UUID, Job> entry : this.getJobMap().entrySet()){
             cancelProcess(entry.getKey());
         }
         //Try to save the local files loaded.
         try {
             Properties tbProperties = new Properties();
-            tbProperties.setProperty(PROPERTY_SOURCES, processManager.getListSourcesAsString());
+            //Save the open process source path
+            tbProperties.setProperty(PROPERTY_SOURCES, this.getProcessManager().getListSourcesAsString());
             tbProperties.store(
                     new FileOutputStream(coreWorkspace.getWorkspaceFolder() + File.separator + TOOLBOX_PROPERTIES),
                     "Save of the OrbisGIS toolBox");
@@ -274,10 +202,10 @@ public class LocalWpsServerImplementation implements LocalWpsServer, DatabasePro
 
     @Reference
     public void setDataSource(DataSource ds) {
-        dataSourceService = (DataSourceService)ds;
+        super.setDataSourceService((DataSourceService)ds);
     }
     public void unsetDataSource(DataSource ds) {
-        dataSourceService = null;
+        super.setDataSourceService(null);
     }
 
     @Reference
@@ -290,38 +218,44 @@ public class LocalWpsServerImplementation implements LocalWpsServer, DatabasePro
 
     @Reference
     public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
+        super.setExecutorService(executorService);
     }
     public void unsetExecutorService(ExecutorService executorService) {
-        this.executorService = null;
+        super.setExecutorService(null);
     }
+
+
+    /***********************/
+    /** Utilities methods **/
+    /***********************/
 
     @Override
     public List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isRemovable, String nodePath){
         List<ProcessIdentifier> piList = new ArrayList<>();
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
-            ProcessIdentifier pi = processManager.addScript(f.toURI(), iconName, isRemovable, nodePath);
+            ProcessIdentifier pi = this.getProcessManager().addScript(f.toURI(), iconName, isRemovable, nodePath);
             if(pi == null) {
                 LOGGER.error("The process identifier get from the script '"+f.getName()+"' is null.");
             }
             piList.add(pi);
         }
         else if(f.isDirectory()){
-            piList.addAll(processManager.addLocalSource(f.toURI(), iconName));
+            piList.addAll(this.getProcessManager().addLocalSource(f.toURI(), iconName));
         }
         return piList;
     }
 
     @Override
     public void removeProcess(CodeType identifier){
-        ProcessDescriptionType process = processManager.getProcess(identifier);
+        ProcessDescriptionType process = this.getProcessManager().getProcess(identifier);
         if(process != null) {
-            processManager.removeProcess(process);
+            this.getProcessManager().removeProcess(process);
         }
     }
 
     @Override
     public boolean checkProcess(CodeType identifier){
+        ProcessManager processManager = this.getProcessManager();
         ProcessIdentifier pi = processManager.getProcessIdentifier(identifier);
         //If the URI correspond to a ProcessIdentifier remove it before adding it again
         if(pi != null){
@@ -484,11 +418,6 @@ public class LocalWpsServerImplementation implements LocalWpsServer, DatabasePro
         return fieldValues;
     }
 
-    @Override
-    public boolean isH2(){
-        return isH2;
-    }
-
     /**
      * Test the database an returns if it allows the wps service to run more than one process at the same time.
      * @return True if more than one process can be run at the same time, false otherwise.
@@ -497,6 +426,12 @@ public class LocalWpsServerImplementation implements LocalWpsServer, DatabasePro
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             if(dataManager != null){
                 isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                if(isH2){
+                    this.setDatabase(Database.H2);
+                }
+                else{
+                    this.setDatabase(Database.POSTGRESQL);
+                }
                 if(isH2) {
                     Statement statement = connection.createStatement();
                     ResultSet result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MVCC';");
@@ -523,11 +458,6 @@ public class LocalWpsServerImplementation implements LocalWpsServer, DatabasePro
     /** Methods for the listening of the database update. **/
     /*******************************************************/
 
-    @Override
-    public void cancelProcess(UUID jobId){
-        processManager.cancelProcess(jobId);
-    }
-
     /**
      * Method called when a change happens in the DataManager (i.e. a table suppression, a table add ...)
      */
@@ -535,7 +465,13 @@ public class LocalWpsServerImplementation implements LocalWpsServer, DatabasePro
         //If not actually doing a refresh, do it.
         if(!awaitingRefresh.getAndSet(true)) {
             ReadDataManagerOnSwingThread worker = new ReadDataManagerOnSwingThread(this);
-            worker.execute();
+            ExecutorService executorService = getExecutorService();
+            if(executorService != null){
+                executorService.execute(worker);
+            }
+            else{
+                worker.run();
+            }
         } else {
             updateWhileAwaitingRefresh = true;
         }
@@ -635,24 +571,19 @@ public class LocalWpsServerImplementation implements LocalWpsServer, DatabasePro
     }
 
     /**
-     * Refresh the JList on the swing thread
+     * Refresh the list
      */
-    private static class ReadDataManagerOnSwingThread extends SwingWorker<Boolean, Boolean> {
-        private LocalWpsServerImplementation wpsService;
+    private static class ReadDataManagerOnSwingThread implements Runnable {
+        private LocalWpsServerImpl wpsService;
 
-        private ReadDataManagerOnSwingThread(LocalWpsServerImplementation wpsService) {
+        private ReadDataManagerOnSwingThread(LocalWpsServerImpl wpsService) {
             this.wpsService = wpsService;
         }
 
         @Override
-        protected Boolean doInBackground() throws Exception {
+        public void run() {
             wpsService.readDatabase();
-            return true;
-        }
-
-        @Override
-        protected void done() {
-            //Refresh the JList on the swing thread
+            //Refresh the list on the swing thread
             wpsService.awaitingRefresh.set(false);
             // An update occurs during fetching tables
             if(wpsService.updateWhileAwaitingRefresh) {
@@ -660,292 +591,5 @@ public class LocalWpsServerImplementation implements LocalWpsServer, DatabasePro
                 wpsService.onDataManagerChange();
             }
         }
-    }
-
-
-    /*******************************************************************/
-    /** Methods from the WpsService class.                            **/
-    /** All of these methods are defined by the WPS 2.0 OGC standard **/
-    /*******************************************************************/
-
-    @Override
-    public WPSCapabilitiesType getCapabilities(GetCapabilitiesType getCapabilities) {
-        WPSCapabilitiesType capabilitiesType = new WPSCapabilitiesType();
-        capabilitiesType.setExtension(basicCapabilities.getExtension());
-        capabilitiesType.setLanguages(basicCapabilities.getLanguages());
-        capabilitiesType.setOperationsMetadata(basicCapabilities.getOperationsMetadata());
-        capabilitiesType.setServiceIdentification(basicCapabilities.getServiceIdentification());
-        capabilitiesType.setServiceProvider(basicCapabilities.getServiceProvider());
-        capabilitiesType.setUpdateSequence(basicCapabilities.getUpdateSequence());
-        capabilitiesType.setVersion(basicCapabilities.getVersion());
-
-        /** Sets the Contents **/
-        Contents contents = new Contents();
-        List<ProcessSummaryType> processSummaryTypeList = new ArrayList<>();
-        List<ProcessDescriptionType> processList = getProcessList();
-        for(ProcessDescriptionType process : processList) {
-            ProcessSummaryType processSummaryType = new ProcessSummaryType();
-            processSummaryType.getJobControlOptions().clear();
-            processSummaryType.getJobControlOptions().addAll(jobControlOptions);
-            processSummaryType.getAbstract().clear();
-            processSummaryType.getAbstract().addAll(process.getAbstract());
-            processSummaryType.setIdentifier(process.getIdentifier());
-            processSummaryType.getKeywords().clear();
-            processSummaryType.getKeywords().addAll(process.getKeywords());
-            processSummaryType.getMetadata().clear();
-            processSummaryType.getMetadata().addAll(process.getMetadata());
-            processSummaryType.getTitle().clear();
-            processSummaryType.getTitle().addAll(process.getTitle());
-
-            processSummaryTypeList.add(processSummaryType);
-        }
-        contents.getProcessSummary().clear();
-        contents.getProcessSummary().addAll(processSummaryTypeList);
-        capabilitiesType.setContents(contents);
-
-        return capabilitiesType;
-    }
-
-    @Override
-    public ProcessOfferings describeProcess(DescribeProcess describeProcess) {
-        List<CodeType> idList = describeProcess.getIdentifier();
-
-        ProcessOfferings processOfferings = new ProcessOfferings();
-        List<ProcessOffering> processOfferingList = new ArrayList<>();
-        for(CodeType id : idList) {
-            ProcessOffering processOffering = null;
-            List<ProcessIdentifier> piList = processManager.getAllProcessIdentifier();
-            for(ProcessIdentifier pi : piList){
-                if(pi.getProcessDescriptionType().getIdentifier().getValue().equals(id.getValue())){
-                    processOffering = pi.getProcessOffering();
-                }
-            }
-            if(processOffering != null) {
-                //Build the new ProcessOffering which will be return
-                ProcessOffering po = new ProcessOffering();
-                po.setProcessVersion(processOffering.getProcessVersion());
-                po.getJobControlOptions().clear();
-                po.getJobControlOptions().addAll(jobControlOptions);
-                //Get the translated process and add it to the ProcessOffering
-                List<DataTransmissionModeType> listTransmission = new ArrayList<>();
-                listTransmission.add(DataTransmissionModeType.VALUE);
-                po.getOutputTransmission().clear();
-                po.getOutputTransmission().addAll(listTransmission);
-                ProcessDescriptionType process = processOffering.getProcess();
-                po.setProcess(ProcessTranslator.getTranslatedProcess(process, describeProcess.getLang()));
-                processOfferingList.add(po);
-            }
-        }
-        processOfferings.getProcessOffering().clear();
-        processOfferings.getProcessOffering().addAll(processOfferingList);
-        return processOfferings;
-    }
-
-    @Override
-    public Object execute(ExecuteRequestType execute) {
-        //Generate the DataMap
-        Map<URI, Object> dataMap = new HashMap<>();
-        for(DataInputType input : execute.getInput()){
-            URI id = URI.create(input.getId());
-            Object data;
-            if(input.getData().getContent().size() == 1){
-                data = input.getData().getContent().get(0);
-            }
-            else{
-                data = input.getData().getContent();
-            }
-            dataMap.put(id, data);
-        }
-        //Generation of the StatusInfo
-        StatusInfo statusInfo = new StatusInfo();
-        //Generation of the Job unique ID
-        UUID jobId = UUID.randomUUID();
-        statusInfo.setJobID(jobId.toString());
-        //Get the Process
-        ProcessIdentifier processIdentifier = processManager.getProcessIdentifier(execute.getIdentifier());
-        //Generate the processInstance
-        Job job = new Job(processIdentifier.getProcessDescriptionType(), jobId, dataMap);
-        jobMap.put(jobId, job);
-        statusInfo.setStatus(job.getState().name());
-
-        //Process execution in new thread
-        ProcessWorker worker = new ProcessWorker(job,
-                processIdentifier,
-                dataProcessingManager,
-                processManager,
-                dataMap);
-
-        if(executorService != null){
-            executorService.execute(worker);
-        }
-        else {
-            worker.run();
-        }
-        statusInfo.setStatus(job.getState().name());
-        XMLGregorianCalendar date = getXMLGregorianCalendar(PROCESS_POLLING_MILLIS);
-        statusInfo.setNextPoll(date);
-        return statusInfo;
-    }
-
-    @Override
-    public StatusInfo getStatus(GetStatus getStatus) {
-        //Get the job concerned by the getStatus request
-        UUID jobId = UUID.fromString(getStatus.getJobID());
-        Job job = jobMap.get(jobId);
-        //Generate the StatusInfo to return
-        StatusInfo statusInfo = new StatusInfo();
-        statusInfo.setJobID(jobId.toString());
-        statusInfo.setStatus(job.getState().name());
-        if(!job.getState().equals(ProcessExecutionListener.ProcessState.FAILED) &&
-                !job.getState().equals(ProcessExecutionListener.ProcessState.SUCCEEDED)) {
-            XMLGregorianCalendar date = getXMLGregorianCalendar(PROCESS_POLLING_MILLIS);
-            statusInfo.setNextPoll(date);
-        }
-        return statusInfo;
-    }
-
-    @Override
-    public Result getResult(GetResult getResult) {
-        Result result = new Result();
-        //generate the XMLGregorianCalendar Object to put in the Result Object
-        //TODO make the service be able to set the expiration date
-        XMLGregorianCalendar date = getXMLGregorianCalendar(0);
-        result.setExpirationDate(date);
-        //Get the concerned Job
-        UUID jobId = UUID.fromString(getResult.getJobID());
-        Job job = jobMap.get(jobId);
-        result.setJobID(jobId.toString());
-        //Get the list of outputs to transmit
-        List<DataOutputType> listOutput = new ArrayList<>();
-        for(Map.Entry<URI, Object> entry : job.getDataMap().entrySet()){
-            //Test if the URI is an Output URI.
-            boolean contained = false;
-            for(OutputDescriptionType output : job.getProcess().getOutput()){
-                if(output.getIdentifier().getValue().equals(entry.getKey().toString())){
-                    contained = true;
-                }
-            }
-            if(contained) {
-                //Create the DataOutputType object, set it and add it to the output list.
-                DataOutputType output = new DataOutputType();
-                output.setId(entry.getKey().toString());
-                Data data = new Data();
-                data.setEncoding("simple");
-                data.setMimeType("");
-                //TODO make the difference between the different data type from the map.
-                List<Serializable> serializableList = new ArrayList<>();
-                serializableList.add(entry.getValue().toString());
-                data.getContent().clear();
-                data.getContent().addAll(serializableList);
-                output.setData(data);
-                listOutput.add(output);
-            }
-        }
-        result.getOutput().clear();
-        result.getOutput().addAll(listOutput);
-        return result;
-    }
-
-    @Override
-    public StatusInfo dismiss(Dismiss dismiss) {
-        UUID jobId = UUID.fromString(dismiss.getJobID());
-        cancelProcess(jobId);
-        Job job = jobMap.get(jobId);
-        //Generate the StatusInfo to return
-        StatusInfo statusInfo = new StatusInfo();
-        statusInfo.setJobID(jobId.toString());
-        statusInfo.setStatus(job.getState().name());
-        if(!job.getState().equals(ProcessExecutionListener.ProcessState.FAILED) &&
-                !job.getState().equals(ProcessExecutionListener.ProcessState.SUCCEEDED)) {
-            XMLGregorianCalendar date = getXMLGregorianCalendar(PROCESS_POLLING_MILLIS);
-            statusInfo.setNextPoll(date);
-        }
-        return statusInfo;
-    }
-
-    @Override
-    public OutputStream callOperation(InputStream xml) {
-        Object result = null;
-        ObjectFactory factory = new ObjectFactory();
-        try {
-            Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
-            Object o = unmarshaller.unmarshal(xml);
-            if(o instanceof JAXBElement){
-                o = ((JAXBElement) o).getValue();
-            }
-            //Call the WPS method associated to the unmarshalled object
-            if(o instanceof GetCapabilitiesType){
-                result = factory.createCapabilities(getCapabilities((GetCapabilitiesType)o));
-            }
-            else if(o instanceof DescribeProcess){
-                result = describeProcess((DescribeProcess)o);
-            }
-            else if(o instanceof ExecuteRequestType){
-                result = execute((ExecuteRequestType)o);
-            }
-            else if(o instanceof GetStatus){
-                result = getStatus((GetStatus)o);
-            }
-            else if(o instanceof GetResult){
-                result = getResult((GetResult)o);
-            }
-            else if(o instanceof Dismiss){
-                result = dismiss((Dismiss)o);
-            }
-        } catch (JAXBException e) {
-            LOGGER.error("Unable to parse the incoming xml\n" + e.getMessage());
-            return new ByteArrayOutputStream();
-        }
-        //Write the request answer in an ByteArrayOutputStream
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        if(result != null){
-            try {
-                //Marshall the WpsService answer
-                Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
-                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-                marshaller.marshal(result, out);
-            } catch (JAXBException e) {
-                LOGGER.error("Unable to parse the outcoming xml\n" + e.getMessage());
-            }
-        }
-        return out;
-    }
-
-
-    /************************/
-    /** Utilities methods. **/
-    /************************/
-
-    /**
-     * Returns the list of processes managed by the wpsService.
-     * @return The list of processes managed by the wpsService.
-     */
-    private List<ProcessDescriptionType> getProcessList(){
-        List<ProcessDescriptionType> processList = new ArrayList<>();
-        List<ProcessIdentifier> piList = processManager.getAllProcessIdentifier();
-        for(ProcessIdentifier pi : piList){
-            processList.add(pi.getProcessDescriptionType());
-        }
-        return processList;
-    }
-
-    /**
-     * Creates a XMLGregorianCalendar object which represent the date of now + durationInMillis.
-     * @param durationInMillis Duration in milliseconds to add to thenow date.
-     * @return A XMLGregorianCalendar object which represent the date of now + durationInMillis.
-     */
-    private XMLGregorianCalendar getXMLGregorianCalendar(long durationInMillis){
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.setTime(new Date());
-        XMLGregorianCalendar date = null;
-        try {
-            DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
-            date = datatypeFactory.newXMLGregorianCalendar(calendar);
-            Duration duration = datatypeFactory.newDuration(durationInMillis);
-            date.add(duration);
-        } catch (DatatypeConfigurationException e) {
-            LOGGER.error("Unable to generate the XMLGregorianCalendar object.\n"+e.getMessage());
-        }
-        return date;
     }
 }
