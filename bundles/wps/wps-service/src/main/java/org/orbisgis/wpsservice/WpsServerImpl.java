@@ -2,6 +2,7 @@ package org.orbisgis.wpsservice;
 
 import net.opengis.ows._2.CodeType;
 import net.opengis.wps._2_0.*;
+import net.sourceforge.cobertura.CoverageIgnore;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
@@ -385,19 +386,23 @@ public class WpsServerImpl implements WpsServer {
     /** Getters and setters **/
     /*************************/
 
+    @CoverageIgnore
     protected void setDatabase(Database database){
         this.database = database;
     }
 
+    @CoverageIgnore
     @Override
     public Database getDatabase() {
         return database;
     }
 
+    @CoverageIgnore
     protected void setDataSourceService(DataSourceService dataSourceService){
         this.dataSourceService = dataSourceService;
     }
 
+    @CoverageIgnore
     protected void setDataProcessingManager(DataProcessingManager dataProcessingManager){
         this.dataProcessingManager = dataProcessingManager;
     }

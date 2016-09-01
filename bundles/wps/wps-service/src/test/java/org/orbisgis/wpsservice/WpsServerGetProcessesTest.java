@@ -16,7 +16,7 @@ import org.junit.Test;
  *
  * @author Sylvain PALOMINOS
  */
-public class WpsClientRequestTest {
+public class WpsServerGetProcessesTest {
     WpsServer wpsServer;
 
     /**
@@ -222,99 +222,6 @@ public class WpsClientRequestTest {
         Assert.assertTrue(message, pos.getProcessOffering() != null && pos.getProcessOffering().size() == 1);
         ProcessOffering po = pos.getProcessOffering().get(0);
         Assert.assertTrue(message, po.isSetProcess());
-    }
-
-    /**
-     * Test the GetCapabilities request.
-     */
-    @Test
-    public void testGetCapabilities() throws JAXBException, IOException {
-        //Start the wpsService
-        initWpsService();
-        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
-        //Build the GetCapabilities object
-        File getCapabilitiesFile = new File(this.getClass().getResource("GetCapabilities.xml").getFile());
-        Object element = unmarshaller.unmarshal(getCapabilitiesFile);
-        //Marshall the DescribeProcess object into an OutputStream
-        Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        marshaller.marshal(element, out);
-        //Write the OutputStream content into an Input stream before sending it to the wpsService
-        InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
-        //Get back the result of the DescribeProcess request as a BufferReader
-        InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
-        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-        Object resultObject = unmarshaller.unmarshal(resultXml);
-        File f = new File(this.getClass().getResource("Capabilities.xml").getFile());
-        Object resourceObject = unmarshaller.unmarshal(f);
-
-        String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, resultObject != null && resultObject instanceof JAXBElement);
-        Assert.assertTrue(message, ((JAXBElement<WPSCapabilitiesType>)resultObject).getValue() != null );
-    }
-
-    /**
-     * Test the Execute, GetStatus and GetResult requests.
-     */
-    @Test
-    public void testExecuteStatusResultRequest() throws JAXBException, IOException {
-        //Start the wpsService
-        initWpsService();
-        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
-        //Build the Execute object
-        File executeFile = new File(this.getClass().getResource("ExecuteRequest.xml").getFile());
-        Object element = unmarshaller.unmarshal(executeFile);
-        //Marshall the Execute object into an OutputStream
-        Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        ByteArrayOutputStream outExecute = new ByteArrayOutputStream();
-        marshaller.marshal(element, outExecute);
-        //Write the OutputStream content into an Input stream before sending it to the wpsService
-        InputStream in = new DataInputStream(new ByteArrayInputStream(outExecute.toByteArray()));
-        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
-        //Get back the result of the DescribeProcess request as a BufferReader
-        InputStream resultExecXml = new ByteArrayInputStream(xml.toByteArray());
-        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-        Object resultObject = unmarshaller.unmarshal(resultExecXml);
-
-        String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
-        Assert.assertTrue(message, resultObject != null && resultObject instanceof StatusInfo);
-
-        //Now test the getStatus request
-        UUID jobId = UUID.fromString(((StatusInfo)resultObject).getJobID());
-        GetStatus getStatus = new GetStatus();
-        getStatus.setJobID(jobId.toString());
-        //Marshall the GetStatus object into an OutputStream
-        ByteArrayOutputStream outStatus = new ByteArrayOutputStream();
-        marshaller.marshal(getStatus, outStatus);
-        //Write the OutputStream content into an Input stream before sending it to the wpsService
-        in = new DataInputStream(new ByteArrayInputStream(outStatus.toByteArray()));
-        xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
-        //Get back the result of the DescribeProcess request as a BufferReader
-        InputStream resultStatusXml = new ByteArrayInputStream(xml.toByteArray());
-        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-        resultObject = unmarshaller.unmarshal(resultStatusXml);
-
-        Assert.assertTrue(message, resultObject != null && resultObject instanceof StatusInfo);
-
-        //Now test the getResult request
-        jobId = UUID.fromString(((StatusInfo)resultObject).getJobID());
-        GetResult getResult = new GetResult();
-        getResult.setJobID(jobId.toString());
-        //Marshall the GetResult object into an OutputStream
-        ByteArrayOutputStream outResult = new ByteArrayOutputStream();
-        marshaller.marshal(getResult, outResult);
-        //Write the OutputStream content into an Input stream before sending it to the wpsService
-        in = new DataInputStream(new ByteArrayInputStream(outResult.toByteArray()));
-        xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
-        //Get back the result of the DescribeProcess request as a BufferReader
-        InputStream resultResultXml = new ByteArrayInputStream(xml.toByteArray());
-        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-        resultObject = unmarshaller.unmarshal(resultResultXml);
-
-        Assert.assertTrue(message, resultObject != null && resultObject instanceof Result);
     }
 
     /**

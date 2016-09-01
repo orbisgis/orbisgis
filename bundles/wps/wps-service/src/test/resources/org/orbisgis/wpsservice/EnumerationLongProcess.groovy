@@ -40,13 +40,13 @@ import org.orbisgis.wpsgroovyapi.process.Process
                         @LanguageString(value = "wps", lang = "fr")
                 ])
         ],
-        identifier = "orbisgis:test:enumeration",
+        identifier = "orbisgis:test:enumerationLongProcess",
         metadata = [
                 @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
         ]
 )
 def processing() {
-    sleep(500)
+    sleep(50000)
     enumerationOutput = inputEnumeration;
 }
 
@@ -81,7 +81,7 @@ def processing() {
         names = ["name1", "name2"],
         minOccurs = 0,
         maxOccurs = 2,
-        identifier = "orbisgis:test:enumeration:input",
+        identifier = "orbisgis:test:enumerationLongProcess:input",
         metadata = [
                 @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
         ]
@@ -112,7 +112,7 @@ String[] inputEnumeration
                 ])
         ],
         values = ["value1", "value2"],
-        identifier = "orbisgis:test:enumeration:output",
+        identifier = "orbisgis:test:enumerationLongProcess:output",
         metadata = [
                 @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
         ]

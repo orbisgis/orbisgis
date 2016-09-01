@@ -155,15 +155,15 @@ public class ProcessManager {
         Class clazz = parserController.getProcessClass(processIdentifier.getSourceFileURI());
         GroovyObject groovyObject = createProcess(process, clazz, dataMap);
         if(groovyObject != null) {
+            CancelClosure closure = new CancelClosure(this);
+            closureMap.put(jobId, closure);
             if (dataSourceService != null) {
                 WpsSql sql = new WpsSql(dataSourceService);
-                CancelClosure closure = new CancelClosure(this);
-                closureMap.put(jobId, closure);
                 sql.withStatement(closure);
                 groovyObject.setProperty("sql", sql);
+                groovyObject.setProperty("isH2", wpsService.getDatabase().equals(WpsServer.Database.H2));
             }
             groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
-            groovyObject.setProperty("isH2", wpsService.getDatabase().equals(WpsServer.Database.H2));
             groovyObject.invokeMethod("processing", null);
             retrieveData(process, clazz, groovyObject, dataMap);
         }
