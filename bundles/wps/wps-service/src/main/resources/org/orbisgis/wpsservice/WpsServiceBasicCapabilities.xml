@@ -16,12 +16,12 @@
         <ns1:ServiceTypeVersion>2.0.0</ns1:ServiceTypeVersion>
     </ns1:ServiceIdentification>
     <ns1:ServiceProvider>
-        <ns1:ProviderName>ORBISGIS</ns1:ProviderName>
+        <ns1:ProviderName>OrbisGIS</ns1:ProviderName>
         <ns1:ProviderSite ns2:href="http://orbisgis.org/"/>
         <ns1:ServiceContact>
             <ns1:ContactInfo>
                 <ns1:Address>
-                    <ns1:ElectronicMailAddress>info@orbisgis.org</ns1:ElectronicMailAddress>
+                    <ns1:ElectronicMailAddress>info_at_orbisgis.org</ns1:ElectronicMailAddress>
                 </ns1:Address>
             </ns1:ContactInfo>
         </ns1:ServiceContact>
