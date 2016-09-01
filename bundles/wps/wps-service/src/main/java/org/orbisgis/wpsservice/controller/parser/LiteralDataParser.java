@@ -152,10 +152,9 @@ public class LiteralDataParser implements Parser {
             literalDataDomain.setAllowedValues(allowedValues);
             //Sets the default value
             if(defaultValue != null && (Boolean) defaultValue) {
-                literalDataDomain.setDefaultValue(trueValue);
-            }
-            else{
-                literalDataDomain.setDefaultValue(falseValue);
+                ValueType defaultValueType = new ValueType();
+                defaultValueType.setValue(defaultValue.toString());
+                literalDataDomain.setDefaultValue(defaultValueType);
             }
 
             //Creates the domain metadata object
