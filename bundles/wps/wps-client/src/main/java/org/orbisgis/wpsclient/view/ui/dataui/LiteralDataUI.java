@@ -239,6 +239,11 @@ public class LiteralDataUI implements DataUI {
                         falseButton.setSelected(true);
                     }
                 }
+                else{
+                    if(isOptional){
+                        group.clearSelection();
+                    }
+                }
                 falseButton.addActionListener(EventHandler.create(
                         ActionListener.class,
                         this,
