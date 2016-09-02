@@ -6,6 +6,7 @@ import net.opengis.ows._2.ResponsiblePartySubsetType;
 import net.opengis.wps._2_0.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.orbisgis.wpsservice.model.JaxbContainer;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
