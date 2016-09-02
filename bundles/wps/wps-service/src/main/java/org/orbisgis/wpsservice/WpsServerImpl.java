@@ -27,13 +27,14 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 /**
- * This class is the implementation of a WPS server.
+ * This class is an implementation of a WPS server.
  * It is used a a base for the OrbisGIS local WPS server.
  *
  * @author Sylvain PALOMINOS
  */
 public class WpsServerImpl implements WpsServer {
 
+    /** Execution options */
     private static final String OPTION_SYNC_EXEC = "sync-execute";
     private static final String OPTION_ASYNC_EXEC = "async-execute";
     /** Process polling time in milliseconds. */
@@ -67,12 +68,12 @@ public class WpsServerImpl implements WpsServer {
     /**********************************************/
 
     /**
-     * Initialization of the LocalWpsServiceImplementation required by OSGI.
+     * Initialization of the WpsServiceImpl.
      */
     public void init(){
         //Initialisation of the wps service itself
         initWpsService();
-        //Create the attribute for the processes execution
+        //Creates the attribute for the processes execution
         processManager = new ProcessManager(dataSourceService, this);
         dataProcessingManager = new DataProcessingManager();
         jobMap = new HashMap<>();
@@ -136,6 +137,7 @@ public class WpsServerImpl implements WpsServer {
 
     @Override
     public WPSCapabilitiesType getCapabilities(GetCapabilitiesType getCapabilities) {
+        //Copy the content of the basicCapabilities into the new one
         WPSCapabilitiesType capabilitiesType = new WPSCapabilitiesType();
         capabilitiesType.setExtension(basicCapabilities.getExtension());
         capabilitiesType.setLanguages(basicCapabilities.getLanguages());
@@ -174,18 +176,22 @@ public class WpsServerImpl implements WpsServer {
 
     @Override
     public ProcessOfferings describeProcess(DescribeProcess describeProcess) {
+        //Get the list of the ids of the process to describe
         List<CodeType> idList = describeProcess.getIdentifier();
 
         ProcessOfferings processOfferings = new ProcessOfferings();
         List<ProcessOffering> processOfferingList = new ArrayList<>();
+        //For each of the processes
         for(CodeType id : idList) {
             ProcessOffering processOffering = null;
             List<ProcessIdentifier> piList = processManager.getAllProcessIdentifier();
+            //Find the process registered in the server with the same id
             for(ProcessIdentifier pi : piList){
                 if(pi.getProcessDescriptionType().getIdentifier().getValue().equals(id.getValue())){
                     processOffering = pi.getProcessOffering();
                 }
             }
+            //Once the process found, build the corresponding processOffering to send to the client
             if(processOffering != null) {
                 //Build the new ProcessOffering which will be return
                 ProcessOffering po = new ProcessOffering();
@@ -241,12 +247,14 @@ public class WpsServerImpl implements WpsServer {
                 processManager,
                 dataMap);
 
+        //Run the worker
         if(executorService != null){
             executorService.execute(worker);
         }
         else {
             worker.run();
         }
+        //Return the StatusInfo to the user
         statusInfo.setStatus(job.getState().name());
         XMLGregorianCalendar date = getXMLGregorianCalendar(PROCESS_POLLING_MILLIS);
         statusInfo.setNextPoll(date);
