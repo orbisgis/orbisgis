@@ -4,10 +4,6 @@ import org.orbisgis.wpsgroovyapi.input.*
 import org.orbisgis.wpsgroovyapi.output.*
 import org.orbisgis.wpsgroovyapi.process.*
 
-/********************/
-/** Process method **/
-/********************/
-
 
 
 /**
@@ -15,18 +11,19 @@ import org.orbisgis.wpsgroovyapi.process.*
  * @author Erwan Bocher
  */
 @Process(title = "Create a graph",
-        resume = "Create a graph stored in two tables nodes and edges from an input table that contains Multi or LineString.\nIf the input table has name 'input', then the output tables are named 'input_nodes' and 'input_edges'.",
+        resume = "Create a graph stored in two tables nodes and edges from an input table that contains Multi or LineString.<br>If the input table has name 'input', then the output tables are named 'input_nodes' and 'input_edges'.",
         keywords = ["Network","Geometry"])
-def processing() {
+def processing() {    
+    if(slope==null){
+        slope=false;
+    }
 	
     String query = " SELECT ST_GRAPH('"   + inputDataStore + "', '"+geometricField[0]+"',"+tolerance+ ", "+ slope+ ")"
-
-println(query);
 
     //Execute the query
     sql.execute(query)
 
-literalOutput = "The graph network has been created."
+    literalOutput = "The graph network has been created."
 }
 
 /****************/
@@ -40,10 +37,6 @@ literalOutput = "The graph network has been created."
         dataStoreTypes = ["GEOMETRY"])
 String inputDataStore
 
-
-/**********************/
-/** INPUT Parameters **/
-/**********************/
 
 /** Name of the Geometric field of the DataStore inputDataStore. */
 @DataFieldInput(
@@ -65,10 +58,6 @@ Double tolerance
 	minOccurs = 0)
 Boolean slope
 
-
-/*****************/
-/** OUTPUT Data **/
-/*****************/
 
 /** String output of the process. */
 @LiteralDataOutput(
