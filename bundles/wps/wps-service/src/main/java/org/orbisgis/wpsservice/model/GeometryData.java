@@ -6,7 +6,6 @@ import net.opengis.wps._2_0.Format;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * GeometryData extends the ComplexData class.

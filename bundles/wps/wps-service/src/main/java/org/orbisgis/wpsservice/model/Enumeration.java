@@ -23,7 +23,6 @@ import net.opengis.wps._2_0.ComplexDataType;
 import net.opengis.wps._2_0.Format;
 
 import javax.xml.bind.annotation.*;
-import java.util.Arrays;
 import java.util.List;
 
 /**

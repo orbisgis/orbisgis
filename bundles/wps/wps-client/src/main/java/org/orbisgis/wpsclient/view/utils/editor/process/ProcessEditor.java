@@ -205,7 +205,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
         JPanel parameterPanel = new JPanel(new MigLayout("fill"));
-        parameterPanel.setBorder(BorderFactory.createTitledBorder("Paramater(s)"));
+        parameterPanel.setBorder(BorderFactory.createTitledBorder("Parameter(s)"));
 
         for(InputDescriptionType i : process.getInput()){
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getValue().getClass());
