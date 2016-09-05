@@ -3,12 +3,12 @@ package org.orbisgis.wpsservice;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.UUID;
 import javax.xml.bind.*;
 
 import net.opengis.wps._2_0.*;
 import org.junit.Assert;
 import org.junit.Test;
+import org.orbisgis.wpsservice.model.JaxbContainer;
 
 /**
  * This test class perform tests about groovy wps scripts.

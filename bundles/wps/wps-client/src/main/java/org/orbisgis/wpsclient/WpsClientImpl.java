@@ -42,8 +42,7 @@ import org.orbisgis.wpsclient.view.utils.editor.log.LogEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.log.LogEditor;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
-import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
-import org.orbisgis.wpsservice.JaxbContainer;
+import org.orbisgis.wpsservice.model.JaxbContainer;
 import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.model.DataField;
 import org.orbisgis.wpsservice.model.DataStore;
@@ -55,7 +54,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
 
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.beans.EventHandler;
 import java.net.URI;
 import java.util.ArrayList;

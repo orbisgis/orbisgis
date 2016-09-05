@@ -1,13 +1,18 @@
 package org.orbisgis.wpsservice;
 
-import net.opengis.ows._2.CodeType;
+import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.*;
+import net.opengis.wps._2_0.GetCapabilitiesType;
+import net.opengis.wps._2_0.ObjectFactory;
 import net.sourceforge.cobertura.CoverageIgnore;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.orbisgis.wpsservice.controller.execution.ProcessWorker;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
+import org.orbisgis.wpsservice.controller.utils.Job;
+import org.orbisgis.wpsservice.model.JaxbContainer;
 import org.orbisgis.wpsservice.utils.ProcessTranslator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,27 +32,37 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 /**
- * This class is the implementation of a WPS server.
+ * This class is an implementation of a WPS server.
  * It is used a a base for the OrbisGIS local WPS server.
  *
  * @author Sylvain PALOMINOS
  */
 public class WpsServerImpl implements WpsServer {
 
+    /** Execution options */
     private static final String OPTION_SYNC_EXEC = "sync-execute";
     private static final String OPTION_ASYNC_EXEC = "async-execute";
     /** Process polling time in milliseconds. */
     private static final long PROCESS_POLLING_MILLIS = 10000;
+    /** Server version. */
+    private static final String SERVER_VERSION = "2.0.0";
+    /** Server default language. */
+    private static final String DEFAULT_LANGUAGE = "en";
     /** Logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(WpsServerImpl.class);
     /** JAXB object factory for the WPS objects. */
     private static final ObjectFactory wpsObjectFactory = new ObjectFactory();
 
+    /** Server supported languages. */
+    private List<String> supportedLanguages;
     /** List of the jobControlOption available (like ASYNC_EXECUTE, SYNC_EXECUTE) */
     private List<String> jobControlOptions;
-    /** Basic WpsCapabilitiesType object of the Wps Service.
-     * It contains all the basics information about the service excepts the Contents (list of available processes)*/
-    private WPSCapabilitiesType basicCapabilities;
+    /** List of basic capabilities.
+     * There should be one basic capabilities for each languages supported by the server.
+     * The basic capabilities is used to build the answer to the GetCapabilities request.*/
+    private List<WPSCapabilitiesType> basicCapabilities;
+    /** The default wps capabilities. */
+    private WPSCapabilitiesType defaultBasicCapabilities;
     /** Process manager which contains all the loaded scripts. */
     private ProcessManager processManager;
     /** DataSource Service from OrbisGIS */
@@ -61,21 +76,26 @@ public class WpsServerImpl implements WpsServer {
     /** Database connected to the WPS server */
     private Database database;
 
+    private enum SectionName {ServiceIdentification, ServiceProvider, OperationMetadata, Contents, Languages, All}
+
 
     /**********************************************/
     /** Initialisation method of the WPS service **/
     /**********************************************/
 
     /**
-     * Initialization of the LocalWpsServiceImplementation required by OSGI.
+     * Initialization of the WpsServiceImpl.
      */
     public void init(){
-        //Initialisation of the wps service itself
-        initWpsService();
-        //Create the attribute for the processes execution
-        processManager = new ProcessManager(dataSourceService, this);
+        basicCapabilities = new ArrayList<>();
         dataProcessingManager = new DataProcessingManager();
         jobMap = new HashMap<>();
+        supportedLanguages = new ArrayList<>();
+        supportedLanguages.add(DEFAULT_LANGUAGE);
+        //Initialisation of the wps service itself
+        initWpsService();
+        //Creates the attribute for the processes execution
+        processManager = new ProcessManager(dataSourceService, this);
     }
 
     /**
@@ -118,11 +138,18 @@ public class WpsServerImpl implements WpsServer {
             LOGGER.error("Error on using the unmarshaller.\n"+e.getMessage());
         }
         if(capabilitiesType != null){
-            basicCapabilities = capabilitiesType;
+            defaultBasicCapabilities = capabilitiesType;
         }
         else{
-            basicCapabilities = wpsObjectFactory.createWPSCapabilitiesType();
+            defaultBasicCapabilities = wpsObjectFactory.createWPSCapabilitiesType();
+            defaultBasicCapabilities.setVersion(SERVER_VERSION);
+            CapabilitiesBaseType.Languages languages = new CapabilitiesBaseType.Languages();
+            languages.getLanguage().add(DEFAULT_LANGUAGE);
+            defaultBasicCapabilities.setLanguages(languages);
+            defaultBasicCapabilities.setContents(new Contents());
+            defaultBasicCapabilities.setOperationsMetadata(new OperationsMetadata());
         }
+        basicCapabilities.add(defaultBasicCapabilities);
 
         //Generate the jobControlOption list
         jobControlOptions = new ArrayList<>();
@@ -131,61 +158,187 @@ public class WpsServerImpl implements WpsServer {
 
     /*******************************************************************/
     /** Methods from the WpsService class.                            **/
-    /** All of these methods are defined by the WPS 2.0 OGC standard **/
+    /** All of these methods are defined by the WPS 2.0 OGC standard  **/
     /*******************************************************************/
 
     @Override
-    public WPSCapabilitiesType getCapabilities(GetCapabilitiesType getCapabilities) {
+    public Object getCapabilities(GetCapabilitiesType getCapabilities){
+        /*** First check the getCapabilities for exceptions **/
+        ExceptionReport exceptionReport = new ExceptionReport();
+        if(getCapabilities == null){
+            ExceptionType exceptionType = new ExceptionType();
+            exceptionType.setExceptionCode("NoApplicableCode");
+            exceptionReport.getException().add(exceptionType);
+            return exceptionReport;
+        }
+        //Accepted versions check
+        //If the version is not supported, add an ExceptionType with the error.
+        if(getCapabilities.getAcceptVersions() != null &&
+                getCapabilities.getAcceptVersions().getVersion() != null &&
+                !getCapabilities.getAcceptVersions().getVersion().contains(SERVER_VERSION)){
+            ExceptionType exceptionType = new ExceptionType();
+            exceptionType.setExceptionCode("VersionNegotiationFailed");
+            exceptionReport.getException().add(exceptionType);
+        }
+        //Sections check
+        //Check if all the section values are one of the 'SectionName' enum values.
+        //If not, add an ExceptionType with the error.
+        List<SectionName> requestedSections = new ArrayList<>();
+        if(getCapabilities.getSections() != null && getCapabilities.getSections().getSection() != null) {
+            for (String section : getCapabilities.getSections().getSection()) {
+                boolean validSection = false;
+                for (SectionName sectionName : SectionName.values()) {
+                    if (section.equals(sectionName.name())) {
+                        validSection = true;
+                    }
+                }
+                if (!validSection) {
+                    ExceptionType exceptionType = new ExceptionType();
+                    exceptionType.setExceptionCode("InvalidParameterValue");
+                    exceptionType.setLocator("Sections:"+section);
+                    exceptionReport.getException().add(exceptionType);
+                }
+                else{
+                    requestedSections.add(SectionName.valueOf(section));
+                }
+            }
+        }
+        else{
+            requestedSections.add(SectionName.All);
+        }
+        //TODO be able to manage the UpdateSequence parameter
+        //TODO be able to manage the AcceptFormat parameter
+        //Languages check
+        //If the language is not supported, add an ExceptionType with the error.
+        String requestLanguage = DEFAULT_LANGUAGE;
+        if(getCapabilities.getAcceptLanguages() != null &&
+                getCapabilities.getAcceptLanguages().getLanguage() != null &&
+                !getCapabilities.getAcceptLanguages().getLanguage().isEmpty()) {
+            List<String> requestedLanguages = getCapabilities.getAcceptLanguages().getLanguage();
+            boolean isAnyLanguage = requestedLanguages.contains("*");
+            boolean languageFound = false;
+            //First try to find the first languages requested by the client which is supported by the server
+            for (String language : requestedLanguages) {
+                if (supportedLanguages.contains(language)) {
+                    requestLanguage = language;
+                    languageFound = true;
+                    break;
+                }
+            }
+            //If not language was found, try to get one with best-effort semantic
+            if(!languageFound){
+                for (String language : requestedLanguages) {
+                    //avoid to test "*" language
+                    if(!language.equals("*")) {
+                        String baseLanguage = language.substring(0, 2);
+                        for (String serverLanguage : supportedLanguages) {
+                            if (serverLanguage.substring(0, 2).equals(baseLanguage)) {
+                                requestLanguage = language;
+                                languageFound = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            //If not language was found, try to use any language if allowed
+            if(!languageFound  && isAnyLanguage){
+                requestLanguage = DEFAULT_LANGUAGE;
+                languageFound = true;
+            }
+            //If no compatible language has been found and not any language are accepted
+            if (!languageFound) {
+                ExceptionType exceptionType = new ExceptionType();
+                exceptionType.setExceptionCode("InvalidParameterValue");
+                exceptionType.setLocator("AcceptLanguages");
+                exceptionReport.getException().add(exceptionType);
+            }
+        }
+
+        if(!exceptionReport.getException().isEmpty()){
+            exceptionReport.setLang(requestLanguage);
+            exceptionReport.setVersion(SERVER_VERSION);
+            return exceptionReport;
+        }
+
+        /** Building of the WPSCapabilitiesTypeAnswer **/
+
+        //Retrieve the basic capabilities which have the good language
+        WPSCapabilitiesType capabilities = null;
+        for(WPSCapabilitiesType capabilitiesType : basicCapabilities){
+            if(capabilitiesType.getLanguages().getLanguage().contains(requestLanguage)){
+                capabilities = capabilitiesType;
+            }
+        }
+        if(capabilities == null){
+            capabilities = defaultBasicCapabilities;
+        }
+        //TODO add the UpdateSequence element
+        //Copy the content of the basicCapabilities into the new one
         WPSCapabilitiesType capabilitiesType = new WPSCapabilitiesType();
-        capabilitiesType.setExtension(basicCapabilities.getExtension());
-        capabilitiesType.setLanguages(basicCapabilities.getLanguages());
-        capabilitiesType.setOperationsMetadata(basicCapabilities.getOperationsMetadata());
-        capabilitiesType.setServiceIdentification(basicCapabilities.getServiceIdentification());
-        capabilitiesType.setServiceProvider(basicCapabilities.getServiceProvider());
-        capabilitiesType.setUpdateSequence(basicCapabilities.getUpdateSequence());
-        capabilitiesType.setVersion(basicCapabilities.getVersion());
+        capabilitiesType.setExtension(capabilities.getExtension());
+        capabilitiesType.setUpdateSequence(capabilities.getUpdateSequence());
+        capabilitiesType.setVersion(capabilities.getVersion());
+        if(requestedSections.contains(SectionName.All) || requestedSections.contains(SectionName.Languages)) {
+            capabilitiesType.setLanguages(capabilities.getLanguages());
+        }
+        if(requestedSections.contains(SectionName.All) || requestedSections.contains(SectionName.OperationMetadata)) {
+            capabilitiesType.setOperationsMetadata(capabilities.getOperationsMetadata());
+        }
+        if(requestedSections.contains(SectionName.All) || requestedSections.contains(SectionName.ServiceIdentification)) {
+            capabilitiesType.setServiceIdentification(capabilities.getServiceIdentification());
+        }
+        if(requestedSections.contains(SectionName.All) || requestedSections.contains(SectionName.ServiceProvider)) {
+            capabilitiesType.setServiceProvider(capabilities.getServiceProvider());
+        }
 
         /** Sets the Contents **/
-        Contents contents = new Contents();
-        List<ProcessSummaryType> processSummaryTypeList = new ArrayList<>();
-        List<ProcessDescriptionType> processList = getProcessList();
-        for(ProcessDescriptionType process : processList) {
-            ProcessSummaryType processSummaryType = new ProcessSummaryType();
-            processSummaryType.getJobControlOptions().clear();
-            processSummaryType.getJobControlOptions().addAll(jobControlOptions);
-            processSummaryType.getAbstract().clear();
-            processSummaryType.getAbstract().addAll(process.getAbstract());
-            processSummaryType.setIdentifier(process.getIdentifier());
-            processSummaryType.getKeywords().clear();
-            processSummaryType.getKeywords().addAll(process.getKeywords());
-            processSummaryType.getMetadata().clear();
-            processSummaryType.getMetadata().addAll(process.getMetadata());
-            processSummaryType.getTitle().clear();
-            processSummaryType.getTitle().addAll(process.getTitle());
+        if(requestedSections.contains(SectionName.All) || requestedSections.contains(SectionName.Contents)) {
+            Contents contents = new Contents();
+            List<ProcessSummaryType> processSummaryTypeList = new ArrayList<>();
+            List<ProcessDescriptionType> processList = getProcessList();
+            for (ProcessDescriptionType process : processList) {
+                ProcessSummaryType processSummaryType = new ProcessSummaryType();
+                processSummaryType.getJobControlOptions().clear();
+                processSummaryType.getJobControlOptions().addAll(jobControlOptions);
+                processSummaryType.getAbstract().clear();
+                processSummaryType.getAbstract().addAll(process.getAbstract());
+                processSummaryType.setIdentifier(process.getIdentifier());
+                processSummaryType.getKeywords().clear();
+                processSummaryType.getKeywords().addAll(process.getKeywords());
+                processSummaryType.getMetadata().clear();
+                processSummaryType.getMetadata().addAll(process.getMetadata());
+                processSummaryType.getTitle().clear();
+                processSummaryType.getTitle().addAll(process.getTitle());
 
-            processSummaryTypeList.add(processSummaryType);
+                processSummaryTypeList.add(processSummaryType);
+            }
+            contents.getProcessSummary().clear();
+            contents.getProcessSummary().addAll(processSummaryTypeList);
+            capabilitiesType.setContents(contents);
         }
-        contents.getProcessSummary().clear();
-        contents.getProcessSummary().addAll(processSummaryTypeList);
-        capabilitiesType.setContents(contents);
 
         return capabilitiesType;
     }
 
     @Override
     public ProcessOfferings describeProcess(DescribeProcess describeProcess) {
+        //Get the list of the ids of the process to describe
         List<CodeType> idList = describeProcess.getIdentifier();
 
         ProcessOfferings processOfferings = new ProcessOfferings();
         List<ProcessOffering> processOfferingList = new ArrayList<>();
+        //For each of the processes
         for(CodeType id : idList) {
             ProcessOffering processOffering = null;
             List<ProcessIdentifier> piList = processManager.getAllProcessIdentifier();
+            //Find the process registered in the server with the same id
             for(ProcessIdentifier pi : piList){
                 if(pi.getProcessDescriptionType().getIdentifier().getValue().equals(id.getValue())){
                     processOffering = pi.getProcessOffering();
                 }
             }
+            //Once the process found, build the corresponding processOffering to send to the client
             if(processOffering != null) {
                 //Build the new ProcessOffering which will be return
                 ProcessOffering po = new ProcessOffering();
@@ -241,12 +394,14 @@ public class WpsServerImpl implements WpsServer {
                 processManager,
                 dataMap);
 
+        //Run the worker
         if(executorService != null){
             executorService.execute(worker);
         }
         else {
             worker.run();
         }
+        //Return the StatusInfo to the user
         statusInfo.setStatus(job.getState().name());
         XMLGregorianCalendar date = getXMLGregorianCalendar(PROCESS_POLLING_MILLIS);
         statusInfo.setNextPoll(date);
@@ -341,7 +496,13 @@ public class WpsServerImpl implements WpsServer {
             }
             //Call the WPS method associated to the unmarshalled object
             if(o instanceof GetCapabilitiesType){
-                result = factory.createCapabilities(getCapabilities((GetCapabilitiesType)o));
+                Object answer = getCapabilities((GetCapabilitiesType)o);
+                if(answer instanceof WPSCapabilitiesType) {
+                    result = factory.createCapabilities((WPSCapabilitiesType)answer);
+                }
+                else{
+                    result = answer;
+                }
             }
             else if(o instanceof DescribeProcess){
                 result = describeProcess((DescribeProcess)o);

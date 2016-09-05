@@ -28,6 +28,7 @@ import org.orbisgis.corejdbc.*;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
+import org.orbisgis.wpsservice.controller.utils.Job;
 import org.orbisgis.wpsservice.model.DataType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;

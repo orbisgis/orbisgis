@@ -1,11 +1,13 @@
 package org.orbisgis.wpsservice;
 
 import junit.framework.Assert;
-import net.opengis.ows._2.Operation;
-import net.opengis.ows._2.ResponsiblePartySubsetType;
+import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.*;
+import net.opengis.wps._2_0.GetCapabilitiesType;
+import net.opengis.wps._2_0.ObjectFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.orbisgis.wpsservice.model.JaxbContainer;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -90,8 +92,36 @@ public class WpsServerImplTest {
         WpsServerImpl wpsServer = new WpsServerImpl();
         wpsServer.init();
 
+        //Ask for the GetCapabilities
+        GetCapabilitiesType getCapabilitiesType = new GetCapabilitiesType();
+        GetCapabilitiesType.AcceptLanguages acceptLanguages = new GetCapabilitiesType.AcceptLanguages();
+        acceptLanguages.getLanguage().add("*");
+        getCapabilitiesType.setAcceptLanguages(acceptLanguages);
+        AcceptVersionsType acceptVersionsType = new AcceptVersionsType();
+        acceptVersionsType.getVersion().add("2.0.0");
+        getCapabilitiesType.setAcceptVersions(acceptVersionsType);
+        SectionsType sectionsType = new SectionsType();
+        sectionsType.getSection().add("All");
+        getCapabilitiesType.setSections(sectionsType);
+        Object object = wpsServer.getCapabilities(getCapabilitiesType);
+        String reason = "";
+        if(object instanceof ExceptionReport){
+            for(ExceptionType exception : ((ExceptionReport)object).getException()){
+                reason += exception.getExceptionCode();
+                if(exception.getLocator() != null && !exception.getLocator().isEmpty()){
+                    reason += " : " + exception.getLocator();
+                }
+                reason += "\n";
+            }
+        }
+        if(reason.isEmpty()){
+            reason = "Unknown reason";
+        }
+        Assert.assertTrue("The wps server capabilities is invalid : " + reason ,
+                object instanceof WPSCapabilitiesType);
+        WPSCapabilitiesType capabilities = (WPSCapabilitiesType)object;
+
         //Contents tests
-        WPSCapabilitiesType capabilities = wpsServer.getCapabilities(new GetCapabilitiesType());
         Assert.assertNotNull("The wps server contents should not be null.",
                 capabilities.getContents());
         Assert.assertNotNull("The wps server process summary should not be null.",
@@ -123,20 +153,22 @@ public class WpsServerImplTest {
         Assert.assertTrue("The wps server service identification profile should be empty",
                 capabilities.getServiceIdentification().getProfile().isEmpty());
 
-        Assert.assertNull("The wps server service identification fees should be null",
+        Assert.assertNotNull("The wps server service identification fees should not be null",
                 capabilities.getServiceIdentification().getFees());
+        Assert.assertEquals("The wps server service identification fees should be 'NONE'",
+                capabilities.getServiceIdentification().getFees(), "NONE");
 
         Assert.assertNotNull("The wps server service identification access constraint should not be null",
                 capabilities.getServiceIdentification().getAccessConstraints());
-        Assert.assertTrue("The wps server service identification access constraint should be empty",
-                capabilities.getServiceIdentification().getAccessConstraints().isEmpty());
+        Assert.assertTrue("The wps server service identification access constraint should contain 'NONE'",
+                capabilities.getServiceIdentification().getAccessConstraints().contains("NONE"));
 
         Assert.assertNotNull("The wps server service identification title should not be null",
                 capabilities.getServiceIdentification().getTitle());
         Assert.assertFalse("The wps server service identification title should not be empty",
                 capabilities.getServiceIdentification().getTitle().isEmpty());
-        Assert.assertEquals("The wps server service identification title value should be 'OrbisGIS Local WPS'",
-                capabilities.getServiceIdentification().getTitle().get(0).getValue(), "OrbisGIS Local WPS");
+        Assert.assertEquals("The wps server service identification title value should be 'OrbisGIS Local WPS Service'",
+                capabilities.getServiceIdentification().getTitle().get(0).getValue(), "OrbisGIS Local WPS Service");
         Assert.assertEquals("The wps server service identification title language should be 'en'",
                 capabilities.getServiceIdentification().getTitle().get(0).getLang(), "en");
 
@@ -254,7 +286,7 @@ public class WpsServerImplTest {
         Assert.assertNotNull("The wps server operation metadata operation should not be null",
                 capabilities.getOperationsMetadata().getOperation());
         Assert.assertEquals("The wps server operation metadata operation should contains five elements",
-                capabilities.getOperationsMetadata().getOperation().size(), 5);
+                capabilities.getOperationsMetadata().getOperation().size(), 6);
         Assert.assertNotNull("The wps server operation metadata operation one should not be null",
                 capabilities.getOperationsMetadata().getOperation().get(0));
         String errorMessage = testOperation(
@@ -280,6 +312,11 @@ public class WpsServerImplTest {
         errorMessage = testOperation(
                 capabilities.getOperationsMetadata().getOperation().get(4), "GetResult");
         Assert.assertNull(errorMessage, errorMessage);
+        Assert.assertNotNull("The wps server operation metadata operation six should not be null",
+                capabilities.getOperationsMetadata().getOperation().get(5));
+        errorMessage = testOperation(
+                capabilities.getOperationsMetadata().getOperation().get(5), "Dismiss");
+        Assert.assertNull(errorMessage, errorMessage);
         Assert.assertNotNull("The wps server operation metadata parameter should not be null",
                 capabilities.getOperationsMetadata().getParameter());
         Assert.assertTrue("The wps server operation metadata parameter should be empty",
@@ -292,8 +329,14 @@ public class WpsServerImplTest {
                 capabilities.getOperationsMetadata().getExtendedCapabilities());
 
         //language tests
-        Assert.assertNull("The wps server languages should be null",
+        Assert.assertNotNull("The wps server languages should not be null",
                 capabilities.getLanguages());
+        Assert.assertNotNull("The wps server languages language should not be null",
+                capabilities.getLanguages().getLanguage());
+        Assert.assertFalse("The wps server languages language should not be empty",
+                capabilities.getLanguages().getLanguage().isEmpty());
+        Assert.assertEquals("The wps server languages language 0 should be 'en'",
+                capabilities.getLanguages().getLanguage().get(0), "en");
 
         //version tests
         Assert.assertEquals("The wps server version should be '2.0.0'",
@@ -517,9 +560,7 @@ public class WpsServerImplTest {
                         " should be null",
                 statusInfo.getPercentCompleted());
 
-        //Wait to be sure that the process has ended. If it is not possible, raise a flag
-        boolean hasWaited = true;
-        try {sleep(1000);} catch (InterruptedException e) {hasWaited=false;}
+        try {sleep(100);} catch (InterruptedException e) {}
 
         //Now test the getStatus request
         UUID jobId = UUID.fromString(((StatusInfo)resultObject).getJobID());
@@ -533,6 +574,47 @@ public class WpsServerImplTest {
         xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultStatusXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        resultObject = unmarshaller.unmarshal(resultStatusXml);
+
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should not be null",
+                resultObject != null);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should be a Statusinfo",
+                resultObject instanceof StatusInfo);
+        statusInfo = (StatusInfo)resultObject;
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the status info job id should not be null",
+                statusInfo.getJobID());
+        Assert.assertEquals("Error on unmarshalling the WpsService answer, the status info status should not be " +
+                        "'RUNNING'",
+                statusInfo.getStatus(), "RUNNING");
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the status info next poll should not be null",
+                statusInfo.getNextPoll());
+        Assert.assertNull("Error on unmarshalling the WpsService answer, the status info expiration date should be " +
+                        "null",
+                statusInfo.getExpirationDate());
+        Assert.assertNull("Error on unmarshalling the WpsService answer, the status info estimated completion " +
+                        " should be null",
+                statusInfo.getEstimatedCompletion());
+        Assert.assertNull("Error on unmarshalling the WpsService answer, the status info percent complete" +
+                        " should be null",
+                statusInfo.getPercentCompleted());
+
+        //Wait to be sure that the process has ended. If it is not possible, raise a flag
+        boolean hasWaited = true;
+        try {sleep(1000);} catch (InterruptedException e) {hasWaited=false;}
+
+        //Now test the getStatus request
+        jobId = UUID.fromString(((StatusInfo)resultObject).getJobID());
+        getStatus = new GetStatus();
+        getStatus.setJobID(jobId.toString());
+        //Marshall the GetStatus object into an OutputStream
+        outStatus = new ByteArrayOutputStream();
+        marshaller.marshal(getStatus, outStatus);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        in = new DataInputStream(new ByteArrayInputStream(outStatus.toByteArray()));
+        xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        resultStatusXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         resultObject = unmarshaller.unmarshal(resultStatusXml);
 
@@ -637,8 +719,7 @@ public class WpsServerImplTest {
 
 
         //Wait to be sure that the process has started. If it is not possible, raise a flag
-        boolean hasWaited = true;
-        try {sleep(200);} catch (InterruptedException e) {hasWaited=false;}
+        try {sleep(200);} catch (InterruptedException e) {}
 
 
         UUID jobId = UUID.fromString(((StatusInfo)resultObject).getJobID());
@@ -697,5 +778,207 @@ public class WpsServerImplTest {
                 ((Result)resultObject).getOutput());
         Assert.assertTrue("Error on unmarshalling the WpsService answer, the result outputs should be empty",
                 ((Result)resultObject).getOutput().isEmpty());
+    }
+
+    /**
+     * Tests the GetCapabilities operation with a bad formed GetCapabilities.
+     * @throws JAXBException
+     * @throws IOException
+     */
+    @Test
+    public void testBadGetCapabilities() throws JAXBException, IOException {
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+        Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+        ObjectFactory factory = new ObjectFactory();
+
+        //Null Capabilities test
+        Object resultObject = wpsServer.getCapabilities(null);
+
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the object should not be null",
+                resultObject);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should be a ExceptionReport",
+                resultObject instanceof ExceptionReport);
+        Assert.assertEquals("Error on unmarshalling the WpsService answer, the exception should be 'NoApplicableCode'",
+                ((ExceptionReport)resultObject).getException().get(0).getExceptionCode(), "NoApplicableCode");
+
+        //Bad Section test
+        //Build the GetCapabilities object
+        GetCapabilitiesType element = new GetCapabilitiesType();
+        SectionsType sectionsType = new SectionsType();
+        sectionsType.getSection().add("All");
+        sectionsType.getSection().add("all");
+        sectionsType.getSection().add("AlL the ThinGS");
+        element.setSections(sectionsType);
+        //Marshall the DescribeProcess object into an OutputStream
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshaller.marshal(factory.createGetCapabilities(element), out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        ByteArrayInputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        resultObject = unmarshaller.unmarshal(resultXml);
+
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the object should not be null",
+                resultObject);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should be a ExceptionReport",
+                resultObject instanceof ExceptionReport);
+        Assert.assertEquals("Error on unmarshalling the WpsService answer, the exception should be 'InvalidParameterValue'",
+                ((ExceptionReport)resultObject).getException().get(0).getExceptionCode(), "InvalidParameterValue");
+
+
+        //Bad Language tests
+        //Build the GetCapabilities object
+        element = new GetCapabilitiesType();
+        GetCapabilitiesType.AcceptLanguages acceptLanguages = new GetCapabilitiesType.AcceptLanguages();
+        acceptLanguages.getLanguage().add("zz");
+        element.setAcceptLanguages(acceptLanguages);
+        //Marshall the DescribeProcess object into an OutputStream
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        out = new ByteArrayOutputStream();
+        marshaller.marshal(factory.createGetCapabilities(element), out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        resultXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        resultObject = unmarshaller.unmarshal(resultXml);
+
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the object should not be null",
+                resultObject);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should be a ExceptionReport",
+                resultObject instanceof ExceptionReport);
+        Assert.assertEquals("Error on unmarshalling the WpsService answer, the exception should be 'InvalidParameterValue'",
+                ((ExceptionReport)resultObject).getException().get(0).getExceptionCode(), "InvalidParameterValue");
+        Assert.assertEquals("Error on unmarshalling the WpsService answer, the exception should be about the parameter" +
+                        " 'AcceptLanguages'",
+                ((ExceptionReport)resultObject).getException().get(0).getLocator(), "AcceptLanguages");
+
+
+        //Bad version tests
+        //Build the GetCapabilities object
+        element = new GetCapabilitiesType();
+        AcceptVersionsType acceptVersionsType = new AcceptVersionsType();
+        acceptVersionsType.getVersion().add("99.99.99");
+        element.setAcceptVersions(acceptVersionsType);
+        //Marshall the DescribeProcess object into an OutputStream
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        out = new ByteArrayOutputStream();
+        marshaller.marshal(factory.createGetCapabilities(element), out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        resultXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        resultObject = unmarshaller.unmarshal(resultXml);
+
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the object should not be null",
+                resultObject);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should be a ExceptionReport",
+                resultObject instanceof ExceptionReport);
+        Assert.assertEquals("Error on unmarshalling the WpsService answer, the exception should be 'VersionNegotiationFailed'",
+                ((ExceptionReport)resultObject).getException().get(0).getExceptionCode(), "VersionNegotiationFailed");
+    }
+
+    /**
+     * Tests the GetCapabilities operation with a bad formed GetCapabilities.
+     * @throws JAXBException
+     * @throws IOException
+     */
+    @Test
+    public void testGetCapabilitiesLanguages() throws JAXBException, IOException {
+        Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
+        Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
+        ObjectFactory factory = new ObjectFactory();
+
+        //'en' language request test
+        //Build the GetCapabilities object
+        GetCapabilitiesType element = new GetCapabilitiesType();
+        GetCapabilitiesType.AcceptLanguages acceptLanguages = new GetCapabilitiesType.AcceptLanguages();
+        acceptLanguages.getLanguage().add("en");
+        element.setAcceptLanguages(acceptLanguages);
+        //Marshall the DescribeProcess object into an OutputStream
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshaller.marshal(factory.createGetCapabilities(element), out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        Object resultObject = unmarshaller.unmarshal(resultXml);
+
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the object should not be null",
+                resultObject);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should be a JAXBElement",
+                resultObject instanceof JAXBElement);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, it should contains a WPSCapabilitiesType",
+                ((JAXBElement)resultObject).getValue() instanceof WPSCapabilitiesType);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the Languages should contains 'en'",
+                ((WPSCapabilitiesType)((JAXBElement)resultObject).getValue()).getLanguages()
+                        .getLanguage().contains("en"));
+
+        //Any language request test
+        //Build the GetCapabilities object
+        element = new GetCapabilitiesType();
+        acceptLanguages = new GetCapabilitiesType.AcceptLanguages();
+        acceptLanguages.getLanguage().add("*");
+        element.setAcceptLanguages(acceptLanguages);
+        //Marshall the DescribeProcess object into an OutputStream
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        out = new ByteArrayOutputStream();
+        marshaller.marshal(factory.createGetCapabilities(element), out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        resultXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        resultObject = unmarshaller.unmarshal(resultXml);
+
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the object should not be null",
+                resultObject);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should be a JAXBElement",
+                resultObject instanceof JAXBElement);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, it should contains a WPSCapabilitiesType",
+                ((JAXBElement)resultObject).getValue() instanceof WPSCapabilitiesType);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the Languages should contains 'en'",
+                ((WPSCapabilitiesType)((JAXBElement)resultObject).getValue()).getLanguages()
+                        .getLanguage().contains("en"));
+
+
+        //'en-CA' language request tests
+        //Build the GetCapabilities object
+        element = new GetCapabilitiesType();
+        acceptLanguages = new GetCapabilitiesType.AcceptLanguages();
+        acceptLanguages.getLanguage().add("fr");
+        acceptLanguages.getLanguage().add("en-CA");
+        element.setAcceptLanguages(acceptLanguages);
+        //Marshall the DescribeProcess object into an OutputStream
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        out = new ByteArrayOutputStream();
+        marshaller.marshal(factory.createGetCapabilities(element), out);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
+        xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        resultXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        resultObject = unmarshaller.unmarshal(resultXml);
+
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the object should not be null",
+                resultObject);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should be a JAXBElement",
+                resultObject instanceof JAXBElement);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, it should contains a WPSCapabilitiesType",
+                ((JAXBElement)resultObject).getValue() instanceof WPSCapabilitiesType);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the Languages should contains 'en'",
+                ((WPSCapabilitiesType)((JAXBElement)resultObject).getValue()).getLanguages()
+                        .getLanguage().contains("en"));
     }
 }
