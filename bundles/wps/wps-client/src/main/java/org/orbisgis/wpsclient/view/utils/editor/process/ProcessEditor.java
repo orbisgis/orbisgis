@@ -192,7 +192,14 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JLabel label = new JLabel("<html>"+process.getAbstract().get(0).getValue()+"</html>");
         label.setFont(label.getFont().deriveFont(Font.ITALIC));
         processPanel.add(label, "growx, span");
-        JLabel version = new JLabel("Version : "+pee.getProcessOffering().getProcessVersion());
+        String versionStr = "Version : ";
+        if(pee.getProcessOffering().getProcessVersion().isEmpty()){
+            versionStr += "unknown";
+        }
+        else{
+            versionStr += pee.getProcessOffering().getProcessVersion();
+        }
+        JLabel version = new JLabel(versionStr);
         version.setFont(version.getFont().deriveFont(Font.ITALIC));
         processPanel.add(version, "growx, span");
         returnPanel.add(processPanel, BorderLayout.PAGE_START);
