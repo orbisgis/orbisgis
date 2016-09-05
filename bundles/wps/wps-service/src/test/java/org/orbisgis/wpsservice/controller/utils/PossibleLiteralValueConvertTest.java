@@ -1,16 +1,13 @@
 package org.orbisgis.wpsservice.controller.utils;
 
 import net.opengis.ows._2.*;
-import net.opengis.wfs._2_1.PropertyType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.PossibleLiteralValuesChoiceAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.ValuesAttribute;
-import org.orbisgis.wpsgroovyapi.attributes.ValuesType;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.List;
 
 /**
  * @author Sylvain PALOMINOS
