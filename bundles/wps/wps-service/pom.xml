@@ -50,13 +50,13 @@
                 <configuration>
                     <check>
                         <!-- TODO Raise Coverage constraint -->
-                        <branchRate>0</branchRate>
-                        <lineRate>0</lineRate>
+                        <branchRate>80</branchRate>
+                        <lineRate>80</lineRate>
                         <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>0</totalBranchRate>
-                        <totalLineRate>0</totalLineRate>
-                        <packageLineRate>0</packageLineRate>
-                        <packageBranchRate>0</packageBranchRate>
+                        <totalBranchRate>80</totalBranchRate>
+                        <totalLineRate>80</totalLineRate>
+                        <packageLineRate>80</packageLineRate>
+                        <packageBranchRate>80</packageBranchRate>
                     </check>
                 </configuration>
                 <executions>

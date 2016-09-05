@@ -58,7 +58,7 @@ public interface WpsServer {
      *             the server shall always return the complete Capabilities document,
      *             without the updateSequence parameter.
      */
-    WPSCapabilitiesType getCapabilities(GetCapabilitiesType getCapabilities);
+    Object getCapabilities(GetCapabilitiesType getCapabilities);
 
     /**
      * The DescribeProcess operation allows WPS clients to query detailed process descriptions for the process

@@ -68,4 +68,7 @@
             </ns1:DCP>
         </ns1:Operation>
     </ns1:OperationsMetadata>
+    <ns1:Languages>
+        <ns1:Language>en</ns1:Language>
+    </ns1:Languages>
 </ns3:Capabilities>
