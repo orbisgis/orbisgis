@@ -153,20 +153,22 @@ public class WpsServerImplTest {
         Assert.assertTrue("The wps server service identification profile should be empty",
                 capabilities.getServiceIdentification().getProfile().isEmpty());
 
-        Assert.assertNull("The wps server service identification fees should be null",
+        Assert.assertNotNull("The wps server service identification fees should not be null",
                 capabilities.getServiceIdentification().getFees());
+        Assert.assertEquals("The wps server service identification fees should be 'NONE'",
+                capabilities.getServiceIdentification().getFees(), "NONE");
 
         Assert.assertNotNull("The wps server service identification access constraint should not be null",
                 capabilities.getServiceIdentification().getAccessConstraints());
-        Assert.assertTrue("The wps server service identification access constraint should be empty",
-                capabilities.getServiceIdentification().getAccessConstraints().isEmpty());
+        Assert.assertTrue("The wps server service identification access constraint should contain 'NONE'",
+                capabilities.getServiceIdentification().getAccessConstraints().contains("NONE"));
 
         Assert.assertNotNull("The wps server service identification title should not be null",
                 capabilities.getServiceIdentification().getTitle());
         Assert.assertFalse("The wps server service identification title should not be empty",
                 capabilities.getServiceIdentification().getTitle().isEmpty());
-        Assert.assertEquals("The wps server service identification title value should be 'OrbisGIS Local WPS'",
-                capabilities.getServiceIdentification().getTitle().get(0).getValue(), "OrbisGIS Local WPS");
+        Assert.assertEquals("The wps server service identification title value should be 'OrbisGIS Local WPS Service'",
+                capabilities.getServiceIdentification().getTitle().get(0).getValue(), "OrbisGIS Local WPS Service");
         Assert.assertEquals("The wps server service identification title language should be 'en'",
                 capabilities.getServiceIdentification().getTitle().get(0).getLang(), "en");
 
@@ -284,7 +286,7 @@ public class WpsServerImplTest {
         Assert.assertNotNull("The wps server operation metadata operation should not be null",
                 capabilities.getOperationsMetadata().getOperation());
         Assert.assertEquals("The wps server operation metadata operation should contains five elements",
-                capabilities.getOperationsMetadata().getOperation().size(), 5);
+                capabilities.getOperationsMetadata().getOperation().size(), 6);
         Assert.assertNotNull("The wps server operation metadata operation one should not be null",
                 capabilities.getOperationsMetadata().getOperation().get(0));
         String errorMessage = testOperation(
@@ -309,6 +311,11 @@ public class WpsServerImplTest {
                 capabilities.getOperationsMetadata().getOperation().get(4));
         errorMessage = testOperation(
                 capabilities.getOperationsMetadata().getOperation().get(4), "GetResult");
+        Assert.assertNull(errorMessage, errorMessage);
+        Assert.assertNotNull("The wps server operation metadata operation six should not be null",
+                capabilities.getOperationsMetadata().getOperation().get(5));
+        errorMessage = testOperation(
+                capabilities.getOperationsMetadata().getOperation().get(5), "Dismiss");
         Assert.assertNull(errorMessage, errorMessage);
         Assert.assertNotNull("The wps server operation metadata parameter should not be null",
                 capabilities.getOperationsMetadata().getParameter());
@@ -553,9 +560,7 @@ public class WpsServerImplTest {
                         " should be null",
                 statusInfo.getPercentCompleted());
 
-        //Wait to be sure that the process has ended. If it is not possible, raise a flag
-        boolean hasWaited = true;
-        try {sleep(1000);} catch (InterruptedException e) {hasWaited=false;}
+        try {sleep(100);} catch (InterruptedException e) {}
 
         //Now test the getStatus request
         UUID jobId = UUID.fromString(((StatusInfo)resultObject).getJobID());
@@ -569,6 +574,47 @@ public class WpsServerImplTest {
         xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
         InputStream resultStatusXml = new ByteArrayInputStream(xml.toByteArray());
+        //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
+        resultObject = unmarshaller.unmarshal(resultStatusXml);
+
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should not be null",
+                resultObject != null);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should be a Statusinfo",
+                resultObject instanceof StatusInfo);
+        statusInfo = (StatusInfo)resultObject;
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the status info job id should not be null",
+                statusInfo.getJobID());
+        Assert.assertEquals("Error on unmarshalling the WpsService answer, the status info status should not be " +
+                        "'RUNNING'",
+                statusInfo.getStatus(), "RUNNING");
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the status info next poll should not be null",
+                statusInfo.getNextPoll());
+        Assert.assertNull("Error on unmarshalling the WpsService answer, the status info expiration date should be " +
+                        "null",
+                statusInfo.getExpirationDate());
+        Assert.assertNull("Error on unmarshalling the WpsService answer, the status info estimated completion " +
+                        " should be null",
+                statusInfo.getEstimatedCompletion());
+        Assert.assertNull("Error on unmarshalling the WpsService answer, the status info percent complete" +
+                        " should be null",
+                statusInfo.getPercentCompleted());
+
+        //Wait to be sure that the process has ended. If it is not possible, raise a flag
+        boolean hasWaited = true;
+        try {sleep(1000);} catch (InterruptedException e) {hasWaited=false;}
+
+        //Now test the getStatus request
+        jobId = UUID.fromString(((StatusInfo)resultObject).getJobID());
+        getStatus = new GetStatus();
+        getStatus.setJobID(jobId.toString());
+        //Marshall the GetStatus object into an OutputStream
+        outStatus = new ByteArrayOutputStream();
+        marshaller.marshal(getStatus, outStatus);
+        //Write the OutputStream content into an Input stream before sending it to the wpsService
+        in = new DataInputStream(new ByteArrayInputStream(outStatus.toByteArray()));
+        xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
+        //Get back the result of the DescribeProcess request as a BufferReader
+        resultStatusXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         resultObject = unmarshaller.unmarshal(resultStatusXml);
 
@@ -673,8 +719,7 @@ public class WpsServerImplTest {
 
 
         //Wait to be sure that the process has started. If it is not possible, raise a flag
-        boolean hasWaited = true;
-        try {sleep(200);} catch (InterruptedException e) {hasWaited=false;}
+        try {sleep(200);} catch (InterruptedException e) {}
 
 
         UUID jobId = UUID.fromString(((StatusInfo)resultObject).getJobID());
@@ -746,6 +791,16 @@ public class WpsServerImplTest {
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         ObjectFactory factory = new ObjectFactory();
 
+        //Null Capabilities test
+        Object resultObject = wpsServer.getCapabilities(null);
+
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the object should not be null",
+                resultObject);
+        Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should be a ExceptionReport",
+                resultObject instanceof ExceptionReport);
+        Assert.assertEquals("Error on unmarshalling the WpsService answer, the exception should be 'NoApplicableCode'",
+                ((ExceptionReport)resultObject).getException().get(0).getExceptionCode(), "NoApplicableCode");
+
         //Bad Section test
         //Build the GetCapabilities object
         GetCapabilitiesType element = new GetCapabilitiesType();
@@ -762,9 +817,9 @@ public class WpsServerImplTest {
         InputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
         ByteArrayOutputStream xml = (ByteArrayOutputStream) wpsServer.callOperation(in);
         //Get back the result of the DescribeProcess request as a BufferReader
-        InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
+        ByteArrayInputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
-        Object resultObject = unmarshaller.unmarshal(resultXml);
+        resultObject = unmarshaller.unmarshal(resultXml);
 
         Assert.assertNotNull("Error on unmarshalling the WpsService answer, the object should not be null",
                 resultObject);

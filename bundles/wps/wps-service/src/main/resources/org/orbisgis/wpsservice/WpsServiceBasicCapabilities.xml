@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns3:Capabilities xmlns:ns1="http://www.opengis.net/ows/2.0" xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:ns3="http://www.opengis.net/wps/2.0" xmlns:ns5="http://orbisgis.org" service="WPS" version="2.0.0">
     <ns1:ServiceIdentification>
-        <ns1:Title xml:lang="en">OrbisGIS Local WPS ServiceX</ns1:Title>
+        <ns1:Title xml:lang="en">OrbisGIS Local WPS Service</ns1:Title>
         <ns1:Abstract xml:lang="en">OrbisGIS local instance of the WPS Service</ns1:Abstract>
         <ns1:Keywords>
             <ns1:Keyword xml:lang="en">Toolbox</ns1:Keyword>
