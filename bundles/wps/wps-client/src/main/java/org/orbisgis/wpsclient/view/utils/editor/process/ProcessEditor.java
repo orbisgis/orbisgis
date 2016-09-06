@@ -198,7 +198,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         ProcessDescriptionType process = pee.getProcess();
         JPanel returnPanel = new JPanel(new MigLayout("fill"));
 
-        JPanel processPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+        AbstractScrollPane processPanel = new AbstractScrollPane();
+        processPanel.setLayout(new MigLayout("fill, ins 0, gap 0"));
         processPanel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.DARK_GRAY), "Description"));
         JLabel label = new JLabel("<html>"+process.getAbstract().get(0).getValue()+"</html>");
@@ -214,7 +215,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JLabel version = new JLabel(versionStr);
         version.setFont(version.getFont().deriveFont(Font.ITALIC));
         processPanel.add(version, "growx, span");
-        returnPanel.add(processPanel, "wrap, growx, height ::50%");
+        returnPanel.add(new JScrollPane(processPanel), "wrap, growx, height ::50%");
 
         JPanel panel = new JPanel(new MigLayout("fill"));
         JScrollPane scrollPane = new JScrollPane(panel);
@@ -285,16 +286,14 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         }
         if(!noParameters) {
             panel.add(parameterPanel, "growx, span");
-        }
-        errorMessage = new JLabel();
-        errorMessage.setForeground(Color.RED);
-        panel.add(errorMessage, "growx, wrap");
-        scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+            errorMessage = new JLabel();
+            errorMessage.setForeground(Color.RED);
+            panel.add(errorMessage, "growx, wrap");
+            scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+            scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
 
-        returnPanel.add(scrollPane, "wrap, growx, growy");
-        JPanel pan = new JPanel(new BorderLayout());
-        pan.add(returnPanel, BorderLayout.CENTER);
+            returnPanel.add(scrollPane, "wrap, growx, growy");
+        }
         return returnPanel;
     }
 
@@ -337,5 +336,33 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             scrollPane.scrollRectToVisible(body.getBounds());
         }
         parent.revalidate();
+    }
+
+    private class AbstractScrollPane extends JPanel implements Scrollable{
+
+        @Override
+        public Dimension getPreferredScrollableViewportSize() {
+            return getPreferredSize();
+        }
+
+        @Override
+        public int getScrollableUnitIncrement(Rectangle rectangle, int i, int i1) {
+            return 5;
+        }
+
+        @Override
+        public int getScrollableBlockIncrement(Rectangle rectangle, int i, int i1) {
+            return 5;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportWidth() {
+            return true;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportHeight() {
+            return false;
+        }
     }
 }
