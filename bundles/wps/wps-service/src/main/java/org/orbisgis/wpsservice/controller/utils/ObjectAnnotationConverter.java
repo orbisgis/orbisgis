@@ -361,7 +361,7 @@ public class ObjectAnnotationConverter {
             for(String type : Arrays.asList(dataStoreAttribute.excludedTypes())){
                 excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
-            dataStore.setDataStoreTypeList(excludedTypeList);
+            dataStore.setExcludedTypeList(excludedTypeList);
             return dataStore;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());

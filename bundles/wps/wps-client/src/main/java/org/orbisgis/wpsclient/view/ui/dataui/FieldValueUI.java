@@ -231,6 +231,16 @@ public class FieldValueUI implements DataUI{
                     tableName = dataMap.get(fieldValue.getDataStoreIdentifier()).toString();
                     fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
                 }
+                else if(fieldValue.getDataStoreIdentifier().toString().contains("$")){
+                    String[] split = fieldValue.getDataStoreIdentifier().toString().split("\\$");
+                    if(split.length == 3){
+                        tableName = split[1]+"."+split[2];
+                    }
+                    else if(split.length == 2){
+                        tableName = split[1];
+                    }
+                    fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
+                }
                 if(tableName != null && fieldName != null) {
                     layerUI.start();
                     //First retrieve the good field name with the good case.
