@@ -296,9 +296,12 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
      */
     public void addNewLocalSource(){
         OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBox.AddSource", "Add a source");
+        openFolderPanel.getFileChooser();
+        openFolderPanel.loadState();
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFolderPanel)){
             addLocalSource(openFolderPanel.getSelectedFile().toURI());
+            openFolderPanel.saveState();
         }
     }
     /**
@@ -307,9 +310,12 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
      */
     public void addNewLocalScript(){
         OpenFilePanel openFilePanel = new OpenFilePanel("ToolBox.AddSource", "Add a source");
+        openFilePanel.getFileChooser();
+        openFilePanel.loadState();
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFilePanel)){
             addLocalSource(openFilePanel.getSelectedFile().toURI());
+            openFilePanel.saveState();
         }
     }
 

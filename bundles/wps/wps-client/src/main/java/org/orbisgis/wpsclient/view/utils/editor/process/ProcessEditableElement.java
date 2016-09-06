@@ -19,10 +19,7 @@
 
 package org.orbisgis.wpsclient.view.utils.editor.process;
 
-import net.opengis.wps._2_0.DataOutputType;
-import net.opengis.wps._2_0.ProcessDescriptionType;
-import net.opengis.wps._2_0.ProcessOffering;
-import net.opengis.wps._2_0.Result;
+import net.opengis.wps._2_0.*;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
@@ -300,7 +297,11 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
         appendLog(LogType.INFO, "Process result :");
         for(DataOutputType output : result.getOutput()){
             Object o = output.getData().getContent().get(0);
-            appendLog(LogType.INFO, output.getId()+" = "+o.toString());
+            for(OutputDescriptionType outputDescriptionType : processOffering.getProcess().getOutput()){
+                if(outputDescriptionType.getIdentifier().getValue().equals(output.getId())){
+                    appendLog(LogType.INFO, outputDescriptionType.getTitle().get(0).getValue()+" = "+o.toString());
+                }
+            }
         }
         firePropertyChangeEvent(new PropertyChangeEvent(this, STATE_PROPERTY, null, state));
     }

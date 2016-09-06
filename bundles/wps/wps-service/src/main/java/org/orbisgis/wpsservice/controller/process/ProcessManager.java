@@ -86,31 +86,33 @@ public class ProcessManager {
             ProcessOffering processOffering = null;
             try {
                 processOffering = parserController.parseProcess(f.getAbsolutePath());
-                MetadataType isRemovableMetadata = new MetadataType();
-                isRemovableMetadata.setTitle(LocalWpsServer.ProcessProperty.IS_REMOVABLE.name());
-                isRemovableMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
-                isRemovableMetadata.setAbstractMetaData(isRemovable);
-                processOffering.getProcess().getMetadata().add(isRemovableMetadata);
-                if(nodePath != null) {
-                    MetadataType nodePathMetadata = new MetadataType();
-                    nodePathMetadata.setTitle(LocalWpsServer.ProcessProperty.NODE_PATH.name());
-                    nodePathMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
-                    nodePathMetadata.setAbstractMetaData(nodePath);
-                    processOffering.getProcess().getMetadata().add(nodePathMetadata);
-                }
-                if(category != null) {
-                    MetadataType iconArrayMetadata = new MetadataType();
-                    iconArrayMetadata.setTitle(LocalWpsServer.ProcessProperty.ICON_ARRAY.name());
-                    iconArrayMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
-                    String iconString = "";
-                    for (String icon : category) {
-                        if (!iconString.isEmpty()) {
-                            iconString += ";";
-                        }
-                        iconString += icon;
+                if(processOffering != null){
+                    MetadataType isRemovableMetadata = new MetadataType();
+                    isRemovableMetadata.setTitle(LocalWpsServer.ProcessProperty.IS_REMOVABLE.name());
+                    isRemovableMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
+                    isRemovableMetadata.setAbstractMetaData(isRemovable);
+                    processOffering.getProcess().getMetadata().add(isRemovableMetadata);
+                    if(nodePath != null) {
+                        MetadataType nodePathMetadata = new MetadataType();
+                        nodePathMetadata.setTitle(LocalWpsServer.ProcessProperty.NODE_PATH.name());
+                        nodePathMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
+                        nodePathMetadata.setAbstractMetaData(nodePath);
+                        processOffering.getProcess().getMetadata().add(nodePathMetadata);
                     }
-                    iconArrayMetadata.setAbstractMetaData(iconString);
-                    processOffering.getProcess().getMetadata().add(iconArrayMetadata);
+                    if(category != null) {
+                        MetadataType iconArrayMetadata = new MetadataType();
+                        iconArrayMetadata.setTitle(LocalWpsServer.ProcessProperty.ICON_ARRAY.name());
+                        iconArrayMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
+                        String iconString = "";
+                        for (String icon : category) {
+                            if (!iconString.isEmpty()) {
+                                iconString += ";";
+                            }
+                            iconString += icon;
+                        }
+                        iconArrayMetadata.setAbstractMetaData(iconString);
+                        processOffering.getProcess().getMetadata().add(iconArrayMetadata);
+                    }
                 }
             } catch (MalformedScriptException e) {
                 LoggerFactory.getLogger(ProcessManager.class).error("Unable to parse the process '"+scriptUri+"'.", e);

@@ -133,6 +133,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
             customLoadScript("scripts/IO/csvToPointLayer.groovy", icons, "OrbisGIS/IO");
             customLoadScript("scripts/Network/createGraph.groovy", icons, "OrbisGIS/Network");
             customLoadScript("scripts/Table/deleteRows.groovy", icons, "OrbisGIS/Table");
+            customLoadScript("scripts/Table/describeColumns.groovy", icons, "OrbisGIS/Table");
             customLoadScript("scripts/Table/insertValues.groovy", icons, "OrbisGIS/Table");
             customLoadScript("scripts/Table/joinTables.groovy", icons, "OrbisGIS/Table");
             customLoadScript("scripts/Vector/Convert/extractCenter.groovy", icons, "OrbisGIS/Vector/Convert");
