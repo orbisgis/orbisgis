@@ -62,6 +62,7 @@ public class LocalWpsServerImpl
     public static final String GROOVY_EXTENSION = "groovy";
     /**Array of the table type accepted. */
     private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL"};
+
     /** Logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalWpsServerImpl.class);
 
