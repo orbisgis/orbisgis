@@ -528,7 +528,12 @@ public class LiteralDataUI implements DataUI {
                 doc.putProperty(DATA_MAP_PROPERTY, comboBox.getClientProperty(DATA_MAP_PROPERTY));
                 doc.putProperty(URI_PROPERTY, comboBox.getClientProperty(URI_PROPERTY));
                 //Set the default value and adds the listener for saving the value set by the user
-                textArea.setText((String)dataMap.get(uri));
+                if(dataMap.get(uri) != null) {
+                    textArea.setText((String) dataMap.get(uri));
+                }
+                else{
+                    textArea.setText("");
+                }
                 doc.addDocumentListener(EventHandler.create(
                         DocumentListener.class,
                         this,
@@ -557,7 +562,6 @@ public class LiteralDataUI implements DataUI {
                 paste.setToolTipText("Paste the clipboard");
                 panel.add(paste, "dock east");
                 dataComponent = panel;
-                textArea.setText("");
                 break;
         }
         dataComponent.setToolTipText(comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY).toString());

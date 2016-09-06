@@ -21,6 +21,9 @@ package org.orbisgis.wpsclient.view.utils.editor.process;
 
 import net.miginfocom.swing.MigLayout;
 import net.opengis.wps._2_0.*;
+import org.orbisgis.sif.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.ActionDockingListener;
+import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
@@ -32,18 +35,17 @@ import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 
 import javax.swing.*;
-import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.math.BigInteger;
 import java.net.URI;
-import java.util.AbstractMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * UI for the configuration and the run of a WPS process.
@@ -81,6 +83,16 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         this.setLayout(new BorderLayout());
         dataUIManager = wpsClient.getDataUIManager();
 
+        ActionCommands dockingActions = new ActionCommands();
+        dockingPanelParameters.setDockActions(dockingActions.getActions());
+        dockingActions.addPropertyChangeListener(new ActionDockingListener(dockingPanelParameters));
+        DefaultAction runAction = new DefaultAction("ACTION_RUN",
+                "ACTION_RUN",
+                "Run the script",
+                ToolBoxIcon.getIcon("execute"),
+                EventHandler.create(ActionListener.class, this, "runProcess"),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)).setButtonGroup("custom");
+        dockingActions.addAction(runAction);
         this.add(buildUI(), BorderLayout.CENTER);
         this.revalidate();
     }
@@ -184,7 +196,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      */
     private JComponent buildUI(){
         ProcessDescriptionType process = pee.getProcess();
-        JPanel returnPanel = new JPanel(new MigLayout());
+        JPanel returnPanel = new JPanel(new MigLayout("fill"));
 
         JPanel processPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         processPanel.setBorder(BorderFactory.createTitledBorder(
@@ -277,10 +289,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         errorMessage = new JLabel();
         errorMessage.setForeground(Color.RED);
         panel.add(errorMessage, "growx, wrap");
-        JButton runButton = new JButton("Run", ToolBoxIcon.getIcon("execute"));
-        runButton.setBorderPainted(false);
-        runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
-        panel.add(runButton, "growx, gap 100! 100!");
         scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
 

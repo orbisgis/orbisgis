@@ -397,7 +397,9 @@ public class ToolBoxPanel extends JPanel {
                                     (TreeNodeWps) model.getRoot())) {
                                 if (child != null && child.isRemovable()) {
                                     cleanParentNode(child, model);
-                                    model.removeNodeFromParent(child);
+                                    if(child.getParent()!=null) {
+                                        model.removeNodeFromParent(child);
+                                    }
                                 }
                             }
                         }
