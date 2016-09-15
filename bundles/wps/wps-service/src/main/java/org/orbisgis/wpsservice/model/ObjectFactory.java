@@ -1,5 +1,7 @@
 package org.orbisgis.wpsservice.model;
 
+import net.sourceforge.cobertura.CoverageIgnore;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
@@ -38,6 +40,7 @@ public class ObjectFactory {
      * Create an instance of {@link DataStore }
      *
      */
+    @CoverageIgnore
     public DataStore createDataStore() { return new DataStore(); }
 
 
@@ -57,6 +60,7 @@ public class ObjectFactory {
      * Create an instance of {@link DataField }
      *
      */
+    @CoverageIgnore
     public DataField createDataField() { return new DataField(); }
 
     /**
@@ -75,6 +79,7 @@ public class ObjectFactory {
      * Create an instance of {@link FieldValue }
      *
      */
+    @CoverageIgnore
     public FieldValue createFieldValue() { return new FieldValue(); }
 
     /**
@@ -93,6 +98,7 @@ public class ObjectFactory {
      * Create an instance of {@link Enumeration }
      *
      */
+    @CoverageIgnore
     public Enumeration createEnumeration() { return new Enumeration(); }
 
     /**
@@ -111,6 +117,7 @@ public class ObjectFactory {
      * Create an instance of {@link GeometryData }
      *
      */
+    @CoverageIgnore
     public GeometryData createGeometryData() { return new GeometryData(); }
 
     /**
@@ -129,6 +136,7 @@ public class ObjectFactory {
      * Create an instance of {@link RawData }
      *
      */
+    @CoverageIgnore
     public RawData createRawData() { return new RawData(); }
 
     /**
@@ -147,6 +155,7 @@ public class ObjectFactory {
      * Create an instance of {@link Password }
      *
      */
+    @CoverageIgnore
     public Password createPassword() { return new Password(); }
 
     /**

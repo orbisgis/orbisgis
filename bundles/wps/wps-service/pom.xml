@@ -53,8 +53,8 @@
                         <branchRate>0</branchRate>
                         <lineRate>0</lineRate>
                         <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>0</totalBranchRate>
-                        <totalLineRate>0</totalLineRate>
+                        <totalBranchRate>40</totalBranchRate>
+                        <totalLineRate>40</totalLineRate>
                         <packageLineRate>0</packageLineRate>
                         <packageBranchRate>0</packageBranchRate>
                     </check>

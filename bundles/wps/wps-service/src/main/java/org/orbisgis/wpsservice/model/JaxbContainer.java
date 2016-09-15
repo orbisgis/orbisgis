@@ -1,5 +1,7 @@
 package org.orbisgis.wpsservice.model;
 
+import net.sourceforge.cobertura.CoverageIgnore;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
@@ -10,6 +12,7 @@ import javax.xml.bind.JAXBException;
  */
 public class JaxbContainer {
     //Make the JaxbContainer constructor private to avoid its instantiation.
+    @CoverageIgnore
     private JaxbContainer() {}
     //The JaxbContext
     public static final JAXBContext JAXBCONTEXT;
