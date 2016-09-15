@@ -149,7 +149,7 @@ public class FieldValue extends ComplexDataType {
      * Tells if more than one value can be selected.
      * @return True if more than one value can be selected, false otherwise.
      */
-    public boolean getMuliSelection(){
+    public boolean getMultiSelection(){
         return multiSelection;
     }
 }

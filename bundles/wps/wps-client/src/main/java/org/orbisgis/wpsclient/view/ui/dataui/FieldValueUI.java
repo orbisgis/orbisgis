@@ -97,7 +97,7 @@ public class FieldValueUI implements DataUI{
         }
         //Build and set the JList containing all the field values
         JList<String> list = new JList<>(new DefaultListModel<String>());
-        if(fieldValue.getMuliSelection()){
+        if(fieldValue.getMultiSelection()){
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         }
         else {
