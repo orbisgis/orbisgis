@@ -568,6 +568,7 @@ public class WpsServerImpl implements WpsServer {
         this.dataProcessingManager = dataProcessingManager;
     }
 
+    @CoverageIgnore
     protected void setExecutorService(ExecutorService executorService){
         this.executorService = executorService;
     }

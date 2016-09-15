@@ -20,6 +20,7 @@
 package org.orbisgis.wpsservice.controller.utils;
 
 import groovy.lang.Closure;
+import net.sourceforge.cobertura.CoverageIgnore;
 import org.h2gis.utilities.wrapper.StatementWrapper;
 
 import java.sql.SQLException;
@@ -31,6 +32,7 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  */
+@CoverageIgnore
 public class CancelClosure extends Closure {
 
     private List<StatementWrapper> statementList;

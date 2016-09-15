@@ -537,6 +537,8 @@ public class WpsServerImplTest {
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         Object resultObject = unmarshaller.unmarshal(resultExecXml);
 
+        try {sleep(100);} catch (InterruptedException e) {}
+
         Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should not be null",
                 resultObject != null);
         Assert.assertTrue("Error on unmarshalling the WpsService answer, the object should be a Statusinfo",

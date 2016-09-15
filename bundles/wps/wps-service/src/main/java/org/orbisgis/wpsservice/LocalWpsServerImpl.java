@@ -21,6 +21,7 @@ package org.orbisgis.wpsservice;
 
 import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.*;
+import net.sourceforge.cobertura.CoverageIgnore;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -194,34 +195,42 @@ public class LocalWpsServerImpl
     /** Set and Unset methods to get services from OrbisGIS via OSGI **/
     /******************************************************************/
 
+    @CoverageIgnore
     @Reference
     public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
         this.coreWorkspace = coreWorkspace;
     }
+    @CoverageIgnore
     public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
         this.coreWorkspace = null;
     }
 
+    @CoverageIgnore
     @Reference
     public void setDataSource(DataSource ds) {
         super.setDataSourceService((DataSourceService)ds);
     }
+    @CoverageIgnore
     public void unsetDataSource(DataSource ds) {
         super.setDataSourceService(null);
     }
 
+    @CoverageIgnore
     @Reference
     public void setDataManager(DataManager dataManager) {
         this.dataManager = dataManager;
     }
+    @CoverageIgnore
     public void unsetDataManager(DataManager dataManager) {
         this.dataManager = null;
     }
 
+    @CoverageIgnore
     @Reference
     public void setExecutorService(ExecutorService executorService) {
         super.setExecutorService(executorService);
     }
+    @CoverageIgnore
     public void unsetExecutorService(ExecutorService executorService) {
         super.setExecutorService(null);
     }

@@ -1,6 +1,7 @@
 package org.orbisgis.wpsservice.controller.utils;
 
 import groovy.sql.Sql;
+import net.sourceforge.cobertura.CoverageIgnore;
 
 import javax.sql.DataSource;
 import java.util.logging.Level;
@@ -12,6 +13,7 @@ import java.util.logging.Level;
  * @author Sylvain PALOMINOS
  */
 public class WpsSql extends Sql {
+    @CoverageIgnore
     public WpsSql(DataSource dataSource) {
         super(dataSource);
         LOG.setLevel(Level.OFF);

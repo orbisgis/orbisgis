@@ -19,6 +19,8 @@
 
 package org.orbisgis.wpsservice.model;
 
+import net.sourceforge.cobertura.CoverageIgnore;
+
 /**
  * Exception thrown when a Groovy WPS script is malformed.
  *
@@ -34,6 +36,7 @@ public class MalformedScriptException extends Exception {
      * @param wrongArgument Wrong argument.
      * @param reason Reason why the argument is wrong.
      */
+    @CoverageIgnore
     public MalformedScriptException(Class wpsModelClass, String wrongArgument, String reason){
         super("Error on implementing '"+wpsModelClass.getSimpleName()+"', the argument '"+wrongArgument+"' "+reason);
     }
