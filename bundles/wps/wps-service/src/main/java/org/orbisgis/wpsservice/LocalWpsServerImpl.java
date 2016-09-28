@@ -464,6 +464,38 @@ public class LocalWpsServerImpl
         return false;
     }
 
+    @Override
+    public void addGroovyProperties(Map<String, Object> propertiesMap){
+        //Before adding an entry, check if it is not already defined.
+        for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
+            if(!this.propertiesMap.containsKey(entry.getKey()) &&
+                    !entry.getKey().equals("logger") &&
+                    !entry.getKey().equals("isH2") &&
+                    !entry.getKey().equals("sql")){
+                this.propertiesMap.put(entry.getKey(), entry.getValue());
+            }
+            else{
+                LOGGER.error("Unable to set the property '" + entry.getKey() + "', the name is already used.");
+            }
+        }
+    }
+
+    @Override
+    public void removeGroovyProperties(Map<String, Object> propertiesMap){
+        for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
+            if(this.propertiesMap.containsKey(entry.getKey()) &&
+                    !entry.getKey().equals("logger") &&
+                    !entry.getKey().equals("isH2") &&
+                    !entry.getKey().equals("sql")){
+                this.propertiesMap.remove(entry.getKey());
+            }
+            else{
+                LOGGER.error("Unable to remove the property '" + entry.getKey() +
+                        "', the name protected or not defined.");
+            }
+        }
+    }
+
 
     /*******************************************************/
     /** Methods for the listening of the database update. **/

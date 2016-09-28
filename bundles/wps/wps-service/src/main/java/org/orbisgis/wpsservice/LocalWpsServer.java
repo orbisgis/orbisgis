@@ -102,4 +102,20 @@ public interface LocalWpsServer extends WpsServer {
     List<String> getFieldValueList(String tableName, String fieldName);
 
     enum ProcessProperty{IS_REMOVABLE, NODE_PATH, ICON_ARRAY, ROLE, DBMS}
+
+    /**
+     * Adds to the server execution properties which will be set to the GroovyObject for the execution.
+     * Those properties will be accessible inside the groovy script as variables which name is the map entry key.
+     * For example :
+     * If the propertiesMap contains <"message", "HelloWorld">, inside the groovy script you can print the message this
+     * way : 'print message'
+     * @param propertiesMap Map containing the properties to be passed to the GroovyObject
+     */
+    void addGroovyProperties(Map<String, Object> propertiesMap);
+
+    /**
+     * Removes the properties already set for the GroovyObject for the execution.
+     * @param propertiesMap Map containing the properties to be removed
+     */
+    void removeGroovyProperties(Map<String, Object> propertiesMap);
 }
