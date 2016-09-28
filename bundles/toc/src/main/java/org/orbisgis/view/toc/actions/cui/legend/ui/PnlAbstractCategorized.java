@@ -118,7 +118,7 @@ public abstract class PnlAbstractCategorized<U extends LineParameters> extends P
         DescriptiveStatistics stats = new DescriptiveStatistics();
         try(Connection connection = getDataSource().getConnection();
             Statement st = connection.createStatement();
-            ResultSet rs = st.executeQuery("select "+ TableLocation.quoteIdentifier(fieldName)+ " from "+getTable())) {
+            ResultSet rs = st.executeQuery("select "+ TableLocation.quoteIdentifier(fieldName)+ " from "+getTable()+ " where "+ TableLocation.quoteIdentifier(fieldName) + " is not null" )) {
             while(rs.next()) {
                 stats.addValue(rs.getDouble(1));
             }
