@@ -148,11 +148,18 @@ public class ProcessManager {
 
     /**
      * Execute the given process with the given data.
+     * @param jobId UUID of the job to execute.
      * @param processIdentifier ProcessIdentifier of the process to execute.
      * @param dataMap Map containing the data for the process.
+     * @param propertiesMap Map containing the properties for the GroovyObject.
      * @return The groovy object on which the 'processing' method will be called.
      */
-    public GroovyObject executeProcess(UUID jobId, ProcessIdentifier processIdentifier, Map<URI, Object> dataMap){
+    public GroovyObject executeProcess(
+            UUID jobId,
+            ProcessIdentifier processIdentifier,
+            Map<URI, Object> dataMap,
+            Map<String, Object> propertiesMap){
+
         ProcessDescriptionType process = processIdentifier.getProcessDescriptionType();
         Class clazz = parserController.getProcessClass(processIdentifier.getSourceFileURI());
         GroovyObject groovyObject = createProcess(process, clazz, dataMap);
@@ -166,6 +173,9 @@ public class ProcessManager {
                 groovyObject.setProperty("isH2", wpsService.getDatabase().equals(WpsServer.Database.H2));
             }
             groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
+            for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
+                groovyObject.setProperty(entry.getKey(), entry.getValue());
+            }
             groovyObject.invokeMethod("processing", null);
             retrieveData(process, clazz, groovyObject, dataMap);
         }

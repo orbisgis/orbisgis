@@ -28,17 +28,21 @@ public class ProcessWorker implements Runnable {
     private ProcessManager processManager;
     /** Map containing the process execution output/input data and URI */
     private Map<URI, Object> dataMap;
+    /** Map containing the properties to give to the GroovyObject for the execution */
+    private Map<String, Object> propertiesMap;
 
     public ProcessWorker(Job job,
                          ProcessIdentifier processIdentifier,
                          DataProcessingManager dataProcessingManager,
                          ProcessManager processManager,
-                         Map<URI, Object> dataMap){
+                         Map<URI, Object> dataMap,
+                         Map<String, Object> propertiesMap){
         this.job = job;
         this.processIdentifier = processIdentifier;
         this.dataProcessingManager = dataProcessingManager;
         this.processManager = processManager;
         this.dataMap = dataMap;
+        this.propertiesMap = propertiesMap;
     }
 
     /**
@@ -76,7 +80,7 @@ public class ProcessWorker implements Runnable {
             if(job != null) {
                 job.appendLog(ProcessExecutionListener.LogType.INFO, "Execute the script");
             }
-            processManager.executeProcess(job.getId(), processIdentifier, dataMap);
+            processManager.executeProcess(job.getId(), processIdentifier, dataMap, propertiesMap);
 
             //Post-process the data
             if(job != null) {

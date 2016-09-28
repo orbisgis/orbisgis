@@ -12,6 +12,7 @@ import org.orbisgis.wpsservice.controller.execution.ProcessWorker;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.controller.utils.Job;
+import org.orbisgis.wpsservice.controller.utils.WpsSql;
 import org.orbisgis.wpsservice.model.JaxbContainer;
 import org.orbisgis.wpsservice.utils.ProcessTranslator;
 import org.slf4j.Logger;
@@ -75,6 +76,9 @@ public class WpsServerImpl implements WpsServer {
     private ExecutorService executorService;
     /** Database connected to the WPS server */
     private Database database;
+    /** Map containing all the properties to give to the groovy object.
+     * The following words are reserved and SHOULD NOT be used as keys : 'logger', 'sql', 'isH2'. */
+    protected Map<String, Object> propertiesMap;
 
     private enum SectionName {ServiceIdentification, ServiceProvider, OperationMetadata, Contents, Languages, All}
 
@@ -92,6 +96,7 @@ public class WpsServerImpl implements WpsServer {
         jobMap = new HashMap<>();
         supportedLanguages = new ArrayList<>();
         supportedLanguages.add(DEFAULT_LANGUAGE);
+        propertiesMap = new HashMap<>();
         //Initialisation of the wps service itself
         initWpsService();
         //Creates the attribute for the processes execution
@@ -392,7 +397,8 @@ public class WpsServerImpl implements WpsServer {
                 processIdentifier,
                 dataProcessingManager,
                 processManager,
-                dataMap);
+                dataMap,
+                propertiesMap);
 
         //Run the worker
         if(executorService != null){
