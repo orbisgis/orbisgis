@@ -47,6 +47,7 @@ public class CommentUtil {
 
     public static final String SQL_COMMENT_CHARACTER = "--";
     public static final String JAVA_COMMENT_CHARACTER = "//";
+    public static final String R_COMMENT_CHARACTER = "#";
     public static final String BLOCK_COMMENT_START = "/*";
     public static final String BLOCK_COMMENT_END = "*/";
     private final static I18n I18N = I18nFactory.getI18n(CommentUtil.class);
@@ -68,6 +69,15 @@ public class CommentUtil {
      */
     public static void commentOrUncommentJava(JTextArea scriptPanel) {
         commentOrUncomment(scriptPanel, JAVA_COMMENT_CHARACTER);
+    }
+    
+    /**
+     * Comment the selected R code in the given script panel.
+     *
+     * @param scriptPanel Script panel
+     */
+    public static void commentOrUncommentR(JTextArea scriptPanel) {
+        commentOrUncomment(scriptPanel, R_COMMENT_CHARACTER);
     }
 
     /**
