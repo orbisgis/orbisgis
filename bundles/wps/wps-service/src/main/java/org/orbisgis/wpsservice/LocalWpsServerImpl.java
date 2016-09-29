@@ -37,6 +37,8 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
 import java.io.*;
@@ -63,9 +65,10 @@ public class LocalWpsServerImpl
     public static final String GROOVY_EXTENSION = "groovy";
     /**Array of the table type accepted. */
     private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL"};
-
     /** Logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalWpsServerImpl.class);
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(LocalWpsServerImpl.class);
 
     /** True if the database is H2, false otherwise. */
     private boolean isH2;
@@ -114,7 +117,7 @@ public class LocalWpsServerImpl
                 try {
                     tbProperties.load(new FileInputStream(propertiesFile));
                 } catch (IOException e) {
-                    LOGGER.warn("Unable to restore previous configuration of the ToolBox");
+                    LOGGER.warn(I18N.tr("Unable to restore previous configuration of the ToolBox."));
                     tbProperties = new Properties();
                 }
             }
@@ -144,13 +147,13 @@ public class LocalWpsServerImpl
             multiThreaded = testDBForMultiProcess();
             if (!multiThreaded) {
                 if (isH2) {
-                    LOGGER.warn("Warning, because of the H2 configuration," +
+                    LOGGER.warn(I18N.tr("Warning, because of the H2 configuration," +
                             " the toolbox won't be able to run more than one process at the same time.\n" +
                             "Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000;" +
-                            " MULTI_THREADED=TRUE'");
+                            " MULTI_THREADED=TRUE'"));
                 } else {
-                    LOGGER.warn("Warning, because of the database configuration," +
-                            " the toolbox won't be able to run more than one process at the same time.");
+                    LOGGER.warn(I18N.tr("Warning, because of the database configuration," +
+                            " the toolbox won't be able to run more than one process at the same time."));
                 }
             }
             //Install database listeners
@@ -159,7 +162,7 @@ public class LocalWpsServerImpl
             onDataManagerChange();
         }
         else{
-            LOGGER.warn("Warning, no DataManager found.");
+            LOGGER.warn(I18N.tr("Warning, no DataManager found."));
         }
     }
 
@@ -184,9 +187,9 @@ public class LocalWpsServerImpl
             tbProperties.setProperty(PROPERTY_SOURCES, this.getProcessManager().getListSourcesAsString());
             tbProperties.store(
                     new FileOutputStream(coreWorkspace.getWorkspaceFolder() + File.separator + TOOLBOX_PROPERTIES),
-                    "Save of the OrbisGIS toolBox");
+                    I18N.tr("Save of the OrbisGIS toolBox"));
         } catch (IOException e) {
-            LOGGER.warn("Unable to save ToolBox state.");
+            LOGGER.warn(I18N.tr("Unable to save ToolBox state."));
         }
     }
 
@@ -246,7 +249,7 @@ public class LocalWpsServerImpl
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
             ProcessIdentifier pi = this.getProcessManager().addScript(f.toURI(), iconName, isRemovable, nodePath);
             if(pi == null) {
-                LOGGER.error("The process identifier get from the script '"+f.getName()+"' is null.");
+                LOGGER.error(I18N.tr("The process identifier get from the script '{0}' is null.", f.getName()));
             }
             piList.add(pi);
         }
@@ -274,7 +277,7 @@ public class LocalWpsServerImpl
             File f = new File(pi.getSourceFileURI());
             if(!f.exists()){
                 processManager.removeProcess(pi.getProcessDescriptionType());
-                LOGGER.error("The script '"+f.getAbsolutePath()+"' does not exist anymore.");
+                LOGGER.error(I18N.tr("The script '{0}' does not exist anymore.", f.getAbsolutePath()));
                 return false;
             }
             processManager.removeProcess(pi.getProcessDescriptionType());
@@ -359,7 +362,8 @@ public class LocalWpsServerImpl
                 map.put(TABLE_DIMENSION, dimension);
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to the the field '" + tableName+"."+fieldName+"' information.\n"+ e.getMessage());
+            LOGGER.error(I18N.tr("Unable to get the field '{0}.{1}' information.\nCause : {2}.",
+                    e.getMessage(), tableName, fieldName));
         }
         return map;
     }
@@ -400,7 +404,7 @@ public class LocalWpsServerImpl
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the table '"+tableName+"' field list.\n"+e.getMessage());
+            LOGGER.error(I18N.tr("Unable to get the table '{0}' field list.\nCause : {1}.", tableName, e.getMessage()));
         }
         return fieldList;
     }
@@ -424,7 +428,8 @@ public class LocalWpsServerImpl
                     tableName,
                     fieldName));
         } catch (SQLException e) {
-            LOGGER.error("Unable to get the field '"+tableName+"."+fieldName+"' value list.\n"+e.getMessage());
+            LOGGER.error(I18N.tr("Unable to get the field '{0}.{1}' value list.\nCause : {2}.",
+                    tableName, fieldName, e.getMessage()));
         }
         return fieldValues;
     }
@@ -475,7 +480,7 @@ public class LocalWpsServerImpl
                 this.propertiesMap.put(entry.getKey(), entry.getValue());
             }
             else{
-                LOGGER.error("Unable to set the property '" + entry.getKey() + "', the name is already used.");
+                LOGGER.error(I18N.tr("Unable to set the property '{0}', the name is already used.", entry.getKey()));
             }
         }
     }
@@ -490,8 +495,8 @@ public class LocalWpsServerImpl
                 this.propertiesMap.remove(entry.getKey());
             }
             else{
-                LOGGER.error("Unable to remove the property '" + entry.getKey() +
-                        "', the name protected or not defined.");
+                LOGGER.error(I18N.tr("Unable to remove the property '{0}', the name protected or not defined.",
+                        entry.getKey()));
             }
         }
     }
@@ -551,7 +556,7 @@ public class LocalWpsServerImpl
                             rs.getString("F_TABLE_SCHEMA"), rs.getString("F_TABLE_NAME")).toString(), rs.getString("TYPE"));
                 }
             } catch (SQLException ex) {
-                LOGGER.warn("Geometry columns information of tables are not available", ex);
+                LOGGER.warn(I18N.tr("Geometry columns information of tables are not available.", ex));
             }
             // Fetch all tables
             try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {
@@ -596,7 +601,7 @@ public class LocalWpsServerImpl
             }
             tableList = newTables;
         } catch (SQLException ex) {
-            LOGGER.error("Cannot read the table list", ex);
+            LOGGER.error(I18N.tr("Cannot read the table list", ex));
         }
     }
 

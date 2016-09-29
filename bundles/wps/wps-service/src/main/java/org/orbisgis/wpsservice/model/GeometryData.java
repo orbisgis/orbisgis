@@ -2,6 +2,9 @@ package org.orbisgis.wpsservice.model;
 
 import net.opengis.wps._2_0.ComplexDataType;
 import net.opengis.wps._2_0.Format;
+import org.orbisgis.wpsservice.WpsServerImpl;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 
 import javax.xml.bind.annotation.*;
@@ -26,6 +29,8 @@ public class GeometryData extends ComplexDataType {
     /** Dimension of the geometry. Can be 2(D) or 3(D). */
     @XmlAttribute(name = "dimension")
     private int dimension;
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(GeometryData.class);
 
     /**
      * Main Constructor.
@@ -61,8 +66,8 @@ public class GeometryData extends ComplexDataType {
         for(DataType excludedType : excludedTypeList){
             for(DataType dataType : geometryTypeList){
                 if(excludedType.equals(dataType)){
-                    throw new MalformedScriptException(GeometryData.class, "excludedTypeList", "A same DataType is" +
-                            " accepted and excluded");
+                    throw new MalformedScriptException(GeometryData.class, "excludedTypeList", I18N.tr("A same DataType" +
+                            " is accepted and excluded."));
                 }
             }
         }

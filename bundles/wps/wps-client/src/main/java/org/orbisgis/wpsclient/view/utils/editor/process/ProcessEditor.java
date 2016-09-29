@@ -33,6 +33,8 @@ import org.orbisgis.wpsclient.view.ui.dataui.DataUI;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUIManager;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,6 +60,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private static final int SCROLLBAR_UNIT_INCREMENT = 16;
     /** Name of the EditorDockable. */
     public static final String NAME = "PROCESS_EDITOR";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(ProcessEditor.class);
 
     private ProcessEditableElement pee;
     private WpsClientImpl wpsClient;
@@ -88,7 +92,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         dockingActions.addPropertyChangeListener(new ActionDockingListener(dockingPanelParameters));
         DefaultAction runAction = new DefaultAction("ACTION_RUN",
                 "ACTION_RUN",
-                "Run the script",
+                I18N.tr("Run the script"),
                 ToolBoxIcon.getIcon("execute"),
                 EventHandler.create(ActionListener.class, this, "runProcess"),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)).setButtonGroup("custom");
@@ -201,13 +205,13 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         AbstractScrollPane processPanel = new AbstractScrollPane();
         processPanel.setLayout(new MigLayout("fill, ins 0, gap 0"));
         processPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.DARK_GRAY), "Description"));
+                BorderFactory.createLineBorder(Color.DARK_GRAY), I18N.tr("Description")));
         JLabel label = new JLabel("<html>"+process.getAbstract().get(0).getValue()+"</html>");
         label.setFont(label.getFont().deriveFont(Font.ITALIC));
         processPanel.add(label, "growx, span");
-        String versionStr = "Version : ";
+        String versionStr = I18N.tr("Version : ");
         if(pee.getProcessOffering().getProcessVersion().isEmpty()){
-            versionStr += "unknown";
+            versionStr += I18N.tr("unknown");
         }
         else{
             versionStr += pee.getProcessOffering().getProcessVersion();
@@ -225,7 +229,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
         JPanel parameterPanel = new JPanel(new MigLayout("fill"));
-        parameterPanel.setBorder(BorderFactory.createTitledBorder("Parameter(s)"));
+        parameterPanel.setBorder(BorderFactory.createTitledBorder(I18N.tr("Parameter(s)")));
 
         for(InputDescriptionType i : process.getInput()){
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getValue().getClass());

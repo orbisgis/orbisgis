@@ -24,6 +24,8 @@ import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.swing.Timer;
@@ -49,6 +51,8 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
     public static final String CANCEL = "CANCEL";
     public static final String REFRESH_STATUS = "REFRESH_STATUS";
     public static final String GET_RESULTS = "GET_RESULTS";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(ProcessEditableElement.class);
     private ProcessOffering processOffering;
     private boolean isOpen;
 
@@ -294,7 +298,7 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
      */
     public void setResult(Result result) {
         appendLog(LogType.INFO, "");
-        appendLog(LogType.INFO, "Process result :");
+        appendLog(LogType.INFO, I18N.tr("Process result :"));
         for(DataOutputType output : result.getOutput()){
             Object o = output.getData().getContent().get(0);
             for(OutputDescriptionType outputDescriptionType : processOffering.getProcess().getOutput()){

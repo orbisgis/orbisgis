@@ -9,6 +9,8 @@ import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsclient.WpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.io.*;
 import java.net.URL;
@@ -46,6 +48,9 @@ import java.util.List;
  */
 public class WpsScriptsPackage {
 
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(WpsScriptsPackage.class);
+
     /**
      * Logger instance.
      */
@@ -81,7 +86,7 @@ public class WpsScriptsPackage {
         File tempFolder = new File(tempFolderPath, "wpsscripts");
         if(!tempFolder.exists()) {
             if(!tempFolder.mkdirs()){
-                LOGGER.error("Unable to create the OrbisGIS temporary folder.");
+                LOGGER.error(I18N.tr("Unable to create the OrbisGIS temporary folder."));
                 return;
             }
         }
@@ -90,7 +95,7 @@ public class WpsScriptsPackage {
         if(!tempFile.exists()) {
             try{
                 if(!tempFile.createNewFile()){
-                    LOGGER.error("Unable to create the script file.");
+                    LOGGER.error(I18N.tr("Unable to create the script file."));
                     return;
                 }
             } catch (IOException e) {
@@ -101,7 +106,7 @@ public class WpsScriptsPackage {
             IOUtils.copy(scriptUrl.openStream(), out);
         }
         catch (Exception e){
-            LOGGER.error("Unable to copy the content of the script to the temporary file.");
+            LOGGER.error(I18N.tr("Unable to copy the content of the script to the temporary file."));
             return;
         }
         List<ProcessIdentifier> piList = localWpsService.addLocalSource(tempFile,
@@ -131,7 +136,7 @@ public class WpsScriptsPackage {
         File tempFolder = new File(tempFolderPath, "wpsscripts");
         if(!tempFolder.exists()) {
             if(!tempFolder.mkdirs()){
-                LOGGER.error("Unable to create the OrbisGIS temporary folder.");
+                LOGGER.error(I18N.tr("Unable to create the OrbisGIS temporary folder."));
                 return null;
             }
         }
@@ -140,7 +145,7 @@ public class WpsScriptsPackage {
         if(!tempFile.exists()) {
             try{
                 if(!tempFile.createNewFile()){
-                    LOGGER.error("Unable to create the icon file.");
+                    LOGGER.error(I18N.tr("Unable to create the icon file."));
                     return null;
                 }
             } catch (IOException e) {
@@ -152,7 +157,7 @@ public class WpsScriptsPackage {
             IOUtils.copy(iconUrl.openStream(), out);
         }
         catch (Exception e){
-            LOGGER.error("Unable to copy the content of the icon to the temporary file.");
+            LOGGER.error(I18N.tr("Unable to copy the content of the icon to the temporary file."));
             return null;
         }
         return tempFile.getAbsolutePath();

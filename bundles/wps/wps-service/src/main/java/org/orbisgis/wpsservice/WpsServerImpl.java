@@ -17,6 +17,8 @@ import org.orbisgis.wpsservice.model.JaxbContainer;
 import org.orbisgis.wpsservice.utils.ProcessTranslator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -53,6 +55,8 @@ public class WpsServerImpl implements WpsServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(WpsServerImpl.class);
     /** JAXB object factory for the WPS objects. */
     private static final ObjectFactory wpsObjectFactory = new ObjectFactory();
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(WpsServerImpl.class);
 
     /** Server supported languages. */
     private List<String> supportedLanguages;
@@ -125,22 +129,23 @@ public class WpsServerImpl implements WpsServer {
                         if (value instanceof WPSCapabilitiesType) {
                             capabilitiesType = (WPSCapabilitiesType) value;
                         } else {
-                            LOGGER.error("The unmarshalled WPSCapabilitiesType is not a valid WPSCapabilitiesType.");
+                            LOGGER.error(I18N.tr("The unmarshalled WPSCapabilitiesType is not a valid" +
+                                    " WPSCapabilitiesType."));
                         }
                     } else if(unmarshalledObject != null) {
-                        LOGGER.error("The unmarshalled WPSCapabilitiesType is invalid.");
+                        LOGGER.error(I18N.tr("The unmarshalled WPSCapabilitiesType is invalid."));
                     } else {
-                        LOGGER.error("The unmarshalled WPSCapabilitiesType is null.");
+                        LOGGER.error(I18N.tr("The unmarshalled WPSCapabilitiesType is null."));
                     }
                 } else {
-                    LOGGER.error("Unable to load the WpsServiceBasicCapabilities.xml file containing the " +
-                            "service basic capabilities.");
+                    LOGGER.error(I18N.tr("Unable to load the WpsServiceBasicCapabilities.xml file containing the " +
+                            "service basic capabilities."));
                 }
             } else {
-                LOGGER.error("Unable to create the unmarshaller");
+                LOGGER.error(I18N.tr("Unable to create the unmarshaller"));
             }
         } catch (JAXBException | IOException e) {
-            LOGGER.error("Error on using the unmarshaller.\n"+e.getMessage());
+            LOGGER.error(I18N.tr("Error on using the unmarshaller.\nCause : {0}.", e.getMessage()));
         }
         if(capabilitiesType != null){
             defaultBasicCapabilities = capabilitiesType;
@@ -526,7 +531,7 @@ public class WpsServerImpl implements WpsServer {
                 result = dismiss((Dismiss)o);
             }
         } catch (JAXBException e) {
-            LOGGER.error("Unable to parse the incoming xml\n" + e.getMessage());
+            LOGGER.error(I18N.tr("Unable to parse the incoming xml.\nCause : {0}.", e.getMessage()));
             return new ByteArrayOutputStream();
         }
         //Write the request answer in an ByteArrayOutputStream
@@ -538,7 +543,7 @@ public class WpsServerImpl implements WpsServer {
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
                 marshaller.marshal(result, out);
             } catch (JAXBException e) {
-                LOGGER.error("Unable to parse the outcoming xml\n" + e.getMessage());
+                LOGGER.error(I18N.tr("Unable to parse the outcoming xml.\nCause : {0}.", e.getMessage()));
             }
         }
         return out;
@@ -623,7 +628,7 @@ public class WpsServerImpl implements WpsServer {
             Duration duration = datatypeFactory.newDuration(durationInMillis);
             date.add(duration);
         } catch (DatatypeConfigurationException e) {
-            LOGGER.error("Unable to generate the XMLGregorianCalendar object.\n"+e.getMessage());
+            LOGGER.error(I18N.tr("Unable to generate the XMLGregorianCalendar object.\nCause : {0}.", e.getMessage()));
         }
         return date;
     }
