@@ -72,7 +72,7 @@ public class CommentUtil {
     }
     
     /**
-     * Comment the selected text in the given script panel.
+     * Comment the selected R code in the given script panel.
      *
      * @param scriptPanel Script panel
      */
