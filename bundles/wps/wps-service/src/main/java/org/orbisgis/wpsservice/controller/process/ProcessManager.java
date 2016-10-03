@@ -36,6 +36,8 @@ import org.orbisgis.wpsservice.model.Enumeration;
 import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -61,6 +63,8 @@ public class ProcessManager {
     private WpsServer wpsService;
     private Map<UUID, CancelClosure> closureMap;
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessManager.class);
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(ProcessManager.class);
 
     /**
      * Main constructor.
@@ -76,7 +80,7 @@ public class ProcessManager {
     public ProcessIdentifier addScript(URI scriptUri, String[] category, boolean isRemovable, String nodePath){
         File f = new File(scriptUri);
         if(!f.exists()){
-            LOGGER.error("The script file doesn't exists.");
+            LOGGER.error(I18N.tr("The script file doesn't exists."));
             return null;
         }
         //Test that the script name is not only '.groovy'
@@ -115,7 +119,7 @@ public class ProcessManager {
                     }
                 }
             } catch (MalformedScriptException e) {
-                LoggerFactory.getLogger(ProcessManager.class).error("Unable to parse the process '"+scriptUri+"'.", e);
+                LOGGER.error(I18N.tr("Unable to parse the process '{0}'.", scriptUri), e);
             }
             //If the process is not already registered
             if(processOffering != null) {
@@ -261,8 +265,7 @@ public class ProcessManager {
                                 data = valueOf.invoke(this, data.toString());
                             }
                         } catch (NoSuchMethodException | InvocationTargetException e) {
-                            LoggerFactory.getLogger(ProcessManager.class)
-                                    .warn("Unable to convert the LiteralData to the good script type");
+                            LOGGER.warn(I18N.tr("Unable to convert the LiteralData to the good script type."));
                         }
                     }
                     f.set(groovyObject, data);

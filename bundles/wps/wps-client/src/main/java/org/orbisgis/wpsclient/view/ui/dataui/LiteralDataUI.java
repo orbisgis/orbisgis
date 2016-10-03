@@ -29,6 +29,8 @@ import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -77,6 +79,8 @@ public class LiteralDataUI implements DataUI {
     private static final String TEXT_AREA_PROPERTY = "TEXT_AREA_PROPERTY";
     private static final String VERTICAL_BAR_PROPERTY = "VERTICAL_BAR_PROPERTY";
     private static final String LITERAL_DATA_PROPERTY = "LITERAL_DATA_PROPERTY";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(LiteralDataUI.class);
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -207,8 +211,8 @@ public class LiteralDataUI implements DataUI {
             case BOOLEAN:
                 //Instantiate the component
                 dataComponent = new JPanel(new MigLayout("ins 0, gap 0"));
-                JRadioButton falseButton = new JRadioButton("FALSE");
-                JRadioButton trueButton = new JRadioButton("TRUE");
+                JRadioButton falseButton = new JRadioButton(I18N.tr("FALSE"));
+                JRadioButton trueButton = new JRadioButton(I18N.tr("TRUE"));
                 falseButton.setToolTipText(comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY).toString());
                 falseButton.setToolTipText(tooltip);
                 trueButton.setToolTipText(comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY).toString());
@@ -559,7 +563,7 @@ public class LiteralDataUI implements DataUI {
                 paste.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
                 paste.setBorderPainted(false);
                 paste.setContentAreaFilled(false);
-                paste.setToolTipText("Paste the clipboard");
+                paste.setToolTipText(I18N.tr("Paste the clipboard"));
                 panel.add(paste, "dock east");
                 dataComponent = panel;
                 break;

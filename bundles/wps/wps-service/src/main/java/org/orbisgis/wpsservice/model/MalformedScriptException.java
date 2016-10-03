@@ -19,7 +19,8 @@
 
 package org.orbisgis.wpsservice.model;
 
-import net.sourceforge.cobertura.CoverageIgnore;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Exception thrown when a Groovy WPS script is malformed.
@@ -29,6 +30,9 @@ import net.sourceforge.cobertura.CoverageIgnore;
 
 public class MalformedScriptException extends Exception {
 
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(MalformedScriptException.class);
+
     /**
      * Create an exception with a message constructed that way :
      * "Error on implementing '<wpsModelClass>', the argument '<wrongArgument>'<reason>"
@@ -36,8 +40,8 @@ public class MalformedScriptException extends Exception {
      * @param wrongArgument Wrong argument.
      * @param reason Reason why the argument is wrong.
      */
-    @CoverageIgnore
     public MalformedScriptException(Class wpsModelClass, String wrongArgument, String reason){
-        super("Error on implementing '"+wpsModelClass.getSimpleName()+"', the argument '"+wrongArgument+"' "+reason);
+        super(I18N.tr("Error on implementing '{0}', the argument '{1}' {2}.",
+                wpsModelClass.getSimpleName(), wrongArgument, reason));
     }
 }

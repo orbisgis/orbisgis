@@ -55,7 +55,7 @@ import java.lang.annotation.RetentionPolicy
 @interface DataFieldAttribute {
 
     /** Title of the DataStore.*/
-    String dataStoreTitle()
+    String dataStoreFieldName()
 
     /** Array of the type allowed for the data field. If no types are specified, accept all.*/
     String[] fieldTypes() default []

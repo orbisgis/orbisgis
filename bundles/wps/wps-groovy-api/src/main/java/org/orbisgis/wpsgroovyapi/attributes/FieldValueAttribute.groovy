@@ -50,7 +50,7 @@ import java.lang.annotation.RetentionPolicy
 @interface FieldValueAttribute {
 
     /** Title of the dataField.*/
-    String dataFieldTitle()
+    String dataFieldFieldName()
 
     /** Indicates if more than one value can be selected.*/
     boolean multiSelection() default false

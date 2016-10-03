@@ -28,6 +28,8 @@ import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,6 +53,8 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
     private static final int FIVE_SECOND = 5000;
     /** Name of the EditorDockable. */
     private static final String NAME = "LOG_EDITOR";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(LogPanel.class);
 
     /** LogEditableElement. */
     private LogEditableElement lee;
@@ -77,7 +81,7 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("log"));
         dockingPanelParameters.setDefaultDockingLocation(
                 new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClientImpl.TOOLBOX_REFERENCE));
-        dockingPanelParameters.setTitle("WPS log");
+        dockingPanelParameters.setTitle(I18N.tr("WPS log"));
         dockingPanelParameters.setName(NAME);
         dockingPanelParameters.setCloseable(false);
 
@@ -105,7 +109,7 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         panel.setState(ProcessEditableElement.ProcessState.RUNNING);
         componentMap.put(pee.getId(), panel);
         contentPanel.add(panel, "growx, span");
-        processRunning.setText("Process running : "+componentMap.size());
+        processRunning.setText(I18N.tr("Process running : {0}.", componentMap.size()));
     }
 
     public void cancelProcess(ActionEvent ae){
@@ -129,10 +133,10 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         }
         LogPanel lp = componentMap.get(pee.getId());
         String log = "\n=====================================\n"+
-                "WPS Process : "+pee.getProcess().getTitle().get(0).getValue() +"\n"+
+                I18N.tr("WPS Process : {0}\n", pee.getProcess().getTitle().get(0).getValue()) +
                 "=====================================\n"+
-                "Result : "+pee.getProcessState()+"\n"+
-                "Log : \n";
+                I18N.tr("Result : {0}\n", pee.getProcessState())+
+                I18N.tr("Log : \n");
         for(Map.Entry<String, Color> entry : pee.getLogMap().entrySet()){
             log+=entry.getKey()+"\n";
         }
@@ -143,8 +147,8 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
             LoggerFactory.getLogger(LogEditor.class).error(log);
         }
         lp.stop();
-        lp.addLogText("(This window will be automatically closed in 5 seconds)\n" +
-                "(The process log will be printed in the OrbisGIS log)");
+        lp.addLogText(I18N.tr("(This window will be automatically closed in 5 seconds)\n" +
+                "(The process log will be printed in the OrbisGIS log)"));
         endProcessFIFO.add(pee.getId());
         //Start the time to fully remove the log in 5 second.
         Timer timer5S = new Timer(FIVE_SECOND, EventHandler.create(ActionListener.class, this, "endInstance"));
@@ -161,7 +165,7 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
             contentPanel.remove(componentMap.get(id));
         }
         componentMap.remove(id);
-        processRunning.setText("Process running : "+componentMap.size());
+        processRunning.setText(I18N.tr("Process running : {0}.", componentMap.size()));
         this.repaint();
     }
 
@@ -189,7 +193,7 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
     @Override
     public void setEditableElement(EditableElement editableElement) {
         this.lee = (LogEditableElement)editableElement;
-        dockingPanelParameters.setTitle("WPS log");
+        dockingPanelParameters.setTitle(I18N.tr("WPS log"));
         lee.addPropertyChangeListener(this);
     }
 

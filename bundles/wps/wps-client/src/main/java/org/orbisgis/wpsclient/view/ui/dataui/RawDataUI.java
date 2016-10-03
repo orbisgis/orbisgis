@@ -29,6 +29,8 @@ import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.RawData;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
@@ -64,6 +66,8 @@ public class RawDataUI implements DataUI {
     private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
     private static final String OPEN_PANEL_PROPERTY = "OPEN_PANEL_PROPERTY";
     private static final String MULTI_SELECTION_PROPERTY = "MULTI_SELECTION_PROPERTY";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(RawDataUI.class);
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -111,7 +115,7 @@ public class RawDataUI implements DataUI {
             dataAccepted = OpenPanel.ACCEPT_BOTH;
         }
 
-        OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", "Make your selection", action, dataAccepted);
+        OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", I18N.tr("Make your selection."), action, dataAccepted);
         openPanel.setAcceptAllFileFilterUsed(true);
         openPanel.setSingleSelection(!rawData.multiSelection());
 

@@ -50,12 +50,12 @@ public class FieldValueParser implements Parser {
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataFieldUri;
         //If the dataStore attribute is not an URI, autoGenerate one.
-        if(!fieldValueAttribute.dataFieldTitle().contains(":")) {
-            dataFieldUri = URI.create(processId + ":input:" + fieldValueAttribute.dataFieldTitle().replaceAll("[^a-zA-Z0-9_$]", "_"));
+        if(!fieldValueAttribute.dataFieldFieldName().contains(":")) {
+            dataFieldUri = URI.create(processId + ":input:" + fieldValueAttribute.dataFieldFieldName());
         }
         //else, use it
         else {
-            dataFieldUri = URI.create(fieldValueAttribute.dataFieldTitle());
+            dataFieldUri = URI.create(fieldValueAttribute.dataFieldFieldName());
         }
         FieldValue fieldValue = ObjectAnnotationConverter.annotationToObject(fieldValueAttribute, format, dataFieldUri);
 
@@ -69,7 +69,7 @@ public class FieldValueParser implements Parser {
 
         if(input.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":input:"+input.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
+            codeType.setValue(processId+":input:"+f.getName());
             input.setIdentifier(codeType);
         }
 
@@ -83,12 +83,12 @@ public class FieldValueParser implements Parser {
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataFieldUri;
         //If the dataStore attribute is not an URI, autoGenerate one.
-        if(!fieldValueAttribute.dataFieldTitle().contains(":")) {
-            dataFieldUri = URI.create(processId + ":input:" + fieldValueAttribute.dataFieldTitle().replaceAll("[^a-zA-Z0-9_]", "_"));
+        if(!fieldValueAttribute.dataFieldFieldName().contains(":")) {
+            dataFieldUri = URI.create(processId + ":input:" + fieldValueAttribute.dataFieldFieldName());
         }
         //else, use it
         else {
-            dataFieldUri = URI.create(fieldValueAttribute.dataFieldTitle());
+            dataFieldUri = URI.create(fieldValueAttribute.dataFieldFieldName());
         }
         FieldValue fieldValue = ObjectAnnotationConverter.annotationToObject(fieldValueAttribute, format, dataFieldUri);
 
@@ -101,7 +101,7 @@ public class FieldValueParser implements Parser {
 
         if(output.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":output:"+output.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
+            codeType.setValue(processId+":output:"+f.getName());
             output.setIdentifier(codeType);
         }
 

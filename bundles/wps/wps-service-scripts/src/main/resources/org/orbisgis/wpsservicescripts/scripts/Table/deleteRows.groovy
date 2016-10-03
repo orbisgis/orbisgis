@@ -1,5 +1,7 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
+import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.input.FieldValueInput
@@ -19,9 +21,25 @@ import org.orbisgis.wpsgroovyapi.process.Process
  *
  * @author Sylvain PALOMINOS
  */
-@Process(title = "Delete rows",
-        resume = "Delete rows from a table.",
-        keywords = ["Table","Delete"])
+@Process(
+        traducedTitles = [
+                @LanguageString(value = "Delete rows", lang = "en"),
+                @LanguageString(value = "Suppression de lignes", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "Delete rows from a table.", lang = "en"),
+                @LanguageString(value = "Supprime des lignes d'une table.", lang = "fr")
+        ],
+        traducedKeywords = [
+                @Keyword(traducedKeywords = [
+                        @LanguageString(value = "Table", lang = "en"),
+                        @LanguageString(value = "Table", lang = "fr")
+                ]),
+                @Keyword(traducedKeywords = [
+                        @LanguageString(value = "Delete", lang = "en"),
+                        @LanguageString(value = "Suppression", lang = "fr")
+                ])
+        ])
 def processing() {
     //Build the start of the query
     for (String s : pkToRemove) {
@@ -39,8 +57,14 @@ def processing() {
 
 /** This DataStore is the input data source table. */
 @DataStoreInput(
-        title = "Table",
-        resume = "The table to edit")
+        traducedTitles = [
+                @LanguageString(value = "Table", lang = "en"),
+                @LanguageString(value = "Table", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The table to edit.", lang = "en"),
+                @LanguageString(value = "La table à éditer.", lang = "fr")
+        ])
 String tableName
 
 /**********************/
@@ -49,22 +73,40 @@ String tableName
 
 /** Name of the PrimaryKey field of the DataStore tableName. */
 @DataFieldInput(
-        title = "PKField",
-        resume = "The primary key field",
-        dataStoreTitle = "Table")
+        traducedTitles = [
+                @LanguageString(value = "PKField", lang = "en"),
+                @LanguageString(value = "Champ clef primaire", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The primary key field.", lang = "en"),
+                @LanguageString(value = "Le champ de la clef primaire.", lang = "fr")
+        ],
+        dataStoreFieldName = "tableName")
 String[] pkField
 
 /** List of primary keys to remove from the table. */
 @FieldValueInput(
-        title = "PKArray",
-        resume = "The array of the primary keys of the rows to remove",
-        dataFieldTitle = "PKField",
+        traducedTitles = [
+                @LanguageString(value = "PKArray", lang = "en"),
+                @LanguageString(value = "Liste clef primaire", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The array of the primary keys of the rows to remove.", lang = "en"),
+                @LanguageString(value = "La liste des clefs primaires dont les lignes sont à supprimer.", lang = "fr")
+        ],
+        dataFieldFieldName = "pkField",
         multiSelection = true)
 String[] pkToRemove
 
 /** Output message. */
 @LiteralDataOutput(
-        title="Output message",
-        resume="The output message")
+        traducedTitles = [
+                @LanguageString(value = "Output message", lang = "en"),
+                @LanguageString(value = "Message de sortie", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The output message.", lang = "en"),
+                @LanguageString(value = "Le message de sortie.", lang = "fr")
+        ])
 String literalOutput
 

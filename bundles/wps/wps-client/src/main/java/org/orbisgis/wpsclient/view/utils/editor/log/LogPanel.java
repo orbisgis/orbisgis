@@ -22,6 +22,8 @@ package org.orbisgis.wpsclient.view.utils.editor.log;
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
@@ -38,6 +40,8 @@ import java.util.Date;
 public class LogPanel extends JPanel {
 
     private static final int ONE_SECOND = 1000;
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(LogPanel.class);
 
     /** Icon of the state of the process. */
     private JLabel icon;
@@ -105,7 +109,7 @@ public class LogPanel extends JPanel {
     public void setTime(){
         if(running) {
             Date date = new Date(System.currentTimeMillis() - startTime - 3600 * 1000);
-            time.setText("Time elapsed : " + new SimpleDateFormat("HH:mm:ss").format(date));
+            time.setText(I18N.tr("Time elapsed : {0}.", new SimpleDateFormat("HH:mm:ss").format(date)));
             this.revalidate();
         }
     }

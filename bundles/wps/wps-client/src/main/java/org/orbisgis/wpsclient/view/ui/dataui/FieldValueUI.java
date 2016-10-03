@@ -27,6 +27,8 @@ import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -67,6 +69,8 @@ public class FieldValueUI implements DataUI{
     private static final String INITIAL_DELAY_PROPERTY = "INITIAL_DELAY_PROPERTY";
     private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
     private static final String LAYERUI_PROPERTY = "LAYERUI_PROPERTY";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(FieldValueUI.class);
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -287,11 +291,11 @@ public class FieldValueUI implements DataUI{
                     else if(split.length == 4){
                         fieldValueStr = split[1]+"."+split[2]+"."+split[3];
                     }
-                    list.setToolTipText("First configure the DataField : " + fieldValueStr);
+                    list.setToolTipText(I18N.tr("First configure the DataField '{0}'.", fieldValueStr));
                 }
                 else {
-                    list.setToolTipText("First configure the DataField : " +
-                            fieldValueStr.substring(fieldValueStr.lastIndexOf(":") + 1));
+                    list.setToolTipText(I18N.tr("First configure the DataField '{0}'",
+                            fieldValueStr.substring(fieldValueStr.lastIndexOf(":") + 1)));
                 }
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
@@ -343,11 +347,11 @@ public class FieldValueUI implements DataUI{
             Font font = g2.getFont().deriveFont(Font.PLAIN, s / 3);
             g2.setFont(font);
             FontMetrics metrics = g2.getFontMetrics(font);
-            int w1 = metrics.stringWidth("Loading");
-            int w2 = metrics.stringWidth("fields");
+            int w1 = metrics.stringWidth(I18N.tr("Loading"));
+            int w2 = metrics.stringWidth(I18N.tr("fields"));
             int h1 = metrics.getHeight();
-            g2.drawString("Loading", cx - w1 / 2, cy - h1 / 2);
-            g2.drawString("source", cx - w2 / 2, cy + h1 / 2);
+            g2.drawString(I18N.tr("Loading"), cx - w1 / 2, cy - h1 / 2);
+            g2.drawString(I18N.tr("source"), cx - w2 / 2, cy + h1 / 2);
             //waiter painting
             g2.setStroke(new BasicStroke(s / 4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,

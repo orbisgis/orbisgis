@@ -29,6 +29,8 @@ import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.sif.JPanelListRenderer;
 import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.model.*;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -67,6 +69,8 @@ public class DataFieldUI implements DataUI{
     private static final String INITIAL_DELAY_PROPERTY = "INITIAL_DELAY_PROPERTY";
     private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
     private static final String NULL_ITEM = "NULL_ITEM";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(DataFieldUI.class);
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -119,7 +123,7 @@ public class DataFieldUI implements DataUI{
             JComboBox<ContainerItem<Object>> comboBox = new JComboBox<>();
             comboBox.setRenderer(new JPanelListRenderer());
             comboBox.setBackground(Color.WHITE);
-            ContainerItem<Object> defaultItem = new ContainerItem<Object>("Select a field", "Select a field");
+            ContainerItem<Object> defaultItem = new ContainerItem<Object>(I18N.tr("Select a field"), I18N.tr("Select a field"));
             comboBox.addItem(defaultItem);
             comboBox.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
             comboBox.putClientProperty(DATA_FIELD_PROPERTY, dataField);
@@ -218,8 +222,8 @@ public class DataFieldUI implements DataUI{
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
                 String dataFieldStr = dataField.getDataStoreIdentifier().toString();
-                comboBox.setToolTipText("First configure the DataStore : " +
-                        dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1));
+                comboBox.setToolTipText(I18N.tr("First configure the DataStore '{0}'.",
+                        dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1)));
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(comboBox, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
             }
@@ -259,11 +263,11 @@ public class DataFieldUI implements DataUI{
                     else if(split.length == 3){
                         dataFieldStr = split[1]+"."+split[2];
                     }
-                    list.setToolTipText("First configure the DataField : " + dataFieldStr);
+                    list.setToolTipText(I18N.tr("First configure the DataField '{0}'", dataFieldStr));
                 }
                 else {
-                    list.setToolTipText("First configure the DataStore : " +
-                            dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1));
+                    list.setToolTipText(I18N.tr("First configure the DataStore '{0}'",
+                            dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1)));
                 }
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(list, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
@@ -357,7 +361,7 @@ public class DataFieldUI implements DataUI{
             tableName = dataMap.get(dataField.getDataStoreIdentifier()).toString();
         }
         if(tableName == null){
-            listContainer.add(new ContainerItem<Object>("Select a field", "Select a field"));
+            listContainer.add(new ContainerItem<Object>(I18N.tr("Select a field"), I18N.tr("Select a field")));
             return listContainer;
         }
         List<String> fieldNameList = wpsClient.getLocalWpsService().getTableFieldList(tableName,
@@ -378,12 +382,12 @@ public class DataFieldUI implements DataUI{
                     //Sets the SRID label
                     int srid = (int) informationMap.get(LocalWpsServer.TABLE_SRID);
                     if (srid != 0) {
-                        fieldPanel.add(new JLabel(" [EPSG:" + srid + "]"));
+                        fieldPanel.add(new JLabel(I18N.tr(" [EPSG:" + srid + "]")));
                     }
                     //Sets the dimension label
                     int dimension = (int) informationMap.get(LocalWpsServer.TABLE_DIMENSION);
                     if (dimension != 2 && dimension != 0) {
-                        fieldPanel.add(new JLabel(" "+dimension + "D"));
+                        fieldPanel.add(new JLabel(I18N.tr(" "+dimension + "D")));
                     }
                 } else {
                     fieldPanel.add(new JLabel(fieldName));

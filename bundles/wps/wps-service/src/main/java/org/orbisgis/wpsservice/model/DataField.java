@@ -21,6 +21,9 @@ package org.orbisgis.wpsservice.model;
 
 import net.opengis.wps._2_0.ComplexDataType;
 import net.opengis.wps._2_0.Format;
+import org.orbisgis.wpsservice.LocalWpsServerImpl;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.xml.bind.annotation.*;
 import java.net.URI;
@@ -54,6 +57,8 @@ public class DataField extends ComplexDataType {
     /** Indicates if the use can choose more than one field*/
     @XmlAttribute(name = "multiSelection")
     private boolean multiSelection = false;
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(LocalWpsServerImpl.class);
 
     /**
      * Main constructor.
@@ -141,8 +146,8 @@ public class DataField extends ComplexDataType {
         for(DataType excludedType : excludedTypeList){
             for(DataType dataType : fieldTypeList){
                 if(excludedType.equals(dataType)){
-                    throw new MalformedScriptException(DataField.class, "excludedTypeList", "A same DataType is" +
-                            " accepted and excluded");
+                    throw new MalformedScriptException(DataField.class, "excludedTypeList", I18N.tr("A same DataType is" +
+                            " accepted and excluded."));
                 }
             }
         }

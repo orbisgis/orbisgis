@@ -50,12 +50,12 @@ public class DataFieldParser implements Parser {
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataStoreUri;
         //If the dataStore attribute is not an URI, autoGenerate one.
-        if(!dataFieldAttribute.dataStoreTitle().contains(":")) {
-            dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStoreTitle().replaceAll("[^a-zA-Z0-9_$]", "_"));
+        if(!dataFieldAttribute.dataStoreFieldName().contains(":")) {
+            dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStoreFieldName());
         }
         //else, use it
         else {
-            dataStoreUri = URI.create(dataFieldAttribute.dataStoreTitle());
+            dataStoreUri = URI.create(dataFieldAttribute.dataStoreFieldName());
         }
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 
@@ -69,7 +69,7 @@ public class DataFieldParser implements Parser {
 
         if(input.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":input:"+input.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
+            codeType.setValue(processId+":input:"+f.getName());
             input.setIdentifier(codeType);
         }
 
@@ -83,12 +83,12 @@ public class DataFieldParser implements Parser {
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataStoreUri;
         //If the dataStore attribute is not an URI, autoGenerate one.
-        if(!dataFieldAttribute.dataStoreTitle().contains(":")) {
-            dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.dataStoreTitle().replaceAll("[^a-zA-Z0-9_]", "_"));
+        if(!dataFieldAttribute.dataStoreFieldName().contains(":")) {
+            dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.dataStoreFieldName());
         }
         //else, use it
         else {
-            dataStoreUri = URI.create(dataFieldAttribute.dataStoreTitle());
+            dataStoreUri = URI.create(dataFieldAttribute.dataStoreFieldName());
         }
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 
@@ -101,7 +101,7 @@ public class DataFieldParser implements Parser {
 
         if(output.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":output:"+output.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
+            codeType.setValue(processId+":output:"+f.getName());
             output.setIdentifier(codeType);
         }
 

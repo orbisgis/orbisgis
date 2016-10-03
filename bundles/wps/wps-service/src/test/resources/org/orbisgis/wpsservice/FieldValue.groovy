@@ -64,7 +64,7 @@ String dataStoreInput
 
 @DataFieldInput(title = "DataField for the FieldValue",
         identifier = "orbisgis:test:datafield:input",
-        dataStoreTitle = "orbisgis:test:datastore:input")
+        dataStoreFieldName = "orbisgis:test:datastore:input")
 String dataFieldInput
 
 /** This FieldValue is the input data source. */
@@ -86,7 +86,7 @@ String dataFieldInput
                         @LanguageString(value = "entrée", lang = "fr")
                 ])
         ],
-        dataFieldTitle = "orbisgis:test:datafield:input",
+        dataFieldFieldName = "orbisgis:test:datafield:input",
         minOccurs = 0,
         maxOccurs = 2,
         identifier = "orbisgis:test:fieldvalue:input",
@@ -106,7 +106,7 @@ String dataStoreOutput
 
 @DataFieldOutput(title = "DataField for the FieldValue",
         identifier = "orbisgis:test:datafield:output",
-        dataStoreTitle = "orbisgis:test:datastore:output")
+        dataStoreFieldName = "orbisgis:test:datastore:output")
 String dataFieldOutput
 
 /** This FieldValue is the output data source. */
@@ -128,7 +128,7 @@ String dataFieldOutput
                         @LanguageString(value = "sortie", lang = "fr")
                 ])
         ],
-        dataFieldTitle = "orbisgis:test:datafield:output",
+        dataFieldFieldName = "orbisgis:test:datafield:output",
         multiSelection = true,
         identifier = "orbisgis:test:fieldvalue:output",
         metadata = [
