@@ -19,7 +19,6 @@
 
 package org.orbisgis.wpsservice.model;
 
-import net.sourceforge.cobertura.CoverageIgnore;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
@@ -86,7 +85,6 @@ public enum DataType {
         return uri;
     }
 
-    @CoverageIgnore
     public static boolean testDBType(DataType dataType, String dbTypeName){
         dbTypeName = dbTypeName.toUpperCase();
         switch(dataType) {

@@ -20,13 +20,8 @@
 package org.orbisgis.wpsservice.model;
 
 import net.opengis.wps._2_0.ComplexDataType;
-import net.opengis.wps._2_0.Format;
-import net.sourceforge.cobertura.CoverageIgnore;
 
 import javax.xml.bind.annotation.*;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Sylvain PALOMINOS
@@ -40,7 +35,6 @@ public class Password extends ComplexDataType {
     /**
      * Main constructor.
      */
-    @CoverageIgnore
     public Password(){
         super();
     }

@@ -19,7 +19,6 @@
 
 package org.orbisgis.wpsservice.model;
 
-import net.sourceforge.cobertura.CoverageIgnore;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -41,7 +40,6 @@ public class MalformedScriptException extends Exception {
      * @param wrongArgument Wrong argument.
      * @param reason Reason why the argument is wrong.
      */
-    @CoverageIgnore
     public MalformedScriptException(Class wpsModelClass, String wrongArgument, String reason){
         super(I18N.tr("Error on implementing '{0}', the argument '{1}' {2}.",
                 wpsModelClass.getSimpleName(), wrongArgument, reason));

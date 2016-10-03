@@ -1,9 +1,10 @@
 package org.orbisgis.wpsservicescripts.scripts.IO
 
+import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.input.RawDataInput
-import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 
@@ -32,9 +33,36 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @see http://www.h2gis.org/docs/dev/ST_SeST_MakePointSRID/
  * @author Sylvain PALOMINOS
  */
-@Process(title = "Point layer from CSV",
-        resume = "Creates a point layer from a CSV file containing the id of the point, its X and Y coordinate.",
-        keywords = ["OrbisGIS","ST_Transform","ST_SetSRID","ST_MakePoint","example"])
+@Process(traducedTitles = [
+                @LanguageString(value = "Point layer from CSV", lang = "en"),
+                @LanguageString(value = "Couche ponctuelle depuis un CSV", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "Creates a point layer from a CSV file containing the id of the point, its X and Y coordinate.", lang = "en"),
+                @LanguageString(value = "Création d'une couche ponctuelle depuis un fichier CSV contenant l'identifiant du point ainsi que ses coordonnées X et Y.", lang = "fr")
+        ],
+        traducedKeywords = [
+                @Keyword(traducedKeywords = [
+                        @LanguageString(value = "OrbisGIS", lang = "en"),
+                        @LanguageString(value = "OrbisGIS", lang = "fr")
+                ]),
+                @Keyword(traducedKeywords = [
+                        @LanguageString(value = "ST_Transform", lang = "en"),
+                        @LanguageString(value = "ST_Transform", lang = "fr")
+                ]),
+                @Keyword(traducedKeywords = [
+                        @LanguageString(value = "ST_SetSRID", lang = "en"),
+                        @LanguageString(value = "ST_SetSRID", lang = "fr")
+                ]),
+                @Keyword(traducedKeywords = [
+                        @LanguageString(value = "ST_MakePoint", lang = "en"),
+                        @LanguageString(value = "ST_MakePoint", lang = "fr")
+                ]),
+                @Keyword(traducedKeywords = [
+                        @LanguageString(value = "example", lang = "en"),
+                        @LanguageString(value = "exemple", lang = "fr")
+                ]),
+        ])
 def processing() {
     outputTableName = dataStoreOutputName
     //Open the CSV file
@@ -63,57 +91,117 @@ def processing() {
  * |1 |1|1|
  * ........
  * */
-@RawDataInput(title="Input csv",
-        resume="The input CSV file containing the point data.")
+@RawDataInput(
+        traducedTitles = [
+                @LanguageString(value = "Input csv", lang = "en"),
+                @LanguageString(value = "Fichier CSV", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The input CSV file containing the point data.", lang = "en"),
+                @LanguageString(value = "Le fichier CSV d'entrée contenant les données ponctuelles.", lang = "fr")
+        ])
 String csvDataInput
 
 
 /**********************/
 /** INPUT Parameters **/
 /**********************/
-@EnumerationInput(title="CSV separator",
-        resume="The CSV separator.",
+@EnumerationInput(
+        traducedTitles = [
+                @LanguageString(value = "CSV separator", lang = "en"),
+                @LanguageString(value = "Séparateur CSV", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The CSV separator.", lang = "en"),
+                @LanguageString(value = "Le séparateur CSV.", lang = "fr")
+        ],
         values=[",", "\t", " ", ";"],
         names=["coma", "tabulation", "space", "semicolon"],
         selectedValues = ";",
         isEditable = true)
 String separator
 
-@LiteralDataInput(title="Id field",
-        resume="The point id field")
+@LiteralDataInput(
+        traducedTitles = [
+                @LanguageString(value = "Id field", lang = "en"),
+                @LanguageString(value = "Champ identifiant", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The point id field.", lang = "en"),
+                @LanguageString(value = "Le champ contenant l'identifiant du point.", lang = "fr")
+        ])
 String idField
 
-@LiteralDataInput(title="X field",
-        resume="The X coordinate field")
+@LiteralDataInput(
+        traducedTitles = [
+                @LanguageString(value = "X field", lang = "en"),
+                @LanguageString(value = "Champ X", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The X coordinate field.", lang = "en"),
+                @LanguageString(value = "Le champ de la coordonnée X.", lang = "fr")
+        ])
 String xField
 
-@LiteralDataInput(title="Y field",
-        resume="The Y coordinate field")
+@LiteralDataInput(
+        traducedTitles = [
+                @LanguageString(value = "Y field", lang = "en"),
+                @LanguageString(value = "Champ Y", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The Y coordinate field.", lang = "en"),
+                @LanguageString(value = "Le champ de la coordonnée X.", lang = "fr")
+        ])
 String yField
 
-@EnumerationInput(title="Input EPSG",
-        resume="The input .csv EPSG code",
+@EnumerationInput(
+        traducedTitles = [
+                @LanguageString(value = "Input EPSG", lang = "en"),
+                @LanguageString(value = "EPSG d'entrée", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The input CSV EPSG code.", lang = "en"),
+                @LanguageString(value = "Le code EPSG du fichier CSV.", lang = "fr")
+        ],
         values=["4326", "2154"],
         minOccurs=0)
 Integer inputEPSG
 
-@EnumerationInput(title="Output EPSG",
-        resume="The output .csv EPSG code",
+@EnumerationInput(
+        traducedTitles = [
+                @LanguageString(value = "Output EPSG", lang = "en"),
+                @LanguageString(value = "EPSG de sortie", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The output .csv EPSG code.", lang = "en"),
+                @LanguageString(value = "Le code EPSG de la couche en sortie.", lang = "fr")
+        ],
         values=["4326", "2154"],
         minOccurs=0)
 Integer outputEPSG
 
 /** Output DataStore name. */
 @LiteralDataInput(
-        title="DataStore name",
-        resume="The DataStore name"
-)
+        traducedTitles = [
+                @LanguageString(value = "DataStore name", lang = "en"),
+                @LanguageString(value = "Nom du DataStore", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The DataStore name.", lang = "en"),
+                @LanguageString(value = "Le nom du DataStore.", lang = "fr")
+        ])
 String dataStoreOutputName
 
 /************/
 /** OUTPUT **/
 /************/
 @LiteralDataOutput(
-        title="Output message",
-        resume="The output message")
+        traducedTitles = [
+                @LanguageString(value = "Output message", lang = "en"),
+                @LanguageString(value = "Message de sortie", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The output message.", lang = "en"),
+                @LanguageString(value = "Le message de sortie.", lang = "fr")
+        ])
 String literalDataOutput

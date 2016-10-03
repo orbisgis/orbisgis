@@ -21,7 +21,6 @@ package org.orbisgis.wpsservice.model;
 
 import net.opengis.wps._2_0.ComplexDataType;
 import net.opengis.wps._2_0.Format;
-import org.orbisgis.wpsservice.WpsServerImpl;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

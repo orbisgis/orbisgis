@@ -1,5 +1,7 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Properties
 
+import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.input.*
 import org.orbisgis.wpsgroovyapi.output.*
 import org.orbisgis.wpsgroovyapi.process.*
@@ -21,10 +23,31 @@ import org.orbisgis.wpsgroovyapi.process.*
  *
  * @return A database table or a file.
  * @author Erwan Bocher
+ * @author Sylvain PALOMINOS
  */
-@Process(title = "Geometry properties",
-        resume = "Compute some basic geometry properties.",
-        keywords = ["Vector","Geometry","Properties"])
+@Process(
+        traducedTitles = [
+                @LanguageString(value = "Geometry properties", lang = "en"),
+                @LanguageString(value = "Propriétés géométriques", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "Compute some basic geometry properties.", lang = "en"),
+                @LanguageString(value = "Calcule des propriétés de base des géométries.", lang = "fr")
+        ],
+        traducedKeywords = [
+                @Keyword(traducedKeywords = [
+                        @LanguageString(value = "Vector", lang = "en"),
+                        @LanguageString(value = "Vecteur", lang = "fr")
+                ]),
+                @Keyword(traducedKeywords = [
+                        @LanguageString(value = "Geometry", lang = "en"),
+                        @LanguageString(value = "Géometrie", lang = "fr")
+                ]),
+                @Keyword(traducedKeywords = [
+                        @LanguageString(value = "Properties", lang = "en"),
+                        @LanguageString(value = "Propriétés", lang = "fr")
+                ])
+        ])
 def processing() {
 //Build the start of the query
     String query = "CREATE TABLE "+outputTableName+" AS SELECT "
@@ -84,8 +107,14 @@ def processing() {
 
 /** This DataStore is the input data source. */
 @DataStoreInput(
-        title = "Input spatial data",
-        resume = "The spatial data source to compute the geometry properties.",
+        traducedTitles = [
+                @LanguageString(value = "Input spatial data", lang = "en"),
+                @LanguageString(value = "Données spatiales d'entrée", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The spatial data source to compute the geometry properties.", lang = "en"),
+                @LanguageString(value = "La source de données spatiales pour le calcul des propriétés géométriques.", lang = "fr")
+        ],
         dataStoreTypes = ["GEOMETRY"])
 String inputDataStore
 
@@ -95,32 +124,57 @@ String inputDataStore
 
 /** Name of the Geometric field of the DataStore inputDataStore. */
 @DataFieldInput(
-        title = "Geometric field",
-        resume = "The geometric field of the data source",
-        dataStoreTitle = "Input spatial data",
+        traducedTitles = [
+                @LanguageString(value = "Geometric field", lang = "en"),
+                @LanguageString(value = "Champ géométrique", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The geometric field of the data source.", lang = "en"),
+                @LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
+        ],
+        dataStoreFieldName = "inputDataStore",
         fieldTypes = ["GEOMETRY"])
 String[] geometricField
 
 /** Name of the identifier field of the DataStore inputDataStore. */
 @DataFieldInput(
-        title = "Identifier field",
-        resume = "A field used as an identifier",
-	excludedTypes=["GEOMETRY"],
-        dataStoreTitle = "Input spatial data")
+        traducedTitles = [
+                @LanguageString(value = "Identifier field", lang = "en"),
+                @LanguageString(value = "Champ identifiant", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "A field used as an identifier.", lang = "en"),
+                @LanguageString(value = "Le champ utilisé comme identifiant.", lang = "fr")
+        ],
+	    excludedTypes=["GEOMETRY"],
+        dataStoreFieldName = "inputDataStore")
 String[] idField
 
-@EnumerationInput(title="Operation",
-        resume="Operation to compute the properties.",
+@EnumerationInput(
+        traducedTitles = [
+                @LanguageString(value = "Operation", lang = "en"),
+                @LanguageString(value = "Opération", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "Operation to compute the properties.", lang = "en"),
+                @LanguageString(value = "Opération à effectuer.", lang = "fr")
+        ],
         values=["geomtype","srid", "length","perimeter","area", "dimension", "coorddim", "num_geoms", "num_pts", "issimple", "isvalid", "isempty"],
         names=["Geometry type","SRID", "Length", "Perimeter", "Area", "Geometry dimension","Coordinate dimension", "Number of geometries", "Number of points", "Is simple", "Is valid", "Is empty" ],
         selectedValues = "geomtype",
-multiSelection = true)
+        multiSelection = true)
 String[] operations
 
 
 @LiteralDataInput(
-        title="Output table name",
-        resume="Name of the table containing the result of the process.")
+        traducedTitles = [
+                @LanguageString(value = "Output table name", lang = "en"),
+                @LanguageString(value = "Nom de la table de sortie", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
+                @LanguageString(value = "Nom de la table contenant les résultats du traitement.", lang = "fr")
+        ])
 String outputTableName
 
 /*****************/
@@ -129,7 +183,13 @@ String outputTableName
 
 /** String output of the process. */
 @LiteralDataOutput(
-        title="Output message",
-        resume="The output message")
+        traducedTitles = [
+                @LanguageString(value = "Output message", lang = "en"),
+                @LanguageString(value = "Message de sortie", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The output message.", lang = "en"),
+                @LanguageString(value = "Le message de sortie.", lang = "fr")
+        ])
 String literalOutput
 

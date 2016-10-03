@@ -58,16 +58,13 @@ import org.xnap.commons.i18n.I18nFactory;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import javax.swing.*;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
-import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -79,7 +76,7 @@ import java.util.concurrent.ExecutorService;
 
 @Component(immediate = true, service = {DockingPanel.class, WpsClient.class})
 public class WpsClientImpl implements DockingPanel, WpsClient {
-    public static final String LANG = "en";
+    public static final String LANG = Locale.getDefault().toString();
     /** String reference of the ToolBox used for DockingFrame. */
     public static final String TOOLBOX_REFERENCE = "orbistoolbox";
     /** I18N object */
@@ -204,6 +201,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         //Sets the language
         AcceptLanguages acceptLanguages = new AcceptLanguages();
         acceptLanguages.getLanguage().add(LANG);
+        acceptLanguages.getLanguage().add("*");
         getCapabilities.setAcceptLanguages(acceptLanguages);
         //Sets the version
         AcceptVersionsType acceptVersions = new AcceptVersionsType();

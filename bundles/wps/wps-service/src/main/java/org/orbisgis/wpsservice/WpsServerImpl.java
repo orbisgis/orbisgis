@@ -4,7 +4,6 @@ import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
-import net.sourceforge.cobertura.CoverageIgnore;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
@@ -12,7 +11,6 @@ import org.orbisgis.wpsservice.controller.execution.ProcessWorker;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.controller.utils.Job;
-import org.orbisgis.wpsservice.controller.utils.WpsSql;
 import org.orbisgis.wpsservice.model.JaxbContainer;
 import org.orbisgis.wpsservice.utils.ProcessTranslator;
 import org.slf4j.Logger;
@@ -100,6 +98,7 @@ public class WpsServerImpl implements WpsServer {
         jobMap = new HashMap<>();
         supportedLanguages = new ArrayList<>();
         supportedLanguages.add(DEFAULT_LANGUAGE);
+        supportedLanguages.add("fr");
         propertiesMap = new HashMap<>();
         //Initialisation of the wps service itself
         initWpsService();
@@ -308,18 +307,20 @@ public class WpsServerImpl implements WpsServer {
             List<ProcessSummaryType> processSummaryTypeList = new ArrayList<>();
             List<ProcessDescriptionType> processList = getProcessList();
             for (ProcessDescriptionType process : processList) {
+                ProcessDescriptionType translatedProcess = ProcessTranslator.getTranslatedProcess(
+                        process, requestLanguage, DEFAULT_LANGUAGE);
                 ProcessSummaryType processSummaryType = new ProcessSummaryType();
                 processSummaryType.getJobControlOptions().clear();
                 processSummaryType.getJobControlOptions().addAll(jobControlOptions);
-                processSummaryType.getAbstract().clear();
-                processSummaryType.getAbstract().addAll(process.getAbstract());
-                processSummaryType.setIdentifier(process.getIdentifier());
-                processSummaryType.getKeywords().clear();
-                processSummaryType.getKeywords().addAll(process.getKeywords());
+                processSummaryType.setIdentifier(translatedProcess.getIdentifier());
                 processSummaryType.getMetadata().clear();
-                processSummaryType.getMetadata().addAll(process.getMetadata());
+                processSummaryType.getMetadata().addAll(translatedProcess.getMetadata());
+                processSummaryType.getAbstract().clear();
+                processSummaryType.getAbstract().addAll(translatedProcess.getAbstract());
                 processSummaryType.getTitle().clear();
-                processSummaryType.getTitle().addAll(process.getTitle());
+                processSummaryType.getTitle().addAll(translatedProcess.getTitle());
+                processSummaryType.getKeywords().clear();
+                processSummaryType.getKeywords().addAll(translatedProcess.getKeywords());
 
                 processSummaryTypeList.add(processSummaryType);
             }
@@ -361,7 +362,7 @@ public class WpsServerImpl implements WpsServer {
                 po.getOutputTransmission().clear();
                 po.getOutputTransmission().addAll(listTransmission);
                 ProcessDescriptionType process = processOffering.getProcess();
-                po.setProcess(ProcessTranslator.getTranslatedProcess(process, describeProcess.getLang()));
+                po.setProcess(ProcessTranslator.getTranslatedProcess(process, describeProcess.getLang(), DEFAULT_LANGUAGE));
                 processOfferingList.add(po);
             }
         }
@@ -558,32 +559,25 @@ public class WpsServerImpl implements WpsServer {
     /** Getters and setters **/
     /*************************/
 
-    @CoverageIgnore
+
     protected void setDatabase(Database database){
         this.database = database;
     }
-
-    @CoverageIgnore
     @Override
     public Database getDatabase() {
         return database;
     }
 
-    @CoverageIgnore
     protected void setDataSourceService(DataSourceService dataSourceService){
         this.dataSourceService = dataSourceService;
     }
-
-    @CoverageIgnore
     protected void setDataProcessingManager(DataProcessingManager dataProcessingManager){
         this.dataProcessingManager = dataProcessingManager;
     }
 
-    @CoverageIgnore
     protected void setExecutorService(ExecutorService executorService){
         this.executorService = executorService;
     }
-
     protected ExecutorService getExecutorService(){
         return executorService;
     }

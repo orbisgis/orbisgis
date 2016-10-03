@@ -26,7 +26,6 @@ import net.opengis.wps._2_0.*;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsservice.LocalWpsServer;
-import org.orbisgis.wpsservice.LocalWpsServerImpl;
 import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
 import org.orbisgis.wpsservice.controller.utils.CancelClosure;
