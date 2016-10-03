@@ -150,7 +150,7 @@ String xField
         ],
         traducedResumes = [
                 @LanguageString(value = "The Y coordinate field.", lang = "en"),
-                @LanguageString(value = "Le champ de la coordonnée X.", lang = "fr")
+                @LanguageString(value = "Le champ de la coordonnée Y.", lang = "fr")
         ])
 String yField
 

@@ -25,7 +25,7 @@ import org.orbisgis.wpsgroovyapi.process.*
 		],
 		traducedResumes = [
 				@LanguageString(value = "Extract the center of a geometry.", lang = "en"),
-				@LanguageString(value = "Extraction du centre d'un géométrie.", lang = "fr")
+				@LanguageString(value = "Extraction du centre d'une géométrie.", lang = "fr")
 		],
 		traducedKeywords = [
 				@Keyword(traducedKeywords = [

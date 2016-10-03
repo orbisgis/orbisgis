@@ -30,7 +30,7 @@ import org.orbisgis.wpsgroovyapi.process.*
 		],
 		traducedResumes = [
 				@LanguageString(value = "Reproject geometries from one Coordinate Reference System to another.", lang = "en"),
-				@LanguageString(value = "Reprojectionne une géométrie d'un SRID vers un autre.", lang = "fr")
+				@LanguageString(value = "Reprojection une géométrie d'un SRID vers un autre.", lang = "fr")
 		],
 		traducedKeywords = [
 				@Keyword(traducedKeywords = [

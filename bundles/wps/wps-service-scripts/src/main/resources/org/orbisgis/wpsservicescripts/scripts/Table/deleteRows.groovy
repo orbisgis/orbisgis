@@ -88,11 +88,11 @@ String[] pkField
 @FieldValueInput(
         traducedTitles = [
                 @LanguageString(value = "PKArray", lang = "en"),
-                @LanguageString(value = "List clef primaire", lang = "fr")
+                @LanguageString(value = "Liste clef primaire", lang = "fr")
         ],
         traducedResumes = [
                 @LanguageString(value = "The array of the primary keys of the rows to remove.", lang = "en"),
-                @LanguageString(value = "La list des clefs primaires dont les lignes sont à supprimer.", lang = "fr")
+                @LanguageString(value = "La liste des clefs primaires dont les lignes sont à supprimer.", lang = "fr")
         ],
         dataFieldFieldName = "pkField",
         multiSelection = true)

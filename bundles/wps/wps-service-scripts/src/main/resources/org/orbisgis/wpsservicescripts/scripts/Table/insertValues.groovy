@@ -30,7 +30,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
         ],
         traducedResumes = [
                 @LanguageString(value = "Insert values into a table.", lang = "en"),
-                @LanguageString(value = "Insert des valeurs dans une table.", lang = "fr")
+                @LanguageString(value = "Insert de valeurs dans une table.", lang = "fr")
         ],
         traducedKeywords = [
                 @Keyword(traducedKeywords = [

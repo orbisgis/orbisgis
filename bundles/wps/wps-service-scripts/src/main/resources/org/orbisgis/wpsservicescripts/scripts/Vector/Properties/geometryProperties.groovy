@@ -32,7 +32,7 @@ import org.orbisgis.wpsgroovyapi.process.*
         ],
         traducedResumes = [
                 @LanguageString(value = "Compute some basic geometry properties.", lang = "en"),
-                @LanguageString(value = "Calcule des propriétés de base des géométries.", lang = "fr")
+                @LanguageString(value = "Calcul des propriétés de base des géométries.", lang = "fr")
         ],
         traducedKeywords = [
                 @Keyword(traducedKeywords = [

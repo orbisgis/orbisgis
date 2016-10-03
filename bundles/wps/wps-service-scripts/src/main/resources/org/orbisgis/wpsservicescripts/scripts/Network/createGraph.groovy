@@ -85,7 +85,7 @@ String[] geometricField
         ],
         traducedResumes = [
                 @LanguageString(value = "The tolerance value is used specify the side length of a square Envelope around each node used to snap together other nodes within the same Envelope.", lang = "en"),
-                @LanguageString(value = "La valeur de tolérance est utilisée pour fixer la taille du coté du carré de l'enveloppe autour de chaque noeud pour rassembler les noeuds appartenant à la meme enveloppe.", lang = "fr")
+                @LanguageString(value = "La valeur de tolérance est utilisée pour fixer la taille du coté du carré de l'enveloppe autour de chaque noeud  qui est utilisée pour rassembler les noeuds appartenant à la meme enveloppe.", lang = "fr")
         ])
 Double tolerance 
 
@@ -96,7 +96,7 @@ Double tolerance
         ],
         traducedResumes = [
                 @LanguageString(value = "True if edges should be oriented by the z-value of their first and last coordinates (decreasing).", lang = "en"),
-                @LanguageString(value = "Vrai si les sommets doivent etre orientés selon les valeurs Z de leur première et dernière corrdonnées.", lang = "fr")
+                @LanguageString(value = "Vrai si les sommets doivent etre orientés selon les valeurs Z de leur première et dernière coordonnées.", lang = "fr")
         ],
 	    minOccurs = 0)
 Boolean slope

@@ -70,7 +70,7 @@ String tableName
 @LiteralDataInput(
         traducedTitles = [
                 @LanguageString(value = "Output table name", lang = "en"),
-                @LanguageString(value = "Nom de la table de la sortie", lang = "fr")
+                @LanguageString(value = "Nom de la table de sortie", lang = "fr")
         ],
         traducedResumes = [
                 @LanguageString(value = "Name of the table containing the descriptions.", lang = "en"),
