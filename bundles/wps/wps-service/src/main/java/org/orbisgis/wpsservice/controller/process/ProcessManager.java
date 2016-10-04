@@ -325,8 +325,8 @@ public class ProcessManager {
                     if(((DescriptionTypeAttribute)a).identifier().equals(identifier)){
                         return f;
                     }
-                    if(identifier.endsWith(":input:"+((DescriptionTypeAttribute) a).title().replaceAll("[^a-zA-Z0-9_]", "_")) ||
-                            identifier.endsWith(":output:"+((DescriptionTypeAttribute) a).title().replaceAll("[^a-zA-Z0-9_]", "_"))){
+                    if(identifier.endsWith(":input:"+f.getName()) ||
+                            identifier.endsWith(":output:"+f.getName())){
                         return f;
                     }
                 }
