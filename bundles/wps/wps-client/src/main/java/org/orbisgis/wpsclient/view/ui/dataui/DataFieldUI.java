@@ -222,7 +222,7 @@ public class DataFieldUI implements DataUI{
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
                 String dataFieldStr = dataField.getDataStoreIdentifier().toString();
-                comboBox.setToolTipText(I18N.tr("First configure the DataStore '{0}'.",
+                comboBox.setToolTipText(I18N.tr("First configure the DataStore {0}.",
                         dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1)));
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(comboBox, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
@@ -263,10 +263,10 @@ public class DataFieldUI implements DataUI{
                     else if(split.length == 3){
                         dataFieldStr = split[1]+"."+split[2];
                     }
-                    list.setToolTipText(I18N.tr("First configure the DataField '{0}'", dataFieldStr));
+                    list.setToolTipText(I18N.tr("First configure the DataField {0}", dataFieldStr));
                 }
                 else {
-                    list.setToolTipText(I18N.tr("First configure the DataStore '{0}'",
+                    list.setToolTipText(I18N.tr("First configure the DataStore {0}",
                             dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1)));
                 }
                 ToolTipManager.sharedInstance().mouseMoved(

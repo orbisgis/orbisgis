@@ -240,7 +240,7 @@ public class LocalWpsServerImpl
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
             ProcessIdentifier pi = this.getProcessManager().addScript(f.toURI(), iconName, isRemovable, nodePath);
             if(pi == null) {
-                LOGGER.error(I18N.tr("The process identifier get from the script '{0}' is null.", f.getName()));
+                LOGGER.error(I18N.tr("The process identifier get from the script {0} is null.", f.getName()));
             }
             piList.add(pi);
         }
@@ -268,7 +268,7 @@ public class LocalWpsServerImpl
             File f = new File(pi.getSourceFileURI());
             if(!f.exists()){
                 processManager.removeProcess(pi.getProcessDescriptionType());
-                LOGGER.error(I18N.tr("The script '{0}' does not exist anymore.", f.getAbsolutePath()));
+                LOGGER.error(I18N.tr("The script {0} does not exist anymore.", f.getAbsolutePath()));
                 return false;
             }
             processManager.removeProcess(pi.getProcessDescriptionType());
@@ -353,7 +353,7 @@ public class LocalWpsServerImpl
                 map.put(TABLE_DIMENSION, dimension);
             }
         } catch (SQLException e) {
-            LOGGER.error(I18N.tr("Unable to get the field '{0}.{1}' information.\nCause : {2}.",
+            LOGGER.error(I18N.tr("Unable to get the field {0}.{1} information.\nCause : {2}.",
                     e.getMessage(), tableName, fieldName));
         }
         return map;
@@ -395,7 +395,7 @@ public class LocalWpsServerImpl
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error(I18N.tr("Unable to get the table '{0}' field list.\nCause : {1}.", tableName, e.getMessage()));
+            LOGGER.error(I18N.tr("Unable to get the table {0} field list.\nCause : {1}.", tableName, e.getMessage()));
         }
         return fieldList;
     }
@@ -419,7 +419,7 @@ public class LocalWpsServerImpl
                     tableName,
                     fieldName));
         } catch (SQLException e) {
-            LOGGER.error(I18N.tr("Unable to get the field '{0}.{1}' value list.\nCause : {2}.",
+            LOGGER.error(I18N.tr("Unable to get the field {0}.{1} value list.\nCause : {2}.",
                     tableName, fieldName, e.getMessage()));
         }
         return fieldValues;
@@ -471,7 +471,7 @@ public class LocalWpsServerImpl
                 this.propertiesMap.put(entry.getKey(), entry.getValue());
             }
             else{
-                LOGGER.error(I18N.tr("Unable to set the property '{0}', the name is already used.", entry.getKey()));
+                LOGGER.error(I18N.tr("Unable to set the property {0}, the name is already used.", entry.getKey()));
             }
         }
     }
@@ -486,7 +486,7 @@ public class LocalWpsServerImpl
                 this.propertiesMap.remove(entry.getKey());
             }
             else{
-                LOGGER.error(I18N.tr("Unable to remove the property '{0}', the name protected or not defined.",
+                LOGGER.error(I18N.tr("Unable to remove the property {0}, the name protected or not defined.",
                         entry.getKey()));
             }
         }

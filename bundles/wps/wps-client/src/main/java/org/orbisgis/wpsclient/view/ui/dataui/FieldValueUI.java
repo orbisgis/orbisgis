@@ -291,10 +291,10 @@ public class FieldValueUI implements DataUI{
                     else if(split.length == 4){
                         fieldValueStr = split[1]+"."+split[2]+"."+split[3];
                     }
-                    list.setToolTipText(I18N.tr("First configure the DataField '{0}'.", fieldValueStr));
+                    list.setToolTipText(I18N.tr("First configure the DataField {0}.", fieldValueStr));
                 }
                 else {
-                    list.setToolTipText(I18N.tr("First configure the DataField '{0}'",
+                    list.setToolTipText(I18N.tr("First configure the DataField {0}",
                             fieldValueStr.substring(fieldValueStr.lastIndexOf(":") + 1)));
                 }
                 ToolTipManager.sharedInstance().mouseMoved(

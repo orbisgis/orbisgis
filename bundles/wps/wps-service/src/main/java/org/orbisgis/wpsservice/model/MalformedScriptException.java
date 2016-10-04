@@ -41,7 +41,7 @@ public class MalformedScriptException extends Exception {
      * @param reason Reason why the argument is wrong.
      */
     public MalformedScriptException(Class wpsModelClass, String wrongArgument, String reason){
-        super(I18N.tr("Error on implementing '{0}', the argument '{1}' {2}.",
+        super(I18N.tr("Error on implementing {0}, the argument {1} {2}.",
                 wpsModelClass.getSimpleName(), wrongArgument, reason));
     }
 }
