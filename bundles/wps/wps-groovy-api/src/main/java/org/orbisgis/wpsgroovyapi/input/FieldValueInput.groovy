@@ -43,8 +43,8 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  * The following fields must be defined (mandatory) :
  *  - title : String
  *       Title of the input. Normally available for display to a human.
- *  - dataFieldTitle : String
- *      Title of the dataField.
+ *  - variableReference : String
+ *      Name of the variable of the DataField.
  *
  * The following fields can be defined (optional) :
  *  - traducedTitles : LanguageString[]

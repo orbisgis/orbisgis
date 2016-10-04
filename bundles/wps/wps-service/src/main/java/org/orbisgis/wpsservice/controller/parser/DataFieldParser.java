@@ -50,12 +50,12 @@ public class DataFieldParser implements Parser {
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataStoreUri;
         //If the dataStore attribute is not an URI, autoGenerate one.
-        if(!dataFieldAttribute.dataStoreFieldName().contains(":")) {
-            dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.dataStoreFieldName());
+        if(!dataFieldAttribute.variableReference().contains(":")) {
+            dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.variableReference());
         }
         //else, use it
         else {
-            dataStoreUri = URI.create(dataFieldAttribute.dataStoreFieldName());
+            dataStoreUri = URI.create(dataFieldAttribute.variableReference());
         }
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 
@@ -83,12 +83,12 @@ public class DataFieldParser implements Parser {
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataStoreUri;
         //If the dataStore attribute is not an URI, autoGenerate one.
-        if(!dataFieldAttribute.dataStoreFieldName().contains(":")) {
-            dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.dataStoreFieldName());
+        if(!dataFieldAttribute.variableReference().contains(":")) {
+            dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.variableReference());
         }
         //else, use it
         else {
-            dataStoreUri = URI.create(dataFieldAttribute.dataStoreFieldName());
+            dataStoreUri = URI.create(dataFieldAttribute.variableReference());
         }
         DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
 

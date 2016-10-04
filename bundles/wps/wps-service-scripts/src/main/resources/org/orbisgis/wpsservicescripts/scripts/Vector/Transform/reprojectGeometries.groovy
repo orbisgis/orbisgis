@@ -100,7 +100,7 @@ String inputDataStore
 				@LanguageString(value = "The geometric field of the data source.", lang = "en"),
 				@LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
 		],
-        dataStoreFieldName = "inputDataStore",
+        variableReference = "inputDataStore",
         fieldTypes = ["GEOMETRY"])
 String[] geometricField
 
@@ -115,7 +115,7 @@ String[] geometricField
 				@LanguageString(value = "The spatial reference system identifier.", lang = "en"),
 				@LanguageString(value = "L'identifiant du système de référence spatiale.", lang = "fr")
 		],
-		dataFieldFieldName = "\$public\$spatial_ref_sys\$srid\$",
+		variableReference = "\$public\$spatial_ref_sys\$srid\$",
 		multiSelection = false)
 String[] srid
 
@@ -133,7 +133,7 @@ String[] srid
 		excludedTypes=["GEOMETRY"],
 		multiSelection = true,
 		minOccurs = 0,
-        dataStoreFieldName = "inputDataStore")
+        variableReference = "inputDataStore")
 String[] fieldList
 
 

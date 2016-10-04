@@ -113,7 +113,7 @@ String rightDataStore
 				@LanguageString(value = "The field identifier of the left data source.", lang = "en"),
 				@LanguageString(value = "L'identifiant du/des champ(s) de la source de données gauche.", lang = "fr")
 		],
-        dataStoreFieldName = "leftDataStore",
+        variableReference = "leftDataStore",
         excludedTypes = ["GEOMETRY"])
 String[] leftField
 
@@ -127,7 +127,7 @@ String[] leftField
 				@LanguageString(value = "The field identifier of the right data source.", lang = "en"),
 				@LanguageString(value = "L'identifiant du/des champ(s) de la source de données droite.", lang = "fr")
 		],
-        dataStoreFieldName = "rightDataStore",
+        variableReference = "rightDataStore",
         excludedTypes = ["GEOMETRY"])
 String[] rightField
 

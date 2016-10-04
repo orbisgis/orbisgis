@@ -20,7 +20,7 @@ import java.util.List;
 public class WpsModelTest {
     /** Field containing the DataFieldAttribute annotation. */
     @DataFieldAttribute(
-            dataStoreFieldName = "data store title",
+            variableReference = "data store title",
             fieldTypes = {"GEOMETRY", "NUMBER"},
             excludedTypes = {"MULTILINESTRING", "LONG"},
             multiSelection = true
@@ -232,7 +232,7 @@ public class WpsModelTest {
     /** Field containing the FieldValueAttribute annotation. */
     @FieldValueAttribute(
             multiSelection = true,
-            dataFieldFieldName = "dataFieldTitle"
+            variableReference = "dataFieldTitle"
     )
     public Object fieldValueInput;
 

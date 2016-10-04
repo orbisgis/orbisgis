@@ -38,8 +38,8 @@ import java.lang.annotation.RetentionPolicy
  * It is linked to a DataStore and its allowed types can be specified.
  *
  * The following fields must be defined (mandatory) :
- *  - dataStoreTitle : String
- *      The title of the DataStore.
+ *  - variableReference : String
+ *      Name of the variable of the DataStore.
  *
  * The following fields can be defined (optional) :
  *  - fieldTypes : String[]
@@ -54,8 +54,8 @@ import java.lang.annotation.RetentionPolicy
 @Retention(RetentionPolicy.RUNTIME)
 @interface DataFieldAttribute {
 
-    /** Title of the DataStore.*/
-    String dataStoreFieldName()
+    /** Name of the variable of the DataStore.*/
+    String variableReference()
 
     /** Array of the type allowed for the data field. If no types are specified, accept all.*/
     String[] fieldTypes() default []

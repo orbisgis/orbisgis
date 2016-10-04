@@ -123,7 +123,7 @@ String inputDataStore
                 @LanguageString(value = "The geometric field of the data source.", lang = "en"),
                 @LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
         ],
-        dataStoreFieldName = "inputDataStore",
+        variableReference = "inputDataStore",
         fieldTypes = ["GEOMETRY"])
 String[] geometricField
 
@@ -137,7 +137,7 @@ String[] geometricField
                 @LanguageString(value = "A numeric field to specify the size of the buffer.", lang = "en"),
                 @LanguageString(value = "Champ numérique contenant les tailles de tampon.", lang = "fr")
         ],
-        dataStoreFieldName = "inputDataStore",
+        variableReference = "inputDataStore",
         fieldTypes = ["DOUBLE", "INTEGER", "LONG"])
 String[] bufferSize
 
@@ -210,7 +210,7 @@ String joinStyle
         excludedTypes=["GEOMETRY"],
         multiSelection = true,
         minOccurs = 0,
-        dataStoreFieldName = "inputDataStore")
+        variableReference = "inputDataStore")
 String[] fieldList
 
 
