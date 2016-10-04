@@ -8,8 +8,6 @@ import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-import org.xnap.commons.i18n.I18n
-import org.xnap.commons.i18n.I18nFactory
 
 /********************/
 /** Process method **/
@@ -125,7 +123,7 @@ String inputDataStore
                 @LanguageString(value = "The geometric field of the data source.", lang = "en"),
                 @LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
         ],
-        dataStoreFieldName = "inputDataStore",
+        variableReference = "inputDataStore",
         fieldTypes = ["GEOMETRY"])
 String geometricField
 
@@ -210,7 +208,7 @@ String joinStyle
         excludedTypes=["GEOMETRY"],
         multiSelection = true,
         minOccurs = 0,
-        dataStoreFieldName = "inputDataStore")
+        variableReference = "inputDataStore")
 String[] fieldList
 
 

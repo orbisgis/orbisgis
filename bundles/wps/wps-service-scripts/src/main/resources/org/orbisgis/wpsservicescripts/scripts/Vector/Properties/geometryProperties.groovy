@@ -132,7 +132,7 @@ String inputDataStore
                 @LanguageString(value = "The geometric field of the data source.", lang = "en"),
                 @LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
         ],
-        dataStoreFieldName = "inputDataStore",
+        variableReference = "inputDataStore",
         fieldTypes = ["GEOMETRY"])
 String[] geometricField
 
@@ -147,7 +147,7 @@ String[] geometricField
                 @LanguageString(value = "Le champ utilisé comme identifiant.", lang = "fr")
         ],
 	    excludedTypes=["GEOMETRY"],
-        dataStoreFieldName = "inputDataStore")
+        variableReference = "inputDataStore")
 String[] idField
 
 @EnumerationInput(

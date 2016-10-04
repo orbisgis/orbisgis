@@ -90,7 +90,7 @@ String inputDataStore
 				@LanguageString(value = "The geometric field of the data source.", lang = "en"),
 				@LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
 		],
-		dataStoreFieldName = "inputDataStore",
+		variableReference = "inputDataStore",
         fieldTypes = ["GEOMETRY"])
 String[] geometricField
 
@@ -104,7 +104,7 @@ String[] geometricField
 				@LanguageString(value = "A numeric field to specify the height of the polygon.", lang = "en"),
 				@LanguageString(value = "Le champ de valeurs numériques définissant la hauteur du polygone.", lang = "fr")
 		],
-        dataStoreFieldName = "inputDataStore",
+        variableReference = "inputDataStore",
         fieldTypes = ["DOUBLE", "INTEGER", "LONG"])
 String[] height
 
@@ -121,7 +121,7 @@ String[] height
 		excludedTypes=["GEOMETRY"],
 		multiSelection = true,
 		minOccurs = 0,
-        dataStoreFieldName = "inputDataStore")
+        variableReference = "inputDataStore")
 String[] fieldList
 
 

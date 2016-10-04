@@ -117,7 +117,7 @@ String tableName
                 @LanguageString(value = "The field concerned by the value insertion.", lang = "en"),
                 @LanguageString(value = "Les champs concernés par les insertions de valeurs.", lang = "fr")
         ],
-        dataStoreFieldName = "tableName",
+        variableReference = "tableName",
         multiSelection = true,
         minOccurs = 0)
 String[] fieldList

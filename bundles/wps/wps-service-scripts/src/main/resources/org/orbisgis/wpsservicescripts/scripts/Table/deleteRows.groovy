@@ -81,7 +81,7 @@ String tableName
                 @LanguageString(value = "The primary key field.", lang = "en"),
                 @LanguageString(value = "Le champ de la clef primaire.", lang = "fr")
         ],
-        dataStoreFieldName = "tableName")
+        variableReference = "tableName")
 String[] pkField
 
 /** List of primary keys to remove from the table. */
@@ -94,7 +94,7 @@ String[] pkField
                 @LanguageString(value = "The array of the primary keys of the rows to remove.", lang = "en"),
                 @LanguageString(value = "La liste des clefs primaires dont les lignes sont à supprimer.", lang = "fr")
         ],
-        dataFieldFieldName = "pkField",
+        variableReference = "pkField",
         multiSelection = true)
 String[] pkToRemove
 
