@@ -81,7 +81,7 @@ def processing() {
 		traducedResumes = [
 				@LanguageString(value = "The spatial data source to be reprojected.", lang = "en"),
 				@LanguageString(value = "La source de données spatiales pour la reprojection.", lang = "fr")
-		]
+		],
 		dataStoreTypes = ["GEOMETRY"])
 String inputDataStore
 
@@ -145,7 +145,7 @@ String[] fieldList
 		traducedResumes = [
 				@LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
 				@LanguageString(value = "Nom de la table contenant les résultats du traitement.", lang = "fr")
-		]
+		])
 String outputTableName
 
 /*****************/

@@ -135,21 +135,21 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
         if(localWpsService != null){
             //Default method to load the scripts
             String[] icons = new String[]{loadIcon("orbisgis.png")};
-            customLoadScript("scripts/IO/csvToPointLayer.groovy", icons, I18N.tr("OrbisGIS/IO"));
-            customLoadScript("scripts/Network/createGraph.groovy", icons, I18N.tr("OrbisGIS/Network"));
-            customLoadScript("scripts/Table/deleteRows.groovy", icons, I18N.tr("OrbisGIS/Table"));
-            customLoadScript("scripts/Table/describeColumns.groovy", icons, I18N.tr("OrbisGIS/Table"));
-            customLoadScript("scripts/Table/insertValues.groovy", icons, I18N.tr("OrbisGIS/Table"));
-            customLoadScript("scripts/Table/joinTables.groovy", icons, I18N.tr("OrbisGIS/Table"));
-            customLoadScript("scripts/Vector/Convert/extractCenter.groovy", icons, I18N.tr("OrbisGIS/Vector/Convert"));
-            customLoadScript("scripts/Vector/Create/createGridOfPoints.groovy", icons, I18N.tr("OrbisGIS/Vector/Create"));
-            customLoadScript("scripts/Vector/Create/createGridOfPolygons.groovy", icons, I18N.tr("OrbisGIS/Vector/Create"));
-            customLoadScript("scripts/Vector/Create/fixedExtrudePolygons.groovy", icons, I18N.tr("OrbisGIS/Vector/Create"));
-            customLoadScript("scripts/Vector/Create/variableExtrudePolygons.groovy", icons, I18N.tr("OrbisGIS/Vector/Create"));
-            customLoadScript("scripts/Vector/Operators/fixedDistanceBuffer.groovy", icons, I18N.tr("OrbisGIS/Vector/Operators"));
-            customLoadScript("scripts/Vector/Operators/variableDistanceBuffer.groovy", icons, I18N.tr("OrbisGIS/Vector/Operators"));
-            customLoadScript("scripts/Vector/Properties/geometryProperties.groovy", icons, I18N.tr("OrbisGIS/Vector/Properties"));
-            customLoadScript("scripts/Vector/Transform/reprojectGeometries.groovy", icons, I18N.tr("OrbisGIS/Vector/Transform"));
+            customLoadScript("scripts/IO/csvToPointLayer.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("IO"));
+            customLoadScript("scripts/Network/createGraph.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Network"));
+            customLoadScript("scripts/Table/deleteRows.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
+            customLoadScript("scripts/Table/describeColumns.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
+            customLoadScript("scripts/Table/insertValues.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
+            customLoadScript("scripts/Table/joinTables.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
+            customLoadScript("scripts/Vector/Convert/extractCenter.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Convert"));
+            customLoadScript("scripts/Vector/Create/createGridOfPoints.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Create"));
+            customLoadScript("scripts/Vector/Create/createGridOfPolygons.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Create"));
+            customLoadScript("scripts/Vector/Create/fixedExtrudePolygons.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Create"));
+            customLoadScript("scripts/Vector/Create/variableExtrudePolygons.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Create"));
+            customLoadScript("scripts/Vector/Operators/fixedDistanceBuffer.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Operators"));
+            customLoadScript("scripts/Vector/Operators/variableDistanceBuffer.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Operators"));
+            customLoadScript("scripts/Vector/Properties/geometryProperties.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Properties"));
+            customLoadScript("scripts/Vector/Transform/reprojectGeometries.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Transform"));
 
             //Check the WpsClient
             if(wpsClient != null){
