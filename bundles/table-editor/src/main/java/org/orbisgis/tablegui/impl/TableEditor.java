@@ -590,12 +590,19 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 int viewColId = popupCellAdress.x;
                 int viewRowId = popupCellAdress.y;
                 int colId = table.convertColumnIndexToModel(viewColId);
-                int rowId = table.convertRowIndexToModel(viewRowId);
-                //
+                int rowId = table.convertRowIndexToModel(viewRowId);            
                 //Build the appropriate search filter
-                String cellValue = tableModel.getValueAt(rowId, colId).toString();
-                DefaultActiveFilter filter = new FieldsContainsFilterFactory.
-                        FilterParameters(colId, cellValue, true, true);
+                Object value = tableModel.getValueAt(rowId, colId);        
+                DefaultActiveFilter filter = null;
+                if(value==null){
+                    WhereSQLFilterFactory whereSQLFilterFactory = new WhereSQLFilterFactory();
+                    filter = whereSQLFilterFactory.getDefaultFilterValue();
+                    filter.setCurrentFilterValue(tableModel.getColumnName(colId) + " is null");  
+                }
+                else{
+                 filter = new FieldsContainsFilterFactory.
+                        FilterParameters(colId,  value.toString(), true, true);
+                }
                 //Clear current filter
                 filterManager.clearFilters();
                 //Add the find filter

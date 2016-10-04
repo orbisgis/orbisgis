@@ -28,16 +28,9 @@
  */
 package org.orbisgis.tablegui.impl.filters;
 
-import org.h2gis.utilities.TableLocation;
-import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.corejdbc.ReadRowSet;
-import org.orbisgis.corejdbc.common.IntegerUnion;
-import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactory;
-import org.orbisgis.sif.edition.EditableElementException;
-import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +53,12 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
+import org.h2gis.utilities.TableLocation;
+import org.orbisgis.commons.progress.ProgressMonitor;
+import org.orbisgis.corejdbc.ReadRowSet;
+import org.orbisgis.corejdbc.common.LongUnion;
+import org.orbisgis.sif.edition.EditableElementException;
+import org.orbisgis.tablegui.api.TableEditableElement;
 
 /**
  * Table extended filter using SQL where request
@@ -69,6 +68,9 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
     public static final String FACTORY_ID  ="WhereSQLFilterFactory";
     private final static I18n I18N = I18nFactory.getI18n(WhereSQLFilterFactory.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(WhereSQLFilterFactory.class);
+
+   
+
     /** Map Table primary key to the row id of regular select * from mytable */
 
     @Override
@@ -110,8 +112,14 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
                 EventHandler.create(ActionListener.class,whereText,
                         "postActionEvent"));
         return textAndButton;
-    }
-    private static class SQLFilter implements TableSelectionFilter {
+    }   
+    
+    
+    /**
+     * A class to build a SQL filter
+     */
+    public static class SQLFilter implements TableSelectionFilter {
+
         private Set<Integer> filteredRows;
         String whereText;
 
@@ -125,29 +133,29 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
         }
 
         @Override
-        public void initialize(ProgressMonitor progress, TableEditableElement source) throws SQLException{
+        public void initialize(ProgressMonitor progress, TableEditableElement source) throws SQLException {
             progress.setTaskName(I18N.tr("Run filter by sql request"));
             // If the table hold a PK then do the find task on the server side
-            try(Connection connection = source.getDataManager().getDataSource().getConnection();
-                Statement st = connection.createStatement()) {
+            try (Connection connection = source.getDataManager().getDataSource().getConnection();
+                    Statement st = connection.createStatement()) {
                 PropertyChangeListener cancelListener = EventHandler.create(PropertyChangeListener.class, st, "cancel");
                 progress.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelListener);
-                try{
+                try {
                     String tablePk = source.getRowSet().getPkName();
-                    if(!tablePk.isEmpty()) {
+                    if (!tablePk.isEmpty()) {
                         final ReadRowSet rowSet = source.getRowSet();
                         StringBuilder request = new StringBuilder(String.format("SELECT %s FROM %s WHERE %s",
                                 TableLocation.quoteIdentifier(tablePk),
                                 source.getTableReference(), whereText));
-                        LOGGER.info(I18N.tr("Find field value with the following request:\n{0}",request.toString()));
+                        LOGGER.info(I18N.tr("Find field value with the following request:\n{0}", request.toString()));
                         SortedSet<Long> selectionPk = new LongUnion();
-                        try(ResultSet rs = st.executeQuery(request.toString())) {
-                            while(rs.next()) {
+                        try (ResultSet rs = st.executeQuery(request.toString())) {
+                            while (rs.next()) {
                                 selectionPk.add(rs.getLong(1));
                             }
                         }
                         filteredRows = new HashSet<>();
-                        for(int oneBasedRowId : rowSet.getRowNumberFromRowPk(selectionPk)) {
+                        for (int oneBasedRowId : rowSet.getRowNumberFromRowPk(selectionPk)) {
                             filteredRows.add(oneBasedRowId - 1);
                         }
                     }
@@ -159,4 +167,5 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
             }
         }
     }
+    
 }
