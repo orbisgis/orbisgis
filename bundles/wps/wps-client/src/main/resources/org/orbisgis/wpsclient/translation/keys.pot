@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-29 13:25+0200\n"
+"POT-Creation-Date: 2016-10-04 09:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -200,44 +200,44 @@ msgstr ""
 msgid "Process cancelled by the user"
 msgstr ""
 
-#: org/orbisgis/wpsclient/WpsClientImpl.java:117
+#: org/orbisgis/wpsclient/WpsClientImpl.java:114
 msgid "ToolBox"
 msgstr ""
 
-#: org/orbisgis/wpsclient/WpsClientImpl.java:128
+#: org/orbisgis/wpsclient/WpsClientImpl.java:125
 msgid "Refresh the selected node."
 msgstr ""
 
-#: org/orbisgis/wpsclient/WpsClientImpl.java:166
+#: org/orbisgis/wpsclient/WpsClientImpl.java:163
 #, java-format
 msgid ""
 "Unable to create the marshall objects.\n"
 "Cause : {0}."
 msgstr ""
 
-#: org/orbisgis/wpsclient/WpsClientImpl.java:176
+#: org/orbisgis/wpsclient/WpsClientImpl.java:173
 #, java-format
 msgid ""
 "Unable to marshall the request object : '{0}'.\n"
 "Cause : {1}."
 msgstr ""
 
-#: org/orbisgis/wpsclient/WpsClientImpl.java:191
+#: org/orbisgis/wpsclient/WpsClientImpl.java:188
 #, java-format
 msgid ""
 "Unable to marshall the answer xml.\n"
 "Cause : {0}."
 msgstr ""
 
-#: org/orbisgis/wpsclient/WpsClientImpl.java:302
-#: org/orbisgis/wpsclient/WpsClientImpl.java:316
+#: org/orbisgis/wpsclient/WpsClientImpl.java:300
+#: org/orbisgis/wpsclient/WpsClientImpl.java:314
 msgid "Add a source"
 msgstr ""
 
-#: org/orbisgis/wpsclient/WpsClientImpl.java:373
+#: org/orbisgis/wpsclient/WpsClientImpl.java:371
 msgid "Unable to retrieve the process '{0}'."
 msgstr ""
 
-#: org/orbisgis/wpsclient/WpsClientImpl.java:397
+#: org/orbisgis/wpsclient/WpsClientImpl.java:395
 msgid "The process '{0}' is already open."
 msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-29 11:18+0200\n"
+"POT-Creation-Date: 2016-10-04 09:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,42 +18,72 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:138
-msgid "OrbisGIS/IO"
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:139
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:140
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:141
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:142
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:143
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:144
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:145
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:146
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:147
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:148
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:149
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:150
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:151
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:152
+msgid "OrbisGIS"
+msgstr ""
+
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:138
+msgid "IO"
 msgstr ""
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:139
-msgid "OrbisGIS/Network"
+msgid "Network"
 msgstr ""
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:140
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:141
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:142
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:143
-msgid "OrbisGIS/Table"
+msgid "Table"
 msgstr ""
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:144
-msgid "OrbisGIS/Vector/Convert"
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:145
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:146
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:147
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:148
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:149
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:150
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:151
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:152
+msgid "Vector"
+msgstr ""
+
+#: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:144
+msgid "Convert"
 msgstr ""
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:145
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:146
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:147
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:148
-msgid "OrbisGIS/Vector/Create"
+msgid "Create"
 msgstr ""
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:149
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:150
-msgid "OrbisGIS/Vector/Operators"
+msgid "Operators"
 msgstr ""
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:151
-msgid "OrbisGIS/Vector/Properties"
+msgid "Properties"
 msgstr ""
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:152
-msgid "OrbisGIS/Vector/Transform"
+msgid "Transform"
 msgstr ""
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:162
