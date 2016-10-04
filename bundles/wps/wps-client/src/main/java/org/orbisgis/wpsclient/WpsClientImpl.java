@@ -170,7 +170,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
             marshaller.marshal(request, out);
         } catch (JAXBException e) {
             LoggerFactory.getLogger(WpsClient.class).error(
-                    I18N.tr("Unable to marshall the request object : '{0}'.\nCause : {1}.",
+                    I18N.tr("Unable to marshall the request object : {0}.\nCause : {1}.",
                             request.getClass().getName(), e.getMessage()));
             return null;
         }
@@ -368,7 +368,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         //Get the list of ProcessOffering
         List<ProcessOffering> listProcess = getProcessOffering(scriptIdentifier);
         if(listProcess == null || listProcess.isEmpty()){
-            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("Unable to retrieve the process '{0}'.",
+            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("Unable to retrieve the process {0}.",
                     scriptIdentifier.getValue()));
             return null;
         }
@@ -392,7 +392,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
             openEditorList.add(pe);
         }
         else{
-            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("The process '{0}' is already open.",
+            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("The process {0} is already open.",
                     pee.getProcess().getTitle().get(0).getValue()));
         }
         return pee;

@@ -114,7 +114,7 @@ public class ProcessWorker implements Runnable {
                 job.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
             }
             else{
-                LOGGER.error(I18N.tr("Error on execution the WPS  process '{0}'.\nCause : {1}.",
+                LOGGER.error(I18N.tr("Error on execution the WPS  process {0}.\nCause : {1}.",
                         process.getTitle(),e.getMessage()));
             }
             for(DescriptionType inputOrOutput : process.getInput()){

@@ -119,7 +119,7 @@ public class ProcessManager {
                     }
                 }
             } catch (MalformedScriptException e) {
-                LOGGER.error(I18N.tr("Unable to parse the process '{0}'.", scriptUri), e);
+                LOGGER.error(I18N.tr("Unable to parse the process {0}.", scriptUri), e);
             }
             //If the process is not already registered
             if(processOffering != null) {

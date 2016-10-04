@@ -51,11 +51,11 @@ public class GeometryProcessing implements DataProcessing {
                     geometry = new WKTReader().read(str);
                 } catch (ParseException e) {
                     if(pel != null) {
-                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Unable to parse the string '{0}'" +
+                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Unable to parse the string {0}" +
                                 " into Geometry.", str));
                     }
                     else{
-                        LOGGER.error("Unable to parse the string '{0}' into Geometry.", str);
+                        LOGGER.error("Unable to parse the string {0} into Geometry.", str);
                     }
                     dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
                     return null;
@@ -70,11 +70,11 @@ public class GeometryProcessing implements DataProcessing {
                 }
                 if(!flag){
                     if(pel != null) {
-                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry '{0}' type is not" +
-                                " accepted ('{1}' not allowed).", input.getTitle(), geometry.getGeometryType()));
+                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry {0} type is not" +
+                                " accepted ({1} not allowed).", input.getTitle(), geometry.getGeometryType()));
                     }
                     else{
-                        LOGGER.error(I18N.tr("The geometry '{0}' type is not accepted ('{1}' not allowed).",
+                        LOGGER.error(I18N.tr("The geometry {0} type is not accepted ({1} not allowed).",
                                 input.getTitle(), geometry.getGeometryType()));
                     }
                     dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
@@ -89,11 +89,11 @@ public class GeometryProcessing implements DataProcessing {
                 }
                 if(!flag){
                     if(pel != null) {
-                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry '{0}' type is not" +
-                                " accepted ('{1}' not allowed).", input.getTitle(), geometry.getGeometryType()));
+                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry {0} type is not" +
+                                " accepted ({1} not allowed).", input.getTitle(), geometry.getGeometryType()));
                     }
                     else{
-                        LOGGER.error(I18N.tr("The geometry '{0}' type is not accepted ('{1}' not allowed).",
+                        LOGGER.error(I18N.tr("The geometry {0} type is not accepted ({1} not allowed).",
                                 input.getTitle(), geometry.getGeometryType()));
                     }
                     dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
@@ -103,12 +103,12 @@ public class GeometryProcessing implements DataProcessing {
                 if((geometryData.getDimension() == 2 && !Double.isNaN(geometry.getCoordinate().z)) ||
                         (geometryData.getDimension() == 3 && Double.isNaN(geometry.getCoordinate().z))){
                     if(pel != null) {
-                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry '{0}' has not a " +
-                        "wrong dimension (should be '{1}').", input.getTitle(), geometryData.getDimension()));
+                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry {0} has not a " +
+                        "wrong dimension (should be {1}).", input.getTitle(), geometryData.getDimension()));
                     }
                     else{
 
-                        LOGGER.error(I18N.tr("The geometry '{0}' has not a wrong dimension (should be '{1}').",
+                        LOGGER.error(I18N.tr("The geometry {0} has not a wrong dimension (should be {1}).",
                                 input.getTitle(), geometryData.getDimension()));
                     }
                     dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
@@ -149,11 +149,11 @@ public class GeometryProcessing implements DataProcessing {
                     }
                     if (!flag) {
                         if(pel != null) {
-                            pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry '{0}' type is not" +
-                                    " accepted ('{1}' not allowed).", input.getTitle(), geometry.getGeometryType()));
+                            pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry {0} type is not" +
+                                    " accepted ({1} not allowed).", input.getTitle(), geometry.getGeometryType()));
                         }
                         else{
-                            LOGGER.error(I18N.tr("The geometry '{0}' type is not accepted ('{1}' not allowed).",
+                            LOGGER.error(I18N.tr("The geometry {0} type is not accepted ({1} not allowed).",
                                     input.getTitle(), geometry.getGeometryType()));
                         }
                         dataMap.put(URI.create(input.getIdentifier().getValue()), null);
@@ -168,11 +168,11 @@ public class GeometryProcessing implements DataProcessing {
                     }
                     if (!flag) {
                         if(pel != null) {
-                            pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry '{0}' type is not" +
-                                    " accepted ('{1}' not allowed).", input.getTitle(), geometry.getGeometryType()));
+                            pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry {0} type is not" +
+                                    " accepted ({1} not allowed).", input.getTitle(), geometry.getGeometryType()));
                         }
                         else{
-                            LOGGER.error(I18N.tr("The geometry '{0}' type is not accepted ('{1}' not allowed).",
+                            LOGGER.error(I18N.tr("The geometry {0} type is not accepted ({1} not allowed).",
                                     input.getTitle(), geometry.getGeometryType()));
                         }
                         dataMap.put(URI.create(input.getIdentifier().getValue()), null);
@@ -183,10 +183,10 @@ public class GeometryProcessing implements DataProcessing {
                     if(wkt == null || wkt.isEmpty()){
                         if(pel != null) {
                             pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Unable to read the geometry" +
-                                    " '{0}'.", output.getTitle()));
+                                    " {0}.", output.getTitle()));
                         }
                         else{
-                            LOGGER.error(I18N.tr("Unable to read the geometry '{0}'.", output.getTitle()));
+                            LOGGER.error(I18N.tr("Unable to read the geometry {0}.", output.getTitle()));
                         }
                         dataMap.put(URI.create(input.getIdentifier().getValue()), null);
                         return;
@@ -194,7 +194,7 @@ public class GeometryProcessing implements DataProcessing {
                     dataMap.put(URI.create(input.getIdentifier().getValue()), wkt);
 
                     if(pel != null) {
-                        pel.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Output geometry '{0}' is '{1}'.",
+                        pel.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Output geometry {0} is {1}.",
                                 output.getTitle(), wkt));
                     }
                 }
