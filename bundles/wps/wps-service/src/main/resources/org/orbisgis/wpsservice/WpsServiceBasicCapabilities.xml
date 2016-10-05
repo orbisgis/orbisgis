@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns3:Capabilities xmlns:ns1="http://www.opengis.net/ows/2.0" xmlns:ns2="http://www.w3.org/1999/xlink" xmlns:ns3="http://www.opengis.net/wps/2.0" xmlns:ns5="http://orbisgis.org" service="WPS" version="2.0.0">
     <ns1:ServiceIdentification>
-        <ns1:Title xml:lang="en">OrbisGIS Local WPS</ns1:Title>
+        <ns1:Title xml:lang="en">OrbisGIS Local WPS Service</ns1:Title>
         <ns1:Abstract xml:lang="en">OrbisGIS local instance of the WPS Service</ns1:Abstract>
         <ns1:Keywords>
             <ns1:Keyword xml:lang="en">Toolbox</ns1:Keyword>
@@ -14,14 +14,16 @@
         </ns1:Keywords>
         <ns1:ServiceType>WPS</ns1:ServiceType>
         <ns1:ServiceTypeVersion>2.0.0</ns1:ServiceTypeVersion>
+        <ns1:Fees>NONE</ns1:Fees>
+        <ns1:AccessConstraints>NONE</ns1:AccessConstraints>
     </ns1:ServiceIdentification>
     <ns1:ServiceProvider>
-        <ns1:ProviderName>ORBISGIS</ns1:ProviderName>
+        <ns1:ProviderName>OrbisGIS</ns1:ProviderName>
         <ns1:ProviderSite ns2:href="http://orbisgis.org/"/>
         <ns1:ServiceContact>
             <ns1:ContactInfo>
                 <ns1:Address>
-                    <ns1:ElectronicMailAddress>info@orbisgis.org</ns1:ElectronicMailAddress>
+                    <ns1:ElectronicMailAddress>info_at_orbisgis.org</ns1:ElectronicMailAddress>
                 </ns1:Address>
             </ns1:ContactInfo>
         </ns1:ServiceContact>
@@ -67,5 +69,16 @@
                 </ns1:HTTP>
             </ns1:DCP>
         </ns1:Operation>
+        <ns1:Operation name="Dismiss">
+            <ns1:DCP>
+                <ns1:HTTP>
+                    <ns1:Get ns2:href="http://orbisgis.org/wps"/>
+                    <ns1:Post ns2:href="http://orbisgis.org/wps"/>
+                </ns1:HTTP>
+            </ns1:DCP>
+        </ns1:Operation>
     </ns1:OperationsMetadata>
+    <ns1:Languages>
+        <ns1:Language>en</ns1:Language>
+    </ns1:Languages>
 </ns3:Capabilities>

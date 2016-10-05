@@ -26,6 +26,7 @@ import net.opengis.wps._2_0.*;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsservice.LocalWpsServer;
+import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
 import org.orbisgis.wpsservice.controller.utils.CancelClosure;
 import org.orbisgis.wpsservice.controller.utils.WpsSql;
@@ -35,6 +36,8 @@ import org.orbisgis.wpsservice.model.Enumeration;
 import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -57,14 +60,16 @@ public class ProcessManager {
     /** Controller used to parse process */
     private ParserController parserController;
     private DataSourceService dataSourceService;
-    private LocalWpsServer wpsService;
+    private WpsServer wpsService;
     private Map<UUID, CancelClosure> closureMap;
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessManager.class);
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(ProcessManager.class);
 
     /**
      * Main constructor.
      */
-    public ProcessManager(DataSourceService dataSourceService, LocalWpsServer wpsService){
+    public ProcessManager(DataSourceService dataSourceService, WpsServer wpsService){
         processIdList = new ArrayList<>();
         parserController = new ParserController();
         this.dataSourceService = dataSourceService;
@@ -75,7 +80,7 @@ public class ProcessManager {
     public ProcessIdentifier addScript(URI scriptUri, String[] category, boolean isRemovable, String nodePath){
         File f = new File(scriptUri);
         if(!f.exists()){
-            LOGGER.error("The script file doesn't exists.");
+            LOGGER.error(I18N.tr("The script file doesn't exists."));
             return null;
         }
         //Test that the script name is not only '.groovy'
@@ -85,34 +90,36 @@ public class ProcessManager {
             ProcessOffering processOffering = null;
             try {
                 processOffering = parserController.parseProcess(f.getAbsolutePath());
-                MetadataType isRemovableMetadata = new MetadataType();
-                isRemovableMetadata.setTitle(LocalWpsServer.ProcessProperty.IS_REMOVABLE.name());
-                isRemovableMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
-                isRemovableMetadata.setAbstractMetaData(isRemovable);
-                processOffering.getProcess().getMetadata().add(isRemovableMetadata);
-                if(nodePath != null) {
-                    MetadataType nodePathMetadata = new MetadataType();
-                    nodePathMetadata.setTitle(LocalWpsServer.ProcessProperty.NODE_PATH.name());
-                    nodePathMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
-                    nodePathMetadata.setAbstractMetaData(nodePath);
-                    processOffering.getProcess().getMetadata().add(nodePathMetadata);
-                }
-                if(category != null) {
-                    MetadataType iconArrayMetadata = new MetadataType();
-                    iconArrayMetadata.setTitle(LocalWpsServer.ProcessProperty.ICON_ARRAY.name());
-                    iconArrayMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
-                    String iconString = "";
-                    for (String icon : category) {
-                        if (!iconString.isEmpty()) {
-                            iconString += ";";
-                        }
-                        iconString += icon;
+                if(processOffering != null){
+                    MetadataType isRemovableMetadata = new MetadataType();
+                    isRemovableMetadata.setTitle(LocalWpsServer.ProcessProperty.IS_REMOVABLE.name());
+                    isRemovableMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
+                    isRemovableMetadata.setAbstractMetaData(isRemovable);
+                    processOffering.getProcess().getMetadata().add(isRemovableMetadata);
+                    if(nodePath != null) {
+                        MetadataType nodePathMetadata = new MetadataType();
+                        nodePathMetadata.setTitle(LocalWpsServer.ProcessProperty.NODE_PATH.name());
+                        nodePathMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
+                        nodePathMetadata.setAbstractMetaData(nodePath);
+                        processOffering.getProcess().getMetadata().add(nodePathMetadata);
                     }
-                    iconArrayMetadata.setAbstractMetaData(iconString);
-                    processOffering.getProcess().getMetadata().add(iconArrayMetadata);
+                    if(category != null) {
+                        MetadataType iconArrayMetadata = new MetadataType();
+                        iconArrayMetadata.setTitle(LocalWpsServer.ProcessProperty.ICON_ARRAY.name());
+                        iconArrayMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
+                        String iconString = "";
+                        for (String icon : category) {
+                            if (!iconString.isEmpty()) {
+                                iconString += ";";
+                            }
+                            iconString += icon;
+                        }
+                        iconArrayMetadata.setAbstractMetaData(iconString);
+                        processOffering.getProcess().getMetadata().add(iconArrayMetadata);
+                    }
                 }
             } catch (MalformedScriptException e) {
-                LoggerFactory.getLogger(ProcessManager.class).error("Unable to parse the process '"+scriptUri+"'.", e);
+                LOGGER.error(I18N.tr("Unable to parse the process {0}.", scriptUri), e);
             }
             //If the process is not already registered
             if(processOffering != null) {
@@ -145,24 +152,34 @@ public class ProcessManager {
 
     /**
      * Execute the given process with the given data.
+     * @param jobId UUID of the job to execute.
      * @param processIdentifier ProcessIdentifier of the process to execute.
      * @param dataMap Map containing the data for the process.
+     * @param propertiesMap Map containing the properties for the GroovyObject.
      * @return The groovy object on which the 'processing' method will be called.
      */
-    public GroovyObject executeProcess(UUID jobId, ProcessIdentifier processIdentifier, Map<URI, Object> dataMap){
+    public GroovyObject executeProcess(
+            UUID jobId,
+            ProcessIdentifier processIdentifier,
+            Map<URI, Object> dataMap,
+            Map<String, Object> propertiesMap){
+
         ProcessDescriptionType process = processIdentifier.getProcessDescriptionType();
         Class clazz = parserController.getProcessClass(processIdentifier.getSourceFileURI());
         GroovyObject groovyObject = createProcess(process, clazz, dataMap);
         if(groovyObject != null) {
+            CancelClosure closure = new CancelClosure(this);
+            closureMap.put(jobId, closure);
             if (dataSourceService != null) {
                 WpsSql sql = new WpsSql(dataSourceService);
-                CancelClosure closure = new CancelClosure(this);
-                closureMap.put(jobId, closure);
                 sql.withStatement(closure);
                 groovyObject.setProperty("sql", sql);
+                groovyObject.setProperty("isH2", wpsService.getDatabase().equals(WpsServer.Database.H2));
             }
             groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
-            groovyObject.setProperty("isH2", wpsService.isH2());
+            for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
+                groovyObject.setProperty(entry.getKey(), entry.getValue());
+            }
             groovyObject.invokeMethod("processing", null);
             retrieveData(process, clazz, groovyObject, dataMap);
         }
@@ -248,8 +265,7 @@ public class ProcessManager {
                                 data = valueOf.invoke(this, data.toString());
                             }
                         } catch (NoSuchMethodException | InvocationTargetException e) {
-                            LoggerFactory.getLogger(ProcessManager.class)
-                                    .warn("Unable to convert the LiteralData to the good script type");
+                            LOGGER.warn(I18N.tr("Unable to convert the LiteralData to the good script type."));
                         }
                     }
                     f.set(groovyObject, data);
@@ -309,8 +325,8 @@ public class ProcessManager {
                     if(((DescriptionTypeAttribute)a).identifier().equals(identifier)){
                         return f;
                     }
-                    if(identifier.endsWith(":input:"+((DescriptionTypeAttribute) a).title().replaceAll("[^a-zA-Z0-9_]", "_")) ||
-                            identifier.endsWith(":output:"+((DescriptionTypeAttribute) a).title().replaceAll("[^a-zA-Z0-9_]", "_"))){
+                    if(identifier.endsWith(":input:"+f.getName()) ||
+                            identifier.endsWith(":output:"+f.getName())){
                         return f;
                     }
                 }

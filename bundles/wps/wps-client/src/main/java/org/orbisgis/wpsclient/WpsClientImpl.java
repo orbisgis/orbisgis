@@ -42,8 +42,7 @@ import org.orbisgis.wpsclient.view.utils.editor.log.LogEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.log.LogEditor;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
-import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
-import org.orbisgis.wpsservice.JaxbContainer;
+import org.orbisgis.wpsservice.model.JaxbContainer;
 import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.model.DataField;
 import org.orbisgis.wpsservice.model.DataStore;
@@ -53,21 +52,19 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.beans.EventHandler;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import javax.swing.*;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
-import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -79,9 +76,11 @@ import java.util.concurrent.ExecutorService;
 
 @Component(immediate = true, service = {DockingPanel.class, WpsClient.class})
 public class WpsClientImpl implements DockingPanel, WpsClient {
-    public static final String LANG = "en";
+    public static final String LANG = Locale.getDefault().toString();
     /** String reference of the ToolBox used for DockingFrame. */
     public static final String TOOLBOX_REFERENCE = "orbistoolbox";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(WpsClientImpl.class);
 
     /** Docking parameters used by DockingFrames. */
     private DockingPanelParameters parameters;
@@ -112,7 +111,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         dataUIManager = new DataUIManager(this);
 
         parameters = new DockingPanelParameters();
-        parameters.setTitle("ToolBox");
+        parameters.setTitle(I18N.tr("ToolBox"));
         parameters.setTitleIcon(ToolBoxIcon.getIcon("orbistoolbox"));
         parameters.setCloseable(true);
         parameters.setName(TOOLBOX_REFERENCE);
@@ -123,7 +122,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         dockingActions.addAction(
                 new DefaultAction("ACTION_REFRESH",
                         "ACTION_REFRESH",
-                        "Refresh the selected node",
+                        I18N.tr("Refresh the selected node."),
                         ToolBoxIcon.getIcon("refresh"),
                         EventHandler.create(ActionListener.class, this, "refreshAvailableScripts"),
                         null)
@@ -160,8 +159,8 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         } catch (JAXBException e) {
-            LoggerFactory.getLogger(WpsClient.class).error("Unable to create the marshall objects.\n"+
-                    e.getMessage());
+            LoggerFactory.getLogger(WpsClient.class).error(
+                    I18N.tr("Unable to create the marshall objects.\nCause : {0}.", e.getMessage()));
             return null;
         }
 
@@ -170,9 +169,9 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         try {
             marshaller.marshal(request, out);
         } catch (JAXBException e) {
-            LoggerFactory.getLogger(WpsClient.class).error("Unable to marshall the request object : '"+
-                    request.getClass().getName()+"'.\n"+
-                    e.getMessage());
+            LoggerFactory.getLogger(WpsClient.class).error(
+                    I18N.tr("Unable to marshall the request object : {0}.\nCause : {1}.",
+                            request.getClass().getName(), e.getMessage()));
             return null;
         }
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
@@ -186,8 +185,8 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         try {
             resultObject = unmarshaller.unmarshal(resultResultXml);
         } catch (JAXBException e) {
-            LoggerFactory.getLogger(WpsClient.class).error("Unable to marshall the answer xml.\n"+
-                    e.getMessage());
+            LoggerFactory.getLogger(WpsClient.class).error(I18N.tr("Unable to marshall the answer xml.\nCause : {0}.",
+                    e.getMessage()));
             return null;
         }
         if(resultObject instanceof JAXBElement){
@@ -202,6 +201,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         //Sets the language
         AcceptLanguages acceptLanguages = new AcceptLanguages();
         acceptLanguages.getLanguage().add(LANG);
+        acceptLanguages.getLanguage().add("*");
         getCapabilities.setAcceptLanguages(acceptLanguages);
         //Sets the version
         AcceptVersionsType acceptVersions = new AcceptVersionsType();
@@ -297,10 +297,13 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
      * Used in an EvenHandler in view.ui.ToolBoxPanel
      */
     public void addNewLocalSource(){
-        OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBox.AddSource", "Add a source");
+        OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBox.AddSource", I18N.tr("Add a source"));
+        openFolderPanel.getFileChooser();
+        openFolderPanel.loadState();
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFolderPanel)){
             addLocalSource(openFolderPanel.getSelectedFile().toURI());
+            openFolderPanel.saveState();
         }
     }
     /**
@@ -308,10 +311,13 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
      * Used in an EvenHandler in view.ui.ToolBoxPanel
      */
     public void addNewLocalScript(){
-        OpenFilePanel openFilePanel = new OpenFilePanel("ToolBox.AddSource", "Add a source");
+        OpenFilePanel openFilePanel = new OpenFilePanel("ToolBox.AddSource", I18N.tr("Add a source"));
+        openFilePanel.getFileChooser();
+        openFilePanel.loadState();
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFilePanel)){
             addLocalSource(openFilePanel.getSelectedFile().toURI());
+            openFilePanel.saveState();
         }
     }
 
@@ -362,8 +368,8 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         //Get the list of ProcessOffering
         List<ProcessOffering> listProcess = getProcessOffering(scriptIdentifier);
         if(listProcess == null || listProcess.isEmpty()){
-            LoggerFactory.getLogger(WpsClient.class).warn("Unable to retrieve the process '"+
-                    scriptIdentifier.getValue()+".");
+            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("Unable to retrieve the process {0}.",
+                    scriptIdentifier.getValue()));
             return null;
         }
         //Get the process
@@ -386,8 +392,8 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
             openEditorList.add(pe);
         }
         else{
-            LoggerFactory.getLogger(WpsClient.class).warn("The process '"+
-                    pee.getProcess().getTitle().get(0).getValue()+"' is already open.");
+            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("The process {0} is already open.",
+                    pee.getProcess().getTitle().get(0).getValue()));
         }
         return pee;
     }

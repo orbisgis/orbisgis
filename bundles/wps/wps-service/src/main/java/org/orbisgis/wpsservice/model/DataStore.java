@@ -21,6 +21,8 @@ package org.orbisgis.wpsservice.model;
 
 import net.opengis.wps._2_0.ComplexDataType;
 import net.opengis.wps._2_0.Format;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.XmlElement;
@@ -44,6 +46,8 @@ public class DataStore extends ComplexDataType {
     /** List of DataField liked to the DataStore */
     @XmlElement(name = "DataField", namespace = "http://orbisgis.org")
     private List<DataField> listDataField;
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(DataStore.class);
 
     /**
      * Main constructor
@@ -89,8 +93,8 @@ public class DataStore extends ComplexDataType {
         for(DataType dataStoreType : dataStoreTypeList){
             for(DataType excludedType : excludedTypeList){
                 if(dataStoreType.equals(excludedType)){
-                    throw new MalformedScriptException(DataField.class, "dataStoreTypeList", "A same DataType is" +
-                            " accepted and excluded");
+                    throw new MalformedScriptException(DataField.class, "dataStoreTypeList", I18N.tr("A same DataType is" +
+                            " accepted and excluded."));
                 }
             }
         }
@@ -113,8 +117,8 @@ public class DataStore extends ComplexDataType {
         for(DataType excludedType : excludedTypeList){
             for(DataType dataType : dataStoreTypeList){
                 if(excludedType.equals(dataType)){
-                    throw new MalformedScriptException(DataField.class, "excludedTypeList", "A same DataType is" +
-                            " accepted and excluded");
+                    throw new MalformedScriptException(DataField.class, "excludedTypeList", I18N.tr("A same DataType is" +
+                            " accepted and excluded."));
                 }
             }
         }

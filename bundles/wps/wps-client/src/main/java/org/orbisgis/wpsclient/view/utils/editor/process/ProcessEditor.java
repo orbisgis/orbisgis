@@ -21,6 +21,9 @@ package org.orbisgis.wpsclient.view.utils.editor.process;
 
 import net.miginfocom.swing.MigLayout;
 import net.opengis.wps._2_0.*;
+import org.orbisgis.sif.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.ActionDockingListener;
+import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
@@ -30,20 +33,21 @@ import org.orbisgis.wpsclient.view.ui.dataui.DataUI;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUIManager;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.math.BigInteger;
 import java.net.URI;
-import java.util.AbstractMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * UI for the configuration and the run of a WPS process.
@@ -56,6 +60,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private static final int SCROLLBAR_UNIT_INCREMENT = 16;
     /** Name of the EditorDockable. */
     public static final String NAME = "PROCESS_EDITOR";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(ProcessEditor.class);
 
     private ProcessEditableElement pee;
     private WpsClientImpl wpsClient;
@@ -81,6 +87,16 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         this.setLayout(new BorderLayout());
         dataUIManager = wpsClient.getDataUIManager();
 
+        ActionCommands dockingActions = new ActionCommands();
+        dockingPanelParameters.setDockActions(dockingActions.getActions());
+        dockingActions.addPropertyChangeListener(new ActionDockingListener(dockingPanelParameters));
+        DefaultAction runAction = new DefaultAction("ACTION_RUN",
+                "ACTION_RUN",
+                I18N.tr("Run the script"),
+                ToolBoxIcon.getIcon("execute"),
+                EventHandler.create(ActionListener.class, this, "runProcess"),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)).setButtonGroup("custom");
+        dockingActions.addAction(runAction);
         this.add(buildUI(), BorderLayout.CENTER);
         this.revalidate();
     }
@@ -184,18 +200,26 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      */
     private JComponent buildUI(){
         ProcessDescriptionType process = pee.getProcess();
-        JPanel returnPanel = new JPanel(new BorderLayout());
+        JPanel returnPanel = new JPanel(new MigLayout("fill"));
 
-        JPanel processPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+        AbstractScrollPane processPanel = new AbstractScrollPane();
+        processPanel.setLayout(new MigLayout("fill, ins 0, gap 0"));
         processPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.DARK_GRAY), "Description"));
+                BorderFactory.createLineBorder(Color.DARK_GRAY), I18N.tr("Description")));
         JLabel label = new JLabel("<html>"+process.getAbstract().get(0).getValue()+"</html>");
         label.setFont(label.getFont().deriveFont(Font.ITALIC));
         processPanel.add(label, "growx, span");
-        JLabel version = new JLabel("Version : "+pee.getProcessOffering().getProcessVersion());
+        String versionStr = I18N.tr("Version : ");
+        if(pee.getProcessOffering().getProcessVersion().isEmpty()){
+            versionStr += I18N.tr("unknown");
+        }
+        else{
+            versionStr += pee.getProcessOffering().getProcessVersion();
+        }
+        JLabel version = new JLabel(versionStr);
         version.setFont(version.getFont().deriveFont(Font.ITALIC));
         processPanel.add(version, "growx, span");
-        returnPanel.add(processPanel, BorderLayout.PAGE_START);
+        returnPanel.add(new JScrollPane(processPanel), "wrap, growx, height ::50%");
 
         JPanel panel = new JPanel(new MigLayout("fill"));
         JScrollPane scrollPane = new JScrollPane(panel);
@@ -205,7 +229,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
         JPanel parameterPanel = new JPanel(new MigLayout("fill"));
-        parameterPanel.setBorder(BorderFactory.createTitledBorder("Paramater(s)"));
+        parameterPanel.setBorder(BorderFactory.createTitledBorder(I18N.tr("Parameter(s)")));
 
         for(InputDescriptionType i : process.getInput()){
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getValue().getClass());
@@ -266,18 +290,14 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         }
         if(!noParameters) {
             panel.add(parameterPanel, "growx, span");
-        }
-        errorMessage = new JLabel();
-        errorMessage.setForeground(Color.RED);
-        panel.add(errorMessage, "growx, wrap");
-        JButton runButton = new JButton("Run", ToolBoxIcon.getIcon("execute"));
-        runButton.setBorderPainted(false);
-        runButton.addActionListener(EventHandler.create(ActionListener.class, this, "runProcess"));
-        panel.add(runButton, "growx, gap 100! 100!");
-        scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+            errorMessage = new JLabel();
+            errorMessage.setForeground(Color.RED);
+            panel.add(errorMessage, "growx, wrap");
+            scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+            scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
 
-        returnPanel.add(scrollPane, BorderLayout.CENTER);
+            returnPanel.add(scrollPane, "wrap, growx, growy");
+        }
         return returnPanel;
     }
 
@@ -320,5 +340,33 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             scrollPane.scrollRectToVisible(body.getBounds());
         }
         parent.revalidate();
+    }
+
+    private class AbstractScrollPane extends JPanel implements Scrollable{
+
+        @Override
+        public Dimension getPreferredScrollableViewportSize() {
+            return getPreferredSize();
+        }
+
+        @Override
+        public int getScrollableUnitIncrement(Rectangle rectangle, int i, int i1) {
+            return 5;
+        }
+
+        @Override
+        public int getScrollableBlockIncrement(Rectangle rectangle, int i, int i1) {
+            return 5;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportWidth() {
+            return true;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportHeight() {
+            return false;
+        }
     }
 }

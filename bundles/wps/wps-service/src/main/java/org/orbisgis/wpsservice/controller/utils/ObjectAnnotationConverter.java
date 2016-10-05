@@ -25,7 +25,6 @@ import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.Format;
 import net.opengis.wps._2_0.LiteralDataType.LiteralDataDomain;
 import org.orbisgis.wpsgroovyapi.attributes.*;
-import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
 
@@ -361,7 +360,7 @@ public class ObjectAnnotationConverter {
             for(String type : Arrays.asList(dataStoreAttribute.excludedTypes())){
                 excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
-            dataStore.setDataStoreTypeList(excludedTypeList);
+            dataStore.setExcludedTypeList(excludedTypeList);
             return dataStore;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());

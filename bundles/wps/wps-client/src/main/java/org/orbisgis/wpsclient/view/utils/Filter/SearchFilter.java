@@ -23,6 +23,8 @@ import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactory;
 import org.orbisgis.sif.components.filter.TextFieldDocumentListener;
 import org.orbisgis.wpsclient.view.utils.TreeNodeWps;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,6 +36,10 @@ import java.awt.*;
  **/
 
 public class SearchFilter implements FilterFactory<IFilter,DefaultActiveFilter> {
+
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(SearchFilter.class);
+
     /**
      * Returns the factory ID.
      * @return Internal name of the filter type
@@ -49,7 +55,7 @@ public class SearchFilter implements FilterFactory<IFilter,DefaultActiveFilter> 
      */
     @Override
     public String getFilterLabel() {
-        return "Search ";
+        return I18N.tr("Search ");
     }
 
     /**

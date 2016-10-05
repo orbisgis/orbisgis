@@ -1,5 +1,7 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Transform
 
+import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.input.*
 import org.orbisgis.wpsgroovyapi.output.*
 import org.orbisgis.wpsgroovyapi.process.*
@@ -21,9 +23,29 @@ import org.orbisgis.wpsgroovyapi.process.*
  * @return A database table or a file.
  * @author Erwan Bocher
  */
-@Process(title = "Reproject geometries",
-        resume = "Reproject geometries from one Coordinate Reference System to another.",
-        keywords = ["Vector","Geometry","Reproject"])
+@Process(
+		traducedTitles = [
+				@LanguageString(value = "Reproject geometries", lang = "en"),
+				@LanguageString(value = "Reprojection de géométries", lang = "fr")
+		],
+		traducedResumes = [
+				@LanguageString(value = "Reproject geometries from one Coordinate Reference System to another.", lang = "en"),
+				@LanguageString(value = "Reprojection une géométrie d'un SRID vers un autre.", lang = "fr")
+		],
+		traducedKeywords = [
+				@Keyword(traducedKeywords = [
+						@LanguageString(value = "Vector", lang = "en"),
+						@LanguageString(value = "Vecteur", lang = "fr")
+				]),
+				@Keyword(traducedKeywords = [
+						@LanguageString(value = "Geometry", lang = "en"),
+						@LanguageString(value = "Géometrie", lang = "fr")
+				]),
+				@Keyword(traducedKeywords = [
+						@LanguageString(value = "Reproject", lang = "en"),
+						@LanguageString(value = "Reprojection", lang = "fr")
+				])
+		])
 def processing() {
 	logger.warn("test")
 	//Build the start of the query
@@ -52,8 +74,14 @@ def processing() {
 
 /** This DataStore is the input data source. */
 @DataStoreInput(
-        title = "Input spatial data",
-        resume = "The spatial data source to be reprojected.",
+		traducedTitles = [
+				@LanguageString(value = "Input spatial data", lang = "en"),
+				@LanguageString(value = "Données spatiales d'entrée", lang = "fr")
+		],
+		traducedResumes = [
+				@LanguageString(value = "The spatial data source to be reprojected.", lang = "en"),
+				@LanguageString(value = "La source de données spatiales pour la reprojection.", lang = "fr")
+		],
 		dataStoreTypes = ["GEOMETRY"])
 String inputDataStore
 
@@ -64,35 +92,60 @@ String inputDataStore
 
 /** Name of the Geometric field of the DataStore inputDataStore. */
 @DataFieldInput(
-        title = "Geometric field",
-        resume = "The geometric field of the data source",
-        dataStoreTitle = "Input spatial data",
+		traducedTitles = [
+				@LanguageString(value = "Geometric field", lang = "en"),
+				@LanguageString(value = "Champ géométrique", lang = "fr")
+		],
+		traducedResumes = [
+				@LanguageString(value = "The geometric field of the data source.", lang = "en"),
+				@LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
+		],
+        variableReference = "inputDataStore",
         fieldTypes = ["GEOMETRY"])
 String[] geometricField
 
 
 /** The spatial_ref SRID */
-@FieldValueInput(title="SRID",
-		resume="The spatial reference system identifier",
-		dataFieldTitle = "\$public\$spatial_ref_sys\$srid\$",
+@FieldValueInput(
+		traducedTitles = [
+				@LanguageString(value = "SRID", lang = "en"),
+				@LanguageString(value = "SRID", lang = "fr")
+		],
+		traducedResumes = [
+				@LanguageString(value = "The spatial reference system identifier.", lang = "en"),
+				@LanguageString(value = "L'identifiant du système de référence spatiale.", lang = "fr")
+		],
+		variableReference = "\$public\$spatial_ref_sys\$srid\$",
 		multiSelection = false)
 String[] srid
 
 
 /** Fields to keep. */
 @DataFieldInput(
-        title = "Fields to keep",
-        resume = "The fields that will be kept in the ouput",
+		traducedTitles = [
+				@LanguageString(value = "Fields to keep", lang = "en"),
+				@LanguageString(value = "Champs à conserver", lang = "fr")
+		],
+		traducedResumes = [
+				@LanguageString(value = "The fields that will be kept in the output.", lang = "en"),
+				@LanguageString(value = "Les champs qui seront conservés dans la table de sortie.", lang = "fr")
+		],
 		excludedTypes=["GEOMETRY"],
 		multiSelection = true,
 		minOccurs = 0,
-        dataStoreTitle = "Input spatial data")
+        variableReference = "inputDataStore")
 String[] fieldList
 
 
 @LiteralDataInput(
-		title="Output table name",
-		resume="Name of the table containing the result of the process.")
+		traducedTitles = [
+				@LanguageString(value = "Output table name", lang = "en"),
+				@LanguageString(value = "Nom de la table de sortie", lang = "fr")
+		],
+		traducedResumes = [
+				@LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
+				@LanguageString(value = "Nom de la table contenant les résultats du traitement.", lang = "fr")
+		])
 String outputTableName
 
 /*****************/
@@ -101,8 +154,14 @@ String outputTableName
 
 /** String output of the process. */
 @LiteralDataOutput(
-		title="Output message",
-		resume="The output message")
+		traducedTitles = [
+				@LanguageString(value = "Output message", lang = "en"),
+				@LanguageString(value = "Message de sortie", lang = "fr")
+		],
+		traducedResumes = [
+				@LanguageString(value = "The output message.", lang = "en"),
+				@LanguageString(value = "Le message de sortie.", lang = "fr")
+		])
 String literalOutput
 
 

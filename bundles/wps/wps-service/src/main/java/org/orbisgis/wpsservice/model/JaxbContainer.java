@@ -1,4 +1,4 @@
-package org.orbisgis.wpsservice;
+package org.orbisgis.wpsservice.model;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

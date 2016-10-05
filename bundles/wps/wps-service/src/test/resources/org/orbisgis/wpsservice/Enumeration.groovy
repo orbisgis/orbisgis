@@ -46,6 +46,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
         ]
 )
 def processing() {
+    sleep(500)
     enumerationOutput = inputEnumeration;
 }
 
@@ -85,7 +86,7 @@ def processing() {
                 @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
         ]
         )
-String inputEnumeration
+String[] inputEnumeration
 
 /*****************/
 /** OUTPUT Data **/
@@ -116,5 +117,5 @@ String inputEnumeration
                 @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
         ]
 )
-String enumerationOutput
+String[] enumerationOutput
 

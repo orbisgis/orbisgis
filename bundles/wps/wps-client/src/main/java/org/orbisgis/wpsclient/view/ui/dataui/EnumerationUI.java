@@ -28,6 +28,8 @@ import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.Enumeration;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
@@ -58,6 +60,8 @@ public class EnumerationUI implements DataUI{
     private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
     private static final String IS_MULTISELECTION_PROPERTY = "IS_MULTISELECTION_PROPERTY";
     private static final String LIST_PROPERTY = "LIST_PROPERTY";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(EnumerationUI.class);
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -161,7 +165,7 @@ public class EnumerationUI implements DataUI{
                     this,
                     "saveDocumentTextFile",
                     "document"));
-            textField.setToolTipText("Coma separated custom value(s)");
+            textField.setToolTipText(I18N.tr("Coma separated custom value(s)"));
 
             panel.add(textField, "growx, wrap");
             list.putClientProperty(TEXT_FIELD_PROPERTY, textField);

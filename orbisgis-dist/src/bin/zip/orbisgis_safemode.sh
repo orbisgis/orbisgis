@@ -28,5 +28,20 @@
 # info_at_ orbisgis.org
 #
 
-cd $(dirname "$0")
-java -Xmx1024M -jar orbisgis.jar $* --nofailmode
+# Total memory in KB
+totalMemKB=$(awk '/MemTotal:/ { print $2 }' /proc/meminfo)
+
+# If unable to retrieve the memory, run orbisgis with 1024M
+if [ -z "$totalMemKB" ]; then
+	cd $(dirname "$0")
+	java -Xmx1024m -jar orbisgis.jar $* --nofailmode
+# Else, uses a percentage of the physical memory
+else
+	# Percentage of memory to use for Java heap
+	usagePercent=30
+
+	let heapKB=$totalMemKB*$usagePercent/100
+	let heapMB=$heapKB/1024
+	cd $(dirname "$0")
+	java -Xmx${heapMB}m -jar orbisgis.jar $* --nofailmode
+fi

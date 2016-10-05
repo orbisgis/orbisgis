@@ -20,12 +20,8 @@
 package org.orbisgis.wpsservice.model;
 
 import net.opengis.wps._2_0.ComplexDataType;
-import net.opengis.wps._2_0.Format;
 
 import javax.xml.bind.annotation.*;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Sylvain PALOMINOS

@@ -1,5 +1,7 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
+import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
@@ -21,9 +23,29 @@ import org.orbisgis.wpsgroovyapi.process.Process
  *
  * @author Sylvain PALOMINOS
  */
-@Process(title = "Insert values",
-        resume = "Insert values into a table.",
-        keywords = ["Table","Insert","Values"])
+@Process(
+        traducedTitles = [
+                @LanguageString(value = "Insert values", lang = "en"),
+                @LanguageString(value = "Insertion de valeurs", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "Insert values into a table.", lang = "en"),
+                @LanguageString(value = "Insert de valeurs dans une table.", lang = "fr")
+        ],
+        traducedKeywords = [
+                @Keyword(traducedKeywords = [
+                        @LanguageString(value = "Table", lang = "en"),
+                        @LanguageString(value = "Table", lang = "fr")
+                ]),
+                @Keyword(traducedKeywords = [
+                        @LanguageString(value = "Insert", lang = "en"),
+                        @LanguageString(value = "Insertion", lang = "fr")
+                ]),
+                @Keyword(traducedKeywords = [
+                        @LanguageString(value = "Values", lang = "en"),
+                        @LanguageString(value = "Valeurs", lang = "fr")
+                ])
+        ])
 def processing() {
     //Build the query
     String queryBase = "INSERT INTO " + tableName;
@@ -71,8 +93,14 @@ def processing() {
 
 /** This DataStore is the input data source table. */
 @DataStoreInput(
-        title = "Table",
-        resume = "The table to edit")
+        traducedTitles = [
+                @LanguageString(value = "Table", lang = "en"),
+                @LanguageString(value = "Table", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The table to edit.", lang = "en"),
+                @LanguageString(value = "La table à éditer.", lang = "fr")
+        ])
 String tableName
 
 /**********************/
@@ -81,22 +109,40 @@ String tableName
 
 /** Field list concerned by the value insertion. */
 @DataFieldInput(
-        title = "Fields",
-        resume = "The field concerned by the value insertion",
-        dataStoreTitle = "Table",
+        traducedTitles = [
+                @LanguageString(value = "Fields", lang = "en"),
+                @LanguageString(value = "Champs", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The field concerned by the value insertion.", lang = "en"),
+                @LanguageString(value = "Les champs concernés par les insertions de valeurs.", lang = "fr")
+        ],
+        variableReference = "tableName",
         multiSelection = true,
         minOccurs = 0)
 String[] fieldList
 
 /** Coma separated values to insert. */
 @LiteralDataInput(
-        title="Values",
-        resume="The input values. The values should be separated by a ',' and rows by ';'")
+        traducedTitles = [
+                @LanguageString(value = "Values", lang = "en"),
+                @LanguageString(value = "Valeurs", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The input values. The values should be separated by a ',' and rows by ';'", lang = "en"),
+                @LanguageString(value = "Les valeurs à insérer. Elles doivent etre séparées par une ',' et les lignes par un ';'", lang = "fr")
+        ])
 String values
 
 /** String output of the process. */
 @LiteralDataOutput(
-        title="Output message",
-        resume="The output message")
+        traducedTitles = [
+                @LanguageString(value = "Output message", lang = "en"),
+                @LanguageString(value = "Message de sortie", lang = "fr")
+        ],
+        traducedResumes = [
+                @LanguageString(value = "The output message.", lang = "en"),
+                @LanguageString(value = "Le message de sortie.", lang = "fr")
+        ])
 String literalOutput
 

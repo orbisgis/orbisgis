@@ -25,7 +25,6 @@ import net.opengis.wps._2_0.Format;
 import javax.xml.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * FieldValue represent one or more values from a DataField.
@@ -150,7 +149,7 @@ public class FieldValue extends ComplexDataType {
      * Tells if more than one value can be selected.
      * @return True if more than one value can be selected, false otherwise.
      */
-    public boolean getMuliSelection(){
+    public boolean getMultiSelection(){
         return multiSelection;
     }
 }

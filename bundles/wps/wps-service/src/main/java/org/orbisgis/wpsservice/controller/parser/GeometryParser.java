@@ -58,7 +58,7 @@ public class GeometryParser implements Parser {
 
         if(input.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":input:"+input.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
+            codeType.setValue(processId+":input:"+f.getName());
             input.setIdentifier(codeType);
         }
 
@@ -79,7 +79,7 @@ public class GeometryParser implements Parser {
 
         if(output.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":output:"+output.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_"));
+            codeType.setValue(processId+":output:"+f.getName());
             output.setIdentifier(codeType);
         }
 
