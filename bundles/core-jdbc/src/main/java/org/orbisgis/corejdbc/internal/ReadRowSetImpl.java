@@ -135,6 +135,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     // When close is called, in how many ms the result set is really closed
     private int closeDelay = 0;
     protected boolean isH2;
+    
+    //Limit the size of the clob to 1000 characters
+    private static final int NUMBER_CHARACTERS= 1000;
 
 
     /**
@@ -353,7 +356,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                         Object obj = rsBatch.getObject(idColumn);
                             if(obj instanceof Clob){
                                 Clob clob = (Clob) obj;
-                                obj = clob.getSubString(1, (int) clob.length());
+                                obj = clob.getSubString(1, NUMBER_CHARACTERS)+" ...";
                             }
                         row[idColumn - 1 - offset] = obj;
                     }
