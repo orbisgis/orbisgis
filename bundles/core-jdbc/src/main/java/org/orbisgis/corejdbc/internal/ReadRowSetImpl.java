@@ -82,13 +82,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -353,7 +350,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     int offset = ignoreFirstColumn ? 1 : 0;
                     Object[] row = new Object[columnCount];
                     for (int idColumn = 1 + offset; idColumn <= columnCount + offset; idColumn++) {
-                        row[idColumn - 1 - offset] = rsBatch.getObject(idColumn);
+                        Object obj = rsBatch.getObject(idColumn);
+                            if(obj instanceof Clob){
+                                Clob clob = (Clob) obj;
+                                obj = clob.getSubString(1, (int) clob.length());
+                            }
+                        row[idColumn - 1 - offset] = obj;
                     }
                     currentBatch.add(new Row(row, currentRowPk));
                     if (curRow++ == fetchSize + 1) {
@@ -400,7 +402,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                     if(validRow) {
                         Object[] row = new Object[columnCount];
                         for(int idColumn=1; idColumn <= columnCount; idColumn++) {
-                            row[idColumn-1] = rs.getObject(idColumn);
+                            Object obj = rs.getObject(idColumn);
+                            if(obj instanceof Clob){
+                                Clob clob = (Clob) obj;
+                                obj = clob.getSubString(1, (int) clob.length());
+                            }
+                            row[idColumn-1] = obj;
                         }
                         cache.put(rowId, new Row(row, null));
                     }
@@ -644,6 +651,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         return cachedRowCount;
     }
 
+    @Override
     public long getRowCount() throws SQLException {
         return getRowCount(new NullProgressMonitor());
     }
