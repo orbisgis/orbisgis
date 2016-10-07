@@ -2,6 +2,7 @@ package org.orbisgis.wpsservicescripts.scripts.Vector.Transform
 
 import org.orbisgis.wpsgroovyapi.attributes.Keyword
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
+import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.*
 import org.orbisgis.wpsgroovyapi.output.*
 import org.orbisgis.wpsgroovyapi.process.*
@@ -45,9 +46,12 @@ import org.orbisgis.wpsgroovyapi.process.*
 						@LanguageString(value = "Reproject", lang = "en"),
 						@LanguageString(value = "Reprojection", lang = "fr")
 				])
+		],
+		metadata = [
+				@MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
+				@MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
 		])
 def processing() {
-	logger.warn("test")
 	//Build the start of the query
 	String query = "CREATE TABLE " + outputTableName + " AS SELECT ST_TRANSFORM("
 	query += geometricField[0] + "," + srid[0]

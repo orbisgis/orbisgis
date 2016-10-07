@@ -90,6 +90,28 @@ public class ProcessManager {
             ProcessOffering processOffering = null;
             try {
                 processOffering = parserController.parseProcess(f.getAbsolutePath());
+                //Check if the process is compatible with the DBMS connected to OrbisGIS.
+                boolean isAcceptedDBMS = true;
+                for(MetadataType metadata : processOffering.getProcess().getMetadata()){
+                    if(metadata.getRole().equals(LocalWpsServer.ProcessProperty.DBMS.name())){
+                        isAcceptedDBMS = false;
+                    }
+                }
+                if(! isAcceptedDBMS){
+                    for(MetadataType metadata : processOffering.getProcess().getMetadata()){
+                        if(metadata.getRole().equals(LocalWpsServer.ProcessProperty.DBMS.name()) &&
+                            metadata.getTitle().toLowerCase().equals(wpsService.getDatabase().name().toLowerCase())){
+                            isAcceptedDBMS = true;
+                        }
+                    }
+                }
+                if(!isAcceptedDBMS){
+                    LOGGER.error(I18N.tr("Error, the script is not compatible with the DBMS : {0}",
+                            wpsService.getDatabase().name()));
+                    processOffering = null;
+                }
+
+                //Sets the metadatas used by the OrbisGIS wps client
                 if(processOffering != null){
                     MetadataType isRemovableMetadata = new MetadataType();
                     isRemovableMetadata.setTitle(LocalWpsServer.ProcessProperty.IS_REMOVABLE.name());
@@ -144,7 +166,10 @@ public class ProcessManager {
         File folder = new File(uri);
         if(folder.exists() && folder.isDirectory()){
             for(File f : folder.listFiles()){
-                piList.add(addScript(f.toURI(), category, true, "localhost"));
+                ProcessIdentifier pi = addScript(f.toURI(), category, true, "localhost");
+                if(pi != null) {
+                    piList.add(pi);
+                }
             }
         }
         return piList;
@@ -174,7 +199,7 @@ public class ProcessManager {
                 WpsSql sql = new WpsSql(dataSourceService);
                 sql.withStatement(closure);
                 groovyObject.setProperty("sql", sql);
-                groovyObject.setProperty("isH2", wpsService.getDatabase().equals(WpsServer.Database.H2));
+                groovyObject.setProperty("isH2", wpsService.getDatabase().equals(WpsServer.Database.H2GIS));
             }
             groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
             for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){

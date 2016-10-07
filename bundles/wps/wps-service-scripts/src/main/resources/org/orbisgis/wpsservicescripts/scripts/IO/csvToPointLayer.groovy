@@ -2,6 +2,7 @@ package org.orbisgis.wpsservicescripts.scripts.IO
 
 import org.orbisgis.wpsgroovyapi.attributes.Keyword
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
+import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.input.RawDataInput
@@ -62,6 +63,10 @@ import org.orbisgis.wpsgroovyapi.process.Process
                         @LanguageString(value = "example", lang = "en"),
                         @LanguageString(value = "exemple", lang = "fr")
                 ]),
+        ],
+        metadata = [
+                @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
+                @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
         ])
 def processing() {
     outputTableName = dataStoreOutputName

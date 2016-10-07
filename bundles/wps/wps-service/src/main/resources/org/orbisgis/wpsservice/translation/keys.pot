@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-04 13:22+0200\n"
+"POT-Creation-Date: 2016-10-07 14:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,12 +111,17 @@ msgstr ""
 msgid "The script file doesn't exists."
 msgstr ""
 
-#: org/orbisgis/wpsservice/controller/process/ProcessManager.java:122
+#: org/orbisgis/wpsservice/controller/process/ProcessManager.java:109
+#, java-format
+msgid "Error, the script is not compatible with the DBMS : {0}"
+msgstr ""
+
+#: org/orbisgis/wpsservice/controller/process/ProcessManager.java:144
 #, java-format
 msgid "Unable to parse the process {0}."
 msgstr ""
 
-#: org/orbisgis/wpsservice/controller/process/ProcessManager.java:268
+#: org/orbisgis/wpsservice/controller/process/ProcessManager.java:293
 msgid "Unable to convert the LiteralData to the good script type."
 msgstr ""
 
@@ -215,65 +220,65 @@ msgstr ""
 
 #: org/orbisgis/wpsservice/LocalWpsServerImpl.java:243
 #, java-format
-msgid "The process identifier get from the script {0} is null."
+msgid "The process {0} can not be loaded."
 msgstr ""
 
-#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:271
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:273
 #, java-format
 msgid "The script {0} does not exist anymore."
 msgstr ""
 
-#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:356
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:358
 #, java-format
 msgid ""
 "Unable to get the field {0}.{1} information.\n"
 "Cause : {2}."
 msgstr ""
 
-#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:398
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:400
 #, java-format
 msgid ""
 "Unable to get the table {0} field list.\n"
 "Cause : {1}."
 msgstr ""
 
-#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:422
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:424
 #, java-format
 msgid ""
 "Unable to get the field {0}.{1} value list.\n"
 "Cause : {2}."
 msgstr ""
 
-#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:474
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:476
 #, java-format
 msgid "Unable to set the property {0}, the name is already used."
 msgstr ""
 
-#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:489
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:491
 #, java-format
 msgid "Unable to remove the property {0}, the name protected or not defined."
 msgstr ""
 
-#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:546
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:548
 msgid "F_TABLE_CATALOG"
 msgstr ""
 
-#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:547
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:549
 msgid "F_TABLE_SCHEMA"
 msgstr ""
 
-#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:547
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:549
 msgid "F_TABLE_NAME"
 msgstr ""
 
-#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:547
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:549
 msgid "TYPE"
 msgstr ""
 
-#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:550
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:552
 msgid "Geometry columns information of tables are not available."
 msgstr ""
 
-#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:595
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:597
 msgid "Cannot read the table list"
 msgstr ""

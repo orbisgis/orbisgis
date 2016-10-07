@@ -2,6 +2,7 @@ package org.orbisgis.wpsservicescripts.scripts.Network
 
 import org.orbisgis.wpsgroovyapi.attributes.Keyword
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
+import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.*
 import org.orbisgis.wpsgroovyapi.output.*
 import org.orbisgis.wpsgroovyapi.process.*
@@ -31,6 +32,10 @@ import org.orbisgis.wpsgroovyapi.process.*
                         @LanguageString(value = "Geometry", lang = "en"),
                         @LanguageString(value = "Géometrie", lang = "fr")
                 ])
+        ],
+        metadata = [
+                @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
+                @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
         ])
 def processing() {    
     if(slope==null){
