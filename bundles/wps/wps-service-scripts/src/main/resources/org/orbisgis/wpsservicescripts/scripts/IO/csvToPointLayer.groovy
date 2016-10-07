@@ -65,8 +65,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 ]),
         ],
         metadata = [
-                @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
-                @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
+                @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/")
         ])
 def processing() {
     outputTableName = dataStoreOutputName
