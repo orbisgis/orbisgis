@@ -83,7 +83,7 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
                 new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClientImpl.TOOLBOX_REFERENCE));
         dockingPanelParameters.setTitle(I18N.tr("WPS log"));
         dockingPanelParameters.setName(NAME);
-        dockingPanelParameters.setCloseable(false);
+        dockingPanelParameters.setCloseable(true);
 
         contentPanel = new VerticalScrollablePanel();
         contentPanel.setLayout(new MigLayout("fill"));

@@ -261,7 +261,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
 
     @Override
     public DockingPanelParameters getDockingParameters() {
-        //when the toolBox is not visible, it mean that is was closed, so close all the toolbox editors
+        /*//when the toolBox is not visible, it mean that is was closed, so close all the toolbox editors
         if(!parameters.isVisible()){
             for(EditorDockable ed : openEditorList) {
                 if (ed instanceof ProcessEditor) {
@@ -272,7 +272,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
             openEditorList = new ArrayList<>();
             lee.removePropertyChangeListener(le);
             le = null;
-        }
+        }*/
         return parameters;
     }
 
