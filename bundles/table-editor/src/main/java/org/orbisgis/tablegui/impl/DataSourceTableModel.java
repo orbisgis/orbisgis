@@ -32,7 +32,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sql.RowSet;
 import javax.swing.table.AbstractTableModel;
 import org.orbisgis.corejdbc.ReversibleRowSet;
