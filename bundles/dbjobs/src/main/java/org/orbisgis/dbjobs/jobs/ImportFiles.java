@@ -122,13 +122,13 @@ public class ImportFiles extends SwingWorkerPM {
                 }
             }
         } catch (SQLException ex) {
-            LOGGER.error(I18N.tr("Cannot import the file"), ex);
+            LOGGER.error(I18N.tr("Cannot import the file.\nCause : {0}", ex.getMessage()), ex);
             // Print additional information
             while((ex = ex.getNextException()) != null) {
                 LOGGER.error(ex.getLocalizedMessage());
             }
         } catch (IOException ex) {
-            LOGGER.error(I18N.tr("Cannot import the file"), ex);
+            LOGGER.error(I18N.tr("Cannot import the file.\nCause : {0}", ex.getMessage()), ex);
         }
         LOGGER.info(I18N.tr("Importation done in {0} sec", (System.currentTimeMillis() - deb) / 1000d));
         dbView.onDatabaseUpdate(DatabaseView.DB_ENTITY.SCHEMA.name(), "PUBLIC");

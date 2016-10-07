@@ -82,7 +82,7 @@ public class ExportInFileOperation extends SwingWorkerPM {
             driverFunction.exportTable(connection, sourceName , savedFile, new H2GISProgressMonitor(this.getProgressMonitor()));
             LOGGER.info(I18N.tr("The file {0} has been saved.", savedFile.getAbsolutePath()));
         } catch (SQLException | IOException ex) {
-            LOGGER.error(I18N.tr("Cannot create the file"), ex);
+            LOGGER.error(I18N.tr("Cannot create the file.\nCause : {0}", ex.getMessage()), ex);
         }
         return null;
     }
