@@ -2,6 +2,7 @@ package org.orbisgis.wpsservicescripts.scripts.Vector.Properties
 
 import org.orbisgis.wpsgroovyapi.attributes.Keyword
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
+import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.*
 import org.orbisgis.wpsgroovyapi.output.*
 import org.orbisgis.wpsgroovyapi.process.*
@@ -47,6 +48,10 @@ import org.orbisgis.wpsgroovyapi.process.*
                         @LanguageString(value = "Properties", lang = "en"),
                         @LanguageString(value = "Propriétés", lang = "fr")
                 ])
+        ],
+        metadata = [
+                @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
+                @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
         ])
 def processing() {
 //Build the start of the query

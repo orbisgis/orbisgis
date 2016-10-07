@@ -240,9 +240,11 @@ public class LocalWpsServerImpl
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
             ProcessIdentifier pi = this.getProcessManager().addScript(f.toURI(), iconName, isRemovable, nodePath);
             if(pi == null) {
-                LOGGER.error(I18N.tr("The process identifier get from the script {0} is null.", f.getName()));
+                LOGGER.error(I18N.tr("The process {0} can not be loaded.", f.getName()));
             }
-            piList.add(pi);
+            else {
+                piList.add(pi);
+            }
         }
         else if(f.isDirectory()){
             piList.addAll(this.getProcessManager().addLocalSource(f.toURI(), iconName));
@@ -434,10 +436,10 @@ public class LocalWpsServerImpl
             if(dataManager != null){
                 isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
                 if(isH2){
-                    this.setDatabase(Database.H2);
+                    this.setDatabase(Database.H2GIS);
                 }
                 else{
-                    this.setDatabase(Database.POSTGRESQL);
+                    this.setDatabase(Database.POSTGIS);
                 }
                 if(isH2) {
                     Statement statement = connection.createStatement();

@@ -144,7 +144,7 @@ public interface WpsServer {
     /**
      * Enumeration of the supported databases
      */
-    enum Database {H2, POSTGRESQL}
+    enum Database {H2GIS, POSTGIS}
 
     /**
      * Returns the database which is connected to the WPS server.
