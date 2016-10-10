@@ -857,6 +857,7 @@ public class ToolBoxPanel extends JPanel {
                         tagNode.setNodeType(TreeNodeWps.NodeType.FOLDER);
                         if(tag.getKeyword()!= null && !tag.getKeyword().isEmpty()) {
                             tagNode.setUserObject(tag.getKeyword().get(0).getValue());
+                            tagNode.setCustomIcon(tag.getKeyword().get(0).getValue().toLowerCase());
                         }
                         tagNode.setValidNode(true);
                         tagModel.insertNodeInto(tagNode, root, 0);
