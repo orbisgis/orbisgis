@@ -242,7 +242,7 @@ public class LocalWpsServerImpl
             if(pi == null) {
                 LOGGER.error(I18N.tr("The process {0} can not be loaded.", f.getName()));
             }
-            else {
+            else if(pi.getProcessDescriptionType() != null){
                 piList.add(pi);
             }
         }
