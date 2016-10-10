@@ -23,7 +23,6 @@ import org.orbisgis.sif.icons.BaseIcon;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.io.File;
 import java.awt.*;
 import java.io.File;
 
@@ -75,7 +74,12 @@ public class ToolBoxIcon {
         }
         //It the iconName is the icon name, load it
         else {
-            return iconManager.getIcon(ToolBoxIcon.class, iconName);
+            if (ToolBoxIcon.class.getResource(iconName+".png") != null) {
+                return iconManager.getIcon(ToolBoxIcon.class, iconName);
+            }
+            else{
+                return null;
+            }
         }
     }
 }

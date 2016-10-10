@@ -106,9 +106,7 @@ public class ProcessManager {
                     }
                 }
                 if(!isAcceptedDBMS){
-                    LOGGER.error(I18N.tr("Error, the script is not compatible with the DBMS : {0}",
-                            wpsService.getDatabase().name()));
-                    processOffering = null;
+                    return new ProcessIdentifier(null, null, null, null);
                 }
 
                 //Sets the metadatas used by the OrbisGIS wps client
