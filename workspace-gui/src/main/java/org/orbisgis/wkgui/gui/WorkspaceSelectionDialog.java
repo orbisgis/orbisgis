@@ -62,7 +62,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.Window;
 import java.awt.event.ActionListener;
@@ -74,8 +73,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import org.h2gis.utilities.JDBCUrlParser;
 
 import org.orbisgis.sif.components.CustomButton;
+import static org.orbisgis.wkgui.gui.DatabaseSettingsPanel.DEFAULT_MESSAGE_H2;
 
 /**
  * GUI for Workspace selection.
@@ -229,8 +231,31 @@ public class WorkspaceSelectionDialog extends JPanel {
         Window window = SwingUtilities.getWindowAncestor(this);
         DatabaseSettingsPanel databaseSettingsPanel = new DatabaseSettingsPanel(window, selectedWorkspace);
         databaseSettingsPanel.setConnectionName(new File(selectedWorkspace.getWorkspaceFolder()).getName());
+        
+        Properties dbProperties = JDBCUrlParser.parse(selectedWorkspace.getJDBCConnectionReference());        
+        databaseSettingsPanel.setDBName(dbProperties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
+        String dbTypeName = dbProperties.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME);
+        if(dbTypeName.equalsIgnoreCase("h2")){
+            String netProt = dbProperties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL);
+            if(netProt!=null){
+                databaseSettingsPanel.setDBType(DatabaseSettingsPanel.DB_TYPES.H2GIS_SERVER);
+                databaseSettingsPanel.setHost(dbProperties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
+                String portNum = dbProperties.getProperty(DataSourceFactory.JDBC_PORT_NUMBER);
+                databaseSettingsPanel.setPort(portNum!=null?portNum:DatabaseSettingsPanel.DEFAULT_H2_PORT);            
+            }
+            else{
+               databaseSettingsPanel.setDBType(DatabaseSettingsPanel.DB_TYPES.H2GIS_EMBEDDED);               
+               databaseSettingsPanel.setPort(DEFAULT_MESSAGE_H2);
+               databaseSettingsPanel.setHost(DEFAULT_MESSAGE_H2);
+            }
+        }
+        else if(dbTypeName.equalsIgnoreCase("postgresql")){
+            databaseSettingsPanel.setDBType(DatabaseSettingsPanel.DB_TYPES.POSTGIS);
+            databaseSettingsPanel.setHost(dbProperties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
+            databaseSettingsPanel.setPort(dbProperties.getProperty(DataSourceFactory.JDBC_PORT_NUMBER));
+        }
+        
         databaseSettingsPanel.setUser(selectedWorkspace.getDataBaseUser());
-        databaseSettingsPanel.setURL(selectedWorkspace.getJDBCConnectionReference());
         databaseSettingsPanel.setHasPassword(selectedWorkspace.isRequirePassword());
         databaseSettingsPanel.setAlwaysOnTop(true);
         databaseSettingsPanel.setModal(true);

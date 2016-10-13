@@ -27,9 +27,6 @@
  */
 package org.orbisgis.wkgui.gui;
 
-import java.awt.Dialog;
-import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
@@ -44,7 +41,6 @@ import java.util.StringTokenizer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -53,10 +49,12 @@ import javax.swing.JTextField;
 import javax.xml.bind.DatatypeConverter;
 
 import net.miginfocom.swing.MigLayout;
+import org.h2gis.utilities.JDBCUrlParser;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.wkgui.icons.WKIcon;
+import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -75,12 +73,23 @@ public class DatabaseSettingsPanel extends JDialog {
     protected static final I18n I18N = I18nFactory.getI18n(DatabaseSettingsPanel.class);
     private Properties dbProperties = new Properties();
     private JTextField connectionName;
-    private JTextField urlValue;
+    
+    private String urlValue;
+    private JTextField dbHost;
+    private JTextField dbPort;
+    private JTextField dbName;
     private JTextField userValue;
     private JCheckBox requirePassword;
-    private JComboBox<Object> comboBox;
+    private JComboBox<Object> connectionsComboBox;
+    private JComboBox<DB_TYPES> dbTypes;
     boolean canceled = false;
     private CoreWorkspace defaultCoreWorkspace;
+    public static String DEFAULT_H2_PORT="8082";
+    public static String DEFAULT_MESSAGE_H2=I18N.tr("Not required");
+
+    
+    
+    public enum DB_TYPES { H2GIS_EMBEDDED, H2GIS_SERVER, POSTGIS; }
 
     public DatabaseSettingsPanel(CoreWorkspace defaultCoreWorkspace) {
         super();
@@ -102,30 +111,55 @@ public class DatabaseSettingsPanel extends JDialog {
         Object[] dbKeys = dbProperties.keySet().toArray();
         JPanel mainPanel = new JPanel(new MigLayout());
         JLabel cbLabel = new JLabel(I18N.tr("Saved connections"));
-        comboBox = new JComboBox<Object>(dbKeys);
-        comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onUserSelectionChange"));
-        comboBox.setSelectedIndex(-1);
+        connectionsComboBox = new JComboBox<Object>(dbKeys);
+        connectionsComboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onUserSelectionChange"));
+        connectionsComboBox.setSelectedIndex(-1);
         mainPanel.add(cbLabel);
-        mainPanel.add(comboBox, "span, grow");
+        mainPanel.add(connectionsComboBox, "width 200!");       
+        CustomButton removeBt = new CustomButton(WKIcon.getIcon("remove"));
+        removeBt.setToolTipText(I18N.tr("Remove the connection parameters"));
+        removeBt.addActionListener(EventHandler.create(ActionListener.class, this, "onRemove")); 
+        CustomButton refreshBt = new CustomButton(WKIcon.getIcon("refresh"));
+        refreshBt.setToolTipText(I18N.tr("Refresh the parameters"));
+        refreshBt.addActionListener(EventHandler.create(ActionListener.class, this, "onUserSelectionChange")); 
+        mainPanel.add(refreshBt);
+        mainPanel.add(removeBt, "wrap");
+        
         JLabel labelName = new JLabel(I18N.tr("Connection name"));
         connectionName = new JTextField();
         mainPanel.add(labelName);
         mainPanel.add(connectionName, "width 200!");
+        
         CustomButton saveBt = new CustomButton(WKIcon.getIcon("save"));
         saveBt.setToolTipText(I18N.tr("Save the connection parameters"));
         saveBt.addActionListener(EventHandler.create(ActionListener.class, this, "onSave"));
-        CustomButton removeBt = new CustomButton(WKIcon.getIcon("remove"));
-        removeBt.setToolTipText(I18N.tr("Remove the connection parameters"));
-        removeBt.addActionListener(EventHandler.create(ActionListener.class, this, "onRemove"));
-        mainPanel.add(saveBt);
-        mainPanel.add(removeBt, "wrap");
-        JLabel labelURL = new JLabel(I18N.tr("JDBC URL"));
-        urlValue = new JTextField();
-        mainPanel.add(labelURL);
-        mainPanel.add(urlValue, "span, grow, wrap");
-        JLabel exampleURL = new JLabel(I18N.tr("Example")+ " : jdbc:h2:/tmp/testdb;MV_STORE=FALSE;DB_CLOSE_DELAY=30");
-        exampleURL.setFont(exampleURL.getFont().deriveFont(Font.ITALIC));
-        mainPanel.add(exampleURL, "span, wrap");
+        
+        mainPanel.add(saveBt, "wrap");
+        
+        
+        JLabel labeldbType = new JLabel(I18N.tr("Database"));
+        dbTypes = new JComboBox<DB_TYPES>(DB_TYPES.values());
+        dbTypes.addActionListener(EventHandler.create(ActionListener.class, this, "onDBTypeChange"));
+        
+        mainPanel.add(labeldbType);
+        mainPanel.add(dbTypes, "span, grow, wrap");
+        
+        JLabel labelHost = new JLabel(I18N.tr("Host"));
+        dbHost = new JTextField();
+        mainPanel.add(labelHost);
+        mainPanel.add(dbHost, "span, grow, wrap");
+        
+        JLabel labelPort = new JLabel(I18N.tr("Port"));
+        dbPort = new JTextField();
+        mainPanel.add(labelPort);
+        mainPanel.add(dbPort, "span, grow, wrap");
+        
+        JLabel labeldbName = new JLabel(I18N.tr("Database name"));
+        dbName = new JTextField();
+        mainPanel.add(labeldbName);
+        mainPanel.add(dbName, "span, grow, wrap");
+        
+        
         JLabel userLabel = new JLabel(I18N.tr("User name"));
         userValue = new JTextField();
         mainPanel.add(userLabel);
@@ -134,6 +168,8 @@ public class DatabaseSettingsPanel extends JDialog {
         requirePassword = new JCheckBox();
         mainPanel.add(pswLabel);
         mainPanel.add(requirePassword, "span 1, grow, wrap");
+        
+        
         JButton okBt = new JButton(I18N.tr("&Ok"));
         MenuCommonFunctions.setMnemonic(okBt);
         okBt.addActionListener(EventHandler.create(ActionListener.class, this, "onOk"));
@@ -184,13 +220,14 @@ public class DatabaseSettingsPanel extends JDialog {
         if (connectionName.getText().isEmpty()) {
             JOptionPane.showMessageDialog(rootPane, I18N.tr("Please specify a connexion name."));
             isParametersOk=false;
-        } else if (urlValue.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(rootPane, I18N.tr("The URL of the database cannot be null."));
+        } else if (dbName.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(rootPane, I18N.tr("The name of the database cannot be null."));
             isParametersOk=false;
         } else if (userValue.getText().isEmpty()) {
             JOptionPane.showMessageDialog(rootPane, I18N.tr("The user name cannot be null."));
             isParametersOk=false;
         }
+        //Check the DB type
         return isParametersOk;
 
     }
@@ -222,17 +259,53 @@ public class DatabaseSettingsPanel extends JDialog {
     public void onSave() {
         if (checkParameters()) {
             String nameValue = connectionName.getText();
-            if (!dbProperties.containsKey(nameValue)) {
+            if (!dbProperties.containsKey(nameValue)) {                
                 // Encode attributes in Base64 in order to be able to use separator char without worries
-                dbProperties.setProperty(nameValue,  encodeStrings(urlValue.getText(),userValue.getText(),
+                urlValue = buildJDBCUrl();
+                dbProperties.setProperty(nameValue,  encodeStrings(urlValue,userValue.getText(),
                         Boolean.toString(requirePassword.isSelected())));
-                comboBox.addItem(nameValue);
-                comboBox.setSelectedItem(nameValue);
+                connectionsComboBox.addItem(nameValue);
+                connectionsComboBox.setSelectedItem(nameValue);
                 saveProperties();
                 onUserSelectionChange();
             }
         }
     }
+    
+    /**
+     * Create the JDBC url from swing components
+     * 
+     * @return 
+     */
+    private String buildJDBCUrl(){        
+        StringBuilder sb =  new StringBuilder("jdbc:");        
+        DB_TYPES dbType = (DB_TYPES) dbTypes.getSelectedItem();
+        switch (dbType) {
+            case H2GIS_EMBEDDED:
+                sb.append("h2:").append(dbName.getText());
+                break;
+            case H2GIS_SERVER:
+                sb.append("h2:tcp://").append(dbHost.getText());
+                if(dbPort.getText()!=null){
+                    sb.append(":").append(dbPort.getText());
+                }
+                sb.append("/").append(dbName.getText());
+                break;
+            case POSTGIS:
+                sb.append("postgresql://").append(dbHost.getText());
+                if(dbPort.getText()!=null){
+                    sb.append(":").append(dbPort.getText());
+                }
+                sb.append("/").append(dbName.getText());
+                break;
+            default:
+                break;
+        }
+        return sb.toString();
+        
+    }
+    
+    
 
     /**
      * Click on the Ok button.
@@ -241,11 +314,12 @@ public class DatabaseSettingsPanel extends JDialog {
         String valueConnection = connectionName.getText();
         if(dbProperties.containsKey(valueConnection)){
             dbProperties.remove(valueConnection);
-            comboBox.removeItem(valueConnection);
+            connectionsComboBox.removeItem(valueConnection);
             saveProperties();
             onUserSelectionChange();
         }
-    }
+    }    
+   
 
     /**
      * Load the connection properties file.
@@ -278,18 +352,63 @@ public class DatabaseSettingsPanel extends JDialog {
      * Change the populate the components.
      */
     public void onUserSelectionChange() {
-        boolean isCmbEmpty = comboBox.getItemCount() == 0;
-        if (!isCmbEmpty && comboBox.getSelectedItem() != null) {
-            String value = comboBox.getSelectedItem().toString();
+        boolean isCmbEmpty = connectionsComboBox.getItemCount() == 0;
+        if (!isCmbEmpty && connectionsComboBox.getSelectedItem() != null) {
+            String value = connectionsComboBox.getSelectedItem().toString();
             String data = dbProperties.getProperty(value);
             connectionName.setText(value);
             List<String> config = decodeStrings(data);
-            if(config.size() == 3) {
-                urlValue.setText(config.get(0));
+            if (config.size() == 3) {
+                urlValue = config.get(0);
+                Properties jdcProperties = JDBCUrlParser.parse(urlValue);
+                dbName.setText(jdcProperties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
+                String dbTypeName = jdcProperties.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME);
+                if (dbTypeName.equalsIgnoreCase("h2")) {
+                    String netProt = jdcProperties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL);
+                    if (netProt != null) {
+                dbTypes.setSelectedItem(DatabaseSettingsPanel.DB_TYPES.H2GIS_SERVER);
+                dbHost.setText(jdcProperties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
+                String portNum = jdcProperties.getProperty(DataSourceFactory.JDBC_PORT_NUMBER);
+                dbPort.setText(portNum!=null?portNum:DatabaseSettingsPanel.DEFAULT_H2_PORT);            
+            }
+            else{
+               dbTypes.setSelectedItem(DatabaseSettingsPanel.DB_TYPES.H2GIS_EMBEDDED);  
+               dbHost.setText(DEFAULT_MESSAGE_H2);
+               dbPort.setText(DEFAULT_MESSAGE_H2);
+            }
+        }
+        else if(dbTypeName.equalsIgnoreCase("postgresql")){
+            dbTypes.setSelectedItem(DatabaseSettingsPanel.DB_TYPES.POSTGIS);
+            dbHost.setText(jdcProperties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
+            dbPort.setText(jdcProperties.getProperty(DataSourceFactory.JDBC_PORT_NUMBER));
+        }
+        
                 userValue.setText(config.get(1));
                 requirePassword.setSelected(Boolean.parseBoolean(config.get(2)));
             }
         }
+    }
+    
+    /**
+     * If the dbtype change some components must be disable
+     */
+    public void onDBTypeChange(){
+        DB_TYPES dbType = (DB_TYPES) dbTypes.getSelectedItem();
+        if(dbType.equals(DB_TYPES.H2GIS_EMBEDDED)){
+            dbHost.setEnabled(false);
+            dbPort.setEnabled(false);
+        }
+        else{            
+            dbHost.setEnabled(true);
+            dbPort.setEnabled(true);
+            if (dbHost.getText() == null) {
+                dbHost.setText("Required");
+            }
+            if (dbPort.getText() == null) {
+                dbPort.setText("Required");
+            }
+        }
+        
     }
     
     /**
@@ -302,7 +421,7 @@ public class DatabaseSettingsPanel extends JDialog {
      * @return URI field
      */
     public String getJdbcURI() {
-        return urlValue.getText();
+        return urlValue;
     }
 
     /**
@@ -312,14 +431,7 @@ public class DatabaseSettingsPanel extends JDialog {
         return userValue.getText();
     }
 
-    /**
-     * Set a new JDBC URL.
-     * @param jdbcConnectionReference JDBC url
-     */
-    public void setURL(String jdbcConnectionReference) {
-        urlValue.setText(jdbcConnectionReference);
-    }
-
+    
     /**
      * Set a new database user name.
      * @param dataBaseUser User identifier
@@ -343,4 +455,38 @@ public class DatabaseSettingsPanel extends JDialog {
     public void setConnectionName(String connectionName) {
         this.connectionName.setText(connectionName);
     }
+    
+    /**
+     * Set the name of the database
+     * @param dbName 
+     */
+    public  void setDBName(String dbName) {
+        this.dbName.setText(dbName); 
+    }
+    
+    /**
+     * Select the DBType name
+     * @param dbType  
+     */
+    public void setDBType(DB_TYPES dbType) {
+        dbTypes.setSelectedItem(dbType);
+    }
+    
+    /**
+     * Set the host value
+     * @param hostValue 
+     */
+    public void setHost(String hostValue) {
+        dbHost.setText(hostValue);
+    }
+    
+    /**
+     * Set the port number
+     * @param portValue 
+     */
+    public void setPort(String portValue) {
+        dbPort.setText(portValue);
+    }     
+
+
 }
