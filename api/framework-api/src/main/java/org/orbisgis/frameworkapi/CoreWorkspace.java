@@ -185,4 +185,17 @@ public interface CoreWorkspace extends Serializable {
      * @return Version qualifier
      */
     String getVersionQualifier();
+    
+    /**
+     * 
+     * @return name of the database
+     */
+    String getDatabaseName();
+    
+    /**
+     * Name of the database
+     * @param databaseName 
+     */
+    void setDatabaseName(String databaseName);
+    
 }
