@@ -362,7 +362,7 @@ public class DatabaseSettingsPanel extends JDialog {
                 urlValue = config.get(0);
                 Properties jdcProperties = JDBCUrlParser.parse(urlValue);
                 dbName.setText(jdcProperties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
-                String dbTypeName = jdcProperties.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME);
+                String dbTypeName = jdcProperties.getProperty("jdbc");
                 if (dbTypeName.equalsIgnoreCase("h2")) {
                     String netProt = jdcProperties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL);
                     if (netProt != null) {
@@ -438,6 +438,13 @@ public class DatabaseSettingsPanel extends JDialog {
      */
     public void setUser(String dataBaseUser) {
         userValue.setText(dataBaseUser);
+    }
+    
+    /**
+     * @return Database name
+     */
+    public String getDatabaseName() {
+        return dbName.getText();
     }
 
     /**
