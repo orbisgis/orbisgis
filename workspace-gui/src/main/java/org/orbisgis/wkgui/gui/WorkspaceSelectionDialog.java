@@ -157,6 +157,12 @@ public class WorkspaceSelectionDialog extends JPanel {
         }
     }
 
+    /**
+     * Init the workspace panel
+     * 
+     * @param coreWorkspace
+     * @param errorMessage 
+     */
     private void init(CoreWorkspaceImpl coreWorkspace, String errorMessage) {
         selectedWorkspace = new CoreWorkspaceImpl(coreWorkspace.getVersionMajor(), coreWorkspace.getVersionMinor(),
                 coreWorkspace.getVersionRevision(), coreWorkspace.getVersionQualifier(), new org.apache.felix
@@ -234,7 +240,7 @@ public class WorkspaceSelectionDialog extends JPanel {
         
         Properties dbProperties = JDBCUrlParser.parse(selectedWorkspace.getJDBCConnectionReference());        
         databaseSettingsPanel.setDBName(dbProperties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
-        String dbTypeName = dbProperties.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME);
+        String dbTypeName = dbProperties.getProperty("jdbc");
         if(dbTypeName.equalsIgnoreCase("h2")){
             String netProt = dbProperties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL);
             if(netProt!=null){
@@ -266,6 +272,7 @@ public class WorkspaceSelectionDialog extends JPanel {
             selectedWorkspace.setDataBaseUser(databaseSettingsPanel.getUser());
             selectedWorkspace.setRequirePassword(databaseSettingsPanel.hasPassword());
             selectedWorkspace.setJDBCConnectionReference(databaseSettingsPanel.getJdbcURI());
+            selectedWorkspace.setDatabaseName(databaseSettingsPanel.getDatabaseName());
         }
     }
 
@@ -288,6 +295,7 @@ public class WorkspaceSelectionDialog extends JPanel {
      *
      * @param parent        Parent component
      * @param coreWorkspace Core workspace
+     * @param errorMessage
      *
      * @return True if the user validate workspace change
      */
@@ -319,13 +327,13 @@ public class WorkspaceSelectionDialog extends JPanel {
                     //The user must input the password
                     JPanel passwordPanel = new JPanel(new BorderLayout());
                     JPasswordField pass = new JPasswordField(10);
-                    JLabel message = new JLabel(I18N.tr("<html>{0}<br>DataBase password for {1}:</html>",
-                            panel.selectedWorkspace.getJDBCConnectionReference(),
+                    JLabel message = new JLabel(I18N.tr("<html>Database : {0}<br>User : {1}</html>",
+                            panel.selectedWorkspace.getDatabaseName(),
                             panel.selectedWorkspace.getDataBaseUser()));
                     passwordPanel.add(pass, BorderLayout.CENTER);
                     passwordPanel.add(message, BorderLayout.NORTH);
                     if(JOptionPane.showConfirmDialog(panel, passwordPanel,
-                            I18N.tr("Enter database password"), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+                            I18N.tr("Enter a password for the database"), JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,WKIcon.getIcon("database")) == JOptionPane.OK_OPTION) {
                         coreWorkspace.setDataBasePassword(new String(pass.getPassword()));
                     } else {
                         return false;
