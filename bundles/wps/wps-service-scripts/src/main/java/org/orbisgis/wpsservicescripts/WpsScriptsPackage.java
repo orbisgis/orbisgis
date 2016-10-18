@@ -80,6 +80,9 @@ public class WpsScriptsPackage {
     /**
      * This method loads the scripts one by one under different node path with different icons.
      * (Be careful before any modification)
+     * @param processpath
+     * @param icons
+     * @param path
      */
     protected void customLoadScript(String processpath, String[] icons, String path){
         String tempFolderPath = coreWorkspace.getApplicationFolder();
@@ -129,6 +132,8 @@ public class WpsScriptsPackage {
 
     /**
      * This method copy the an icon into the temporary system folder to make it accessible by the WpsClient
+     * @param iconName
+     * @return 
      */
     protected String loadIcon(String iconName){
         URL iconUrl = this.getClass().getResource("icons/"+iconName);

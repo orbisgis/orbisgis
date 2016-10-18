@@ -62,7 +62,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.Window;
 import java.awt.event.ActionListener;
@@ -74,8 +73,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import org.h2gis.utilities.JDBCUrlParser;
 
 import org.orbisgis.sif.components.CustomButton;
+import static org.orbisgis.wkgui.gui.DatabaseSettingsPanel.DEFAULT_MESSAGE_H2;
 
 /**
  * GUI for Workspace selection.
@@ -155,6 +157,12 @@ public class WorkspaceSelectionDialog extends JPanel {
         }
     }
 
+    /**
+     * Init the workspace panel
+     * 
+     * @param coreWorkspace
+     * @param errorMessage 
+     */
     private void init(CoreWorkspaceImpl coreWorkspace, String errorMessage) {
         selectedWorkspace = new CoreWorkspaceImpl(coreWorkspace.getVersionMajor(), coreWorkspace.getVersionMinor(),
                 coreWorkspace.getVersionRevision(), coreWorkspace.getVersionQualifier(), new org.apache.felix
@@ -229,8 +237,31 @@ public class WorkspaceSelectionDialog extends JPanel {
         Window window = SwingUtilities.getWindowAncestor(this);
         DatabaseSettingsPanel databaseSettingsPanel = new DatabaseSettingsPanel(window, selectedWorkspace);
         databaseSettingsPanel.setConnectionName(new File(selectedWorkspace.getWorkspaceFolder()).getName());
+        
+        Properties dbProperties = JDBCUrlParser.parse(selectedWorkspace.getJDBCConnectionReference());        
+        databaseSettingsPanel.setDBName(dbProperties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
+        String dbTypeName = dbProperties.getProperty("jdbc");
+        if(dbTypeName.equalsIgnoreCase("h2")){
+            String netProt = dbProperties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL);
+            if(netProt!=null){
+                databaseSettingsPanel.setDBType(DatabaseSettingsPanel.DB_TYPES.H2GIS_SERVER);
+                databaseSettingsPanel.setHost(dbProperties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
+                String portNum = dbProperties.getProperty(DataSourceFactory.JDBC_PORT_NUMBER);
+                databaseSettingsPanel.setPort(portNum!=null?portNum:DatabaseSettingsPanel.DEFAULT_H2_PORT);            
+            }
+            else{
+               databaseSettingsPanel.setDBType(DatabaseSettingsPanel.DB_TYPES.H2GIS_EMBEDDED);               
+               databaseSettingsPanel.setPort(DEFAULT_MESSAGE_H2);
+               databaseSettingsPanel.setHost(DEFAULT_MESSAGE_H2);
+            }
+        }
+        else if(dbTypeName.equalsIgnoreCase("postgresql")){
+            databaseSettingsPanel.setDBType(DatabaseSettingsPanel.DB_TYPES.POSTGIS);
+            databaseSettingsPanel.setHost(dbProperties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
+            databaseSettingsPanel.setPort(dbProperties.getProperty(DataSourceFactory.JDBC_PORT_NUMBER));
+        }
+        
         databaseSettingsPanel.setUser(selectedWorkspace.getDataBaseUser());
-        databaseSettingsPanel.setURL(selectedWorkspace.getJDBCConnectionReference());
         databaseSettingsPanel.setHasPassword(selectedWorkspace.isRequirePassword());
         databaseSettingsPanel.setAlwaysOnTop(true);
         databaseSettingsPanel.setModal(true);
@@ -241,6 +272,7 @@ public class WorkspaceSelectionDialog extends JPanel {
             selectedWorkspace.setDataBaseUser(databaseSettingsPanel.getUser());
             selectedWorkspace.setRequirePassword(databaseSettingsPanel.hasPassword());
             selectedWorkspace.setJDBCConnectionReference(databaseSettingsPanel.getJdbcURI());
+            selectedWorkspace.setDatabaseName(databaseSettingsPanel.getDatabaseName());
         }
     }
 
@@ -263,6 +295,7 @@ public class WorkspaceSelectionDialog extends JPanel {
      *
      * @param parent        Parent component
      * @param coreWorkspace Core workspace
+     * @param errorMessage
      *
      * @return True if the user validate workspace change
      */
@@ -294,13 +327,13 @@ public class WorkspaceSelectionDialog extends JPanel {
                     //The user must input the password
                     JPanel passwordPanel = new JPanel(new BorderLayout());
                     JPasswordField pass = new JPasswordField(10);
-                    JLabel message = new JLabel(I18N.tr("<html>{0}<br>DataBase password for {1}:</html>",
-                            panel.selectedWorkspace.getJDBCConnectionReference(),
+                    JLabel message = new JLabel(I18N.tr("<html>Database : {0}<br>User : {1}</html>",
+                            panel.selectedWorkspace.getDatabaseName(),
                             panel.selectedWorkspace.getDataBaseUser()));
                     passwordPanel.add(pass, BorderLayout.CENTER);
                     passwordPanel.add(message, BorderLayout.NORTH);
                     if(JOptionPane.showConfirmDialog(panel, passwordPanel,
-                            I18N.tr("Enter database password"), JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+                            I18N.tr("Enter a password for the database"), JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,WKIcon.getIcon("database")) == JOptionPane.OK_OPTION) {
                         coreWorkspace.setDataBasePassword(new String(pass.getPassword()));
                     } else {
                         return false;
