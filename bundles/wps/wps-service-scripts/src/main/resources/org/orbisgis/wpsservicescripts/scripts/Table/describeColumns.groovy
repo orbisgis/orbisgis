@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
@@ -16,20 +16,20 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Describe columns", lang = "en"),
                 @LanguageString(value = "Décrire les colonnes", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Extract the name, type and comment from all fields of a table.", lang = "en"),
                 @LanguageString(value = "Extrait le nom, le type et le commentaire de chacun des champs d'un table.", lang = "fr")
         ],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "Table", lang = "en"),
                         @LanguageString(value = "Table", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "Describe", lang = "en"),
                         @LanguageString(value = "Descrition", lang = "fr")
                 ])
@@ -62,22 +62,22 @@ def processing() {
 
 /** This DataStore is the input data source table. */
 @DataStoreInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Table", lang = "en"),
                 @LanguageString(value = "Table", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Extract name, type and comments from the selected table.", lang = "en"),
                 @LanguageString(value = "Extrait les noms, les types et les commentaires de la table.", lang = "fr")
         ])
 String tableName
 
 @LiteralDataInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Output table name", lang = "en"),
                 @LanguageString(value = "Nom de la table de sortie", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Name of the table containing the descriptions.", lang = "en"),
                 @LanguageString(value = "Nom de la table contenant les descriptions.", lang = "fr")
         ])
@@ -86,11 +86,11 @@ String outputTableName
 
 /** Output message. */
 @LiteralDataOutput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Output message", lang = "en"),
                 @LanguageString(value = "Message de sortie", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The output message.", lang = "en"),
                 @LanguageString(value = "Le message de sortie.", lang = "fr")
         ])

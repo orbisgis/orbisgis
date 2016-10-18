@@ -67,6 +67,8 @@ import java.lang.annotation.RetentionPolicy
     /** Displayable name of the values. If not specified, use the values as name. */
     String[] names() default []
 
+    TranslatableString[] translatedNames() default []
+
     /** Default selected values, can be empty.*/
     String[] selectedValues() default []
 
@@ -80,4 +82,5 @@ import java.lang.annotation.RetentionPolicy
     public static final String[] defaultValues = []
     public static final String[] defaultNames = []
     public static final String[] defaultSelectedValues = []
+    public static final LanguageString[] defaultTranslatedNames = []
 }

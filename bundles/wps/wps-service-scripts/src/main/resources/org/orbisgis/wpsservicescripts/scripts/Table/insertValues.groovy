@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
@@ -25,24 +25,24 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Insert values", lang = "en"),
                 @LanguageString(value = "Insertion de valeurs", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Insert values into a table.", lang = "en"),
                 @LanguageString(value = "Insert de valeurs dans une table.", lang = "fr")
         ],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "Table", lang = "en"),
                         @LanguageString(value = "Table", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "Insert", lang = "en"),
                         @LanguageString(value = "Insertion", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "Values", lang = "en"),
                         @LanguageString(value = "Valeurs", lang = "fr")
                 ])
@@ -98,11 +98,11 @@ def processing() {
 
 /** This DataStore is the input data source table. */
 @DataStoreInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Table", lang = "en"),
                 @LanguageString(value = "Table", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The table to edit.", lang = "en"),
                 @LanguageString(value = "La table à éditer.", lang = "fr")
         ])
@@ -114,11 +114,11 @@ String tableName
 
 /** Field list concerned by the value insertion. */
 @DataFieldInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Fields", lang = "en"),
                 @LanguageString(value = "Champs", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The field concerned by the value insertion.", lang = "en"),
                 @LanguageString(value = "Les champs concernés par les insertions de valeurs.", lang = "fr")
         ],
@@ -129,11 +129,11 @@ String[] fieldList
 
 /** Coma separated values to insert. */
 @LiteralDataInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Values", lang = "en"),
                 @LanguageString(value = "Valeurs", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The input values. The values should be separated by a ',' and rows by ';'", lang = "en"),
                 @LanguageString(value = "Les valeurs à insérer. Elles doivent etre séparées par une ',' et les lignes par un ';'", lang = "fr")
         ])
@@ -141,11 +141,11 @@ String values
 
 /** String output of the process. */
 @LiteralDataOutput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Output message", lang = "en"),
                 @LanguageString(value = "Message de sortie", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The output message.", lang = "en"),
                 @LanguageString(value = "Le message de sortie.", lang = "fr")
         ])

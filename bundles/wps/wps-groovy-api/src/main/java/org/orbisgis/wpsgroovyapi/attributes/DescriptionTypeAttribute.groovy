@@ -32,15 +32,15 @@ import java.lang.annotation.RetentionPolicy
  *       Title of a process, input, and output. Normally available for display to a human.
  *
  * The following fields can be defined (optional) :
- *  - traducedTitles : LanguageString[]
- *      List of LanguageString containing the traduced titles.
+ *  - translatedTitles : LanguageString[]
+ *      List of LanguageString containing the translated titles.
  *  - resume : String
  *      Brief narrative description of a process, input, and output. Normally available for display to a human.
- *  - traducedResumes : LanguageString[]
- *      List of LanguageString containing the traduced description.
+ *  - translatedResumes : LanguageString[]
+ *      List of LanguageString containing the translated description.
  *  - keywords : String
  *      Array of keywords that characterize a process, its inputs, and outputs.
- *  - traducedKeywords : Keyword[]
+ *  - translatedKeywords : Keyword[]
  *      List of Keyword containing the keywords translations.
  *  - identifier : String
  *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
@@ -55,20 +55,20 @@ import java.lang.annotation.RetentionPolicy
     /** Title of a process, input, and output. Normally available for display to a human. */
     String title()
 
-    /** List of LanguageString containing the traduced titles. */
-    LanguageString[] traducedTitles() default []
+    /** List of LanguageString containing the translated titles. */
+    LanguageString[] translatedTitles() default []
 
     /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
     String resume() default ""
 
-    /** List of LanguageString containing the traduced description. */
-    LanguageString[] traducedResumes() default []
+    /** List of LanguageString containing the translated description. */
+    LanguageString[] translatedResumes() default []
 
     /** Array of keywords that characterize a process, its inputs, and outputs. */
     String[] keywords() default []
 
     /** List of Keyword containing the keywords translations. */
-    Keyword[] traducedKeywords() default []
+    TranslatableString[] translatedKeywords() default []
 
     /** Unambiguous identifier of a process, input, and output. */
     String identifier() default ""
@@ -81,11 +81,11 @@ import java.lang.annotation.RetentionPolicy
     /********************/
     /** default values **/
     /********************/
-    public static final LanguageString[] defaultTraducedTitles = []
+    public static final LanguageString[] defaultTranslatedTitles = []
     public static final String defaultResume = ""
-    public static final LanguageString[] defaultTraducedResumes = []
+    public static final LanguageString[] defaultTranslatedResumes = []
     public static final String[] defaultKeywords = []
-    public static final Keyword[] defaultTraducedKeywords = []
+    public static final TranslatableString[] defaultTranslatedKeywords = []
     public static final String defaultIdentifier = ""
     public static final MetadataAttribute[] defaultMetadata = []
 }

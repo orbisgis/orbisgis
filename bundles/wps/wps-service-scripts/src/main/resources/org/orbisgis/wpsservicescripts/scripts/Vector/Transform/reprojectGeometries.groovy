@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Transform
 
-import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.*
@@ -25,24 +25,24 @@ import org.orbisgis.wpsgroovyapi.process.*
  * @author Erwan Bocher
  */
 @Process(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Reproject geometries", lang = "en"),
 				@LanguageString(value = "Reprojection de géométries", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "Reproject geometries from one Coordinate Reference System to another.", lang = "en"),
 				@LanguageString(value = "Reprojection une géométrie d'un SRID vers un autre.", lang = "fr")
 		],
-		traducedKeywords = [
-				@Keyword(traducedKeywords = [
+		translatedKeywords = [
+				@TranslatableString(translatableStrings = [
 						@LanguageString(value = "Vector", lang = "en"),
 						@LanguageString(value = "Vecteur", lang = "fr")
 				]),
-				@Keyword(traducedKeywords = [
+				@TranslatableString(translatableStrings = [
 						@LanguageString(value = "Geometry", lang = "en"),
 						@LanguageString(value = "Géometrie", lang = "fr")
 				]),
-				@Keyword(traducedKeywords = [
+				@TranslatableString(translatableStrings = [
 						@LanguageString(value = "Reproject", lang = "en"),
 						@LanguageString(value = "Reprojection", lang = "fr")
 				])
@@ -78,11 +78,11 @@ def processing() {
 
 /** This DataStore is the input data source. */
 @DataStoreInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Input spatial data", lang = "en"),
 				@LanguageString(value = "Données spatiales d'entrée", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "The spatial data source to be reprojected.", lang = "en"),
 				@LanguageString(value = "La source de données spatiales pour la reprojection.", lang = "fr")
 		],
@@ -96,11 +96,11 @@ String inputDataStore
 
 /** Name of the Geometric field of the DataStore inputDataStore. */
 @DataFieldInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Geometric field", lang = "en"),
 				@LanguageString(value = "Champ géométrique", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "The geometric field of the data source.", lang = "en"),
 				@LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
 		],
@@ -111,11 +111,11 @@ String[] geometricField
 
 /** The spatial_ref SRID */
 @FieldValueInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "SRID", lang = "en"),
 				@LanguageString(value = "SRID", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "The spatial reference system identifier.", lang = "en"),
 				@LanguageString(value = "L'identifiant du système de référence spatiale.", lang = "fr")
 		],
@@ -126,11 +126,11 @@ String[] srid
 
 /** Fields to keep. */
 @DataFieldInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Fields to keep", lang = "en"),
 				@LanguageString(value = "Champs à conserver", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "The fields that will be kept in the output.", lang = "en"),
 				@LanguageString(value = "Les champs qui seront conservés dans la table de sortie.", lang = "fr")
 		],
@@ -142,11 +142,11 @@ String[] fieldList
 
 
 @LiteralDataInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Output table name", lang = "en"),
 				@LanguageString(value = "Nom de la table de sortie", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
 				@LanguageString(value = "Nom de la table contenant les résultats du traitement.", lang = "fr")
 		])
@@ -158,11 +158,11 @@ String outputTableName
 
 /** String output of the process. */
 @LiteralDataOutput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Output message", lang = "en"),
 				@LanguageString(value = "Message de sortie", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "The output message.", lang = "en"),
 				@LanguageString(value = "Le message de sortie.", lang = "fr")
 		])

@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Convert
 
-import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.*
@@ -20,28 +20,28 @@ import org.orbisgis.wpsgroovyapi.process.*
  * @author Sylvain PALOMINOS
  */
 @Process(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Extract center", lang = "en"),
 				@LanguageString(value = "Extraction du centre", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "Extract the center of a geometry.", lang = "en"),
 				@LanguageString(value = "Extraction du centre d'une géométrie.", lang = "fr")
 		],
-		traducedKeywords = [
-				@Keyword(traducedKeywords = [
+		translatedKeywords = [
+				@TranslatableString(translatableStrings = [
 						@LanguageString(value = "Vector", lang = "en"),
 						@LanguageString(value = "Vecteur", lang = "fr")
 				]),
-				@Keyword(traducedKeywords = [
+				@TranslatableString(translatableStrings = [
 						@LanguageString(value = "Geometry", lang = "en"),
 						@LanguageString(value = "Géometrie", lang = "fr")
 				]),
-				@Keyword(traducedKeywords = [
+				@TranslatableString(translatableStrings = [
 						@LanguageString(value = "Extract", lang = "en"),
 						@LanguageString(value = "Extraction", lang = "fr")
 				]),
-				@Keyword(traducedKeywords = [
+				@TranslatableString(translatableStrings = [
 						@LanguageString(value = "Center", lang = "en"),
 						@LanguageString(value = "Centre", lang = "fr")
 				])
@@ -76,11 +76,11 @@ def processing() {
 
 /** This DataStore is the input data source. */
 @DataStoreInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Extract center", lang = "en"),
 				@LanguageString(value = "Extraction du centre", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "Extract the center of a geometry.", lang = "en"),
 				@LanguageString(value = "Extraction du centre d'une géométrie.", lang = "fr")
 		],
@@ -93,11 +93,11 @@ String inputDataStore
 
 /** Name of the Geometric field of the DataStore inputDataStore. */
 @DataFieldInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Geometric field", lang = "en"),
 				@LanguageString(value = "Champ géométrique", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "The geometric field of the data source.", lang = "en"),
 				@LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
 		],
@@ -107,11 +107,11 @@ String[] geometricField
 
 /** Name of the identifier field of the DataStore inputDataStore. */
 @DataFieldInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Identifier field", lang = "en"),
 				@LanguageString(value = "Champ identifiant", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "A field used as an identifier.", lang = "en"),
 				@LanguageString(value = "Champ utilisé comme identifiant.", lang = "fr")
 		],
@@ -120,11 +120,11 @@ String[] geometricField
 String[] idField
 
 @EnumerationInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Operation", lang = "en"),
 				@LanguageString(value = "Opération", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "Operation to extract the points.", lang = "en"),
 				@LanguageString(value = "Opération d'extraction des points.", lang = "fr")
 		],
@@ -135,11 +135,11 @@ String[] operation
 
 
 @LiteralDataInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Output table name", lang = "en"),
 				@LanguageString(value = "Nom de la table de sortie", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
 				@LanguageString(value = "Nom de la table contenant les résultats du traitement.", lang = "fr")
 		])
@@ -151,11 +151,11 @@ String outputTableName
 
 /** String output of the process. */
 @LiteralDataOutput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Output message", lang = "en"),
 				@LanguageString(value = "Message de sortie", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "The output message.", lang = "en"),
 				@LanguageString(value = "Le message de sortie.", lang = "fr")
 		])
