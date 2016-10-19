@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
@@ -16,26 +16,26 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(title = "DataStoreTest",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "DataStore test", lang = "en"),
                 @LanguageString(value = "Test du DataStore", lang = "fr")
         ],
         resume = "Test script using the DataStore ComplexData.",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Test script using the DataStore ComplexData.", lang = "en"),
                 @LanguageString(value = "Scripts test pour l'usage du ComplexData DataStore.", lang = "fr")
         ],
         keywords = ["test", "script", "wps"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "test", lang = "en"),
                         @LanguageString(value = "test", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "script", lang = "en"),
                         @LanguageString(value = "scripte", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "wps", lang = "en"),
                         @LanguageString(value = "wps", lang = "fr")
                 ])
@@ -57,18 +57,18 @@ def processing() {
 /** This DataStore is the input data source. */
 @DataStoreInput(
         title = "Input DataStore",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Input DataStore", lang = "en"),
                 @LanguageString(value = "Entrée DataStore", lang = "fr")
         ],
         resume = "A DataStore input.",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "A DataStore input.", lang = "en"),
                 @LanguageString(value = "Une entrée DataStore.", lang = "fr")
         ],
         keywords = ["input"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "input", lang = "en"),
                         @LanguageString(value = "entrée", lang = "fr")
                 ])
@@ -90,18 +90,18 @@ String inputDataStore
 /** This DataStore is the output data source. */
 @DataStoreOutput(
         title="Output DataStore",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Output DataStore", lang = "en"),
                 @LanguageString(value = "Sortie DataStore", lang = "fr")
         ],
         resume="A DataStore output",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "A DataStore output.", lang = "en"),
                 @LanguageString(value = "Une sortie DataStore.", lang = "fr")
         ],
         keywords = ["output"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "output", lang = "en"),
                         @LanguageString(value = "sortie", lang = "fr")
                 ])

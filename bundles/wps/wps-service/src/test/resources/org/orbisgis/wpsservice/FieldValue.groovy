@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
@@ -20,26 +20,26 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(title = "FieldValueTest",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "FieldValue test", lang = "en"),
                 @LanguageString(value = "Test du FieldValue", lang = "fr")
         ],
         resume = "Test script using the FieldValue ComplexData.",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Test script using the FieldValue ComplexData.", lang = "en"),
                 @LanguageString(value = "Scripts test pour l'usage du ComplexData FieldValue.", lang = "fr")
         ],
         keywords = ["test", "script", "wps"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "test", lang = "en"),
                         @LanguageString(value = "test", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "script", lang = "en"),
                         @LanguageString(value = "scripte", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "wps", lang = "en"),
                         @LanguageString(value = "wps", lang = "fr")
                 ])
@@ -70,18 +70,18 @@ String dataFieldInput
 /** This FieldValue is the input data source. */
 @FieldValueInput(
         title = "Input FieldValue",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Input FieldValue", lang = "en"),
                 @LanguageString(value = "Entrée FieldValue", lang = "fr")
         ],
         resume = "A FieldValue input.",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "A FieldValue input.", lang = "en"),
                 @LanguageString(value = "Une entrée FieldValue.", lang = "fr")
         ],
         keywords = ["input"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "input", lang = "en"),
                         @LanguageString(value = "entrée", lang = "fr")
                 ])
@@ -112,18 +112,18 @@ String dataFieldOutput
 /** This FieldValue is the output data source. */
 @FieldValueOutput(
         title="Output FieldValue",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Output FieldValue", lang = "en"),
                 @LanguageString(value = "Sortie FieldValue", lang = "fr")
         ],
         resume="A FieldValue output",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "A FieldValue output.", lang = "en"),
                 @LanguageString(value = "Une sortie FieldValue.", lang = "fr")
         ],
         keywords = ["output"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "output", lang = "en"),
                         @LanguageString(value = "sortie", lang = "fr")
                 ])

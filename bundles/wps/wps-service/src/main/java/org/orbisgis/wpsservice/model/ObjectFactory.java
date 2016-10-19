@@ -26,6 +26,7 @@ public class ObjectFactory {
     private final static QName _GeometryData_QNAME = new QName("http://orbisgis.org", "Geometry");
     private final static QName _RawData_QNAME = new QName("http://orbisgis.org", "RawData");
     private final static QName _Password_QNAME = new QName("http://orbisgis.org", "Password");
+    private final static QName _TranslatableString_QNAME = new QName("http://orbisgis.org", "TranslatableString");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: net.opengis.wps.v_2_0
@@ -159,5 +160,21 @@ public class ObjectFactory {
             substitutionHeadName="DataDescription")
     public JAXBElement<Password> createPassword(Password password) {
         return new JAXBElement<>(_Password_QNAME, Password.class, password);
+    }
+
+    /**
+     * Create an instance of {@link TranslatableString }
+     *
+     */
+    public TranslatableString createTranslatableString() { return new TranslatableString(); }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link TranslatableString }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace="http://orbisgis.org",
+            name="TranslatableString")
+    public JAXBElement<TranslatableString> createTranslatableString(TranslatableString translatableString) {
+        return new JAXBElement<>(_TranslatableString_QNAME, TranslatableString.class, translatableString);
     }
 }

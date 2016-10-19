@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Properties
 
-import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.*
@@ -27,24 +27,24 @@ import org.orbisgis.wpsgroovyapi.process.*
  * @author Sylvain PALOMINOS
  */
 @Process(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Geometry properties", lang = "en"),
                 @LanguageString(value = "Propriétés géométriques", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Compute some basic geometry properties.", lang = "en"),
                 @LanguageString(value = "Calcul des propriétés de base des géométries.", lang = "fr")
         ],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "Vector", lang = "en"),
                         @LanguageString(value = "Vecteur", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "Geometry", lang = "en"),
                         @LanguageString(value = "Géometrie", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "Properties", lang = "en"),
                         @LanguageString(value = "Propriétés", lang = "fr")
                 ])
@@ -112,11 +112,11 @@ def processing() {
 
 /** This DataStore is the input data source. */
 @DataStoreInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Input spatial data", lang = "en"),
                 @LanguageString(value = "Données spatiales d'entrée", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The spatial data source to compute the geometry properties.", lang = "en"),
                 @LanguageString(value = "La source de données spatiales pour le calcul des propriétés géométriques.", lang = "fr")
         ],
@@ -129,11 +129,11 @@ String inputDataStore
 
 /** Name of the Geometric field of the DataStore inputDataStore. */
 @DataFieldInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Geometric field", lang = "en"),
                 @LanguageString(value = "Champ géométrique", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The geometric field of the data source.", lang = "en"),
                 @LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
         ],
@@ -143,11 +143,11 @@ String[] geometricField
 
 /** Name of the identifier field of the DataStore inputDataStore. */
 @DataFieldInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Identifier field", lang = "en"),
                 @LanguageString(value = "Champ identifiant", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "A field used as an identifier.", lang = "en"),
                 @LanguageString(value = "Le champ utilisé comme identifiant.", lang = "fr")
         ],
@@ -156,27 +156,76 @@ String[] geometricField
 String[] idField
 
 @EnumerationInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Operation", lang = "en"),
                 @LanguageString(value = "Opération", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Operation to compute the properties.", lang = "en"),
                 @LanguageString(value = "Opération à effectuer.", lang = "fr")
         ],
         values=["geomtype","srid", "length","perimeter","area", "dimension", "coorddim", "num_geoms", "num_pts", "issimple", "isvalid", "isempty"],
-        names=["Geometry type","SRID", "Length", "Perimeter", "Area", "Geometry dimension","Coordinate dimension", "Number of geometries", "Number of points", "Is simple", "Is valid", "Is empty" ],
+        translatedNames = [
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Geometry type", lang = "en"),
+                        @LanguageString(value = "Type de géométrie", lang = "fr")
+                ]),
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "SRID", lang = "en"),
+                        @LanguageString(value = "SRID", lang = "fr")
+                ]),
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Length", lang = "en"),
+                        @LanguageString(value = "Longueur", lang = "fr")
+                ]),
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Perimeter", lang = "en"),
+                        @LanguageString(value = "Périmètre", lang = "fr")
+                ]),
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Area", lang = "en"),
+                        @LanguageString(value = "Surface", lang = "fr")
+                ]),
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Geometry dimension", lang = "en"),
+                        @LanguageString(value = "Dimension de la géométrie", lang = "fr")
+                ]),
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Coordinate dimension", lang = "en"),
+                        @LanguageString(value = "Dimension des coordonnées", lang = "fr")
+                ]),
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Number of geometries", lang = "en"),
+                        @LanguageString(value = "Nombre de géométries", lang = "fr")
+                ]),
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Number of points", lang = "en"),
+                        @LanguageString(value = "Nombre de points", lang = "fr")
+                ]),
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Is simple", lang = "en"),
+                        @LanguageString(value = "Est simple", lang = "fr")
+                ]),
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Is valid", lang = "en"),
+                        @LanguageString(value = "Est valide", lang = "fr")
+                ]),
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Is empty", lang = "en"),
+                        @LanguageString(value = "Est vide", lang = "fr")
+                ])
+        ],
         selectedValues = "geomtype",
         multiSelection = true)
 String[] operations
 
 
 @LiteralDataInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Output table name", lang = "en"),
                 @LanguageString(value = "Nom de la table de sortie", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
                 @LanguageString(value = "Nom de la table contenant les résultats du traitement.", lang = "fr")
         ])
@@ -188,11 +237,11 @@ String outputTableName
 
 /** String output of the process. */
 @LiteralDataOutput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Output message", lang = "en"),
                 @LanguageString(value = "Message de sortie", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The output message.", lang = "en"),
                 @LanguageString(value = "Le message de sortie.", lang = "fr")
         ])

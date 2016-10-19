@@ -19,10 +19,13 @@
 
 package org.orbisgis.wpsservice.model;
 
+import net.opengis.ows._2.LanguageStringType;
 import net.opengis.wps._2_0.ComplexDataType;
 import net.opengis.wps._2_0.Format;
+import org.orbisgis.wpsgroovyapi.attributes.LanguageString;
 
 import javax.xml.bind.annotation.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,8 +34,9 @@ import java.util.List;
  **/
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Enumeration", propOrder = {"values", "names", "defaultValues", "multiSelection", "isEditable"})
-public class Enumeration extends ComplexDataType{
+@XmlType(name = "Enumeration",
+        propOrder = {"values", "names", "defaultValues", "multiSelection", "isEditable", "translatedNames"})
+public class Enumeration extends ComplexDataType implements TranslatableComplexData{
 
     /** List of values.*/
     @XmlElement(name = "Value", namespace = "http://orbisgis.org")
@@ -49,6 +53,9 @@ public class Enumeration extends ComplexDataType{
     /** Enable or not the user to use its own value.*/
     @XmlAttribute(name = "isEditable")
     private boolean isEditable = false;
+    @XmlElement(name = "TranslatedNames", namespace = "http://orbisgis.org")
+    //TODO create an marshallable object to handle and array of LanguageString Type
+    private TranslatableString[] translatedNames;
 
     /**
      * Main constructor.
@@ -132,5 +139,62 @@ public class Enumeration extends ComplexDataType{
      */
     public String[] getValuesNames(){
         return names;
+    }
+
+    /**
+     * Sets the translated names of the values. The translated names will be only used for the displaying.
+     * @param translatedNames List of the translated names. It should have the same size of the values array.
+     */
+    public void setTranslatedNames(TranslatableString[] translatedNames){
+        this.translatedNames = translatedNames;
+    }
+
+    /**
+     * Returns the array of the translated name.
+     * @return The array of the translated name.
+     */
+    public TranslatableString[] getTranslatedNames(){
+        return translatedNames;
+    }
+
+    @Override
+    public ComplexDataType getTranslatedData(String serverLanguage, String clientLanguages) {
+        try {
+            Enumeration enumeration = new Enumeration(format, values, defaultValues);
+            enumeration.setEditable(this.isEditable());
+            enumeration.setMultiSelection(this.isMultiSelection());
+            List<String> translatedNames = new ArrayList<>();
+            if(this.translatedNames == null || this.translatedNames.length == 0){
+                enumeration.setValuesNames(this.getValuesNames());
+            }
+            else {
+                for (TranslatableString translatableString : this.getTranslatedNames()) {
+                    String clientLanguageTranslation = null;
+                    String subClientLanguageTranslation = null;
+                    String serverLanguageTranslation = null;
+                    for (LanguageStringType stringType : translatableString.getStrings()) {
+                        if (stringType.getLang().equals(clientLanguages)) {
+                            clientLanguageTranslation = stringType.getValue();
+                        }
+                        if (stringType.getLang().equals(clientLanguages.substring(0, 2))) {
+                            subClientLanguageTranslation = stringType.getValue();
+                        }
+                        if (stringType.getLang().equals(serverLanguage)) {
+                            serverLanguageTranslation = stringType.getValue();
+                        }
+                    }
+                    if (clientLanguageTranslation != null) {
+                        translatedNames.add(clientLanguageTranslation);
+                    } else if (subClientLanguageTranslation != null) {
+                        translatedNames.add(subClientLanguageTranslation);
+                    } else if (serverLanguageTranslation != null) {
+                        translatedNames.add(serverLanguageTranslation);
+                    }
+                }
+                enumeration.setValuesNames(translatedNames.toArray(new String[translatedNames.size()]));
+            }
+            return enumeration;
+        } catch (MalformedScriptException ignored) {}
+        return this;
     }
 }
