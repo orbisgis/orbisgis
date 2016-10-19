@@ -67,11 +67,11 @@ def processing() {
     }
     //If endcapStyle is defined
     if(endcapStyle != null){
-        optionalParameter += "endcap="+endcapStyle+" "
+        optionalParameter += "endcap="+endcapStyle[0]+" "
     }
     //If joinStyle is defined
     if(joinStyle != null){
-        optionalParameter += "join="+joinStyle+" "
+        optionalParameter += "join="+joinStyle[0]+" "
     }
     //If mitreLimit is defined
     if(mitreLimit != null){
@@ -185,7 +185,7 @@ Integer quadSegs = 8
         values=["round", "flat", "butt", "square"],
         selectedValues = ["round"],
         minOccurs = 0)
-String endcapStyle
+String[] endcapStyle
 
 /** Join style. */
 @EnumerationInput(
@@ -200,7 +200,7 @@ String endcapStyle
         values=["round", "mitre", "miter", "bevel"],
         selectedValues=["round"],
         minOccurs = 0)
-String joinStyle
+String[] joinStyle
 
 /** Fields to keep. */
 @DataFieldInput(

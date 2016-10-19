@@ -56,7 +56,12 @@ import org.orbisgis.wpsgroovyapi.process.*
 def processing() {
 //Build the start of the query
     String query = "CREATE TABLE "+outputTableName+" AS SELECT "
-   
+
+    logger.info(""+operations.size())
+    for (String operation : operations) {
+        logger.info(operation)
+    }
+
     for (String operation : operations) {
         if(operation.equals("geomtype")){
             query += " ST_GeometryType("+geometricField[0]+") as geomType,"

@@ -51,10 +51,10 @@ def processing() {
 
 	String query = "CREATE TABLE "+outputTableName+" AS SELECT * FROM "
 
-	if(operation.equals("left")){
+	if(operation[0].equals("left")){
 		query += leftDataStore + "JOIN " + rightDataStore + " ON " + leftDataStore+ "."+ leftField[0]+ "="+ rightDataStore+"."+ rightField[0];
 	}
-	else if (operation.equals("left")){
+	else if (operation[0].equals("left")){
 
 	}
 	//Execute the query
@@ -149,8 +149,8 @@ String[] rightField
         values=["left","right", "union"],
         names=["Left join","Right join", "Union join" ],
         selectedValues = "left",
-multiSelection = false)
-String operation
+		multiSelection = false)
+String[] operation
 
 
 @LiteralDataInput(
