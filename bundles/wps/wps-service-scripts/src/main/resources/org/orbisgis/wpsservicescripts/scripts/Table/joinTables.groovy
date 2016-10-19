@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.*
@@ -20,20 +20,20 @@ import org.orbisgis.wpsgroovyapi.process.*
  * @author Sylvain PALOMINOS
  */
 @Process(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Table join", lang = "en"),
 				@LanguageString(value = "Jointure de table", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "Join two tables.", lang = "en"),
 				@LanguageString(value = "Jointure de deux tables.", lang = "fr")
 		],
-		traducedKeywords = [
-				@Keyword(traducedKeywords = [
+		translatedKeywords = [
+				@TranslatableString(translatableStrings = [
 						@LanguageString(value = "Table", lang = "en"),
 						@LanguageString(value = "Table", lang = "fr")
 				]),
-				@Keyword(traducedKeywords = [
+				@TranslatableString(translatableStrings = [
 						@LanguageString(value = "Join", lang = "en"),
 						@LanguageString(value = "Jointure", lang = "fr")
 				])
@@ -82,11 +82,11 @@ def processing() {
 
 /** This DataStore is the left data source. */
 @DataStoreInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Left data source", lang = "en"),
 				@LanguageString(value = "Source de données gauche", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "The left data source used for the join.", lang = "en"),
 				@LanguageString(value = "La source de données gauche utilisée pour la jointure.", lang = "fr")
 		])
@@ -94,11 +94,11 @@ String leftDataStore
 
 /** This DataStore is the right data source. */
 @DataStoreInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Right data source", lang = "en"),
 				@LanguageString(value = "Source de données droite", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "The right data source used for the join.", lang = "en"),
 				@LanguageString(value = "La source de données droite utilisée pour la jointure.", lang = "fr")
 		])
@@ -110,11 +110,11 @@ String rightDataStore
 
 /** Name of the identifier field of the left dataStore. */
 @DataFieldInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Left field(s)", lang = "en"),
 				@LanguageString(value = "Champ(s) gauche(s)", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "The field identifier of the left data source.", lang = "en"),
 				@LanguageString(value = "L'identifiant du/des champ(s) de la source de données gauche.", lang = "fr")
 		],
@@ -124,11 +124,11 @@ String[] leftField
 
 /** Name of the identifier field of the right dataStore. */
 @DataFieldInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Right field(s)", lang = "en"),
 				@LanguageString(value = "Champ(s) droit(s)", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "The field identifier of the right data source.", lang = "en"),
 				@LanguageString(value = "L'identifiant du/des champ(s) de la source de données droite.", lang = "fr")
 		],
@@ -138,11 +138,11 @@ String[] rightField
 
 
 @EnumerationInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Operation", lang = "en"),
 				@LanguageString(value = "Opération", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "Types of join.", lang = "en"),
 				@LanguageString(value = "Type de jointure.", lang = "fr")
 		],
@@ -154,11 +154,11 @@ String operation
 
 
 @LiteralDataInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Create indexes", lang = "en"),
 				@LanguageString(value = "Création d'indexes", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "Create an index on each field identifiers to perform the join.", lang = "en"),
 				@LanguageString(value = "Création d'un index sur chacun des identifiants des champs avant la jointure.", lang = "fr")
 		],
@@ -167,11 +167,11 @@ Boolean createIndex
 
 
 @LiteralDataInput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Output table name", lang = "en"),
 				@LanguageString(value = "Nom de la table de sortie", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
 				@LanguageString(value = "Nom de la table contenant le résultat de la jointure.", lang = "fr")
 		])
@@ -183,11 +183,11 @@ String outputTableName
 
 /** String output of the process. */
 @LiteralDataOutput(
-		traducedTitles = [
+		translatedTitles = [
 				@LanguageString(value = "Output message", lang = "en"),
 				@LanguageString(value = "Message de sortie", lang = "fr")
 		],
-		traducedResumes = [
+		translatedResumes = [
 				@LanguageString(value = "The output message.", lang = "en"),
 				@LanguageString(value = "Le message de sortie.", lang = "fr")
 		])

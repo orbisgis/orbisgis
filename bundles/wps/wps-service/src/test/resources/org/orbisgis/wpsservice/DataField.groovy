@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
@@ -18,26 +18,26 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(title = "DataFieldTest",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "DataField test", lang = "en"),
                 @LanguageString(value = "Test du DataField", lang = "fr")
         ],
         resume = "Test script using the DataField ComplexData.",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Test script using the DataField ComplexData.", lang = "en"),
                 @LanguageString(value = "Scripts test pour l'usage du DataField DataField.", lang = "fr")
         ],
         keywords = ["test", "script", "wps"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "test", lang = "en"),
                         @LanguageString(value = "test", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "script", lang = "en"),
                         @LanguageString(value = "scripte", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "wps", lang = "en"),
                         @LanguageString(value = "wps", lang = "fr")
                 ])
@@ -63,18 +63,18 @@ String dataStoreInput
 /** This DataField is the input data source. */
 @DataFieldInput(
         title = "Input DataField",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Input DataField", lang = "en"),
                 @LanguageString(value = "Entrée DataField", lang = "fr")
         ],
         resume = "A DataField input.",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "A DataField input.", lang = "en"),
                 @LanguageString(value = "Une entrée DataField.", lang = "fr")
         ],
         keywords = ["input"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "input", lang = "en"),
                         @LanguageString(value = "entrée", lang = "fr")
                 ])
@@ -101,18 +101,18 @@ String dataStoreOutput
 /** This DataField is the output data source. */
 @DataFieldOutput(
         title="Output DataField",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Output DataField", lang = "en"),
                 @LanguageString(value = "Sortie DataField", lang = "fr")
         ],
         resume="A DataField output",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "A DataField output.", lang = "en"),
                 @LanguageString(value = "Une sortie DataField.", lang = "fr")
         ],
         keywords = ["output"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "output", lang = "en"),
                         @LanguageString(value = "sortie", lang = "fr")
                 ])

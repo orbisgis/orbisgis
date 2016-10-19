@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Create
 
-import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
@@ -20,24 +20,24 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Create a grid of points", lang = "en"),
                 @LanguageString(value = "Création d'une grille de points", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Create a grid of points.", lang = "en"),
                 @LanguageString(value = "Création d'une grille de points.", lang = "fr")
         ],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "Vector", lang = "en"),
                         @LanguageString(value = "Vecteur", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "Geometry", lang = "en"),
                         @LanguageString(value = "Géometrie", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "Create", lang = "en"),
                         @LanguageString(value = "Création", lang = "fr")
                 ])
@@ -61,11 +61,11 @@ def processing() {
 /****************/
 
 @DataStoreInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Input spatial data", lang = "en"),
                 @LanguageString(value = "Données spatiales d'entrée", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The spatial data source to compute the grid. The extend of grid is based on the full extend of the table.", lang = "en"),
                 @LanguageString(value = "La source de données spatiales utilisée pour le calcul de la grille. L'étendue de la grille se base sur l'étendue de la table.", lang = "fr")
         ],
@@ -77,22 +77,22 @@ String inputDataStore
 /**********************/
 
 @LiteralDataInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "X cell size", lang = "en"),
                 @LanguageString(value = "Taille X des cellules", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The X cell size.", lang = "en"),
                 @LanguageString(value = "La taille X des cellules.", lang = "fr")
         ])
 Double x_distance =1
 
 @LiteralDataInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Y cell size", lang = "en"),
                 @LanguageString(value = "Taille Y des cellules", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The Y cell size.", lang = "en"),
                 @LanguageString(value = "La taille Y des cellules.", lang = "fr")
         ])
@@ -100,11 +100,11 @@ Double y_distance =1
 
 
 @LiteralDataInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Output table name", lang = "en"),
                 @LanguageString(value = "Nom de la table de sortie", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
                 @LanguageString(value = "Nom de la table contenant les résultats du traitement.", lang = "fr")
         ])
@@ -116,11 +116,11 @@ String outputTableName
 
 /** String output of the process. */
 @LiteralDataOutput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Output message", lang = "en"),
                 @LanguageString(value = "Message de sortie", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The output message.", lang = "en"),
                 @LanguageString(value = "Le message de sortie.", lang = "fr")
         ])

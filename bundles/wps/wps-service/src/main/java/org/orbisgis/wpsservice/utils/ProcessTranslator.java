@@ -6,7 +6,10 @@ import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
+import org.orbisgis.wpsservice.model.ObjectFactory;
+import org.orbisgis.wpsservice.model.TranslatableComplexData;
 
+import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +36,12 @@ public class ProcessTranslator {
         List<InputDescriptionType> inputList = new ArrayList<>();
         for(InputDescriptionType input : process.getInput()){
             InputDescriptionType translatedInput = new InputDescriptionType();
-            translatedInput.setDataDescription(input.getDataDescription());
+            JAXBElement jaxbElement = input.getDataDescription();
+            if(jaxbElement.getValue() instanceof TranslatableComplexData){
+                TranslatableComplexData translatableComplexData = (TranslatableComplexData)jaxbElement.getValue();
+                jaxbElement.setValue(translatableComplexData.getTranslatedData(defaultLanguage, requestedLanguage));
+            }
+            translatedInput.setDataDescription(jaxbElement);
             translatedInput.setMaxOccurs(input.getMaxOccurs());
             translatedInput.setMinOccurs(input.getMinOccurs());
             translateDescriptionType(translatedInput, input, requestedLanguage, defaultLanguage);
@@ -44,7 +52,12 @@ public class ProcessTranslator {
         List<OutputDescriptionType> outputList = new ArrayList<>();
         for(OutputDescriptionType output : process.getOutput()){
             OutputDescriptionType translatedOutput = new OutputDescriptionType();
-            translatedOutput.setDataDescription(output.getDataDescription());
+            JAXBElement jaxbElement = output.getDataDescription();
+            if(jaxbElement.getValue() instanceof TranslatableComplexData){
+                TranslatableComplexData translatableComplexData = (TranslatableComplexData)jaxbElement.getValue();
+                jaxbElement.setValue(translatableComplexData.getTranslatedData(defaultLanguage, requestedLanguage));
+            }
+            translatedOutput.setDataDescription(jaxbElement);
             translateDescriptionType(translatedOutput, output, requestedLanguage, defaultLanguage);
             outputList.add(translatedOutput);
         }

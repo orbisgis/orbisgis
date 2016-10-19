@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
@@ -23,20 +23,20 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Delete rows", lang = "en"),
                 @LanguageString(value = "Suppression de lignes", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Delete rows from a table.", lang = "en"),
                 @LanguageString(value = "Supprime des lignes d'une table.", lang = "fr")
         ],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "Table", lang = "en"),
                         @LanguageString(value = "Table", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "Delete", lang = "en"),
                         @LanguageString(value = "Suppression", lang = "fr")
                 ])
@@ -62,11 +62,11 @@ def processing() {
 
 /** This DataStore is the input data source table. */
 @DataStoreInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Table", lang = "en"),
                 @LanguageString(value = "Table", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The table to edit.", lang = "en"),
                 @LanguageString(value = "La table à éditer.", lang = "fr")
         ])
@@ -78,11 +78,11 @@ String tableName
 
 /** Name of the PrimaryKey field of the DataStore tableName. */
 @DataFieldInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "PKField", lang = "en"),
                 @LanguageString(value = "Champ clef primaire", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The primary key field.", lang = "en"),
                 @LanguageString(value = "Le champ de la clef primaire.", lang = "fr")
         ],
@@ -91,11 +91,11 @@ String[] pkField
 
 /** List of primary keys to remove from the table. */
 @FieldValueInput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "PKArray", lang = "en"),
                 @LanguageString(value = "Liste clef primaire", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The array of the primary keys of the rows to remove.", lang = "en"),
                 @LanguageString(value = "La liste des clefs primaires dont les lignes sont à supprimer.", lang = "fr")
         ],
@@ -105,11 +105,11 @@ String[] pkToRemove
 
 /** Output message. */
 @LiteralDataOutput(
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Output message", lang = "en"),
                 @LanguageString(value = "Message de sortie", lang = "fr")
         ],
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "The output message.", lang = "en"),
                 @LanguageString(value = "Le message de sortie.", lang = "fr")
         ])

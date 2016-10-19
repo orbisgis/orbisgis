@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
@@ -16,26 +16,26 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(title = "EnumerationTest",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Enumeration test", lang = "en"),
                 @LanguageString(value = "Test du Enumeration", lang = "fr")
         ],
         resume = "Test script using the Enumeration ComplexData.",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Test script using the Enumeration ComplexData.", lang = "en"),
                 @LanguageString(value = "Scripts test pour l'usage du ComplexData Enumeration.", lang = "fr")
         ],
         keywords = ["test", "script", "wps"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "test", lang = "en"),
                         @LanguageString(value = "test", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "script", lang = "en"),
                         @LanguageString(value = "scripte", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "wps", lang = "en"),
                         @LanguageString(value = "wps", lang = "fr")
                 ])
@@ -58,18 +58,18 @@ def processing() {
 /** This Enumeration is the input data source. */
 @EnumerationInput(
         title = "Input Enumeration",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Input Enumeration", lang = "en"),
                 @LanguageString(value = "Entrée Enumeration", lang = "fr")
         ],
         resume = "A Enumeration input.",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "A Enumeration input.", lang = "en"),
                 @LanguageString(value = "Une entrée Enumeration.", lang = "fr")
         ],
         keywords = ["input"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "input", lang = "en"),
                         @LanguageString(value = "entrée", lang = "fr")
                 ])
@@ -95,18 +95,18 @@ String[] inputEnumeration
 /** This Enumeration is the output data source. */
 @EnumerationOutput(
         title="Output Enumeration",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Output Enumeration", lang = "en"),
                 @LanguageString(value = "Sortie Enumeration", lang = "fr")
         ],
         resume="A Enumeration output",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "A Enumeration output.", lang = "en"),
                 @LanguageString(value = "Une sortie Enumeration.", lang = "fr")
         ],
         keywords = ["output"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "output", lang = "en"),
                         @LanguageString(value = "sortie", lang = "fr")
                 ])

@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.attributes.Keyword
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.RawDataInput
@@ -16,26 +16,26 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(title = "RawDataTest",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "RawData test", lang = "en"),
                 @LanguageString(value = "Test du RawData", lang = "fr")
         ],
         resume = "Test script using the RawData ComplexData.",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "Test script using the RawData ComplexData.", lang = "en"),
                 @LanguageString(value = "Scripts test pour l'usage du ComplexData RawData.", lang = "fr")
         ],
         keywords = ["test", "script", "wps"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "test", lang = "en"),
                         @LanguageString(value = "test", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "script", lang = "en"),
                         @LanguageString(value = "scripte", lang = "fr")
                 ]),
-                @Keyword(traducedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "wps", lang = "en"),
                         @LanguageString(value = "wps", lang = "fr")
                 ])
@@ -57,18 +57,18 @@ def processing() {
 /** This RawData is the input data source. */
 @RawDataInput(
         title = "Input RawData",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Input RawData", lang = "en"),
                 @LanguageString(value = "Entrée RawData", lang = "fr")
         ],
         resume = "A RawData input.",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "A RawData input.", lang = "en"),
                 @LanguageString(value = "Une entrée RawData.", lang = "fr")
         ],
         keywords = ["input"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "input", lang = "en"),
                         @LanguageString(value = "entrée", lang = "fr")
                 ])
@@ -90,18 +90,18 @@ String inputRawData
 /** This RawData is the output data source. */
 @RawDataOutput(
         title="Output RawData",
-        traducedTitles = [
+        translatedTitles = [
                 @LanguageString(value = "Output RawData", lang = "en"),
                 @LanguageString(value = "Sortie RawData", lang = "fr")
         ],
         resume="A RawData output",
-        traducedResumes = [
+        translatedResumes = [
                 @LanguageString(value = "A RawData output.", lang = "en"),
                 @LanguageString(value = "Une sortie RawData.", lang = "fr")
         ],
         keywords = ["output"],
-        traducedKeywords = [
-                @Keyword(traducedKeywords = [
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
                         @LanguageString(value = "output", lang = "en"),
                         @LanguageString(value = "sortie", lang = "fr")
                 ])
