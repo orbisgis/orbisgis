@@ -51,6 +51,7 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
     private final String applicationFolder;
     private static final String DEFAULT_JDBC_USER = "sa";
     private static final boolean DEFAULT_JDBC_REQUIREPASSWORD = false;
+    private static final String DEFAULT_DB_NAME = "database";
     private String workspaceFolder;
     private String sourceFolder;
     private String pluginFolder = "plugins";
@@ -60,14 +61,17 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
     private String databaseUser = DEFAULT_JDBC_USER;
     private String databasePassword = "";
     private String jdbcURI = "";
+     private String databaseName = DEFAULT_DB_NAME;
     private boolean requirePassword = DEFAULT_JDBC_REQUIREPASSWORD;
     private static final String CURRENT_WORKSPACE_FILENAME = "currentWorkspace.txt";
     private static final String ALL_WORKSPACE_FILENAME = "workspaces.txt";
     private static final String DATA_BASE_URI_FILE = "database.uri";
+    
     private final int version_major;
     private final int version_minor;
     private final int version_revision;
     private final String version_qualifier;
+   
 
     public CoreWorkspaceImpl(int version_major, int version_minor, int version_revision, String version_qualifier, Logger logger) {
         this.LOGGER = logger;
@@ -161,9 +165,14 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
         }
     }
 
+    /**
+     * Return a default JDBC URI
+     * @param workspaceFolder
+     * @return 
+     */
     private static String getDefaultJDBCConnectionString(String workspaceFolder) {
-        return "jdbc:h2:" + new File(workspaceFolder + File.separator +
-                "database;DB_CLOSE_DELAY=30").toURI().getRawPath();
+        return "jdbc:h2:" + new File(workspaceFolder + File.separator + DEFAULT_DB_NAME+
+                ";DB_CLOSE_DELAY=30").toURI().getRawPath();
     }
 
     @Override
@@ -513,5 +522,15 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
     @Override
     public String getVersionQualifier() {
         return version_qualifier;
+    }
+    
+    @Override
+    public String getDatabaseName(){
+        return databaseName;
+    }
+    
+    @Override
+    public  void setDatabaseName(String databaseName){
+        this.databaseName =databaseName;
     }
 }
