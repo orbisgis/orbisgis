@@ -219,7 +219,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JLabel version = new JLabel(versionStr);
         version.setFont(version.getFont().deriveFont(Font.ITALIC));
         processPanel.add(version, "growx, span");
-        returnPanel.add(new JScrollPane(processPanel), "wrap, growx, height ::50%");
+        returnPanel.add(new JScrollPane(processPanel), "wrap, growx, height ::30%");
 
         JPanel panel = new JPanel(new MigLayout("fill"));
         JScrollPane scrollPane = new JScrollPane(panel);
@@ -296,7 +296,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
             scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
 
-            returnPanel.add(scrollPane, "wrap, growx, growy");
+            returnPanel.add(scrollPane, "wrap, growx, height ::70%");
         }
         return returnPanel;
     }
