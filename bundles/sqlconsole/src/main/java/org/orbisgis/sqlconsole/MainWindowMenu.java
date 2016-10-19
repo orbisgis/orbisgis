@@ -58,7 +58,7 @@ public class MainWindowMenu implements MainFrameAction {
 
     @Override
     public List<Action> createActions(MainWindow target) {
-        return Arrays.asList((Action)new DefaultAction(M_NEW_SQL_WINDOW, I18N.tr("SQL Console..."), I18N.tr
+        return Arrays.asList((Action)new DefaultAction(M_NEW_SQL_WINDOW, I18N.tr("New SQL Console"), I18N.tr
                 ("Open a new SQL editor panel"), SQLConsoleIcon.getIcon("sql_code"), EventHandler.create
                 (ActionListener.class, this, "onMenuOpenSQLConsole"),
                 KeyStroke.getKeyStroke("ctrl e")).setParent(MainFrameAction.MENU_TOOLS)
