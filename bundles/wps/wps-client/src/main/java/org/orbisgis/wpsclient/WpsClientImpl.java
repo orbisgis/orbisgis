@@ -562,7 +562,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
             DataInputType dataInput = new DataInputType();
             dataInput.setId(entry.getKey().toString());
             Data data = new Data();
-            data.getContent().add(entry.getValue().toString());
+            data.getContent().add(entry.getValue());
             dataInput.setData(data);
             inputList.add(dataInput);
         }

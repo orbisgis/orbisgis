@@ -104,7 +104,7 @@ def processing() {
                 @LanguageString(value = "The input CSV file containing the point data.", lang = "en"),
                 @LanguageString(value = "Le fichier CSV d'entrée contenant les données ponctuelles.", lang = "fr")
         ])
-String csvDataInput
+String[] csvDataInput
 
 
 /**********************/
@@ -123,7 +123,7 @@ String csvDataInput
         names=["coma", "tabulation", "space", "semicolon"],
         selectedValues = ";",
         isEditable = true)
-String separator
+String[] separator
 
 @LiteralDataInput(
         translatedTitles = [
@@ -169,7 +169,7 @@ String yField
         ],
         values=["4326", "2154"],
         minOccurs=0)
-Integer inputEPSG
+String[] inputEPSG
 
 @EnumerationInput(
         translatedTitles = [
@@ -182,7 +182,7 @@ Integer inputEPSG
         ],
         values=["4326", "2154"],
         minOccurs=0)
-Integer outputEPSG
+String[] outputEPSG
 
 /** Output DataStore name. */
 @LiteralDataInput(

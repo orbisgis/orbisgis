@@ -30,10 +30,8 @@ import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
 import org.orbisgis.wpsservice.controller.utils.CancelClosure;
 import org.orbisgis.wpsservice.controller.utils.WpsSql;
-import org.orbisgis.wpsservice.model.DataField;
-import org.orbisgis.wpsservice.model.FieldValue;
+import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsservice.model.Enumeration;
-import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -275,7 +273,8 @@ public class ProcessManager {
                     DataDescriptionType dataDescriptionType = i.getDataDescription().getValue();
                     if(dataDescriptionType instanceof FieldValue ||
                             dataDescriptionType instanceof DataField ||
-                            dataDescriptionType instanceof Enumeration){
+                            dataDescriptionType instanceof Enumeration ||
+                            dataDescriptionType instanceof RawData){
                         if(data != null) {
                             data = data.toString().split("\\t");
                         }

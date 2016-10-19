@@ -47,8 +47,10 @@ import java.beans.EventHandler;
 import java.io.IOException;
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 /**
  * DataUI associated to the RawData type.
@@ -135,7 +137,7 @@ public class RawDataUI implements DataUI {
         browseButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
         browseButton.putClientProperty(OPEN_PANEL_PROPERTY, openPanel);
         browseButton.putClientProperty(DATA_MAP_PROPERTY, dataMap);
-        browseButton.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        browseButton.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
         browseButton.setBorderPainted(false);
         browseButton.setContentAreaFilled(false);
         browseButton.setMargin(new Insets(0, 0, 0, 0));
@@ -202,10 +204,10 @@ public class RawDataUI implements DataUI {
                 String str = "";
                 for(File f : openPanel.getSelectedFiles()){
                     if(str.isEmpty()){
-                        str+="\""+f.getAbsolutePath()+"\"";
+                        str+=f.getAbsolutePath();
                     }
                     else{
-                        str+=","+"\""+f.getAbsolutePath()+"\"";
+                        str+="\t"+f.getAbsolutePath();
                     }
                 }
                 Map<URI, Object> dataMap = (Map<URI, Object>) source.getClientProperty(DATA_MAP_PROPERTY);
