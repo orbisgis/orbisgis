@@ -86,7 +86,7 @@ public class DatabaseSettingsPanel extends JDialog {
     private CoreWorkspace defaultCoreWorkspace;
     public static String DEFAULT_H2_PORT="8082";
     public static String DEFAULT_MESSAGE_H2=I18N.tr("Not required");
-
+    private static final String URL_STARTS = "jdbc:";
     
     
     public enum DB_TYPES { H2GIS_EMBEDDED, H2GIS_SERVER, POSTGIS; }
@@ -362,7 +362,7 @@ public class DatabaseSettingsPanel extends JDialog {
                 urlValue = config.get(0);
                 Properties jdcProperties = JDBCUrlParser.parse(urlValue);
                 dbName.setText(jdcProperties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
-                String dbTypeName = jdcProperties.getProperty("jdbc");
+                String dbTypeName = parseDbType(urlValue);
                 if (dbTypeName.equalsIgnoreCase("h2")) {
                     String netProt = jdcProperties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL);
                     if (netProt != null) {
@@ -494,6 +494,24 @@ public class DatabaseSettingsPanel extends JDialog {
     public void setPort(String portValue) {
         dbPort.setText(portValue);
     }     
+    
+    /**
+     * Return the database type name base on the JDBC url
+     * @param jdbcUrl
+     * @return 
+     */
+    public static String parseDbType(String jdbcUrl) {
+        if (!jdbcUrl.startsWith(URL_STARTS)) {
+            throw new IllegalArgumentException("JDBC Url must start with " + URL_STARTS);
+        }
+        String driverAndURI = jdbcUrl.substring(URL_STARTS.length());
+        String driver = driverAndURI.substring(0, driverAndURI.indexOf(':'));
+        if (driver != null) {
+            return driver;
+        }
+        throw new IllegalArgumentException("JDBC Url must start with " + URL_STARTS);
+    }
+    
 
 
 }

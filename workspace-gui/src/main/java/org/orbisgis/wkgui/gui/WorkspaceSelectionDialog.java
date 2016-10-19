@@ -237,10 +237,10 @@ public class WorkspaceSelectionDialog extends JPanel {
         Window window = SwingUtilities.getWindowAncestor(this);
         DatabaseSettingsPanel databaseSettingsPanel = new DatabaseSettingsPanel(window, selectedWorkspace);
         databaseSettingsPanel.setConnectionName(new File(selectedWorkspace.getWorkspaceFolder()).getName());
-        
-        Properties dbProperties = JDBCUrlParser.parse(selectedWorkspace.getJDBCConnectionReference());        
+        String jdbc_url = selectedWorkspace.getJDBCConnectionReference();
+        Properties dbProperties = JDBCUrlParser.parse(jdbc_url);        
         databaseSettingsPanel.setDBName(dbProperties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
-        String dbTypeName = dbProperties.getProperty("jdbc");
+        String dbTypeName = DatabaseSettingsPanel.parseDbType(jdbc_url);
         if(dbTypeName.equalsIgnoreCase("h2")){
             String netProt = dbProperties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL);
             if(netProt!=null){
