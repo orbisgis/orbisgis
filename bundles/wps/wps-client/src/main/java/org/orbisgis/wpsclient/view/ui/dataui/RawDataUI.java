@@ -140,6 +140,7 @@ public class RawDataUI implements DataUI {
         browseButton.setBorderPainted(false);
         browseButton.setContentAreaFilled(false);
         browseButton.setMargin(new Insets(0, 0, 0, 0));
+        browseButton.setToolTipText(I18N.tr("Browse"));
         //Add the listener for the click on the button
         browseButton.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
         buttonPanel.add(browseButton);
@@ -150,7 +151,8 @@ public class RawDataUI implements DataUI {
         pasteButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
         pasteButton.setBorderPainted(false);
         pasteButton.setContentAreaFilled(false);
-        pasteButton.setMargin(new Insets(0, 0, 0, 0));
+        pasteButton.setMargin(new Insets(0, 0, 0, 0));        
+        pasteButton.setToolTipText(I18N.tr("Paste the clipboard"));
         //Add the listener for the click on the button
         pasteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
         buttonPanel.add(pasteButton);
