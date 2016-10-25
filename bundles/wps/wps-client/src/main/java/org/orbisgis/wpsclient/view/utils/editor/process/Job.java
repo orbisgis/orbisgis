@@ -23,6 +23,8 @@ import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableEl
 import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement.STATE_PROPERTY;
 
 /**
+ * This class represents the WPS Job object by in the client side.
+ *
  * @author Sylvain PALOMOINOS
  */
 public class Job implements ProcessExecutionListener{
@@ -72,6 +74,11 @@ public class Job implements ProcessExecutionListener{
         return logMap;
     }
 
+    /**
+     * Put a log in the Job log map
+     * @param log String text of the log.
+     * @param color Color of the log text.
+     */
     public void putLog(String log, Color color) {
         this.logMap.put(log, color);
     }
