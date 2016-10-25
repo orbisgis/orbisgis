@@ -442,7 +442,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         }
 
         for(int i = 0; i < descriptionTypeList.size(); i++){
-            String migOption = "width 10%::60%";
+            String migOption = "growx";
             if(i == descriptionTypeList.size()-1){
                 if(!migOption.isEmpty()){
                     migOption += ", ";
@@ -551,7 +551,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             }
         }
         for(int i = 0; i < descriptionTypeList.size(); i++){
-            String migOption = "width 10%::60%";
+            String migOption = "growx";
             if(i == descriptionTypeList.size()-1){
                 if(!migOption.isEmpty()){
                     migOption += ", ";
