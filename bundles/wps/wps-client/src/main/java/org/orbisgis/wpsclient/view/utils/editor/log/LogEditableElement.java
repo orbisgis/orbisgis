@@ -22,6 +22,7 @@ package org.orbisgis.wpsclient.view.utils.editor.log;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
+import org.orbisgis.wpsclient.view.utils.editor.process.Job;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.xnap.commons.i18n.I18n;
@@ -31,6 +32,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * EditableElement associated to the LogEditor.
@@ -130,11 +132,12 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
         }
     }
 
-    public void cancelProcess(String id) {
+    public void cancelProcess(UUID id) {
         for(ProcessEditableElement pee : listPee){
-            if(pee.getId().equals(id)){
-                pee.firePropertyChangeEvent(new PropertyChangeEvent(this, ProcessEditableElement.CANCEL, null, null));
-                pee.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Process cancelled by the user"));
+            Job job = pee.getJob(id);
+            if(job != null){
+                pee.firePropertyChangeEvent(new PropertyChangeEvent(this, ProcessEditableElement.CANCEL, id, id));
+                job.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Process cancelled by the user"));
             }
         }
     }

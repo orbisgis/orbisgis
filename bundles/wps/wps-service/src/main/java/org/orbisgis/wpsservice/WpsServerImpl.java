@@ -81,6 +81,10 @@ public class WpsServerImpl implements WpsServer {
     /** Map containing all the properties to give to the groovy object.
      * The following words are reserved and SHOULD NOT be used as keys : 'logger', 'sql', 'isH2'. */
     protected Map<String, Object> propertiesMap;
+    /** True if the server configuration allows the multiThread, false otherwise */
+    protected boolean multiThreaded = true;
+    private boolean processRunning = false;
+    private LinkedList<ProcessWorker> workerFIFO;
 
     private enum SectionName {ServiceIdentification, ServiceProvider, OperationMetadata, Contents, Languages, All}
 
@@ -104,6 +108,7 @@ public class WpsServerImpl implements WpsServer {
         initWpsService();
         //Creates the attribute for the processes execution
         processManager = new ProcessManager(dataSourceService, this);
+        workerFIFO = new LinkedList<>();
     }
 
     /**
@@ -406,12 +411,18 @@ public class WpsServerImpl implements WpsServer {
                 dataMap,
                 propertiesMap);
 
-        //Run the worker
-        if(executorService != null){
-            executorService.execute(worker);
+
+        if(processRunning){
+            workerFIFO.push(worker);
         }
         else {
-            worker.run();
+            //Run the worker
+            processRunning = true;
+            if (executorService != null) {
+                executorService.execute(worker);
+            } else {
+                worker.run();
+            }
         }
         //Return the StatusInfo to the user
         statusInfo.setStatus(job.getState().name());
@@ -476,6 +487,22 @@ public class WpsServerImpl implements WpsServer {
         }
         result.getOutput().clear();
         result.getOutput().addAll(listOutput);
+        LOGGER.info("end of process "+job.getProcess().getTitle().get(0).getValue());
+
+        //If other process are waiting, run them
+        if(processRunning && workerFIFO.size()>0){
+            processRunning = true;
+            if (executorService != null) {
+                executorService.execute(workerFIFO.pollFirst());
+                LOGGER.info("start of next process");
+            } else {
+                workerFIFO.pollFirst().run();
+            }
+        }
+        else{
+            processRunning = false;
+        }
+
         return result;
     }
 

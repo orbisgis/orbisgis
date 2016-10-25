@@ -45,39 +45,28 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  */
-public class ProcessEditableElement implements EditableElement, ProcessExecutionListener {
+
+public class ProcessEditableElement implements EditableElement {
     public static final String STATE_PROPERTY = "STATE_PROPERTY";
     public static final String LOG_PROPERTY = "LOG_PROPERTY";
     public static final String CANCEL = "CANCEL";
     public static final String REFRESH_STATUS = "REFRESH_STATUS";
     public static final String GET_RESULTS = "GET_RESULTS";
-    /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(ProcessEditableElement.class);
     private ProcessOffering processOffering;
     private boolean isOpen;
 
-    /** Map of input data (URI of the corresponding input) */
-    private Map<URI, Object> inputDataMap;
-    /** Map of output data (URI of the corresponding output) */
-    private Map<URI, Object> outputDataMap;
-    /** Map of the log message and their color.*/
-    private Map<String, Color> logMap;
     /** List of listeners for the processState*/
     private List<PropertyChangeListener> propertyChangeListenerList;
-    /** Unique identifier of this ProcessEditableElement. */
-    private final String ID;
-    private ProcessExecutionListener.ProcessState state;
-    private long startTime;
-    private UUID jobID;
-    private Timer statusTimer;
+    private Map<UUID, Job> jobMap;
+    private Map<URI, Object> inputDataMap;
+    private Map<URI, Object> outputDataMap;
 
     public ProcessEditableElement(ProcessOffering processOffering){
         this.processOffering = processOffering;
+        this.propertyChangeListenerList = new ArrayList<>();
+        this.jobMap = new HashMap<>();
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
-        this.logMap = new LinkedHashMap<>();
-        this.propertyChangeListenerList = new ArrayList<>();
-        this.ID = UUID.randomUUID().toString();
     }
 
     @Override
@@ -102,7 +91,7 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
 
     @Override
     public String getId() {
-        return ID;
+        return UUID.randomUUID().toString();
     }
 
     @Override
@@ -147,8 +136,8 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
         return processOffering.getProcess().getTitle().get(0).getValue();
     }
 
-    public Map<String, Color> getLogMap(){
-        return logMap;
+    public Map<String, Color> getLogMap(UUID jobId){
+        return jobMap.get(jobId).getLogMap();
     }
 
     public Map<URI, Object> getInputDataMap() {
@@ -175,85 +164,8 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
         return processOffering;
     }
 
-    public ProcessExecutionListener.ProcessState getProcessState() {
-        return state;
-    }
-
-    public void setStartTime(long time){
-        startTime = time + 3600000;
-    }
-
-    /**
-     * Set the date when it should ask again the process execution job status to the WpsService.
-     * @param date Date when the state should be asked.
-     */
-    public void setRefreshDate(XMLGregorianCalendar date){
-        //If the time is already running stop it
-        if(statusTimer != null && statusTimer.isRunning()){
-            statusTimer.stop();
-        }
-        //If there is a new date, launch a timer
-        if(date != null) {
-            long delta = date.toGregorianCalendar().getTime().getTime() - new Date().getTime();
-            if (delta <= 0) {
-                delta = 1;
-            }
-            statusTimer = new Timer((int) delta, EventHandler.create(ActionListener.class, this, "askStatusRefresh"));
-            statusTimer.setRepeats(false);
-            statusTimer.start();
-        }
-    }
-
-    /**
-     * Fire an event to ask the refreshing of the status.
-     */
-    public void askStatusRefresh(){
-        PropertyChangeEvent event = new PropertyChangeEvent(this, REFRESH_STATUS, null, null);
-        firePropertyChangeEvent(event);
-    }
-
-    /**
-     * Append to the log a new entry.
-     * @param logType Type of the message (INFO, WARN, FAILED ...).
-     * @param message Message.
-     */
-    public void appendLog(ProcessExecutionListener.LogType logType, String message){
-        Color color;
-        switch(logType){
-            case ERROR:
-                color = Color.RED;
-                break;
-            case WARN:
-                color = Color.ORANGE;
-                break;
-            case INFO:
-            default:
-                color = Color.BLACK;
-        }
-        Date date = new Date(System.currentTimeMillis() - startTime);
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-        String log = timeFormat.format(date) + " : " + logType.name() + " : " + message + "";
-        logMap.put(log, color);
-        firePropertyChangeEvent(new PropertyChangeEvent(
-                this, LOG_PROPERTY, null, new AbstractMap.SimpleEntry<>(log, color)));
-    }
-
-    public void setProcessState(ProcessExecutionListener.ProcessState processState) {
-        this.state = processState;
-        if (state.equals(ProcessState.FAILED)) {
-            appendLog(LogType.ERROR, state.toString());
-        } else {
-            appendLog(LogType.INFO, state.toString());
-        }
-        //If the process has ended with success, retrieve the results.
-        //The firing of the process state change will be done later
-        if (state.equals(ProcessState.SUCCEEDED)) {
-            askResults();
-        }
-        //Else, fire the change of the process state.
-        else {
-            firePropertyChangeEvent(new PropertyChangeEvent(this, STATE_PROPERTY, null, state));
-        }
+    public ProcessExecutionListener.ProcessState getProcessState(UUID jobId) {
+        return jobMap.get(jobId).getState();
     }
 
     public void firePropertyChangeEvent(PropertyChangeEvent event){
@@ -269,44 +181,25 @@ public class ProcessEditableElement implements EditableElement, ProcessExecution
     }
 
     /**
-     * Sets the jobID of the running process.
-     * @param jobID The job ID.
-     */
-    public void setJobID(UUID jobID) {
-        this.jobID = jobID;
-    }
-
-    /**
-     * Returns the job ID of the running process.
-     * @return The job ID.
-     */
-    public UUID getJobID(){
-        return jobID;
-    }
-
-    /**
      * Throw a property change event to ask the result of the job.
      */
-    public void askResults() {
-        PropertyChangeEvent event = new PropertyChangeEvent(this, GET_RESULTS, null, null);
+    public void askResults(UUID jobId) {
+        PropertyChangeEvent event = new PropertyChangeEvent(this, GET_RESULTS, jobId, jobId);
         firePropertyChangeEvent(event);
     }
 
-    /**
-     * Sets the Result of the process job.
-     * @param result Result object.
-     */
-    public void setResult(Result result) {
-        appendLog(LogType.INFO, "");
-        appendLog(LogType.INFO, I18N.tr("Process result :"));
-        for(DataOutputType output : result.getOutput()){
-            Object o = output.getData().getContent().get(0);
-            for(OutputDescriptionType outputDescriptionType : processOffering.getProcess().getOutput()){
-                if(outputDescriptionType.getIdentifier().getValue().equals(output.getId())){
-                    appendLog(LogType.INFO, outputDescriptionType.getTitle().get(0).getValue()+" = "+o.toString());
-                }
-            }
+    public Job getJob(UUID jobID) {
+        if(jobMap.containsKey(jobID)) {
+            return jobMap.get(jobID);
         }
-        firePropertyChangeEvent(new PropertyChangeEvent(this, STATE_PROPERTY, null, state));
+        else{
+            return null;
+        }
+    }
+
+    public Job newJob(UUID jobId) {
+        Job job = new Job(this, jobId);
+        this.jobMap.put(jobId, job);
+        return job;
     }
 }

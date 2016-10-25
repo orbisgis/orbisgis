@@ -36,12 +36,18 @@ import java.util.Map;
 public interface DataUI {
 
     /**
+     * Orientation of the UI build in the 'createUI' method.
+     */
+    enum Orientation{VERTICAL, HORIZONTAL}
+
+    /**
      * Return the UI (a JComponent) which contain all the element to configure the input or output in argument.
      * @param inputOrOutput Input or output to render.
      * @param dataMap Map that will contain the data once the input or output configured.
+     * @param orientation Orientation of the UI.
      * @return JComponent containing the UI.
      */
-    JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap);
+    JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation);
 
     /**
      * Returns the map of default input value if it exists.

@@ -71,8 +71,6 @@ public class LocalWpsServerImpl
 
     /** True if the database is H2, false otherwise. */
     private boolean isH2;
-    /** True if the H2 configuration allows the multiThread, false otherwise */
-    private boolean multiThreaded;
     /** True if an updates happen while another on is running. */
     private boolean updateWhileAwaitingRefresh = false;
     /** True if a swing runnable is pending to refresh the content of the table list, false otherwise. */

@@ -48,6 +48,9 @@ public class ToolBoxIcon {
     public static final String UNDEFINED = "undefined";
     public static final String PASTE = "paste";
     public static final String RAW_DATA = "rawdata";
+    public static final String ADD = "add";
+    public static final String DELETE = "delete";
+    public static final String TOGGLE_MODE = "toggleMode";
 
     private static BaseIcon iconManager = new BaseIcon(LoggerFactory.getLogger(ToolBoxIcon.class));
 

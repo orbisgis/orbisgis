@@ -33,6 +33,8 @@ import org.orbisgis.wpsclient.view.ui.dataui.DataUI;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUIManager;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -48,6 +50,7 @@ import java.beans.PropertyChangeListener;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
+import java.util.List;
 
 /**
  * UI for the configuration and the run of a WPS process.
@@ -58,10 +61,18 @@ import java.util.*;
 public class ProcessEditor extends JPanel implements EditorDockable, PropertyChangeListener {
 
     private static final int SCROLLBAR_UNIT_INCREMENT = 16;
+    public static final String PROCESS_PROPERTY = "PROCESS_PROPERTY";
+    public static final String PANEL_PROPERTY = "PANEL_PROPERTY";
+    public static final String SCROLLPANE_PROPERTY = "SCROLLPANE_PROPERTY";
+    public static final String ACTION_TOGGLE_MODE = "ACTION_TOGGLE_MODE";
+    public static final String SIMPLE_MODE = "SIMPLE_MODE";
+    public static final String BASH_MODE = "BASH_MODE";
     /** Name of the EditorDockable. */
     public static final String NAME = "PROCESS_EDITOR";
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(ProcessEditor.class);
+    /** Logger object */
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessEditor.class);
 
     private ProcessEditableElement pee;
     private WpsClientImpl wpsClient;
@@ -72,12 +83,16 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private boolean alive;
     /** Error label displayed when the process inputs and output are all defined. */
     private JLabel errorMessage;
+    private String mode;
+    private DefaultAction toggleModeAction;
+    private HashMap<URI, Object> dataMap;
 
     public ProcessEditor(WpsClientImpl wpsClient, ProcessEditableElement pee){
         this.alive = true;
         this.wpsClient = wpsClient;
         this.pee = pee;
         this.pee.addPropertyChangeListener(this);
+        this.dataMap = new HashMap<>();
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName(NAME+"_"+pee.getProcess().getTitle());
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("process"));
@@ -97,8 +112,37 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 EventHandler.create(ActionListener.class, this, "runProcess"),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)).setButtonGroup("custom");
         dockingActions.addAction(runAction);
-        this.add(buildUI(), BorderLayout.CENTER);
+        toggleModeAction = new DefaultAction(ACTION_TOGGLE_MODE,
+                ACTION_TOGGLE_MODE,
+                I18N.tr("Uses the bash mode."),
+                ToolBoxIcon.getIcon(ToolBoxIcon.TOGGLE_MODE),
+                EventHandler.create(ActionListener.class, this, "toggleMode"),
+                null);
+        dockingActions.addAction(toggleModeAction);
+        mode = SIMPLE_MODE;
+        this.add(buildSimpleUI(), BorderLayout.CENTER);
         this.revalidate();
+    }
+
+    public void toggleMode(){
+        switch(mode) {
+            case BASH_MODE:
+                toggleModeAction.setToolTipText(I18N.tr("Uses the simple mode."));
+                mode = SIMPLE_MODE;
+                this.removeAll();
+                this.add(buildSimpleUI(), BorderLayout.CENTER);
+                pee.setInputDataMap(new HashMap<URI, Object>());
+                pee.setOutputDataMap(new HashMap<URI, Object>());
+                break;
+            case SIMPLE_MODE:
+                toggleModeAction.setToolTipText(I18N.tr("Uses the bash mode."));
+                mode = BASH_MODE;
+                this.removeAll();
+                this.add(buildBashUI(), BorderLayout.CENTER);
+                pee.setInputDataMap(new HashMap<URI, Object>());
+                pee.setOutputDataMap(new HashMap<URI, Object>());
+                break;
+        }
     }
 
     /**
@@ -148,18 +192,21 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             AbstractMap.Entry<String, Color> entry = (AbstractMap.Entry)propertyChangeEvent.getNewValue();
         }
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.CANCEL)){
-            StatusInfo statusInfo = wpsClient.dismissJob(pee.getJobID());
-            pee.setProcessState(ProcessExecutionListener.ProcessState.valueOf(statusInfo.getStatus().toUpperCase()));
-            pee.setRefreshDate(statusInfo.getNextPoll());
+            StatusInfo statusInfo = wpsClient.dismissJob((UUID)propertyChangeEvent.getNewValue());
+            Job job = pee.getJob(UUID.fromString(statusInfo.getJobID()));
+            job.setProcessState(ProcessExecutionListener.ProcessState.valueOf(statusInfo.getStatus().toUpperCase()));
+            job.addRefreshDate(statusInfo.getNextPoll());
         }
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.REFRESH_STATUS)){
-            StatusInfo statusInfo = wpsClient.getJobStatus(pee.getJobID());
-            pee.setProcessState(ProcessExecutionListener.ProcessState.valueOf(statusInfo.getStatus().toUpperCase()));
-            pee.setRefreshDate(statusInfo.getNextPoll());
+            StatusInfo statusInfo = wpsClient.getJobStatus((UUID)propertyChangeEvent.getNewValue());
+            Job job = pee.getJob(UUID.fromString(statusInfo.getJobID()));
+            job.setProcessState(ProcessExecutionListener.ProcessState.valueOf(statusInfo.getStatus().toUpperCase()));
+            job.addRefreshDate(statusInfo.getNextPoll());
         }
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.GET_RESULTS)){
-            Result result = wpsClient.getJobResult(pee.getJobID());
-            pee.setResult(result);
+            Result result = wpsClient.getJobResult((UUID)propertyChangeEvent.getNewValue());
+            Job job = pee.getJob(UUID.fromString(result.getJobID()));
+            job.setResult(result);
         }
     }
 
@@ -167,30 +214,67 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      * Run the process if all the mandatory process inputs are defined.
      */
     public void runProcess(){
-        //First check if all the inputs are defined.
-        boolean allDefined = true;
-        Map<URI, Object> inputDataMap = pee.getInputDataMap();
-        for(InputDescriptionType input : pee.getProcess().getInput()){
-            URI identifier = URI.create(input.getIdentifier().getValue());
-            if(!input.getMinOccurs().equals(new BigInteger("0")) && !inputDataMap.containsKey(identifier)){
-                allDefined = false;
-            }
-        }
+        switch(mode) {
+            case SIMPLE_MODE:
+                //First check if all the inputs are defined.
+                boolean allDefined = true;
+                for (InputDescriptionType input : pee.getProcess().getInput()) {
+                    URI identifier = URI.create(input.getIdentifier().getValue());
+                    if (!input.getMinOccurs().equals(new BigInteger("0")) && !dataMap.containsKey(identifier)) {
+                        allDefined = false;
+                    }
+                }
 
-        if(allDefined) {
-            //Then launch the process execution
-            wpsClient.validateInstance(this);
-            pee.setProcessState(ProcessEditableElement.ProcessState.RUNNING);
+                if (allDefined) {
 
-            //Run the process in a separated thread
-            StatusInfo statusInfo = wpsClient.executeProcess(pee.getProcess(),
-                    pee.getInputDataMap(),
-                    pee.getOutputDataMap());
-            pee.setRefreshDate(statusInfo.getNextPoll());
-            pee.setJobID(UUID.fromString(statusInfo.getJobID()));
-        }
-        else{
-            errorMessage.setText("Please, configure all the inputs/outputs before executing.");
+                    //Run the process in a separated thread
+                    StatusInfo statusInfo = wpsClient.executeProcess(pee.getProcess(), dataMap);
+                    Job job = pee.newJob(UUID.fromString(statusInfo.getJobID()));
+
+                    //Then launch the process execution
+                    wpsClient.validateInstance(this, job.getId());
+
+                    job.setStartTime(System.currentTimeMillis());
+                    job.setProcessState(ProcessExecutionListener.ProcessState.RUNNING);
+                    job.addRefreshDate(statusInfo.getNextPoll());
+                } else {
+                    errorMessage.setText("Please, configure all the inputs/outputs before executing.");
+                }
+                break;
+            case BASH_MODE:
+                for(Map.Entry<URI, Object> entry : dataMap.entrySet()) {
+                    Map<URI, Object> map = null;
+                    if(entry.getValue() instanceof Map) {
+                        map = (Map<URI, Object>) entry.getValue();
+                    }
+                    if(map != null) {
+                        //First check if all the inputs are defined.
+                        allDefined = true;
+                        for (InputDescriptionType input : pee.getProcess().getInput()) {
+                            URI identifier = URI.create(input.getIdentifier().getValue());
+                            if (!input.getMinOccurs().equals(new BigInteger("0")) && !map.containsKey(identifier)) {
+                                allDefined = false;
+                            }
+                        }
+
+                        if (allDefined) {
+                            //Run the process in a separated thread
+                            StatusInfo statusInfo = wpsClient.executeProcess(pee.getProcess(), map);
+                            Job job = pee.newJob(UUID.fromString(statusInfo.getJobID()));
+
+                            //Then launch the process execution
+                            wpsClient.validateInstance(this, job.getId());
+
+                            job.setStartTime(System.currentTimeMillis());
+                            job.setProcessState(ProcessExecutionListener.ProcessState.RUNNING);
+                            job.addRefreshDate(statusInfo.getNextPoll());
+
+                        } else {
+                            errorMessage.setText("Please, configure all the inputs/outputs before executing.");
+                        }
+                    }
+                }
+                break;
         }
     }
 
@@ -198,8 +282,12 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      * Build the UI of the given process according to the given data.
      * @return The UI for the configuration of the process.
      */
-    private JComponent buildUI(){
+    private JComponent buildSimpleUI(){
         ProcessDescriptionType process = pee.getProcess();
+        dataMap = new HashMap<>();
+        dataMap.putAll(pee.getInputDataMap());
+        dataMap.putAll(pee.getOutputDataMap());
+
         JPanel returnPanel = new JPanel(new MigLayout("fill"));
 
         AbstractScrollPane processPanel = new AbstractScrollPane();
@@ -236,7 +324,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
             if(dataUI!=null) {
                 //Retrieve the component containing all the UI components.
-                JComponent uiComponent = dataUI.createUI(i, pee.getInputDataMap());
+                JComponent uiComponent = dataUI.createUI(i, dataMap, DataUI.Orientation.VERTICAL);
                 if(uiComponent != null) {
                     noParameters = false;
                     //If the input is optional, hide it
@@ -279,7 +367,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         for(OutputDescriptionType o : process.getOutput()){
             DataUI dataUI = dataUIManager.getDataUI(o.getDataDescription().getValue().getClass());
             if(dataUI!=null) {
-                JComponent component = dataUI.createUI(o, pee.getOutputDataMap());
+                JComponent component = dataUI.createUI(o, dataMap, DataUI.Orientation.VERTICAL);
                 if(component != null) {
                     noParameters = false;
                     parameterPanel.add(new JLabel(o.getTitle().get(0).getValue()), "growx, span");
@@ -299,6 +387,222 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             returnPanel.add(scrollPane, "wrap, growx, height ::70%");
         }
         return returnPanel;
+    }
+
+    /**
+     * Build the UI of the given process according to the given data.
+     * @return The UI for the configuration of the process.
+     */
+    private JComponent buildBashUI(){
+        ProcessDescriptionType process = pee.getProcess();
+        dataMap = new HashMap<>();
+
+        JPanel returnPanel = new JPanel(new MigLayout("fill"));
+
+        AbstractScrollPane processPanel = new AbstractScrollPane();
+        processPanel.setLayout(new MigLayout("fill, ins 0, gap 0"));
+        processPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.DARK_GRAY), I18N.tr("Description")));
+        JLabel label = new JLabel("<html>"+process.getAbstract().get(0).getValue()+"</html>");
+        label.setFont(label.getFont().deriveFont(Font.ITALIC));
+        processPanel.add(label, "growx, span");
+        String versionStr = I18N.tr("Version : ");
+        if(pee.getProcessOffering().getProcessVersion().isEmpty()){
+            versionStr += I18N.tr("unknown");
+        }
+        else{
+            versionStr += pee.getProcessOffering().getProcessVersion();
+        }
+        JLabel version = new JLabel(versionStr);
+        version.setFont(version.getFont().deriveFont(Font.ITALIC));
+        processPanel.add(version, "growx, span");
+        returnPanel.add(new JScrollPane(processPanel), "wrap, growx, height ::30%");
+
+        JPanel panel = new JPanel(new MigLayout("fill"));
+        JScrollPane scrollPane = new JScrollPane(panel);
+
+        // Put all the default values in the datamap
+        pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
+        //Creates the panel that will contains all the inputs.
+        JPanel parameterPanel = new JPanel(new MigLayout("fill, ins 5"));
+        parameterPanel.setBorder(BorderFactory.createTitledBorder(I18N.tr("Parameter(s)")));
+
+        List<DescriptionType> descriptionTypeList = new ArrayList<>();
+        for(OutputDescriptionType o : process.getOutput()){
+            if(dataUIManager.getDataUI(o.getDataDescription().getValue().getClass()) != null) {
+                descriptionTypeList.add(o);
+            }
+        }
+        for(InputDescriptionType i : process.getInput()){
+            if(dataUIManager.getDataUI(i.getDataDescription().getValue().getClass()) != null) {
+                descriptionTypeList.add(i);
+            }
+        }
+
+        for(int i = 0; i < descriptionTypeList.size(); i++){
+            String migOption = "width 10%::60%";
+            if(i == descriptionTypeList.size()-1){
+                if(!migOption.isEmpty()){
+                    migOption += ", ";
+                }
+                migOption += "wrap";
+            }
+            DescriptionType descriptionType = descriptionTypeList.get(i);
+            DataUI dataUI = null;
+            if(descriptionType instanceof InputDescriptionType) {
+                dataUI = dataUIManager.getDataUI(
+                        ((InputDescriptionType)descriptionType).getDataDescription().getValue().getClass());
+            }
+            if(descriptionType instanceof OutputDescriptionType) {
+                dataUI = dataUIManager.getDataUI(
+                        ((OutputDescriptionType)descriptionType).getDataDescription().getValue().getClass());
+            }
+
+            if(dataUI!=null) {
+                //Retrieve the component containing all the UI components.
+                JComponent uiComponent = dataUI.createUI(descriptionType,new HashMap<URI, Object>(), DataUI.Orientation.HORIZONTAL);
+                if(uiComponent != null) {
+                    parameterPanel.add(new JLabel(descriptionType.getTitle().get(0).getValue()), migOption);
+                }
+            }
+        }
+        parameterPanel.add(new JSeparator(), "growx, span");
+
+        addBashLine(process, parameterPanel, scrollPane);
+
+        JButton addButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.ADD));
+        addButton.putClientProperty(PROCESS_PROPERTY, process);
+        addButton.putClientProperty(PANEL_PROPERTY, parameterPanel);
+        addButton.putClientProperty(SCROLLPANE_PROPERTY, scrollPane);
+        addButton.addActionListener(EventHandler.create(ActionListener.class, this, "addBashLine", "source"));
+        addButton.setBorderPainted(false);
+        addButton.setContentAreaFilled(false);
+        parameterPanel.add(addButton, "wrap");
+
+        panel.add(parameterPanel, "growx, span");
+        errorMessage = new JLabel();
+        errorMessage.setForeground(Color.RED);
+        panel.add(errorMessage, "growx, wrap");
+        scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+
+        returnPanel.add(scrollPane, "wrap, growx, height ::70%");
+        return returnPanel;
+    }
+
+    public void addBashLine(Object source){
+        if(source instanceof JButton){
+            JButton addButton = (JButton) source;
+            ProcessDescriptionType process;
+            if(addButton.getClientProperty(PROCESS_PROPERTY) instanceof ProcessDescriptionType){
+                process = (ProcessDescriptionType) addButton.getClientProperty(PROCESS_PROPERTY);
+            }
+            else{
+                LOGGER.warn(I18N.tr("Unable to add a nex wps bash line. The property process is invalid."));
+                return;
+            }
+            JPanel parameterPanel;
+            if(addButton.getClientProperty(PANEL_PROPERTY) instanceof JPanel){
+                parameterPanel = (JPanel) addButton.getClientProperty(PANEL_PROPERTY);
+            }
+            else{
+                LOGGER.warn(I18N.tr("Unable to add a nex wps bash line. The property parameterPanel is invalid."));
+                return;
+            }
+            JScrollPane scrollPane;
+            if(addButton.getClientProperty(SCROLLPANE_PROPERTY) instanceof JScrollPane){
+                scrollPane = (JScrollPane) addButton.getClientProperty(SCROLLPANE_PROPERTY);
+            }
+            else{
+                LOGGER.warn(I18N.tr("Unable to add a nex wps bash line. The property scrollPane is invalid."));
+                return;
+            }
+            parameterPanel.remove(addButton);
+            addBashLine(process, parameterPanel, scrollPane);
+            parameterPanel.add(addButton, "wrap");
+            scrollPane.validate();
+            scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+        }
+    }
+
+    private void addBashLine(ProcessDescriptionType process, JPanel parameterPanel, JScrollPane scrollPane){
+        HashMap<URI, Object> map = new HashMap<>();
+        map.putAll(pee.getInputDataMap());
+        map.putAll(pee.getOutputDataMap());
+        dataMap.put(URI.create(Integer.toString(dataMap.size())), map);
+
+        List<DescriptionType> descriptionTypeList = new ArrayList<>();
+        for(OutputDescriptionType o : process.getOutput()){
+            if(dataUIManager.getDataUI(o.getDataDescription().getValue().getClass()) != null) {
+                descriptionTypeList.add(o);
+            }
+        }
+        for(InputDescriptionType i : process.getInput()){
+            if(dataUIManager.getDataUI(i.getDataDescription().getValue().getClass()) != null) {
+                descriptionTypeList.add(i);
+            }
+        }
+        for(int i = 0; i < descriptionTypeList.size(); i++){
+            String migOption = "width 10%::60%";
+            if(i == descriptionTypeList.size()-1){
+                if(!migOption.isEmpty()){
+                    migOption += ", ";
+                }
+                migOption += "wrap";
+            }
+            DescriptionType descriptionType = descriptionTypeList.get(i);
+            DataUI dataUI = null;
+            if(descriptionType instanceof InputDescriptionType) {
+                dataUI = dataUIManager.getDataUI(
+                        ((InputDescriptionType)descriptionType).getDataDescription().getValue().getClass());
+            }
+            if(descriptionType instanceof OutputDescriptionType) {
+                dataUI = dataUIManager.getDataUI(
+                        ((OutputDescriptionType)descriptionType).getDataDescription().getValue().getClass());
+            }
+
+            if(dataUI!=null) {
+                //Retrieve the component containing all the UI components.
+                JComponent uiComponent = dataUI.createUI(descriptionType, map, DataUI.Orientation.HORIZONTAL);
+                if(uiComponent != null) {
+                    //If the input is optional, hide it
+                    if(descriptionType instanceof InputDescriptionType &&
+                            ((InputDescriptionType)descriptionType).getMinOccurs().equals(new BigInteger("0"))) {
+                        uiComponent.setVisible(false);
+                        //This panel is the one which contains the header with the title of the input and
+                        // the hide/show button
+                        JPanel contentPanel = new JPanel(new BorderLayout());
+                        JPanel hideShowPanel = new JPanel(new MigLayout("ins 0, gap 0"));
+                        JPanel centerPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+                        //Sets the button to make it shown as just an icon
+                        JButton showButton = new JButton(ToolBoxIcon.getIcon("btnright"));
+                        showButton.setBorderPainted(false);
+                        showButton.setMargin(new Insets(0, 0, 0, 0));
+                        showButton.setContentAreaFilled(false);
+                        showButton.setOpaque(false);
+                        showButton.setFocusable(false);
+                        showButton.putClientProperty("upPanel", hideShowPanel);
+                        showButton.addMouseListener(EventHandler.create(MouseListener.class,
+                                this, "onClickButton", "source", "mouseClicked"));
+                        hideShowPanel.add(showButton);
+                        hideShowPanel.setToolTipText("Hide/Show option");
+                        hideShowPanel.putClientProperty("body", uiComponent);
+                        hideShowPanel.putClientProperty("parent", centerPanel);
+                        hideShowPanel.putClientProperty("button", showButton);
+                        hideShowPanel.putClientProperty("scrollPane", scrollPane);
+                        hideShowPanel.addMouseListener(EventHandler.create(MouseListener.class,
+                                this, "onClickHeader", "source", "mouseClicked"));
+                        contentPanel.add(hideShowPanel, BorderLayout.LINE_START);
+                        contentPanel.add(centerPanel, BorderLayout.CENTER);
+                        parameterPanel.add(contentPanel, migOption);
+                    }
+                    else{
+                        parameterPanel.add(uiComponent, migOption);
+                    }
+                }
+            }
+        }
+        parameterPanel.add(new JSeparator(), "growx, span");
     }
 
     /**

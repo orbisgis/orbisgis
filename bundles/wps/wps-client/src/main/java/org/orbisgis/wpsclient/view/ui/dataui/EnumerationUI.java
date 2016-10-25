@@ -50,7 +50,8 @@ import java.util.*;
  **/
 
 public class EnumerationUI implements DataUI{
-    private static final int JLIST_MAX_ROW_COUNT = 10;
+    private static final int JLIST_VERTICAL_MAX_ROW_COUNT = 10;
+    private static final int JLIST_HORIZONTAL_MAX_ROW_COUNT = 3;
 
     /** Constant used to pass object as client property throw JComponents **/
     private static final String IS_OPTIONAL_PROPERTY = "IS_OPTIONAL_PROPERTY";
@@ -72,7 +73,7 @@ public class EnumerationUI implements DataUI{
     }
 
     @Override
-    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         //Get the enumeration object
         Enumeration enumeration = null;
@@ -134,11 +135,23 @@ public class EnumerationUI implements DataUI{
         list.setSelectedIndices(array);
         //Configure the JList
         list.setLayoutOrientation(JList.VERTICAL);
-        if(enumeration.getValues().length < JLIST_MAX_ROW_COUNT){
+        int maxRowCount;
+        if(orientation.equals(Orientation.VERTICAL)){
+            maxRowCount = JLIST_VERTICAL_MAX_ROW_COUNT;
+        }
+        else{
+            if(enumeration.isEditable()) {
+                maxRowCount = JLIST_HORIZONTAL_MAX_ROW_COUNT - 1;
+            }
+            else{
+                maxRowCount = JLIST_HORIZONTAL_MAX_ROW_COUNT;
+            }
+        }
+        if(enumeration.getValues().length < maxRowCount){
             list.setVisibleRowCount(enumeration.getValues().length);
         }
         else {
-            list.setVisibleRowCount(JLIST_MAX_ROW_COUNT);
+            list.setVisibleRowCount(maxRowCount);
         }
         JScrollPane listScroller = new JScrollPane(list);
         panel.add(listScroller, "growx, wrap");

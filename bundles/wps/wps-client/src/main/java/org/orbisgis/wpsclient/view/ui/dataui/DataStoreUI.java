@@ -79,7 +79,7 @@ public class DataStoreUI implements DataUI{
     }
 
     @Override
-    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         //Main panel which contains all the UI
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         DataStore dataStore;

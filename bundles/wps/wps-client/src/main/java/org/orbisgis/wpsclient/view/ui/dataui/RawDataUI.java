@@ -80,7 +80,7 @@ public class RawDataUI implements DataUI {
     }
 
     @Override
-    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         //Create the main panel
         JComponent component = new JPanel(new MigLayout("fill"));
         //Display the SourceCA into a JTextField
@@ -145,16 +145,18 @@ public class RawDataUI implements DataUI {
         browseButton.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
         buttonPanel.add(browseButton);
 
-        //Create the button Browse
-        JButton pasteButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
-        //"Save" the sourceCA and the JTextField in the button
-        pasteButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
-        pasteButton.setBorderPainted(false);
-        pasteButton.setContentAreaFilled(false);
-        pasteButton.setMargin(new Insets(0, 0, 0, 0));
-        //Add the listener for the click on the button
-        pasteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
-        buttonPanel.add(pasteButton);
+        if(orientation.equals(Orientation.VERTICAL)) {
+            //Create the button Browse
+            JButton pasteButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
+            //"Save" the sourceCA and the JTextField in the button
+            pasteButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
+            pasteButton.setBorderPainted(false);
+            pasteButton.setContentAreaFilled(false);
+            pasteButton.setMargin(new Insets(0, 0, 0, 0));
+            //Add the listener for the click on the button
+            pasteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
+            buttonPanel.add(pasteButton);
+        }
 
         component.add(buttonPanel, "dock east");
 
