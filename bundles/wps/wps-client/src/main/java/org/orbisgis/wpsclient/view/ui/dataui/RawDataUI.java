@@ -47,10 +47,8 @@ import java.beans.EventHandler;
 import java.io.IOException;
 import java.io.File;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 
 /**
  * DataUI associated to the RawData type.
@@ -120,6 +118,7 @@ public class RawDataUI implements DataUI {
         OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", I18N.tr("Make your selection."), action, dataAccepted);
         openPanel.setAcceptAllFileFilterUsed(true);
         openPanel.setSingleSelection(!rawData.multiSelection());
+        openPanel.loadState();
 
 
         if(dataMap.get(inputOrOutput.getIdentifier()) != null)
@@ -141,10 +140,10 @@ public class RawDataUI implements DataUI {
         browseButton.setBorderPainted(false);
         browseButton.setContentAreaFilled(false);
         browseButton.setMargin(new Insets(0, 0, 0, 0));
+        browseButton.setToolTipText(I18N.tr("Browse"));
         //Add the listener for the click on the button
         browseButton.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
         buttonPanel.add(browseButton);
-
         if(orientation.equals(Orientation.VERTICAL)) {
             //Create the button Browse
             JButton pasteButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
@@ -200,6 +199,7 @@ public class RawDataUI implements DataUI {
         JButton source = (JButton) event.getSource();
         OpenPanel openPanel = (OpenPanel) source.getClientProperty(OPEN_PANEL_PROPERTY);
         if (UIFactory.showDialog(openPanel, true, true)) {
+            openPanel.saveState();
             JTextField textField = (JTextField) source.getClientProperty(TEXT_FIELD_PROPERTY);
             boolean multiSelection = (boolean) source.getClientProperty((MULTI_SELECTION_PROPERTY));
             if(multiSelection){
