@@ -483,6 +483,16 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         }
     }
 
+    public ProcessDescriptionType getProcessCopy(CodeType processIdentifier){
+        List<ProcessOffering> processOfferingList = getProcessOffering(processIdentifier);
+        if(!processOfferingList.isEmpty()){
+            ProcessDescriptionType processCopy = processOfferingList.get(0).getProcess();
+            link(processCopy);
+            return processCopy;
+        }
+        return null;
+    }
+
     /**
      * Verify if the given process is a well formed script.
      * @param identifier Identifier of the process.

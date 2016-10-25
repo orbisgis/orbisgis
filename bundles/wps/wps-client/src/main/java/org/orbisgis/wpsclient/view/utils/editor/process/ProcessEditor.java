@@ -266,7 +266,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                             wpsClient.validateInstance(this, job.getId());
 
                             job.setStartTime(System.currentTimeMillis());
-                            job.setProcessState(ProcessExecutionListener.ProcessState.RUNNING);
+                            job.setProcessState(ProcessExecutionListener.ProcessState.IDLE);
                             job.addRefreshDate(statusInfo.getNextPoll());
 
                         } else {
@@ -498,7 +498,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 process = (ProcessDescriptionType) addButton.getClientProperty(PROCESS_PROPERTY);
             }
             else{
-                LOGGER.warn(I18N.tr("Unable to add a nex wps bash line. The property process is invalid."));
+                LOGGER.warn(I18N.tr("Unable to add a new wps bash line. The property process is invalid."));
                 return;
             }
             JPanel parameterPanel;
@@ -506,7 +506,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 parameterPanel = (JPanel) addButton.getClientProperty(PANEL_PROPERTY);
             }
             else{
-                LOGGER.warn(I18N.tr("Unable to add a nex wps bash line. The property parameterPanel is invalid."));
+                LOGGER.warn(I18N.tr("Unable to add a new wps bash line. The property parameterPanel is invalid."));
                 return;
             }
             JScrollPane scrollPane;
@@ -514,11 +514,17 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 scrollPane = (JScrollPane) addButton.getClientProperty(SCROLLPANE_PROPERTY);
             }
             else{
-                LOGGER.warn(I18N.tr("Unable to add a nex wps bash line. The property scrollPane is invalid."));
+                LOGGER.warn(I18N.tr("Unable to add a new wps bash line. The property scrollPane is invalid."));
                 return;
             }
             parameterPanel.remove(addButton);
-            addBashLine(process, parameterPanel, scrollPane);
+            ProcessDescriptionType processCopy = wpsClient.getProcessCopy(process.getIdentifier());
+            if(processCopy != null) {
+                addBashLine(processCopy, parameterPanel, scrollPane);
+            }
+            else{
+                LOGGER.error(I18N.tr("Unable to get a copy of the process {0}.", process.getTitle().get(0).getValue()));
+            }
             parameterPanel.add(addButton, "wrap");
             scrollPane.validate();
             scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
