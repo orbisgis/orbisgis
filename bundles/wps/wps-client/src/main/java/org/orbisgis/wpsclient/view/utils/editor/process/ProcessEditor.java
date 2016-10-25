@@ -110,7 +110,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 I18N.tr("Run the script"),
                 ToolBoxIcon.getIcon("execute"),
                 EventHandler.create(ActionListener.class, this, "runProcess"),
-                KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)).setButtonGroup("custom");
+                null);
         dockingActions.addAction(runAction);
         toggleModeAction = new DefaultAction(ACTION_TOGGLE_MODE,
                 ACTION_TOGGLE_MODE,
@@ -133,6 +133,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 this.add(buildSimpleUI(), BorderLayout.CENTER);
                 pee.setInputDataMap(new HashMap<URI, Object>());
                 pee.setOutputDataMap(new HashMap<URI, Object>());
+                this.revalidate();
                 break;
             case SIMPLE_MODE:
                 toggleModeAction.setToolTipText(I18N.tr("Uses the bash mode."));
@@ -141,6 +142,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 this.add(buildBashUI(), BorderLayout.CENTER);
                 pee.setInputDataMap(new HashMap<URI, Object>());
                 pee.setOutputDataMap(new HashMap<URI, Object>());
+                this.revalidate();
                 break;
         }
     }

@@ -183,6 +183,9 @@ public class EnumerationUI implements DataUI{
             panel.add(textField, "growx, wrap");
             list.putClientProperty(TEXT_FIELD_PROPERTY, textField);
         }
+
+        onListSelection(list);
+
         return panel;
     }
 
