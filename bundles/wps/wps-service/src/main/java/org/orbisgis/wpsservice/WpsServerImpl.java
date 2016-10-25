@@ -445,6 +445,24 @@ public class WpsServerImpl implements WpsServer {
             XMLGregorianCalendar date = getXMLGregorianCalendar(PROCESS_POLLING_MILLIS);
             statusInfo.setNextPoll(date);
         }
+        if(job.getState().equals(ProcessExecutionListener.ProcessState.FAILED) ||
+                job.getState().equals(ProcessExecutionListener.ProcessState.SUCCEEDED)) {
+            processRunning = false;
+        }
+
+
+        //If other process are waiting and the actual process failed, run them
+        if(job.getState().equals(ProcessExecutionListener.ProcessState.FAILED) &&
+                !processRunning &&
+                workerFIFO.size()>0){
+            processRunning = true;
+            if (executorService != null) {
+                executorService.execute(workerFIFO.pollFirst());
+            } else {
+                workerFIFO.pollFirst().run();
+            }
+        }
+
         return statusInfo;
     }
 
@@ -487,20 +505,15 @@ public class WpsServerImpl implements WpsServer {
         }
         result.getOutput().clear();
         result.getOutput().addAll(listOutput);
-        LOGGER.info("end of process "+job.getProcess().getTitle().get(0).getValue());
 
         //If other process are waiting, run them
-        if(processRunning && workerFIFO.size()>0){
+        if(!processRunning && workerFIFO.size()>0){
             processRunning = true;
             if (executorService != null) {
                 executorService.execute(workerFIFO.pollFirst());
-                LOGGER.info("start of next process");
             } else {
                 workerFIFO.pollFirst().run();
             }
-        }
-        else{
-            processRunning = false;
         }
 
         return result;

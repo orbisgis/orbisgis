@@ -50,8 +50,10 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
     private List<PropertyChangeListener> changeListenerList = new ArrayList<>();
 
     public void addProcessEditableElement(ProcessEditableElement pee){
-        listPee.add(pee);
-        pee.addPropertyChangeListener(this);
+        if(!listPee.contains(pee)) {
+            listPee.add(pee);
+            pee.addPropertyChangeListener(this);
+        }
     }
 
     @Override

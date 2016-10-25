@@ -116,7 +116,7 @@ public class Job implements ProcessExecutionListener{
             if (delta <= 0) {
                 delta = 1;
             }
-            Timer timer = new Timer((int) delta, EventHandler.create(ActionListener.class, this, "askStatusRefresh"));
+            Timer timer = new Timer((int) delta, EventHandler.create(ActionListener.class, this, "askStatusRefresh", "source"));
             timer.setRepeats(false);
             timer.start();
         }
@@ -125,7 +125,7 @@ public class Job implements ProcessExecutionListener{
     /**
      * Fire an event to ask the refreshing of the status.
      */
-    public void askStatusRefresh(){
+    public void askStatusRefresh(Object source){
         PropertyChangeEvent event = new PropertyChangeEvent(this, REFRESH_STATUS, this.getId(), this.getId());
         pee.firePropertyChangeEvent(event);
     }
