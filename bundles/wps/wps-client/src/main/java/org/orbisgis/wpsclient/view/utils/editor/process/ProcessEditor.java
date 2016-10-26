@@ -119,6 +119,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 EventHandler.create(ActionListener.class, this, "toggleMode"),
                 null);
         dockingActions.addAction(toggleModeAction);
+        LOGGER.error("Bash mode available");
         mode = SIMPLE_MODE;
         this.add(buildSimpleUI(), BorderLayout.CENTER);
         this.revalidate();
