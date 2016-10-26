@@ -57,7 +57,7 @@ public class DataFieldUI implements DataUI{
 
     /** Size constants **/
     private static final int MAX_JLIST_ROW_COUNT_VERTICAL = 5;
-    private static final int MAX_JLIST_ROW_COUNT_HORIZONTAL = 5;
+    private static final int MAX_JLIST_ROW_COUNT_HORIZONTAL = 3;
     private static final int MIN_JLIST_ROW_COUNT = 1;
 
     /** Constant used to pass object as client property throw JComponents **/
@@ -185,6 +185,8 @@ public class DataFieldUI implements DataUI{
                 list.setToolTipText((String) list.getClientProperty(TOOLTIP_TEXT_PROPERTY));
                 ToolTipManager.sharedInstance().setInitialDelay((int) list.getClientProperty(INITIAL_DELAY_PROPERTY));
             }
+            list.revalidate();
+            list.repaint();
         }
     }
 
@@ -290,6 +292,7 @@ public class DataFieldUI implements DataUI{
                 }
             }
             list.revalidate();
+            list.repaint();
         }
     }
 

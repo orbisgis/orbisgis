@@ -119,7 +119,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 EventHandler.create(ActionListener.class, this, "toggleMode"),
                 null);
         dockingActions.addAction(toggleModeAction);
-        LOGGER.error("Bash mode available");
         mode = SIMPLE_MODE;
         this.add(buildSimpleUI(), BorderLayout.CENTER);
         this.revalidate();
@@ -397,7 +396,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      * @return The UI for the configuration of the process.
      */
     private JComponent buildBashUI(){
-        ProcessDescriptionType process = pee.getProcess();
+        ProcessDescriptionType process = wpsClient.getProcessCopy(pee.getProcess().getIdentifier());
         dataMap = new HashMap<>();
 
         JPanel returnPanel = new JPanel(new MigLayout("fill"));
@@ -471,7 +470,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         }
         parameterPanel.add(new JSeparator(), "growx, span");
 
-        addBashLine(process, parameterPanel, scrollPane);
+        addBashLine(wpsClient.getProcessCopy(process.getIdentifier()), parameterPanel, scrollPane);
 
         JButton addButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.ADD));
         addButton.putClientProperty(PROCESS_PROPERTY, process);
@@ -574,40 +573,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 //Retrieve the component containing all the UI components.
                 JComponent uiComponent = dataUI.createUI(descriptionType, map, DataUI.Orientation.HORIZONTAL);
                 if(uiComponent != null) {
-                    //If the input is optional, hide it
-                    if(descriptionType instanceof InputDescriptionType &&
-                            ((InputDescriptionType)descriptionType).getMinOccurs().equals(new BigInteger("0"))) {
-                        uiComponent.setVisible(false);
-                        //This panel is the one which contains the header with the title of the input and
-                        // the hide/show button
-                        JPanel contentPanel = new JPanel(new BorderLayout());
-                        JPanel hideShowPanel = new JPanel(new MigLayout("ins 0, gap 0"));
-                        JPanel centerPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-                        //Sets the button to make it shown as just an icon
-                        JButton showButton = new JButton(ToolBoxIcon.getIcon("btnright"));
-                        showButton.setBorderPainted(false);
-                        showButton.setMargin(new Insets(0, 0, 0, 0));
-                        showButton.setContentAreaFilled(false);
-                        showButton.setOpaque(false);
-                        showButton.setFocusable(false);
-                        showButton.putClientProperty("upPanel", hideShowPanel);
-                        showButton.addMouseListener(EventHandler.create(MouseListener.class,
-                                this, "onClickButton", "source", "mouseClicked"));
-                        hideShowPanel.add(showButton);
-                        hideShowPanel.setToolTipText("Hide/Show option");
-                        hideShowPanel.putClientProperty("body", uiComponent);
-                        hideShowPanel.putClientProperty("parent", centerPanel);
-                        hideShowPanel.putClientProperty("button", showButton);
-                        hideShowPanel.putClientProperty("scrollPane", scrollPane);
-                        hideShowPanel.addMouseListener(EventHandler.create(MouseListener.class,
-                                this, "onClickHeader", "source", "mouseClicked"));
-                        contentPanel.add(hideShowPanel, BorderLayout.LINE_START);
-                        contentPanel.add(centerPanel, BorderLayout.CENTER);
-                        parameterPanel.add(contentPanel, migOption);
-                    }
-                    else{
-                        parameterPanel.add(uiComponent, migOption);
-                    }
+                    parameterPanel.add(uiComponent, migOption);
                 }
             }
         }

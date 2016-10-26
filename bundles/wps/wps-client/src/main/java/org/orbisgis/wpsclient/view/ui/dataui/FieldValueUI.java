@@ -312,6 +312,8 @@ public class FieldValueUI implements DataUI{
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
             }
+            list.revalidate();
+            list.repaint();
             return null;
         }
     }
