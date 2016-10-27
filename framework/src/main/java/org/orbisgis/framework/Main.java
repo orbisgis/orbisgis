@@ -64,6 +64,9 @@ final class Main {
     private static final int BUNDLE_STABILITY_TIMEOUT = 3000;
     private static final int SAFE_MODE_COUNTDOWN_DELETE = 5000;
     private static final Logger LOGGER = new Logger();
+    private static Version version;
+    private static final String OBR_REPOSITORY_URL = "obr.repository.url";
+    private static final String OBR_REPOSITORY_SNAPSHOT_URL = "obr.repository.snapshot.url";
 
     //Minimum supported java version
     public static final char MIN_JAVA_VERSION = '7';
@@ -108,7 +111,7 @@ final class Main {
             JOptionPane.showMessageDialog(null, I18N.tr("OrbisGIS needs at least a java 1.7+"));
         } else {
             // Fetch application version
-            Version version = new Version(1, 0, 0);
+            version = new Version(1, 0, 0);
             try (InputStream fs = Main.class.getResourceAsStream("version.txt")) {
                 String versionTxt = IOUtils.readLines(fs).get(0);
                 version = new Version(versionTxt.replace("-", "."));
@@ -186,6 +189,16 @@ final class Main {
         {
             System.err.println("No " + org.apache.felix.main.Main.CONFIG_PROPERTIES_FILE_VALUE + " found.");
             configProps = new HashMap<>();
+        }
+
+        //If OrbisGIS is in a SNAPSHOT version, uses the release and snapshot orb.
+        //Else only uses the release one.
+        if(configProps.containsKey(OBR_REPOSITORY_URL) && configProps.containsKey(OBR_REPOSITORY_SNAPSHOT_URL)) {
+            if (version.getQualifier().equals("SNAPSHOT")) {
+                configProps.remove(OBR_REPOSITORY_URL);
+                configProps.put(OBR_REPOSITORY_URL, configProps.get(OBR_REPOSITORY_SNAPSHOT_URL));
+            }
+            configProps.remove(OBR_REPOSITORY_SNAPSHOT_URL);
         }
 
         // Copy framework properties from the system properties.

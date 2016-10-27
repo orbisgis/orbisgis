@@ -73,6 +73,8 @@ public class ManagerMenuFactory implements MainFrameAction {
     public static final String MENU_MANAGE_PLUGINS = "A_MANAGE_PLUGINS";
     private static final String OSGI_REPOSITORY_FILENAME = "repositories.properties";
     private final URI ORBISGIS_OSGI_REPOSITORY = URI.create("http://plugins.orbisgis.org/.meta/obr.xml");
+    private final URI ORBISGIS_OSGI_REPOSITORY_SNAPSHOT =
+            URI.create("http://nexus.orbisgis.org/content/shadows/obr-snapshot/.meta/obr.xml");
     private static final I18n I18N = I18nFactory.getI18n(ManagerMenuFactory.class);
     private MainDialog mainPanel;
     private MainWindow target; // There is only one main window in the application, it can be stored here.
@@ -142,6 +144,7 @@ public class ManagerMenuFactory implements MainFrameAction {
         if(!addingRepositories.getAndSet(true)) {
             // Read repositories
             Set<URI> obrRepositories = new HashSet<>();
+            obrRepositories.add(ORBISGIS_OSGI_REPOSITORY_SNAPSHOT);
             obrRepositories.add(ORBISGIS_OSGI_REPOSITORY);
             readRepositoryListFile(obrRepositories, bc.getDataFile(OSGI_REPOSITORY_FILENAME));
             RegisterSavedRepositories process = new RegisterSavedRepositories(obrRepositories,repositoryAdmin,addingRepositories);
