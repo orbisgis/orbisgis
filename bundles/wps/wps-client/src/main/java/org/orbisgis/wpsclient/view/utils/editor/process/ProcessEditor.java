@@ -21,6 +21,7 @@ package org.orbisgis.wpsclient.view.utils.editor.process;
 
 import net.miginfocom.swing.MigLayout;
 import net.opengis.wps._2_0.*;
+import org.h2.jdbc.JdbcConnection;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.components.actions.DefaultAction;
@@ -441,6 +442,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             }
         }
 
+        parameterPanel.add(new JLabel());
+
         for(int i = 0; i < descriptionTypeList.size(); i++){
             String migOption = "growx";
             if(i == descriptionTypeList.size()-1){
@@ -537,7 +540,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         HashMap<URI, Object> map = new HashMap<>();
         map.putAll(pee.getInputDataMap());
         map.putAll(pee.getOutputDataMap());
-        dataMap.put(URI.create(Integer.toString(dataMap.size())), map);
+        URI key = URI.create(UUID.randomUUID().toString());
+        dataMap.put(key, map);
 
         List<DescriptionType> descriptionTypeList = new ArrayList<>();
         for(OutputDescriptionType o : process.getOutput()){
@@ -550,6 +554,17 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 descriptionTypeList.add(i);
             }
         }
+        JButton removeRow = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.DELETE));
+        removeRow.setContentAreaFilled(false);
+        removeRow.setBorderPainted(false);
+        removeRow.putClientProperty("dataMap", dataMap);
+        removeRow.putClientProperty("key", key);
+        removeRow.putClientProperty("parameterPanel", parameterPanel);
+        List<JComponent> componentList = new ArrayList<>();
+        componentList.add(removeRow);
+        removeRow.putClientProperty("componentList", componentList);
+        removeRow.addActionListener(EventHandler.create(ActionListener.class, this, "onRemoveRow", "source"));
+        parameterPanel.add(removeRow);
         for(int i = 0; i < descriptionTypeList.size(); i++){
             String migOption = "growx";
             if(i == descriptionTypeList.size()-1){
@@ -574,10 +589,29 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 JComponent uiComponent = dataUI.createUI(descriptionType, map, DataUI.Orientation.HORIZONTAL);
                 if(uiComponent != null) {
                     parameterPanel.add(uiComponent, migOption);
+                    componentList.add(uiComponent);
                 }
             }
         }
-        parameterPanel.add(new JSeparator(), "growx, span");
+        JSeparator separator = new JSeparator();
+        parameterPanel.add(separator, "growx, span");
+        componentList.add(separator);
+    }
+
+    public void onRemoveRow(Object source){
+        if(source instanceof JButton){
+            JButton removeRow = (JButton)source;
+            Map dataMap = (Map) removeRow.getClientProperty("dataMap");
+            URI key = (URI) removeRow.getClientProperty("key");
+            dataMap.remove(key);
+
+            JPanel parameterPanel = (JPanel) removeRow.getClientProperty("parameterPanel");
+            List<JComponent> componentList = (List<JComponent>) removeRow.getClientProperty("componentList");
+            for(JComponent component : componentList){
+                parameterPanel.remove(component);
+            }
+            parameterPanel.revalidate();
+        }
     }
 
     /**
