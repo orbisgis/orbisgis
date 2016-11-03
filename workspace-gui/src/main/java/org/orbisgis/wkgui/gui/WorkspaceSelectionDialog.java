@@ -96,6 +96,7 @@ public class WorkspaceSelectionDialog extends JPanel {
     private JLabel errorLabel = new JLabel();
     DataSourceService dataSourceService = new DataSourceService();
     private Version bundleVersion;
+    private boolean isJDBCUrlValid = true;
 
     public WorkspaceSelectionDialog() {
         super(new MigLayout("wrap 1"));
@@ -215,10 +216,38 @@ public class WorkspaceSelectionDialog extends JPanel {
         customDataBase.setToolTipText(I18N.tr("Click to customize your database."));
         customDataBase.addActionListener(
                 EventHandler.create(ActionListener.class, this, "onOpenDBPanel"));
-        add(customDataBase);
-        onWorkspaceFolderChange();
-        errorLabel.setText(errorMessage);
+        add(customDataBase);            
+        errorLabel.setText(errorMessage);  
+        onWorkspaceFolderChange(); 
+        
     }
+    
+    /**
+     * Check the JDBC url 
+     * if invalid return false and the default JDBC connection reference
+     * if valid return true 
+     */
+    public void checkJDBCUrl() {
+        String jdbc_url = selectedWorkspace.getJDBCConnectionReference();
+        try {
+            JDBCUrlParser.parse(jdbc_url);
+            errorLabel.setText("");
+            isJDBCUrlValid = true;
+        } catch (IllegalArgumentException ex) {
+            selectedWorkspace.setJDBCConnectionReference("");
+            isJDBCUrlValid = false;
+            errorLabel.setText(I18N.tr("The database parameters are invalid."));
+        }
+    }
+
+    /**
+     * Return true if the JDBC url is valid
+     * @return 
+     */
+    public boolean isJDBCUrlValid() {
+        return isJDBCUrlValid;
+    }    
+    
 
     /**
      * User click on delete button.
@@ -238,43 +267,43 @@ public class WorkspaceSelectionDialog extends JPanel {
         DatabaseSettingsPanel databaseSettingsPanel = new DatabaseSettingsPanel(window, selectedWorkspace);
         databaseSettingsPanel.setConnectionName(new File(selectedWorkspace.getWorkspaceFolder()).getName());
         String jdbc_url = selectedWorkspace.getJDBCConnectionReference();
-        Properties dbProperties = JDBCUrlParser.parse(jdbc_url);        
+        Properties dbProperties = JDBCUrlParser.parse(jdbc_url);
         databaseSettingsPanel.setDBName(dbProperties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
         String dbTypeName = DatabaseSettingsPanel.parseDbType(jdbc_url);
-        if(dbTypeName.equalsIgnoreCase("h2")){
+        if (dbTypeName.equalsIgnoreCase("h2")) {
             String netProt = dbProperties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL);
-            if(netProt!=null){
+            if (netProt != null) {
                 databaseSettingsPanel.setDBType(DatabaseSettingsPanel.DB_TYPES.H2GIS_SERVER);
                 databaseSettingsPanel.setHost(dbProperties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
                 String portNum = dbProperties.getProperty(DataSourceFactory.JDBC_PORT_NUMBER);
-                databaseSettingsPanel.setPort(portNum!=null?portNum:DatabaseSettingsPanel.DEFAULT_H2_PORT);            
+                databaseSettingsPanel.setPort(portNum != null ? portNum : DatabaseSettingsPanel.DEFAULT_H2_PORT);
+            } else {
+                databaseSettingsPanel.setDBType(DatabaseSettingsPanel.DB_TYPES.H2GIS_EMBEDDED);
+                databaseSettingsPanel.setPort(DEFAULT_MESSAGE_H2);
+                databaseSettingsPanel.setHost(DEFAULT_MESSAGE_H2);
             }
-            else{
-               databaseSettingsPanel.setDBType(DatabaseSettingsPanel.DB_TYPES.H2GIS_EMBEDDED);               
-               databaseSettingsPanel.setPort(DEFAULT_MESSAGE_H2);
-               databaseSettingsPanel.setHost(DEFAULT_MESSAGE_H2);
-            }
-        }
-        else if(dbTypeName.equalsIgnoreCase("postgresql")){
+        } else if (dbTypeName.equalsIgnoreCase("postgresql")) {
             databaseSettingsPanel.setDBType(DatabaseSettingsPanel.DB_TYPES.POSTGIS);
             databaseSettingsPanel.setHost(dbProperties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
             databaseSettingsPanel.setPort(dbProperties.getProperty(DataSourceFactory.JDBC_PORT_NUMBER));
         }
-        
+
         databaseSettingsPanel.setUser(selectedWorkspace.getDataBaseUser());
         databaseSettingsPanel.setHasPassword(selectedWorkspace.isRequirePassword());
         databaseSettingsPanel.setAlwaysOnTop(true);
         databaseSettingsPanel.setModal(true);
         databaseSettingsPanel.setLocationRelativeTo(window);
         databaseSettingsPanel.setVisible(true);
-        if(!databaseSettingsPanel.isCanceled()) {
+        if (!databaseSettingsPanel.isCanceled()) {
             // Read selected attributes
             selectedWorkspace.setDataBaseUser(databaseSettingsPanel.getUser());
             selectedWorkspace.setRequirePassword(databaseSettingsPanel.hasPassword());
             selectedWorkspace.setJDBCConnectionReference(databaseSettingsPanel.getJdbcURI());
             selectedWorkspace.setDatabaseName(databaseSettingsPanel.getDatabaseName());
         }
-    }
+    }   
+    
+    
 
     /**
      * @return The workspace selection combo box
@@ -322,6 +351,10 @@ public class WorkspaceSelectionDialog extends JPanel {
                         coreWorkspace.getVersionMajor()));
                 return false;
             }
+            if(!panel.isJDBCUrlValid()){
+                LOGGER.error(I18N.tr("The database parameters are invalid."));
+                return false;
+            }
             try {
                 if(panel.selectedWorkspace.isRequirePassword()) {
                     //The user must input the password
@@ -354,14 +387,15 @@ public class WorkspaceSelectionDialog extends JPanel {
     /**
      * The user select another workspace folder.Update the JDBC uri
      */
-    public void onWorkspaceFolderChange() {
+    public void onWorkspaceFolderChange() {        
         // Check if workspace folder is valid
         if(ViewWorkspaceImpl.isWorkspaceValid(new File(comboBox.getValue()), selectedWorkspace.getVersionMajor())) {
             selectedWorkspace.setWorkspaceFolder(comboBox.getValue());
             errorLabel.setText("");
         } else {
             errorLabel.setText(I18N.tr("The selected folder is not a valid workspace"));
-        }
+        }     
+        checkJDBCUrl();
     }
 
     /**
@@ -403,6 +437,8 @@ public class WorkspaceSelectionDialog extends JPanel {
         // Do this at the end because there is trigger on property change
         coreWorkspace.setWorkspaceFolder(wkDialog.getComboBox().getValue());
     }
+
+   
 
     public static class RegisterViewWorkspaceJob extends SwingWorker {
         private WorkspaceSelectionDialog workspaceSelectionDialog;
