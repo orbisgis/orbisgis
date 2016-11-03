@@ -442,6 +442,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             }
         }
 
+        parameterPanel.add(new JLabel());
+
         for(int i = 0; i < descriptionTypeList.size(); i++){
             String migOption = "growx";
             if(i == descriptionTypeList.size()-1){
@@ -562,7 +564,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         componentList.add(removeRow);
         removeRow.putClientProperty("componentList", componentList);
         removeRow.addActionListener(EventHandler.create(ActionListener.class, this, "onRemoveRow", "source"));
-        parameterPanel.add(removeRow, "east");
+        parameterPanel.add(removeRow);
         for(int i = 0; i < descriptionTypeList.size(); i++){
             String migOption = "growx";
             if(i == descriptionTypeList.size()-1){
