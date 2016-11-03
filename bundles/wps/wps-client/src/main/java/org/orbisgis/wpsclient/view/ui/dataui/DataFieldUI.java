@@ -56,7 +56,8 @@ import java.util.List;
 public class DataFieldUI implements DataUI{
 
     /** Size constants **/
-    private static final int MAX_JLIST_ROW_COUNT = 5;
+    private static final int MAX_JLIST_ROW_COUNT_VERTICAL = 5;
+    private static final int MAX_JLIST_ROW_COUNT_HORIZONTAL = 3;
     private static final int MIN_JLIST_ROW_COUNT = 1;
 
     /** Constant used to pass object as client property throw JComponents **/
@@ -69,6 +70,7 @@ public class DataFieldUI implements DataUI{
     private static final String INITIAL_DELAY_PROPERTY = "INITIAL_DELAY_PROPERTY";
     private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
     private static final String NULL_ITEM = "NULL_ITEM";
+    private static final String MAX_JLIST_ROW_COUNT = "MAX_JLIST_ROW_COUNT";
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(DataFieldUI.class);
 
@@ -80,7 +82,7 @@ public class DataFieldUI implements DataUI{
     }
 
     @Override
-    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         DataField dataField = null;
         boolean isOptional = false;
@@ -105,6 +107,12 @@ public class DataFieldUI implements DataUI{
             list.setCellRenderer(new JPanelListRenderer());
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
             list.setLayoutOrientation(JList.VERTICAL);
+            if(orientation.equals(Orientation.VERTICAL)){
+                list.putClientProperty(MAX_JLIST_ROW_COUNT, MAX_JLIST_ROW_COUNT_VERTICAL);
+            }
+            else{
+                list.putClientProperty(MAX_JLIST_ROW_COUNT, MAX_JLIST_ROW_COUNT_HORIZONTAL);
+            }
             list.setVisibleRowCount(MIN_JLIST_ROW_COUNT);
             list.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
             list.putClientProperty(DATA_FIELD_PROPERTY, dataField);
@@ -177,6 +185,8 @@ public class DataFieldUI implements DataUI{
                 list.setToolTipText((String) list.getClientProperty(TOOLTIP_TEXT_PROPERTY));
                 ToolTipManager.sharedInstance().setInitialDelay((int) list.getClientProperty(INITIAL_DELAY_PROPERTY));
             }
+            list.revalidate();
+            list.repaint();
         }
     }
 
@@ -190,9 +200,9 @@ public class DataFieldUI implements DataUI{
             DataField dataField = (DataField) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
             HashMap<URI, Object> dataMap = (HashMap) comboBox.getClientProperty(DATA_MAP_PROPERTY);
             boolean isOptional = (boolean) comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
+            ContainerItem<Object> defaultItem = (ContainerItem<Object>)comboBox.getClientProperty(DEFAULT_ITEM_PROPERTY);
             //If the DataStore related to the DataField has been modified, reload the dataField values
-            if (dataField.isSourceModified()) {
-                String defaultItem = comboBox.getClientProperty(DEFAULT_ITEM_PROPERTY).toString();
+            if (dataField.isSourceModified() || comboBox.getSelectedItem().equals(defaultItem)) {
                 comboBox.removeItem(defaultItem);
                 dataField.setSourceModified(false);
                 comboBox.removeAllItems();
@@ -233,6 +243,7 @@ public class DataFieldUI implements DataUI{
         else if(source instanceof JList){
             JList<ContainerItem<Object>> list = (JList) source;
             DataField dataField = (DataField) list.getClientProperty(DATA_FIELD_PROPERTY);
+            int maxRow = (int) list.getClientProperty(MAX_JLIST_ROW_COUNT);
             HashMap<URI, Object> dataMap = (HashMap) list.getClientProperty(DATA_MAP_PROPERTY);
             DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
             //If the DataStore related to the DataField has been modified, reload the dataField values
@@ -273,14 +284,15 @@ public class DataFieldUI implements DataUI{
                         new MouseEvent(list, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
             }
             else{
-                if(model.getSize()>MAX_JLIST_ROW_COUNT){
-                    list.setVisibleRowCount(MAX_JLIST_ROW_COUNT);
+                if(model.getSize()>maxRow){
+                    list.setVisibleRowCount(maxRow);
                 }
                 else{
                     list.setVisibleRowCount(model.getSize());
                 }
             }
             list.revalidate();
+            list.repaint();
         }
     }
 

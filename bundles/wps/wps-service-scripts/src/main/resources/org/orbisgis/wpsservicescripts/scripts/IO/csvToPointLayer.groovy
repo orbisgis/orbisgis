@@ -70,13 +70,13 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
     outputTableName = dataStoreOutputName
     //Open the CSV file
-    File csvFile = new File(csvDataInput)
+    File csvFile = new File(csvDataInput[0])
     String csvRead = "CSVRead('"+csvFile.absolutePath+"', NULL, 'fieldSeparator="+separator+"')";
     String create = "CREATE TABLE "+outputTableName+"(ID INT PRIMARY KEY, THE_GEOM GEOMETRY)";
     //Execute the SQL query
     if(inputEPSG != null && outputEPSG != null){
         sql.execute(create+" AS SELECT "+idField+", " +
-                "ST_TRANSFORM(ST_SETSRID(ST_MakePoint("+xField+", "+yField+"), "+inputEPSG+"), "+outputEPSG+") THE_GEOM FROM "+csvRead+";");
+                "ST_TRANSFORM(ST_SETSRID(ST_MakePoint("+xField+", "+yField+"), "+inputEPSG[0]+"), "+outputEPSG[0]+") THE_GEOM FROM "+csvRead+";");
     }
     else{
         sql.execute(create + " AS SELECT "+idField+", ST_MakePoint("+xField+", "+yField+") THE_GEOM FROM "+csvRead+";");

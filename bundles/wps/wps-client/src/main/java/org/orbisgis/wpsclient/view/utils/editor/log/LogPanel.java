@@ -21,7 +21,7 @@ package org.orbisgis.wpsclient.view.utils.editor.log;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
-import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
+import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -118,7 +118,7 @@ public class LogPanel extends JPanel {
      * Sets the process state.
      * @param state State of the running process.
      */
-    public void setState(ProcessEditableElement.ProcessState state){
+    public void setState(ProcessExecutionListener.ProcessState state){
         switch(state){
             case SUCCEEDED:
                 icon.setIcon(ToolBoxIcon.getIcon("process"));

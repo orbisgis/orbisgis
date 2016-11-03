@@ -849,7 +849,7 @@ public class ToolBoxPanel extends JPanel {
             if(processSummary.getTitle() != null && !processSummary.getTitle().isEmpty()) {
                 script.setUserObject(processSummary.getTitle().get(0).getValue());
             }
-            if(!processSummary.getKeywords().isEmpty()) {
+            if(!processSummary.getKeywords().isEmpty() && !processSummary.getKeywords().get(0).getKeyword().isEmpty()) {
                 for (KeywordsType tag : processSummary.getKeywords()) {
                     TreeNodeWps tagNode = getChildWithUserObject(tag.getKeyword().get(0).getValue(), root);
                     if (tagNode == null) {
