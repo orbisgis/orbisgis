@@ -127,12 +127,15 @@ public class EnumerationUI implements DataUI{
             else{
                 selectedIndex.add(0);
             }
+            int[] array = new int[selectedIndex.size()];
+            for (int i = 0; i < selectedIndex.size(); i++) {
+                array[i] = selectedIndex.get(i);
+            }
+            list.setSelectedIndices(array);
         }
-        int[] array = new int[selectedIndex.size()];
-        for (int i = 0; i < selectedIndex.size(); i++) {
-            array[i] = selectedIndex.get(i);
+        else{
+            dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
         }
-        list.setSelectedIndices(array);
         //Configure the JList
         list.setLayoutOrientation(JList.VERTICAL);
         int maxRowCount;

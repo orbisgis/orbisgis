@@ -386,6 +386,9 @@ public class WpsServerImpl implements WpsServer {
             if(input.getData().getContent().size() == 1){
                 data = input.getData().getContent().get(0);
             }
+            else if(input.getData().getContent().size() == 0){
+                data = null;
+            }
             else{
                 data = input.getData().getContent();
             }
