@@ -88,6 +88,9 @@ public class ProcessManager {
             ProcessOffering processOffering = null;
             try {
                 processOffering = parserController.parseProcess(f.getAbsolutePath());
+                if(processOffering == null){
+                    return null;
+                }
                 //Check if the process is compatible with the DBMS connected to OrbisGIS.
                 boolean isAcceptedDBMS = true;
                 for(MetadataType metadata : processOffering.getProcess().getMetadata()){
