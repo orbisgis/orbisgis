@@ -207,6 +207,7 @@ public class DatabaseSettingsPanel extends JDialog {
      */
     public void onOk() {
         if (checkParameters()) {
+            urlValue = buildJDBCUrl();
             saveProperties();    
             setVisible(false);
         }

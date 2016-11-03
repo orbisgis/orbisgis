@@ -300,6 +300,8 @@ public class WorkspaceSelectionDialog extends JPanel {
             selectedWorkspace.setRequirePassword(databaseSettingsPanel.hasPassword());
             selectedWorkspace.setJDBCConnectionReference(databaseSettingsPanel.getJdbcURI());
             selectedWorkspace.setDatabaseName(databaseSettingsPanel.getDatabaseName());
+            isJDBCUrlValid=true;
+            errorLabel.setText("");
         }
     }   
     
