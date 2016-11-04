@@ -49,6 +49,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 /**
  * DataUI associated to the RawData type.
@@ -66,6 +67,7 @@ public class RawDataUI implements DataUI {
     private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
     private static final String OPEN_PANEL_PROPERTY = "OPEN_PANEL_PROPERTY";
     private static final String MULTI_SELECTION_PROPERTY = "MULTI_SELECTION_PROPERTY";
+    private static final String EXCLUDED_TYPE_LIST_PROPERTY = "EXCLUDED_TYPE_LIST_PROPERTY";
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(RawDataUI.class);
 
@@ -116,13 +118,22 @@ public class RawDataUI implements DataUI {
         }
 
         OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", I18N.tr("Make your selection."), action, dataAccepted);
-        openPanel.setAcceptAllFileFilterUsed(true);
+        if(rawData.getFileTypes().length == 0) {
+            openPanel.setAcceptAllFileFilterUsed(true);
+        }
+        else{
+            openPanel.setAcceptAllFileFilterUsed(false);
+            for(String type : rawData.getFileTypes()){
+                openPanel.addFilter(type, type);
+            }
+        }
+
         openPanel.setSingleSelection(!rawData.multiSelection());
         openPanel.loadState();
 
 
-        if(dataMap.get(inputOrOutput.getIdentifier()) != null)
-            jtf.setText(dataMap.get(inputOrOutput.getIdentifier()).toString());
+        if(dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue())) != null)
+            jtf.setText(dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue())).toString());
         else {
             jtf.setText(openPanel.getCurrentDirectory().getAbsolutePath());
         }
@@ -137,6 +148,7 @@ public class RawDataUI implements DataUI {
         browseButton.putClientProperty(OPEN_PANEL_PROPERTY, openPanel);
         browseButton.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         browseButton.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
+        browseButton.putClientProperty(EXCLUDED_TYPE_LIST_PROPERTY, rawData.getExcludedTypes());
         browseButton.setBorderPainted(false);
         browseButton.setContentAreaFilled(false);
         browseButton.setMargin(new Insets(0, 0, 0, 0));
@@ -198,6 +210,7 @@ public class RawDataUI implements DataUI {
     public void openLoadPanel(ActionEvent event){
         JButton source = (JButton) event.getSource();
         OpenPanel openPanel = (OpenPanel) source.getClientProperty(OPEN_PANEL_PROPERTY);
+        List<String> excludedTypeList = (List<String>) source.getClientProperty(EXCLUDED_TYPE_LIST_PROPERTY);
         if (UIFactory.showDialog(openPanel, true, true)) {
             openPanel.saveState();
             JTextField textField = (JTextField) source.getClientProperty(TEXT_FIELD_PROPERTY);
@@ -205,11 +218,16 @@ public class RawDataUI implements DataUI {
             if(multiSelection){
                 String str = "";
                 for(File f : openPanel.getSelectedFiles()){
-                    if(str.isEmpty()){
-                        str+=f.getAbsolutePath();
+                    String extension = null;
+                    if(f.getName().lastIndexOf(".") != -1){
+                        extension = f.getName().substring(f.getName().lastIndexOf(".")+1);
                     }
-                    else{
-                        str+="\t"+f.getAbsolutePath();
+                    if(extension == null || !excludedTypeList.contains(extension)) {
+                        if (str.isEmpty()) {
+                            str += f.getAbsolutePath();
+                        } else {
+                            str += "\t" + f.getAbsolutePath();
+                        }
                     }
                 }
                 Map<URI, Object> dataMap = (Map<URI, Object>) source.getClientProperty(DATA_MAP_PROPERTY);
@@ -218,7 +236,14 @@ public class RawDataUI implements DataUI {
                 textField.setText(str);
             }
             else {
-                textField.setText(openPanel.getSelectedFile().getAbsolutePath());
+                File f = openPanel.getSelectedFile();
+                String extension = null;
+                if(f.getName().lastIndexOf(".") != -1){
+                    extension = f.getName().substring(f.getName().lastIndexOf(".")+1);
+                }
+                if(extension == null || !excludedTypeList.contains(extension)) {
+                    textField.setText(f.getAbsolutePath());
+                }
             }
         }
     }

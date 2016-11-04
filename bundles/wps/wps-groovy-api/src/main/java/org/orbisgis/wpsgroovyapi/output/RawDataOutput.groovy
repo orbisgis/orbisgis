@@ -59,6 +59,10 @@ import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute
  *      Indicates that the RawData can be a file.
  *  - multiSelection : boolean
  *      Indicates that the user can select more than one file/directory.
+ *  - fileTypes : String[]
+ *      Array of the file type allowed for the raw data. If no types are specified, accept all.
+ *  - excludedTypes : String[]
+ *      Array of the file type not allowed for the raw data.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *

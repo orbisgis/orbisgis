@@ -295,8 +295,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
         AbstractScrollPane processPanel = new AbstractScrollPane();
         processPanel.setLayout(new MigLayout("fill, ins 0, gap 0"));
-        processPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.DARK_GRAY), I18N.tr("Description")));
         JLabel label = new JLabel("<html>"+process.getAbstract().get(0).getValue()+"</html>");
         label.setFont(label.getFont().deriveFont(Font.ITALIC));
         processPanel.add(label, "growx, span");
