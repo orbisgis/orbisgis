@@ -595,14 +595,14 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 Object value = tableModel.getValueAt(rowId, colId);        
                 DefaultActiveFilter filter = null;
                 if(value==null){
-                    WhereSQLFilterFactory whereSQLFilterFactory = new WhereSQLFilterFactory();
-                    filter = whereSQLFilterFactory.getDefaultFilterValue();
-                    filter.setCurrentFilterValue(tableModel.getColumnName(colId) + " is null");  
+                    filter = new FieldsContainsFilterFactory.
+                        FilterParameters(colId,  null, true, true);
                 }
                 else{
-                 filter = new FieldsContainsFilterFactory.
+                filter = new FieldsContainsFilterFactory.
                         FilterParameters(colId,  value.toString(), true, true);
                 }
+                
                 //Clear current filter
                 filterManager.clearFilters();
                 //Add the find filter
