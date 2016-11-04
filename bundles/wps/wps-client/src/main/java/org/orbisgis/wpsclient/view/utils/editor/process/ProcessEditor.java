@@ -310,17 +310,18 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JLabel version = new JLabel(versionStr);
         version.setFont(version.getFont().deriveFont(Font.ITALIC));
         processPanel.add(version, "growx, span");
-        returnPanel.add(new JScrollPane(processPanel), "wrap, growx, height ::30%");
-
-        JPanel panel = new JPanel(new MigLayout("fill"));
-        JScrollPane scrollPane = new JScrollPane(panel);
+        JPanel borderProcessPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+        borderProcessPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.DARK_GRAY), I18N.tr("Description")));
+        borderProcessPanel.add(new JScrollPane(processPanel), "growx");
+        returnPanel.add(borderProcessPanel, "wrap, growx, height ::30%");
 
         boolean noParameters = true;
         // Put all the default values in the datamap
         pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
         JPanel parameterPanel = new JPanel(new MigLayout("fill"));
-        parameterPanel.setBorder(BorderFactory.createTitledBorder(I18N.tr("Parameter(s)")));
+        JScrollPane scrollPane = new JScrollPane(parameterPanel);
 
         for(InputDescriptionType i : process.getInput()){
             DataUI dataUI = dataUIManager.getDataUI(i.getDataDescription().getValue().getClass());
@@ -380,14 +381,16 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             }
         }
         if(!noParameters) {
-            panel.add(parameterPanel, "growx, span");
             errorMessage = new JLabel();
             errorMessage.setForeground(Color.RED);
-            panel.add(errorMessage, "growx, wrap");
+            parameterPanel.add(errorMessage, "growx, wrap");
             scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
             scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+            JPanel borderParameterPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+            borderParameterPanel.setBorder(BorderFactory.createTitledBorder(I18N.tr("Parameter(s)")));
+            borderParameterPanel.add(scrollPane, "growx");
 
-            returnPanel.add(scrollPane, "wrap, growx, height ::70%");
+            returnPanel.add(borderParameterPanel, "wrap, growx, height ::70%");
         }
         return returnPanel;
     }
@@ -404,8 +407,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
         AbstractScrollPane processPanel = new AbstractScrollPane();
         processPanel.setLayout(new MigLayout("fill, ins 0, gap 0"));
-        processPanel.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.DARK_GRAY), I18N.tr("Description")));
         JLabel label = new JLabel("<html>"+process.getAbstract().get(0).getValue()+"</html>");
         label.setFont(label.getFont().deriveFont(Font.ITALIC));
         processPanel.add(label, "growx, span");
@@ -419,7 +420,11 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JLabel version = new JLabel(versionStr);
         version.setFont(version.getFont().deriveFont(Font.ITALIC));
         processPanel.add(version, "growx, span");
-        returnPanel.add(new JScrollPane(processPanel), "wrap, growx, height ::30%");
+        JPanel borderProcessPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+        borderProcessPanel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(Color.DARK_GRAY), I18N.tr("Description")));
+        borderProcessPanel.add(new JScrollPane(processPanel), "growx");
+        returnPanel.add(borderProcessPanel, "wrap, growx, height ::30%");
 
         JPanel panel = new JPanel(new MigLayout("fill"));
         JScrollPane scrollPane = new JScrollPane(panel);
@@ -427,8 +432,9 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         // Put all the default values in the datamap
         pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
+        JPanel boderParameterPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+        boderParameterPanel.setBorder(BorderFactory.createTitledBorder(I18N.tr("Parameter(s)")));
         JPanel parameterPanel = new JPanel(new MigLayout("fill, ins 5"));
-        parameterPanel.setBorder(BorderFactory.createTitledBorder(I18N.tr("Parameter(s)")));
 
         List<DescriptionType> descriptionTypeList = new ArrayList<>();
         for(OutputDescriptionType o : process.getOutput()){
@@ -472,7 +478,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             }
         }
         parameterPanel.add(new JSeparator(), "growx, span");
-
         addBashLine(wpsClient.getProcessCopy(process.getIdentifier()), parameterPanel, scrollPane);
 
         JButton addButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.ADD));
@@ -490,8 +495,9 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         panel.add(errorMessage, "growx, wrap");
         scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
+        boderParameterPanel.add(scrollPane, "span");
 
-        returnPanel.add(scrollPane, "wrap, growx, height ::70%");
+        returnPanel.add(boderParameterPanel, "wrap, growx, height ::70%");
         return returnPanel;
     }
 
