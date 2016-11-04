@@ -6,6 +6,7 @@
     <artifactId>framework-api</artifactId>
     <name>Framework API</name>
     <url>http://orbisgis.org</url>
+    <description>API for the OrbisGIS framework</description>
     <build>
         <plugins>
             <plugin>

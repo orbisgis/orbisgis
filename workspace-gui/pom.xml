@@ -11,6 +11,7 @@
     <name>workspace-gui</name>
     <description>Manage launch Workspace GUI chooser. Publish ViewWorkspace service.</description>
     <packaging>bundle</packaging>
+    <url>http://www.orbisgis.org</url>       
     <build>
         <plugins>
             <plugin>
