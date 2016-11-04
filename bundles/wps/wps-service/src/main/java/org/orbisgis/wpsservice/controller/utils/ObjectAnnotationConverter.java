@@ -26,15 +26,13 @@ import net.opengis.wps._2_0.Format;
 import net.opengis.wps._2_0.LiteralDataType.LiteralDataDomain;
 import org.orbisgis.wpsgroovyapi.attributes.*;
 import org.orbisgis.wpsservice.model.*;
+import org.orbisgis.wpsservice.model.Enumeration;
 import org.orbisgis.wpsservice.model.TranslatableString;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Class able to convert annotation into object and object into annotation.
@@ -305,6 +303,8 @@ public class ObjectAnnotationConverter {
             rawData.setFile(rawDataAttribute.isFile());
             rawData.setDirectory(rawDataAttribute.isDirectory());
             rawData.setMultiSelection(rawDataAttribute.multiSelection());
+            rawData.setFileTypes(rawDataAttribute.fileTypes());
+            rawData.setExcludedTypes(rawDataAttribute.excludedTypes());
             return rawData;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());

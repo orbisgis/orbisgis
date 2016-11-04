@@ -103,7 +103,8 @@ def processing() {
         translatedResumes = [
                 @LanguageString(value = "The input CSV file containing the point data.", lang = "en"),
                 @LanguageString(value = "Le fichier CSV d'entrée contenant les données ponctuelles.", lang = "fr")
-        ])
+        ],
+        fileTypes = ["csv"])
 String[] csvDataInput
 
 
