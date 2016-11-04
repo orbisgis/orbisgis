@@ -5,7 +5,7 @@ package org.orbisgis.wpsservice.controller.execution;
  */
 public interface ProcessExecutionListener {
 
-    enum ProcessState{RUNNING, SUCCEEDED, FAILED, ACCEPTED}
+    enum ProcessState{RUNNING, SUCCEEDED, FAILED, ACCEPTED, IDLE}
     enum LogType{INFO, WARN, ERROR}
 
     void setStartTime(long time);
