@@ -122,7 +122,7 @@ public class RawDataUI implements DataUI {
             openPanel.setAcceptAllFileFilterUsed(true);
         }
         else{
-            openPanel.setAcceptAllFileFilterUsed(false);
+            openPanel.setAcceptAllFileFilterUsed(true);
             for(String type : rawData.getFileTypes()){
                 openPanel.addFilter(type, type);
             }
@@ -217,23 +217,26 @@ public class RawDataUI implements DataUI {
             boolean multiSelection = (boolean) source.getClientProperty((MULTI_SELECTION_PROPERTY));
             if(multiSelection){
                 String str = "";
+                String displayedStr = "";
                 for(File f : openPanel.getSelectedFiles()){
                     String extension = null;
                     if(f.getName().lastIndexOf(".") != -1){
                         extension = f.getName().substring(f.getName().lastIndexOf(".")+1);
                     }
-                    if(extension == null || !excludedTypeList.contains(extension)) {
+                    if(extension == null || excludedTypeList == null || !excludedTypeList.contains(extension)) {
                         if (str.isEmpty()) {
                             str += f.getAbsolutePath();
+                            displayedStr += "\"" + f.getAbsolutePath() + "\"";
                         } else {
                             str += "\t" + f.getAbsolutePath();
+                            displayedStr += " \"" + f.getAbsolutePath() + "\"";
                         }
                     }
                 }
                 Map<URI, Object> dataMap = (Map<URI, Object>) source.getClientProperty(DATA_MAP_PROPERTY);
                 URI uri = (URI) source.getClientProperty(URI_PROPERTY);
                 dataMap.put(uri, str);
-                textField.setText(str);
+                textField.setText(displayedStr);
             }
             else {
                 File f = openPanel.getSelectedFile();
@@ -241,7 +244,7 @@ public class RawDataUI implements DataUI {
                 if(f.getName().lastIndexOf(".") != -1){
                     extension = f.getName().substring(f.getName().lastIndexOf(".")+1);
                 }
-                if(extension == null || !excludedTypeList.contains(extension)) {
+                if(extension == null || excludedTypeList == null || !excludedTypeList.contains(extension)) {
                     textField.setText(f.getAbsolutePath());
                 }
             }
@@ -258,6 +261,9 @@ public class RawDataUI implements DataUI {
             if(new File(name).exists()) {
                 Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
                 URI uri = (URI) document.getProperty(URI_PROPERTY);
+                if(name.contains("\"")){
+                    name = name.replaceAll("\" \"", "\t").replaceAll("\"", "");
+                }
                 dataMap.put(uri, name);
             }
         } catch (BadLocationException e) {
