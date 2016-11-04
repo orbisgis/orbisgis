@@ -40,10 +40,7 @@ package org.orbisgis.wpsservice.model;
 import net.opengis.wps._2_0.ComplexDataType;
 import net.opengis.wps._2_0.Format;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import java.util.List;
 
 /**
@@ -54,7 +51,7 @@ import java.util.List;
  */
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "RawData", propOrder = {"isFile", "isDirectory", "multiSelection"})
+@XmlType(name = "RawData", propOrder = {"isFile", "isDirectory", "multiSelection", "fileTypes", "excludedTypes"})
 public class RawData extends ComplexDataType {
 
     /** True if the RawData can be a file, false otherwise. */
@@ -66,6 +63,12 @@ public class RawData extends ComplexDataType {
     /** True if the user can select more than one file/directory, false otherwise. */
     @XmlAttribute(name = "multiSelection")
     private boolean multiSelection;
+    /** Array of the file type allowed for the raw data. If no types are specified, accept all. */
+    @XmlElement(name = "fileTypes")
+    private String[] fileTypes;
+    /** Array of the file type not allowed for the raw data. */
+    @XmlElement(name = "excludedTypes")
+    private String[] excludedTypes;
 
     /**
      * Constructor giving a list of format.
@@ -130,5 +133,37 @@ public class RawData extends ComplexDataType {
      */
     public void setMultiSelection(boolean multiSelection) {
         this.multiSelection = multiSelection;
+    }
+
+    /**
+     * Returns the array of the file type allowed for the raw data. If no types are specified, accept all.
+     * @return the array of the file type allowed for the raw data.
+     */
+    public String[] getFileTypes() {
+        return fileTypes;
+    }
+
+    /**
+     * Sets the array of the file type allowed for the raw data. If no types are specified, accept all.
+     * @param fileTypes The array of the file type allowed for the raw data.
+     */
+    public void setFileTypes(String[] fileTypes) {
+        this.fileTypes = fileTypes;
+    }
+
+    /**
+     * Returns the array of the file type not allowed for the raw data.
+     * @return the array of the file type not allowed for the raw data.
+     */
+    public String[] getExcludedTypes() {
+        return excludedTypes;
+    }
+
+    /**
+     * Sets the array of the file type not allowed for the raw data.
+     * @param excludedTypes The array of the file type not allowed for the raw data.
+     */
+    public void setExcludedTypes(String[] excludedTypes) {
+        this.excludedTypes = excludedTypes;
     }
 }

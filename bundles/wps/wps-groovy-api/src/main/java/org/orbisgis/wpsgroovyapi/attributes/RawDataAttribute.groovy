@@ -43,6 +43,10 @@ import java.lang.annotation.RetentionPolicy
  *      Indicates that the RawData can be a file.
  *  - multiSelection : boolean
  *      Indicates that the user can select more than one file/directory.
+ *  - fileTypes : String[]
+ *      Array of the file type allowed for the raw data. If no types are specified, accept all.
+ *  - excludedTypes : String[]
+ *      Array of the file type not allowed for the raw data.
  *
  * @author Sylvain PALOMINOS
  */
@@ -55,6 +59,12 @@ import java.lang.annotation.RetentionPolicy
     /** Indicates that the user can select more than one file/directory. */
     boolean multiSelection() default false
 
+    /** Array of the file type allowed for the raw data. If no types are specified, accept all.*/
+    String[] fileTypes() default []
+
+    /** Array of the file type not allowed for the raw data.*/
+    String[] excludedTypes() default []
+
 
 
     /********************/
@@ -63,4 +73,6 @@ import java.lang.annotation.RetentionPolicy
     public static final boolean defaultIsDirectory = true
     public static final boolean defaultIsFile = true
     public static final boolean defaultMultiSelection = false
+    public static final String[] defaultFileType = []
+    public static final String[] defaultExcludedType = []
 }
