@@ -269,6 +269,11 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
         propertySupport.firePropertyChange(PROP_LOGFILE, oldLogFile, logFile);
     }
 
+    /**
+     * Write workspace paths into the OrbisGIS application folder
+     * @param paths
+     * @throws IOException 
+     */
     public void writeKnownWorkspaces(List<File> paths) throws IOException {
         File appFolder = new File(applicationFolder + File.separator);
         File currentWK = new File(appFolder, ALL_WORKSPACE_FILENAME);
@@ -305,7 +310,7 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
                 String line;
                 while ((line = fileReader.readLine()) != null) {
                     File currentDir = new File(line);
-                    if (currentDir.exists()) {
+                    if (currentDir.exists() && !knownPath.contains(currentDir)) {
                         knownPath.add(currentDir);
                     }
                 }
