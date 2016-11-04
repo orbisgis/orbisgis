@@ -207,6 +207,7 @@ public class DatabaseSettingsPanel extends JDialog {
      */
     public void onOk() {
         if (checkParameters()) {
+            urlValue = buildJDBCUrl();
             saveProperties();    
             setVisible(false);
         }
@@ -366,23 +367,21 @@ public class DatabaseSettingsPanel extends JDialog {
                 if (dbTypeName.equalsIgnoreCase("h2")) {
                     String netProt = jdcProperties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL);
                     if (netProt != null) {
-                dbTypes.setSelectedItem(DatabaseSettingsPanel.DB_TYPES.H2GIS_SERVER);
-                dbHost.setText(jdcProperties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
-                String portNum = jdcProperties.getProperty(DataSourceFactory.JDBC_PORT_NUMBER);
-                dbPort.setText(portNum!=null?portNum:DatabaseSettingsPanel.DEFAULT_H2_PORT);            
-            }
-            else{
-               dbTypes.setSelectedItem(DatabaseSettingsPanel.DB_TYPES.H2GIS_EMBEDDED);  
-               dbHost.setText(DEFAULT_MESSAGE_H2);
-               dbPort.setText(DEFAULT_MESSAGE_H2);
-            }
-        }
-        else if(dbTypeName.equalsIgnoreCase("postgresql")){
-            dbTypes.setSelectedItem(DatabaseSettingsPanel.DB_TYPES.POSTGIS);
-            dbHost.setText(jdcProperties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
-            dbPort.setText(jdcProperties.getProperty(DataSourceFactory.JDBC_PORT_NUMBER));
-        }
-        
+                        dbTypes.setSelectedItem(DatabaseSettingsPanel.DB_TYPES.H2GIS_SERVER);
+                        dbHost.setText(jdcProperties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
+                        String portNum = jdcProperties.getProperty(DataSourceFactory.JDBC_PORT_NUMBER);
+                        dbPort.setText(portNum != null ? portNum : DatabaseSettingsPanel.DEFAULT_H2_PORT);
+                    } else {
+                        dbTypes.setSelectedItem(DatabaseSettingsPanel.DB_TYPES.H2GIS_EMBEDDED);
+                        dbHost.setText(DEFAULT_MESSAGE_H2);
+                        dbPort.setText(DEFAULT_MESSAGE_H2);
+                    }
+                } else if (dbTypeName.equalsIgnoreCase("postgresql")) {
+                    dbTypes.setSelectedItem(DatabaseSettingsPanel.DB_TYPES.POSTGIS);
+                    dbHost.setText(jdcProperties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
+                    dbPort.setText(jdcProperties.getProperty(DataSourceFactory.JDBC_PORT_NUMBER));
+                }
+
                 userValue.setText(config.get(1));
                 requirePassword.setSelected(Boolean.parseBoolean(config.get(2)));
             }

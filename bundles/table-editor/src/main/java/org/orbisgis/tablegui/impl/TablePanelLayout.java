@@ -39,7 +39,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Set;
 import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.docking.XElement;

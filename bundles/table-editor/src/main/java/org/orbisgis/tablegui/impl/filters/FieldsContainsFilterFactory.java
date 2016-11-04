@@ -39,7 +39,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Set;
@@ -191,7 +190,8 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                     } else {
                         request.append(" ");
                     }
-                    request.append(TableLocation.quoteIdentifier(fieldName));
+                    request.append(TableLocation.quoteIdentifier(fieldName));                    
+                    if(params.getSearchedChars()!=null){
                     request.append("::text");
                     if(!params.isMatchCase()) {
                         request.append(")");
@@ -210,6 +210,10 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                         request.append("%");
                     }
                     request.append("'");
+                    }
+                    else{
+                        request.append(" is null");
+                    }
                 }
 
                 @Override
