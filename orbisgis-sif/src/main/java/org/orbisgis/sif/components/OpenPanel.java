@@ -1,12 +1,20 @@
 /**
- * OrbisGIS is a GIS application dedicated to scientific spatial analysis.
- * This cross-platform GIS is developed at the Lab-STICC laboratory by the DECIDE 
- * team located in University of South Brittany, Vannes.
+ * OrbisGIS is a java GIS application dedicated to research in GIScience.
+ * OrbisGIS is developed by the GIS group of the DECIDE team of the 
+ * Lab-STICC CNRS laboratory, see <http://www.lab-sticc.fr/>.
  *
+ * The GIS group of the DECIDE team is located at :
+ *
+ * Laboratoire Lab-STICC – CNRS UMR 6285
+ * Equipe DECIDE
+ * UNIVERSITÉ DE BRETAGNE-SUD
+ * Institut Universitaire de Technologie de Vannes
+ * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
+ * 
  * OrbisGIS is distributed under GPL 3 license.
  *
- * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
- * Copyright (C) 2015-2016 CNRS (UMR CNRS 6285)
+ * Copyright (C) 2007-2014 CNRS (IRSTV FR CNRS 2488)
+ * Copyright (C) 2015-2016 CNRS (Lab-STICC UMR CNRS 6285)
  *
  * This file is part of OrbisGIS.
  *
