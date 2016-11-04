@@ -5,7 +5,10 @@ import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.wpsservice.controller.utils.Job;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -30,6 +33,10 @@ public class ProcessWorker implements Runnable {
     private Map<URI, Object> dataMap;
     /** Map containing the properties to give to the GroovyObject for the execution */
     private Map<String, Object> propertiesMap;
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(ProcessWorker.class);
+    /** Logger */
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessWorker.class);
 
     public ProcessWorker(Job job,
                          ProcessIdentifier processIdentifier,
@@ -65,12 +72,12 @@ public class ProcessWorker implements Runnable {
         try {
             //Print in the log the process execution start
             if(job != null) {
-                job.appendLog(ProcessExecutionListener.LogType.INFO, "Start the process");
+                job.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Start the process."));
             }
 
             //Pre-process the data
             if(job != null) {
-                job.appendLog(ProcessExecutionListener.LogType.INFO, "Pre-processing");
+                job.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Pre-processing."));
             }
             for(DescriptionType inputOrOutput : process.getInput()){
                 stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, job));
@@ -78,13 +85,13 @@ public class ProcessWorker implements Runnable {
 
             //Execute the process and retrieve the groovy object.
             if(job != null) {
-                job.appendLog(ProcessExecutionListener.LogType.INFO, "Execute the script");
+                job.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Execute the script."));
             }
             processManager.executeProcess(job.getId(), processIdentifier, dataMap, propertiesMap);
 
             //Post-process the data
             if(job != null) {
-                job.appendLog(ProcessExecutionListener.LogType.INFO, "Post-processing");
+                job.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Post-processing."));
             }
             for(DescriptionType inputOrOutput : process.getOutput()){
                 dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, job);
@@ -95,20 +102,20 @@ public class ProcessWorker implements Runnable {
 
             //Print in the log the process execution end
             if(job != null) {
-                job.appendLog(ProcessExecutionListener.LogType.INFO, "End of the process");
+                job.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("End of the process."));
                 job.setProcessState(ProcessExecutionListener.ProcessState.SUCCEEDED);
             }
         }
         catch (Exception e) {
             if(job != null) {
                 job.setProcessState(ProcessExecutionListener.ProcessState.FAILED);
-                LoggerFactory.getLogger(ProcessWorker.class).error(e.getLocalizedMessage());
+                LOGGER.error(e.getLocalizedMessage());
                 //Print in the log the process execution error
                 job.appendLog(ProcessExecutionListener.LogType.ERROR, e.getMessage());
             }
             else{
-                LoggerFactory.getLogger(ProcessWorker.class).error("Error on execution the WPS " +
-                        "process '"+process.getTitle()+"'.\n"+e.getMessage());
+                LOGGER.error(I18N.tr("Error on execution the WPS  process {0}.\nCause : {1}.",
+                        process.getTitle(),e.getMessage()));
             }
             for(DescriptionType inputOrOutput : process.getInput()){
                 dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, job);

@@ -1,5 +1,8 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
+import org.orbisgis.wpsgroovyapi.attributes.LanguageString
+import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.input.FieldValueInput
@@ -19,9 +22,29 @@ import org.orbisgis.wpsgroovyapi.process.Process
  *
  * @author Sylvain PALOMINOS
  */
-@Process(title = "Delete rows",
-        resume = "Delete rows from a table.",
-        keywords = ["Table","Delete"])
+@Process(
+        translatedTitles = [
+                @LanguageString(value = "Delete rows", lang = "en"),
+                @LanguageString(value = "Suppression de lignes", lang = "fr")
+        ],
+        translatedResumes = [
+                @LanguageString(value = "Delete rows from a table.", lang = "en"),
+                @LanguageString(value = "Supprime des lignes d'une table.", lang = "fr")
+        ],
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Table", lang = "en"),
+                        @LanguageString(value = "Table", lang = "fr")
+                ]),
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Delete", lang = "en"),
+                        @LanguageString(value = "Suppression", lang = "fr")
+                ])
+        ],
+        metadata = [
+                @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
+                @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
+        ])
 def processing() {
     //Build the start of the query
     for (String s : pkToRemove) {
@@ -39,8 +62,14 @@ def processing() {
 
 /** This DataStore is the input data source table. */
 @DataStoreInput(
-        title = "Table",
-        resume = "The table to edit")
+        translatedTitles = [
+                @LanguageString(value = "Table", lang = "en"),
+                @LanguageString(value = "Table", lang = "fr")
+        ],
+        translatedResumes = [
+                @LanguageString(value = "The table to edit.", lang = "en"),
+                @LanguageString(value = "La table à éditer.", lang = "fr")
+        ])
 String tableName
 
 /**********************/
@@ -49,22 +78,40 @@ String tableName
 
 /** Name of the PrimaryKey field of the DataStore tableName. */
 @DataFieldInput(
-        title = "PKField",
-        resume = "The primary key field",
-        dataStoreTitle = "Table")
+        translatedTitles = [
+                @LanguageString(value = "PKField", lang = "en"),
+                @LanguageString(value = "Champ clef primaire", lang = "fr")
+        ],
+        translatedResumes = [
+                @LanguageString(value = "The primary key field.", lang = "en"),
+                @LanguageString(value = "Le champ de la clef primaire.", lang = "fr")
+        ],
+        variableReference = "tableName")
 String[] pkField
 
 /** List of primary keys to remove from the table. */
 @FieldValueInput(
-        title = "PKArray",
-        resume = "The array of the primary keys of the rows to remove",
-        dataFieldTitle = "PKField",
+        translatedTitles = [
+                @LanguageString(value = "PKArray", lang = "en"),
+                @LanguageString(value = "Liste clef primaire", lang = "fr")
+        ],
+        translatedResumes = [
+                @LanguageString(value = "The array of the primary keys of the rows to remove.", lang = "en"),
+                @LanguageString(value = "La liste des clefs primaires dont les lignes sont à supprimer.", lang = "fr")
+        ],
+        variableReference = "pkField",
         multiSelection = true)
 String[] pkToRemove
 
 /** Output message. */
 @LiteralDataOutput(
-        title="Output message",
-        resume="The output message")
+        translatedTitles = [
+                @LanguageString(value = "Output message", lang = "en"),
+                @LanguageString(value = "Message de sortie", lang = "fr")
+        ],
+        translatedResumes = [
+                @LanguageString(value = "The output message.", lang = "en"),
+                @LanguageString(value = "Le message de sortie.", lang = "fr")
+        ])
 String literalOutput
 

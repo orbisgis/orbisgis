@@ -27,6 +27,8 @@ import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.sif.JPanelListRenderer;
 import org.orbisgis.wpsservice.model.*;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,6 +57,8 @@ public class DataStoreUI implements DataUI{
     private static final String INITIAL_DELAY_PROPERTY = "INITIAL_DELAY_PROPERTY";
     private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
     private static final String IS_OUTPUT_PROPERTY = "IS_OUTPUT_PROPERTY";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(DataStoreUI.class);
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -75,7 +79,7 @@ public class DataStoreUI implements DataUI{
     }
 
     @Override
-    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         //Main panel which contains all the UI
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         DataStore dataStore;
@@ -187,7 +191,7 @@ public class DataStoreUI implements DataUI{
         }
         //If it is an output, adds the newTable item
         if(isOutput){
-            geocatalogComboBox.insertItemAt(new ContainerItem<Object>("New_table", "New_table"), 0);
+            geocatalogComboBox.insertItemAt(new ContainerItem<Object>(I18N.tr("New_table"), I18N.tr("New_table")), 0);
             geocatalogComboBox.setSelectedIndex(0);
         }
     }
@@ -218,7 +222,7 @@ public class DataStoreUI implements DataUI{
             comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, comboBox.getToolTipText());
             ToolTipManager.sharedInstance().setInitialDelay(0);
             ToolTipManager.sharedInstance().setDismissDelay(2500);
-            comboBox.setToolTipText("First add a table to the Geocatalog");
+            comboBox.setToolTipText(I18N.tr("First add a table to the Geocatalog"));
             ToolTipManager.sharedInstance().mouseMoved(
                     new MouseEvent(comboBox,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
         }

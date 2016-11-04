@@ -68,7 +68,7 @@ public class GeometryUI implements DataUI {
     }
 
     @Override
-    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         //Create the main panel
         JComponent component = new JPanel(new MigLayout("fill"));
         //Display the SourceCA into a JTextField
@@ -92,20 +92,22 @@ public class GeometryUI implements DataUI {
 
         component.add(jtf, "growx");
 
-        JPanel buttonPanel = new JPanel(new MigLayout());
+        if(orientation.equals(Orientation.VERTICAL)) {
+            JPanel buttonPanel = new JPanel(new MigLayout());
 
-        //Create the button Browse
-        JButton pasteButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
-        //"Save" the sourceCA and the JTextField in the button
-        pasteButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
-        pasteButton.setBorderPainted(false);
-        pasteButton.setContentAreaFilled(false);
-        pasteButton.setMargin(new Insets(0, 0, 0, 0));
-        //Add the listener for the click on the button
-        pasteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
-        buttonPanel.add(pasteButton);
+            //Create the button Browse
+            JButton pasteButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
+            //"Save" the sourceCA and the JTextField in the button
+            pasteButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
+            pasteButton.setBorderPainted(false);
+            pasteButton.setContentAreaFilled(false);
+            pasteButton.setMargin(new Insets(0, 0, 0, 0));
+            //Add the listener for the click on the button
+            pasteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
+            buttonPanel.add(pasteButton);
 
-        component.add(buttonPanel, "dock east");
+            component.add(buttonPanel, "dock east");
+        }
 
         return component;
     }

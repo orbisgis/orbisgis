@@ -22,13 +22,17 @@ package org.orbisgis.wpsclient.view.utils.editor.log;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
+import org.orbisgis.wpsclient.view.utils.editor.process.Job;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * EditableElement associated to the LogEditor.
@@ -38,14 +42,18 @@ import java.util.List;
 public class LogEditableElement implements EditableElement, PropertyChangeListener {
     /** Unique id of the LogEditableElement. */
     public static final String ID = "LOG_EDITABLE_ELEMENT";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(LogEditableElement.class);
     /** List of ProcessEditableElements displayed by the Editor. */
     private List<ProcessEditableElement> listPee = new ArrayList<>();
     /** List of listeners. */
     private List<PropertyChangeListener> changeListenerList = new ArrayList<>();
 
     public void addProcessEditableElement(ProcessEditableElement pee){
-        listPee.add(pee);
-        pee.addPropertyChangeListener(this);
+        if(!listPee.contains(pee)) {
+            listPee.add(pee);
+            pee.addPropertyChangeListener(this);
+        }
     }
 
     @Override
@@ -126,11 +134,12 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
         }
     }
 
-    public void cancelProcess(String id) {
+    public void cancelProcess(UUID id) {
         for(ProcessEditableElement pee : listPee){
-            if(pee.getId().equals(id)){
-                pee.firePropertyChangeEvent(new PropertyChangeEvent(this, ProcessEditableElement.CANCEL, null, null));
-                pee.appendLog(ProcessExecutionListener.LogType.ERROR, "Process cancelled by the user");
+            Job job = pee.getJob(id);
+            if(job != null){
+                pee.firePropertyChangeEvent(new PropertyChangeEvent(this, ProcessEditableElement.CANCEL, id, id));
+                job.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Process cancelled by the user"));
             }
         }
     }

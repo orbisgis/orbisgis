@@ -30,12 +30,12 @@ import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
 import org.orbisgis.wpsservice.controller.utils.CancelClosure;
 import org.orbisgis.wpsservice.controller.utils.WpsSql;
-import org.orbisgis.wpsservice.model.DataField;
-import org.orbisgis.wpsservice.model.FieldValue;
+import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsservice.model.Enumeration;
-import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -61,6 +61,8 @@ public class ProcessManager {
     private WpsServer wpsService;
     private Map<UUID, CancelClosure> closureMap;
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessManager.class);
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(ProcessManager.class);
 
     /**
      * Main constructor.
@@ -76,7 +78,7 @@ public class ProcessManager {
     public ProcessIdentifier addScript(URI scriptUri, String[] category, boolean isRemovable, String nodePath){
         File f = new File(scriptUri);
         if(!f.exists()){
-            LOGGER.error("The script file doesn't exists.");
+            LOGGER.error(I18N.tr("The script file doesn't exists."));
             return null;
         }
         //Test that the script name is not only '.groovy'
@@ -86,6 +88,29 @@ public class ProcessManager {
             ProcessOffering processOffering = null;
             try {
                 processOffering = parserController.parseProcess(f.getAbsolutePath());
+                if(processOffering == null){
+                    return null;
+                }
+                //Check if the process is compatible with the DBMS connected to OrbisGIS.
+                boolean isAcceptedDBMS = true;
+                for(MetadataType metadata : processOffering.getProcess().getMetadata()){
+                    if(metadata.getRole().equals(LocalWpsServer.ProcessProperty.DBMS.name())){
+                        isAcceptedDBMS = false;
+                    }
+                }
+                if(! isAcceptedDBMS){
+                    for(MetadataType metadata : processOffering.getProcess().getMetadata()){
+                        if(metadata.getRole().equals(LocalWpsServer.ProcessProperty.DBMS.name()) &&
+                            metadata.getTitle().toLowerCase().equals(wpsService.getDatabase().name().toLowerCase())){
+                            isAcceptedDBMS = true;
+                        }
+                    }
+                }
+                if(!isAcceptedDBMS){
+                    return new ProcessIdentifier(null, null, null, null);
+                }
+
+                //Sets the metadatas used by the OrbisGIS wps client
                 if(processOffering != null){
                     MetadataType isRemovableMetadata = new MetadataType();
                     isRemovableMetadata.setTitle(LocalWpsServer.ProcessProperty.IS_REMOVABLE.name());
@@ -115,7 +140,7 @@ public class ProcessManager {
                     }
                 }
             } catch (MalformedScriptException e) {
-                LoggerFactory.getLogger(ProcessManager.class).error("Unable to parse the process '"+scriptUri+"'.", e);
+                LOGGER.error(I18N.tr("Unable to parse the process {0}.", scriptUri), e);
             }
             //If the process is not already registered
             if(processOffering != null) {
@@ -140,7 +165,10 @@ public class ProcessManager {
         File folder = new File(uri);
         if(folder.exists() && folder.isDirectory()){
             for(File f : folder.listFiles()){
-                piList.add(addScript(f.toURI(), category, true, "localhost"));
+                ProcessIdentifier pi = addScript(f.toURI(), category, true, "localhost");
+                if(pi != null) {
+                    piList.add(pi);
+                }
             }
         }
         return piList;
@@ -170,7 +198,7 @@ public class ProcessManager {
                 WpsSql sql = new WpsSql(dataSourceService);
                 sql.withStatement(closure);
                 groovyObject.setProperty("sql", sql);
-                groovyObject.setProperty("isH2", wpsService.getDatabase().equals(WpsServer.Database.H2));
+                groovyObject.setProperty("isH2", wpsService.getDatabase().equals(WpsServer.Database.H2GIS));
             }
             groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
             for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
@@ -248,7 +276,8 @@ public class ProcessManager {
                     DataDescriptionType dataDescriptionType = i.getDataDescription().getValue();
                     if(dataDescriptionType instanceof FieldValue ||
                             dataDescriptionType instanceof DataField ||
-                            dataDescriptionType instanceof Enumeration){
+                            dataDescriptionType instanceof Enumeration ||
+                            dataDescriptionType instanceof RawData){
                         if(data != null) {
                             data = data.toString().split("\\t");
                         }
@@ -261,8 +290,7 @@ public class ProcessManager {
                                 data = valueOf.invoke(this, data.toString());
                             }
                         } catch (NoSuchMethodException | InvocationTargetException e) {
-                            LoggerFactory.getLogger(ProcessManager.class)
-                                    .warn("Unable to convert the LiteralData to the good script type");
+                            LOGGER.warn(I18N.tr("Unable to convert the LiteralData to the good script type."));
                         }
                     }
                     f.set(groovyObject, data);
@@ -322,8 +350,8 @@ public class ProcessManager {
                     if(((DescriptionTypeAttribute)a).identifier().equals(identifier)){
                         return f;
                     }
-                    if(identifier.endsWith(":input:"+((DescriptionTypeAttribute) a).title().replaceAll("[^a-zA-Z0-9_]", "_")) ||
-                            identifier.endsWith(":output:"+((DescriptionTypeAttribute) a).title().replaceAll("[^a-zA-Z0-9_]", "_"))){
+                    if(identifier.endsWith(":input:"+f.getName()) ||
+                            identifier.endsWith(":output:"+f.getName())){
                         return f;
                     }
                 }

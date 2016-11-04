@@ -29,10 +29,13 @@ import net.opengis.wps._2_0.ProcessDescriptionType;
 import net.opengis.wps._2_0.ProcessOffering;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute;
+import org.orbisgis.wpsservice.LocalWpsServerImpl;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +60,8 @@ public class ParserController {
     private List<Parser> parserList;
     private ProcessParser processParser;
     private GroovyClassLoader groovyClassLoader;
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(ParserController.class);
 
     public ParserController(){
         //Instantiate the parser list
@@ -80,7 +85,7 @@ public class ParserController {
             groovyClassLoader.clearCache();
             return groovyClassLoader.parseClass(groovyFile);
         } catch (Exception e) {
-            LOGGER.error("Can not parse the process : '"+sourceFileURI+"'");
+            LOGGER.error(I18N.tr("Can not parse the process : {0}.", sourceFileURI));
         }
         return null;
     }
@@ -105,8 +110,7 @@ public class ParserController {
         try {
             scriptObject = clazz.newInstance();
         } catch (InstantiationException|IllegalAccessException e) {
-            LoggerFactory.getLogger(ParserController.class).error(
-                    "Unable to create a new instance of the groovy script.\n" + e.getMessage());
+            LOGGER.error(I18N.tr("Unable to create a new instance of the groovy script.\nCause : {0}", e.getMessage()));
         }
 
         for(Field f : clazz.getDeclaredFields()){
@@ -119,8 +123,8 @@ public class ParserController {
                             f.setAccessible(true);
                             defaultValue = f.get(scriptObject);
                         } catch (IllegalAccessException e) {
-                            LoggerFactory.getLogger(ParserController.class).error(
-                                    "Unable to retrieve the default value of the field : "+ f + ".\n" + e.getMessage());
+                            LOGGER.error(I18N.tr("Unable to retrieve the default value of the field : {0}.\n" +
+                                    "Cause : {1}.", f, e.getMessage()));
                         }
                     }
                     //Find the good parser and parse the input.
@@ -141,7 +145,7 @@ public class ParserController {
                     }
                     if(!parsed){
                         throw new MalformedScriptException(ParserController.class, a.toString(),
-                                "Unable to find the Parser fo the annotation "+a.toString());
+                                I18N.tr("Unable to find the Parser fo the annotation {0}.", a.toString()));
                     }
                 }
                 if(a instanceof OutputAttribute){
@@ -163,7 +167,7 @@ public class ParserController {
                     }
                     if(!parsed){
                         throw new MalformedScriptException(ParserController.class, a.toString(),
-                                "Unable to find the Parser fo the annotation "+a.toString());
+                                I18N.tr("Unable to find the Parser for the annotation {0}.", a.toString()));
                     }
                 }
             }

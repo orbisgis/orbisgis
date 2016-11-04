@@ -1,0 +1,295 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-04 09:20+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+
+#: org/orbisgis/wpsservice/controller/execution/ProcessWorker.java:75
+msgid "Start the process."
+msgstr "Start the process."
+
+#: org/orbisgis/wpsservice/controller/execution/ProcessWorker.java:80
+msgid "Pre-processing."
+msgstr "Pre-processing."
+
+#: org/orbisgis/wpsservice/controller/execution/ProcessWorker.java:88
+msgid "Execute the script."
+msgstr "Execute the script."
+
+#: org/orbisgis/wpsservice/controller/execution/ProcessWorker.java:94
+msgid "Post-processing."
+msgstr "Post-processing."
+
+#: org/orbisgis/wpsservice/controller/execution/ProcessWorker.java:105
+msgid "End of the process."
+msgstr "End of the process."
+
+#: org/orbisgis/wpsservice/controller/execution/ProcessWorker.java:117
+#, java-format
+msgid ""
+"Error on execution the WPS  process '{0}'.\n"
+"Cause : {1}."
+msgstr ""
+"Error on execution the WPS  process '{0}'.\n"
+"Cause : {1}."
+
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:54
+msgid "Unable to parse the string '{0}' into Geometry."
+msgstr "Unable to parse the string '{0}' into Geometry."
+
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:73
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:77
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:92
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:96
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:152
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:156
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:171
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:175
+msgid "The geometry '{0}' type is not accepted ('{1}' not allowed)."
+msgstr "The geometry '{0}' type is not accepted ('{1}' not allowed)."
+
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:106
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:111
+msgid "The geometry '{0}' has not a wrong dimension (should be '{1}')."
+msgstr "The geometry '{0}' has not a wrong dimension (should be '{1}')."
+
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:185
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:189
+msgid "Unable to read the geometry '{0}'."
+msgstr "Unable to read the geometry '{0}'."
+
+#: org/orbisgis/wpsservice/controller/execution/GeometryProcessing.java:197
+msgid "Output geometry '{0}' is '{1}'."
+msgstr "Output geometry '{0}' is '{1}'."
+
+#: org/orbisgis/wpsservice/controller/parser/ParserController.java:88
+msgid "Can not parse the process : '{0}'."
+msgstr "Can not parse the process : '{0}'."
+
+#: org/orbisgis/wpsservice/controller/parser/ParserController.java:113
+#, java-format
+msgid ""
+"Unable to create a new instance of the groovy script.\n"
+"Cause : {0}"
+msgstr ""
+"Unable to create a new instance of the groovy script.\n"
+"Cause : {0}"
+
+#: org/orbisgis/wpsservice/controller/parser/ParserController.java:126
+#, java-format
+msgid ""
+"Unable to retrieve the default value of the field : {0}.\n"
+"Cause : {1}."
+msgstr ""
+"Unable to retrieve the default value of the field : {0}.\n"
+"Cause : {1}."
+
+#: org/orbisgis/wpsservice/controller/parser/ParserController.java:148
+#, java-format
+msgid "Unable to find the Parser fo the annotation {0}."
+msgstr "Unable to find the Parser fo the annotation {0}."
+
+#: org/orbisgis/wpsservice/controller/parser/ParserController.java:170
+#, java-format
+msgid "Unable to find the Parser for the annotation {0}."
+msgstr "Unable to find the Parser for the annotation {0}."
+
+#: org/orbisgis/wpsservice/controller/process/ProcessManager.java:83
+msgid "The script file doesn't exists."
+msgstr "The script file doesn't exists."
+
+#: org/orbisgis/wpsservice/controller/process/ProcessManager.java:122
+msgid "Unable to parse the process {0}."
+msgstr "Unable to parse the process {0}."
+
+#: org/orbisgis/wpsservice/controller/process/ProcessManager.java:268
+msgid "Unable to convert the LiteralData to the good script type."
+msgstr "Unable to convert the LiteralData to the good script type."
+
+#: org/orbisgis/wpsservice/WpsServerImpl.java:131
+msgid ""
+"The unmarshalled WPSCapabilitiesType is not a valid WPSCapabilitiesType."
+msgstr ""
+"The unmarshalled WPSCapabilitiesType is not a valid WPSCapabilitiesType."
+
+#: org/orbisgis/wpsservice/WpsServerImpl.java:135
+msgid "The unmarshalled WPSCapabilitiesType is invalid."
+msgstr "The unmarshalled WPSCapabilitiesType is invalid."
+
+#: org/orbisgis/wpsservice/WpsServerImpl.java:137
+msgid "The unmarshalled WPSCapabilitiesType is null."
+msgstr "The unmarshalled WPSCapabilitiesType is null."
+
+#: org/orbisgis/wpsservice/WpsServerImpl.java:140
+msgid ""
+"Unable to load the WpsServiceBasicCapabilities.xml file containing the "
+"service basic capabilities."
+msgstr ""
+"Unable to load the WpsServiceBasicCapabilities.xml file containing the "
+"service basic capabilities."
+
+#: org/orbisgis/wpsservice/WpsServerImpl.java:144
+msgid "Unable to create the unmarshaller"
+msgstr "Unable to create the unmarshaller"
+
+#: org/orbisgis/wpsservice/WpsServerImpl.java:147
+#, java-format
+msgid ""
+"Error on using the unmarshaller.\n"
+"Cause : {0}."
+msgstr ""
+"Error on using the unmarshaller.\n"
+"Cause : {0}."
+
+#: org/orbisgis/wpsservice/WpsServerImpl.java:535
+#, java-format
+msgid ""
+"Unable to parse the incoming xml.\n"
+"Cause : {0}."
+msgstr ""
+"Unable to parse the incoming xml.\n"
+"Cause : {0}."
+
+#: org/orbisgis/wpsservice/WpsServerImpl.java:547
+#, java-format
+msgid ""
+"Unable to parse the outcoming xml.\n"
+"Cause : {0}."
+msgstr ""
+"Unable to parse the outcoming xml.\n"
+"Cause : {0}."
+
+#: org/orbisgis/wpsservice/WpsServerImpl.java:625
+#, java-format
+msgid ""
+"Unable to generate the XMLGregorianCalendar object.\n"
+"Cause : {0}."
+msgstr ""
+"Unable to generate the XMLGregorianCalendar object.\n"
+"Cause : {0}."
+
+#: org/orbisgis/wpsservice/model/DataStore.java:96
+#: org/orbisgis/wpsservice/model/DataStore.java:120
+#: org/orbisgis/wpsservice/model/GeometryData.java:68
+#: org/orbisgis/wpsservice/model/DataField.java:149
+msgid "A same DataType is accepted and excluded."
+msgstr "A same DataType is accepted and excluded."
+
+#: org/orbisgis/wpsservice/model/MalformedScriptException.java:44
+#, java-format
+msgid "Error on implementing '{0}', the argument '{1}' {2}."
+msgstr "Error on implementing '{0}', the argument '{1}' {2}."
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:119
+msgid "Unable to restore previous configuration of the ToolBox."
+msgstr "Unable to restore previous configuration of the ToolBox."
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:149
+msgid ""
+"Warning, because of the H2 configuration, the toolbox won't be able to run more than one process at the same time.\n"
+"Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000; MULTI_THREADED=TRUE'"
+msgstr ""
+"Warning, because of the H2 configuration, the toolbox won't be able to run more than one process at the same time.\n"
+"Try to use the following setting for H2 : 'MVCC=TRUE; LOCK_TIMEOUT=100000; MULTI_THREADED=TRUE'"
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:154
+msgid ""
+"Warning, because of the database configuration, the toolbox won't be able to"
+" run more than one process at the same time."
+msgstr ""
+"Warning, because of the database configuration, the toolbox won't be able to"
+" run more than one process at the same time."
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:164
+msgid "Warning, no DataManager found."
+msgstr "Warning, no DataManager found."
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:189
+msgid "Save of the OrbisGIS toolBox"
+msgstr "Save of the OrbisGIS toolBox"
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:191
+msgid "Unable to save ToolBox state."
+msgstr "Unable to save ToolBox state."
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:243
+msgid "The process identifier get from the script '{0}' is null."
+msgstr "The process identifier get from the script '{0}' is null."
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:271
+msgid "The script '{0}' does not exist anymore."
+msgstr "The script '{0}' does not exist anymore."
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:356
+#, java-format
+msgid ""
+"Unable to get the field '{0}.{1}' information.\n"
+"Cause : {2}."
+msgstr ""
+"Unable to get the field '{0}.{1}' information.\n"
+"Cause : {2}."
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:398
+#, java-format
+msgid ""
+"Unable to get the table '{0}' field list.\n"
+"Cause : {1}."
+msgstr ""
+"Unable to get the table '{0}' field list.\n"
+"Cause : {1}."
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:422
+#, java-format
+msgid ""
+"Unable to get the field '{0}.{1}' value list.\n"
+"Cause : {2}."
+msgstr ""
+"Unable to get the field '{0}.{1}' value list.\n"
+"Cause : {2}."
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:474
+msgid "Unable to set the property '{0}', the name is already used."
+msgstr "Unable to set the property '{0}', the name is already used."
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:489
+msgid ""
+"Unable to remove the property '{0}', the name protected or not defined."
+msgstr ""
+"Unable to remove the property '{0}', the name protected or not defined."
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:546
+msgid "F_TABLE_CATALOG"
+msgstr "F_TABLE_CATALOG"
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:547
+msgid "F_TABLE_SCHEMA"
+msgstr "F_TABLE_SCHEMA"
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:547
+msgid "F_TABLE_NAME"
+msgstr "F_TABLE_NAME"
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:547
+msgid "TYPE"
+msgstr "TYPE"
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:550
+msgid "Geometry columns information of tables are not available."
+msgstr "Geometry columns information of tables are not available."
+
+#: org/orbisgis/wpsservice/LocalWpsServerImpl.java:595
+msgid "Cannot read the table list"
+msgstr "Cannot read the table list"

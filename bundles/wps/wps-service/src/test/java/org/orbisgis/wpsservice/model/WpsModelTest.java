@@ -1,6 +1,5 @@
 package org.orbisgis.wpsservice.model;
 
-import com.vividsolutions.jts.geom.Geometry;
 import net.opengis.wps._2_0.Format;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,7 +20,7 @@ import java.util.List;
 public class WpsModelTest {
     /** Field containing the DataFieldAttribute annotation. */
     @DataFieldAttribute(
-            dataStoreTitle = "data store title",
+            variableReference = "data store title",
             fieldTypes = {"GEOMETRY", "NUMBER"},
             excludedTypes = {"MULTILINESTRING", "LONG"},
             multiSelection = true
@@ -233,7 +232,7 @@ public class WpsModelTest {
     /** Field containing the FieldValueAttribute annotation. */
     @FieldValueAttribute(
             multiSelection = true,
-            dataFieldTitle = "dataFieldTitle"
+            variableReference = "dataFieldTitle"
     )
     public Object fieldValueInput;
 

@@ -23,7 +23,6 @@ import org.orbisgis.sif.icons.BaseIcon;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.io.File;
 import java.awt.*;
 import java.io.File;
 
@@ -49,6 +48,9 @@ public class ToolBoxIcon {
     public static final String UNDEFINED = "undefined";
     public static final String PASTE = "paste";
     public static final String RAW_DATA = "rawdata";
+    public static final String ADD = "add";
+    public static final String DELETE = "delete";
+    public static final String TOGGLE_MODE = "toggleMode";
 
     private static BaseIcon iconManager = new BaseIcon(LoggerFactory.getLogger(ToolBoxIcon.class));
 
@@ -75,7 +77,12 @@ public class ToolBoxIcon {
         }
         //It the iconName is the icon name, load it
         else {
-            return iconManager.getIcon(ToolBoxIcon.class, iconName);
+            if (ToolBoxIcon.class.getResource(iconName+".png") != null) {
+                return iconManager.getIcon(ToolBoxIcon.class, iconName);
+            }
+            else{
+                return null;
+            }
         }
     }
 }

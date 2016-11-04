@@ -28,6 +28,8 @@ import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.Enumeration;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
@@ -48,7 +50,8 @@ import java.util.*;
  **/
 
 public class EnumerationUI implements DataUI{
-    private static final int JLIST_MAX_ROW_COUNT = 10;
+    private static final int JLIST_VERTICAL_MAX_ROW_COUNT = 10;
+    private static final int JLIST_HORIZONTAL_MAX_ROW_COUNT = 3;
 
     /** Constant used to pass object as client property throw JComponents **/
     private static final String IS_OPTIONAL_PROPERTY = "IS_OPTIONAL_PROPERTY";
@@ -58,6 +61,8 @@ public class EnumerationUI implements DataUI{
     private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
     private static final String IS_MULTISELECTION_PROPERTY = "IS_MULTISELECTION_PROPERTY";
     private static final String LIST_PROPERTY = "LIST_PROPERTY";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(EnumerationUI.class);
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -68,7 +73,7 @@ public class EnumerationUI implements DataUI{
     }
 
     @Override
-    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         //Get the enumeration object
         Enumeration enumeration = null;
@@ -122,19 +127,34 @@ public class EnumerationUI implements DataUI{
             else{
                 selectedIndex.add(0);
             }
+            int[] array = new int[selectedIndex.size()];
+            for (int i = 0; i < selectedIndex.size(); i++) {
+                array[i] = selectedIndex.get(i);
+            }
+            list.setSelectedIndices(array);
         }
-        int[] array = new int[selectedIndex.size()];
-        for (int i = 0; i < selectedIndex.size(); i++) {
-            array[i] = selectedIndex.get(i);
+        else{
+            dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
         }
-        list.setSelectedIndices(array);
         //Configure the JList
         list.setLayoutOrientation(JList.VERTICAL);
-        if(enumeration.getValues().length < JLIST_MAX_ROW_COUNT){
+        int maxRowCount;
+        if(orientation.equals(Orientation.VERTICAL)){
+            maxRowCount = JLIST_VERTICAL_MAX_ROW_COUNT;
+        }
+        else{
+            if(enumeration.isEditable()) {
+                maxRowCount = JLIST_HORIZONTAL_MAX_ROW_COUNT - 1;
+            }
+            else{
+                maxRowCount = JLIST_HORIZONTAL_MAX_ROW_COUNT;
+            }
+        }
+        if(enumeration.getValues().length < maxRowCount){
             list.setVisibleRowCount(enumeration.getValues().length);
         }
         else {
-            list.setVisibleRowCount(JLIST_MAX_ROW_COUNT);
+            list.setVisibleRowCount(maxRowCount);
         }
         JScrollPane listScroller = new JScrollPane(list);
         panel.add(listScroller, "growx, wrap");
@@ -161,11 +181,14 @@ public class EnumerationUI implements DataUI{
                     this,
                     "saveDocumentTextFile",
                     "document"));
-            textField.setToolTipText("Coma separated custom value(s)");
+            textField.setToolTipText(I18N.tr("Coma separated custom value(s)"));
 
             panel.add(textField, "growx, wrap");
             list.putClientProperty(TEXT_FIELD_PROPERTY, textField);
         }
+
+        onListSelection(list);
+
         return panel;
     }
 

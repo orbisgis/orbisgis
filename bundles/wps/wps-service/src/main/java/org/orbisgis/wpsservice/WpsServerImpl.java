@@ -4,7 +4,6 @@ import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
-import net.sourceforge.cobertura.CoverageIgnore;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
@@ -12,11 +11,12 @@ import org.orbisgis.wpsservice.controller.execution.ProcessWorker;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.controller.utils.Job;
-import org.orbisgis.wpsservice.controller.utils.WpsSql;
 import org.orbisgis.wpsservice.model.JaxbContainer;
 import org.orbisgis.wpsservice.utils.ProcessTranslator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -53,6 +53,8 @@ public class WpsServerImpl implements WpsServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(WpsServerImpl.class);
     /** JAXB object factory for the WPS objects. */
     private static final ObjectFactory wpsObjectFactory = new ObjectFactory();
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(WpsServerImpl.class);
 
     /** Server supported languages. */
     private List<String> supportedLanguages;
@@ -79,6 +81,10 @@ public class WpsServerImpl implements WpsServer {
     /** Map containing all the properties to give to the groovy object.
      * The following words are reserved and SHOULD NOT be used as keys : 'logger', 'sql', 'isH2'. */
     protected Map<String, Object> propertiesMap;
+    /** True if the server configuration allows the multiThread, false otherwise */
+    protected boolean multiThreaded = true;
+    private boolean processRunning = false;
+    private LinkedList<ProcessWorker> workerFIFO;
 
     private enum SectionName {ServiceIdentification, ServiceProvider, OperationMetadata, Contents, Languages, All}
 
@@ -96,11 +102,13 @@ public class WpsServerImpl implements WpsServer {
         jobMap = new HashMap<>();
         supportedLanguages = new ArrayList<>();
         supportedLanguages.add(DEFAULT_LANGUAGE);
+        supportedLanguages.add("fr");
         propertiesMap = new HashMap<>();
         //Initialisation of the wps service itself
         initWpsService();
         //Creates the attribute for the processes execution
         processManager = new ProcessManager(dataSourceService, this);
+        workerFIFO = new LinkedList<>();
     }
 
     /**
@@ -125,22 +133,23 @@ public class WpsServerImpl implements WpsServer {
                         if (value instanceof WPSCapabilitiesType) {
                             capabilitiesType = (WPSCapabilitiesType) value;
                         } else {
-                            LOGGER.error("The unmarshalled WPSCapabilitiesType is not a valid WPSCapabilitiesType.");
+                            LOGGER.error(I18N.tr("The unmarshalled WPSCapabilitiesType is not a valid" +
+                                    " WPSCapabilitiesType."));
                         }
                     } else if(unmarshalledObject != null) {
-                        LOGGER.error("The unmarshalled WPSCapabilitiesType is invalid.");
+                        LOGGER.error(I18N.tr("The unmarshalled WPSCapabilitiesType is invalid."));
                     } else {
-                        LOGGER.error("The unmarshalled WPSCapabilitiesType is null.");
+                        LOGGER.error(I18N.tr("The unmarshalled WPSCapabilitiesType is null."));
                     }
                 } else {
-                    LOGGER.error("Unable to load the WpsServiceBasicCapabilities.xml file containing the " +
-                            "service basic capabilities.");
+                    LOGGER.error(I18N.tr("Unable to load the WpsServiceBasicCapabilities.xml file containing the " +
+                            "service basic capabilities."));
                 }
             } else {
-                LOGGER.error("Unable to create the unmarshaller");
+                LOGGER.error(I18N.tr("Unable to create the unmarshaller"));
             }
         } catch (JAXBException | IOException e) {
-            LOGGER.error("Error on using the unmarshaller.\n"+e.getMessage());
+            LOGGER.error(I18N.tr("Error on using the unmarshaller.\nCause : {0}.", e.getMessage()));
         }
         if(capabilitiesType != null){
             defaultBasicCapabilities = capabilitiesType;
@@ -303,18 +312,20 @@ public class WpsServerImpl implements WpsServer {
             List<ProcessSummaryType> processSummaryTypeList = new ArrayList<>();
             List<ProcessDescriptionType> processList = getProcessList();
             for (ProcessDescriptionType process : processList) {
+                ProcessDescriptionType translatedProcess = ProcessTranslator.getTranslatedProcess(
+                        process, requestLanguage, DEFAULT_LANGUAGE);
                 ProcessSummaryType processSummaryType = new ProcessSummaryType();
                 processSummaryType.getJobControlOptions().clear();
                 processSummaryType.getJobControlOptions().addAll(jobControlOptions);
-                processSummaryType.getAbstract().clear();
-                processSummaryType.getAbstract().addAll(process.getAbstract());
-                processSummaryType.setIdentifier(process.getIdentifier());
-                processSummaryType.getKeywords().clear();
-                processSummaryType.getKeywords().addAll(process.getKeywords());
+                processSummaryType.setIdentifier(translatedProcess.getIdentifier());
                 processSummaryType.getMetadata().clear();
-                processSummaryType.getMetadata().addAll(process.getMetadata());
+                processSummaryType.getMetadata().addAll(translatedProcess.getMetadata());
+                processSummaryType.getAbstract().clear();
+                processSummaryType.getAbstract().addAll(translatedProcess.getAbstract());
                 processSummaryType.getTitle().clear();
-                processSummaryType.getTitle().addAll(process.getTitle());
+                processSummaryType.getTitle().addAll(translatedProcess.getTitle());
+                processSummaryType.getKeywords().clear();
+                processSummaryType.getKeywords().addAll(translatedProcess.getKeywords());
 
                 processSummaryTypeList.add(processSummaryType);
             }
@@ -356,7 +367,7 @@ public class WpsServerImpl implements WpsServer {
                 po.getOutputTransmission().clear();
                 po.getOutputTransmission().addAll(listTransmission);
                 ProcessDescriptionType process = processOffering.getProcess();
-                po.setProcess(ProcessTranslator.getTranslatedProcess(process, describeProcess.getLang()));
+                po.setProcess(ProcessTranslator.getTranslatedProcess(process, describeProcess.getLang(), DEFAULT_LANGUAGE));
                 processOfferingList.add(po);
             }
         }
@@ -374,6 +385,9 @@ public class WpsServerImpl implements WpsServer {
             Object data;
             if(input.getData().getContent().size() == 1){
                 data = input.getData().getContent().get(0);
+            }
+            else if(input.getData().getContent().size() == 0){
+                data = null;
             }
             else{
                 data = input.getData().getContent();
@@ -400,12 +414,18 @@ public class WpsServerImpl implements WpsServer {
                 dataMap,
                 propertiesMap);
 
-        //Run the worker
-        if(executorService != null){
-            executorService.execute(worker);
+
+        if(processRunning){
+            workerFIFO.push(worker);
         }
         else {
-            worker.run();
+            //Run the worker
+            processRunning = true;
+            if (executorService != null) {
+                executorService.execute(worker);
+            } else {
+                worker.run();
+            }
         }
         //Return the StatusInfo to the user
         statusInfo.setStatus(job.getState().name());
@@ -428,6 +448,24 @@ public class WpsServerImpl implements WpsServer {
             XMLGregorianCalendar date = getXMLGregorianCalendar(PROCESS_POLLING_MILLIS);
             statusInfo.setNextPoll(date);
         }
+        if(job.getState().equals(ProcessExecutionListener.ProcessState.FAILED) ||
+                job.getState().equals(ProcessExecutionListener.ProcessState.SUCCEEDED)) {
+            processRunning = false;
+        }
+
+
+        //If other process are waiting and the actual process failed, run them
+        if(job.getState().equals(ProcessExecutionListener.ProcessState.FAILED) &&
+                !processRunning &&
+                workerFIFO.size()>0){
+            processRunning = true;
+            if (executorService != null) {
+                executorService.execute(workerFIFO.pollFirst());
+            } else {
+                workerFIFO.pollFirst().run();
+            }
+        }
+
         return statusInfo;
     }
 
@@ -470,6 +508,17 @@ public class WpsServerImpl implements WpsServer {
         }
         result.getOutput().clear();
         result.getOutput().addAll(listOutput);
+
+        //If other process are waiting, run them
+        if(!processRunning && workerFIFO.size()>0){
+            processRunning = true;
+            if (executorService != null) {
+                executorService.execute(workerFIFO.pollFirst());
+            } else {
+                workerFIFO.pollFirst().run();
+            }
+        }
+
         return result;
     }
 
@@ -526,7 +575,7 @@ public class WpsServerImpl implements WpsServer {
                 result = dismiss((Dismiss)o);
             }
         } catch (JAXBException e) {
-            LOGGER.error("Unable to parse the incoming xml\n" + e.getMessage());
+            LOGGER.error(I18N.tr("Unable to parse the incoming xml.\nCause : {0}.", e.getMessage()));
             return new ByteArrayOutputStream();
         }
         //Write the request answer in an ByteArrayOutputStream
@@ -538,7 +587,7 @@ public class WpsServerImpl implements WpsServer {
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
                 marshaller.marshal(result, out);
             } catch (JAXBException e) {
-                LOGGER.error("Unable to parse the outcoming xml\n" + e.getMessage());
+                LOGGER.error(I18N.tr("Unable to parse the outcoming xml.\nCause : {0}.", e.getMessage()));
             }
         }
         return out;
@@ -553,32 +602,25 @@ public class WpsServerImpl implements WpsServer {
     /** Getters and setters **/
     /*************************/
 
-    @CoverageIgnore
+
     protected void setDatabase(Database database){
         this.database = database;
     }
-
-    @CoverageIgnore
     @Override
     public Database getDatabase() {
         return database;
     }
 
-    @CoverageIgnore
     protected void setDataSourceService(DataSourceService dataSourceService){
         this.dataSourceService = dataSourceService;
     }
-
-    @CoverageIgnore
     protected void setDataProcessingManager(DataProcessingManager dataProcessingManager){
         this.dataProcessingManager = dataProcessingManager;
     }
 
-    @CoverageIgnore
     protected void setExecutorService(ExecutorService executorService){
         this.executorService = executorService;
     }
-
     protected ExecutorService getExecutorService(){
         return executorService;
     }
@@ -623,7 +665,7 @@ public class WpsServerImpl implements WpsServer {
             Duration duration = datatypeFactory.newDuration(durationInMillis);
             date.add(duration);
         } catch (DatatypeConfigurationException e) {
-            LOGGER.error("Unable to generate the XMLGregorianCalendar object.\n"+e.getMessage());
+            LOGGER.error(I18N.tr("Unable to generate the XMLGregorianCalendar object.\nCause : {0}.", e.getMessage()));
         }
         return date;
     }

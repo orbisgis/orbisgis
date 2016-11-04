@@ -6,7 +6,10 @@ import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
+import org.orbisgis.wpsservice.model.ObjectFactory;
+import org.orbisgis.wpsservice.model.TranslatableComplexData;
 
+import javax.xml.bind.JAXBElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,19 +25,26 @@ public class ProcessTranslator {
      * Return the process with the given language translation.
      * If the asked translation doesn't exists, use the english one. If it doesn't exists too, uses one of the others.
      * @param process Process to traduce.
-     * @param language Language asked.
+     * @param requestedLanguage Language asked.
+     * @param defaultLanguage Default language.
      * @return The traduced process.
      */
-    public static final ProcessDescriptionType getTranslatedProcess(ProcessDescriptionType process, String language){
+    public static final ProcessDescriptionType getTranslatedProcess(
+            ProcessDescriptionType process, String requestedLanguage, String defaultLanguage){
         ProcessDescriptionType translatedProcess = new ProcessDescriptionType();
-        translatedProcess.setLang(language);
+        translatedProcess.setLang(requestedLanguage);
         List<InputDescriptionType> inputList = new ArrayList<>();
         for(InputDescriptionType input : process.getInput()){
             InputDescriptionType translatedInput = new InputDescriptionType();
-            translatedInput.setDataDescription(input.getDataDescription());
+            JAXBElement jaxbElement = input.getDataDescription();
+            if(jaxbElement.getValue() instanceof TranslatableComplexData){
+                TranslatableComplexData translatableComplexData = (TranslatableComplexData)jaxbElement.getValue();
+                jaxbElement.setValue(translatableComplexData.getTranslatedData(defaultLanguage, requestedLanguage));
+            }
+            translatedInput.setDataDescription(jaxbElement);
             translatedInput.setMaxOccurs(input.getMaxOccurs());
             translatedInput.setMinOccurs(input.getMinOccurs());
-            translateDescriptionType(translatedInput, input, language);
+            translateDescriptionType(translatedInput, input, requestedLanguage, defaultLanguage);
             inputList.add(translatedInput);
         }
         translatedProcess.getInput().clear();
@@ -42,13 +52,18 @@ public class ProcessTranslator {
         List<OutputDescriptionType> outputList = new ArrayList<>();
         for(OutputDescriptionType output : process.getOutput()){
             OutputDescriptionType translatedOutput = new OutputDescriptionType();
-            translatedOutput.setDataDescription(output.getDataDescription());
-            translateDescriptionType(translatedOutput, output, language);
+            JAXBElement jaxbElement = output.getDataDescription();
+            if(jaxbElement.getValue() instanceof TranslatableComplexData){
+                TranslatableComplexData translatableComplexData = (TranslatableComplexData)jaxbElement.getValue();
+                jaxbElement.setValue(translatableComplexData.getTranslatedData(defaultLanguage, requestedLanguage));
+            }
+            translatedOutput.setDataDescription(jaxbElement);
+            translateDescriptionType(translatedOutput, output, requestedLanguage, defaultLanguage);
             outputList.add(translatedOutput);
         }
         translatedProcess.getOutput().clear();
         translatedProcess.getOutput().addAll(outputList);
-        translateDescriptionType(translatedProcess, process, language);
+        translateDescriptionType(translatedProcess, process, requestedLanguage, defaultLanguage);
         return translatedProcess;
     }
 
@@ -58,29 +73,36 @@ public class ProcessTranslator {
      *
      * @param translatedDescriptionType Translated DescriptionType.
      * @param descriptionType Source DescriptionType.
-     * @param language Language asked.
+     * @param requestedLanguage Language asked.
+     * @param defaultLanguage Default language.
      */
     public static final void translateDescriptionType(DescriptionType translatedDescriptionType,
                                                       DescriptionType descriptionType,
-                                                      String language){
-        String enLanguage = "en";
+                                                      String requestedLanguage,
+                                                      String defaultLanguage){
         translatedDescriptionType.setIdentifier(descriptionType.getIdentifier());
         translatedDescriptionType.getMetadata().clear();
         translatedDescriptionType.getMetadata().addAll(descriptionType.getMetadata());
         //Find the good abstract
-        LanguageStringType translatedAbstract = new LanguageStringType();
-        boolean defaultAbstrFound = false;
+        LanguageStringType translatedAbstract = null;
+        List<String> languageList = new ArrayList<>();
+        for(LanguageStringType abstr : descriptionType.getAbstract()){
+            if(abstr.getLang() != null) {
+                languageList.add(abstr.getLang());
+            }
+        }
+        String language = getBestEffortLanguage(requestedLanguage, defaultLanguage, languageList);
         for(LanguageStringType abstr : descriptionType.getAbstract()){
             if(abstr.getLang() != null && abstr.getLang().equals(language)){
                 translatedAbstract = abstr;
-                break;
             }
-            else if(abstr.getLang() != null && abstr.getLang().equals(enLanguage)){
-                translatedAbstract = abstr;
-                defaultAbstrFound = true;
+        }
+        if(translatedAbstract == null){
+            if(descriptionType.getAbstract().size() > 0){
+                translatedAbstract = descriptionType.getAbstract().get(0);
             }
-            else if(!defaultAbstrFound){
-                translatedAbstract = abstr;
+            else{
+                translatedAbstract = new LanguageStringType();
             }
         }
         List<LanguageStringType> abstrList = new ArrayList<>();
@@ -88,19 +110,25 @@ public class ProcessTranslator {
         translatedDescriptionType.getAbstract().clear();
         translatedDescriptionType.getAbstract().addAll(abstrList);
         //Find the good title
-        LanguageStringType translatedTitle = new LanguageStringType();
-        boolean defaultTitleFound = false;
+        LanguageStringType translatedTitle = null;
+        languageList = new ArrayList<>();
+        for(LanguageStringType title : descriptionType.getTitle()){
+            if(title.getLang() != null) {
+                languageList.add(title.getLang());
+            }
+        }
+        language = getBestEffortLanguage(requestedLanguage, defaultLanguage, languageList);
         for(LanguageStringType title : descriptionType.getTitle()){
             if(title.getLang() != null && title.getLang().equals(language)){
                 translatedTitle = title;
-                break;
             }
-            else if(title.getLang() != null && title.getLang().equals(enLanguage)){
-                translatedTitle = title;
-                defaultTitleFound = true;
+        }
+        if(translatedTitle == null){
+            if(descriptionType.getTitle().size() > 0){
+                translatedTitle = descriptionType.getTitle().get(0);
             }
-            else if(!defaultTitleFound){
-                translatedTitle = title;
+            else{
+                translatedTitle = new LanguageStringType();
             }
         }
         List<LanguageStringType> titleList = new ArrayList<>();
@@ -112,17 +140,25 @@ public class ProcessTranslator {
         KeywordsType translatedKeywords = new KeywordsType();
         List<LanguageStringType> keywordList = new ArrayList<>();
         for(KeywordsType keywords : descriptionType.getKeywords()) {
-            LanguageStringType translatedKeyword = new LanguageStringType();
-            boolean defaultKeywordFound = false;
-            for (LanguageStringType keyword : keywords.getKeyword()) {
-                if (keyword.getLang() != null && keyword.getLang().equals(language)) {
+            LanguageStringType translatedKeyword = null;
+            languageList = new ArrayList<>();
+            for(LanguageStringType keyword : keywords.getKeyword()){
+                if(keyword != null && keyword.getLang() != null) {
+                    languageList.add(keyword.getLang());
+                }
+            }
+            language = getBestEffortLanguage(requestedLanguage, defaultLanguage, languageList);
+            for(LanguageStringType keyword : keywords.getKeyword()){
+                if(keyword.getLang() != null && keyword.getLang().equals(language)){
                     translatedKeyword = keyword;
-                    break;
-                } else if (keyword.getLang() != null && keyword.getLang().equals(enLanguage)) {
-                    translatedKeyword = keyword;
-                    defaultKeywordFound = true;
-                } else if (!defaultKeywordFound) {
-                    translatedKeyword = keyword;
+                }
+            }
+            if(translatedKeyword == null){
+                if(keywords.getKeyword().size() > 0){
+                    translatedKeyword = keywords.getKeyword().get(0);
+                }
+                else{
+                    translatedKeyword = new LanguageStringType();
                 }
             }
             keywordList.add(translatedKeyword);
@@ -132,5 +168,27 @@ public class ProcessTranslator {
         keywordsList.add(translatedKeywords);
         translatedDescriptionType.getKeywords().clear();
         translatedDescriptionType.getKeywords().addAll(keywordsList);
+        translatedDescriptionType.setIdentifier(descriptionType.getIdentifier());
+        translatedDescriptionType.getMetadata().addAll(descriptionType.getMetadata());
+    }
+
+    private static String getBestEffortLanguage(
+            String requestedLanguage,
+            String defaultLanguage,
+            List<String> availableLanguages){
+
+        if(requestedLanguage.equals("*")){
+            return defaultLanguage;
+        }
+        if (availableLanguages.contains(requestedLanguage)) {
+            return requestedLanguage;
+        }
+        for (String language : availableLanguages) {
+            if (requestedLanguage.substring(0, 2).equals(language.substring(0, 2))) {
+                return language;
+            }
+        }
+        //If not language was found, try to use any language if allowed
+        return defaultLanguage;
     }
 }

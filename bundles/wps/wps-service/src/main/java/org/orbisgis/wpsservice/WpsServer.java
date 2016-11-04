@@ -30,7 +30,6 @@
 package org.orbisgis.wpsservice;
 
 import net.opengis.wps._2_0.*;
-import net.sourceforge.cobertura.CoverageIgnore;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -145,8 +144,7 @@ public interface WpsServer {
     /**
      * Enumeration of the supported databases
      */
-    @CoverageIgnore
-    enum Database {H2, POSTGRESQL}
+    enum Database {H2GIS, POSTGIS}
 
     /**
      * Returns the database which is connected to the WPS server.

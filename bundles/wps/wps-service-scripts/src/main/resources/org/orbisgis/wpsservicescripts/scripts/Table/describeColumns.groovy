@@ -1,8 +1,9 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
+import org.orbisgis.wpsgroovyapi.attributes.LanguageString
+import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
-import org.orbisgis.wpsgroovyapi.input.FieldValueInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
@@ -12,10 +13,31 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * 
  *
  * @author Erwan Bocher
+ * @author Sylvain PALOMINOS
  */
-@Process(title = "Describe columns",
-        resume = "Extract the name, type and comment from all fields of a table.",
-        keywords = ["Table","Describe"])
+@Process(
+        translatedTitles = [
+                @LanguageString(value = "Describe columns", lang = "en"),
+                @LanguageString(value = "Décrire les colonnes", lang = "fr")
+        ],
+        translatedResumes = [
+                @LanguageString(value = "Extract the name, type and comment from all fields of a table.", lang = "en"),
+                @LanguageString(value = "Extrait le nom, le type et le commentaire de chacun des champs d'un table.", lang = "fr")
+        ],
+        translatedKeywords = [
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Table", lang = "en"),
+                        @LanguageString(value = "Table", lang = "fr")
+                ]),
+                @TranslatableString(translatableStrings = [
+                        @LanguageString(value = "Describe", lang = "en"),
+                        @LanguageString(value = "Descrition", lang = "fr")
+                ])
+        ],
+        metadata = [
+                @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
+                @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
+        ])
 def processing() {
     
     literalOutput = "No descriptions have been extracted."
@@ -40,19 +62,37 @@ def processing() {
 
 /** This DataStore is the input data source table. */
 @DataStoreInput(
-        title = "Table",
-        resume = "Extract name, type and comments from the selected table.")
+        translatedTitles = [
+                @LanguageString(value = "Table", lang = "en"),
+                @LanguageString(value = "Table", lang = "fr")
+        ],
+        translatedResumes = [
+                @LanguageString(value = "Extract name, type and comments from the selected table.", lang = "en"),
+                @LanguageString(value = "Extrait les noms, les types et les commentaires de la table.", lang = "fr")
+        ])
 String tableName
 
 @LiteralDataInput(
-		title="Output table name",
-		resume="Name of the table containing the descriptions.")
+        translatedTitles = [
+                @LanguageString(value = "Output table name", lang = "en"),
+                @LanguageString(value = "Nom de la table de sortie", lang = "fr")
+        ],
+        translatedResumes = [
+                @LanguageString(value = "Name of the table containing the descriptions.", lang = "en"),
+                @LanguageString(value = "Nom de la table contenant les descriptions.", lang = "fr")
+        ])
 String outputTableName
 
 
 /** Output message. */
 @LiteralDataOutput(
-        title="Output message",
-        resume="The output message")
+        translatedTitles = [
+                @LanguageString(value = "Output message", lang = "en"),
+                @LanguageString(value = "Message de sortie", lang = "fr")
+        ],
+        translatedResumes = [
+                @LanguageString(value = "The output message.", lang = "en"),
+                @LanguageString(value = "Le message de sortie.", lang = "fr")
+        ])
 String literalOutput
 

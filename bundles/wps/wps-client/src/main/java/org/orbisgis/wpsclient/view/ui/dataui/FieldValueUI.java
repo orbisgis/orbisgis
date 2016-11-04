@@ -27,6 +27,8 @@ import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -56,8 +58,9 @@ import java.util.concurrent.ExecutorService;
 public class FieldValueUI implements DataUI{
 
     /** Size constants **/
-    private static final int MAX_JLIST_ROW_COUNT = 10;
-    private static final int MIN_JLIST_ROW_COUNT = 1;
+    private static final int JLIST_VERTICAL_MAX_ROW_COUNT = 10;
+    private static final int JLIST_HORIZONTAL_MAX_ROW_COUNT = 3;
+    private static final int JLIST_MIN_ROW_COUNT = 1;
 
     /** Constant used to pass object as client property throw JComponents **/
     private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
@@ -67,6 +70,9 @@ public class FieldValueUI implements DataUI{
     private static final String INITIAL_DELAY_PROPERTY = "INITIAL_DELAY_PROPERTY";
     private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
     private static final String LAYERUI_PROPERTY = "LAYERUI_PROPERTY";
+    private static final String ORIENTATION_PROPERTY = "ORIENTATION_PROPERTY";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(FieldValueUI.class);
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -77,7 +83,7 @@ public class FieldValueUI implements DataUI{
     }
 
     @Override
-    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         FieldValue fieldValue = null;
         //Retrieve the FieldValue and if it is optional
@@ -104,11 +110,12 @@ public class FieldValueUI implements DataUI{
             list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         }
         list.setLayoutOrientation(JList.VERTICAL);
-        list.setVisibleRowCount(MIN_JLIST_ROW_COUNT);
+        list.setVisibleRowCount(JLIST_MIN_ROW_COUNT);
         list.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
         list.putClientProperty(FIELD_VALUE_PROPERTY, fieldValue);
         list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
+        list.putClientProperty(ORIENTATION_PROPERTY, orientation);
         list.addMouseListener(EventHandler.create(MouseListener.class, this, "refreshList", "source", "mouseEntered"));
         list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
@@ -206,6 +213,7 @@ public class FieldValueUI implements DataUI{
         protected Object doInBackground() throws Exception {
             WaitLayerUI layerUI = (WaitLayerUI)list.getClientProperty(LAYERUI_PROPERTY);
             FieldValue fieldValue = (FieldValue)list.getClientProperty(FIELD_VALUE_PROPERTY);
+            Orientation orientation = (Orientation)list.getClientProperty(ORIENTATION_PROPERTY);
             HashMap<URI, Object> dataMap = (HashMap<URI, Object>)list.getClientProperty(DATA_MAP_PROPERTY);
             boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
             //If the DataField related to the FieldValue has been modified, reload the dataField values
@@ -259,10 +267,18 @@ public class FieldValueUI implements DataUI{
                     for (String field : listFields) {
                         model.addElement(field);
                     }
-                    if (listFields.size() < MAX_JLIST_ROW_COUNT) {
+                    int maxRowCount;
+                    if(orientation.equals(Orientation.VERTICAL)){
+                        maxRowCount = JLIST_VERTICAL_MAX_ROW_COUNT;
+                    }
+                    else{
+                        maxRowCount = JLIST_HORIZONTAL_MAX_ROW_COUNT;
+                    }
+                    if(listFields.size() < maxRowCount){
                         list.setVisibleRowCount(listFields.size());
-                    } else {
-                        list.setVisibleRowCount(MAX_JLIST_ROW_COUNT);
+                    }
+                    else {
+                        list.setVisibleRowCount(maxRowCount);
                     }
                     if (!isOptional && list.getModel().getSize() > 0) {
                         list.setSelectedIndex(0);
@@ -287,15 +303,17 @@ public class FieldValueUI implements DataUI{
                     else if(split.length == 4){
                         fieldValueStr = split[1]+"."+split[2]+"."+split[3];
                     }
-                    list.setToolTipText("First configure the DataField : " + fieldValueStr);
+                    list.setToolTipText(I18N.tr("First configure the DataField {0}.", fieldValueStr));
                 }
                 else {
-                    list.setToolTipText("First configure the DataField : " +
-                            fieldValueStr.substring(fieldValueStr.lastIndexOf(":") + 1));
+                    list.setToolTipText(I18N.tr("First configure the DataField {0}",
+                            fieldValueStr.substring(fieldValueStr.lastIndexOf(":") + 1)));
                 }
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
             }
+            list.revalidate();
+            list.repaint();
             return null;
         }
     }
@@ -343,11 +361,11 @@ public class FieldValueUI implements DataUI{
             Font font = g2.getFont().deriveFont(Font.PLAIN, s / 3);
             g2.setFont(font);
             FontMetrics metrics = g2.getFontMetrics(font);
-            int w1 = metrics.stringWidth("Loading");
-            int w2 = metrics.stringWidth("fields");
+            int w1 = metrics.stringWidth(I18N.tr("Loading"));
+            int w2 = metrics.stringWidth(I18N.tr("fields"));
             int h1 = metrics.getHeight();
-            g2.drawString("Loading", cx - w1 / 2, cy - h1 / 2);
-            g2.drawString("source", cx - w2 / 2, cy + h1 / 2);
+            g2.drawString(I18N.tr("Loading"), cx - w1 / 2, cy - h1 / 2);
+            g2.drawString(I18N.tr("source"), cx - w2 / 2, cy + h1 / 2);
             //waiter painting
             g2.setStroke(new BasicStroke(s / 4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,

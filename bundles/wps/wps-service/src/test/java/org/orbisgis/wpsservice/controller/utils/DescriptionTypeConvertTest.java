@@ -8,12 +8,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import net.opengis.wps._2_0.DescriptionType;
-import org.orbisgis.wpsgroovyapi.attributes.Keyword;
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString;
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString;
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -35,22 +33,22 @@ public class DescriptionTypeConvertTest {
     /** Field containing the full DescriptionTypeAttribute annotation. */
     @DescriptionTypeAttribute(
             title = "DescriptionType attribute title",
-            traducedTitles = {
+            translatedTitles = {
                     @LanguageString(value = "DescriptionType attribute title", lang = "en"),
                     @LanguageString(value = "Titre de l'attribut DescriptionType", lang = "fr")
             },
             resume = "DescriptionType attribute resume",
-            traducedResumes = {
+            translatedResumes = {
                     @LanguageString(value = "DescriptionType attribute resume", lang = "en"),
                     @LanguageString(value = "Description de l'attribut DescriptionType", lang = "fr")
             },
             keywords = {"DescriptionType","Attribute"},
-            traducedKeywords = {
-                    @Keyword(traducedKeywords = {
+            translatedKeywords = {
+                    @TranslatableString(translatableStrings = {
                             @LanguageString(value = "Attribute en", lang = "en"),
                             @LanguageString(value = "Attribute fr", lang = "fr")
                     }),
-                    @Keyword(traducedKeywords = {
+                    @TranslatableString(translatableStrings = {
                             @LanguageString(value = "DescriptionType en", lang = "en"),
                             @LanguageString(value = "DescriptionType fr", lang = "fr")
                     })

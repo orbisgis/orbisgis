@@ -29,6 +29,8 @@ import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.RawData;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
@@ -64,6 +66,8 @@ public class RawDataUI implements DataUI {
     private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
     private static final String OPEN_PANEL_PROPERTY = "OPEN_PANEL_PROPERTY";
     private static final String MULTI_SELECTION_PROPERTY = "MULTI_SELECTION_PROPERTY";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(RawDataUI.class);
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -74,7 +78,7 @@ public class RawDataUI implements DataUI {
     }
 
     @Override
-    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap) {
+    public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         //Create the main panel
         JComponent component = new JPanel(new MigLayout("fill"));
         //Display the SourceCA into a JTextField
@@ -111,9 +115,10 @@ public class RawDataUI implements DataUI {
             dataAccepted = OpenPanel.ACCEPT_BOTH;
         }
 
-        OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", "Make your selection", action, dataAccepted);
+        OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", I18N.tr("Make your selection."), action, dataAccepted);
         openPanel.setAcceptAllFileFilterUsed(true);
         openPanel.setSingleSelection(!rawData.multiSelection());
+        openPanel.loadState();
 
 
         if(dataMap.get(inputOrOutput.getIdentifier()) != null)
@@ -131,24 +136,26 @@ public class RawDataUI implements DataUI {
         browseButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
         browseButton.putClientProperty(OPEN_PANEL_PROPERTY, openPanel);
         browseButton.putClientProperty(DATA_MAP_PROPERTY, dataMap);
-        browseButton.putClientProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        browseButton.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
         browseButton.setBorderPainted(false);
         browseButton.setContentAreaFilled(false);
         browseButton.setMargin(new Insets(0, 0, 0, 0));
+        browseButton.setToolTipText(I18N.tr("Browse"));
         //Add the listener for the click on the button
         browseButton.addActionListener(EventHandler.create(ActionListener.class, this, "openLoadPanel", ""));
         buttonPanel.add(browseButton);
-
-        //Create the button Browse
-        JButton pasteButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
-        //"Save" the sourceCA and the JTextField in the button
-        pasteButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
-        pasteButton.setBorderPainted(false);
-        pasteButton.setContentAreaFilled(false);
-        pasteButton.setMargin(new Insets(0, 0, 0, 0));
-        //Add the listener for the click on the button
-        pasteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
-        buttonPanel.add(pasteButton);
+        if(orientation.equals(Orientation.VERTICAL)) {
+            //Create the button Browse
+            JButton pasteButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
+            //"Save" the sourceCA and the JTextField in the button
+            pasteButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
+            pasteButton.setBorderPainted(false);
+            pasteButton.setContentAreaFilled(false);
+            pasteButton.setMargin(new Insets(0, 0, 0, 0));
+            //Add the listener for the click on the button
+            pasteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
+            buttonPanel.add(pasteButton);
+        }
 
         component.add(buttonPanel, "dock east");
 
@@ -192,16 +199,17 @@ public class RawDataUI implements DataUI {
         JButton source = (JButton) event.getSource();
         OpenPanel openPanel = (OpenPanel) source.getClientProperty(OPEN_PANEL_PROPERTY);
         if (UIFactory.showDialog(openPanel, true, true)) {
+            openPanel.saveState();
             JTextField textField = (JTextField) source.getClientProperty(TEXT_FIELD_PROPERTY);
             boolean multiSelection = (boolean) source.getClientProperty((MULTI_SELECTION_PROPERTY));
             if(multiSelection){
                 String str = "";
                 for(File f : openPanel.getSelectedFiles()){
                     if(str.isEmpty()){
-                        str+="\""+f.getAbsolutePath()+"\"";
+                        str+=f.getAbsolutePath();
                     }
                     else{
-                        str+=","+"\""+f.getAbsolutePath()+"\"";
+                        str+="\t"+f.getAbsolutePath();
                     }
                 }
                 Map<URI, Object> dataMap = (Map<URI, Object>) source.getClientProperty(DATA_MAP_PROPERTY);

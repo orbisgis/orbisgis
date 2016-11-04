@@ -57,10 +57,6 @@ public class ProcessIdentifier {
     public ProcessDescriptionType getProcessDescriptionType() {
         return processOffering.getProcess();
     }
-    @Deprecated
-    public Process getProcess() {
-        return null;
-    }
 
     public URI getSourceFileURI() {
         return sourceFileURI;

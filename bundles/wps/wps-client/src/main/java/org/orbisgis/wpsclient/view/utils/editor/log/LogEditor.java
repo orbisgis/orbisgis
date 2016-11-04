@@ -26,20 +26,22 @@ import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
+import org.orbisgis.wpsclient.view.utils.editor.process.Job;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
+import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 /**
  * UI for the configuration and the run of a WPS process.
@@ -51,15 +53,17 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
     private static final int FIVE_SECOND = 5000;
     /** Name of the EditorDockable. */
     private static final String NAME = "LOG_EDITOR";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(LogPanel.class);
 
     /** LogEditableElement. */
     private LogEditableElement lee;
     /** DockingParameters. */
     private DockingPanelParameters dockingPanelParameters;
     /** Map of LogPanel to display. */
-    private Map<String, LogPanel> componentMap;
+    private Map<UUID, LogPanel> componentMap;
     /** List of process ended, waiting the 5 seconds before beeing removed.*/
-    private LinkedList<String> endProcessFIFO;
+    private LinkedList<UUID> endProcessFIFO;
     /** Content panel which is only scrollable vertically. */
     private VerticalScrollablePanel contentPanel;
     /** Label displaying the actual number of process running. */
@@ -77,9 +81,9 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("log"));
         dockingPanelParameters.setDefaultDockingLocation(
                 new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClientImpl.TOOLBOX_REFERENCE));
-        dockingPanelParameters.setTitle("WPS log");
+        dockingPanelParameters.setTitle(I18N.tr("WPS log"));
         dockingPanelParameters.setName(NAME);
-        dockingPanelParameters.setCloseable(false);
+        dockingPanelParameters.setCloseable(true);
 
         contentPanel = new VerticalScrollablePanel();
         contentPanel.setLayout(new MigLayout("fill"));
@@ -100,17 +104,17 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
      * Its log will be displayed dynamically.
      * @param pee ProcessEditableElement of the running process to add.
      */
-    public void addNewLog(ProcessEditableElement pee){
+    public void addNewLog(ProcessEditableElement pee, UUID jobId){
         LogPanel panel = new LogPanel(pee.getProcess().getTitle().get(0).getValue(), this);
-        panel.setState(ProcessEditableElement.ProcessState.RUNNING);
-        componentMap.put(pee.getId(), panel);
+        panel.setState(ProcessExecutionListener.ProcessState.RUNNING);
+        componentMap.put(jobId, panel);
         contentPanel.add(panel, "growx, span");
-        processRunning.setText("Process running : "+componentMap.size());
+        processRunning.setText(I18N.tr("Process running : {0}.", componentMap.size()));
     }
 
     public void cancelProcess(ActionEvent ae){
         Object logPanelSource = ((JButton)ae.getSource()).getClientProperty("logPanel");
-        for(Map.Entry<String, LogPanel> entry : componentMap.entrySet()){
+        for(Map.Entry<UUID, LogPanel> entry : componentMap.entrySet()){
             if(entry.getValue().equals(logPanelSource)){
                 lee.cancelProcess(entry.getKey());
             }
@@ -120,20 +124,20 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
     /**
      * The LogPanel corresponding to the process represented by the ProcessEditableElement is prepared to be removed
      * in 5 seconds and its log is copied to the OrbisGIS log.
-     * @param pee ProcessEditableElement corresponding to the process.
+     * @param job ProcessEditableElement corresponding to the process.
      * @param successful True if the process has been successfully run, false otherwise.
      */
-    private void removeLog(ProcessEditableElement pee, boolean successful){
-        if(endProcessFIFO.contains(pee)){
+    private void removeLog(Job job, boolean successful){
+        if(endProcessFIFO.contains(job.getId())){
             return;
         }
-        LogPanel lp = componentMap.get(pee.getId());
+        LogPanel lp = componentMap.get(job.getId());
         String log = "\n=====================================\n"+
-                "WPS Process : "+pee.getProcess().getTitle().get(0).getValue() +"\n"+
+                I18N.tr("WPS Process : {0}\n", job.getProcess().getTitle().get(0).getValue()) +
                 "=====================================\n"+
-                "Result : "+pee.getProcessState()+"\n"+
-                "Log : \n";
-        for(Map.Entry<String, Color> entry : pee.getLogMap().entrySet()){
+                I18N.tr("Result : {0}\n", job.getState())+
+                I18N.tr("Log : \n");
+        for(Map.Entry<String, Color> entry : job.getLogMap().entrySet()){
             log+=entry.getKey()+"\n";
         }
         if(successful) {
@@ -143,9 +147,9 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
             LoggerFactory.getLogger(LogEditor.class).error(log);
         }
         lp.stop();
-        lp.addLogText("(This window will be automatically closed in 5 seconds)\n" +
-                "(The process log will be printed in the OrbisGIS log)");
-        endProcessFIFO.add(pee.getId());
+        lp.addLogText(I18N.tr("(This window will be automatically closed in 5 seconds)\n" +
+                "(The process log will be printed in the OrbisGIS log)"));
+        endProcessFIFO.add(job.getId());
         //Start the time to fully remove the log in 5 second.
         Timer timer5S = new Timer(FIVE_SECOND, EventHandler.create(ActionListener.class, this, "endInstance"));
         timer5S.setRepeats(false);
@@ -156,12 +160,12 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
      * Fully remove the log from the UI.
      */
     public void endInstance(){
-        String id = endProcessFIFO.removeFirst();
+        UUID id = endProcessFIFO.removeFirst();
         if(componentMap.get(id) != null) {
             contentPanel.remove(componentMap.get(id));
         }
         componentMap.remove(id);
-        processRunning.setText("Process running : "+componentMap.size());
+        processRunning.setText(I18N.tr("Process running : {0}.", componentMap.size()));
         this.repaint();
     }
 
@@ -189,25 +193,25 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
     @Override
     public void setEditableElement(EditableElement editableElement) {
         this.lee = (LogEditableElement)editableElement;
-        dockingPanelParameters.setTitle("WPS log");
+        dockingPanelParameters.setTitle(I18N.tr("WPS log"));
         lee.addPropertyChangeListener(this);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
         if(event.getPropertyName().equals(ProcessEditableElement.LOG_PROPERTY)){
-            ProcessEditableElement pee = (ProcessEditableElement)event.getSource();
+            Job job = (Job) event.getSource();
             AbstractMap.SimpleEntry<String, Color> entry = (AbstractMap.SimpleEntry<String, Color>)event.getNewValue();
-            componentMap.get(pee.getId()).addLogText(entry.getKey());
+            componentMap.get(job.getId()).addLogText(entry.getKey());
         }
         if(event.getPropertyName().equals(ProcessEditableElement.STATE_PROPERTY)){
-            ProcessEditableElement pee = (ProcessEditableElement)event.getSource();
-            switch((ProcessEditableElement.ProcessState)event.getNewValue()){
+            Job job = (Job) event.getSource();
+            switch((ProcessExecutionListener.ProcessState)event.getNewValue()){
                 case SUCCEEDED:
-                    removeLog(pee, true);
+                    removeLog(job, true);
                     break;
                 case FAILED:
-                    removeLog(pee, false);
+                    removeLog(job, false);
                     break;
             }
         }

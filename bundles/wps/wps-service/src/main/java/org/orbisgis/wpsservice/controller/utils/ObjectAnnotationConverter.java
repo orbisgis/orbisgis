@@ -25,8 +25,8 @@ import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.Format;
 import net.opengis.wps._2_0.LiteralDataType.LiteralDataDomain;
 import org.orbisgis.wpsgroovyapi.attributes.*;
-import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.model.*;
+import org.orbisgis.wpsservice.model.TranslatableString;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
@@ -46,9 +46,9 @@ public class ObjectAnnotationConverter {
 
     public static void annotationToObject(DescriptionTypeAttribute descriptionTypeAttribute,
                                           DescriptionType descriptionType){
-        if(descriptionTypeAttribute.traducedTitles().length != DescriptionTypeAttribute.defaultTraducedTitles.length){
+        if(descriptionTypeAttribute.translatedTitles().length != DescriptionTypeAttribute.defaultTranslatedTitles.length){
             List<LanguageStringType> titleList = new ArrayList<>();
-            for(LanguageString languageString : descriptionTypeAttribute.traducedTitles()){
+            for(LanguageString languageString : descriptionTypeAttribute.translatedTitles()){
                 LanguageStringType title = new LanguageStringType();
                 title.setValue(languageString.value());
                 title.setLang(languageString.lang());
@@ -66,9 +66,9 @@ public class ObjectAnnotationConverter {
             descriptionType.getTitle().addAll(titleList);
         }
 
-        if(descriptionTypeAttribute.traducedResumes().length != DescriptionTypeAttribute.defaultTraducedResumes.length) {
+        if(descriptionTypeAttribute.translatedResumes().length != DescriptionTypeAttribute.defaultTranslatedResumes.length) {
             List<LanguageStringType> resumeList = new ArrayList<>();
-            for(LanguageString languageString : descriptionTypeAttribute.traducedResumes()){
+            for(LanguageString languageString : descriptionTypeAttribute.translatedResumes()){
                 LanguageStringType resume = new LanguageStringType();
                 resume.setValue(languageString.value());
                 resume.setLang(languageString.lang());
@@ -91,13 +91,13 @@ public class ObjectAnnotationConverter {
             descriptionType.setIdentifier(codeType);
         }
 
-        if(descriptionTypeAttribute.traducedKeywords().length !=
-                DescriptionTypeAttribute.defaultTraducedKeywords.length) {
+        if(descriptionTypeAttribute.translatedKeywords().length !=
+                DescriptionTypeAttribute.defaultTranslatedKeywords.length) {
             List<KeywordsType> keywordTypeList = new ArrayList<>();
-            for(Keyword keyword : descriptionTypeAttribute.traducedKeywords()) {
+            for(org.orbisgis.wpsgroovyapi.attributes.TranslatableString keyword : descriptionTypeAttribute.translatedKeywords()) {
                 KeywordsType keywordsType = new KeywordsType();
                 List<LanguageStringType> keywordList = new ArrayList<>();
-                for (LanguageString languageString : keyword.traducedKeywords()) {
+                for (LanguageString languageString : keyword.translatableStrings()) {
                     LanguageStringType keywordString = new LanguageStringType();
                     keywordString.setValue(languageString.value());
                     keywordString.setLang(languageString.lang());
@@ -413,6 +413,18 @@ public class ObjectAnnotationConverter {
             enumeration.setEditable(enumAttribute.isEditable());
             enumeration.setMultiSelection(enumAttribute.multiSelection());
             enumeration.setValuesNames(enumAttribute.names());
+            List<TranslatableString> translatedNameList = new ArrayList<>();
+            for(org.orbisgis.wpsgroovyapi.attributes.TranslatableString translatableString : enumAttribute.translatedNames()){
+                List<LanguageStringType> translatedName = new ArrayList<>();
+                for(LanguageString languageString : translatableString.translatableStrings()) {
+                    LanguageStringType language = new LanguageStringType();
+                    language.setLang(languageString.lang());
+                    language.setValue(languageString.value());
+                    translatedName.add(language);
+                }
+                translatedNameList.add(new TranslatableString(translatedName.toArray(new LanguageStringType[]{})));
+            }
+            enumeration.setTranslatedNames(translatedNameList.toArray(new TranslatableString[]{}));
             return enumeration;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());

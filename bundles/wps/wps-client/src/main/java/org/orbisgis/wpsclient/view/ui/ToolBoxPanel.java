@@ -36,6 +36,8 @@ import org.orbisgis.wpsclient.view.utils.Filter.SearchFilter;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.TreeNodeWps;
 import org.orbisgis.wpsservice.LocalWpsServer;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -64,14 +66,16 @@ public class ToolBoxPanel extends JPanel {
     private static final String REFRESH_SOURCE = "REFRESH_SOURCE";
     private static final String REMOVE = "REMOVE";
 
-    public final static String TAG_MODEL = "Advanced interface";
-    public final static String FILE_MODEL = "Simple interface";
-    public final static String FILTERED_MODEL = "Filtered";
+    private static String TAG_MODEL;
+    private static String FILE_MODEL;
+    private static String FILTERED_MODEL;
 
     private static final String ORBISGIS_STRING = "OrbisGIS";
 
     private static final String LOCALHOST_STRING = "localhost";
     private static final URI LOCALHOST_URI = URI.create(LOCALHOST_STRING);
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(ToolBoxPanel.class);
 
     /** ComboBox with the different model of the tree */
     private JComboBox<String> treeNodeBox;
@@ -113,6 +117,10 @@ public class ToolBoxPanel extends JPanel {
 
     public ToolBoxPanel(WpsClientImpl wpsClient){
         super(new BorderLayout());
+
+        TAG_MODEL = I18N.tr("Advanced interface");
+        FILE_MODEL = I18N.tr("Simple interface");
+        FILTERED_MODEL = I18N.tr("Filtered");
 
         this.wpsClient = wpsClient;
 
@@ -588,32 +596,32 @@ public class ToolBoxPanel extends JPanel {
     private void createPopupActions(WpsClientImpl wpsClient) {
         DefaultAction addSource = new DefaultAction(
                 ADD_SOURCE,
-                "Add folder",
-                "Add a local folder",
+                I18N.tr("Add folder"),
+                I18N.tr("Add a local folder"),
                 ToolBoxIcon.getIcon("folder_add"),
                 EventHandler.create(ActionListener.class, wpsClient, "addNewLocalSource"),
                 null
         );
         DefaultAction addFile = new DefaultAction(
                 ADD_SCRIPT,
-                "Add file",
-                "Add a local file",
+                I18N.tr("Add file"),
+                I18N.tr("Add a local file"),
                 ToolBoxIcon.getIcon("script_add"),
                 EventHandler.create(ActionListener.class, wpsClient, "addNewLocalScript"),
                 null
         );
         DefaultAction runScript = new DefaultAction(
                 RUN_SCRIPT,
-                "Run",
-                "Run a script",
+                I18N.tr("Run"),
+                I18N.tr("Run a script"),
                 ToolBoxIcon.getIcon("execute"),
                 EventHandler.create(ActionListener.class, wpsClient, "openProcess"),
                 null
         );
         DefaultAction refresh_source = new DefaultAction(
                 REFRESH_SOURCE,
-                "Refresh",
-                "Refresh a source",
+                I18N.tr("Refresh"),
+                I18N.tr("Refresh a source"),
                 ToolBoxIcon.getIcon("refresh"),
                 EventHandler.create(ActionListener.class, this, "refresh"),
                 null
@@ -709,13 +717,12 @@ public class ToolBoxPanel extends JPanel {
      */
     public void openNode(String nodeName, String modelName){
         FileTreeModel model = null;
-        switch(modelName){
-            case FILE_MODEL:
-                model = fileModel;
-                break;
-            case TAG_MODEL:
-                model = tagModel;
-                break;
+        if (modelName.equals(FILE_MODEL)) {
+            model = fileModel;
+
+        } else if (modelName.equals(TAG_MODEL)) {
+            model = tagModel;
+
         }
         TreePath treePath = null;
         if(model != null){
@@ -842,7 +849,7 @@ public class ToolBoxPanel extends JPanel {
             if(processSummary.getTitle() != null && !processSummary.getTitle().isEmpty()) {
                 script.setUserObject(processSummary.getTitle().get(0).getValue());
             }
-            if(!processSummary.getKeywords().isEmpty()) {
+            if(!processSummary.getKeywords().isEmpty() && !processSummary.getKeywords().get(0).getKeyword().isEmpty()) {
                 for (KeywordsType tag : processSummary.getKeywords()) {
                     TreeNodeWps tagNode = getChildWithUserObject(tag.getKeyword().get(0).getValue(), root);
                     if (tagNode == null) {
@@ -850,6 +857,7 @@ public class ToolBoxPanel extends JPanel {
                         tagNode.setNodeType(TreeNodeWps.NodeType.FOLDER);
                         if(tag.getKeyword()!= null && !tag.getKeyword().isEmpty()) {
                             tagNode.setUserObject(tag.getKeyword().get(0).getValue());
+                            tagNode.setCustomIcon(tag.getKeyword().get(0).getValue().toLowerCase());
                         }
                         tagNode.setValidNode(true);
                         tagModel.insertNodeInto(tagNode, root, 0);

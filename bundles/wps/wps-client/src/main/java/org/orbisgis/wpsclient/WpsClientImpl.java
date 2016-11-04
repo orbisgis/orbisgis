@@ -52,20 +52,19 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import javax.swing.*;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
-import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -77,9 +76,14 @@ import java.util.concurrent.ExecutorService;
 
 @Component(immediate = true, service = {DockingPanel.class, WpsClient.class})
 public class WpsClientImpl implements DockingPanel, WpsClient {
-    public static final String LANG = "en";
+
+    public static final String ACTION_REFRESH = "ACTION_REFRESH";
+
+    public static final String LANG = Locale.getDefault().toString();
     /** String reference of the ToolBox used for DockingFrame. */
     public static final String TOOLBOX_REFERENCE = "orbistoolbox";
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(WpsClientImpl.class);
 
     /** Docking parameters used by DockingFrames. */
     private DockingPanelParameters parameters;
@@ -110,7 +114,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         dataUIManager = new DataUIManager(this);
 
         parameters = new DockingPanelParameters();
-        parameters.setTitle("ToolBox");
+        parameters.setTitle(I18N.tr("ToolBox"));
         parameters.setTitleIcon(ToolBoxIcon.getIcon("orbistoolbox"));
         parameters.setCloseable(true);
         parameters.setName(TOOLBOX_REFERENCE);
@@ -119,9 +123,9 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         parameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(parameters));
         dockingActions.addAction(
-                new DefaultAction("ACTION_REFRESH",
-                        "ACTION_REFRESH",
-                        "Refresh the selected node",
+                new DefaultAction(ACTION_REFRESH,
+                        ACTION_REFRESH,
+                        I18N.tr("Refresh the selected node."),
                         ToolBoxIcon.getIcon("refresh"),
                         EventHandler.create(ActionListener.class, this, "refreshAvailableScripts"),
                         null)
@@ -158,8 +162,8 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         } catch (JAXBException e) {
-            LoggerFactory.getLogger(WpsClient.class).error("Unable to create the marshall objects.\n"+
-                    e.getMessage());
+            LoggerFactory.getLogger(WpsClient.class).error(
+                    I18N.tr("Unable to create the marshall objects.\nCause : {0}.", e.getMessage()));
             return null;
         }
 
@@ -168,9 +172,9 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         try {
             marshaller.marshal(request, out);
         } catch (JAXBException e) {
-            LoggerFactory.getLogger(WpsClient.class).error("Unable to marshall the request object : '"+
-                    request.getClass().getName()+"'.\n"+
-                    e.getMessage());
+            LoggerFactory.getLogger(WpsClient.class).error(
+                    I18N.tr("Unable to marshall the request object : {0}.\nCause : {1}.",
+                            request.getClass().getName(), e.getMessage()));
             return null;
         }
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
@@ -184,8 +188,8 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         try {
             resultObject = unmarshaller.unmarshal(resultResultXml);
         } catch (JAXBException e) {
-            LoggerFactory.getLogger(WpsClient.class).error("Unable to marshall the answer xml.\n"+
-                    e.getMessage());
+            LoggerFactory.getLogger(WpsClient.class).error(I18N.tr("Unable to marshall the answer xml.\nCause : {0}.",
+                    e.getMessage()));
             return null;
         }
         if(resultObject instanceof JAXBElement){
@@ -200,6 +204,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         //Sets the language
         AcceptLanguages acceptLanguages = new AcceptLanguages();
         acceptLanguages.getLanguage().add(LANG);
+        acceptLanguages.getLanguage().add("*");
         getCapabilities.setAcceptLanguages(acceptLanguages);
         //Sets the version
         AcceptVersionsType acceptVersions = new AcceptVersionsType();
@@ -259,7 +264,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
 
     @Override
     public DockingPanelParameters getDockingParameters() {
-        //when the toolBox is not visible, it mean that is was closed, so close all the toolbox editors
+        /*//when the toolBox is not visible, it mean that is was closed, so close all the toolbox editors
         if(!parameters.isVisible()){
             for(EditorDockable ed : openEditorList) {
                 if (ed instanceof ProcessEditor) {
@@ -270,7 +275,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
             openEditorList = new ArrayList<>();
             lee.removePropertyChangeListener(le);
             le = null;
-        }
+        }*/
         return parameters;
     }
 
@@ -295,7 +300,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
      * Used in an EvenHandler in view.ui.ToolBoxPanel
      */
     public void addNewLocalSource(){
-        OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBox.AddSource", "Add a source");
+        OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBox.AddSource", I18N.tr("Add a source"));
         openFolderPanel.getFileChooser();
         openFolderPanel.loadState();
         //Wait the window answer and if the user validate set and run the export thread.
@@ -309,7 +314,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
      * Used in an EvenHandler in view.ui.ToolBoxPanel
      */
     public void addNewLocalScript(){
-        OpenFilePanel openFilePanel = new OpenFilePanel("ToolBox.AddSource", "Add a source");
+        OpenFilePanel openFilePanel = new OpenFilePanel("ToolBox.AddSource", I18N.tr("Add a source"));
         openFilePanel.getFileChooser();
         openFilePanel.loadState();
         //Wait the window answer and if the user validate set and run the export thread.
@@ -366,8 +371,8 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         //Get the list of ProcessOffering
         List<ProcessOffering> listProcess = getProcessOffering(scriptIdentifier);
         if(listProcess == null || listProcess.isEmpty()){
-            LoggerFactory.getLogger(WpsClient.class).warn("Unable to retrieve the process '"+
-                    scriptIdentifier.getValue()+".");
+            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("Unable to retrieve the process {0}.",
+                    scriptIdentifier.getValue()));
             return null;
         }
         //Get the process
@@ -390,8 +395,8 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
             openEditorList.add(pe);
         }
         else{
-            LoggerFactory.getLogger(WpsClient.class).warn("The process '"+
-                    pee.getProcess().getTitle().get(0).getValue()+"' is already open.");
+            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("The process {0} is already open.",
+                    pee.getProcess().getTitle().get(0).getValue()));
         }
         return pee;
     }
@@ -456,10 +461,11 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
     }
 
     /**
-     * Once the process is configured and run, add it to the LogEditor and removes the ProcessEditor (close it).
+     * Once the process(es) is(are) configured and run, add it(them) to the LogEditor and removes the ProcessEditor (close it).
      * @param pe ProcessEditor to close.
+     * @param id Identifier of the job to validate.
      */
-    public void validateInstance(ProcessEditor pe){
+    public void validateInstance(ProcessEditor pe, UUID id){
         ProcessEditableElement pee = (ProcessEditableElement) pe.getEditableElement();
         //If the LogEditor is not displayed, just do it <°>.
         if(le == null) {
@@ -467,11 +473,34 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
             dockingManager.addDockingPanel(le);
             openEditorList.add(le);
         }
-        le.addNewLog(pee);
+        le.addNewLog(pee, id);
 
         lee.addProcessEditableElement(pee);
-        dockingManager.removeDockingPanel(pe.getDockingParameters().getName());
-        openEditorList.remove(pe);
+        //First test if the ProcessEditor has not been already deleted.
+        if(dockingManager.getPanels().contains(pe)) {
+            dockingManager.removeDockingPanel(pe.getDockingParameters().getName());
+        }
+        //Test if the ProcessEditor is in the edotor list before removing it.
+        if(openEditorList.contains(pe)) {
+            openEditorList.remove(pe);
+        }
+    }
+
+    /**
+     * Returns a deep copy of the given process.
+     * The copy is generated by requesting to the WPS server the process.
+     *
+     * @param processIdentifier Identifier of the process to copy.
+     * @return A deep copy of the process.
+     */
+    public ProcessDescriptionType getProcessCopy(CodeType processIdentifier){
+        List<ProcessOffering> processOfferingList = getProcessOffering(processIdentifier);
+        if(!processOfferingList.isEmpty()){
+            ProcessDescriptionType processCopy = processOfferingList.get(0).getProcess();
+            link(processCopy);
+            return processCopy;
+        }
+        return null;
     }
 
     /**
@@ -545,33 +574,35 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
      * Build the Execution request, set it and then launch it in the WpsService.
      *
      * @param process The process to execute.
-     * @param inputDataMap Map containing the inputs.
-     * @param outputDataMap Map containing the outputs.
+     * @param dataMap Map containing the inputs/outputs.
      */
-    public StatusInfo executeProcess(ProcessDescriptionType process,
-                                     Map<URI,Object> inputDataMap,
-                                     Map<URI, Object> outputDataMap) {
+    public StatusInfo executeProcess(ProcessDescriptionType process, Map<URI,Object> dataMap) {
         //Build the ExecuteRequest object
         ExecuteRequestType executeRequest = new ExecuteRequestType();
         executeRequest.setIdentifier(process.getIdentifier());
         List<DataInputType> inputList = executeRequest.getInput();
         //Sets the inputs
-        for(Map.Entry<URI, Object> entry : inputDataMap.entrySet()){
-            DataInputType dataInput = new DataInputType();
-            dataInput.setId(entry.getKey().toString());
-            Data data = new Data();
-            data.getContent().add(entry.getValue().toString());
-            dataInput.setData(data);
-            inputList.add(dataInput);
-        }
-        //Sets the outputs
-        List<OutputDefinitionType> outputList = executeRequest.getOutput();
-        for(Map.Entry<URI, Object> entry : outputDataMap.entrySet()){
-            OutputDefinitionType output = new OutputDefinitionType();
-            output.setId(entry.getKey().toString());
-            output.setTransmission(DataTransmissionModeType.VALUE);
-            output.setMimeType("text/plain");
-            outputList.add(output);
+        for(Map.Entry<URI, Object> entry : dataMap.entrySet()){
+            for(InputDescriptionType input : process.getInput()){
+                if(URI.create(input.getIdentifier().getValue()).equals(entry.getKey())){
+                    DataInputType dataInput = new DataInputType();
+                    dataInput.setId(entry.getKey().toString());
+                    Data data = new Data();
+                    data.getContent().add(entry.getValue());
+                    dataInput.setData(data);
+                    inputList.add(dataInput);
+                }
+            }
+            List<OutputDefinitionType> outputList = executeRequest.getOutput();
+            for(OutputDescriptionType output : process.getOutput()){
+                if(URI.create(output.getIdentifier().getValue()).equals(entry.getKey())){
+                    OutputDefinitionType out = new OutputDefinitionType();
+                    out.setId(entry.getKey().toString());
+                    out.setTransmission(DataTransmissionModeType.VALUE);
+                    out.setMimeType("text/plain");
+                    outputList.add(out);
+                }
+            }
         }
         //Launch the execution on the server
         JAXBElement<ExecuteRequestType> jaxbElement = new ObjectFactory().createExecute(executeRequest);
