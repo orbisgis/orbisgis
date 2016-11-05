@@ -9,6 +9,8 @@
     </parent>
     <artifactId>itext-osgi</artifactId>
     <name>itext-osgi</name>
+    <url>http://www.orbisgis.org</url>
+    <description>OSGI bundle for IText</description>
     <packaging>bundle</packaging>
     <build>
         <plugins>

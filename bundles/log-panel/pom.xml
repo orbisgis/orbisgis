@@ -8,6 +8,7 @@
         <version>5.1.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
+    <url>http://www.orbisgis.org</url>
     <artifactId>logpanel</artifactId>
     <name>logpanel</name>
     <description>Logging panel with Info, Error, Warning tabs</description>

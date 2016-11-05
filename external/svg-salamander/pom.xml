@@ -10,6 +10,8 @@
     <artifactId>svg-salamander</artifactId>
     <name>svg-salamander</name>
     <packaging>bundle</packaging>
+    <description>OSGI bundle for SVG Salamander</description>
+    <url>http://www.orbisgis.org</url>
     <build>
         <plugins>
             <plugin>

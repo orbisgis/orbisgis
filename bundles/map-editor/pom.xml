@@ -4,6 +4,7 @@
     <artifactId>mapeditor</artifactId>
     <name>Map Editor</name>
     <description>MapEditor of OrbisGIS</description>
+    <url>http://www.orbisgis.org</url>
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>

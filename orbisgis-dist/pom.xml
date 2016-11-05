@@ -9,6 +9,7 @@
     </parent>
     <artifactId>orbisgis-dist</artifactId>
     <name>orbisgis-dist</name>
+    <description>Module to build a single jar that contains both the dependencies and the application</description>
     <url>http://maven.apache.org</url>
     <packaging>jar</packaging>
     <build>

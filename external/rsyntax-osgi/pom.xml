@@ -9,6 +9,8 @@
     </parent>
     <artifactId>rsyntax-osgi</artifactId>
     <name>rsyntax-osgi</name>
+    <url>http://www.orbisgis.org</url>
+    <description>OSGI bundle for RSyntax</description>
     <packaging>bundle</packaging>
     <build>
         <plugins>
