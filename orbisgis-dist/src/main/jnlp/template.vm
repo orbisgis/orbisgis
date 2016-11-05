@@ -2,7 +2,7 @@
 <jnlp codebase="http://www.orbisgis.org/store/releases/orbisgis-5.0-SNAPSHOT" href="$outputFile">
         <information> 
                 <title>OrbisGIS 5.0.0 SNAPSHOT</title> 
-                <vendor>IRSTV - Atelier SIG</vendor> 
+                <vendor>OrbisGIS - Lab-STICC</vendor> 
                 <homepage href="http://www.orbisgis.org/"/> 
                 <description>OrbisGIS is a Geographic Information System dedicated to scientific spatial simulation. It is developed by French IRSTV institute and is able to manipulate and create vectorial and raster spatial data. OrbisGIS is distributed under GPL 3 license.</description> 
                 <description kind="short">OrbisGIS is a Geographic Information System dedicated to scientific spatial simulation. It is developed by French IRSTV institute and is able to manipulate and create vectorial and raster spatial data. OrbisGIS is distributed under GPL 3 license.</description> 
