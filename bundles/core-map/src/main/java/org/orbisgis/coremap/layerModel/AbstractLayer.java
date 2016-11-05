@@ -52,28 +52,18 @@ public abstract class AbstractLayer implements ILayer {
 	public AbstractLayer() {
 		listeners = new ArrayList<LayerListener>();
         }
-        
-        
 
 	private ILayer parent;
 
 	protected ArrayList<LayerListener> listeners = new ArrayList<LayerListener>();
 
 	
-	/**
-	 * 
-         * @return the main layer
-	 * @see org.orbisgis.coremap.layerModel.ILayer#getParent()
-	 */
+        @Override
 	public ILayer getParent() {
 		return parent;
 	}
 
-	/**
-	 * 
-         * @param parent to set
-	 * @see org.orbisgis.coremap.layerModel.ILayer#setParent()
-	 */
+	
         @Override
 	public void setParent(final ILayer parent) {
 		this.parent = parent;

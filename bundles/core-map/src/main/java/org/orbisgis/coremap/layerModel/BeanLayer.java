@@ -96,6 +96,7 @@ public abstract class BeanLayer extends AbstractLayer {
          * Set the value of visible
          *
          * @param visible new value of visible
+         * @throws org.orbisgis.coremap.layerModel.LayerException
          */
         @Override
         public void setVisible(boolean visible) throws LayerException  {
