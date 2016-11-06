@@ -3,7 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sqlconsole-parser</artifactId>
     <name>sqlconsole-parser</name>
-    <description>SQL Parser for RSyntaxArea</description>
+    <description>SQL Parser for RSyntaxArea</description>    
+    <url>http://wwww.orbisgis.org</url>
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>

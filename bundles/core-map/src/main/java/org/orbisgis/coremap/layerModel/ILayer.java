@@ -133,14 +133,37 @@ public interface ILayer {
          */
 	void setName(final String name) throws LayerException;
 
+        /**
+	 * 
+         * @param parent to set
+         * @throws org.orbisgis.coremap.layerModel.LayerException
+	 */
 	void setParent(final ILayer parent) throws LayerException;
 
+        /**
+         * 
+         * @return all layer names
+         */
 	public Set<String> getAllLayersNames();
 
+        /**
+         * True if the layer is visible
+         * @return 
+         */
 	boolean isVisible();
 
+        /**
+         * Set if the layer is visible or not
+         * @param isVisible
+         * @throws LayerException 
+         */
 	void setVisible(final boolean isVisible) throws LayerException;
 
+        /**
+	 * 
+         * @return the main layer
+	 * @see org.orbisgis.coremap.layerModel.ILayer#getParent()
+	 */
 	ILayer getParent();
 
     /**
@@ -268,10 +291,26 @@ public interface ILayer {
 
 	void moveTo(ILayer layer) throws LayerException;
 
+        /**
+         * Open the data or any resources used by the layer
+         * 
+         * @throws LayerException 
+         */
 	void open() throws LayerException;
 
+        /**
+         * Close the data or any resources used by the layer
+         * @throws LayerException 
+         */
 	void close() throws LayerException;
 
+        /**
+         * Insert the layer at index position
+         * @param layer
+         * @param index
+         * @param isMoving
+         * @throws LayerException 
+         */
 	void insertLayer(ILayer layer, int index, boolean isMoving)
 			throws LayerException;
 
@@ -371,17 +410,18 @@ public interface ILayer {
         /**
          * Gets the {@code i}th {@code Style} that is used to define the
          * symbology associated to the current {@code ILayer}.
+         * @param index
          * @return
          */
-        Style getStyle(int i);
+        Style getStyle(int index);
 
         /**
          * Sets the {@code i}th {@code Style} that is used to define the
          * symbology associated to the current {@code ILayer}.
-         * @param i
-         * @param s
+         * @param index
+         * @param style
          */
-        void setStyle(int i, Style s);
+        void setStyle(int index, Style style);
 
         /**
          * Adds a {@code Style} instance at the end of the list of associated
@@ -393,9 +433,10 @@ public interface ILayer {
         /**
          * Adds a {@code Style} instance at the ith position of the list of
          * associated {@code Style}s.
+         * @param index
          * @param style
          */
-        public void addStyle(int i, Style style);
+        public void addStyle(int index, Style style);
 
         /**
          * Gets the index of {@code s} in this {@code ILayer}, or {@code -1} if
@@ -448,7 +489,8 @@ public interface ILayer {
 
         /**
          * Removes s from the styles associated to this layer.
+         * @param style
          */
-        void removeStyle(Style s);
+        void removeStyle(Style style);
 
 }

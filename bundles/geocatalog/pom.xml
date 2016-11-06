@@ -3,7 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>geocatalog</artifactId>
     <name>geocatalog</name>
-    <description>GeoCatalog panel, list of database tables</description>
+    <description>GeoCatalog panel to list of database tables</description>
+    <url>http://www.orbisgis.org</url>
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>

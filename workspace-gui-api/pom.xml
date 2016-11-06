@@ -8,7 +8,9 @@
         <version>5.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>wkgui-api</artifactId>
-    <name>wkgui-api</name>
+    <name>wkgui-api</name>    
+    <url>http://orbisgis.org</url>
+    <description>API to get informations about the workspace</description>
     <packaging>bundle</packaging>
     <build>
         <plugins>

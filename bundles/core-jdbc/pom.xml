@@ -6,6 +6,7 @@
     <artifactId>core-jdbc</artifactId>
     <name>core-jdbc</name>
     <url>http://orbisgis.org</url>
+    <description>Library to minimize the use of JDBC connection</description>
     <build>
         <plugins>
             <plugin>

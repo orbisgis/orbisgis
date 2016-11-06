@@ -3,6 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>mainframe</artifactId>
     <name>mainframe</name>
+    <url>http://www.orbisgis.org</url>
     <description>Main window of OrbisGIS</description>
     <parent>
         <artifactId>orbisgis</artifactId>

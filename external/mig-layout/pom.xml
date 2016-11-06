@@ -9,6 +9,8 @@
     </parent>
     <artifactId>miglayout-osgi</artifactId>
     <name>miglayout-osgi</name>
+    <url>http://www.orbisgis.org</url>
+    <description>OSGI bundle for MigLayout</description>
     <packaging>bundle</packaging>
     <build>
         <plugins>

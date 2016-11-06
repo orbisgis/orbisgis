@@ -3,6 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>toc-api</artifactId>
     <name>toc-api</name>
+    <url>http://www.orbisgis.org</url>
+    <description>API to manage the TOC element</description>
     <packaging>bundle</packaging>
     <parent>
         <artifactId>orbisgis</artifactId>

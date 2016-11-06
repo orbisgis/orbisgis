@@ -4,6 +4,7 @@
     <artifactId>sqlconsole</artifactId>
     <name>SQL Console</name>
     <description>SQL Console of OrbisGIS</description>
+    <url>http://www.orbisgis.org</url>
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>

@@ -9,6 +9,8 @@
     </parent>
     <artifactId>rsyntax-language-support</artifactId>
     <name>rsyntax-language-support</name>
+    <url>http://www.orbisgis.org</url>
+    <description>OSGI bundle for RSyntax Language Support</description>
     <packaging>bundle</packaging>
     <build>
         <plugins>

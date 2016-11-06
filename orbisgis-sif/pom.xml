@@ -11,7 +11,7 @@
         <artifactId>orbisgis-sif</artifactId>
         <packaging>bundle</packaging>
         <name>orbisgis-sif</name>
-        <url>http://maven.apache.org</url>
+        <url>http://www.orbisgis.org</url>
         <description>In order to provide the same user experience over OrbisGIS gui modules this project aim to expose
             a common Swing usage. Nothing related with GIS should be included in this package.This package content is
             only related to swing components.</description>

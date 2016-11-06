@@ -16,7 +16,7 @@ dirs="gdms orbisgis-core orbisgis-ui"
 
 for d in $dirs
 do
-	url=$(echo "https://github.com/irstv/orbisgis/tree/${rev}/${d}/src/main/java" | sed 's/\//\\\//g')
+	url=$(echo "https://github.com/orbisgis/orbisgis/tree/${rev}/${d}/src/main/java" | sed 's/\//\\\//g')
 
 	rm -rf "${d}/target/site/apidocs/src-html"
 	files=$(find ${d}/target/site/apidocs/ -name "*.html" -type f)

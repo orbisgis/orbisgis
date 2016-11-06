@@ -3,7 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>table-editor</artifactId>
     <name>table-editor</name>
-    <description>TableEditor panel, show rows of a table</description>
+    <description>TableEditor panel to show rows of a table</description>
+    <url>http://www.orbisgis.org</url>
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>
