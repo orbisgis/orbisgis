@@ -38,10 +38,13 @@ import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.wpsclient.view.ui.ToolBoxPanel;
 import org.orbisgis.wpsclient.view.ui.dataui.DataUIManager;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
+import org.orbisgis.wpsclient.view.utils.WpsJobStateListener;
 import org.orbisgis.wpsclient.view.utils.editor.log.LogEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.log.LogEditor;
+import org.orbisgis.wpsclient.view.utils.editor.process.Job;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
+import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.orbisgis.wpsservice.model.JaxbContainer;
 import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.model.DataField;
@@ -107,6 +110,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
     private static DataManager dataManager;
     private LocalWpsServer wpsService;
     private ProcessEditor pe;
+    private List<WpsJobStateListener> jobStateListenerList;
 
     @Activate
     public void init(){
@@ -134,6 +138,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         openEditorList = new ArrayList<>();
         lee = new LogEditableElement();
         le = null;
+        jobStateListenerList = new ArrayList<>();
         refreshAvailableScripts();
     }
 
@@ -147,6 +152,19 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
 
     public LocalWpsServer getLocalWpsService(){
         return wpsService;
+    }
+
+    @Override
+    public ProcessDescriptionType getInternalProcess(URI identifier) {
+        CodeType codeType = new CodeType();
+        codeType.setValue(identifier.toString());
+        List<ProcessOffering> processOfferingList = getProcessOffering(codeType);
+        if(processOfferingList.isEmpty()) {
+            return null;
+        }
+        else{
+            return processOfferingList.get(0).getProcess();
+        }
     }
 
     /**
@@ -610,24 +628,64 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         return result;
     }
 
-    /**
-     * Ask the WpsService the status of the job corresponding to the given ID.
-     * @param jobID UUID of the job.
-     * @return The status of a job.
-     */
+    @Override
+    public UUID executeInternalProcess(ProcessDescriptionType process, Map<URI, Object> dataMap,
+                                       WpsJobStateListener listener) {
+        if(listener != null) {
+            addJobListener(listener);
+        }
+        StatusInfo statusInfo = executeProcess(process, dataMap);
+        UUID jobId = UUID.fromString(statusInfo.getJobID());
+        Job job = new Job(this, jobId);
+        job.setStartTime(System.currentTimeMillis());
+        job.setStatus(statusInfo);
+        return jobId;
+    }
+
+    private void fireJobStateEvent(StatusInfo statusInfo){
+        for(WpsJobStateListener listener : jobStateListenerList){
+            if(listener.getJobId() != null && listener.getJobId().equals(UUID.fromString(statusInfo.getJobID()))){
+                switch(statusInfo.getStatus()){
+                    case "ACCEPTED":
+                        listener.onJobAccepted();
+                        break;
+                    case "RUNNING":
+                        listener.onJobRunning();
+                        break;
+                    case "SUCCEEDED":
+                        listener.onJobSuccess();
+                        break;
+                    case "FAILED":
+                        listener.onJobFailed();
+                        break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void addJobListener(WpsJobStateListener listener) {
+        if(!jobStateListenerList.contains(listener)) {
+            jobStateListenerList.add(listener);
+        }
+    }
+
+    @Override
+    public void removeJobListener(WpsJobStateListener listener) {
+        jobStateListenerList.remove(listener);
+    }
+
+    @Override
     public StatusInfo getJobStatus(UUID jobID) {
         GetStatus getStatus = new GetStatus();
         getStatus.setJobID(jobID.toString());
         //Launch the execution on the server
         StatusInfo result = (StatusInfo)askService(getStatus);
+        fireJobStateEvent(result);
         return result;
     }
 
-    /**
-     * Ask the WpsService the result of the job corresponding to the given ID.
-     * @param jobID UUID of the job.
-     * @return The result of a job.
-     */
+    @Override
     public Result getJobResult(UUID jobID) {
         GetResult getResult = new GetResult();
         getResult.setJobID(jobID.toString());
@@ -636,16 +694,13 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         return result;
     }
 
-    /**
-     * Ask the WpsService to dismiss the job corresponding to the given ID.
-     * @param jobID UUID of the job.
-     * @return The status of the job.
-     */
+    @Override
     public StatusInfo dismissJob(UUID jobID) {
         Dismiss dismiss = new Dismiss();
         dismiss.setJobID(jobID.toString());
         //Launch the execution on the server
         StatusInfo result = (StatusInfo)askService(dismiss);
+        fireJobStateEvent(result);
         return result;
     }
 }

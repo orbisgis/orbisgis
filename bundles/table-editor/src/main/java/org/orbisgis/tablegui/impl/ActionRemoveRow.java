@@ -33,7 +33,7 @@ import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.wpsservice.WpsServer;
+import org.orbisgis.wpsclient.WpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -64,13 +64,13 @@ public class ActionRemoveRow extends AbstractAction {
     private static final I18n I18N = I18nFactory.getI18n(ActionRemoveRow.class);
     private TableEditor tableEditor;
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionRemoveRow.class);
-    private WpsServer wpsServer;
+    private WpsClient wpsClient;
 
     /**
      * Constructor
      * @param editable Table editable instance
      */
-    public ActionRemoveRow(TableEditableElement editable, TableEditor tableEditor, WpsServer wpsServer) {
+    public ActionRemoveRow(TableEditableElement editable, TableEditor tableEditor, WpsClient wpsClient) {
         super(I18N.tr("Delete selected rows"), TableEditorIcon.getIcon("delete_row"));
         this.tableEditor = tableEditor;
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
@@ -78,7 +78,7 @@ public class ActionRemoveRow extends AbstractAction {
         this.editable = editable;
         updateEnabledState();
         editable.addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class, this, "onEditableUpdate",""));
-        this.wpsServer = wpsServer;
+        this.wpsClient = wpsClient;
     }
 
     /**
@@ -102,7 +102,7 @@ public class ActionRemoveRow extends AbstractAction {
                 I18N.tr("Delete selected rows"),
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
             if(response == JOptionPane.YES_OPTION) {
-                if(wpsServer != null){
+                if(wpsClient != null){
                     /** Would be updates later once the WPS client will be fully updated **/
                     /*Process p = null;
                     for(ProcessIdentifier pi : wpsService.getCapabilities()){

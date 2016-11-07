@@ -36,8 +36,8 @@ import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.sif.edition.EditorFactory;
 import org.orbisgis.tablegui.api.TableEditableElement;
-import org.orbisgis.wpsservice.LocalWpsServer;
-import org.orbisgis.wpsservice.WpsServer;
+import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -59,7 +59,7 @@ public class TableEditorFactory implements EditorFactory {
         private DataManager dataManager;
         private EditorManager editorManager;
         private ExecutorService executorService;
-        private WpsServer wpsServer = null;
+        private WpsClient wpsClient = null;
 
         @Override
         public DockingPanelLayout makeEditableLayout(EditableElement editable) {
@@ -98,12 +98,12 @@ public class TableEditorFactory implements EditorFactory {
         }
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL)
-    public void setLocalWpsService(LocalWpsServer wpsServer) {
-        this.wpsServer = wpsServer;
+    public void setWpsClient(WpsClient wpsClient) {
+        this.wpsClient = wpsClient;
     }
 
-    public void unsetLocalWpsService(LocalWpsServer wpsService) {
-        this.wpsServer = null;
+    public void unsetWpsClient(WpsClient wpsClient) {
+        this.wpsClient = null;
     }
 
         /**
@@ -144,7 +144,7 @@ public class TableEditorFactory implements EditorFactory {
         public EditorDockable create(DockingPanelLayout layout) {
                 TableEditableElement editableTable = ((TablePanelLayout)layout).getTableEditableElement();
                 //Check the DataSource state
-                return new TableEditor(editableTable, dataManager, editorManager, executorService, wpsServer);
+                return new TableEditor(editableTable, dataManager, editorManager, executorService, wpsClient);
         }
 
         @Override

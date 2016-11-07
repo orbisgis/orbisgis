@@ -102,7 +102,8 @@ import org.orbisgis.tablegui.impl.filters.WhereSQLFilterFactory;
 import org.orbisgis.tablegui.impl.jobs.ComputeFieldStatistics;
 import org.orbisgis.tablegui.impl.jobs.OptimalWidthJob;
 import org.orbisgis.tablegui.impl.jobs.SearchJob;
-import org.orbisgis.wpsservice.WpsServer;
+import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -146,13 +147,14 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         private int currentSelectionNavigation = 0;
         private EditorManager editorManager;
         private ExecutorService executorService;
-        private WpsServer wpsServer;
+        private WpsClient wpsClient;
 
         /**
          * Constructor
          * @param element Source to read and edit
          */
-        public TableEditor(TableEditableElement element, DataManager dataManager, EditorManager editorManager, ExecutorService executorService, WpsServer wpsServer) {
+        public TableEditor(TableEditableElement element, DataManager dataManager, EditorManager editorManager,
+                           ExecutorService executorService, WpsClient wpsClient) {
                 super(new BorderLayout());
                 this.editorManager = editorManager;
                 this.executorService = executorService;
@@ -177,7 +179,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         registerMapContext(mapContext);
                     }
                 }
-            this.wpsServer = wpsServer;
+            this.wpsClient = wpsClient;
         }
 
         public void onMenuRefresh() {
@@ -220,10 +222,10 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         .setLogicalGroup(TableEditorActions.LGROUP_READ));
 
                 // Edition is only available if there is a primary key
-                if(wpsServer != null) {
+                if(wpsClient != null) {
                         //TODO : actions.add(new ActionAddColumn(tableEditableElement));
-                        actions.add(new ActionAddRow(tableEditableElement, this, wpsServer));
-                        actions.add(new ActionRemoveRow(tableEditableElement, this, wpsServer));
+                        actions.add(new ActionAddRow(tableEditableElement, this, wpsClient));
+                        actions.add(new ActionRemoveRow(tableEditableElement, this, wpsClient));
                 }
                 actions.add(new ActionUndo(tableEditableElement, undoManager));
                 actions.add(new ActionRedo(tableEditableElement, undoManager));

@@ -197,14 +197,12 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.CANCEL)){
             StatusInfo statusInfo = wpsClient.dismissJob((UUID)propertyChangeEvent.getNewValue());
             Job job = pee.getJob(UUID.fromString(statusInfo.getJobID()));
-            job.setProcessState(ProcessExecutionListener.ProcessState.valueOf(statusInfo.getStatus().toUpperCase()));
-            job.addRefreshDate(statusInfo.getNextPoll());
+            job.setStatus(statusInfo);
         }
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.REFRESH_STATUS)){
             StatusInfo statusInfo = wpsClient.getJobStatus((UUID)propertyChangeEvent.getNewValue());
             Job job = pee.getJob(UUID.fromString(statusInfo.getJobID()));
-            job.setProcessState(ProcessExecutionListener.ProcessState.valueOf(statusInfo.getStatus().toUpperCase()));
-            job.addRefreshDate(statusInfo.getNextPoll());
+            job.setStatus(statusInfo);
         }
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.GET_RESULTS)){
             Result result = wpsClient.getJobResult((UUID)propertyChangeEvent.getNewValue());
@@ -238,8 +236,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                     wpsClient.validateInstance(this, job.getId());
 
                     job.setStartTime(System.currentTimeMillis());
-                    job.setProcessState(ProcessExecutionListener.ProcessState.RUNNING);
-                    job.addRefreshDate(statusInfo.getNextPoll());
+                    job.setStatus(statusInfo);
                 } else {
                     errorMessage.setText("Please, configure all the inputs/outputs before executing.");
                 }
@@ -269,8 +266,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                             wpsClient.validateInstance(this, job.getId());
 
                             job.setStartTime(System.currentTimeMillis());
+                            job.setStatus(statusInfo);
                             job.setProcessState(ProcessExecutionListener.ProcessState.IDLE);
-                            job.addRefreshDate(statusInfo.getNextPoll());
 
                         } else {
                             errorMessage.setText("Please, configure all the inputs/outputs before executing.");

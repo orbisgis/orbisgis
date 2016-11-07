@@ -1,14 +1,11 @@
 package org.orbisgis.wpsclient.view.utils.editor.process;
 
-import net.opengis.wps._2_0.DataOutputType;
-import net.opengis.wps._2_0.OutputDescriptionType;
-import net.opengis.wps._2_0.ProcessDescriptionType;
-import net.opengis.wps._2_0.Result;
+import net.opengis.wps._2_0.*;
+import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.*;
 import javax.swing.Timer;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.awt.*;
@@ -21,6 +18,7 @@ import java.util.*;
 import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement.LOG_PROPERTY;
 import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement.REFRESH_STATUS;
 import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement.STATE_PROPERTY;
+import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement.GET_RESULTS;
 
 /**
  * This class represents the WPS Job object by in the client side.
@@ -36,10 +34,19 @@ public class Job implements ProcessExecutionListener{
     private Long startTime;
     private Map<String, Color> logMap;
     private ProcessEditableElement pee;
+    private WpsClient wpsClient;
 
     public Job(ProcessEditableElement pee, UUID id){
         this.logMap = new LinkedHashMap<>();
         this.pee = pee;
+        this.wpsClient = null;
+        this.id = id;
+    }
+
+    public Job(WpsClient client, UUID id){
+        this.logMap = new LinkedHashMap<>();
+        this.pee = null;
+        this.wpsClient = client;
         this.id = id;
     }
 
@@ -62,11 +69,11 @@ public class Job implements ProcessExecutionListener{
         //If the process has ended with success, retrieve the results.
         //The firing of the process state change will be done later
         if (processState.equals(ProcessExecutionListener.ProcessState.SUCCEEDED)) {
-            pee.askResults(id);
+            firePropertyChangeEvent(new PropertyChangeEvent(this, GET_RESULTS, id, id));
         }
         //Else, fire the change of the process state.
         else {
-            pee.firePropertyChangeEvent(new PropertyChangeEvent(this, STATE_PROPERTY, null, processState));
+            firePropertyChangeEvent(new PropertyChangeEvent(this, STATE_PROPERTY, null, processState));
         }
     }
 
@@ -106,7 +113,7 @@ public class Job implements ProcessExecutionListener{
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         String log = timeFormat.format(date) + " : " + logType.name() + " : " + message + "";
         putLog(log, color);
-        pee.firePropertyChangeEvent(new PropertyChangeEvent(
+        firePropertyChangeEvent(new PropertyChangeEvent(
                 this, LOG_PROPERTY, null, new AbstractMap.SimpleEntry<>(log, color)));
     }
 
@@ -134,7 +141,12 @@ public class Job implements ProcessExecutionListener{
      */
     public void askStatusRefresh(Object source){
         PropertyChangeEvent event = new PropertyChangeEvent(this, REFRESH_STATUS, this.getId(), this.getId());
-        pee.firePropertyChangeEvent(event);
+        firePropertyChangeEvent(event);
+    }
+
+    public void setStatus(StatusInfo statusInfo){
+        setProcessState(ProcessExecutionListener.ProcessState.valueOf(statusInfo.getStatus().toUpperCase()));
+        addRefreshDate(statusInfo.getNextPoll());
     }
 
 
@@ -155,10 +167,32 @@ public class Job implements ProcessExecutionListener{
                 }
             }
         }
-        pee.firePropertyChangeEvent(new PropertyChangeEvent(this, STATE_PROPERTY, null, getState()));
+        firePropertyChangeEvent(new PropertyChangeEvent(this, STATE_PROPERTY, null, getState()));
     }
 
     public ProcessDescriptionType getProcess() {
         return pee.getProcess();
+    }
+
+    private void firePropertyChangeEvent(PropertyChangeEvent event){
+        if(pee != null){
+            pee.firePropertyChangeEvent(event);
+        }
+        else if(wpsClient != null){
+            switch(event.getPropertyName()){
+                case STATE_PROPERTY:
+                    //Nothing to do
+                    break;
+                case REFRESH_STATUS:
+                    wpsClient.getJobStatus(id);
+                    break;
+                case GET_RESULTS:
+                    setResult(wpsClient.getJobResult(id));
+                    break;
+                case LOG_PROPERTY:
+                    //Nothing to do
+                    break;
+            }
+        }
     }
 }
