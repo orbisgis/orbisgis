@@ -93,7 +93,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     /** Logger object */
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessEditor.class);
 
-    private ProcessEditableElement pee;
+    private ProcessEditableElement processEditableElement;
     private WpsClientImpl wpsClient;
     private DockingPanelParameters dockingPanelParameters;
     /** DataUIManager used to create the UI corresponding the the data */
@@ -106,18 +106,18 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private DefaultAction toggleModeAction;
     private HashMap<URI, Object> dataMap;
 
-    public ProcessEditor(WpsClientImpl wpsClient, ProcessEditableElement pee){
+    public ProcessEditor(WpsClientImpl wpsClient, ProcessEditableElement processEditableElement){
         this.alive = true;
         this.wpsClient = wpsClient;
-        this.pee = pee;
-        this.pee.addPropertyChangeListener(this);
+        this.processEditableElement = processEditableElement;
+        this.processEditableElement.addPropertyChangeListener(this);
         this.dataMap = new HashMap<>();
         dockingPanelParameters = new DockingPanelParameters();
-        dockingPanelParameters.setName(NAME+"_"+pee.getProcess().getTitle());
+        dockingPanelParameters.setName(NAME+"_"+processEditableElement.getProcess().getTitle());
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("process"));
         dockingPanelParameters.setDefaultDockingLocation(
                 new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClientImpl.TOOLBOX_REFERENCE));
-        dockingPanelParameters.setTitle(pee.getProcessReference());
+        dockingPanelParameters.setTitle(processEditableElement.getProcessReference());
         this.setLayout(new BorderLayout());
         dataUIManager = wpsClient.getDataUIManager();
 
@@ -150,8 +150,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 mode = SIMPLE_MODE;
                 this.removeAll();
                 this.add(buildSimpleUI(), BorderLayout.CENTER);
-                pee.setInputDataMap(new HashMap<URI, Object>());
-                pee.setOutputDataMap(new HashMap<URI, Object>());
+                processEditableElement.setInputDataMap(new HashMap<URI, Object>());
+                processEditableElement.setOutputDataMap(new HashMap<URI, Object>());
                 this.revalidate();
                 break;
             case SIMPLE_MODE:
@@ -159,8 +159,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 mode = BASH_MODE;
                 this.removeAll();
                 this.add(buildBashUI(), BorderLayout.CENTER);
-                pee.setInputDataMap(new HashMap<URI, Object>());
-                pee.setOutputDataMap(new HashMap<URI, Object>());
+                processEditableElement.setInputDataMap(new HashMap<URI, Object>());
+                processEditableElement.setOutputDataMap(new HashMap<URI, Object>());
                 this.revalidate();
                 break;
         }
@@ -192,19 +192,19 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     @Override
     public boolean match(EditableElement editableElement) {
         //Return true if the editable is the one contained by the Process editor
-        return editableElement instanceof ProcessEditableElement && editableElement.getId().equals(pee.getId());
+        return editableElement instanceof ProcessEditableElement && editableElement.getId().equals(processEditableElement.getId());
     }
 
     @Override
     public EditableElement getEditableElement() {
-        return pee;
+        return processEditableElement;
     }
 
     @Override
     public void setEditableElement(EditableElement editableElement) {
-        this.pee = (ProcessEditableElement)editableElement;
-        dockingPanelParameters.setTitle(pee.getProcessReference());
-        pee.addPropertyChangeListener(this);
+        this.processEditableElement = (ProcessEditableElement)editableElement;
+        dockingPanelParameters.setTitle(processEditableElement.getProcessReference());
+        processEditableElement.addPropertyChangeListener(this);
     }
 
     @Override
@@ -214,17 +214,17 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         }
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.CANCEL)){
             StatusInfo statusInfo = wpsClient.dismissJob((UUID)propertyChangeEvent.getNewValue());
-            Job job = pee.getJob(UUID.fromString(statusInfo.getJobID()));
+            Job job = processEditableElement.getJob(UUID.fromString(statusInfo.getJobID()));
             job.setStatus(statusInfo);
         }
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.REFRESH_STATUS)){
             StatusInfo statusInfo = wpsClient.getJobStatus((UUID)propertyChangeEvent.getNewValue());
-            Job job = pee.getJob(UUID.fromString(statusInfo.getJobID()));
+            Job job = processEditableElement.getJob(UUID.fromString(statusInfo.getJobID()));
             job.setStatus(statusInfo);
         }
         if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.GET_RESULTS)){
             Result result = wpsClient.getJobResult((UUID)propertyChangeEvent.getNewValue());
-            Job job = pee.getJob(UUID.fromString(result.getJobID()));
+            Job job = processEditableElement.getJob(UUID.fromString(result.getJobID()));
             job.setResult(result);
         }
     }
@@ -237,7 +237,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             case SIMPLE_MODE:
                 //First check if all the inputs are defined.
                 boolean allDefined = true;
-                for (InputDescriptionType input : pee.getProcess().getInput()) {
+                for (InputDescriptionType input : processEditableElement.getProcess().getInput()) {
                     URI identifier = URI.create(input.getIdentifier().getValue());
                     if (!input.getMinOccurs().equals(new BigInteger("0")) && !dataMap.containsKey(identifier)) {
                         allDefined = false;
@@ -247,8 +247,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 if (allDefined) {
 
                     //Run the process in a separated thread
-                    StatusInfo statusInfo = wpsClient.executeProcess(pee.getProcess(), dataMap);
-                    Job job = pee.newJob(UUID.fromString(statusInfo.getJobID()));
+                    StatusInfo statusInfo = wpsClient.executeProcess(processEditableElement.getProcess(), dataMap);
+                    Job job = processEditableElement.newJob(UUID.fromString(statusInfo.getJobID()));
 
                     //Then launch the process execution
                     wpsClient.validateInstance(this, job.getId());
@@ -268,7 +268,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                     if(map != null) {
                         //First check if all the inputs are defined.
                         allDefined = true;
-                        for (InputDescriptionType input : pee.getProcess().getInput()) {
+                        for (InputDescriptionType input : processEditableElement.getProcess().getInput()) {
                             URI identifier = URI.create(input.getIdentifier().getValue());
                             if (!input.getMinOccurs().equals(new BigInteger("0")) && !map.containsKey(identifier)) {
                                 allDefined = false;
@@ -277,8 +277,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
                         if (allDefined) {
                             //Run the process in a separated thread
-                            StatusInfo statusInfo = wpsClient.executeProcess(pee.getProcess(), map);
-                            Job job = pee.newJob(UUID.fromString(statusInfo.getJobID()));
+                            StatusInfo statusInfo = wpsClient.executeProcess(processEditableElement.getProcess(), map);
+                            Job job = processEditableElement.newJob(UUID.fromString(statusInfo.getJobID()));
 
                             //Then launch the process execution
                             wpsClient.validateInstance(this, job.getId());
@@ -301,10 +301,10 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      * @return The UI for the configuration of the process.
      */
     private JComponent buildSimpleUI(){
-        ProcessDescriptionType process = pee.getProcess();
+        ProcessDescriptionType process = processEditableElement.getProcess();
         dataMap = new HashMap<>();
-        dataMap.putAll(pee.getInputDataMap());
-        dataMap.putAll(pee.getOutputDataMap());
+        dataMap.putAll(processEditableElement.getInputDataMap());
+        dataMap.putAll(processEditableElement.getOutputDataMap());
 
         JPanel returnPanel = new JPanel(new MigLayout("fill"));
 
@@ -314,11 +314,11 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         label.setFont(label.getFont().deriveFont(Font.ITALIC));
         processPanel.add(label, "growx, span");
         String versionStr = I18N.tr("Version : ");
-        if(pee.getProcessOffering().getProcessVersion().isEmpty()){
+        if(processEditableElement.getProcessOffering().getProcessVersion().isEmpty()){
             versionStr += I18N.tr("unknown");
         }
         else{
-            versionStr += pee.getProcessOffering().getProcessVersion();
+            versionStr += processEditableElement.getProcessOffering().getProcessVersion();
         }
         JLabel version = new JLabel(versionStr);
         version.setFont(version.getFont().deriveFont(Font.ITALIC));
@@ -331,7 +331,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
         boolean noParameters = true;
         // Put all the default values in the datamap
-        pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
+        processEditableElement.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
         JPanel parameterPanel = new JPanel(new MigLayout("fill"));
         JScrollPane scrollPane = new JScrollPane(parameterPanel);
@@ -413,7 +413,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      * @return The UI for the configuration of the process.
      */
     private JComponent buildBashUI(){
-        ProcessDescriptionType process = wpsClient.getProcessCopy(pee.getProcess().getIdentifier());
+        ProcessDescriptionType process = wpsClient.getProcessCopy(processEditableElement.getProcess().getIdentifier());
         dataMap = new HashMap<>();
 
         JPanel returnPanel = new JPanel(new MigLayout("fill"));
@@ -424,11 +424,11 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         label.setFont(label.getFont().deriveFont(Font.ITALIC));
         processPanel.add(label, "growx, span");
         String versionStr = I18N.tr("Version : ");
-        if(pee.getProcessOffering().getProcessVersion().isEmpty()){
+        if(processEditableElement.getProcessOffering().getProcessVersion().isEmpty()){
             versionStr += I18N.tr("unknown");
         }
         else{
-            versionStr += pee.getProcessOffering().getProcessVersion();
+            versionStr += processEditableElement.getProcessOffering().getProcessVersion();
         }
         JLabel version = new JLabel(versionStr);
         version.setFont(version.getFont().deriveFont(Font.ITALIC));
@@ -443,7 +443,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         JScrollPane scrollPane = new JScrollPane(panel);
 
         // Put all the default values in the datamap
-        pee.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
+        processEditableElement.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
         JPanel boderParameterPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         boderParameterPanel.setBorder(BorderFactory.createTitledBorder(I18N.tr("Parameter(s)")));
@@ -557,8 +557,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
     private void addBashLine(ProcessDescriptionType process, JPanel parameterPanel, JScrollPane scrollPane){
         HashMap<URI, Object> map = new HashMap<>();
-        map.putAll(pee.getInputDataMap());
-        map.putAll(pee.getOutputDataMap());
+        map.putAll(processEditableElement.getInputDataMap());
+        map.putAll(processEditableElement.getOutputDataMap());
         URI key = URI.create(UUID.randomUUID().toString());
         dataMap.put(key, map);
 

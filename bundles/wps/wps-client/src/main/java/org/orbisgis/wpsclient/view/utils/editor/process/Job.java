@@ -69,19 +69,19 @@ public class Job implements ProcessExecutionListener{
     private ProcessExecutionListener.ProcessState state;
     private Long startTime;
     private Map<String, Color> logMap;
-    private ProcessEditableElement pee;
+    private ProcessEditableElement processEditableElement;
     private WpsClient wpsClient;
 
-    public Job(ProcessEditableElement pee, UUID id){
+    public Job(ProcessEditableElement processEditableElement, UUID id){
         this.logMap = new LinkedHashMap<>();
-        this.pee = pee;
+        this.processEditableElement = processEditableElement;
         this.wpsClient = null;
         this.id = id;
     }
 
     public Job(WpsClient client, UUID id){
         this.logMap = new LinkedHashMap<>();
-        this.pee = null;
+        this.processEditableElement = null;
         this.wpsClient = client;
         this.id = id;
     }
@@ -196,7 +196,7 @@ public class Job implements ProcessExecutionListener{
         appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Process result :"));
         for(DataOutputType output : result.getOutput()){
             Object o = output.getData().getContent().get(0);
-            for(OutputDescriptionType outputDescriptionType : pee.getProcessOffering().getProcess().getOutput()){
+            for(OutputDescriptionType outputDescriptionType : processEditableElement.getProcessOffering().getProcess().getOutput()){
                 if(outputDescriptionType.getIdentifier().getValue().equals(output.getId())){
                     appendLog(ProcessExecutionListener.LogType.INFO,
                             outputDescriptionType.getTitle().get(0).getValue()+" = "+o.toString());
@@ -207,12 +207,12 @@ public class Job implements ProcessExecutionListener{
     }
 
     public ProcessDescriptionType getProcess() {
-        return pee.getProcess();
+        return processEditableElement.getProcess();
     }
 
     private void firePropertyChangeEvent(PropertyChangeEvent event){
-        if(pee != null){
-            pee.firePropertyChangeEvent(event);
+        if(processEditableElement != null){
+            processEditableElement.firePropertyChangeEvent(event);
         }
         else if(wpsClient != null){
             switch(event.getPropertyName()){

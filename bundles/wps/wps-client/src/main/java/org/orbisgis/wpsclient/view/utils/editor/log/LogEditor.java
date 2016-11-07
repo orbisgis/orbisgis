@@ -120,10 +120,10 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
     /**
      * Adds a new running process.
      * Its log will be displayed dynamically.
-     * @param pee ProcessEditableElement of the running process to add.
+     * @param processEditableElement ProcessEditableElement of the running process to add.
      */
-    public void addNewLog(ProcessEditableElement pee, UUID jobId){
-        LogPanel panel = new LogPanel(pee.getProcess().getTitle().get(0).getValue(), this);
+    public void addNewLog(ProcessEditableElement processEditableElement, UUID jobId){
+        LogPanel panel = new LogPanel(processEditableElement.getProcess().getTitle().get(0).getValue(), this);
         panel.setState(ProcessExecutionListener.ProcessState.RUNNING);
         componentMap.put(jobId, panel);
         contentPanel.add(panel, "growx, span");

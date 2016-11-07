@@ -416,8 +416,8 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         //Link the DataStore with the DataField, with the FieldValue
         link(process);
         //Open the ProcessEditor
-        ProcessEditableElement pee = new ProcessEditableElement(listProcess.get(0));
-        pe = new ProcessEditor(this, pee);
+        ProcessEditableElement processEditableElement = new ProcessEditableElement(listProcess.get(0));
+        pe = new ProcessEditor(this, processEditableElement);
         //Find if there is already a ProcessEditor open with the same process.
         //If not, add the new one.
         boolean alreadyOpen = false;
@@ -432,9 +432,9 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         }
         else{
             LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("The process {0} is already open.",
-                    pee.getProcess().getTitle().get(0).getValue()));
+                    processEditableElement.getProcess().getTitle().get(0).getValue()));
         }
-        return pee;
+        return processEditableElement;
     }
     /**
      * Link the deiffrents input/output together like the DataStore with its DataFields,
@@ -502,16 +502,16 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
      * @param id Identifier of the job to validate.
      */
     public void validateInstance(ProcessEditor pe, UUID id){
-        ProcessEditableElement pee = (ProcessEditableElement) pe.getEditableElement();
+        ProcessEditableElement processEditableElement = (ProcessEditableElement) pe.getEditableElement();
         //If the LogEditor is not displayed, just do it <°>.
         if(le == null) {
             le = new LogEditor(lee);
             dockingManager.addDockingPanel(le);
             openEditorList.add(le);
         }
-        le.addNewLog(pee, id);
+        le.addNewLog(processEditableElement, id);
 
-        lee.addProcessEditableElement(pee);
+        lee.addProcessEditableElement(processEditableElement);
         //First test if the ProcessEditor has not been already deleted.
         if(dockingManager.getPanels().contains(pe)) {
             dockingManager.removeDockingPanel(pe.getDockingParameters().getName());

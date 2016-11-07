@@ -67,10 +67,10 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
     /** List of listeners. */
     private List<PropertyChangeListener> changeListenerList = new ArrayList<>();
 
-    public void addProcessEditableElement(ProcessEditableElement pee){
-        if(!listPee.contains(pee)) {
-            listPee.add(pee);
-            pee.addPropertyChangeListener(this);
+    public void addProcessEditableElement(ProcessEditableElement processEditableElement){
+        if(!listPee.contains(processEditableElement)) {
+            listPee.add(processEditableElement);
+            processEditableElement.addPropertyChangeListener(this);
         }
     }
 
@@ -153,10 +153,10 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
     }
 
     public void cancelProcess(UUID id) {
-        for(ProcessEditableElement pee : listPee){
-            Job job = pee.getJob(id);
+        for(ProcessEditableElement processEditableElement : listPee){
+            Job job = processEditableElement.getJob(id);
             if(job != null){
-                pee.firePropertyChangeEvent(new PropertyChangeEvent(this, ProcessEditableElement.CANCEL, id, id));
+                processEditableElement.firePropertyChangeEvent(new PropertyChangeEvent(this, ProcessEditableElement.CANCEL, id, id));
                 job.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Process cancelled by the user"));
             }
         }
