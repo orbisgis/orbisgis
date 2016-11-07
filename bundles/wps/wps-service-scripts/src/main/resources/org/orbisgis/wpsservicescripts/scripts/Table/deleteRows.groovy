@@ -44,7 +44,9 @@ import org.orbisgis.wpsgroovyapi.process.Process
         metadata = [
                 @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
                 @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
-        ])
+        ],
+        identifier = "wps:orbisgis:internal:DeleteValues"
+)
 def processing() {
     //Build the start of the query
     for (String s : pkToRemove) {
@@ -69,7 +71,9 @@ def processing() {
         translatedResumes = [
                 @LanguageString(value = "The table to edit.", lang = "en"),
                 @LanguageString(value = "La table à éditer.", lang = "fr")
-        ])
+        ],
+        identifier = "wps:orbisgis:internal:DeleteValues:Table"
+)
 String tableName
 
 /**********************/
@@ -86,7 +90,9 @@ String tableName
                 @LanguageString(value = "The primary key field.", lang = "en"),
                 @LanguageString(value = "Le champ de la clef primaire.", lang = "fr")
         ],
-        variableReference = "tableName")
+        variableReference = "tableName",
+        identifier = "wps:orbisgis:internal:DeleteValues:PKField"
+)
 String[] pkField
 
 /** List of primary keys to remove from the table. */
@@ -100,7 +106,9 @@ String[] pkField
                 @LanguageString(value = "La liste des clefs primaires dont les lignes sont à supprimer.", lang = "fr")
         ],
         variableReference = "pkField",
-        multiSelection = true)
+        multiSelection = true,
+        identifier = "wps:orbisgis:internal:DeleteValues:PKArray"
+)
 String[] pkToRemove
 
 /** Output message. */

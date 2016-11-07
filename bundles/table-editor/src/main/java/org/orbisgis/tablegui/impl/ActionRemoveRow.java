@@ -29,42 +29,52 @@
 
 package org.orbisgis.tablegui.impl;
 
+import net.opengis.wps._2_0.ProcessDescriptionType;
+import org.h2gis.utilities.JDBCUtilities;
+import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.view.utils.WpsJobStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Set;
+import java.net.URI;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * Remove selected rows in the DataSource.
  * @author Nicolas Fortin
  * @author Sylvain PALOMINOS
  */
-public class ActionRemoveRow extends AbstractAction {
+public class ActionRemoveRow extends AbstractAction implements WpsJobStateListener {
     /** Title of the wps process to use. */
-    private static final String PROCESS_TITLE = "RemoveRow";
+    private static final URI PROCESS_TITLE = URI.create("wps:orbisgis:internal:DeleteValues");
     /** Name of the process input containing the table name. */
-    private static final String INPUT_TABLE = "Table";
+    private static final URI INPUT_TABLE = URI.create("wps:orbisgis:internal:DeleteValues:Table");
     /** Name of the process input containing the primary key field name. */
-    private static final String INPUT_PK_FIELD = "PKField";
+    private static final URI INPUT_PK_FIELD = URI.create("wps:orbisgis:internal:DeleteValues:PKField");
     /** Name of the process input containing the primary key array. */
-    private static final String INPUT_PK_ARRAY = "PKArray";
+    private static final URI INPUT_PK_ARRAY = URI.create("wps:orbisgis:internal:DeleteValues:PKArray");
     private final TableEditableElement editable;
     private static final I18n I18N = I18nFactory.getI18n(ActionRemoveRow.class);
     private TableEditor tableEditor;
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionRemoveRow.class);
     private WpsClient wpsClient;
+    private ProcessDescriptionType process;
+    private UUID jobId;
 
     /**
      * Constructor
@@ -79,6 +89,7 @@ public class ActionRemoveRow extends AbstractAction {
         updateEnabledState();
         editable.addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class, this, "onEditableUpdate",""));
         this.wpsClient = wpsClient;
+        process = wpsClient.getInternalProcess(PROCESS_TITLE);
     }
 
     /**
@@ -102,61 +113,72 @@ public class ActionRemoveRow extends AbstractAction {
                 I18N.tr("Delete selected rows"),
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
             if(response == JOptionPane.YES_OPTION) {
-                if(wpsClient != null){
-                    /** Would be updates later once the WPS client will be fully updated **/
-                    /*Process p = null;
-                    for(ProcessIdentifier pi : wpsService.getCapabilities()){
-                        if(pi.getProcess().getTitle().equals(PROCESS_TITLE)){
-                            p = pi.getProcess();
-                            break;
-                        }
-                    }
-                    if(p != null){
+                if(wpsClient != null && process != null){
                         try(Connection connection = editable.getDataManager().getDataSource().getConnection()) {
                             //Gets the pk column name
                             int columnId = JDBCUtilities.getIntegerPrimaryKey(connection, editable.getTableReference());
                             String pkColumnName = JDBCUtilities.getFieldName(connection.getMetaData(), editable.getTableReference(), columnId);
                             //Gets the pk list as a String[]
-                            String[] pkList = new String[editable.getSelection().size()];
+                            String pkListStr = "";
                             SortedSet<Long> selection = editable.getSelection();
-                            int i = 0;
                             for (Long l : selection) {
-                                pkList[i] = l.toString();
-                                i++;
+                                if(!pkListStr.isEmpty()){
+                                    pkListStr += "\t";
+                                }
+                                pkListStr += l.toString();
                             }
                             //Build the dataMap
                             Map<URI, Object> dataMap = new HashMap<>();
-                            for (Input input : p.getInput()) {
-                                if (input.getTitle().equals(INPUT_TABLE)) {
-                                    URI uri = DataStoreOld.buildUriDataStore(DataStoreOld.DATASTORE_TYPE_GEOCATALOG,
-                                            editable.getTableReference(),
-                                            editable.getTableReference());
-                                    dataMap.put(input.getIdentifier(), uri);
-                                }
-                                if (input.getTitle().equals(INPUT_PK_ARRAY)) {
-                                    dataMap.put(input.getIdentifier(), pkList);
-                                }
-                                if (input.getTitle().equals(INPUT_PK_FIELD)) {
-                                    dataMap.put(input.getIdentifier(), pkColumnName);
-                                }
-                            }
+                            dataMap.put(INPUT_TABLE, editable.getTableReference());
+                            dataMap.put(INPUT_PK_ARRAY, pkListStr);
+                            dataMap.put(INPUT_PK_FIELD, pkColumnName);
                             //Run the service
-                            wpsService.execute(p, dataMap, null);
-                            //Indicates to the tableEditor that a change occurred.
-                            tableEditor.tableChange(new TableEditEvent(editable.getTableReference(),
-                                    TableModelEvent.ALL_COLUMNS,
-                                    null,
-                                    null,
-                                    TableModelEvent.UPDATE));
+                            jobId = wpsClient.executeInternalProcess(process, dataMap, this);
                         } catch (SQLException e) {
                             LOGGER.error(I18N.tr("Unable to get the connection to remove rows.\n")+e.getMessage());
                         }
-                    }
-                    else{
-                        LOGGER.error(I18N.tr("Unable to get the process '{0}' from the WpsService.", PROCESS_TITLE));
-                    }*/
+                }
+                else{
+                    LOGGER.error(I18N.tr("Unable to get the process {0} from the WpsService.", PROCESS_TITLE));
                 }
             }
         }
+    }
+
+    @Override
+    public UUID getJobId() {
+        return jobId;
+    }
+
+    @Override
+    public void onJobAccepted() {
+        //Nothing to do
+    }
+
+    @Override
+    public void onJobRunning() {
+        //Nothing to do
+    }
+
+    @Override
+    public void onJobSuccess() {
+        //Indicates to the tableEditor that a change occurred.
+        tableEditor.tableChange(new TableEditEvent(editable.getTableReference(),
+                TableModelEvent.ALL_COLUMNS,
+                null,
+                null,
+                TableModelEvent.UPDATE));
+        wpsClient.removeJobListener(this);
+    }
+
+    @Override
+    public void onJobFailed() {
+        //Indicates to the tableEditor that a change occurred.
+        tableEditor.tableChange(new TableEditEvent(editable.getTableReference(),
+                TableModelEvent.ALL_COLUMNS,
+                null,
+                null,
+                TableModelEvent.UPDATE));
+        wpsClient.removeJobListener(this);
     }
 }
