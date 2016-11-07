@@ -1,12 +1,20 @@
 /**
- * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information.
+ * OrbisGIS is a java GIS application dedicated to research in GIScience.
+ * OrbisGIS is developed by the GIS group of the DECIDE team of the 
+ * Lab-STICC CNRS laboratory, see <http://www.lab-sticc.fr/>.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * The GIS group of the DECIDE team is located at :
  *
- * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
+ * Laboratoire Lab-STICC – CNRS UMR 6285
+ * Equipe DECIDE
+ * UNIVERSITÉ DE BRETAGNE-SUD
+ * Institut Universitaire de Technologie de Vannes
+ * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
+ * 
+ * OrbisGIS is distributed under GPL 3 license.
+ *
+ * Copyright (C) 2007-2014 CNRS (IRSTV FR CNRS 2488)
+ * Copyright (C) 2015-2016 CNRS (Lab-STICC UMR CNRS 6285)
  *
  * This file is part of OrbisGIS.
  *
@@ -125,14 +133,37 @@ public interface ILayer {
          */
 	void setName(final String name) throws LayerException;
 
+        /**
+	 * 
+         * @param parent to set
+         * @throws org.orbisgis.coremap.layerModel.LayerException
+	 */
 	void setParent(final ILayer parent) throws LayerException;
 
+        /**
+         * 
+         * @return all layer names
+         */
 	public Set<String> getAllLayersNames();
 
+        /**
+         * True if the layer is visible
+         * @return 
+         */
 	boolean isVisible();
 
+        /**
+         * Set if the layer is visible or not
+         * @param isVisible
+         * @throws LayerException 
+         */
 	void setVisible(final boolean isVisible) throws LayerException;
 
+        /**
+	 * 
+         * @return the main layer
+	 * @see org.orbisgis.coremap.layerModel.ILayer#getParent()
+	 */
 	ILayer getParent();
 
     /**
@@ -260,10 +291,26 @@ public interface ILayer {
 
 	void moveTo(ILayer layer) throws LayerException;
 
+        /**
+         * Open the data or any resources used by the layer
+         * 
+         * @throws LayerException 
+         */
 	void open() throws LayerException;
 
+        /**
+         * Close the data or any resources used by the layer
+         * @throws LayerException 
+         */
 	void close() throws LayerException;
 
+        /**
+         * Insert the layer at index position
+         * @param layer
+         * @param index
+         * @param isMoving
+         * @throws LayerException 
+         */
 	void insertLayer(ILayer layer, int index, boolean isMoving)
 			throws LayerException;
 
@@ -363,17 +410,18 @@ public interface ILayer {
         /**
          * Gets the {@code i}th {@code Style} that is used to define the
          * symbology associated to the current {@code ILayer}.
+         * @param index
          * @return
          */
-        Style getStyle(int i);
+        Style getStyle(int index);
 
         /**
          * Sets the {@code i}th {@code Style} that is used to define the
          * symbology associated to the current {@code ILayer}.
-         * @param i
-         * @param s
+         * @param index
+         * @param style
          */
-        void setStyle(int i, Style s);
+        void setStyle(int index, Style style);
 
         /**
          * Adds a {@code Style} instance at the end of the list of associated
@@ -385,9 +433,10 @@ public interface ILayer {
         /**
          * Adds a {@code Style} instance at the ith position of the list of
          * associated {@code Style}s.
+         * @param index
          * @param style
          */
-        public void addStyle(int i, Style style);
+        public void addStyle(int index, Style style);
 
         /**
          * Gets the index of {@code s} in this {@code ILayer}, or {@code -1} if
@@ -440,7 +489,8 @@ public interface ILayer {
 
         /**
          * Removes s from the styles associated to this layer.
+         * @param style
          */
-        void removeStyle(Style s);
+        void removeStyle(Style style);
 
 }

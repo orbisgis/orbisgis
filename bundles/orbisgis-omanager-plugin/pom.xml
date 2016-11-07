@@ -6,7 +6,7 @@
         <artifactId>orbisgis-omanager-plugin</artifactId>
         <name>OrbisGIS OSGi Plugin Manager</name>
         <description>Add a menu shortcut in OrbisGIS in order to show the plugin manager</description>
-        <url>http://orbisgis.org</url>
+        <url>http://www.orbisgis.org</url>
         <build>
                 <plugins>
                     <plugin>

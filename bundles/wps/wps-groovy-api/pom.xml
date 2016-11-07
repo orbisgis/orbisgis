@@ -8,7 +8,7 @@
     <name>WPS Groovy API</name>
     <description>WPS Groovy API</description>
     <packaging>bundle</packaging>
-
+    <url>http://www.orbisgis.org</url>
     <parent>
         <artifactId>wps</artifactId>
         <groupId>org.orbisgis</groupId>

@@ -7,6 +7,7 @@
     <artifactId>wps-service</artifactId>
     <name>WPS Service</name>
     <description>WPS Service</description>
+    <url>http://www.orbisgis.org</url>
     <packaging>bundle</packaging>
 
     <parent>

@@ -13,6 +13,7 @@
 	<packaging>bundle</packaging>
 	<name>WMS-Client</name>
 	<url>http://www.orbisgis.org</url>
+        <description>WMS client to query a WMS service.</description>
 	<dependencies>
 		<dependency>
 			<groupId>biz.source_code</groupId>

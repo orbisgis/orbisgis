@@ -2,7 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>commons</artifactId>
-    <name>commons</name>
+    <name>commons</name>    
+    <url>http://orbisgis.org</url>
     <description>Some common utility classes used in several OrbisGIS library and applications.</description>
     <packaging>bundle</packaging>
     <parent>
@@ -11,22 +12,6 @@
         <version>5.1.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-    <organization>
-        <name>Lab-STICC - CNRS UMR 6285</name>
-        <url>http://www.lab-sticc.fr/</url>
-    </organization>
-    <url>http://www.orbisgis.org</url>
-    <licenses>
-        <license>
-            <name>GNU General Public License (GPLV3+)</name>
-            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
-        </license>
-    </licenses>
-    <scm>
-        <connection>scm:git:https://github.com/orbisgis/orbisgis.git</connection>
-        <developerConnection>scm:git:https://github.com/orbisgis/orbisgis.git</developerConnection>
-        <url>git@github.com:orbisgis/orbisgis.git</url>
-    </scm>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

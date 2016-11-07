@@ -4,6 +4,7 @@
     <artifactId>docking-impl</artifactId>
     <name>docking-impl</name>
     <description>Implement Docking API using Docking Frames library</description>
+    <url>http://www.orbisgis.org</url>
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>

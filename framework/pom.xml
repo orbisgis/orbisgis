@@ -5,7 +5,7 @@
     <artifactId>framework</artifactId>
     <name>framework</name>
     <url>http://orbisgis.org</url>
-    <packaging>bundle</packaging>
+    <packaging>bundle</packaging>   
     <description>OSGi framework, also known as system bundle 0</description>
     <parent>
         <artifactId>orbisgis</artifactId>

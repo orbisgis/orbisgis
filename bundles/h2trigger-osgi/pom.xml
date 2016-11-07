@@ -3,13 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>h2trigger-osgi</artifactId>
     <name>h2trigger-osgi</name>
-    <description>Register database triggerFactory and fire update to DataManager</description>
+    <description>Register H2 database triggerFactory and fire update to DataManager</description>
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>
         <version>5.1.0-SNAPSHOT</version>
         <relativePath>../..</relativePath>
     </parent>
+    <url>http://www.orbisgis.org</url>
     <packaging>bundle</packaging>
     <build>
         <plugins>

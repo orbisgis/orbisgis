@@ -4,6 +4,7 @@
     <artifactId>sql-parser-api</artifactId>
     <name>sql-parser-api</name>
     <packaging>bundle</packaging>
+    <description>API to parser a SQL script</description>
     <parent>
         <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>

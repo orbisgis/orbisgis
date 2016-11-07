@@ -5,8 +5,8 @@
     <packaging>bundle</packaging>
     <artifactId>editor-jdbc</artifactId>
     <name>editor-jdbc</name>
-    <description>Library linked to gui editors using Jdbc resources</description>
-    <url>http://orbisgis.org</url>
+    <description>Library linked to GUI editors using JDBC resources</description>
+    <url>http://www.orbisgis.org</url>
     <build>
         <plugins>
             <plugin>

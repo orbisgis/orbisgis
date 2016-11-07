@@ -6,7 +6,7 @@
         <artifactId>orbisgis-omanager</artifactId>
         <name>OSGi Plugin Manager GUI</name>
         <description>Graphical user interface to manage OSGi bundles.</description>
-        <url>http://orbisgis.org</url>
+        <url>http://www.orbisgis.org</url>
         <build>
                 <plugins>
                         <plugin>
