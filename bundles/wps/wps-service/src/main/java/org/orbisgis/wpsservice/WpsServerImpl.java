@@ -79,8 +79,6 @@ public class WpsServerImpl implements WpsServer {
     /** Execution options */
     private static final String OPTION_SYNC_EXEC = "sync-execute";
     private static final String OPTION_ASYNC_EXEC = "async-execute";
-    /** Process polling time in milliseconds. */
-    private static final long PROCESS_POLLING_MILLIS = 10000;
     /** Server version. */
     private static final String SERVER_VERSION = "2.0.0";
     /** Server default language. */
@@ -465,7 +463,7 @@ public class WpsServerImpl implements WpsServer {
         }
         //Return the StatusInfo to the user
         statusInfo.setStatus(job.getState().name());
-        XMLGregorianCalendar date = getXMLGregorianCalendar(PROCESS_POLLING_MILLIS);
+        XMLGregorianCalendar date = getXMLGregorianCalendar(job.getProcessPollingTime());
         statusInfo.setNextPoll(date);
         return statusInfo;
     }
@@ -481,7 +479,7 @@ public class WpsServerImpl implements WpsServer {
         statusInfo.setStatus(job.getState().name());
         if(!job.getState().equals(ProcessExecutionListener.ProcessState.FAILED) &&
                 !job.getState().equals(ProcessExecutionListener.ProcessState.SUCCEEDED)) {
-            XMLGregorianCalendar date = getXMLGregorianCalendar(PROCESS_POLLING_MILLIS);
+            XMLGregorianCalendar date = getXMLGregorianCalendar(job.getProcessPollingTime());
             statusInfo.setNextPoll(date);
         }
         if(job.getState().equals(ProcessExecutionListener.ProcessState.FAILED) ||
@@ -569,7 +567,7 @@ public class WpsServerImpl implements WpsServer {
         statusInfo.setStatus(job.getState().name());
         if(!job.getState().equals(ProcessExecutionListener.ProcessState.FAILED) &&
                 !job.getState().equals(ProcessExecutionListener.ProcessState.SUCCEEDED)) {
-            XMLGregorianCalendar date = getXMLGregorianCalendar(PROCESS_POLLING_MILLIS);
+            XMLGregorianCalendar date = getXMLGregorianCalendar(job.getProcessPollingTime());
             statusInfo.setNextPoll(date);
         }
         return statusInfo;

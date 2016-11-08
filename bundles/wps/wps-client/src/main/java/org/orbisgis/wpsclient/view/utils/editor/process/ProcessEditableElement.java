@@ -198,14 +198,6 @@ public class ProcessEditableElement implements EditableElement {
         }
     }
 
-    /**
-     * Throw a property change event to ask the result of the job.
-     */
-    public void askResults(UUID jobId) {
-        PropertyChangeEvent event = new PropertyChangeEvent(this, GET_RESULTS, jobId, jobId);
-        firePropertyChangeEvent(event);
-    }
-
     public Job getJob(UUID jobID) {
         if(jobMap.containsKey(jobID)) {
             return jobMap.get(jobID);

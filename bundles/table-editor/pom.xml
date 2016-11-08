@@ -129,7 +129,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wps-service</artifactId>
+            <artifactId>wps-client</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

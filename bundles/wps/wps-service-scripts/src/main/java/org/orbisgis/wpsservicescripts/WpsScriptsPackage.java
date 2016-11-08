@@ -130,6 +130,10 @@ public class WpsScriptsPackage {
             }
         }
         URL scriptUrl = this.getClass().getResource(processpath);
+        if(scriptUrl == null){
+            LOGGER.error(I18N.tr("Unable to get the URL of the process {0}", processpath));
+            return;
+        }
         final File tempFile = new File(tempFolder.getAbsolutePath(), new File(scriptUrl.getFile()).getName());
         if(!tempFile.exists()) {
             try{
@@ -138,7 +142,7 @@ public class WpsScriptsPackage {
                     return;
                 }
             } catch (IOException e) {
-                LoggerFactory.getLogger(WpsScriptsPackage.class).error(e.getMessage());
+                LOGGER.error(I18N.tr("Unable to create the icon file.\n Error : {0}", e.getMessage()));
             }
         }
         try (FileOutputStream out = new FileOutputStream(tempFile)) {
@@ -152,7 +156,14 @@ public class WpsScriptsPackage {
                 icons,
                 false,
                 path);
+        if(piList == null || piList.isEmpty()){
+            LOGGER.error(I18N.tr("Error get on adding the process {0} to the WpsService, no process returned.", processpath));
+            return;
+        }
         for(ProcessIdentifier pi : piList){
+            if(pi == null || pi.getProcessDescriptionType() == null || pi.getProcessDescriptionType().getInput() == null){
+                LOGGER.error(I18N.tr("Error, the ProcessIdentifier get is malformed."));
+            }
             listIdProcess.add(pi.getProcessDescriptionType().getIdentifier());
         }
     }
@@ -173,6 +184,10 @@ public class WpsScriptsPackage {
      */
     protected String loadIcon(String iconName){
         URL iconUrl = this.getClass().getResource("icons/"+iconName);
+        if(iconUrl == null){
+            LOGGER.error(I18N.tr("Unable to get the URL of the icon {0}", iconName));
+            return null;
+        }
         String tempFolderPath = coreWorkspace.getApplicationFolder();
         File tempFolder = new File(tempFolderPath, "wpsscripts");
         if(!tempFolder.exists()) {
@@ -190,7 +205,7 @@ public class WpsScriptsPackage {
                     return null;
                 }
             } catch (IOException e) {
-                LoggerFactory.getLogger(WpsScriptsPackage.class).error(e.getMessage());
+                LOGGER.error(I18N.tr("Unable to create the icon file.\n Error : {0}", e.getMessage()));
             }
         }
         //Copy the content of the resource file in the temporary file.

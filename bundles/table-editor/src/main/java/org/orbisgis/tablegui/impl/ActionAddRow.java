@@ -37,13 +37,16 @@
 
 package org.orbisgis.tablegui.impl;
 
+import net.opengis.wps._2_0.ProcessDescriptionType;
+import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.editorjdbc.AskValidRow;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.wpsservice.WpsServer;
+import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.view.utils.WpsJobStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -51,32 +54,40 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
 import javax.swing.AbstractAction;
+import javax.swing.event.TableModelEvent;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Add a row in the DataSource.
  * @author Nicolas Fortin
  */
-public class ActionAddRow extends AbstractAction {
+public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
     /** Title of the wps process to use. */
-    private static final String PROCESS_TITLE = "InsertInto";
+    private static final URI PROCESS_TITLE = URI.create("wps:orbisgis:internal:InsertValues");
     /** Name of the process input containing the table name. */
-    private static final String INPUT_TABLE = "Table";
+    private static final URI INPUT_TABLE = URI.create("wps:orbisgis:internal:InsertValues:Table");
     /** Name of the process input containing the values to add. */
-    private static final String INPUT_VALUES = "Values";
+    private static final URI INPUT_VALUES = URI.create("wps:orbisgis:internal:InsertValues:Values");
+    private static final URI INPUT_FIELDS = URI.create("wps:orbisgis:internal:InsertValues:Fields");
     private final TableEditableElement editable;
     private static final I18n I18N = I18nFactory.getI18n(ActionAddRow.class);
     private final Logger LOGGER = LoggerFactory.getLogger(ActionAddRow.class);
     private TableEditor tableEditor;
-    private WpsServer wpsServer;
+    private WpsClient wpsClient;
+    private ProcessDescriptionType process;
+    private UUID jobId;
 
     /**
      * Constructor
      * @param editable Table editable instance
      */
-    public ActionAddRow(TableEditableElement editable, TableEditor tableEditor, WpsServer wpsServer) {
+    public ActionAddRow(TableEditableElement editable, TableEditor tableEditor, WpsClient wpsClient) {
         super(I18N.tr("Add a row"), TableEditorIcon.getIcon("add_row"));
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
         putValue(ActionTools.MENU_ID, TableEditorActions.A_ADD_ROW);
@@ -85,14 +96,20 @@ public class ActionAddRow extends AbstractAction {
         editable.addPropertyChangeListener(TableEditableElement.PROP_EDITING,
                 EventHandler.create(PropertyChangeListener.class, this, "updateEnabledState"));
         this.tableEditor = tableEditor;
-        this.wpsServer = wpsServer;
+        this.wpsClient = wpsClient;
+        process = wpsClient.getInternalProcess(PROCESS_TITLE);
     }
 
     /**
      * Enable this action only if edition is enabled
      */
     public void updateEnabledState() {
-        setEnabled(editable.isEditing());
+        if(wpsClient == null || process == null) {
+            setEnabled(false);
+        }
+        else{
+            setEnabled(editable.isEditing());
+        }
     }
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
@@ -101,62 +118,71 @@ public class ActionAddRow extends AbstractAction {
             try {
                 AskValidRow rowInput = new AskValidRow(I18N.tr("New row"), source, editable.getTableReference());
                 if(UIFactory.showDialog(rowInput)) {
-                    if(wpsServer != null){
-                        //Firs try to retrieve the process corresponding to the process title.
-                        /** Would be updates later once the WPS client will be fully updated **/
-                        /*Process p = null;
-                        for(ProcessIdentifier pi : wpsService.getCapabilities()){
-                            if(pi.getProcess().getTitle().equals(PROCESS_TITLE)){
-                                p = pi.getProcess();
-                                break;
+                    if(wpsClient != null && process != null){
+                        //Get the string containing the values to add separated by a coma.
+                        String values = "";
+                        for(Object o : rowInput.getRow()){
+                            //If the value is null, put an empty string,
+                            // the process will convert it into a null value.
+                            if(!values.isEmpty()){
+                                values += ",";
+                            }
+                            if(o != null){
+                                values += o.toString();
                             }
                         }
-                        if(p != null){
-                            //Get the string containing the values to add separated by a coma.
-                            String values = "";
-                            boolean isEmptyString = true;
-                            Object[] newRow = rowInput.getRow();
-                            for(Object o : newRow){
-                                if(!isEmptyString){
-                                    values += ",";
-                                }
-                                //If the value is null, put an empty string,
-                                // the process will convert it into a null value.
-                                if(o != null){
-                                    values += o.toString();
-                                }
-                                isEmptyString = false;
-                            }
-                            //Build the dataMap containing the process input
-                            Map<URI, Object> dataMap = new HashMap<>();
-                            for (Input input : p.getInput()) {
-                                if (input.getTitle().equals(INPUT_TABLE)) {
-                                    URI uri = DataStoreOld.buildUriDataStore(DataStoreOld.DATASTORE_TYPE_GEOCATALOG,
-                                            editable.getTableReference(),
-                                            editable.getTableReference());
-                                    dataMap.put(input.getIdentifier(), uri);
-                                }
-                                if (input.getTitle().equals(INPUT_VALUES)) {
-                                    dataMap.put(input.getIdentifier(), values);
-                                }
-                            }
-                            //Run the service
-                            wpsService.execute(p, dataMap, null);
-                            //Indicates to the tableEditor that a change occurred.
-                            tableEditor.tableChange(new TableEditEvent(editable.getTableReference(),
-                                    TableModelEvent.ALL_COLUMNS,
-                                    null,
-                                    null,
-                                    TableModelEvent.UPDATE));
-                        }
-                        else{
-                            LOGGER.error(I18N.tr("Unable to get the process '{0}' from the WpsService.", PROCESS_TITLE));
-                        }*/
+                        //Build the dataMap containing the process input
+                        Map<URI, Object> dataMap = new HashMap<>();
+                        dataMap.put(INPUT_TABLE, editable.getTableReference());
+                        dataMap.put(INPUT_FIELDS, null);
+                        dataMap.put(INPUT_VALUES, values);
+                        //Run the service
+                        jobId = wpsClient.executeInternalProcess(process, dataMap, this);
+                    }
+                    else{
+                        LOGGER.error(I18N.tr("Unable to get the process {0} from the WpsService.", PROCESS_TITLE));
                     }
                 }
             } catch (Exception ex) {
                 LOGGER.error(ex.getLocalizedMessage(),ex);
             }
         }
+    }
+
+    @Override
+    public UUID getJobId() {
+        return jobId;
+    }
+
+    @Override
+    public void onJobAccepted() {
+        //Nothing to do
+    }
+
+    @Override
+    public void onJobRunning() {
+        //Nothing to do
+    }
+
+    @Override
+    public void onJobSuccess() {
+        //Indicates to the tableEditor that a change occurred.
+        tableEditor.tableChange(new TableEditEvent(editable.getTableReference(),
+                TableModelEvent.ALL_COLUMNS,
+                null,
+                null,
+                TableModelEvent.UPDATE));
+        wpsClient.removeJobListener(this);
+    }
+
+    @Override
+    public void onJobFailed() {
+        //Indicates to the tableEditor that a change occurred.
+        tableEditor.tableChange(new TableEditEvent(editable.getTableReference(),
+                TableModelEvent.ALL_COLUMNS,
+                null,
+                null,
+                TableModelEvent.UPDATE));
+        wpsClient.removeJobListener(this);
     }
 }

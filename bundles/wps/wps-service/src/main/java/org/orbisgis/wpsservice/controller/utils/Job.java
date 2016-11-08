@@ -51,6 +51,9 @@ import java.util.UUID;
  */
 public class Job implements ProcessExecutionListener {
 
+    /** Process polling time in milliseconds. */
+    private static final long MAX_PROCESS_POLLING_MILLIS = 10000;
+    private static final long BASE_PROCESS_POLLING_MILLIS = 1000;
     /** WPS process */
     private ProcessDescriptionType process;
     /** Unique identifier of the job */
@@ -63,6 +66,7 @@ public class Job implements ProcessExecutionListener {
     private ProcessState state;
     /** Map of the input/output data of the process execution */
     private Map<URI, Object> dataMap;
+    private long processPollingTime;
 
     public Job(ProcessDescriptionType process, UUID id, Map<URI, Object> dataMap){
         this.process = process;
@@ -70,6 +74,7 @@ public class Job implements ProcessExecutionListener {
         logMap = new HashMap<>();
         state = ProcessState.ACCEPTED;
         this.dataMap = dataMap;
+        processPollingTime = BASE_PROCESS_POLLING_MILLIS;
     }
 
     @Override
@@ -117,5 +122,17 @@ public class Job implements ProcessExecutionListener {
      */
     public UUID getId() {
         return id;
+    }
+
+    /**
+     * Returns the process polling time.
+     * @return The process polling time.
+     */
+    public long getProcessPollingTime(){
+        long time = processPollingTime;
+        if(processPollingTime < MAX_PROCESS_POLLING_MILLIS) {
+            processPollingTime += BASE_PROCESS_POLLING_MILLIS;
+        }
+        return time;
     }
 }
