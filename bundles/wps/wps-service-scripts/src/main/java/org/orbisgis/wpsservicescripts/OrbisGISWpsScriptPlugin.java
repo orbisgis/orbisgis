@@ -192,6 +192,10 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
                 //Refresh the client
                 wpsClient.refreshAvailableScripts();
             }
+            else{
+                LoggerFactory.getLogger(WpsScriptsPackage.class).warn(
+                        I18N.tr("Unable to retrieve the WpsClient from OrbisGIS."));
+            }
         }
         else{
             LoggerFactory.getLogger(WpsScriptsPackage.class).error(
