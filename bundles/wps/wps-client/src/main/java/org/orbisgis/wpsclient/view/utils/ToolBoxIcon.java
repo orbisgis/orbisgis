@@ -54,7 +54,6 @@ public class ToolBoxIcon {
     public static final String DATA_STORE = "datastore";
     public static final String FLAT_FILE = "flatfile";
     public static final String GEO_FILE = "geofile";
-    public static final String GEOCATALOG = "geocatalog";
     public static final String BROWSE = "browse";
     public static final String OPTIONS = "options";
     public static final String DATA_FIELD = "datafield";
@@ -69,6 +68,26 @@ public class ToolBoxIcon {
     public static final String ADD = "add";
     public static final String DELETE = "delete";
     public static final String TOGGLE_MODE = "toggleMode";
+    public static final String LOCALHOST = "localhost";
+    public static final String DISTANT_HOST = "distanthost";
+    public static final String DISTANT_HOST_INVALID = "distanthost_invalid";
+    public static final String FOLDER_CLOSED = "folder_closed";
+    public static final String PROCESS = "process";
+    public static final String PROCESS_INVALID = "process_invalid";
+    public static final String ERROR = "error";
+    public static final String FOLDER_OPEN= "folder_open";
+    public static final String ORBIS_TOOLBOX ="orbistoolbox";
+    public static final String REFRESH ="refresh";
+    public static final String FOLDER_ADD ="folder_add";
+    public static final String SCRIPT_ADD ="script_add";
+    public static final String EXECUTE ="execute";
+    public static final String REMOVE ="remove";
+    public static final String LOG = "log";
+    public static final String STOP = "stop";
+    public static final String PROCESS_RUNING ="process_running";
+    public static final String PROCESS_ERROR ="process_error";
+    public static final String BTNRIGHT ="btnright";
+    public static final String BTNDOWN ="btndown";
 
     private static BaseIcon iconManager = new BaseIcon(LoggerFactory.getLogger(ToolBoxIcon.class));
 

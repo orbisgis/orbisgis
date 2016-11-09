@@ -93,7 +93,7 @@ public class LogPanel extends JPanel {
         JPanel leftPanel = new JPanel(new MigLayout("fill"));
         time = new JLabel();
         leftPanel.add(time);
-        stopButton = new JButton(ToolBoxIcon.getIcon("stop"));
+        stopButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.STOP));
         stopButton.setBorderPainted(false);
         stopButton.setContentAreaFilled(false);
         stopButton.putClientProperty("logPanel", this);
@@ -139,13 +139,13 @@ public class LogPanel extends JPanel {
     public void setState(ProcessExecutionListener.ProcessState state){
         switch(state){
             case SUCCEEDED:
-                icon.setIcon(ToolBoxIcon.getIcon("process"));
+                icon.setIcon(ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS));
                 break;
             case FAILED:
-                icon.setIcon(ToolBoxIcon.getIcon("process_error"));
+                icon.setIcon(ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS_ERROR));
                 break;
             case RUNNING:
-                icon.setIcon(ToolBoxIcon.getIcon("process_running"));
+                icon.setIcon(ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS_RUNING));
                 break;
         }
     }

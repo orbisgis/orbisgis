@@ -114,7 +114,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         this.dataMap = new HashMap<>();
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName(NAME+"_"+processEditableElement.getProcess().getTitle());
-        dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("process"));
+        dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS));
         dockingPanelParameters.setDefaultDockingLocation(
                 new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClientImpl.TOOLBOX_REFERENCE));
         dockingPanelParameters.setTitle(processEditableElement.getProcessReference());
@@ -127,7 +127,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         DefaultAction runAction = new DefaultAction("ACTION_RUN",
                 "ACTION_RUN",
                 I18N.tr("Run the script"),
-                ToolBoxIcon.getIcon("execute"),
+                ToolBoxIcon.getIcon(ToolBoxIcon.EXECUTE),
                 EventHandler.create(ActionListener.class, this, "runProcess"),
                 null);
         dockingActions.addAction(runAction);
@@ -352,7 +352,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                         JPanel contentPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
                         JPanel hideShowPanel = new JPanel(new MigLayout("ins 0, gap 0"));
                         //Sets the button to make it shown as just an icon
-                        JButton showButton = new JButton(ToolBoxIcon.getIcon("btnright"));
+                        JButton showButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.BTNRIGHT));
                         showButton.setBorderPainted(false);
                         showButton.setMargin(new Insets(0, 0, 0, 0));
                         showButton.setContentAreaFilled(false);
@@ -656,12 +656,12 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         if(isVisible) {
             body.setVisible(false);
             parent.remove(body);
-            showButton.setIcon(ToolBoxIcon.getIcon("btnright"));
+            showButton.setIcon(ToolBoxIcon.getIcon(ToolBoxIcon.BTNRIGHT));
         }
         else{
             body.setVisible(true);
             parent.add(body, "growx, span");
-            showButton.setIcon(ToolBoxIcon.getIcon("btndown"));
+            showButton.setIcon(ToolBoxIcon.getIcon(ToolBoxIcon.BTNDOWN));
             //Later scrollDown to the element
             SwingUtilities.invokeLater(new Runnable() {
                 @Override

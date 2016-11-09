@@ -126,6 +126,6 @@ public class DataUIManager {
         if(icon != null) {
             return icon;
         }
-        return ToolBoxIcon.getIcon("undefined");
+        return ToolBoxIcon.getIcon(ToolBoxIcon.UNDEFINED);
     }
 }
