@@ -661,7 +661,9 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
     }
 
     private void fireJobStateEvent(StatusInfo statusInfo){
-        for(WpsJobStateListener listener : jobStateListenerList){
+        List<WpsJobStateListener> list = new ArrayList<>();
+        list.addAll(jobStateListenerList);
+        for(WpsJobStateListener listener : list){
             if(listener.getJobId() != null && listener.getJobId().equals(UUID.fromString(statusInfo.getJobID()))){
                 switch(statusInfo.getStatus()){
                     case "ACCEPTED":

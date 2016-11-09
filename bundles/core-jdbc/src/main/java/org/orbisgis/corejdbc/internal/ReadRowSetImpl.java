@@ -590,6 +590,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     public void execute(ProgressMonitor pm) throws SQLException {
         try(Connection connection = dataSource.getConnection()) {
             isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            // Cache Columncount here
+            cachedColumnCount = -1;
             // Cache Rowcount here
             cachedRowCount = -1;
             getRowCount(pm);

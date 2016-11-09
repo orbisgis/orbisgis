@@ -37,14 +37,17 @@
 
 package org.orbisgis.tablegui.impl;
 
+import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.h2gis.utilities.TableLocation;
 
+import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.sif.components.SQLMessageDialog;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
-import org.orbisgis.tablegui.impl.ext.SourceTable;
 import org.orbisgis.tablegui.impl.ext.TableEditorPopupActions;
 
+import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.view.utils.WpsJobStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -52,69 +55,126 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.sql.DataSource;
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Remove a column in the DataSource.
  * @author Nicolas Fortin
  */
-public class ActionRemoveColumn extends AbstractAction {
-        private final SourceTable editor;
-        private Component parentComponent;
-        private static final I18n I18N = I18nFactory.getI18n(ActionRemoveColumn.class);
-        private final Logger logger = LoggerFactory.getLogger(ActionRemoveColumn.class);
+public class ActionRemoveColumn extends AbstractAction implements WpsJobStateListener {
+    private static final URI PROCESS_TITLE = URI.create("wps:orbisgis:internal:DeleteColumns");
+    private static final URI INPUT_TABLE = URI.create("wps:orbisgis:internal:DeleteColumns:Table");
+    private static final URI INPUT_COLUMN = URI.create("wps:orbisgis:internal:DeleteColumns:Columns");
+    private final TableEditor editor;
+    private Component parentComponent;
+    private static final I18n I18N = I18nFactory.getI18n(ActionRemoveColumn.class);
+    private final Logger logger = LoggerFactory.getLogger(ActionRemoveColumn.class);
+    private WpsClient wpsClient;
+    private ProcessDescriptionType process;
+    private UUID jobId;
 
-        /**
-         * Constructor
-         * @param editor Table editor instance
-         */
-        public ActionRemoveColumn(SourceTable editor, Component parentComponent) {
-                super(I18N.tr("Remove a column"), TableEditorIcon.getIcon("delete_field"));
-                putValue(ActionTools.MENU_ID, TableEditorPopupActions.A_REMOVE_COLUMN);
-                this.editor = editor;
-                this.parentComponent = parentComponent;
-        }
+    /**
+     * Constructor
+     * @param editor Table editor instance
+     */
+    public ActionRemoveColumn(TableEditor editor, WpsClient wpsClient) {
+        super(I18N.tr("Remove a column"), TableEditorIcon.getIcon("delete_field"));
+        putValue(ActionTools.MENU_ID, TableEditorPopupActions.A_REMOVE_COLUMN);
+        this.editor = editor;
+        this.parentComponent = editor;
+        this.wpsClient = wpsClient;
+        process = wpsClient.getInternalProcess(PROCESS_TITLE);
+    }
 
-        @Override
-        public boolean isEnabled() {
-                return editor!=null && editor.getTableEditableElement().isEditing()
-                        && editor.getPopupCellAdress().getY()==-1;
-        }
+    @Override
+    public boolean isEnabled() {
+        return editor!=null && editor.getTableEditableElement().isEditing()
+                && editor.getPopupCellAdress().getY()==-1;
+    }
 
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-                if(editor.getTableEditableElement().isEditing()) {
-                        TableLocation table = TableLocation.parse(editor.getTableEditableElement().getTableReference());
-                        int columnIndex = editor.getPopupCellAdress().x + 1;
-                        DataSource dataSource = editor.getTableEditableElement().getDataManager().getDataSource();
-                        try(Connection connection = dataSource.getConnection()) {
-                            String columnName = "";
-                            // Read column name
-                            DatabaseMetaData meta = connection.getMetaData();
-                            try(ResultSet rs  = meta.getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
-                                while(rs.next()) {
-                                    if(rs.getInt("ORDINAL_POSITION")==columnIndex) {
-                                        columnName = rs.getString("COLUMN_NAME");
-                                        break;
-                                    }
-                                }
+    @Override
+    public void actionPerformed(ActionEvent actionEvent) {
+        if(editor.getTableEditableElement().isEditing()) {
+            if (wpsClient != null && process != null) {
+                TableLocation table = TableLocation.parse(editor.getTableEditableElement().getTableReference());
+                int columnIndex = editor.getPopupCellAdress().x + 1;
+                DataSource dataSource = editor.getTableEditableElement().getDataManager().getDataSource();
+                try (Connection connection = dataSource.getConnection()) {
+                    String columnName = "";
+                    // Read column name
+                    DatabaseMetaData meta = connection.getMetaData();
+                    try (ResultSet rs = meta.getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
+                        while (rs.next()) {
+                            if (rs.getInt("ORDINAL_POSITION") == columnIndex) {
+                                columnName = rs.getString("COLUMN_NAME");
+                                break;
                             }
-                            if(columnName.isEmpty()) {
-                                throw new SQLException(I18N.tr("Column not found"));
-                            }
-                            String sqlQuery = String.format("ALTER TABLE %s DROP COLUMN `%s`",table, columnName);
-                            if( SQLMessageDialog.showModal(SwingUtilities.getWindowAncestor(parentComponent),I18N.tr("Deletion of a column"),
-                                    I18N.tr("Are you sure you want to remove the column {0} ?",columnName),sqlQuery) == SQLMessageDialog.CHOICE.OK) {
-                                    connection.createStatement().execute(sqlQuery);
-                            }
-                        } catch (SQLException ex ) {
-                            logger.error(ex.getLocalizedMessage(), ex);
                         }
+                    }
+                    if (columnName.isEmpty()) {
+                        throw new SQLException(I18N.tr("Column not found"));
+                    }
+                    String sqlQuery = String.format("ALTER TABLE %s DROP COLUMN `%s`", table, columnName);
+                    if (SQLMessageDialog.showModal(SwingUtilities.getWindowAncestor(parentComponent), I18N.tr("Deletion of a column"),
+                            I18N.tr("Are you sure you want to remove the column {0} ?", columnName), sqlQuery) == SQLMessageDialog.CHOICE.OK) {
+
+                        Map<URI, Object> dataMap = new HashMap<>();
+                        dataMap.put(INPUT_TABLE, editor.getTableEditableElement().getTableReference());
+                        dataMap.put(INPUT_COLUMN, columnName);
+                        //Run the service
+                        jobId = wpsClient.executeInternalProcess(process, dataMap, this);
+                    }
+                } catch (SQLException ex) {
+                    logger.error(ex.getLocalizedMessage(), ex);
                 }
+            }
         }
+    }
+
+    @Override
+    public UUID getJobId() {
+        return jobId;
+    }
+
+    @Override
+    public void onJobAccepted() {
+        //Nothing to do
+    }
+
+    @Override
+    public void onJobRunning() {
+        //Nothing to do
+    }
+
+    @Override
+    public void onJobSuccess() {
+        //Indicates to the tableEditor that a change occurred.
+        editor.tableChange(new TableEditEvent(editor.getTableEditableElement().getTableReference(),
+                TableModelEvent.ALL_COLUMNS,
+                null,
+                null,
+                TableModelEvent.DELETE));
+        wpsClient.removeJobListener(this);
+    }
+
+    @Override
+    public void onJobFailed() {
+        //Indicates to the tableEditor that a change occurred.
+        editor.tableChange(new TableEditEvent(editor.getTableEditableElement().getTableReference(),
+                TableModelEvent.ALL_COLUMNS,
+                null,
+                null,
+                TableModelEvent.DELETE));
+        wpsClient.removeJobListener(this);
+    }
 }

@@ -177,6 +177,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
             customLoadScript("scripts/Table/describeColumns.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
             customLoadScript("scripts/Table/insertValues.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
             customLoadScript("scripts/Table/joinTables.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
+            customLoadScript("scripts/Table/deleteColumns.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
             customLoadScript("scripts/Vector/Convert/extractCenter.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Convert"));
             customLoadScript("scripts/Vector/Create/createGridOfPoints.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Create"));
             customLoadScript("scripts/Vector/Create/createGridOfPolygons.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Create"));
