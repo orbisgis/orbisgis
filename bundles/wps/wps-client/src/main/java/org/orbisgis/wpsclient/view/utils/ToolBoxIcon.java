@@ -67,7 +67,7 @@ public class ToolBoxIcon {
     public static final String RAW_DATA = "rawdata";
     public static final String ADD = "add";
     public static final String DELETE = "delete";
-    public static final String TOGGLE_MODE = "toggleMode";
+    public static final String TOGGLE_MODE = "process_batch";
     public static final String LOCALHOST = "localhost";
     public static final String DISTANT_HOST = "database_distant";
     public static final String DISTANT_HOST_INVALID = "database_distant_invalid";
