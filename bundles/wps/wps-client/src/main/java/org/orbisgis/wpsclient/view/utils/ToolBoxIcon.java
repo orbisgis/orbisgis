@@ -69,8 +69,8 @@ public class ToolBoxIcon {
     public static final String DELETE = "delete";
     public static final String TOGGLE_MODE = "toggleMode";
     public static final String LOCALHOST = "localhost";
-    public static final String DISTANT_HOST = "distanthost";
-    public static final String DISTANT_HOST_INVALID = "distanthost_invalid";
+    public static final String DISTANT_HOST = "database_distant";
+    public static final String DISTANT_HOST_INVALID = "database_distant_invalid";
     public static final String FOLDER_CLOSED = "folder_closed";
     public static final String PROCESS = "process";
     public static final String PROCESS_INVALID = "process_invalid";
