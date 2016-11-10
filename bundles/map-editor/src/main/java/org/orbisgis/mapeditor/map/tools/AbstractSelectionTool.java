@@ -72,6 +72,7 @@ import org.orbisgis.coremap.renderer.se.Style;
  * 
  * @author Fernando Gonzalez Cortes
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public abstract class AbstractSelectionTool extends Selection {
         private static final Color FILL_COLOR = new Color(255, 204, 51, 50);
@@ -283,11 +284,18 @@ public abstract class AbstractSelectionTool extends Selection {
             protected Set<Long> doInBackground() throws Exception {
                 Set<Long> newSelection;
                 // Get all primary value where default geometry intersects a bounding box
+                TableLocation tableLocation = TableLocation.parse(activeLayer.getTableReference());
                 try (Connection connection = SFSUtilities.wrapConnection(activeLayer.getDataManager().getDataSource().getConnection())) {
-                    String geomFieldName = SFSUtilities.getGeometryFields(connection,
-                            TableLocation.parse(activeLayer.getTableReference())).get(0);
+                    List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableLocation);
+                    if (geomFields.isEmpty()) {
+                        return null;
+                    }
+                    int srid = SFSUtilities.getSRID(connection, tableLocation, geomFields.get(0));
+                    if (srid > 0) {
+                        selectionRect.setSRID(srid);
+                    }
                     newSelection = ReadTable.getTablePkByEnvelope(mc.getDataManager(),
-                            activeLayer.getTableReference(), geomFieldName, selectionRect, !intersects);
+                            activeLayer.getTableReference(), geomFields.get(0), selectionRect, !intersects);
 
                 } catch (SQLException e) {
                     automaton.transition(Code.NO_SELECTION);

@@ -458,7 +458,7 @@ public class ReadTable {
                     }
                 }
             } else {
-                throw new SQLException("Table "+table+" do not contain any information in order to identify row");
+                throw new SQLException(I18N.tr("Table "+table+" do not contain any information in order to identify row"));
             }
         }
         return newSelection;
