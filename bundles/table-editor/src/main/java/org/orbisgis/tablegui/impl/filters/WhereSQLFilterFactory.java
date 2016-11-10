@@ -66,7 +66,7 @@ import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.corejdbc.ReadRowSet;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.sif.edition.EditableElementException;
-import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tableeditorapi.TableEditableElement;
 
 /**
  * Table extended filter using SQL where request

@@ -42,7 +42,7 @@ import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.editorjdbc.AskValidRow;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.actions.ActionTools;
-import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.wpsclient.WpsClient;

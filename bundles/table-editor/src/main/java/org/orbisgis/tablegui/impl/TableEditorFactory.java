@@ -43,7 +43,7 @@ import org.orbisgis.sif.edition.Editor;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.sif.edition.EditorFactory;
-import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.wpsclient.WpsClient;
 import org.orbisgis.wpsclient.WpsClientImpl;
 import org.osgi.service.component.annotations.Component;

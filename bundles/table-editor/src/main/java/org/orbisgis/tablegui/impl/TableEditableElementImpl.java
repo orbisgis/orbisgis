@@ -43,7 +43,7 @@ import java.util.SortedSet;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.editorjdbc.EditableSourceImpl;
-import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
