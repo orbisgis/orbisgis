@@ -1,15 +1,14 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>map-editor-api</artifactId>
-    <name>Map Editor api</name>
-    <packaging>bundle</packaging>
     <parent>
-        <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>
+        <artifactId>orbisgis</artifactId>
         <version>5.1.0-SNAPSHOT</version>
-        <relativePath>../..</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
+    <artifactId>table-editor-api</artifactId>    
+    <packaging>bundle</packaging>
     <url>http://www.orbisgis.org</url>
     <build>
         <plugins>
@@ -20,7 +19,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Public-Package>org.orbisgis.mapeditorapi.*</Public-Package>
+                        <Public-Package>org.orbisgis.tableeditorapi.*</Public-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -38,8 +37,8 @@
                 </executions>
                 <artifactId>gettext-maven-plugin</artifactId>
                 <configuration>
-                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/mapeditorapi/</poDirectory>
-                    <targetBundle>org.orbisgis.mapeditorapi.Messages</targetBundle>
+                    <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/tableeditorapi/</poDirectory>
+                    <targetBundle>org.orbisgis.tableeditorapi.Messages</targetBundle>
                     <keywords>-ktr -kmarktr</keywords>
                     <outputFormat>properties</outputFormat>
                 </configuration>
@@ -54,17 +53,7 @@
             <groupId>com.googlecode.gettext-commons</groupId>
             <artifactId>gettext-commons</artifactId>
             <version>${gettext-commons-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>orbisgis-sif</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>core-export</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        </dependency>        
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>editor-jdbc</artifactId>
