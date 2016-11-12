@@ -209,12 +209,17 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             }
         }
 
+        /**
+         * Return the actions available on the top of the table editor
+         * @return 
+         */
         private List<Action> getDockActions() {
                 List<Action> actions = new LinkedList<>();
                 actions.add(new DefaultAction(TableEditorActions.A_REFRESH, I18N.tr("Refresh table content"),
                         TableEditorIcon.getIcon("table_refresh"),
                         EventHandler.create(ActionListener.class, this, "onMenuRefresh"))
-                        .setLogicalGroup(TableEditorActions.LGROUP_READ));
+                        .setLogicalGroup(TableEditorActions.LGROUP_READ));                
+                actions.add(new ActionFilteredRow(tableEditableElement, this));
 
                 actions.add(new DefaultAction(TableEditorActions.A_PREVIOUS_SELECTION, I18N.tr("Previous selection"),
                         I18N.tr("Go to previous selected row"),TableEditorIcon.getIcon("selection-previous"),
@@ -271,7 +276,6 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         }
 
         private boolean isRowVisible(int row) {
-            JViewport viewport = tableScrollPane.getViewport();
             return table.getVisibleRect().intersects(table.getCellRect(row, 0, true));
         }
 
@@ -427,10 +431,14 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 }
         }
         
+        /**
+         * Create popup menu when the user click on a cell
+         * @return 
+         */
         private JPopupMenu makeTableCellPopup() {
                 JPopupMenu pop = new JPopupMenu();
                 boolean hasSelectedRows = table.getSelectedRowCount()>0;
-                if(hasSelectedRows) {
+                if(hasSelectedRows && !tableSorter.isFiltered()) {
                         JMenuItem addRowFilter = new JMenuItem(I18N.tr("Filter selected rows"),
                                 TableEditorIcon.getIcon("row_filter"));
                         addRowFilter.setToolTipText(I18N.tr("Show only the selected rows"));
@@ -441,7 +449,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 }
                 if(tableSorter.isFiltered()) {
                         JMenuItem removeRowFilter = new JMenuItem(
-                                I18N.tr("Clear row filter"), TableEditorIcon.getIcon("remove"));
+                                I18N.tr("Clear row filter"), TableEditorIcon.getIcon("row_filter_remove"));
                         removeRowFilter.setToolTipText(I18N.tr("Show all rows"));
                         removeRowFilter.addActionListener(
                                 EventHandler.create(ActionListener.class,
@@ -766,7 +774,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
          * @param zeroBaseDiff JTable selection is 0 based. Set 1 in order to get a 1 based row identifier selection.
          * @return Select row id
          */
-        private IntegerUnion getTableModelSelection(int zeroBaseDiff) {
+        public IntegerUnion getTableModelSelection(int zeroBaseDiff) {
             IntegerUnion selectionModelRowId = new IntegerUnion();
             for (int viewRowId : table.getSelectedRows()) {
                 selectionModelRowId.add(tableSorter.convertRowIndexToModel(viewRowId) + zeroBaseDiff);
@@ -1340,4 +1348,13 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             return true;
         }
     }
+
+    /**
+     * Return the DataSourceRowSorter to filter or short the data of the table 
+     * @return 
+     */
+    public DataSourceRowSorter getDataSourceRowSorter() {
+        return tableSorter;
+    }    
+    
 }

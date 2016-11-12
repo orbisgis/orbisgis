@@ -61,6 +61,7 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
         // Properties
         protected LongUnion selectedGeometries;
         private final I18n i18n = I18nFactory.getI18n(TableEditableElementImpl.class);
+        private boolean isFiltered;
 
         /**
          * Constructor
@@ -104,5 +105,17 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
         @Override
         public String getTypeId() {
                 return TYPE_ID;
+        }
+
+        @Override
+        public boolean isFiltered() {
+                return isFiltered;
+        }
+
+        @Override
+        public void setFiltered(boolean isFiltered) {
+                boolean oldValue = this.isFiltered;
+                this.isFiltered = isFiltered;
+                propertyChangeSupport.firePropertyChange(PROP_FILTERED, oldValue, this.isFiltered);
         }
 }
