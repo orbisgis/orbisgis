@@ -44,28 +44,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.framework.CoreWorkspaceImpl;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wkguiapi.ViewWorkspace;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.Version;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -181,6 +162,10 @@ public class ViewWorkspaceImpl implements ViewWorkspace {
      * Create minimal resource inside an empty workspace folder
      *
      * @param workspaceFolder
+     * @param version_major
+     * @param version_minor
+     * @param version_revision
+     * @param version_qualifier
      * @throws IOException Error while writing files or the folder is not empty
      */
     public static void initWorkspaceFolder(File workspaceFolder, int version_major, int version_minor, int
@@ -207,6 +192,7 @@ public class ViewWorkspaceImpl implements ViewWorkspace {
      * Check if the provided folder can be loaded has the workspace
      *
      * @param workspaceFolder
+     * @param majorVersion
      * @return True if valid
      */
     public static boolean isWorkspaceValid(File workspaceFolder, int majorVersion) {

@@ -96,7 +96,7 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         this.lee = lee;
         this.lee.addPropertyChangeListener(this);
         dockingPanelParameters = new DockingPanelParameters();
-        dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("log"));
+        dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon(ToolBoxIcon.LOG));
         dockingPanelParameters.setDefaultDockingLocation(
                 new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClientImpl.TOOLBOX_REFERENCE));
         dockingPanelParameters.setTitle(I18N.tr("WPS log"));

@@ -140,6 +140,10 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
     /**
      * Create minimal resource inside an empty workspace folder
      * @param workspaceFolder
+     * @param version_major
+     * @param version_minor
+     * @param version_revision
+     * @param version_qualifier
      * @throws IOException Error while writing files or the folder is not empty
      */
     public static void initWorkspaceFolder(File workspaceFolder, int version_major, int version_minor,
@@ -200,6 +204,10 @@ public class CoreWorkspaceImpl implements CoreWorkspace {
         this.jdbcURI = jdbcURI;
     }
 
+    /**
+     * Read the JBBC URI stored in the database.uri file located in
+     * the orbisgis workspace folder
+     */
     private void readJDBCConnectionReference() {
         // Set default value, if one is missing
         jdbcURI = getDefaultJDBCConnectionString(getWorkspaceFolder());

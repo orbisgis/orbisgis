@@ -137,7 +137,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
 
         parameters = new DockingPanelParameters();
         parameters.setTitle(I18N.tr("ToolBox"));
-        parameters.setTitleIcon(ToolBoxIcon.getIcon("orbistoolbox"));
+        parameters.setTitleIcon(ToolBoxIcon.getIcon(ToolBoxIcon.ORBIS_TOOLBOX));
         parameters.setCloseable(true);
         parameters.setName(TOOLBOX_REFERENCE);
 
@@ -148,7 +148,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
                 new DefaultAction(ACTION_REFRESH,
                         ACTION_REFRESH,
                         I18N.tr("Refresh the selected node."),
-                        ToolBoxIcon.getIcon("refresh"),
+                        ToolBoxIcon.getIcon(ToolBoxIcon.REFRESH),
                         EventHandler.create(ActionListener.class, this, "refreshAvailableScripts"),
                         null)
         );

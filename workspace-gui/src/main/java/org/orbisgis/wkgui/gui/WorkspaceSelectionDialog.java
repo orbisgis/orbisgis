@@ -226,9 +226,11 @@ public class WorkspaceSelectionDialog extends JPanel {
                 EventHandler.create(ActionListener.class, this, "onOpenDBPanel"));
         add(customDataBase);            
         errorLabel.setText(errorMessage);  
-        onWorkspaceFolderChange(); 
-        
+        onWorkspaceFolderChange();         
     }
+    
+    
+    
     
     /**
      * Check the JDBC url 
@@ -237,15 +239,22 @@ public class WorkspaceSelectionDialog extends JPanel {
      */
     public void checkJDBCUrl() {
         String jdbc_url = selectedWorkspace.getJDBCConnectionReference();
-        try {
-            JDBCUrlParser.parse(jdbc_url);
-            errorLabel.setText("");
-            isJDBCUrlValid = true;
-        } catch (IllegalArgumentException ex) {
-            selectedWorkspace.setJDBCConnectionReference("");
-            isJDBCUrlValid = false;
-            errorLabel.setText(I18N.tr("The database parameters are invalid."));
+        if (!jdbc_url.isEmpty()) {
+            try {
+                Properties jdbcProperties = JDBCUrlParser.parse(jdbc_url);
+                selectedWorkspace.setDatabaseName(jdbcProperties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
+                errorLabel.setText("");
+                isJDBCUrlValid = true;
+            } catch (IllegalArgumentException ex) {
+                selectedWorkspace.setJDBCConnectionReference("");
+                isJDBCUrlValid = false;
+                errorLabel.setText(I18N.tr("The database parameters are invalid."));
+            }
         }
+        else{
+            errorLabel.setText("The database parameters are invalid.");
+        }
+        
     }
 
     /**

@@ -99,27 +99,27 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         switch (nodeType) {
             //The localHost is always avaliable and valid.
             case HOST_LOCAL:
-                return ToolBoxIcon.getIcon("localhost");
+                return ToolBoxIcon.getIcon(ToolBoxIcon.LOCALHOST);
             //The distant host can be invalid if it can't be reached.
             case HOST_DISTANT:
                 if (isValid) {
-                    return ToolBoxIcon.getIcon("distanthost");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.DISTANT_HOST);
                 } else {
-                    return ToolBoxIcon.getIcon("distanthost_invalid");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.DISTANT_HOST_INVALID);
                 }
                 //If the folder is a leaf, it mean that it doesn't contain any script, so it is invalid.
             case FOLDER:
-                return ToolBoxIcon.getIcon("folder_closed");
+                return ToolBoxIcon.getIcon(ToolBoxIcon.FOLDER_CLOSED);
             //The the process is invalid if it can't be parsed..
             case PROCESS:
                 if (isValid) {
-                    return ToolBoxIcon.getIcon("process");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS);
                 } else {
-                    return ToolBoxIcon.getIcon("process_invalid");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS_INVALID);
                 }
                 //Else return the error icon.
             default:
-                return ToolBoxIcon.getIcon("error");
+                return ToolBoxIcon.getIcon(ToolBoxIcon.ERROR);
         }
     }
 
@@ -140,31 +140,31 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         switch (nodeType) {
             //The localHost is always avaliable and valid.
             case HOST_LOCAL:
-                return ToolBoxIcon.getIcon("localhost");
+                return ToolBoxIcon.getIcon(ToolBoxIcon.LOCALHOST);
             //The distant host can be invalid if it can't be reached.
             case HOST_DISTANT:
                 if (isValid) {
-                    return ToolBoxIcon.getIcon("distanthost");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.DISTANT_HOST);
                 } else {
-                    return ToolBoxIcon.getIcon("distanthost_invalid");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.DISTANT_HOST_INVALID);
                 }
                 //The folder can be invalid if no valid script are found inside.
             case FOLDER:
                 if (isValid) {
-                    return ToolBoxIcon.getIcon("folder_closed");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.FOLDER_CLOSED);
                 } else {
-                    return ToolBoxIcon.getIcon("folder_closed");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.FOLDER_CLOSED);
                 }
                 //The the process is invalid if it can't be parsed..
             case PROCESS:
                 if (isValid) {
-                    return ToolBoxIcon.getIcon("process");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS);
                 } else {
-                    return ToolBoxIcon.getIcon("process_invalid");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS_INVALID);
                 }
                 //Else return the error icon.
             default:
-                return ToolBoxIcon.getIcon("error");
+                return ToolBoxIcon.getIcon(ToolBoxIcon.ERROR);
         }
     }
 
@@ -185,31 +185,31 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         switch (nodeType) {
             //The localHost is always avaliable and valid.
             case HOST_LOCAL:
-                return ToolBoxIcon.getIcon("localhost");
+                return ToolBoxIcon.getIcon(ToolBoxIcon.LOCALHOST);
             //The distant host can be invalid if it can't be reached.
             case HOST_DISTANT:
                 if (isValid) {
-                    return ToolBoxIcon.getIcon("distanthost");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.DISTANT_HOST);
                 } else {
-                    return ToolBoxIcon.getIcon("distanthost_invalid");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.DISTANT_HOST_INVALID);
                 }
                 //The folder can be invalid if no valid script are found inside.
             case FOLDER:
                 if (isValid) {
-                    return ToolBoxIcon.getIcon("folder_open");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.FOLDER_OPEN);
                 } else {
-                    return ToolBoxIcon.getIcon("folder_closed");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.FOLDER_CLOSED);
                 }
                 //The the process is invalid if it can't be parsed..
             case PROCESS:
                 if (isValid) {
-                    return ToolBoxIcon.getIcon("process");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS);
                 } else {
-                    return ToolBoxIcon.getIcon("process_invalid");
+                    return ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS_INVALID);
                 }
                 //Else return the error icon.
             default:
-                return ToolBoxIcon.getIcon("error");
+                return ToolBoxIcon.getIcon(ToolBoxIcon.ERROR);
         }
     }
 
