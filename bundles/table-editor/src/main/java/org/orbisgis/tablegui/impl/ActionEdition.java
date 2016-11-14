@@ -51,6 +51,7 @@ import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import org.orbisgis.tableeditorapi.TableEditableElementImpl;
 
 /**
  * Lock/Unlock table edition action.

@@ -55,6 +55,7 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.Arrays;
 import java.util.List;
+import org.orbisgis.tableeditorapi.TableEditableElementImpl;
 
 /**
  * DBTree menu "Open table"

@@ -43,6 +43,7 @@ import javax.swing.AbstractAction;
 import static javax.swing.Action.NAME;
 import static javax.swing.Action.SMALL_ICON;
 import org.orbisgis.tableeditorapi.TableEditableElement;
+import org.orbisgis.tableeditorapi.TableEditableElementImpl;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -72,12 +73,12 @@ public class ActionFilteredRow extends AbstractAction{
     /**
      * Update the label and the icon when a table is filtered or not
      */
-    private void changeLabelAndIcon() {
+    public void changeLabelAndIcon() {
         if(tableEditableElement.isFiltered()){
             putValue(NAME, I18N.tr("Clear row filter"));
             putValue(SMALL_ICON, TableEditorIcon.getIcon("row_filter_remove"));
         }
-        else{
+        else {
             putValue(NAME, I18N.tr("Filter selected rows"));
             putValue(SMALL_ICON, TableEditorIcon.getIcon("row_filter"));
         }
@@ -87,10 +88,10 @@ public class ActionFilteredRow extends AbstractAction{
     public void actionPerformed(ActionEvent ae) {
         if (tableEditableElement.isFiltered()) {
             tableEditor.onMenuClearFilter();
-            tableEditableElement.setFiltered(!tableEditableElement.isFiltered());
+            tableEditableElement.setFiltered(false);
         } else {
             tableEditor.onMenuFilterRows();
-            tableEditableElement.setFiltered(!tableEditableElement.isFiltered());
+            tableEditableElement.setFiltered(true);
         }
     }
     

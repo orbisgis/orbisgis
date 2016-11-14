@@ -218,8 +218,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 actions.add(new DefaultAction(TableEditorActions.A_REFRESH, I18N.tr("Refresh table content"),
                         TableEditorIcon.getIcon("table_refresh"),
                         EventHandler.create(ActionListener.class, this, "onMenuRefresh"))
-                        .setLogicalGroup(TableEditorActions.LGROUP_READ));                
-                actions.add(new ActionFilteredRow(tableEditableElement, this));
+                        .setLogicalGroup(TableEditorActions.LGROUP_READ));  
+                
+                actions.add(new ActionFilteredRow(tableEditableElement, this));                
 
                 actions.add(new DefaultAction(TableEditorActions.A_PREVIOUS_SELECTION, I18N.tr("Previous selection"),
                         I18N.tr("Go to previous selected row"),TableEditorIcon.getIcon("selection-previous"),
@@ -241,7 +242,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 }
                 actions.add(new ActionUndo(tableEditableElement, undoManager));
                 actions.add(new ActionRedo(tableEditableElement, undoManager));
-                actions.add(new ActionEdition(tableEditableElement));
+                actions.add(new ActionEdition(tableEditableElement));                
                 return actions;
         }
 
