@@ -39,7 +39,6 @@ package org.orbisgis.wpsclient.view.utils.editor.process;
 
 import net.miginfocom.swing.MigLayout;
 import net.opengis.wps._2_0.*;
-import org.h2.jdbc.JdbcConnection;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.components.actions.DefaultAction;
@@ -60,8 +59,6 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
@@ -70,6 +67,9 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
 import java.util.List;
+
+import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor.ProcessExecutionType.BASH;
+import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor.ProcessExecutionType.STANDARD;
 
 /**
  * UI for the configuration and the run of a WPS process.
@@ -84,8 +84,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     public static final String PANEL_PROPERTY = "PANEL_PROPERTY";
     public static final String SCROLLPANE_PROPERTY = "SCROLLPANE_PROPERTY";
     public static final String ACTION_TOGGLE_MODE = "ACTION_TOGGLE_MODE";
-    public static final String SIMPLE_MODE = "SIMPLE_MODE";
-    public static final String BASH_MODE = "BASH_MODE";
     /** Name of the EditorDockable. */
     public static final String NAME = "PROCESS_EDITOR";
     /** I18N object */
@@ -102,16 +100,23 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     private boolean alive;
     /** Error label displayed when the process inputs and output are all defined. */
     private JLabel errorMessage;
-    private String mode;
+    private ProcessExecutionType mode;
     private DefaultAction toggleModeAction;
-    private HashMap<URI, Object> dataMap;
+    private Map<URI, Object> dataMap;
+    private Map<URI, Object> defaultDataMap;
 
-    public ProcessEditor(WpsClientImpl wpsClient, ProcessEditableElement processEditableElement){
+    public enum ProcessExecutionType{STANDARD, BASH}
+
+    public ProcessEditor(WpsClientImpl wpsClient,
+                         ProcessEditableElement processEditableElement,
+                         Map<URI, Object> defaultDataMap,
+                         ProcessExecutionType type){
         this.alive = true;
         this.wpsClient = wpsClient;
         this.processEditableElement = processEditableElement;
         this.processEditableElement.addPropertyChangeListener(this);
         this.dataMap = new HashMap<>();
+        this.defaultDataMap = defaultDataMap;
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName(NAME+"_"+processEditableElement.getProcess().getTitle());
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon("process"));
@@ -138,25 +143,31 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 EventHandler.create(ActionListener.class, this, "toggleMode"),
                 null);
         dockingActions.addAction(toggleModeAction);
-        mode = SIMPLE_MODE;
-        this.add(buildSimpleUI(), BorderLayout.CENTER);
+        switch(type){
+            case STANDARD:
+                this.add(buildSimpleUI(), BorderLayout.CENTER);
+                break;
+            case BASH:
+                this.add(buildBashUI(), BorderLayout.CENTER);
+        }
+        mode = type;
         this.revalidate();
     }
 
     public void toggleMode(){
         switch(mode) {
-            case BASH_MODE:
+            case BASH:
                 toggleModeAction.setToolTipText(I18N.tr("Uses the simple mode."));
-                mode = SIMPLE_MODE;
+                mode = STANDARD;
                 this.removeAll();
                 this.add(buildSimpleUI(), BorderLayout.CENTER);
                 processEditableElement.setInputDataMap(new HashMap<URI, Object>());
                 processEditableElement.setOutputDataMap(new HashMap<URI, Object>());
                 this.revalidate();
                 break;
-            case SIMPLE_MODE:
+            case STANDARD:
                 toggleModeAction.setToolTipText(I18N.tr("Uses the bash mode."));
-                mode = BASH_MODE;
+                mode = BASH;
                 this.removeAll();
                 this.add(buildBashUI(), BorderLayout.CENTER);
                 processEditableElement.setInputDataMap(new HashMap<URI, Object>());
@@ -234,7 +245,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      */
     public void runProcess(){
         switch(mode) {
-            case SIMPLE_MODE:
+            case STANDARD:
                 //First check if all the inputs are defined.
                 boolean allDefined = true;
                 for (InputDescriptionType input : processEditableElement.getProcess().getInput()) {
@@ -259,7 +270,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                     errorMessage.setText("Please, configure all the inputs/outputs before executing.");
                 }
                 break;
-            case BASH_MODE:
+            case BASH:
                 for(Map.Entry<URI, Object> entry : dataMap.entrySet()) {
                     Map<URI, Object> map = null;
                     if(entry.getValue() instanceof Map) {
@@ -305,6 +316,9 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         dataMap = new HashMap<>();
         dataMap.putAll(processEditableElement.getInputDataMap());
         dataMap.putAll(processEditableElement.getOutputDataMap());
+        if(defaultDataMap != null) {
+            dataMap.putAll(defaultDataMap);
+        }
 
         JPanel returnPanel = new JPanel(new MigLayout("fill"));
 
@@ -491,7 +505,18 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             }
         }
         parameterPanel.add(new JSeparator(), "growx, span");
-        addBashLine(wpsClient.getProcessCopy(process.getIdentifier()), parameterPanel, scrollPane);
+
+        if(defaultDataMap.size() == 0) {
+            addBashLine(wpsClient.getProcessCopy(process.getIdentifier()), parameterPanel, new HashMap<URI, Object>());
+        }
+        else{
+            for(Map.Entry<URI, Object> entry : defaultDataMap.entrySet()){
+                if(entry.getValue() instanceof Map) {
+                    addBashLine(wpsClient.getProcessCopy(process.getIdentifier()), parameterPanel,
+                            (Map<URI, Object>)entry.getValue());
+                }
+            }
+        }
 
         JButton addButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.ADD));
         addButton.putClientProperty(PROCESS_PROPERTY, process);
@@ -508,7 +533,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         panel.add(errorMessage, "growx, wrap");
         scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
-        boderParameterPanel.add(scrollPane, "span");
+        boderParameterPanel.add(scrollPane, "span, growx");
 
         returnPanel.add(boderParameterPanel, "wrap, growx, height ::70%");
         return returnPanel;
@@ -544,7 +569,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
             parameterPanel.remove(addButton);
             ProcessDescriptionType processCopy = wpsClient.getProcessCopy(process.getIdentifier());
             if(processCopy != null) {
-                addBashLine(processCopy, parameterPanel, scrollPane);
+                addBashLine(processCopy, parameterPanel, null);
             }
             else{
                 LOGGER.error(I18N.tr("Unable to get a copy of the process {0}.", process.getTitle().get(0).getValue()));
@@ -555,10 +580,13 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         }
     }
 
-    private void addBashLine(ProcessDescriptionType process, JPanel parameterPanel, JScrollPane scrollPane){
+    private void addBashLine(ProcessDescriptionType process, JPanel parameterPanel, Map<URI, Object> defaultDataMap){
         HashMap<URI, Object> map = new HashMap<>();
         map.putAll(processEditableElement.getInputDataMap());
         map.putAll(processEditableElement.getOutputDataMap());
+        if(defaultDataMap != null) {
+            map.putAll(defaultDataMap);
+        }
         URI key = URI.create(UUID.randomUUID().toString());
         dataMap.put(key, map);
 

@@ -72,9 +72,9 @@ import java.util.UUID;
  * @author Nicolas Fortin
  */
 public class ActionRemoveColumn extends AbstractAction implements WpsJobStateListener {
-    private static final URI PROCESS_TITLE = URI.create("wps:orbisgis:internal:DeleteColumns");
-    private static final URI INPUT_TABLE = URI.create("wps:orbisgis:internal:DeleteColumns:Table");
-    private static final URI INPUT_COLUMN = URI.create("wps:orbisgis:internal:DeleteColumns:Columns");
+    private static final URI PROCESS_TITLE = URI.create("orbisgis:wps:official:deleteColumns");
+    private static final URI INPUT_TABLE = URI.create("orbisgis:wps:official:deleteColumns:tableName");
+    private static final URI INPUT_COLUMN = URI.create("orbisgis:wps:official:deleteColumns:columnNames");
     private final TableEditor editor;
     private Component parentComponent;
     private static final I18n I18N = I18nFactory.getI18n(ActionRemoveColumn.class);

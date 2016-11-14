@@ -45,7 +45,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
                 @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
         ],
-        identifier = "wps:orbisgis:internal:DeleteValues"
+        identifier = "orbisgis:wps:official:deleteRows"
 )
 def processing() {
     //Build the start of the query
@@ -72,7 +72,7 @@ def processing() {
                 @LanguageString(value = "The table to edit.", lang = "en"),
                 @LanguageString(value = "La table à éditer.", lang = "fr")
         ],
-        identifier = "wps:orbisgis:internal:DeleteValues:Table"
+        identifier = "orbisgis:wps:official:deleteRows:tableName"
 )
 String tableName
 
@@ -90,8 +90,8 @@ String tableName
                 @LanguageString(value = "The primary key field.", lang = "en"),
                 @LanguageString(value = "Le champ de la clef primaire.", lang = "fr")
         ],
-        variableReference = "tableName",
-        identifier = "wps:orbisgis:internal:DeleteValues:PKField"
+        variableReference = "orbisgis:wps:official:deleteRows:tableName",
+        identifier = "orbisgis:wps:official:deleteRows:pkField"
 )
 String[] pkField
 
@@ -105,9 +105,9 @@ String[] pkField
                 @LanguageString(value = "The array of the primary keys of the rows to remove.", lang = "en"),
                 @LanguageString(value = "La liste des clefs primaires dont les lignes sont à supprimer.", lang = "fr")
         ],
-        variableReference = "pkField",
+        variableReference = "orbisgis:wps:official:deleteRows:pkField",
         multiSelection = true,
-        identifier = "wps:orbisgis:internal:DeleteValues:PKArray"
+        identifier = "orbisgis:wps:official:deleteRows:pkToRemove"
 )
 String[] pkToRemove
 
@@ -120,6 +120,7 @@ String[] pkToRemove
         translatedResumes = [
                 @LanguageString(value = "The output message.", lang = "en"),
                 @LanguageString(value = "Le message de sortie.", lang = "fr")
-        ])
+        ],
+        identifier = "orbisgis:wps:official:deleteRows:literalOutput")
 String literalOutput
 

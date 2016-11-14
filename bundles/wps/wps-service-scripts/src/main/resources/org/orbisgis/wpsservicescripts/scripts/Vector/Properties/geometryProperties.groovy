@@ -52,7 +52,9 @@ import org.orbisgis.wpsgroovyapi.process.*
         metadata = [
                 @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
                 @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
-        ])
+        ],
+        identifier = "orbisgis:wps:official:geometryProperties"
+)
 def processing() {
 //Build the start of the query
     String query = "CREATE TABLE "+outputTableName+" AS SELECT "
@@ -120,7 +122,9 @@ def processing() {
                 @LanguageString(value = "The spatial data source to compute the geometry properties.", lang = "en"),
                 @LanguageString(value = "La source de données spatiales pour le calcul des propriétés géométriques.", lang = "fr")
         ],
-        dataStoreTypes = ["GEOMETRY"])
+        dataStoreTypes = ["GEOMETRY"],
+        identifier = "orbisgis:wps:official:geometryProperties:inputDataStore"
+)
 String inputDataStore
 
 /**********************/
@@ -137,7 +141,8 @@ String inputDataStore
                 @LanguageString(value = "The geometric field of the data source.", lang = "en"),
                 @LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
         ],
-        variableReference = "inputDataStore",
+        variableReference = "orbisgis:wps:official:geometryProperties:inputDataStore",
+        identifier = "orbisgis:wps:official:geometryProperties:geometricField",
         fieldTypes = ["GEOMETRY"])
 String[] geometricField
 
@@ -152,7 +157,8 @@ String[] geometricField
                 @LanguageString(value = "Le champ utilisé comme identifiant.", lang = "fr")
         ],
 	    excludedTypes=["GEOMETRY"],
-        variableReference = "inputDataStore")
+        variableReference = "orbisgis:wps:official:geometryProperties:inputDataStore",
+        identifier = "orbisgis:wps:official:geometryProperties:idField")
 String[] idField
 
 @EnumerationInput(
@@ -216,7 +222,8 @@ String[] idField
                 ])
         ],
         selectedValues = "geomtype",
-        multiSelection = true)
+        multiSelection = true,
+        identifier = "orbisgis:wps:official:geometryProperties:operations")
 String[] operations
 
 
@@ -228,7 +235,8 @@ String[] operations
         translatedResumes = [
                 @LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
                 @LanguageString(value = "Nom de la table contenant les résultats du traitement.", lang = "fr")
-        ])
+        ],
+        identifier = "orbisgis:wps:official:geometryProperties:outputTableName")
 String outputTableName
 
 /*****************/
@@ -244,6 +252,7 @@ String outputTableName
         translatedResumes = [
                 @LanguageString(value = "The output message.", lang = "en"),
                 @LanguageString(value = "Le message de sortie.", lang = "fr")
-        ])
+        ],
+        identifier = "orbisgis:wps:official:geometryProperties:literalOutput")
 String literalOutput
 

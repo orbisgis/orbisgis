@@ -69,13 +69,13 @@ import java.util.*;
  */
 public class ActionRemoveRow extends AbstractAction implements WpsJobStateListener {
     /** Title of the wps process to use. */
-    private static final URI PROCESS_TITLE = URI.create("wps:orbisgis:internal:DeleteValues");
+    private static final URI PROCESS_TITLE = URI.create("orbisgis:wps:official:deleteRows");
     /** Name of the process input containing the table name. */
-    private static final URI INPUT_TABLE = URI.create("wps:orbisgis:internal:DeleteValues:Table");
+    private static final URI INPUT_TABLE = URI.create("orbisgis:wps:official:deleteRows:tableName");
     /** Name of the process input containing the primary key field name. */
-    private static final URI INPUT_PK_FIELD = URI.create("wps:orbisgis:internal:DeleteValues:PKField");
+    private static final URI INPUT_PK_FIELD = URI.create("orbisgis:wps:official:deleteRows:pkField");
     /** Name of the process input containing the primary key array. */
-    private static final URI INPUT_PK_ARRAY = URI.create("wps:orbisgis:internal:DeleteValues:PKArray");
+    private static final URI INPUT_PK_ARRAY = URI.create("orbisgis:wps:official:deleteRows:pkToRemove");
     private final TableEditableElement editable;
     private static final I18n I18N = I18nFactory.getI18n(ActionRemoveRow.class);
     private TableEditor tableEditor;

@@ -42,6 +42,7 @@ import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
@@ -89,6 +90,8 @@ public class FieldValueUI implements DataUI{
     private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
     private static final String LAYERUI_PROPERTY = "LAYERUI_PROPERTY";
     private static final String ORIENTATION_PROPERTY = "ORIENTATION_PROPERTY";
+    private static final String MAX_JLIST_ROW_COUNT = "MAX_JLIST_ROW_COUNT";
+    private static final String DEFAULT_ELEMENT_PROPERTY = "DEFAULT_ELEMENT_PROPERTY";
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(FieldValueUI.class);
 
@@ -120,16 +123,23 @@ public class FieldValueUI implements DataUI{
             return panel;
         }
         //Build and set the JList containing all the field values
-        JList<String> list = new JList<>(new DefaultListModel<String>());
-        if(fieldValue.getMultiSelection()){
-            list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        JList<ContainerItem<Object>> list = new JList<>();
+        DefaultListModel<ContainerItem<Object>> model = new DefaultListModel<>();
+        list.setModel(model);
+        int maxRow;
+        if(orientation.equals(Orientation.VERTICAL)){
+            maxRow = JLIST_VERTICAL_MAX_ROW_COUNT;
         }
-        else {
-            list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        else{
+            maxRow = JLIST_HORIZONTAL_MAX_ROW_COUNT;
         }
-        list.setLayoutOrientation(JList.VERTICAL);
+        list.putClientProperty(MAX_JLIST_ROW_COUNT, maxRow);
         list.setVisibleRowCount(JLIST_MIN_ROW_COUNT);
-        list.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
+        list.setLayoutOrientation(JList.VERTICAL);
+        ContainerItem<Object> defaultElement = new ContainerItem<Object>("Select a value", I18N.tr("Select a value"));
+        list.putClientProperty(DEFAULT_ELEMENT_PROPERTY, defaultElement);
+        URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
+        list.putClientProperty(URI_PROPERTY, uri);
         list.putClientProperty(FIELD_VALUE_PROPERTY, fieldValue);
         list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
@@ -138,6 +148,34 @@ public class FieldValueUI implements DataUI{
         list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
         list.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
+
+        if(!isOptional && dataMap.containsKey(uri)) {
+            Object obj = dataMap.get(uri);
+            if(obj instanceof String[]){
+                String[] fields = (String[]) obj;
+                int[] indexes = new int[fields.length];
+                int i=0;
+                for(String field : fields){
+                    model.add(0, new ContainerItem<Object>(field, field));
+                    indexes[i] = i;
+                    i++;
+                }
+                list.setSelectedIndices(indexes);
+            }
+            else {
+                model.add(0, new ContainerItem<>(dataMap.get(uri), dataMap.get(uri).toString()));
+                list.setSelectedIndex(0);
+            }
+        }
+        else{
+            model.addElement(defaultElement);
+        }
+        if(model.getSize()>maxRow){
+            list.setVisibleRowCount(maxRow);
+        }
+        else{
+            list.setVisibleRowCount(model.getSize());
+        }
 
         //Adds a WaitLayerUI which will be displayed when the toolbox is loading the data
         JScrollPane listScroller = new JScrollPane(list);
@@ -221,9 +259,9 @@ public class FieldValueUI implements DataUI{
      * SwingWorker doing the list update in a separated Swing Thread
      */
     private class FieldValueWorker extends SwingWorkerPM{
-        private JList<String> list;
+        private JList<ContainerItem<Object>> list;
 
-        public FieldValueWorker(JList<String> list){
+        public FieldValueWorker(JList<ContainerItem<Object>> list){
             this.list = list;
         }
 
@@ -231,9 +269,14 @@ public class FieldValueUI implements DataUI{
         protected Object doInBackground() throws Exception {
             WaitLayerUI layerUI = (WaitLayerUI)list.getClientProperty(LAYERUI_PROPERTY);
             FieldValue fieldValue = (FieldValue)list.getClientProperty(FIELD_VALUE_PROPERTY);
+            ContainerItem<Object> defaultElement = (ContainerItem<Object>)list.getClientProperty(DEFAULT_ELEMENT_PROPERTY);
+            this.setTaskName(I18N.tr("Updating the field values"));
             Orientation orientation = (Orientation)list.getClientProperty(ORIENTATION_PROPERTY);
-            HashMap<URI, Object> dataMap = (HashMap<URI, Object>)list.getClientProperty(DATA_MAP_PROPERTY);
+            int maxRow = (int) list.getClientProperty(MAX_JLIST_ROW_COUNT);
+            URI uri = (URI) list.getClientProperty(URI_PROPERTY);
+            Map<URI, Object> dataMap = (Map) list.getClientProperty(DATA_MAP_PROPERTY);
             boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
+            DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
             //If the DataField related to the FieldValue has been modified, reload the dataField values
             if(fieldValue.isDataFieldModified()) {
                 fieldValue.setDataFieldModified(false);
@@ -278,12 +321,11 @@ public class FieldValueUI implements DataUI{
                         }
                     }
                     //Retrieve the rowSet reading the table from the wpsService.
-                    DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
                     model.removeAllElements();
                     List<String> listFields = wpsClient.getLocalWpsService().getFieldValueList(tableName, fieldName);
                     Collections.sort(listFields);
                     for (String field : listFields) {
-                        model.addElement(field);
+                        model.addElement(new ContainerItem<Object>(field, field));
                     }
                     int maxRowCount;
                     if(orientation.equals(Orientation.VERTICAL)){
@@ -327,8 +369,31 @@ public class FieldValueUI implements DataUI{
                     list.setToolTipText(I18N.tr("First configure the DataField {0}",
                             fieldValueStr.substring(fieldValueStr.lastIndexOf(":") + 1)));
                 }
+                model.addElement(defaultElement);
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
+            }
+            else{
+                if(dataMap.containsKey(uri) && dataMap.get(uri) != null){
+                    List<Integer> indexList = new ArrayList<>();
+                    String[] elements = dataMap.get(uri).toString().split("\\t");
+                    for (int i = 0; i < Math.min(model.getSize(), elements.length); i++) {
+                        if (model.getElementAt(i).getLabel().toUpperCase().equals(elements[i].toUpperCase())) {
+                            indexList.add(i);
+                        }
+                    }
+                    int[] indexes = new int[indexList.size()];
+                    for(int i=0; i<indexList.size(); i++){
+                        indexes[i] = indexList.get(i);
+                    }
+                    list.setSelectedIndices(indexes);
+                }
+            }
+            if(model.getSize()>maxRow){
+                list.setVisibleRowCount(maxRow);
+            }
+            else{
+                list.setVisibleRowCount(model.getSize());
             }
             list.revalidate();
             list.repaint();

@@ -44,7 +44,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
                 @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
         ],
-        identifier = "wps:orbisgis:internal:DeleteColumns"
+        identifier = "orbisgis:wps:official:deleteColumns"
 )
 def processing() {
     //Build the start of the query
@@ -71,7 +71,7 @@ def processing() {
                 @LanguageString(value = "The table to edit.", lang = "en"),
                 @LanguageString(value = "La table à éditer.", lang = "fr")
         ],
-        identifier = "wps:orbisgis:internal:DeleteColumns:Table"
+        identifier = "orbisgis:wps:official:deleteColumns:tableName"
 )
 String tableName
 
@@ -89,8 +89,8 @@ String tableName
                 @LanguageString(value = "The columns to remove names.", lang = "en"),
                 @LanguageString(value = "Le nom des colonnes à supprimer.", lang = "fr")
         ],
-        variableReference = "tableName",
-        identifier = "wps:orbisgis:internal:DeleteColumns:Columns"
+        variableReference = "orbisgis:wps:official:deleteColumns:tableName",
+        identifier = "orbisgis:wps:official:deleteColumns:columnNames"
 )
 String[] columnNames
 
@@ -104,6 +104,7 @@ String[] columnNames
         translatedResumes = [
                 @LanguageString(value = "The output message.", lang = "en"),
                 @LanguageString(value = "Le message de sortie.", lang = "fr")
-        ])
+        ],
+        identifier = "orbisgis:wps:official:deleteColumns:literalOutput")
 String literalOutput
 

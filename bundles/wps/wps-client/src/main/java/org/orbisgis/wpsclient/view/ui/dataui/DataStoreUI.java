@@ -136,7 +136,8 @@ public class DataStoreUI implements DataUI{
                 EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
         geocatalogComboBox.addMouseListener(
                 EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
-        geocatalogComboBox.putClientProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
+        URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
+        geocatalogComboBox.putClientProperty(URI_PROPERTY, uri);
         geocatalogComboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         geocatalogComboBox.putClientProperty(DATA_STORE_PROPERTY, dataStore);
         geocatalogComboBox.putClientProperty(IS_OUTPUT_PROPERTY, false);
@@ -148,8 +149,25 @@ public class DataStoreUI implements DataUI{
             geocatalogComboBox.add(new JPanel());
         }
         //Register the geocatalog combo box as a property in the DataStore type box
-        if(geocatalogComboBox.getItemCount() > 0) {
-            geocatalogComboBox.setSelectedIndex(0);
+        if(!isOptional) {
+            if (geocatalogComboBox.getItemCount() > 0) {
+                if (dataMap.containsKey(uri)) {
+                    boolean isItemSelected = false;
+                    for (int i = 0; i < geocatalogComboBox.getItemCount(); i++) {
+                        if (geocatalogComboBox.getItemAt(i).getLabel().equals(dataMap.get(uri))) {
+                            geocatalogComboBox.setSelectedIndex(i);
+                            isItemSelected = true;
+                        }
+                    }
+                    if (!isItemSelected) {
+                        geocatalogComboBox.setSelectedIndex(0);
+                    }
+                }
+                else{
+                    geocatalogComboBox.setSelectedIndex(0);
+                }
+                dataMap.put(uri, geocatalogComboBox.getItemAt(geocatalogComboBox.getSelectedIndex()).getLabel());
+            }
         }
         panel.add(geocatalogComboBox, "grow");
         return panel;

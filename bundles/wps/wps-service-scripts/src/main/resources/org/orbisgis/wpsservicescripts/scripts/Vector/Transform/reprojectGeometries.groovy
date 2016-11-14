@@ -50,7 +50,9 @@ import org.orbisgis.wpsgroovyapi.process.*
 		metadata = [
 				@MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
 				@MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
-		])
+		],
+		identifier = "orbisgis:wps:official:reprojectGeometries"
+)
 def processing() {
 	//Build the start of the query
 	String query = "CREATE TABLE " + outputTableName + " AS SELECT ST_TRANSFORM("
@@ -86,7 +88,9 @@ def processing() {
 				@LanguageString(value = "The spatial data source to be reprojected.", lang = "en"),
 				@LanguageString(value = "La source de données spatiales pour la reprojection.", lang = "fr")
 		],
-		dataStoreTypes = ["GEOMETRY"])
+		dataStoreTypes = ["GEOMETRY"],
+		identifier = "orbisgis:wps:official:reprojectGeometries:inputDataStore"
+)
 String inputDataStore
 
 
@@ -104,8 +108,10 @@ String inputDataStore
 				@LanguageString(value = "The geometric field of the data source.", lang = "en"),
 				@LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
 		],
-        variableReference = "inputDataStore",
-        fieldTypes = ["GEOMETRY"])
+        variableReference = "orbisgis:wps:official:reprojectGeometries:inputDataStore",
+        fieldTypes = ["GEOMETRY"],
+		identifier = "orbisgis:wps:official:reprojectGeometries:geometryField"
+)
 String[] geometricField
 
 
@@ -120,7 +126,9 @@ String[] geometricField
 				@LanguageString(value = "L'identifiant du système de référence spatiale.", lang = "fr")
 		],
 		variableReference = "\$public\$spatial_ref_sys\$srid\$",
-		multiSelection = false)
+		multiSelection = false,
+		identifier = "orbisgis:wps:official:reprojectGeometries:srid"
+)
 String[] srid
 
 
@@ -137,7 +145,9 @@ String[] srid
 		excludedTypes=["GEOMETRY"],
 		multiSelection = true,
 		minOccurs = 0,
-        variableReference = "inputDataStore")
+        variableReference = "orbisgis:wps:official:reprojectGeometries:inputDataStore",
+		identifier = "orbisgis:wps:official:reprojectGeometries:fieldList"
+)
 String[] fieldList
 
 
@@ -149,7 +159,9 @@ String[] fieldList
 		translatedResumes = [
 				@LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
 				@LanguageString(value = "Nom de la table contenant les résultats du traitement.", lang = "fr")
-		])
+		],
+		identifier = "orbisgis:wps:official:reprojectGeometries:outputTableName"
+)
 String outputTableName
 
 /*****************/
@@ -165,7 +177,9 @@ String outputTableName
 		translatedResumes = [
 				@LanguageString(value = "The output message.", lang = "en"),
 				@LanguageString(value = "Le message de sortie.", lang = "fr")
-		])
+		],
+		identifier = "orbisgis:wps:official:reprojectGeometries:literalOutput"
+)
 String literalOutput
 
 

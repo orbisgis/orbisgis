@@ -58,6 +58,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,15 +90,26 @@ public class GeometryUI implements DataUI {
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         //Create the main panel
         JComponent component = new JPanel(new MigLayout("fill"));
+
+        boolean isOptional = false;
+        if(inputOrOutput instanceof InputDescriptionType){
+            isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
+        }
         //Display the SourceCA into a JTextField
         JTextField jtf = new JTextField();
         jtf.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
         //"Save" the CA inside the JTextField
         jtf.getDocument().putProperty(DATA_MAP_PROPERTY, dataMap);
-        jtf.getDocument().putProperty(URI_PROPERTY, inputOrOutput.getIdentifier());
+        URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
+        jtf.getDocument().putProperty(URI_PROPERTY, uri);
         //add the listener for the text changes in the JTextField
         jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this,
                 "saveDocumentText", "document"));
+        if(isOptional) {
+            if (dataMap.containsKey(uri)) {
+                jtf.setText(dataMap.get(uri).toString());
+            }
+        }
 
         GeometryData geometryData = null;
         if(inputOrOutput instanceof InputDescriptionType){

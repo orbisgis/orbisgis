@@ -62,7 +62,6 @@ import org.orbisgis.wpsclient.view.utils.editor.log.LogEditor;
 import org.orbisgis.wpsclient.view.utils.editor.process.Job;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
-import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.orbisgis.wpsservice.model.JaxbContainer;
 import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.model.DataField;
@@ -397,45 +396,6 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         }
         refreshAvailableScripts();
     }
-
-    /**
-     * Open the process window for the selected process.
-     * @param scriptIdentifier Script URI to execute as a process.
-     * @return The ProcessEditableElement which contains the running process information (log, state, ...).
-     */
-    public ProcessEditableElement openProcess(CodeType scriptIdentifier){
-        //Get the list of ProcessOffering
-        List<ProcessOffering> listProcess = getProcessOffering(scriptIdentifier);
-        if(listProcess == null || listProcess.isEmpty()){
-            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("Unable to retrieve the process {0}.",
-                    scriptIdentifier.getValue()));
-            return null;
-        }
-        //Get the process
-        ProcessDescriptionType process = listProcess.get(0).getProcess();
-        //Link the DataStore with the DataField, with the FieldValue
-        link(process);
-        //Open the ProcessEditor
-        ProcessEditableElement processEditableElement = new ProcessEditableElement(listProcess.get(0));
-        pe = new ProcessEditor(this, processEditableElement);
-        //Find if there is already a ProcessEditor open with the same process.
-        //If not, add the new one.
-        boolean alreadyOpen = false;
-        for(EditorDockable ed : openEditorList){
-            if(ed.getDockingParameters().getName().equals(pe.getDockingParameters().getName())){
-                alreadyOpen = true;
-            }
-        }
-        if(!alreadyOpen) {
-            dockingManager.addDockingPanel(pe);
-            openEditorList.add(pe);
-        }
-        else{
-            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("The process {0} is already open.",
-                    processEditableElement.getProcess().getTitle().get(0).getValue()));
-        }
-        return processEditableElement;
-    }
     /**
      * Link the deiffrents input/output together like the DataStore with its DataFields,
      * the DataFields with its FieldValues ...
@@ -493,7 +453,8 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
     }
 
     public void openProcess(){
-        openProcess(toolBoxPanel.getSelectedNode().getIdentifier());
+        openProcess(URI.create(toolBoxPanel.getSelectedNode().getIdentifier().getValue()),
+                new HashMap<URI, Object>(), ProcessEditor.ProcessExecutionType.STANDARD);
     }
 
     /**
@@ -644,6 +605,42 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         JAXBElement<ExecuteRequestType> jaxbElement = new ObjectFactory().createExecute(executeRequest);
         StatusInfo result = (StatusInfo)askService(jaxbElement);
         return result;
+    }
+
+    @Override
+    public void openProcess(URI processIdentifier, Map<URI, Object> defaultValuesMap, ProcessEditor.ProcessExecutionType type) {
+        //Get the list of ProcessOffering
+        CodeType codeType = new CodeType();
+        codeType.setValue(processIdentifier.toString());
+        List<ProcessOffering> listProcess = getProcessOffering(codeType);
+        if(listProcess == null || listProcess.isEmpty()){
+            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("Unable to retrieve the process {0}.",
+                    processIdentifier.toString()));
+            return;
+        }
+        //Get the process
+        ProcessDescriptionType process = listProcess.get(0).getProcess();
+        //Link the DataStore with the DataField, with the FieldValue
+        link(process);
+        //Open the ProcessEditor
+        ProcessEditableElement processEditableElement = new ProcessEditableElement(listProcess.get(0));
+        pe = new ProcessEditor(this, processEditableElement, defaultValuesMap, type);
+        //Find if there is already a ProcessEditor open with the same process.
+        //If not, add the new one.
+        boolean alreadyOpen = false;
+        for(EditorDockable ed : openEditorList){
+            if(ed.getDockingParameters().getName().equals(pe.getDockingParameters().getName())){
+                alreadyOpen = true;
+            }
+        }
+        if(!alreadyOpen) {
+            dockingManager.addDockingPanel(pe);
+            openEditorList.add(pe);
+        }
+        else{
+            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("The process {0} is already open.",
+                    processEditableElement.getProcess().getTitle().get(0).getValue()));
+        }
     }
 
     @Override

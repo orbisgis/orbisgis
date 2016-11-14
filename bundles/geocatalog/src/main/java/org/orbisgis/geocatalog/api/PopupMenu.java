@@ -67,6 +67,11 @@ public interface PopupMenu extends ActionFactoryService<PopupTarget> {
     public static final String M_CLEAR_CATALOG = "M_CLEAR_CATALOG";
     // Refresh geocatalog
     public static final String M_REFRESH = "M_REFRESH";
+
+
+    public static final String M_TOOLS = "M_TOOLS";
+    public static final String M_TOOLS_GEOMETRY_PROPERTIES = "M_TOOLS_GEOMETRY_PROPERTIES";
+    public static final String M_TOOLS_REPROJECT_GEOMETRIES = "M_TOOLS_REPROJECT_GEOMETRIES";
     /**
      * Grouping keys : Group of menus used to add sources
      */
@@ -83,4 +88,8 @@ public interface PopupMenu extends ActionFactoryService<PopupTarget> {
      * Grouping keys : Group of menus used to close things
      */
     public static final String GROUP_CLOSE = "CLOSE";
+    /**
+     * Grouping keys : Group of menus used to launch tools
+     */
+    public static final String GROUP_TOOLS = "TOOLS";
 }

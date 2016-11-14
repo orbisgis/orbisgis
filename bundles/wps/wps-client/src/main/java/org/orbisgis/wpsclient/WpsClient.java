@@ -40,6 +40,7 @@ import net.opengis.wps._2_0.ProcessDescriptionType;
 import net.opengis.wps._2_0.Result;
 import net.opengis.wps._2_0.StatusInfo;
 import org.orbisgis.wpsclient.view.utils.WpsJobStateListener;
+import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
 import org.orbisgis.wpsservice.LocalWpsServer;
 
 import java.net.URI;
@@ -78,6 +79,14 @@ public interface WpsClient {
      * @param dataMap Map containing the inputs/outputs.
      */
     StatusInfo executeProcess(ProcessDescriptionType process, Map<URI,Object> dataMap);
+
+    /**
+     * Open the process UI with the given default values.
+     * @param processIdentifier Process identifier of the process to open.
+     * @param defaultValuesMap Map of the default values to give to the UI. If their is no default values,
+     *                         it should be null;
+     */
+    void openProcess(URI processIdentifier, Map<URI, Object> defaultValuesMap, ProcessEditor.ProcessExecutionType type);
 
     /**
      * Adds a WpsJobListener.
