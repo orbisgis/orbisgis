@@ -49,16 +49,22 @@ import javax.swing.SwingWorker;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
+import org.orbisgis.sif.edition.EditorManager;
+import org.orbisgis.tableeditorapi.TableEditableElement;
+import org.orbisgis.tableeditorapi.TableEditableElementImpl;
+import org.osgi.service.component.annotations.Reference;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -69,11 +75,23 @@ public class InfoTool extends AbstractRectangleTool {
 
     private static Logger UILOGGER = LoggerFactory.getLogger("gui." + InfoTool.class);
     private static Logger POPUPLOGGER = LoggerFactory.getLogger("popup." + InfoTool.class);
-    private static final int MAX_PRINTED_ROWS = 100;
-    private static final int MAX_FIELD_LENGTH = 512;
-    /** Info is shown on popup if the attributes length is not superior than this constant*/
-    private static final int POPUP_MAX_LENGTH = 200;
+    private EditorManager editorManager;
 
+    
+   /**
+     * @param editorManager Editor windows manager
+     */
+    @Reference
+    public void setEditorManager(EditorManager editorManager) {
+        this.editorManager = editorManager;
+    }
+    /**
+     * @param editorManager Editor windows manager
+     */
+    public void unsetEditorManager(EditorManager editorManager) {
+        this.editorManager = editorManager;
+    }
+    
     @Override
     public void update(Observable o, Object arg) {
         //PlugInContext.checkTool(this);
@@ -88,7 +106,11 @@ public class InfoTool extends AbstractRectangleTool {
         double miny = rect.getMinY();
         double maxx = rect.getMaxX();
         double maxy = rect.getMaxY();
-        new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), layer).execute();
+        boolean intersects = true;
+        if (minx < tm.getValues()[0]) {
+            intersects = false;
+        }            
+        new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), layer, intersects, editorManager).execute();
 
     }
 
@@ -115,51 +137,37 @@ public class InfoTool extends AbstractRectangleTool {
         private final Envelope envelope;
         private final ILayer layer;
         private static final I18n I18N = I18nFactory.getI18n(PopulateViewJob.class);
+        private final boolean intersects;
+        private final EditorManager editorManager;
 
-        private PopulateViewJob(Envelope envelope, ILayer layer) {
+        private PopulateViewJob(Envelope envelope, ILayer layer, boolean intersects, EditorManager editorManager) {
             this.envelope = envelope;
             this.layer = layer;
+            this.intersects=intersects;
+            this.editorManager=editorManager;
         }
 
         @Override
         public String toString() {
-            return I18N.tr("Fetch area information");
+            return I18N.tr("Open table with selected features");
         }
 
         @Override
         protected Object doInBackground() throws Exception {
-            GeometryFactory geometryFactory = new GeometryFactory();
-            Geometry envGeom = geometryFactory.toGeometry(envelope);
+            Geometry envGeom = ToolManager.toolsGeometryFactory.toGeometry(envelope);
             TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
             try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
-                // Fetch SRID for PostGIS constraints
-                try(PreparedStatement pst = SFSUtilities.prepareInformationSchemaStatement(connection,
-                        tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(),
-                        "PUBLIC.GEOMETRY_COLUMNS", "");
-                    ResultSet rs = pst.executeQuery()) {
-                    if(rs.next()) {
-                        int srid = rs.getInt("srid");
-                        if(srid > 0) {
-                            envGeom.setSRID(srid);
-                        }
-                    }
-                }
                 List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableLocation);
                 if(geomFields.isEmpty()) {
                     return null;
                 }
-                try(PreparedStatement pst = connection.prepareStatement("SELECT * FROM "+layer.getTableReference()+
-                        " WHERE "+TableLocation.quoteIdentifier(geomFields.get(0))+" && ?")) {
-                    pst.setObject(1, envGeom);
-                    try(ResultSet rs = pst.executeQuery()) {
-                        String lines = ReadTable.resultSetToString(rs, MAX_FIELD_LENGTH, MAX_PRINTED_ROWS, false, false,
-                                new EnvelopeFilter(envelope));
-                        UILOGGER.info(lines);
-                        if (lines.length() <= POPUP_MAX_LENGTH) {
-                            POPUPLOGGER.info(lines);
-                        }
-                    }
-                }
+                Set<Long> newSelection = ReadTable.getTablePkByEnvelope(layer.getDataManager(),
+                        layer.getTableReference(), geomFields.get(0), envGeom, !intersects);
+                if (newSelection.size() > 0) {
+                    layer.setSelection(newSelection);
+                    editorManager.openEditable(new TableEditableElementImpl(newSelection, layer.getTableReference(), layer.getDataManager()));
+                }                
+                
             } catch (SQLException ex) {
                 UILOGGER.error(ex.getLocalizedMessage(), ex);
             }
@@ -167,27 +175,7 @@ public class InfoTool extends AbstractRectangleTool {
         }
     }
 
-    private static class EnvelopeFilter implements ReadTable.ResultSetFilter {
-        private Geometry envelope;
-        private String geomFieldName = "";
-
-        private EnvelopeFilter(Envelope envelope) {
-            GeometryFactory factory = new GeometryFactory();
-            this.envelope = factory.toGeometry(envelope);
-        }
-
-        @Override
-        public boolean printRow(ResultSet rs) throws SQLException {
-            if(geomFieldName.isEmpty()) {
-                List<String> geomFields = SFSUtilities.getGeometryFields(rs);
-                if(!geomFields.isEmpty()) {
-                    geomFieldName = geomFields.get(0);
-                }
-            }
-            Object geomObj = rs.getObject(geomFieldName);
-            return geomObj instanceof Geometry && ((Geometry) geomObj).intersects(envelope);
-        }
-    }
+    
     @Override
     public String getTooltip() {
         return i18n.tr("Get feature attributes");

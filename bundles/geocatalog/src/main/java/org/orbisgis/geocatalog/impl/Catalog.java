@@ -492,6 +492,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
             refreshSourceList();
         }
 
+        @Override
         public void refreshSourceList() {
             sourceListContent.onDataManagerChange();
         }
