@@ -39,8 +39,6 @@ package org.orbisgis.mapeditor.map.tools;
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.geom.Rectangle2D;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Observable;
@@ -48,13 +46,11 @@ import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.orbisgis.corejdbc.ReadTable;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
@@ -62,8 +58,10 @@ import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
 import org.orbisgis.sif.edition.EditorManager;
-import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tableeditorapi.TableEditableElementImpl;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.component.annotations.Reference;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -75,23 +73,7 @@ public class InfoTool extends AbstractRectangleTool {
 
     private static Logger UILOGGER = LoggerFactory.getLogger("gui." + InfoTool.class);
     private static Logger POPUPLOGGER = LoggerFactory.getLogger("popup." + InfoTool.class);
-    private EditorManager editorManager;
-
-    
-   /**
-     * @param editorManager Editor windows manager
-     */
-    @Reference
-    public void setEditorManager(EditorManager editorManager) {
-        this.editorManager = editorManager;
-    }
-    /**
-     * @param editorManager Editor windows manager
-     */
-    public void unsetEditorManager(EditorManager editorManager) {
-        this.editorManager = editorManager;
-    }
-    
+       
     @Override
     public void update(Observable o, Object arg) {
         //PlugInContext.checkTool(this);
@@ -110,7 +92,7 @@ public class InfoTool extends AbstractRectangleTool {
         if (minx < tm.getValues()[0]) {
             intersects = false;
         }            
-        new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), layer, intersects, editorManager).execute();
+        new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), layer, intersects).execute();
 
     }
 
@@ -138,13 +120,11 @@ public class InfoTool extends AbstractRectangleTool {
         private final ILayer layer;
         private static final I18n I18N = I18nFactory.getI18n(PopulateViewJob.class);
         private final boolean intersects;
-        private final EditorManager editorManager;
 
-        private PopulateViewJob(Envelope envelope, ILayer layer, boolean intersects, EditorManager editorManager) {
+        private PopulateViewJob(Envelope envelope, ILayer layer, boolean intersects) {
             this.envelope = envelope;
             this.layer = layer;
             this.intersects=intersects;
-            this.editorManager=editorManager;
         }
 
         @Override
@@ -153,7 +133,10 @@ public class InfoTool extends AbstractRectangleTool {
         }
 
         @Override
-        protected Object doInBackground() throws Exception {
+        protected Object doInBackground() throws Exception {            
+            BundleContext thisBundle = FrameworkUtil.getBundle(InfoTool.class).getBundleContext();
+            ServiceReference<?> serviceReference = thisBundle.getServiceReference(EditorManager.class.getName());            
+
             Geometry envGeom = ToolManager.toolsGeometryFactory.toGeometry(envelope);
             TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
             try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
@@ -165,7 +148,10 @@ public class InfoTool extends AbstractRectangleTool {
                         layer.getTableReference(), geomFields.get(0), envGeom, !intersects);
                 if (newSelection.size() > 0) {
                     layer.setSelection(newSelection);
-                    editorManager.openEditable(new TableEditableElementImpl(newSelection, layer.getTableReference(), layer.getDataManager()));
+                    TableEditableElementImpl tabe = new TableEditableElementImpl(newSelection, layer.getTableReference(), layer.getDataManager());
+                    tabe.setFiltered(true);
+                    EditorManager editorManager= (EditorManager ) thisBundle .getService(serviceReference );
+                    editorManager.openEditable(tabe);
                 }                
                 
             } catch (SQLException ex) {

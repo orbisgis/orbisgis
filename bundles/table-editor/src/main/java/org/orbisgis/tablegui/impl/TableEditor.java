@@ -136,6 +136,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         // Property selection change Event trigered by TableEditableElement
         // is ignored if onUpdateEditableSelection is true
         private AtomicBoolean onUpdateEditableSelection = new AtomicBoolean(false);
+        //Property filter is activate or not
+        private AtomicBoolean onFiltered = new AtomicBoolean(false);
         private AtomicBoolean filterRunning = new AtomicBoolean(false);
         private FilterFactoryManager<TableSelectionFilter,DefaultActiveFilter> filterManager =
                 new FilterFactoryManager<>();
@@ -145,6 +147,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         private PropertyChangeListener editableSelectionListener =
                 EventHandler.create(PropertyChangeListener.class,this,
                 "onEditableSelectionChange");
+        private PropertyChangeListener filterListener =
+                EventHandler.create(PropertyChangeListener.class,this,
+                "onFilterChange");
         private ActionCommands popupActions = new ActionCommands();
         private DataSource dataSource;
         private DataManager dataManager;
@@ -266,6 +271,18 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                             onUpdateEditableSelection.set(false);
                     }
                 }
+        }
+        
+        public void onFilterChange(){
+            if (!onFiltered.getAndSet(true)) {
+                onMenuFilterRows();
+                onFiltered.set(true);
+            }
+            else{
+                onMenuClearFilter();
+                onFiltered.set(false);
+            }
+            
         }
 
         /**
@@ -885,7 +902,10 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 updateTitle();
                 // Add a selection listener on the editable element
                 tableEditableElement.addPropertyChangeListener(TableEditableElement.PROP_SELECTION,
-                        editableSelectionListener);
+                        editableSelectionListener);                
+                // Add a filter listener on the editable element
+                tableEditableElement.addPropertyChangeListener(TableEditableElement.PROP_FILTERED,
+                        filterListener);
                 dockingPanelParameters.setDockActions(getDockActions());
                 initPopupActions();
                 tableScrollPane.getVerticalScrollBar().setBlockIncrement((int)(table.getHeight() / (TABLE_SCROLL_PERC / 100.)));
@@ -918,6 +938,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                                 LOGGER.debug("Close table "+dockingPanelParameters.getTitle());
                                 tableEditableElement.close(new NullProgressMonitor());                                
                                 tableEditableElement.removePropertyChangeListener(editableSelectionListener);
+                                tableEditableElement.removePropertyChangeListener(filterListener);
                         } catch (UnsupportedOperationException | EditableElementException ex) {
                                 LOGGER.error(ex.getLocalizedMessage(),ex);
                         }
