@@ -196,11 +196,16 @@ public class Job implements ProcessExecutionListener{
         appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Process result :"));
         for(DataOutputType output : result.getOutput()){
             Object o = output.getData().getContent().get(0);
-            for(OutputDescriptionType outputDescriptionType : processEditableElement.getProcessOffering().getProcess().getOutput()){
-                if(outputDescriptionType.getIdentifier().getValue().equals(output.getId())){
-                    appendLog(ProcessExecutionListener.LogType.INFO,
-                            outputDescriptionType.getTitle().get(0).getValue()+" = "+o.toString());
+            if(processEditableElement != null) {
+                for (OutputDescriptionType outputDescriptionType : processEditableElement.getProcessOffering().getProcess().getOutput()) {
+                    if (outputDescriptionType.getIdentifier().getValue().equals(output.getId())) {
+                        appendLog(ProcessExecutionListener.LogType.INFO,
+                                outputDescriptionType.getTitle().get(0).getValue() + " = " + o.toString());
+                    }
                 }
+            }
+            else{
+                appendLog(ProcessExecutionListener.LogType.INFO, "Output : " + o.toString());
             }
         }
         firePropertyChangeEvent(new PropertyChangeEvent(this, STATE_PROPERTY, null, getState()));
@@ -220,7 +225,7 @@ public class Job implements ProcessExecutionListener{
                     //Nothing to do
                     break;
                 case REFRESH_STATUS:
-                    wpsClient.getJobStatus(id);
+                    setStatus(wpsClient.getJobStatus(id));
                     break;
                 case GET_RESULTS:
                     setResult(wpsClient.getJobResult(id));

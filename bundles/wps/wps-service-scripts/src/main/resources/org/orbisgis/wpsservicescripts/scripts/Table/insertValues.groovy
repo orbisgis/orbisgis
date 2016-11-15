@@ -51,7 +51,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
                 @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
         ],
-        identifier = "wps:orbisgis:internal:InsertValues")
+        identifier = "orbisgis:wps:official:insertValues")
 def processing() {
     //Build the query
     String queryBase = "INSERT INTO " + tableName;
@@ -109,7 +109,7 @@ def processing() {
                 @LanguageString(value = "The table to edit.", lang = "en"),
                 @LanguageString(value = "La table à éditer.", lang = "fr")
         ],
-        identifier = "wps:orbisgis:internal:InsertValues:Table")
+        identifier = "orbisgis:wps:official:insertValues:tableName")
 String tableName
 
 /**********************/
@@ -126,10 +126,10 @@ String tableName
                 @LanguageString(value = "The field concerned by the value insertion.", lang = "en"),
                 @LanguageString(value = "Les champs concernés par les insertions de valeurs.", lang = "fr")
         ],
-        variableReference = "tableName",
+        variableReference = "orbisgis:wps:official:insertValues:tableName",
         multiSelection = true,
         minOccurs = 0,
-        identifier = "wps:orbisgis:internal:InsertValues:Fields")
+        identifier = "orbisgis:wps:official:insertValues:fieldList")
 String[] fieldList
 
 /** Coma separated values to insert. */
@@ -142,7 +142,7 @@ String[] fieldList
                 @LanguageString(value = "The input values. The values should be separated by a ',' and rows by ';'", lang = "en"),
                 @LanguageString(value = "Les valeurs à insérer. Elles doivent etre séparées par une ',' et les lignes par un ';'", lang = "fr")
         ],
-        identifier = "wps:orbisgis:internal:InsertValues:Values")
+        identifier = "orbisgis:wps:official:insertValues:values")
 String values
 
 /** String output of the process. */
@@ -154,6 +154,7 @@ String values
         translatedResumes = [
                 @LanguageString(value = "The output message.", lang = "en"),
                 @LanguageString(value = "Le message de sortie.", lang = "fr")
-        ])
+        ],
+        identifier = "orbisgis:wps:official:insertValues:literalOutput")
 String literalOutput
 

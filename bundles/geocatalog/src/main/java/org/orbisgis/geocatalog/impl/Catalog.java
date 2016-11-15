@@ -50,6 +50,7 @@ import org.orbisgis.geocatalog.api.PopupTarget;
 import org.orbisgis.geocatalog.api.TitleActionBar;
 import org.orbisgis.geocatalog.icons.GeocatalogIcon;
 import org.orbisgis.geocatalog.impl.actions.ActionOnSelection;
+import org.orbisgis.geocatalog.impl.actions.WpsActionOnSelection;
 import org.orbisgis.geocatalog.impl.filters.IFilter;
 import org.orbisgis.geocatalog.impl.filters.factories.NameContains;
 import org.orbisgis.geocatalog.impl.filters.factories.NameNotContains;
@@ -58,11 +59,15 @@ import org.orbisgis.geocatalog.impl.renderer.DataSourceListCellRenderer;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
+import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
+import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.view.utils.WpsClientHandler;
+import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -73,28 +78,15 @@ import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.beans.EventHandler;
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -125,6 +117,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
         private DriverFunctionContainer driverFunctionContainer;
         private DataManager dataManager;
         private ExecutorService executorService = null;
+        private WpsClientHandler wpsClientHandler = new WpsClientHandler();
 
         /**
          * For the Unit test purpose
@@ -135,14 +128,23 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                 return sourceList;
         }
 
-        @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-        public void setExecutorService(ExecutorService executorService) {
-            this.executorService = executorService;
-        }
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
-        public void unsetExecutorService(ExecutorService executorService) {
-            this.executorService = null;
-        }
+    public void unsetExecutorService(ExecutorService executorService) {
+        this.executorService = null;
+    }
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    public void setWpsClient(WpsClient wpsClient) {
+        this.wpsClientHandler.setWpsClient(wpsClient);
+    }
+
+    public void unsetWpsClient(WpsClient wpsClient) {
+        this.wpsClientHandler.setWpsClient(null);
+    }
 
     @Reference
     public void setDriverFunctionContainer(DriverFunctionContainer driverFunctionContainer) {
@@ -446,6 +448,8 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                 //        I18N.tr("Add one or more tables from a DataBase"),
                 //        OrbisGISIcon.getIcon("database_add"),EventHandler.create(ActionListener.class,
                 //        this,"onMenuAddFromDataBase"),null).setParent(PopupMenu.M_ADD));
+
+
             }            
             //Popup:Import
             popupActions.addAction(new DefaultAction(PopupMenu.M_IMPORT,I18N.tr("Import")).setMenuGroup(true).setLogicalGroup(PopupMenu.GROUP_IMPORT));
@@ -485,6 +489,29 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                     I18N.tr("Read the content of the database"),
                     GeocatalogIcon.getIcon("refresh"),EventHandler.create(ActionListener.class,
                     this,"refreshSourceList"),KeyStroke.getKeyStroke("ctrl R")).setLogicalGroup(PopupMenu.GROUP_OPEN));
+
+            //Popup:Tools
+            popupActions.addAction(new WpsActionOnSelection(PopupMenu.M_TOOLS,
+                    I18N.tr("Tools"),
+                    true,
+                    getListSelectionModel(),
+                    wpsClientHandler).setMenuGroup(true));
+            //Popup:GeometricProperties
+            popupActions.addAction(new WpsActionOnSelection(PopupMenu.M_TOOLS_GEOMETRY_PROPERTIES,
+                    I18N.tr("Geometry Properties"),
+                    I18N.tr("Compute some basic geometry properties."),
+                    GeocatalogIcon.getIcon("geometry_properties"),
+                    EventHandler.create(ActionListener.class, this, "openTool", ""),
+                    getListSelectionModel(),
+                    wpsClientHandler).setParent(PopupMenu.M_TOOLS));
+            //Popup:ReprojectGeometries
+            popupActions.addAction(new WpsActionOnSelection(PopupMenu.M_TOOLS_REPROJECT_GEOMETRIES,
+                    I18N.tr("Reproject geometries"),
+                    I18N.tr("Reproject geometries from one Coordinate Reference System to another."),
+                    GeocatalogIcon.getIcon("reproject_geometries"),
+                    EventHandler.create(ActionListener.class, this, "openTool", ""),
+                    getListSelectionModel(),
+                    wpsClientHandler).setParent(PopupMenu.M_TOOLS));
         }
 
         @Override
@@ -521,6 +548,77 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                 //Attach the content to the DataSource instance
                 sourceListContent.setListeners();
                 return sourceList;
+        }
+
+        /**
+         * Open the selected tool using the toolbox.
+         * @param event
+         */
+        public void openTool(ActionEvent event){
+            switch(((JMenuItem)event.getSource()).getAction().getValue(ActionTools.MENU_ID).toString()){
+                case PopupMenu.M_TOOLS_GEOMETRY_PROPERTIES:
+                    URI geometryPropertyURI = URI.create("orbisgis:wps:official:geometryProperties");
+                    URI inputDataStoreURI = URI.create("orbisgis:wps:official:geometryProperties:inputDataStore");
+                    URI geometricFieldURI = URI.create("orbisgis:wps:official:geometryProperties:geometricField");
+                    Map<URI, Object> dataMap = new HashMap<>();
+                    String[] sources = this.getSelectedSources();
+                    if(sources.length<1){
+                        LOGGER.error("Cannot run the tool, the source list is empty.");
+                        return;
+                    }
+                    ProcessEditor.ProcessExecutionType executionType = sources.length>1
+                            ? ProcessEditor.ProcessExecutionType.BASH
+                            : ProcessEditor.ProcessExecutionType.STANDARD;
+                    if(executionType.equals(ProcessEditor.ProcessExecutionType.BASH)) {
+                        for (String table : sources) {
+                            Map<URI, Object> map = new HashMap<>();
+                            map.put(inputDataStoreURI, table);
+                            map.put(geometricFieldURI, new String[]{"the_geom", "pk"});
+                            dataMap.put(URI.create(UUID.randomUUID().toString()), map);
+                        }
+                    }
+                    else {
+                        if(sources.length == 0){
+                            dataMap = null;
+                        }
+                        else{
+                            dataMap.put(inputDataStoreURI, sources[0]);
+                            dataMap.put(geometricFieldURI, new String[]{"the_geom", "pk"});
+                        }
+                    }
+                    wpsClientHandler.getWpsClient().openProcess(geometryPropertyURI, dataMap, executionType);
+                    break;
+                case PopupMenu.M_TOOLS_REPROJECT_GEOMETRIES:
+                    URI reprojectGeometryURI = URI.create("orbisgis:wps:official:reprojectGeometries");
+                    inputDataStoreURI = URI.create("orbisgis:wps:official:reprojectGeometries:inputDataStore");
+                    URI sridFieldURI = URI.create("orbisgis:wps:official:reprojectGeometries:srid");
+                    dataMap = new HashMap<>();
+                    sources = this.getSelectedSources();
+                    if(sources.length<1){
+                        LOGGER.error("Cannot run the tool, the source list is empty.");
+                        return;
+                    }
+                    executionType = sources.length>1
+                            ? ProcessEditor.ProcessExecutionType.BASH
+                            : ProcessEditor.ProcessExecutionType.STANDARD;
+                    if(executionType.equals(ProcessEditor.ProcessExecutionType.BASH)) {
+                        for (String table : sources) {
+                            Map<URI, Object> map = new HashMap<>();
+                            map.put(inputDataStoreURI, table);
+                            dataMap.put(URI.create(UUID.randomUUID().toString()), map);
+                        }
+                    }
+                    else {
+                        if(sources.length == 0){
+                            dataMap = null;
+                        }
+                        else{
+                            dataMap.put(inputDataStoreURI, sources[0]);
+                        }
+                    }
+                    wpsClientHandler.getWpsClient().openProcess(reprojectGeometryURI, dataMap, executionType);
+                    break;
+            }
         }
 
         /**

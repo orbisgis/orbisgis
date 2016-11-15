@@ -69,12 +69,12 @@ import java.util.UUID;
  */
 public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
     /** Title of the wps process to use. */
-    private static final URI PROCESS_TITLE = URI.create("wps:orbisgis:internal:InsertValues");
+    private static final URI PROCESS_TITLE = URI.create("orbisgis:wps:official:insertValues");
     /** Name of the process input containing the table name. */
-    private static final URI INPUT_TABLE = URI.create("wps:orbisgis:internal:InsertValues:Table");
+    private static final URI INPUT_TABLE = URI.create("orbisgis:wps:official:insertValues:tableName");
     /** Name of the process input containing the values to add. */
-    private static final URI INPUT_VALUES = URI.create("wps:orbisgis:internal:InsertValues:Values");
-    private static final URI INPUT_FIELDS = URI.create("wps:orbisgis:internal:InsertValues:Fields");
+    private static final URI INPUT_VALUES = URI.create("orbisgis:wps:official:insertValues:fieldList");
+    private static final URI INPUT_FIELDS = URI.create("orbisgis:wps:official:insertValues:values");
     private final TableEditableElement editable;
     private static final I18n I18N = I18nFactory.getI18n(ActionAddRow.class);
     private final Logger LOGGER = LoggerFactory.getLogger(ActionAddRow.class);

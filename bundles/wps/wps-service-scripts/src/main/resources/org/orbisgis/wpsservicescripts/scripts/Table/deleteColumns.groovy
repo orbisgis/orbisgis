@@ -14,22 +14,21 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /********************/
 
 /**
- * This process removes the given rows from the given table.
+ * This process deletes the given columns from the given table.
  * The user has to specify (mandatory):
  *  - The input table (DataStore)
- *  - The primary key field (DataField)
- *  - The primary keys of the rows to remove (FieldValue)
+ *  - The column to delete (DataField)
  *
  * @author Sylvain PALOMINOS
  */
 @Process(
         translatedTitles = [
-                @LanguageString(value = "Delete rows", lang = "en"),
-                @LanguageString(value = "Suppression de lignes", lang = "fr")
+                @LanguageString(value = "Delete columns", lang = "en"),
+                @LanguageString(value = "Suppression de colonnes", lang = "fr")
         ],
         translatedResumes = [
-                @LanguageString(value = "Delete rows from a table.", lang = "en"),
-                @LanguageString(value = "Supprime des lignes d'une table.", lang = "fr")
+                @LanguageString(value = "Delete columns from a table.", lang = "en"),
+                @LanguageString(value = "Supprime des colonnes d'une table.", lang = "fr")
         ],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [
@@ -45,12 +44,12 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
                 @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
         ],
-        identifier = "orbisgis:wps:official:deleteRows"
+        identifier = "orbisgis:wps:official:deleteColumns"
 )
 def processing() {
     //Build the start of the query
-    for (String s : pkToRemove) {
-        String query = "DELETE FROM " + tableName + " WHERE " + pkField[0] + " = " + Long.parseLong(s)
+    for (String columnName : columnNames) {
+        String query = String.format("ALTER TABLE %s DROP COLUMN `%s`", tableName, columnName)
         //Execute the query
         sql.execute(query)
     }
@@ -72,7 +71,7 @@ def processing() {
                 @LanguageString(value = "The table to edit.", lang = "en"),
                 @LanguageString(value = "La table à éditer.", lang = "fr")
         ],
-        identifier = "orbisgis:wps:official:deleteRows:tableName"
+        identifier = "orbisgis:wps:official:deleteColumns:tableName"
 )
 String tableName
 
@@ -80,36 +79,21 @@ String tableName
 /** INPUT Parameters **/
 /**********************/
 
-/** Name of the PrimaryKey field of the DataStore tableName. */
+/** Name of the columns of the DataStore tableName to remove. */
 @DataFieldInput(
         translatedTitles = [
-                @LanguageString(value = "PKField", lang = "en"),
-                @LanguageString(value = "Champ clef primaire", lang = "fr")
+                @LanguageString(value = "Columns", lang = "en"),
+                @LanguageString(value = "Colonnes", lang = "fr")
         ],
         translatedResumes = [
-                @LanguageString(value = "The primary key field.", lang = "en"),
-                @LanguageString(value = "Le champ de la clef primaire.", lang = "fr")
+                @LanguageString(value = "The columns to remove names.", lang = "en"),
+                @LanguageString(value = "Le nom des colonnes à supprimer.", lang = "fr")
         ],
-        variableReference = "orbisgis:wps:official:deleteRows:tableName",
-        identifier = "orbisgis:wps:official:deleteRows:pkField"
+        variableReference = "orbisgis:wps:official:deleteColumns:tableName",
+        identifier = "orbisgis:wps:official:deleteColumns:columnNames"
 )
-String[] pkField
+String[] columnNames
 
-/** List of primary keys to remove from the table. */
-@FieldValueInput(
-        translatedTitles = [
-                @LanguageString(value = "PKArray", lang = "en"),
-                @LanguageString(value = "Liste clef primaire", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The array of the primary keys of the rows to remove.", lang = "en"),
-                @LanguageString(value = "La liste des clefs primaires dont les lignes sont à supprimer.", lang = "fr")
-        ],
-        variableReference = "orbisgis:wps:official:deleteRows:pkField",
-        multiSelection = true,
-        identifier = "orbisgis:wps:official:deleteRows:pkToRemove"
-)
-String[] pkToRemove
 
 /** Output message. */
 @LiteralDataOutput(
@@ -121,6 +105,6 @@ String[] pkToRemove
                 @LanguageString(value = "The output message.", lang = "en"),
                 @LanguageString(value = "Le message de sortie.", lang = "fr")
         ],
-        identifier = "orbisgis:wps:official:deleteRows:literalOutput")
+        identifier = "orbisgis:wps:official:deleteColumns:literalOutput")
 String literalOutput
 
