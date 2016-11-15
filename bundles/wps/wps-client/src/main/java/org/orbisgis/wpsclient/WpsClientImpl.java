@@ -471,7 +471,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient {
      * Open the UI of the process selected in the ToolBoxPanel.
      */
     public void openProcess(){
-        openProcess(URI.create(toolBoxPanel.getSelectedNode().getIdentifier().getValue()),
+        openProcess(toolBoxPanel.getSelectedNode().getIdentifier(),
                 new HashMap<URI, Object>(), ProcessEditor.ProcessExecutionType.STANDARD);
     }
 
@@ -514,18 +514,18 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient {
 
     /**
      * Verify if the given process is a well formed script.
-     * @param identifier Identifier of the process.
+     * @param processIdentifier Identifier of the process.
      * @return True if the file is well formed, false otherwise.
      */
-    public boolean checkProcess(CodeType identifier){
-        return wpsService.checkProcess(identifier);
+    public boolean checkProcess(URI processIdentifier){
+        return wpsService.checkProcess(processIdentifier);
     }
 
     /**
      * Remove the selected process in the tree.
      */
-    public void removeProcess(CodeType codeType){
-        wpsService.removeProcess(codeType);
+    public void removeProcess(URI processIdentifier){
+        wpsService.removeProcess(processIdentifier);
     }
 
     /**

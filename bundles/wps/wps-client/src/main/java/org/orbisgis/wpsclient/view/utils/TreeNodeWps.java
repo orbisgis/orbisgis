@@ -37,11 +37,11 @@
 
 package org.orbisgis.wpsclient.view.utils;
 
-import net.opengis.ows._2.CodeType;
 import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.net.URI;
 
 /**
  * Node of the process tree displayed in the ToolBox.
@@ -62,13 +62,11 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
 
     /** Max length in character of the user object. */
     private static final int MAX_USEROBJECT_LENGTH = 30;
-    /** Error icon name. */
-    public static final String ERROR_ICON_NAME = "error";
 
     /** Type of the node. */
     private NodeType nodeType = NodeType.FOLDER;
     /** File or folder name associated to the node. */
-    private CodeType identyifier;
+    private URI identifier;
     /** Indicates if the node is a valid folder, script, host ... or not. */
     private boolean isValid = true;
     /** Indicates if the node is a default process from OrbisGIS. */
@@ -214,20 +212,20 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
     }
 
     /**
-     * Returns the URI represented by the node.
+     * Returns the URI of the process represented by the node.
      * The URI value has no impact on the node appearance.
-     * @return The URI represented by the node.
+     * @return The URI of the process represented by the node.
      */
-    public CodeType getIdentifier() {
-        return identyifier;
+    public URI getIdentifier() {
+        return identifier;
     }
 
     /**
-     * Sets the URI represented by the node.
-     * @param identifier The URI represented by the node.
+     * Sets the URI of the process represented by the node.
+     * @param identifier The URI of the process represented by the node.
      */
-    public void setIdentifier(CodeType identifier){
-        this.identyifier = identifier;
+    public void setIdentifier(URI identifier){
+        this.identifier = identifier;
     }
 
     /**
@@ -275,7 +273,7 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         this.customClosedIconName = iconName;
         this.customOpenIconName = iconName;
         this.customLeafIconName = iconName;
-        this.customInvalidIconName = "error";
+        this.customInvalidIconName = ToolBoxIcon.ERROR;
     }
 
     /**
@@ -329,9 +327,7 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
      */
     public TreeNodeWps deepCopy(){
         TreeNodeWps copy = new TreeNodeWps();
-        copy.setIdentifier(new CodeType());
-        copy.identyifier.setCodeSpace(this.identyifier.getCodeSpace());
-        copy.identyifier.setValue(this.identyifier.getValue());
+        copy.identifier = this.identifier;
         copy.isValid = this.isValid;
         copy.nodeType = this.nodeType;
         copy.userObject = this.userObject;

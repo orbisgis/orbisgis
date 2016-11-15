@@ -274,7 +274,7 @@ public class ToolBoxPanel extends JPanel {
                                 }
                             }
                             else{
-                                wpsClient.addLocalSource(URI.create(selectedNode.getIdentifier().getValue()));
+                                wpsClient.addLocalSource(selectedNode.getIdentifier());
                             }
                             break;
                         case PROCESS:
@@ -287,7 +287,7 @@ public class ToolBoxPanel extends JPanel {
                     if (selectedNode.isValidNode()) {
                         //if the selected node is a PROCESS node, open a new instance.
                         if(selectedNode.getNodeType().equals(TreeNodeWps.NodeType.PROCESS)) {
-                            wpsClient.openProcess(URI.create(selectedNode.getIdentifier().getValue()), null,
+                            wpsClient.openProcess(selectedNode.getIdentifier(), null,
                                     ProcessEditor.ProcessExecutionType.STANDARD);
                         }
                     }
@@ -319,7 +319,7 @@ public class ToolBoxPanel extends JPanel {
     private boolean isNodeExisting(URI uri, TreeNodeWps parent){
         boolean exist = false;
         for(int l=0; l<parent.getChildCount(); l++){
-            if(((TreeNodeWps)parent.getChildAt(l)).getIdentifier().getValue().equals(uri.toString())){
+            if(((TreeNodeWps)parent.getChildAt(l)).getIdentifier().equals(uri)){
                 exist = true;
             }
         }
@@ -335,7 +335,7 @@ public class ToolBoxPanel extends JPanel {
     private TreeNodeWps getSubNode(URI nodeURI, TreeNodeWps parent){
         TreeNodeWps child = null;
         for(int i = 0; i < parent.getChildCount(); i++){
-            if(((TreeNodeWps)parent.getChildAt(i)).getIdentifier().getValue().equals(nodeURI.toString())){
+            if(((TreeNodeWps)parent.getChildAt(i)).getIdentifier().equals(nodeURI)){
                 child = (TreeNodeWps)parent.getChildAt(i);
             }
         }
@@ -362,9 +362,7 @@ public class ToolBoxPanel extends JPanel {
         TreeNodeWps folderNode = new TreeNodeWps();
         folderNode.setValidNode(true);
         folderNode.setUserObject(folderName);
-        CodeType codeType = new CodeType();
-        codeType.setValue(folderUri.toString());
-        folderNode.setIdentifier(codeType);
+        folderNode.setIdentifier(folderUri);
         folderNode.setNodeType(TreeNodeWps.NodeType.FOLDER);
 
         if (parentNode == null) {
@@ -412,7 +410,7 @@ public class ToolBoxPanel extends JPanel {
             if(node.isRemovable()) {
                 switch(node.getNodeType()) {
                     case FOLDER:
-                        for (TreeNodeWps child : getChildrenWithUri(URI.create(node.getIdentifier().getValue()),
+                        for (TreeNodeWps child : getChildrenWithUri(node.getIdentifier(),
                                 (TreeNodeWps) selectedModel.getRoot())) {
                             if (child.isRemovable()) {
                                 cleanParentNode(child, selectedModel);
@@ -421,7 +419,7 @@ public class ToolBoxPanel extends JPanel {
                         break;
                     case PROCESS:
                         for (FileTreeModel model : modelList) {
-                            for (TreeNodeWps child : getChildrenWithUri(URI.create(node.getIdentifier().getValue()),
+                            for (TreeNodeWps child : getChildrenWithUri(node.getIdentifier(),
                                     (TreeNodeWps) model.getRoot())) {
                                 if (child != null && child.isRemovable()) {
                                     cleanParentNode(child, model);
@@ -448,7 +446,7 @@ public class ToolBoxPanel extends JPanel {
         List<TreeNodeWps> nodeList = new ArrayList<>();
         for(int i=0; i<parent.getChildCount(); i++){
             TreeNodeWps child = (TreeNodeWps)parent.getChildAt(i);
-            if(child.getIdentifier() != null && child.getIdentifier().getValue().equals(uri.toString())){
+            if(child.getIdentifier() != null && child.getIdentifier().equals(uri)){
                 nodeList.add(child);
             }
             else{
@@ -703,7 +701,7 @@ public class ToolBoxPanel extends JPanel {
                 for (TreeNodeWps node : getAllChildWithType((TreeNodeWps) fileModel.getRoot(), TreeNodeWps.NodeType.PROCESS)) {
                     //For all the leaf, tests if they are accepted by the filter or not.
                     TreeNodeWps filteredRoot = (TreeNodeWps) filteredModel.getRoot();
-                    List<TreeNodeWps> filteredNode = getChildrenWithUri(URI.create(node.getIdentifier().getValue()), filteredRoot);
+                    List<TreeNodeWps> filteredNode = getChildrenWithUri(node.getIdentifier(), filteredRoot);
                     if (filteredNode.isEmpty()) {
                         if (filter.accepts(node)) {
                             TreeNodeWps newNode = node.deepCopy();
@@ -811,9 +809,7 @@ public class ToolBoxPanel extends JPanel {
                 node = new TreeNodeWps();
                 node.setValidNode(true);
                 node.setUserObject(str);
-                CodeType codeType = new CodeType();
-                codeType.setValue(str);
-                node.setIdentifier(codeType);
+                node.setIdentifier(URI.create(str));
                 node.setNodeType(TreeNodeWps.NodeType.FOLDER);
                 if(iconName != null) {
                     if (iconName.length > index) {
@@ -831,9 +827,7 @@ public class ToolBoxPanel extends JPanel {
         URI processUri = URI.create(processSummary.getIdentifier().getValue());
         if(getChildrenWithUri(processUri, node).isEmpty()) {
             TreeNodeWps script = new TreeNodeWps();
-            CodeType codeType = new CodeType();
-            codeType.setValue(processUri.toString());
-            script.setIdentifier(codeType);
+            script.setIdentifier(processUri);
             script.setValidNode(processSummary != null);
             script.setNodeType(TreeNodeWps.NodeType.PROCESS);
             script.setIsRemovable(isRemovable);
@@ -857,7 +851,7 @@ public class ToolBoxPanel extends JPanel {
         TreeNodeWps root = (TreeNodeWps) tagModel.getRoot();
         TreeNodeWps script = new TreeNodeWps();
         URI uri = URI.create(processSummary.getIdentifier().getValue());
-        script.setIdentifier(processSummary.getIdentifier());
+        script.setIdentifier(uri);
         script.setNodeType(TreeNodeWps.NodeType.PROCESS);
         script.setIsRemovable(isRemovable);
 

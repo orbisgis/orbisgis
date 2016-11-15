@@ -269,17 +269,21 @@ public class LocalWpsServerImpl
     }
 
     @Override
-    public void removeProcess(CodeType identifier){
-        ProcessDescriptionType process = this.getProcessManager().getProcess(identifier);
+    public void removeProcess(URI identifier){
+        CodeType codeType = new CodeType();
+        codeType.setValue(identifier.toString());
+        ProcessDescriptionType process = this.getProcessManager().getProcess(codeType);
         if(process != null) {
             this.getProcessManager().removeProcess(process);
         }
     }
 
     @Override
-    public boolean checkProcess(CodeType identifier){
+    public boolean checkProcess(URI identifier){
         ProcessManager processManager = this.getProcessManager();
-        ProcessIdentifier pi = processManager.getProcessIdentifier(identifier);
+        CodeType codeType = new CodeType();
+        codeType.setValue(identifier.toString());
+        ProcessIdentifier pi = processManager.getProcessIdentifier(codeType);
         //If the URI correspond to a ProcessIdentifier remove it before adding it again
         if(pi != null){
             //If the file corresponding to the URI does not exist anymore, remove if and warn the user.

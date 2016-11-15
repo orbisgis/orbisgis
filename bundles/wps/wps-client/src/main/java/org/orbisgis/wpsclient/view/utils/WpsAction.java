@@ -43,7 +43,8 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 
 /**
- * An action that request at least one selected data source and a WpsClient
+ * An action that request at least a InternalWpsClientHandler which will be used to dynamically get the
+ * InternalWpsClient.
  *
  * @author Sylvain PALOMINOS
  */

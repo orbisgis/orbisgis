@@ -47,6 +47,7 @@ import java.io.File;
 /**
  * Use this class to retrieve the data of an icon
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  **/
 
 public class ToolBoxIcon {
