@@ -35,7 +35,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsclient.view.utils.sif;
+package org.orbisgis.sif.components.renderers;
 
 import net.miginfocom.swing.MigLayout;
 import org.orbisgis.sif.common.ContainerItem;
@@ -44,6 +44,12 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
+ * Customize the rendering of a JList containing ContainerItem. The content of the container item is rendered as a
+ * JPanel. If the content of the ContainerItem is a :
+ *  - JPanel, the panel is rendered.
+ *  - JComponent, the component is add to a JPanel and the panel is rendered
+ *  - Any other object, the toString() method result is stored into a JLabel, added to a JPanel which is rendered.
+ *
  * @author Sylvain PALOMINOS
  */
 public class JPanelListRenderer extends JPanel implements ListCellRenderer<ContainerItem<Object>>{
@@ -52,22 +58,27 @@ public class JPanelListRenderer extends JPanel implements ListCellRenderer<Conta
     public Component getListCellRendererComponent(JList<? extends ContainerItem<Object>> panelList,
                                                   ContainerItem<Object> container,
                                                   int index, boolean isSelected, boolean cellHasFocus){
+        //If the container is null, render an empty JPanel
         if(container == null){
             return new JPanel();
         }
         JComponent panel;
+        //If the container contains a JPanel, the panel is rendered.
         if(container.getKey() instanceof JPanel) {
             panel = (JPanel)container.getKey();
         }
+        //If the container contains a JComponent, add it to a JPanel and render the panel.
         else if(container.getKey() instanceof JComponent){
             panel = new JPanel(new MigLayout("ins 0, gap 0"));
             panel.add((JComponent)container.getKey());
         }
+        //Else, create a JLabel with the toString() method result and add it to a JPanel before rendering it.
         else{
             panel = new JPanel();
             panel.add(new JLabel(container.getKey().toString()));
         }
 
+        //Sets the backGround and foreground colors according to the selection state.
         if (isSelected) {
             panel.setBackground(panelList.getSelectionBackground());
             panel.setForeground(panelList.getSelectionForeground());
