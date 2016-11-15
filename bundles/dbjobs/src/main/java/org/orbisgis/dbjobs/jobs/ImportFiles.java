@@ -143,5 +143,12 @@ public class ImportFiles extends SwingWorkerPM {
         dbView.onDatabaseUpdate(DatabaseView.DB_ENTITY.SCHEMA.name(), "PUBLIC");
         return null;
     }
+
+    @Override
+    public String toString() {
+        return super.toString(); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
 }
 

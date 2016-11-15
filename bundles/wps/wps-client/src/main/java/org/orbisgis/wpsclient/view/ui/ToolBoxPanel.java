@@ -618,7 +618,7 @@ public class ToolBoxPanel extends JPanel {
                 ADD_SOURCE,
                 I18N.tr("Add folder"),
                 I18N.tr("Add a local folder"),
-                ToolBoxIcon.getIcon("folder_add"),
+                ToolBoxIcon.getIcon(ToolBoxIcon.FOLDER_ADD),
                 EventHandler.create(ActionListener.class, wpsClient, "addNewLocalSource"),
                 null
         );
@@ -626,7 +626,7 @@ public class ToolBoxPanel extends JPanel {
                 ADD_SCRIPT,
                 I18N.tr("Add file"),
                 I18N.tr("Add a local file"),
-                ToolBoxIcon.getIcon("script_add"),
+                ToolBoxIcon.getIcon(ToolBoxIcon.SCRIPT_ADD),
                 EventHandler.create(ActionListener.class, wpsClient, "addNewLocalScript"),
                 null
         );
@@ -634,7 +634,7 @@ public class ToolBoxPanel extends JPanel {
                 RUN_SCRIPT,
                 I18N.tr("Run"),
                 I18N.tr("Run a script"),
-                ToolBoxIcon.getIcon("execute"),
+                ToolBoxIcon.getIcon(ToolBoxIcon.EXECUTE),
                 EventHandler.create(ActionListener.class, wpsClient, "openProcess"),
                 null
         );
@@ -642,7 +642,7 @@ public class ToolBoxPanel extends JPanel {
                 REFRESH_SOURCE,
                 I18N.tr("Refresh"),
                 I18N.tr("Refresh a source"),
-                ToolBoxIcon.getIcon("refresh"),
+                ToolBoxIcon.getIcon(ToolBoxIcon.REFRESH),
                 EventHandler.create(ActionListener.class, this, "refresh"),
                 null
         );
@@ -650,7 +650,7 @@ public class ToolBoxPanel extends JPanel {
                 REMOVE,
                 "Remove",
                 "Remove a source or a script",
-                ToolBoxIcon.getIcon("remove"),
+                ToolBoxIcon.getIcon(ToolBoxIcon.REMOVE),
                 EventHandler.create(ActionListener.class, this, "removeSelected"),
                 null
         );

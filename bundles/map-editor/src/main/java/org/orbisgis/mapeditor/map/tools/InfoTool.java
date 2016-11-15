@@ -131,23 +131,16 @@ public class InfoTool extends AbstractRectangleTool {
             GeometryFactory geometryFactory = new GeometryFactory();
             Geometry envGeom = geometryFactory.toGeometry(envelope);
             TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
-            try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
-                // Fetch SRID for PostGIS constraints
-                try(PreparedStatement pst = SFSUtilities.prepareInformationSchemaStatement(connection,
-                        tableLocation.getCatalog(), tableLocation.getSchema(), tableLocation.getTable(),
-                        "PUBLIC.GEOMETRY_COLUMNS", "");
-                    ResultSet rs = pst.executeQuery()) {
-                    if(rs.next()) {
-                        int srid = rs.getInt("srid");
-                        if(srid > 0) {
-                            envGeom.setSRID(srid);
-                        }
-                    }
-                }
+            try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {                
                 List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableLocation);
-                if(geomFields.isEmpty()) {
+                if (geomFields.isEmpty()) {
                     return null;
                 }
+                int srid = SFSUtilities.getSRID(connection, tableLocation, geomFields.get(0));
+                if (srid > 0) {
+                    envGeom.setSRID(srid);
+                }
+                
                 try(PreparedStatement pst = connection.prepareStatement("SELECT * FROM "+layer.getTableReference()+
                         " WHERE "+TableLocation.quoteIdentifier(geomFields.get(0))+" && ?")) {
                     pst.setObject(1, envGeom);
