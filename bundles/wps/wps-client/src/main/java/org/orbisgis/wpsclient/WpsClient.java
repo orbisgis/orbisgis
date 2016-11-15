@@ -36,98 +36,65 @@
  */
 package org.orbisgis.wpsclient;
 
-import net.opengis.wps._2_0.ProcessDescriptionType;
 import net.opengis.wps._2_0.Result;
 import net.opengis.wps._2_0.StatusInfo;
-import org.orbisgis.wpsclient.view.utils.WpsJobStateListener;
-import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
-import org.orbisgis.wpsservice.LocalWpsServer;
 
 import java.net.URI;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * Interface that should be implemented by the OrbisGIS wps client.
+ * The WPS client interface for the communication with WPS external servers.
+ * A WPS client contains all the methods for the communication with the external WPS servers.
+ * It contains others methods to allow other OrbisGIS components to get, run or open WPS processes throw the client.
+ * Other methods for the process tracking thanks to JobStateListeners and some UI interaction are defined.
  *
  * @author Sylvain PALOMINOS
  */
 public interface WpsClient {
 
-    /**
-     * Refresh the JTree containing the list of the available wps processes.
-     */
-    void refreshAvailableScripts();
+
+    /*****************/
+    /** WPS methods **/
+    /*****************/
 
     /**
-     * Returns the instance of the localWpsService of OrbisGIS.
-     * @return The local instance of the wps service.
-     */
-    LocalWpsServer getLocalWpsService();
-
-    /**
-     * Return the process with the given identifier. If no process is found, return null.
+     * Ask to the WPS server running the job with the given id its status. Once the answer get, a job status event
+     * should be launch.
      *
-     * @param identifier The process identifier.
-     */
-    ProcessDescriptionType getInternalProcess(URI identifier);
-
-    /**
-     * Build the Execution request, set it and then launch it in the WpsService.
-     *
-     * @param process The process to execute.
-     * @param dataMap Map containing the inputs/outputs.
-     */
-    StatusInfo executeProcess(ProcessDescriptionType process, Map<URI,Object> dataMap);
-
-    /**
-     * Open the process UI with the given default values.
-     * @param processIdentifier Process identifier of the process to open.
-     * @param defaultValuesMap Map of the default values to give to the UI. If their is no default values,
-     *                         it should be null;
-     */
-    void openProcess(URI processIdentifier, Map<URI, Object> defaultValuesMap, ProcessEditor.ProcessExecutionType type);
-
-    /**
-     * Adds a WpsJobListener.
-     * @param listener WpsJobListener to add.
-     */
-    void addJobListener(WpsJobStateListener listener);
-
-    /**
-     * Removes a WpsJobListener.
-     * @param listener WpsJobListener to remove.
-     */
-    void removeJobListener(WpsJobStateListener listener);
-
-    /**
-     * Ask the WpsService the status of the job corresponding to the given ID.
      * @param jobID UUID of the job.
-     * @return The status of a job.
+     *
+     * @return The StatusInfo object containing the status of the job with the given UUID.
      */
-    public StatusInfo getJobStatus(UUID jobID);
+    StatusInfo getJobStatus(UUID jobID);
 
     /**
      * Ask the WpsService the result of the job corresponding to the given ID.
+     *
      * @param jobID UUID of the job.
-     * @return The result of a job.
+     *
+     * @return The Result object containing the results of a job with the given UUID.
      */
-    public Result getJobResult(UUID jobID);
+    Result getJobResult(UUID jobID);
 
     /**
      * Ask the WpsService to dismiss the job corresponding to the given ID.
+     *
      * @param jobID UUID of the job.
-     * @return The status of the job.
+     *
+     * @return The StatusInfo object containing the status of the job with the given UUID.
      */
-    public StatusInfo dismissJob(UUID jobID);
+    StatusInfo dismissJob(UUID jobID);
 
     /**
-     * Execute and internal process. The internal process will be tracked by the client and job state will be
-     * communicated to the listener.
-     * @param process Process to execute.
-     * @param dataMap Map of the data for the process execution
-     * @param listener WpsJobListener which is listening for the process execution. Can be null.
+     * Build the Execution request with the process identifier and the data to process. Then send it to the server.
+     * To finish return the StatusInfo object get back from the request.
+     *
+     * @param processIdentifier The identifier of the process to execute.
+     * @param dataMap Map containing the inputs/outputs values. The map key are the URI of the input/output and the
+     *                value is the value Object.
+     *
+     * @return The StatusInfo object containing the status of the job resulting of the request.
      */
-    public UUID executeInternalProcess(ProcessDescriptionType process, Map<URI, Object> dataMap,
-                                       WpsJobStateListener listener);
+    StatusInfo executeProcess(URI processIdentifier, Map<URI,Object> dataMap);
 }

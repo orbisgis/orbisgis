@@ -473,14 +473,14 @@ public class DataFieldUI implements DataUI{
             listContainer.add(new ContainerItem<Object>(I18N.tr("Select a field"), I18N.tr("Select a field")));
             return listContainer;
         }
-        List<String> fieldNameList = wpsClient.getLocalWpsService().getTableFieldList(tableName,
+        List<String> fieldNameList = wpsClient.getTableFieldList(tableName,
                 dataField.getFieldTypeList(), dataField.getExcludedTypeList());
         //If there is tables, retrieve their information to format the display in the comboBox
         if(fieldNameList != null && !fieldNameList.isEmpty()){
             for (String fieldName : fieldNameList) {
                 //Retrieve the table information
                 Map<String, Object> informationMap =
-                        wpsClient.getLocalWpsService().getFieldInformation(tableName, fieldName);
+                        wpsClient.getFieldInformation(tableName, fieldName);
                 //If there is information, use it to improve the table display in the comboBox
                 JPanel fieldPanel = new JPanel(new MigLayout("ins 0, gap 0"));
                 if (!informationMap.isEmpty()) {

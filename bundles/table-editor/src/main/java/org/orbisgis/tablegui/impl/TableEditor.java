@@ -110,7 +110,7 @@ import org.orbisgis.tablegui.impl.filters.WhereSQLFilterFactory;
 import org.orbisgis.tablegui.impl.jobs.ComputeFieldStatistics;
 import org.orbisgis.tablegui.impl.jobs.OptimalWidthJob;
 import org.orbisgis.tablegui.impl.jobs.SearchJob;
-import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.InternalWpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -154,14 +154,14 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         private int currentSelectionNavigation = 0;
         private EditorManager editorManager;
         private ExecutorService executorService;
-        private WpsClient wpsClient;
+        private InternalWpsClient wpsClient;
 
         /**
          * Constructor
          * @param element Source to read and edit
          */
         public TableEditor(TableEditableElement element, DataManager dataManager, EditorManager editorManager,
-                           ExecutorService executorService, WpsClient wpsClient) {
+                           ExecutorService executorService, InternalWpsClient wpsClient) {
                 super(new BorderLayout());
                 this.editorManager = editorManager;
                 this.executorService = executorService;

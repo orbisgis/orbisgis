@@ -313,7 +313,7 @@ public class FieldValueUI implements DataUI{
                 if(tableName != null && fieldName != null) {
                     layerUI.start();
                     //First retrieve the good field name with the good case.
-                    List<String> fieldList = wpsClient.getLocalWpsService().getTableFieldList(tableName,
+                    List<String> fieldList = wpsClient.getTableFieldList(tableName,
                             new ArrayList<DataType>(), new ArrayList<DataType>());
                     for(String field : fieldList){
                         if(field.equalsIgnoreCase(fieldName)){
@@ -322,7 +322,7 @@ public class FieldValueUI implements DataUI{
                     }
                     //Retrieve the rowSet reading the table from the wpsService.
                     model.removeAllElements();
-                    List<String> listFields = wpsClient.getLocalWpsService().getFieldValueList(tableName, fieldName);
+                    List<String> listFields = wpsClient.getFieldValueList(tableName, fieldName);
                     Collections.sort(listFields);
                     for (String field : listFields) {
                         model.addElement(new ContainerItem<Object>(field, field));

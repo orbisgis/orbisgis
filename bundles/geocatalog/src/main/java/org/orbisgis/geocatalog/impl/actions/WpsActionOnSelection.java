@@ -38,7 +38,7 @@ package org.orbisgis.geocatalog.impl.actions;
 
 
 import org.orbisgis.wpsclient.view.utils.WpsAction;
-import org.orbisgis.wpsclient.view.utils.WpsClientHandler;
+import org.orbisgis.wpsclient.view.utils.InternalWpsClientHandler;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -60,7 +60,7 @@ public class WpsActionOnSelection extends WpsAction {
      * @param wpsClientHandler Wps client handler containing the Wps Client.
      */
     public WpsActionOnSelection(String actionId, String actionLabel, boolean isGroup, ListSelectionModel selModel,
-                                WpsClientHandler wpsClientHandler) {
+                                InternalWpsClientHandler wpsClientHandler) {
         super(actionId, actionLabel, isGroup, wpsClientHandler);
         this.selModel=selModel;
     }
@@ -74,7 +74,7 @@ public class WpsActionOnSelection extends WpsAction {
      * @param wpsClientHandler Wps client handler containing the Wps Client.
      */
     public WpsActionOnSelection(String actionId, String actionLabel, String actionToolTip, Icon icon,
-                                ActionListener actionListener, ListSelectionModel selModel, WpsClientHandler wpsClientHandler) {
+                                ActionListener actionListener, ListSelectionModel selModel, InternalWpsClientHandler wpsClientHandler) {
         super(actionId, actionLabel, actionToolTip, icon, actionListener, wpsClientHandler);
         this.selModel=selModel;
     }

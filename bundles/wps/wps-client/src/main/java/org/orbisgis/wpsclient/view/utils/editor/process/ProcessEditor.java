@@ -244,6 +244,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      * Run the process if all the mandatory process inputs are defined.
      */
     public void runProcess(){
+        URI uri = URI.create(processEditableElement.getProcess().getIdentifier().getValue());
         switch(mode) {
             case STANDARD:
                 //First check if all the inputs are defined.
@@ -256,9 +257,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 }
 
                 if (allDefined) {
-
                     //Run the process in a separated thread
-                    StatusInfo statusInfo = wpsClient.executeProcess(processEditableElement.getProcess(), dataMap);
+                    StatusInfo statusInfo = wpsClient.executeProcess(uri, dataMap);
                     Job job = processEditableElement.newJob(UUID.fromString(statusInfo.getJobID()));
 
                     //Then launch the process execution
@@ -288,7 +288,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
 
                         if (allDefined) {
                             //Run the process in a separated thread
-                            StatusInfo statusInfo = wpsClient.executeProcess(processEditableElement.getProcess(), map);
+                            StatusInfo statusInfo = wpsClient.executeProcess(uri, map);
                             Job job = processEditableElement.newJob(UUID.fromString(statusInfo.getJobID()));
 
                             //Then launch the process execution
@@ -427,7 +427,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
      * @return The UI for the configuration of the process.
      */
     private JComponent buildBashUI(){
-        ProcessDescriptionType process = wpsClient.getProcessCopy(processEditableElement.getProcess().getIdentifier());
+        URI uri = URI.create(processEditableElement.getProcess().getIdentifier().getValue());
+        ProcessDescriptionType process = wpsClient.getProcessCopy(uri);
         dataMap = new HashMap<>();
 
         JPanel returnPanel = new JPanel(new MigLayout("fill"));
@@ -506,14 +507,13 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         }
         parameterPanel.add(new JSeparator(), "growx, span");
 
-        if(defaultDataMap.size() == 0) {
-            addBashLine(wpsClient.getProcessCopy(process.getIdentifier()), parameterPanel, new HashMap<URI, Object>());
+        if(defaultDataMap == null || defaultDataMap.size() == 0) {
+            addBashLine(wpsClient.getProcessCopy(uri), parameterPanel, new HashMap<URI, Object>());
         }
         else{
             for(Map.Entry<URI, Object> entry : defaultDataMap.entrySet()){
                 if(entry.getValue() instanceof Map) {
-                    addBashLine(wpsClient.getProcessCopy(process.getIdentifier()), parameterPanel,
-                            (Map<URI, Object>)entry.getValue());
+                    addBashLine(wpsClient.getProcessCopy(uri), parameterPanel, (Map<URI, Object>)entry.getValue());
                 }
             }
         }
@@ -567,7 +567,8 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 return;
             }
             parameterPanel.remove(addButton);
-            ProcessDescriptionType processCopy = wpsClient.getProcessCopy(process.getIdentifier());
+            ProcessDescriptionType processCopy =
+                    wpsClient.getProcessCopy(URI.create(process.getIdentifier().getValue()));
             if(processCopy != null) {
                 addBashLine(processCopy, parameterPanel, null);
             }

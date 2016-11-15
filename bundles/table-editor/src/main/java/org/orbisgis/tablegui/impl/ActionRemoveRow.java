@@ -44,7 +44,7 @@ import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.api.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.InternalWpsClient;
 import org.orbisgis.wpsclient.view.utils.WpsJobStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +69,7 @@ import java.util.*;
  */
 public class ActionRemoveRow extends AbstractAction implements WpsJobStateListener {
     /** Title of the wps process to use. */
-    private static final URI PROCESS_TITLE = URI.create("orbisgis:wps:official:deleteRows");
+    private static final URI PROCESS_URI = URI.create("orbisgis:wps:official:deleteRows");
     /** Name of the process input containing the table name. */
     private static final URI INPUT_TABLE = URI.create("orbisgis:wps:official:deleteRows:tableName");
     /** Name of the process input containing the primary key field name. */
@@ -80,15 +80,14 @@ public class ActionRemoveRow extends AbstractAction implements WpsJobStateListen
     private static final I18n I18N = I18nFactory.getI18n(ActionRemoveRow.class);
     private TableEditor tableEditor;
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionRemoveRow.class);
-    private WpsClient wpsClient;
-    private ProcessDescriptionType process;
+    private InternalWpsClient wpsClient;
     private UUID jobId;
 
     /**
      * Constructor
      * @param editable Table editable instance
      */
-    public ActionRemoveRow(TableEditableElement editable, TableEditor tableEditor, WpsClient wpsClient) {
+    public ActionRemoveRow(TableEditableElement editable, TableEditor tableEditor, InternalWpsClient wpsClient) {
         super(I18N.tr("Delete selected rows"), TableEditorIcon.getIcon("delete_row"));
         this.tableEditor = tableEditor;
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
@@ -97,7 +96,6 @@ public class ActionRemoveRow extends AbstractAction implements WpsJobStateListen
         updateEnabledState();
         editable.addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class, this, "onEditableUpdate",""));
         this.wpsClient = wpsClient;
-        process = wpsClient.getInternalProcess(PROCESS_TITLE);
     }
 
     /**
@@ -110,7 +108,7 @@ public class ActionRemoveRow extends AbstractAction implements WpsJobStateListen
         }
     }
     private void updateEnabledState() {
-            setEnabled(editable.isEditing() && !editable.getSelection().isEmpty());
+        setEnabled(editable.isEditing() && !editable.getSelection().isEmpty() && wpsClient != null);
     }
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
@@ -121,7 +119,7 @@ public class ActionRemoveRow extends AbstractAction implements WpsJobStateListen
                 I18N.tr("Delete selected rows"),
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
             if(response == JOptionPane.YES_OPTION) {
-                if(wpsClient != null && process != null){
+                if(wpsClient != null){
                         try(Connection connection = editable.getDataManager().getDataSource().getConnection()) {
                             //Gets the pk column name
                             int columnId = JDBCUtilities.getIntegerPrimaryKey(connection, editable.getTableReference());
@@ -141,13 +139,13 @@ public class ActionRemoveRow extends AbstractAction implements WpsJobStateListen
                             dataMap.put(INPUT_PK_ARRAY, pkListStr);
                             dataMap.put(INPUT_PK_FIELD, pkColumnName);
                             //Run the service
-                            jobId = wpsClient.executeInternalProcess(process, dataMap, this);
+                            jobId = wpsClient.executeInternalProcess(PROCESS_URI, dataMap, this);
                         } catch (SQLException e) {
                             LOGGER.error(I18N.tr("Unable to get the connection to remove rows.\n")+e.getMessage());
                         }
                 }
                 else{
-                    LOGGER.error(I18N.tr("Unable to get the process {0} from the WpsService.", PROCESS_TITLE));
+                    LOGGER.error(I18N.tr("Unable to get the process {0} from the WpsService.", PROCESS_URI));
                 }
             }
         }

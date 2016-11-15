@@ -36,22 +36,22 @@
  */
 package org.orbisgis.wpsclient.view.utils;
 
-import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.InternalWpsClient;
 
 /**
  * This class contains a Wps Client. It is used for the OrbisGIS components to have a dynamic link with the Wps Client.
  *
  * @author Sylvain PALOMINOS
  */
-public class WpsClientHandler {
+public class InternalWpsClientHandler {
 
-    private WpsClient wpsClient;
+    private InternalWpsClient internalWpsClient;
 
-    public void setWpsClient(WpsClient wpsClient) {
-        this.wpsClient = wpsClient;
+    public void setInternalWpsClient(InternalWpsClient internalWpsClient) {
+        this.internalWpsClient = internalWpsClient;
     }
 
-    public WpsClient getWpsClient() {
-        return wpsClient;
+    public InternalWpsClient getInternalWpsClient() {
+        return internalWpsClient;
     }
 }

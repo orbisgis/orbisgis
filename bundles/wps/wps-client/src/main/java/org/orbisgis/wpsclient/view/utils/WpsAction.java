@@ -48,19 +48,19 @@ import java.awt.event.ActionListener;
  * @author Sylvain PALOMINOS
  */
 public class WpsAction extends DefaultAction {
-    WpsClientHandler wpsClientHandler;
+    private InternalWpsClientHandler internalWpsClientHandler;
 
     /**
      * Constructor for menu group
      * @param actionId Action identifier, should be unique for ActionCommands
      * @param actionLabel I18N label short label
      * @param isGroup if this action is an action group.
-     * @param wpsClientHandler Wps client handler containing the Wps Client.
+     * @param internalWpsClientHandler Internal Wps client handler containing the Wps Client.
      */
-    public WpsAction(String actionId, String actionLabel, boolean isGroup, WpsClientHandler wpsClientHandler) {
+    public WpsAction(String actionId, String actionLabel, boolean isGroup, InternalWpsClientHandler internalWpsClientHandler) {
         super(actionId, actionLabel);
         setMenuGroup(isGroup);
-        this.wpsClientHandler = wpsClientHandler;
+        this.internalWpsClientHandler = internalWpsClientHandler;
     }
     /**
      * @param actionId Action identifier, should be unique for ActionCommands
@@ -68,16 +68,16 @@ public class WpsAction extends DefaultAction {
      * @param actionToolTip I18N tool tip text
      * @param icon Icon
      * @param actionListener Fire the event to this listener
-     * @param wpsClientHandler Wps client handler containing the Wps Client.
+     * @param internalWpsClientHandler Internal Wps client handler containing the Wps Client.
      */
     public WpsAction(String actionId, String actionLabel, String actionToolTip, Icon icon,
-                     ActionListener actionListener, WpsClientHandler wpsClientHandler) {
+                     ActionListener actionListener, InternalWpsClientHandler internalWpsClientHandler) {
         super(actionId, actionLabel, actionToolTip, icon, actionListener, null);
-        this.wpsClientHandler = wpsClientHandler;
+        this.internalWpsClientHandler = internalWpsClientHandler;
     }
 
     @Override
     public boolean isEnabled() {
-        return super.isEnabled() && wpsClientHandler.getWpsClient() != null;
+        return super.isEnabled() && internalWpsClientHandler.getInternalWpsClient() != null;
     }
 }

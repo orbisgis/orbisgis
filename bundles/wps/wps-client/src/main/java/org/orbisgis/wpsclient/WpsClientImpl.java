@@ -62,11 +62,8 @@ import org.orbisgis.wpsclient.view.utils.editor.log.LogEditor;
 import org.orbisgis.wpsclient.view.utils.editor.process.Job;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
-import org.orbisgis.wpsservice.model.JaxbContainer;
+import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsservice.LocalWpsServer;
-import org.orbisgis.wpsservice.model.DataField;
-import org.orbisgis.wpsservice.model.DataStore;
-import org.orbisgis.wpsservice.model.FieldValue;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -88,18 +85,18 @@ import java.io.*;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Start point of the OrbisToolBox.
- * This class instantiate all the tool and allow the different parts to communicates.
+ * Implementation of the InternalWpsClient for Orbisgis.
  *
  * @author Sylvain PALOMINOS
  **/
 
-@Component(immediate = true, service = {DockingPanel.class, WpsClient.class})
-public class WpsClientImpl implements DockingPanel, WpsClient {
+@Component(immediate = true, service = {DockingPanel.class, InternalWpsClient.class})
+public class WpsClientImpl implements DockingPanel, InternalWpsClient {
 
-    public static final String ACTION_REFRESH = "ACTION_REFRESH";
-
-    public static final String LANG = Locale.getDefault().toString();
+    /** String of the action Refresh. */
+    private static final String ACTION_REFRESH = "ACTION_REFRESH";
+    /** Client Local (language). */
+    private static final String LANG = Locale.getDefault().toString();
     /** String reference of the ToolBox used for DockingFrame. */
     public static final String TOOLBOX_REFERENCE = "orbistoolbox";
     /** I18N object */
@@ -125,12 +122,21 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
     private ExecutorService executorService;
     /** OrbisGIS DataManager. */
     private static DataManager dataManager;
+    /** OrbisGIS WpsServer. */
     private LocalWpsServer wpsService;
-    private ProcessEditor pe;
+    /** List of JobStateListener listening for the Job state execution. */
     private List<WpsJobStateListener> jobStateListenerList;
 
+
+
+    /***************************/
+    /** WpsClientImpl mathods **/
+    /***************************/
+
+    /** OSGI active/deactivate, set/unset methods **/
+
     @Activate
-    public void init(){
+    public void activate(){
         toolBoxPanel = new ToolBoxPanel(this);
         dataUIManager = new DataUIManager(this);
 
@@ -151,45 +157,73 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
                         EventHandler.create(ActionListener.class, this, "refreshAvailableScripts"),
                         null)
         );
-
-        openEditorList = new ArrayList<>();
+        //Creates the LogEditableElement and the LogEditor
         lee = new LogEditableElement();
-        le = null;
+        openEditorList = new ArrayList<>();
+        le = new LogEditor(lee);
+        dockingManager.addDockingPanel(le);
+        openEditorList.add(le);
+
         jobStateListenerList = new ArrayList<>();
         refreshAvailableScripts();
     }
 
-    @Override
-    public void refreshAvailableScripts(){
-        toolBoxPanel.cleanAll();
-        for(ProcessSummaryType processSummary : getAvailableProcesses()) {
-            toolBoxPanel.addProcess(processSummary);
+    @Deactivate
+    public void deactivate() {
+        //Removes all the EditorDockable that were added
+        for (EditorDockable ed : openEditorList) {
+            dockingManager.removeDockingPanel(ed.getDockingParameters().getName());
         }
+        openEditorList = new ArrayList<>();
+        toolBoxPanel.dispose();
     }
 
-    public LocalWpsServer getLocalWpsService(){
-        return wpsService;
+    @Reference
+    public void setLocalWpsService(LocalWpsServer wpsService) {
+        this.wpsService = wpsService;
+    }
+    public void unsetLocalWpsService(LocalWpsServer wpsService) {
+        this.wpsService = null;
     }
 
-    @Override
-    public ProcessDescriptionType getInternalProcess(URI identifier) {
-        CodeType codeType = new CodeType();
-        codeType.setValue(identifier.toString());
-        List<ProcessOffering> processOfferingList = getProcessOffering(codeType);
-        if(processOfferingList.isEmpty()) {
-            return null;
-        }
-        else{
-            return processOfferingList.get(0).getProcess();
-        }
+    @Reference
+    public void setDataManager(DataManager dataManager) {
+        WpsClientImpl.dataManager = dataManager;
     }
+    public void unsetDataManager(DataManager dataManager) {
+        WpsClientImpl.dataManager = null;
+    }
+    public DataManager getDataManager(){
+        return dataManager;
+    }
+
+    @Reference
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+    public void unsetExecutorService(ExecutorService executorService) {
+        this.executorService = null;
+    }
+    public ExecutorService getExecutorService(){
+        return executorService;
+    }
+
+    @Reference
+    public void setDockingManager(DockingManager dockingManager) {
+        this.dockingManager = dockingManager;
+    }
+    public void unsetDockingManager(DockingManager dockingManager) {
+        this.dockingManager = null;
+    }
+
+    /** Other methods **/
 
     /**
      * Uses the request object to ask it to the WPS service, get the result and unmarshall it.
      * @param request The request to ask to the WPS service.
      * @return The result object.
      */
-    public Object askService(Object request){
+    private Object askRequest(Object request){
         Marshaller marshaller;
         Unmarshaller unmarshaller;
         try {
@@ -233,7 +267,12 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         return resultObject;
     }
 
-    private List<ProcessSummaryType> getAvailableProcesses(){
+    /**
+     * Ask to the Wps server the getCapabilities request and returns the list of ProcessSummaryType.
+     *
+     * @return The list of ProcessSummaryType.
+     */
+    private List<ProcessSummaryType> getCapabilities(){
         //Sets the getCapabilities request
         GetCapabilitiesType getCapabilities = new GetCapabilitiesType();
         //Sets the language
@@ -249,7 +288,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         JAXBElement<GetCapabilitiesType> request = new ObjectFactory().createGetCapabilities(getCapabilities);
 
         //Ask the service
-        Object capabilities = askService(request);
+        Object capabilities = askRequest(request);
 
         //Retrieve the process list from the Capabilities answer
         if(capabilities != null && capabilities instanceof WPSCapabilitiesType){
@@ -263,19 +302,21 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
 
     /**
      * Return the list of the ProcessOffering contained by the WpsService corresponding to the given CodeType.
-     * @param processIdentifier CodeType of the processes asked.
+     * @param processIdentifier Identifier of the processes asked.
      * @return The list of the ProcessOffering
      */
-    private List<ProcessOffering> getProcessOffering(CodeType processIdentifier){
+    private List<ProcessOffering> getProcessOffering(URI processIdentifier){
         //Sets the describeProcess request
         DescribeProcess describeProcess = new DescribeProcess();
         //Sets the language
         describeProcess.setLang(LANG);
         //Sets the process
-        describeProcess.getIdentifier().add(processIdentifier);
+        CodeType codeType = new CodeType();
+        codeType.setValue(processIdentifier.toString());
+        describeProcess.getIdentifier().add(codeType);
 
         //Ask the service
-        Object answer = askService(describeProcess);
+        Object answer = askRequest(describeProcess);
 
         //Retrieve the process list from the Capabilities answer
         if(answer != null && answer instanceof ProcessOfferings){
@@ -287,31 +328,14 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         return new ArrayList<>();
     }
 
-    @Deactivate
-    public void dispose() {
-        //Removes all the EditorDockable that were added
-        for (EditorDockable ed : openEditorList) {
-            dockingManager.removeDockingPanel(ed.getDockingParameters().getName());
-        }
-        openEditorList = new ArrayList<>();
-        toolBoxPanel.dispose();
+    @Override
+    public DockingPanelParameters getDockingParameters() {
+        return parameters;
     }
 
     @Override
-    public DockingPanelParameters getDockingParameters() {
-        /*//when the toolBox is not visible, it mean that is was closed, so close all the toolbox editors
-        if(!parameters.isVisible()){
-            for(EditorDockable ed : openEditorList) {
-                if (ed instanceof ProcessEditor) {
-                    ((ProcessEditor)ed).setAlive(false);
-                }
-                dockingManager.removeDockingPanel(ed.getDockingParameters().getName());
-            }
-            openEditorList = new ArrayList<>();
-            lee.removePropertyChangeListener(le);
-            le = null;
-        }*/
-        return parameters;
+    public JComponent getComponent() {
+        return toolBoxPanel;
     }
 
     /**
@@ -323,11 +347,6 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
             dockingManager.removeDockingPanel(ed.getDockingParameters().getName());
         }
         openEditorList.remove(ed);
-    }
-
-    @Override
-    public JComponent getComponent() {
-        return toolBoxPanel;
     }
 
     /**
@@ -372,25 +391,21 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
      * @param uri Folder URI where the script are located.
      * @param iconName Name of the icon to use for this node.
      */
-    public void addLocalSource(URI uri, String[] iconName, boolean isDefaultScript, String nodePath){
+    private void addLocalSource(URI uri, String[] iconName, boolean isDefaultScript, String nodePath){
         File file = new File(uri);
         if(file.isFile()){
             wpsService.addLocalSource(file, iconName, isDefaultScript, nodePath);
         }
         //If the folder doesn't contains only folders, add it
         else if(file.isDirectory()){
-            boolean onlyDirectory = true;
+            boolean isFolderAdd = false;
             for(File f : file.listFiles()){
                 if(f.isFile()){
-                    onlyDirectory = false;
-                }
-            }
-            if(!onlyDirectory) {
-                toolBoxPanel.addFolder(file.toURI(), file.getParentFile().toURI());
-                for (File f : file.listFiles()) {
-                    if (f.isFile()) {
-                        wpsService.addLocalSource(f, iconName, isDefaultScript, nodePath);
+                    if(!isFolderAdd){
+                        toolBoxPanel.addFolder(file.toURI(), file.getParentFile().toURI());
+                        isFolderAdd = true;
                     }
+                    wpsService.addLocalSource(f, iconName, isDefaultScript, nodePath);
                 }
             }
         }
@@ -452,6 +467,9 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         }
     }
 
+    /**
+     * Open the UI of the process selected in the ToolBoxPanel.
+     */
     public void openProcess(){
         openProcess(URI.create(toolBoxPanel.getSelectedNode().getIdentifier().getValue()),
                 new HashMap<URI, Object>(), ProcessEditor.ProcessExecutionType.STANDARD);
@@ -463,21 +481,15 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
      * @param id Identifier of the job to validate.
      */
     public void validateInstance(ProcessEditor pe, UUID id){
+        //Adds the process information to the log managing classes (LogEditableElement and LogEditor)
         ProcessEditableElement processEditableElement = (ProcessEditableElement) pe.getEditableElement();
-        //If the LogEditor is not displayed, just do it <°>.
-        if(le == null) {
-            le = new LogEditor(lee);
-            dockingManager.addDockingPanel(le);
-            openEditorList.add(le);
-        }
         le.addNewLog(processEditableElement, id);
-
         lee.addProcessEditableElement(processEditableElement);
         //First test if the ProcessEditor has not been already deleted.
         if(dockingManager.getPanels().contains(pe)) {
             dockingManager.removeDockingPanel(pe.getDockingParameters().getName());
         }
-        //Test if the ProcessEditor is in the edotor list before removing it.
+        //Test if the ProcessEditor is in the editor list before removing it.
         if(openEditorList.contains(pe)) {
             openEditorList.remove(pe);
         }
@@ -490,7 +502,7 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
      * @param processIdentifier Identifier of the process to copy.
      * @return A deep copy of the process.
      */
-    public ProcessDescriptionType getProcessCopy(CodeType processIdentifier){
+    public ProcessDescriptionType getProcessCopy(URI processIdentifier){
         List<ProcessOffering> processOfferingList = getProcessOffering(processIdentifier);
         if(!processOfferingList.isEmpty()){
             ProcessDescriptionType processCopy = processOfferingList.get(0).getProcess();
@@ -524,139 +536,6 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         return dataUIManager;
     }
 
-
-    @Reference
-    public void setLocalWpsService(LocalWpsServer wpsService) {
-        this.wpsService = wpsService;
-    }
-    public void unsetLocalWpsService(LocalWpsServer wpsService) {
-        this.wpsService = null;
-    }
-
-    @Reference
-    public void setDataManager(DataManager dataManager) {
-        WpsClientImpl.dataManager = dataManager;
-    }
-    public void unsetDataManager(DataManager dataManager) {
-        WpsClientImpl.dataManager = null;
-    }
-    public DataManager getDataManager(){
-        return dataManager;
-    }
-
-    @Reference
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
-    public void unsetExecutorService(ExecutorService executorService) {
-        this.executorService = null;
-    }
-    public ExecutorService getExecutorService(){
-        return executorService;
-    }
-
-    @Reference
-    public void setDockingManager(DockingManager dockingManager) {
-        this.dockingManager = dockingManager;
-    }
-    public void unsetDockingManager(DockingManager dockingManager) {
-        this.dockingManager = null;
-    }
-
-    public ProcessEditor getProcessEditor() {
-        return pe;
-    }
-
-    /**
-     * Build the Execution request, set it and then launch it in the WpsService.
-     *
-     * @param process The process to execute.
-     * @param dataMap Map containing the inputs/outputs.
-     */
-    public StatusInfo executeProcess(ProcessDescriptionType process, Map<URI,Object> dataMap) {
-        //Build the ExecuteRequest object
-        ExecuteRequestType executeRequest = new ExecuteRequestType();
-        executeRequest.setIdentifier(process.getIdentifier());
-        List<DataInputType> inputList = executeRequest.getInput();
-        //Sets the inputs
-        for(Map.Entry<URI, Object> entry : dataMap.entrySet()){
-            for(InputDescriptionType input : process.getInput()){
-                if(URI.create(input.getIdentifier().getValue()).equals(entry.getKey())){
-                    DataInputType dataInput = new DataInputType();
-                    dataInput.setId(entry.getKey().toString());
-                    Data data = new Data();
-                    data.getContent().add(entry.getValue());
-                    dataInput.setData(data);
-                    inputList.add(dataInput);
-                }
-            }
-            List<OutputDefinitionType> outputList = executeRequest.getOutput();
-            for(OutputDescriptionType output : process.getOutput()){
-                if(URI.create(output.getIdentifier().getValue()).equals(entry.getKey())){
-                    OutputDefinitionType out = new OutputDefinitionType();
-                    out.setId(entry.getKey().toString());
-                    out.setTransmission(DataTransmissionModeType.VALUE);
-                    out.setMimeType("text/plain");
-                    outputList.add(out);
-                }
-            }
-        }
-        //Launch the execution on the server
-        JAXBElement<ExecuteRequestType> jaxbElement = new ObjectFactory().createExecute(executeRequest);
-        StatusInfo result = (StatusInfo)askService(jaxbElement);
-        return result;
-    }
-
-    @Override
-    public void openProcess(URI processIdentifier, Map<URI, Object> defaultValuesMap, ProcessEditor.ProcessExecutionType type) {
-        //Get the list of ProcessOffering
-        CodeType codeType = new CodeType();
-        codeType.setValue(processIdentifier.toString());
-        List<ProcessOffering> listProcess = getProcessOffering(codeType);
-        if(listProcess == null || listProcess.isEmpty()){
-            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("Unable to retrieve the process {0}.",
-                    processIdentifier.toString()));
-            return;
-        }
-        //Get the process
-        ProcessDescriptionType process = listProcess.get(0).getProcess();
-        //Link the DataStore with the DataField, with the FieldValue
-        link(process);
-        //Open the ProcessEditor
-        ProcessEditableElement processEditableElement = new ProcessEditableElement(listProcess.get(0));
-        pe = new ProcessEditor(this, processEditableElement, defaultValuesMap, type);
-        //Find if there is already a ProcessEditor open with the same process.
-        //If not, add the new one.
-        boolean alreadyOpen = false;
-        for(EditorDockable ed : openEditorList){
-            if(ed.getDockingParameters().getName().equals(pe.getDockingParameters().getName())){
-                alreadyOpen = true;
-            }
-        }
-        if(!alreadyOpen) {
-            dockingManager.addDockingPanel(pe);
-            openEditorList.add(pe);
-        }
-        else{
-            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("The process {0} is already open.",
-                    processEditableElement.getProcess().getTitle().get(0).getValue()));
-        }
-    }
-
-    @Override
-    public UUID executeInternalProcess(ProcessDescriptionType process, Map<URI, Object> dataMap,
-                                       WpsJobStateListener listener) {
-        if(listener != null) {
-            addJobListener(listener);
-        }
-        StatusInfo statusInfo = executeProcess(process, dataMap);
-        UUID jobId = UUID.fromString(statusInfo.getJobID());
-        Job job = new Job(this, jobId);
-        job.setStartTime(System.currentTimeMillis());
-        job.setStatus(statusInfo);
-        return jobId;
-    }
-
     private void fireJobStateEvent(StatusInfo statusInfo){
         List<WpsJobStateListener> list = new ArrayList<>();
         list.addAll(jobStateListenerList);
@@ -680,6 +559,110 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         }
     }
 
+
+
+    /*******************************/
+    /** InternalWpsClient methods **/
+    /*******************************/
+
+    /** Internal WPS methods **/
+
+    @Override
+    public UUID executeInternalProcess(URI processIdentifier, Map<URI, Object> dataMap, WpsJobStateListener listener) {
+        //If there is a listener for this process execution, register it
+        if(listener != null) {
+            addJobListener(listener);
+        }
+        //Call the process execution and get the StatusInfo object answer
+        StatusInfo statusInfo = executeProcess(processIdentifier, dataMap);
+        //Get the Server job id and build a client side job
+        UUID jobId = UUID.fromString(statusInfo.getJobID());
+        Job job = new Job(this, jobId);
+        job.setStartTime(System.currentTimeMillis());
+        job.setStatus(statusInfo);
+        //Returns the job id
+        return jobId;
+    }
+
+    @Override
+    public ProcessDescriptionType getInternalProcess(URI processIdentifier) {
+        List<ProcessOffering> processOfferingList = getProcessOffering(processIdentifier);
+        if(processOfferingList.isEmpty()) {
+            return null;
+        }
+        else{
+            return processOfferingList.get(0).getProcess();
+        }
+    }
+
+    @Override
+    public void openProcess(URI processIdentifier,
+                            Map<URI, Object> defaultValuesMap,
+                            ProcessEditor.ProcessExecutionType type) {
+        //Get the list of ProcessOffering
+        List<ProcessOffering> listProcess = getProcessOffering(processIdentifier);
+        if(listProcess == null || listProcess.isEmpty()){
+            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("Unable to retrieve the process {0}.",
+                    processIdentifier.toString()));
+            return;
+        }
+        //Get the process
+        ProcessDescriptionType process = listProcess.get(0).getProcess();
+        //Link the DataStore with the DataField and the DataField with the FieldValue
+        link(process);
+        //Open the ProcessEditor
+        ProcessEditableElement processEditableElement = new ProcessEditableElement(listProcess.get(0));
+        ProcessEditor pe = new ProcessEditor(this, processEditableElement, defaultValuesMap, type);
+        //Find if there is already a ProcessEditor open with the same process.
+        //If not, add the new one.
+        boolean alreadyOpen = false;
+        for(EditorDockable ed : openEditorList){
+            if(ed.getDockingParameters().getName().equals(pe.getDockingParameters().getName())){
+                alreadyOpen = true;
+            }
+        }
+        if(!alreadyOpen) {
+            dockingManager.addDockingPanel(pe);
+            openEditorList.add(pe);
+        }
+        else{
+            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("The process {0} is already open.",
+                    processEditableElement.getProcess().getTitle().get(0).getValue()));
+        }
+    }
+
+    /** Other methods **/
+
+    @Override
+    public void refreshAvailableScripts(){
+        //Removes all the processes from the UI of the toolbox
+        toolBoxPanel.cleanAll();
+        //Adds all the available processes
+        for(ProcessSummaryType processSummary : getCapabilities()) {
+            toolBoxPanel.addProcess(processSummary);
+        }
+    }
+
+    @Override
+    public List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
+        return wpsService.getTableFieldList(tableName, dataTypes, excludedTypes);
+    }
+
+    @Override
+    public Map<String, Boolean> getGeocatalogTableList(boolean onlySpatial){
+        return wpsService.getGeocatalogTableList(onlySpatial);
+    }
+
+    @Override
+    public Map<String, Object> getFieldInformation(String tableName, String fieldName){
+        return wpsService.getFieldInformation(tableName, fieldName);
+    }
+
+    @Override
+    public List<String> getFieldValueList(String tableName, String fieldName){
+        return wpsService.getFieldValueList(tableName, fieldName);
+    }
+
     @Override
     public void addJobListener(WpsJobStateListener listener) {
         if(!jobStateListenerList.contains(listener)) {
@@ -692,32 +675,90 @@ public class WpsClientImpl implements DockingPanel, WpsClient {
         jobStateListenerList.remove(listener);
     }
 
+
+
+    /***********************/
+    /** WpsClient methods **/
+    /***********************/
+
+    /** WPS methods **/
+
     @Override
     public StatusInfo getJobStatus(UUID jobID) {
+        //Build the GetStatus object used to request a job status to the WPS server.
         GetStatus getStatus = new GetStatus();
         getStatus.setJobID(jobID.toString());
-        //Launch the execution on the server
-        StatusInfo result = (StatusInfo)askService(getStatus);
+        //Launch the request on the server
+        StatusInfo result = (StatusInfo) askRequest(getStatus);
+        //Fire a job state event to tells the JobStateListeners that a job state has been updated.
         fireJobStateEvent(result);
         return result;
     }
 
     @Override
     public Result getJobResult(UUID jobID) {
+        //Build the GetResult object used to request a job result to the WPS server.
         GetResult getResult = new GetResult();
         getResult.setJobID(jobID.toString());
         //Launch the execution on the server
-        Result result = (Result)askService(getResult);
-        return result;
+        return (Result) askRequest(getResult);
     }
 
     @Override
     public StatusInfo dismissJob(UUID jobID) {
+        //Build the Dismiss object used to request the dismiss of a job to the WPS server.
         Dismiss dismiss = new Dismiss();
         dismiss.setJobID(jobID.toString());
         //Launch the execution on the server
-        StatusInfo result = (StatusInfo)askService(dismiss);
+        StatusInfo result = (StatusInfo) askRequest(dismiss);
+        //Fire a job state event to tells the JobStateListeners that a job state has been updated.
         fireJobStateEvent(result);
         return result;
+    }
+
+    @Override
+    public StatusInfo executeProcess(URI processIdentifier, Map<URI,Object> dataMap) {
+        //Get the ProcessDescriptionType corresponding to the process identifier
+        ProcessDescriptionType process = getInternalProcess(processIdentifier);
+        //Build the ExecuteRequest object
+        ExecuteRequestType executeRequest = new ExecuteRequestType();
+        //Sets the identifier of the process to execute
+        executeRequest.setIdentifier(process.getIdentifier());
+        //For each entry of the map, test if it is an input or an output and so add it to the execute request
+        for(Map.Entry<URI, Object> entry : dataMap.entrySet()){
+            //Sets the inputs
+            List<DataInputType> inputList = executeRequest.getInput();
+            //Test if the entry is one of the inputs
+            for(InputDescriptionType input : process.getInput()){
+                if(URI.create(input.getIdentifier().getValue()).equals(entry.getKey())){
+                    //Build the data object containing the data on the input
+                    Data data = new Data();
+                    data.getContent().add(entry.getValue());
+                    //Build the DataInput object containing the input identifier and the data to process
+                    DataInputType dataInput = new DataInputType();
+                    dataInput.setId(entry.getKey().toString());
+                    dataInput.setData(data);
+                    //Register the DataInput
+                    inputList.add(dataInput);
+                }
+            }
+            //Sets the outputs
+            List<OutputDefinitionType> outputList = executeRequest.getOutput();
+            //Test if the entry is one of the outputs
+            for(OutputDescriptionType output : process.getOutput()){
+                if(URI.create(output.getIdentifier().getValue()).equals(entry.getKey())){
+                    //Build the OutputDefinition object which contains the processing information for the output
+                    OutputDefinitionType out = new OutputDefinitionType();
+                    out.setId(entry.getKey().toString());
+                    out.setTransmission(DataTransmissionModeType.VALUE);
+                    out.setMimeType("text/plain");
+                    outputList.add(out);
+                }
+            }
+        }
+        //Launch the execution on the server
+        JAXBElement<ExecuteRequestType> jaxbElement = new ObjectFactory().createExecute(executeRequest);
+        //Return the StatusInfo answer of the server
+        return (StatusInfo) askRequest(jaxbElement);
     }
 }

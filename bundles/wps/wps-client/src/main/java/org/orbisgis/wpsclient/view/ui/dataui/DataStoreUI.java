@@ -186,10 +186,10 @@ public class DataStoreUI implements DataUI{
         //Retrieve the table map
         Map<String, Boolean> tableMap;
         if(isSpatialDataStore) {
-            tableMap = wpsClient.getLocalWpsService().getGeocatalogTableList(true);
+            tableMap = wpsClient.getGeocatalogTableList(true);
         }
         else {
-            tableMap = wpsClient.getLocalWpsService().getGeocatalogTableList(false);
+            tableMap = wpsClient.getGeocatalogTableList(false);
         }
         //If there is tables, build all the ContainerItem containing the JPanel representing a table
         ContainerItem<Object> selectedItem = (ContainerItem<Object>)geocatalogComboBox.getSelectedItem();
