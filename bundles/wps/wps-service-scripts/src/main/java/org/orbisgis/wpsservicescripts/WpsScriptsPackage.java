@@ -49,6 +49,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -173,7 +174,7 @@ public class WpsScriptsPackage {
      */
     protected void removeAllScripts(){
         for(CodeType idProcess : listIdProcess){
-            localWpsService.removeProcess(idProcess);
+            localWpsService.removeProcess(URI.create(idProcess.getValue()));
         }
     }
 

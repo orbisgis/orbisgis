@@ -35,7 +35,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsclient.view.utils.Filter;
+package org.orbisgis.wpsclient.view.utils.filter;
 
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactory;
@@ -109,7 +109,7 @@ public class SearchFilter implements FilterFactory<IFilter,DefaultActiveFilter> 
     }
 
     /**
-     * Filter associated to this factory
+     * filter associated to this factory
      */
     private class TextFilter implements IFilter{
         /** Text use to filter **/

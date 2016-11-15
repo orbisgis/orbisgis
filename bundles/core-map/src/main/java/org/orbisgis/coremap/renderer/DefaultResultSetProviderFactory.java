@@ -121,7 +121,7 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
             pm.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL, cancelListener);
             GeometryFactory geometryFactory = new GeometryFactory();
             if(st.getParameterMetaData().getParameterCount() > 0) {
-                st.setObject(1, geometryFactory.toGeometry(extent)); // Filter geometry by envelope
+                st.setObject(1, geometryFactory.toGeometry(extent)); // filter geometry by envelope
             }
             return st.executeQuery().unwrap(SpatialResultSet.class);
         }

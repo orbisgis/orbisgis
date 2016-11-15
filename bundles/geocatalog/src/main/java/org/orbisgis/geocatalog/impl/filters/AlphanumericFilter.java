@@ -39,7 +39,7 @@ import org.h2gis.utilities.TableLocation;
 import java.util.Map;
 
 /**
- * The Alphanumeric Data Source Filter.
+ * The Alphanumeric Data Source filter.
  * Data Source is Not vectorial, raster, wms or a system table
  */
 public class AlphanumericFilter implements IFilter {

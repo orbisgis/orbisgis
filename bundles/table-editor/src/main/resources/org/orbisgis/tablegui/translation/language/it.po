@@ -76,7 +76,7 @@ msgid ""
 msgstr "La rierca è già partita. Aspetta che finisca oppure cancellala."
 
 #: org/orbisgis/tablegui/impl/TableEditor.java:407
-msgid "Filter selected rows"
+msgid "filter selected rows"
 msgstr "Filtra righe selezionate"
 
 #: org/orbisgis/tablegui/impl/TableEditor.java:409

@@ -37,8 +37,8 @@
 
 package org.orbisgis.wpsclient.view.ui;
 
-import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.KeywordsType;
+import net.opengis.ows._2.LanguageStringType;
 import net.opengis.ows._2.MetadataType;
 import net.opengis.wps._2_0.ProcessSummaryType;
 import org.orbisgis.sif.components.actions.ActionCommands;
@@ -49,11 +49,12 @@ import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
 import org.orbisgis.wpsclient.WpsClientImpl;
-import org.orbisgis.wpsclient.view.utils.Filter.IFilter;
-import org.orbisgis.wpsclient.view.utils.Filter.SearchFilter;
+import org.orbisgis.wpsclient.view.utils.filter.IFilter;
+import org.orbisgis.wpsclient.view.utils.filter.SearchFilter;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.TreeNodeWps;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
+import org.orbisgis.wpsgroovyapi.attributes.LanguageString;
 import org.orbisgis.wpsservice.LocalWpsServer;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -864,15 +865,13 @@ public class ToolBoxPanel extends JPanel {
                 script.setUserObject(processSummary.getTitle().get(0).getValue());
             }
             if(!processSummary.getKeywords().isEmpty() && !processSummary.getKeywords().get(0).getKeyword().isEmpty()) {
-                for (KeywordsType tag : processSummary.getKeywords()) {
-                    TreeNodeWps tagNode = getChildWithUserObject(tag.getKeyword().get(0).getValue(), root);
+                for (LanguageStringType tag : processSummary.getKeywords().get(0).getKeyword()) {
+                    TreeNodeWps tagNode = getChildWithUserObject(tag.getValue(), root);
                     if (tagNode == null) {
                         tagNode = new TreeNodeWps();
                         tagNode.setNodeType(TreeNodeWps.NodeType.FOLDER);
-                        if(tag.getKeyword()!= null && !tag.getKeyword().isEmpty()) {
-                            tagNode.setUserObject(tag.getKeyword().get(0).getValue());
-                            tagNode.setCustomIcon(tag.getKeyword().get(0).getValue().toLowerCase());
-                        }
+                        tagNode.setUserObject(tag.getValue());
+                        tagNode.setCustomIcon(tag.getValue().toLowerCase());
                         tagNode.setValidNode(true);
                         tagModel.insertNodeInto(tagNode, root, 0);
                     }

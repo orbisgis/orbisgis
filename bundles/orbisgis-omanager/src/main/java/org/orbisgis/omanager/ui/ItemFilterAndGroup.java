@@ -48,7 +48,7 @@ public class ItemFilterAndGroup implements ItemFilter<BundleListModel> {
 
     /**
      * Constructor, take a collection of Filters
-     * @param filters Filter collection
+     * @param filters filter collection
      */
     public ItemFilterAndGroup(Collection<ItemFilter<BundleListModel>> filters) {
         this.filters = filters;

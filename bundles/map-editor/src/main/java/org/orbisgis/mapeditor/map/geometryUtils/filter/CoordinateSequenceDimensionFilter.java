@@ -40,7 +40,7 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 
 /**
- * Filter on the dimension of the coordinate sequence.
+ * filter on the dimension of the coordinate sequence.
  *
  * @author Erwan Bocher
  */

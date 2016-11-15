@@ -35,7 +35,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsclient.view.utils.Filter;
+package org.orbisgis.wpsclient.view.utils.filter;
 
 import org.orbisgis.wpsclient.view.utils.TreeNodeWps;
 
