@@ -259,12 +259,16 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 if (!onUpdateEditableSelection.getAndSet(true)) {
                     // Convert primary key value into row number
                     try {
-                        SortedSet<Integer> modelRows = tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement.getSelection());
-                        setRowSelection(modelRows, -1);
-                        if(!modelRows.isEmpty()) {
-                            // Scroll to first selection
-                            scrollToRow(modelRows.first() - 1);
+                            SortedSet<Integer> modelRows = tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement.getSelection());                        
+                            setRowSelection(modelRows, -1);
+                            if (tableEditableElement.isFiltered()) {
+                            tableSorter.setRowsFilter( getTableModelSelection(0));
                         }
+                            if (!modelRows.isEmpty()) {
+                                // Scroll to first selection
+                                scrollToRow(modelRows.first() - 1);
+                            }
+                        
                     } catch (EditableElementException | SQLException ex) {
                         LOGGER.error(ex.getLocalizedMessage(), ex);
                     } finally {
@@ -273,6 +277,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 }
         }
         
+        /**
+         * The rows have been filtered
+         */
         public void onFilterChange(){
             if (!onFiltered.getAndSet(true)) {
                 onMenuFilterRows();
@@ -293,6 +300,11 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             return table.rowAtPoint(viewport.getViewPosition());
         }
 
+        /**
+         * Return true if the row is visible
+         * @param row
+         * @return 
+         */
         private boolean isRowVisible(int row) {
             return table.getVisibleRect().intersects(table.getCellRect(row, 0, true));
         }
@@ -353,6 +365,11 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         public void onPopupBecomeVisible() {
                 cellHighlight.setLocation(popupCellAdress);
         }
+        
+        /**
+         * Create the filter panel
+         * @return 
+         */
         private JComponent makeFilterManager() {
                 JPanel filterComp = filterManager.makeFilterPanel(false);
                 filterManager.setUserCanRemoveFilter(false);
@@ -394,6 +411,11 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 filterManager.clearFilters();
                 filterManager.addFilter(currentFilter);
         }
+        
+        /**
+         * Create the table and its actions
+         * @return 
+         */
         private JComponent makeTable() {
                 table = new JTable();
                 table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
@@ -880,16 +902,24 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 //Set the row count at left
                 tableRowHeader = new TableRowHeader(table);
                 tableScrollPane.setRowHeaderView(tableRowHeader);
+                              
                 //Apply the selection
                 try {
                     setRowSelection(tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement
                             .getSelection()), -1);
+                    //Apply the filtered row action
+                if(tableEditableElement.isFiltered()){
+                    IntegerUnion selectedModelIndex = getTableModelSelection(0);
+                    tableSorter.setRowsFilter(selectedModelIndex);
+                }
+                    
                     if (!table.getSelectionModel().isSelectionEmpty()) {
                         scrollToRow(table.getSelectionModel().getMinSelectionIndex());
                     }
                 } catch (EditableElementException |SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
+                
                 table.getSelectionModel().addListSelectionListener(
                         EventHandler.create(ListSelectionListener.class,this,
                         "onTableSelectionChange",""));

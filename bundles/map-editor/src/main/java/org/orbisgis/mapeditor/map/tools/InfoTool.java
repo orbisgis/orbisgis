@@ -59,10 +59,6 @@ import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.tableeditorapi.TableEditableElementImpl;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.component.annotations.Reference;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -73,7 +69,12 @@ public class InfoTool extends AbstractRectangleTool {
 
     private static Logger UILOGGER = LoggerFactory.getLogger("gui." + InfoTool.class);
     private static Logger POPUPLOGGER = LoggerFactory.getLogger("popup." + InfoTool.class);
+    private final EditorManager editorManager;
        
+    public InfoTool(EditorManager editorManager){
+        this.editorManager=editorManager;
+    }
+    
     @Override
     public void update(Observable o, Object arg) {
         //PlugInContext.checkTool(this);
@@ -92,7 +93,7 @@ public class InfoTool extends AbstractRectangleTool {
         if (minx < tm.getValues()[0]) {
             intersects = false;
         }            
-        new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), layer, intersects).execute();
+        new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), layer, intersects, editorManager).execute();
 
     }
 
@@ -120,11 +121,13 @@ public class InfoTool extends AbstractRectangleTool {
         private final ILayer layer;
         private static final I18n I18N = I18nFactory.getI18n(PopulateViewJob.class);
         private final boolean intersects;
+        private final EditorManager editorManager;
 
-        private PopulateViewJob(Envelope envelope, ILayer layer, boolean intersects) {
+        private PopulateViewJob(Envelope envelope, ILayer layer, boolean intersects, EditorManager editorManager) {
             this.envelope = envelope;
             this.layer = layer;
             this.intersects=intersects;
+            this.editorManager=editorManager;
         }
 
         @Override
@@ -134,9 +137,6 @@ public class InfoTool extends AbstractRectangleTool {
 
         @Override
         protected Object doInBackground() throws Exception {            
-            BundleContext thisBundle = FrameworkUtil.getBundle(InfoTool.class).getBundleContext();
-            ServiceReference<?> serviceReference = thisBundle.getServiceReference(EditorManager.class.getName());            
-
             Geometry envGeom = ToolManager.toolsGeometryFactory.toGeometry(envelope);
             TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
             try(Connection connection = layer.getDataManager().getDataSource().getConnection()) {
@@ -150,7 +150,6 @@ public class InfoTool extends AbstractRectangleTool {
                     layer.setSelection(newSelection);
                     TableEditableElementImpl tabe = new TableEditableElementImpl(newSelection, layer.getTableReference(), layer.getDataManager());
                     tabe.setFiltered(true);
-                    EditorManager editorManager= (EditorManager ) thisBundle .getService(serviceReference );
                     editorManager.openEditable(tabe);
                 }                
                 
