@@ -262,7 +262,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                     Job job = processEditableElement.newJob(UUID.fromString(statusInfo.getJobID()));
 
                     //Then launch the process execution
-                    wpsClient.validateInstance(this, job.getId());
+                    wpsClient.validateInstance(this, job);
 
                     job.setStartTime(System.currentTimeMillis());
                     job.setStatus(statusInfo);
@@ -292,7 +292,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                             Job job = processEditableElement.newJob(UUID.fromString(statusInfo.getJobID()));
 
                             //Then launch the process execution
-                            wpsClient.validateInstance(this, job.getId());
+                            wpsClient.validateInstance(this, job);
 
                             job.setStartTime(System.currentTimeMillis());
                             job.setStatus(statusInfo);

@@ -15,7 +15,7 @@ public interface WpsJobStateListener {
      * Returns the id of the listened job.
      * @return The id of the listened job.
      */
-    UUID getJobId();
+    UUID getJobID();
 
     /**
      * Method called when the job has been accepted.

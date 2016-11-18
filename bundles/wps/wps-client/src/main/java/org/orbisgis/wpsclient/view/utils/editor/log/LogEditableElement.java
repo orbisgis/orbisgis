@@ -48,9 +48,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * EditableElement associated to the LogEditor.
@@ -63,15 +61,12 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(LogEditableElement.class);
     /** List of ProcessEditableElements displayed by the Editor. */
-    private List<ProcessEditableElement> listPee = new ArrayList<>();
+    private Map<UUID, Job> jobMap = new HashMap<>();
     /** List of listeners. */
     private List<PropertyChangeListener> changeListenerList = new ArrayList<>();
 
-    public void addProcessEditableElement(ProcessEditableElement processEditableElement){
-        if(!listPee.contains(processEditableElement)) {
-            listPee.add(processEditableElement);
-            processEditableElement.addPropertyChangeListener(this);
-        }
+    public void addJob(Job job){
+        this.jobMap.put(job.getId(), job);
     }
 
     @Override
@@ -133,7 +128,7 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
 
     @Override
     public Object getObject() throws UnsupportedOperationException {
-        return listPee;
+        return jobMap;
     }
 
     @Override
@@ -153,12 +148,8 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
     }
 
     public void cancelProcess(UUID id) {
-        for(ProcessEditableElement processEditableElement : listPee){
-            Job job = processEditableElement.getJob(id);
-            if(job != null){
-                processEditableElement.firePropertyChangeEvent(new PropertyChangeEvent(this, ProcessEditableElement.CANCEL, id, id));
-                job.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Process cancelled by the user"));
-            }
-        }
+        Job job = jobMap.get(id);
+        job.firePropertyChangeEvent(new PropertyChangeEvent(this, ProcessEditableElement.CANCEL, id, id));
+        job.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Process cancelled by the user"));
     }
 }

@@ -38,6 +38,7 @@ package org.orbisgis.wpsclient.view.utils.editor.process;
 
 import net.opengis.wps._2_0.*;
 import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -48,8 +49,10 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement.LOG_PROPERTY;
 import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement.REFRESH_STATUS;
@@ -57,33 +60,41 @@ import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableEl
 import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement.GET_RESULTS;
 
 /**
- * This class represents the WPS Job object by in the client side.
+ * This class represents the WPS server Job object but in the client side.
+ * It collects the process execution state, the job ID and the logs.
+ * It also contains a timer which will activate the refresh of the job state.
  *
- * @author Sylvain PALOMOINOS
+ * @author Sylvain PALOMINOS
  */
 public class Job implements ProcessExecutionListener{
 
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(ProcessExecutionListener.class);
+    /** Id of the server side Job. */
     private UUID id;
+    /** Process state at the last refresh date. */
     private ProcessExecutionListener.ProcessState state;
+    /** Time when the process has started. */
     private Long startTime;
+    /** Map containing the logs of the execution of their display color. */
     private Map<String, Color> logMap;
-    private ProcessEditableElement processEditableElement;
-    private WpsClient wpsClient;
+    private ProcessDescriptionType process;
+    private WpsClientImpl wpsClient;
+    private List<PropertyChangeListener> propertyChangeListenerList;
 
-    public Job(ProcessEditableElement processEditableElement, UUID id){
+    public Job(ProcessDescriptionType process, ProcessEditableElement processEditableElement, UUID id){
         this.logMap = new LinkedHashMap<>();
-        this.processEditableElement = processEditableElement;
+        this.propertyChangeListenerList = new ArrayList<>();
+        this.process = process;
         this.wpsClient = null;
         this.id = id;
     }
 
-    public Job(WpsClient client, UUID id){
+    public Job(WpsClientImpl client, UUID id){
         this.logMap = new LinkedHashMap<>();
-        this.processEditableElement = null;
         this.wpsClient = client;
         this.id = id;
+        this.addPropertyChangeListener(wpsClient);
     }
 
     public UUID getId() {
@@ -196,8 +207,8 @@ public class Job implements ProcessExecutionListener{
         appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Process result :"));
         for(DataOutputType output : result.getOutput()){
             Object o = output.getData().getContent().get(0);
-            if(processEditableElement != null) {
-                for (OutputDescriptionType outputDescriptionType : processEditableElement.getProcessOffering().getProcess().getOutput()) {
+            if(process != null) {
+                for (OutputDescriptionType outputDescriptionType : process.getOutput()) {
                     if (outputDescriptionType.getIdentifier().getValue().equals(output.getId())) {
                         appendLog(ProcessExecutionListener.LogType.INFO,
                                 outputDescriptionType.getTitle().get(0).getValue() + " = " + o.toString());
@@ -212,12 +223,22 @@ public class Job implements ProcessExecutionListener{
     }
 
     public ProcessDescriptionType getProcess() {
-        return processEditableElement.getProcess();
+        return process;
     }
 
-    private void firePropertyChangeEvent(PropertyChangeEvent event){
-        if(processEditableElement != null){
-            processEditableElement.firePropertyChangeEvent(event);
+    public void addPropertyChangeListener(PropertyChangeListener listener){
+        this.propertyChangeListenerList.add(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener){
+        this.propertyChangeListenerList.remove(listener);
+    }
+
+    public void firePropertyChangeEvent(PropertyChangeEvent event){
+        if(!propertyChangeListenerList.isEmpty()) {
+            for (PropertyChangeListener listener : propertyChangeListenerList) {
+                listener.propertyChange(event);
+            }
         }
         else if(wpsClient != null){
             switch(event.getPropertyName()){

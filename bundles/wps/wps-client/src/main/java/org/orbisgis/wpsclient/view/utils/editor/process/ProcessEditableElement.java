@@ -208,7 +208,7 @@ public class ProcessEditableElement implements EditableElement {
     }
 
     public Job newJob(UUID jobId) {
-        Job job = new Job(this, jobId);
+        Job job = new Job(getProcess(), this, jobId);
         this.jobMap.put(jobId, job);
         return job;
     }

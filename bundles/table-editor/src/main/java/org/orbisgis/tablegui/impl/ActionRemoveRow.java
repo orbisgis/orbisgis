@@ -152,7 +152,7 @@ public class ActionRemoveRow extends AbstractAction implements WpsJobStateListen
     }
 
     @Override
-    public UUID getJobId() {
+    public UUID getJobID() {
         return jobId;
     }
 

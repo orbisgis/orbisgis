@@ -142,7 +142,7 @@ public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
     }
 
     @Override
-    public UUID getJobId() {
+    public UUID getJobID() {
         return jobId;
     }
 

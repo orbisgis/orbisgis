@@ -74,6 +74,8 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URI;
 import java.util.*;
 import javax.swing.*;
@@ -91,7 +93,7 @@ import java.util.concurrent.ExecutorService;
  **/
 
 @Component(immediate = true, service = {DockingPanel.class, InternalWpsClient.class})
-public class WpsClientImpl implements DockingPanel, InternalWpsClient {
+public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyChangeListener {
 
     /** String of the action Refresh. */
     private static final String ACTION_REFRESH = "ACTION_REFRESH";
@@ -126,6 +128,8 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient {
     private LocalWpsServer wpsService;
     /** List of JobStateListener listening for the Job state execution. */
     private List<WpsJobStateListener> jobStateListenerList;
+    /** Map of the running job. */
+    private Map<UUID, Job> jobMap;
 
 
 
@@ -165,6 +169,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient {
         openEditorList.add(le);
 
         jobStateListenerList = new ArrayList<>();
+        jobMap = new HashMap<>();
         refreshAvailableScripts();
     }
 
@@ -478,13 +483,15 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient {
     /**
      * Once the process(es) is(are) configured and run, add it(them) to the LogEditor and removes the ProcessEditor (close it).
      * @param pe ProcessEditor to close.
-     * @param id Identifier of the job to validate.
+     * @param job Job to validate.
      */
-    public void validateInstance(ProcessEditor pe, UUID id){
-        //Adds the process information to the log managing classes (LogEditableElement and LogEditor)
+    public void validateInstance(ProcessEditor pe, Job job){
+        this.jobMap.put(job.getId(), job);
+        //Adds the process information to the log managing classes (LogEditableElement, LogEditor and Job)
         ProcessEditableElement processEditableElement = (ProcessEditableElement) pe.getEditableElement();
-        le.addNewLog(processEditableElement, id);
-        lee.addProcessEditableElement(processEditableElement);
+        le.addNewLog(processEditableElement, job.getId());
+        job.addPropertyChangeListener(this);
+        job.addPropertyChangeListener(lee);
         //First test if the ProcessEditor has not been already deleted.
         if(dockingManager.getPanels().contains(pe)) {
             dockingManager.removeDockingPanel(pe.getDockingParameters().getName());
@@ -540,7 +547,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient {
         List<WpsJobStateListener> list = new ArrayList<>();
         list.addAll(jobStateListenerList);
         for(WpsJobStateListener listener : list){
-            if(listener.getJobId() != null && listener.getJobId().equals(UUID.fromString(statusInfo.getJobID()))){
+            if(listener.getJobID() != null && listener.getJobID().equals(UUID.fromString(statusInfo.getJobID()))){
                 switch(statusInfo.getStatus()){
                     case "ACCEPTED":
                         listener.onJobAccepted();
@@ -576,12 +583,13 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient {
         //Call the process execution and get the StatusInfo object answer
         StatusInfo statusInfo = executeProcess(processIdentifier, dataMap);
         //Get the Server job id and build a client side job
-        UUID jobId = UUID.fromString(statusInfo.getJobID());
-        Job job = new Job(this, jobId);
+        UUID jobID = UUID.fromString(statusInfo.getJobID());
+        Job job = new Job(this, jobID);
         job.setStartTime(System.currentTimeMillis());
         job.setStatus(statusInfo);
+        this.jobMap.put(jobID, job);
         //Returns the job id
-        return jobId;
+        return jobID;
     }
 
     @Override
@@ -675,6 +683,27 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient {
         jobStateListenerList.remove(listener);
     }
 
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.CANCEL)){
+            UUID jobID = (UUID)propertyChangeEvent.getNewValue();
+            StatusInfo statusInfo = this.dismissJob(jobID);
+            Job job = jobMap.get(jobID);
+            job.setStatus(statusInfo);
+        }
+        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.REFRESH_STATUS)){
+            UUID jobID = (UUID)propertyChangeEvent.getNewValue();
+            StatusInfo statusInfo = this.getJobStatus(jobID);
+            Job job = jobMap.get(jobID);
+            job.setStatus(statusInfo);
+        }
+        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.GET_RESULTS)){
+            UUID jobID = (UUID)propertyChangeEvent.getNewValue();
+            Job job = jobMap.get(jobID);
+            Result result = this.getJobResult(jobID);
+            job.setResult(result);
+        }
+    }
 
 
     /***********************/
@@ -697,6 +726,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient {
 
     @Override
     public Result getJobResult(UUID jobID) {
+        jobMap.remove(jobID);
         //Build the GetResult object used to request a job result to the WPS server.
         GetResult getResult = new GetResult();
         getResult.setJobID(jobID.toString());

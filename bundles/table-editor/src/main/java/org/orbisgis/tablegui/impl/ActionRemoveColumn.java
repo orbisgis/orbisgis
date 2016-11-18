@@ -139,7 +139,7 @@ public class ActionRemoveColumn extends AbstractAction implements WpsJobStateLis
     }
 
     @Override
-    public UUID getJobId() {
+    public UUID getJobID() {
         return jobId;
     }
 
