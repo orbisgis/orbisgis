@@ -59,25 +59,31 @@ import java.util.List;
 
 /**
  * EditableElement of a process which contains all the information about a process instance
- * (input data, output data, job).
+ * (data, process ...).
  *
  * @author Sylvain PALOMINOS
  */
 
 public class ProcessEditableElement implements EditableElement {
-    private ProcessOffering processOffering;
-    private boolean isOpen;
 
+    /** ProcessOffering containing the process represented. */
+    private ProcessOffering processOffering;
+    /** Indicates if the the element is open or not. */
+    private boolean isOpen;
     /** List of listeners for the processState*/
     private List<PropertyChangeListener> propertyChangeListenerList;
-    private Map<URI, Object> inputDataMap;
-    private Map<URI, Object> outputDataMap;
+    /** Map of the pre defined data of a process used to display default datas */
+    private Map<URI, Object> dataMap;
 
+    /**
+     * Constructor of the EditableElement using the ProcessOfferings.
+     *
+     * @param processOffering Process offering coming from the Wps server.
+     */
     public ProcessEditableElement(ProcessOffering processOffering){
         this.processOffering = processOffering;
         this.propertyChangeListenerList = new ArrayList<>();
-        this.outputDataMap = new HashMap<>();
-        this.inputDataMap = new HashMap<>();
+        this.dataMap = new HashMap<>();
     }
 
     @Override
@@ -143,37 +149,46 @@ public class ProcessEditableElement implements EditableElement {
         return processOffering;
     }
 
-    public String getProcessReference(){
-        return processOffering.getProcess().getTitle().get(0).getValue();
+    /**
+     * Returns the Map of the pre defined data.
+     *
+     * @return The Map of the pre defined data.
+     */
+    public Map<URI, Object> getDataMap() {
+        return dataMap;
     }
 
-    public Map<URI, Object> getInputDataMap() {
-        return inputDataMap;
+    /**
+     * Resets  and empty the data Map.
+     */
+    public void resetDataMap() {
+        this.dataMap = new HashMap<>();
     }
 
-    public void setInputDataMap(Map<URI, Object> inputDataMap) {
-        this.inputDataMap = inputDataMap;
-    }
-
-    public Map<URI, Object> getOutputDataMap() {
-        return outputDataMap;
-    }
-
-    public void setOutputDataMap(Map<URI, Object> outputDataMap) {
-        this.outputDataMap = outputDataMap;
-    }
-
+    /**
+     * Returns the process.
+     *
+     * @return The process.
+     */
     public ProcessDescriptionType getProcess() {
         return processOffering.getProcess();
     }
 
+    /**
+     * Returns the ProcessOffering object.
+     *
+     * @return the ProcessOffering object.
+     */
     public ProcessOffering getProcessOffering() {
         return processOffering;
     }
 
-    public void setDefaultInputValues(Map<URI,Object> defaultInputValues) {
-        for(Map.Entry<URI, Object> entry : defaultInputValues.entrySet()){
-            inputDataMap.put(entry.getKey(), entry.getValue());
-        }
+    /**
+     * Sets the default values associated to the ProcessOffering and to the process.
+     *
+     * @param defaultValues Map of the default values associated to the process.
+     */
+    public void setDefaultValues(Map<URI,Object> defaultValues) {
+        dataMap.putAll(defaultValues);
     }
 }

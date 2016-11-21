@@ -61,14 +61,11 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
 import java.util.List;
 
-import static org.orbisgis.wpsclient.view.utils.editor.process.Job.*;
 import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor.ProcessExecutionType.BASH;
 import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor.ProcessExecutionType.STANDARD;
 
@@ -122,7 +119,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS));
         dockingPanelParameters.setDefaultDockingLocation(
                 new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClientImpl.TOOLBOX_REFERENCE));
-        dockingPanelParameters.setTitle(processEditableElement.getProcessReference());
+        dockingPanelParameters.setTitle(processEditableElement.getProcess().getTitle().get(0).getValue());
         this.setLayout(new BorderLayout());
         dataUIManager = wpsClient.getDataUIManager();
 
@@ -161,8 +158,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
                 mode = STANDARD;
                 this.removeAll();
                 this.add(buildSimpleUI(), BorderLayout.CENTER);
-                processEditableElement.setInputDataMap(new HashMap<URI, Object>());
-                processEditableElement.setOutputDataMap(new HashMap<URI, Object>());
+                processEditableElement.resetDataMap();
                 this.revalidate();
                 break;
             case STANDARD:
@@ -170,8 +166,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
                 mode = BASH;
                 this.removeAll();
                 this.add(buildBashUI(), BorderLayout.CENTER);
-                processEditableElement.setInputDataMap(new HashMap<URI, Object>());
-                processEditableElement.setOutputDataMap(new HashMap<URI, Object>());
+                processEditableElement.resetDataMap();
                 this.revalidate();
                 break;
         }
@@ -214,7 +209,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
     @Override
     public void setEditableElement(EditableElement editableElement) {
         this.processEditableElement = (ProcessEditableElement)editableElement;
-        dockingPanelParameters.setTitle(processEditableElement.getProcessReference());
+        dockingPanelParameters.setTitle(processEditableElement.getProcess().getTitle().get(0).getValue());
     }
 
     /**
@@ -291,8 +286,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
     private JComponent buildSimpleUI(){
         ProcessDescriptionType process = processEditableElement.getProcess();
         dataMap = new HashMap<>();
-        dataMap.putAll(processEditableElement.getInputDataMap());
-        dataMap.putAll(processEditableElement.getOutputDataMap());
+        dataMap.putAll(processEditableElement.getDataMap());
         if(defaultDataMap != null) {
             dataMap.putAll(defaultDataMap);
         }
@@ -322,7 +316,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
 
         boolean noParameters = true;
         // Put all the default values in the datamap
-        processEditableElement.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
+        processEditableElement.setDefaultValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
         JPanel parameterPanel = new JPanel(new MigLayout("fill"));
         JScrollPane scrollPane = new JScrollPane(parameterPanel);
@@ -435,7 +429,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         JScrollPane scrollPane = new JScrollPane(panel);
 
         // Put all the default values in the datamap
-        processEditableElement.setDefaultInputValues(dataUIManager.getInputDefaultValues(process));
+        processEditableElement.setDefaultValues(dataUIManager.getInputDefaultValues(process));
         //Creates the panel that will contains all the inputs.
         JPanel boderParameterPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         boderParameterPanel.setBorder(BorderFactory.createTitledBorder(I18N.tr("Parameter(s)")));
@@ -560,8 +554,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
 
     private void addBashLine(ProcessDescriptionType process, JPanel parameterPanel, Map<URI, Object> defaultDataMap){
         HashMap<URI, Object> map = new HashMap<>();
-        map.putAll(processEditableElement.getInputDataMap());
-        map.putAll(processEditableElement.getOutputDataMap());
+        map.putAll(processEditableElement.getDataMap());
         if(defaultDataMap != null) {
             map.putAll(defaultDataMap);
         }
