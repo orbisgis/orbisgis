@@ -86,6 +86,10 @@ import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.util.concurrent.ExecutorService;
 
+import static org.orbisgis.wpsclient.view.utils.editor.process.Job.CANCEL;
+import static org.orbisgis.wpsclient.view.utils.editor.process.Job.GET_RESULTS;
+import static org.orbisgis.wpsclient.view.utils.editor.process.Job.REFRESH_STATUS;
+
 /**
  * Implementation of the InternalWpsClient for Orbisgis.
  *
@@ -576,6 +580,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
 
     @Override
     public UUID executeInternalProcess(URI processIdentifier, Map<URI, Object> dataMap, WpsJobStateListener listener) {
+        ProcessDescriptionType process = getInternalProcess(processIdentifier);
         //If there is a listener for this process execution, register it
         if(listener != null) {
             addJobListener(listener);
@@ -584,7 +589,8 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         StatusInfo statusInfo = executeProcess(processIdentifier, dataMap);
         //Get the Server job id and build a client side job
         UUID jobID = UUID.fromString(statusInfo.getJobID());
-        Job job = new Job(this, jobID);
+        Job job = new Job(jobID, process);
+        job.addPropertyChangeListener(this);
         job.setStartTime(System.currentTimeMillis());
         job.setStatus(statusInfo);
         this.jobMap.put(jobID, job);
@@ -685,19 +691,19 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
 
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.CANCEL)){
+        if(propertyChangeEvent.getPropertyName().equals(CANCEL)){
             UUID jobID = (UUID)propertyChangeEvent.getNewValue();
             StatusInfo statusInfo = this.dismissJob(jobID);
             Job job = jobMap.get(jobID);
             job.setStatus(statusInfo);
         }
-        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.REFRESH_STATUS)){
+        if(propertyChangeEvent.getPropertyName().equals(REFRESH_STATUS)){
             UUID jobID = (UUID)propertyChangeEvent.getNewValue();
             StatusInfo statusInfo = this.getJobStatus(jobID);
             Job job = jobMap.get(jobID);
             job.setStatus(statusInfo);
         }
-        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.GET_RESULTS)){
+        if(propertyChangeEvent.getPropertyName().equals(GET_RESULTS)){
             UUID jobID = (UUID)propertyChangeEvent.getNewValue();
             Job job = jobMap.get(jobID);
             Result result = this.getJobResult(jobID);

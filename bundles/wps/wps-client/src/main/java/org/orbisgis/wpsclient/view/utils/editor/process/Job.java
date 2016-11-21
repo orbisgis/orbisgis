@@ -37,8 +37,6 @@
 package org.orbisgis.wpsclient.view.utils.editor.process;
 
 import net.opengis.wps._2_0.*;
-import org.orbisgis.wpsclient.WpsClient;
-import org.orbisgis.wpsclient.WpsClientImpl;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -54,19 +52,34 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
-import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement.LOG_PROPERTY;
-import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement.REFRESH_STATUS;
-import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement.STATE_PROPERTY;
-import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement.GET_RESULTS;
-
 /**
  * This class represents the WPS server Job object but in the client side.
- * It collects the process execution state, the job ID and the logs.
- * It also contains a timer which will activate the refresh of the job state.
+ * The aim of the class is to follow the life cycle of a server side Job.
+ *
+ * When it is construct, the UUID of the server side Job is given and will be used later for refreshing the job status.
+ * Once created, some property listener can be add for listening the update of the Process state.
+ * Then, once configured, the result of the process execution (the StatusInfo object) is given with the setStatus()
+ * methods. The job will save the state, and fire two PropertyEvents : one with the new state of the execution and
+ * another with the execution log.
+ * After firering the event, with the refresh date of the StatusInfo object, a timer is launched and will wake up the
+ * Job. When the Job is woken up by the timer, it will fire a PropertyEvent with the request of the update of the job status.
+ * The class in charge of that (often the WpsClient) will get the new StatusInfo object form the Wps server thanks to the
+ * GetStatus request and give it back to the client side Job object. Then the status update is done, the timer is reset
+ * and so on.
+ * Once the status is 'succedded' or 'failed', the Job fire a PropertyEvent for getting the execution result from its
+ * listeners. The listener in charge (often the WpsClient) gives back the Result object from the WpsServer and the Job
+ * fire the last two status and log PropertyEvents.
  *
  * @author Sylvain PALOMINOS
  */
 public class Job implements ProcessExecutionListener{
+
+    /** Static strings used for the PropertyEvents. */
+    public static final String STATE_PROPERTY = "STATE_PROPERTY";
+    public static final String LOG_PROPERTY = "LOG_PROPERTY";
+    public static final String CANCEL = "CANCEL";
+    public static final String REFRESH_STATUS = "REFRESH_STATUS";
+    public static final String GET_RESULTS = "GET_RESULTS";
 
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(ProcessExecutionListener.class);
@@ -78,29 +91,38 @@ public class Job implements ProcessExecutionListener{
     private Long startTime;
     /** Map containing the logs of the execution of their display color. */
     private Map<String, Color> logMap;
+    /** Process executed by the Job */
     private ProcessDescriptionType process;
-    private WpsClientImpl wpsClient;
+    /** List of property listener which are waiting for any changes on the process*/
     private List<PropertyChangeListener> propertyChangeListenerList;
 
-    public Job(ProcessDescriptionType process, ProcessEditableElement processEditableElement, UUID id){
+    /**
+     * Constructs a Job with the id of the server side Job and the ProcessDescriptionType of the process to execute.
+     * This way, while no PropertyListener is add, the Job will only update it's internal state without communicating
+     * it to other class.
+     *
+     * @param id UUID of the server side Job.
+     * @param process ProcessDescriptionType of the process to execute.
+     */
+    public Job(UUID id, ProcessDescriptionType process){
         this.logMap = new LinkedHashMap<>();
         this.propertyChangeListenerList = new ArrayList<>();
         this.process = process;
-        this.wpsClient = null;
         this.id = id;
     }
 
-    public Job(WpsClientImpl client, UUID id){
-        this.logMap = new LinkedHashMap<>();
-        this.wpsClient = client;
-        this.id = id;
-        this.addPropertyChangeListener(wpsClient);
-    }
-
+    /**
+     * Returns the UUID of the track server side Job.
+     * @return The UUID of the server side Job.
+     */
     public UUID getId() {
         return id;
     }
 
+    /**
+     * Returns the state of the track server side Job.
+     * @return The state of the server side Job.
+     */
     public ProcessExecutionListener.ProcessState getState() {
         return state;
     }
@@ -124,6 +146,10 @@ public class Job implements ProcessExecutionListener{
         }
     }
 
+    /**
+     * Returns the map of the Job execution logs.
+     * @return The map of the Job execution logs.
+     */
     public Map<String, Color> getLogMap() {
         return logMap;
     }
@@ -167,17 +193,16 @@ public class Job implements ProcessExecutionListener{
 
 
     /**
-     * Adds a date when it should ask again the process execution job status to the WpsService.
+     * Start a timer with the date when the Job should ask again the process execution job status to the WpsService.
      * @param date Date when the state should be asked.
      */
-    public void addRefreshDate(XMLGregorianCalendar date){
-
+    private void startRefreshTimer(XMLGregorianCalendar date){
         if(date != null) {
             long delta = date.toGregorianCalendar().getTime().getTime() - new Date().getTime();
             if (delta <= 0) {
                 delta = 1;
             }
-            Timer timer = new Timer((int) delta, EventHandler.create(ActionListener.class, this, "askStatusRefresh", "source"));
+            Timer timer = new Timer((int) delta, EventHandler.create(ActionListener.class, this, "askStatusRefresh"));
             timer.setRepeats(false);
             timer.start();
         }
@@ -186,74 +211,74 @@ public class Job implements ProcessExecutionListener{
     /**
      * Fire an event to ask the refreshing of the status.
      */
-    public void askStatusRefresh(Object source){
+    public void askStatusRefresh(){
         PropertyChangeEvent event = new PropertyChangeEvent(this, REFRESH_STATUS, this.getId(), this.getId());
         firePropertyChangeEvent(event);
     }
 
+    /**
+     * Sets the new status of the Job with the Wps server answer object StatusInfo.
+     * @param statusInfo StatusInfo object coming from the Wps server.
+     */
     public void setStatus(StatusInfo statusInfo){
         setProcessState(ProcessExecutionListener.ProcessState.valueOf(statusInfo.getStatus().toUpperCase()));
-        addRefreshDate(statusInfo.getNextPoll());
+        startRefreshTimer(statusInfo.getNextPoll());
     }
 
 
 
     /**
      * Sets the Result of the process job.
-     * @param result Result object.
+     * @param result Result object coming from the Wps server.
      */
     public void setResult(Result result) {
         appendLog(ProcessExecutionListener.LogType.INFO, "");
         appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Process result :"));
+        //For each output, try to build a human readable string containing the output which will be displayed in the log.
         for(DataOutputType output : result.getOutput()){
             Object o = output.getData().getContent().get(0);
-            if(process != null) {
-                for (OutputDescriptionType outputDescriptionType : process.getOutput()) {
-                    if (outputDescriptionType.getIdentifier().getValue().equals(output.getId())) {
-                        appendLog(ProcessExecutionListener.LogType.INFO,
-                                outputDescriptionType.getTitle().get(0).getValue() + " = " + o.toString());
-                    }
+            for (OutputDescriptionType outputDescriptionType : process.getOutput()) {
+                if (outputDescriptionType.getIdentifier().getValue().equals(output.getId())) {
+                    appendLog(ProcessExecutionListener.LogType.INFO,
+                            outputDescriptionType.getTitle().get(0).getValue() + " = " + o.toString());
                 }
-            }
-            else{
-                appendLog(ProcessExecutionListener.LogType.INFO, "Output : " + o.toString());
             }
         }
         firePropertyChangeEvent(new PropertyChangeEvent(this, STATE_PROPERTY, null, getState()));
     }
 
+    /**
+     * Returns the process executed by the server side Job.
+     * @return The process executed by the server side Job.
+     */
     public ProcessDescriptionType getProcess() {
         return process;
     }
 
+    /**
+     * Adds a PropertyChangeListener which will track the updates of the Job.
+     * @param listener Listeners track the Job.
+     */
     public void addPropertyChangeListener(PropertyChangeListener listener){
         this.propertyChangeListenerList.add(listener);
     }
 
+    /**
+     * Removes a PropertyChangeListener .
+     * @param listener Listeners to remove.
+     */
     public void removePropertyChangeListener(PropertyChangeListener listener){
         this.propertyChangeListenerList.remove(listener);
     }
 
+    /**
+     * Fires a PropertyEvent to all the registered PropertyListeners.
+     * @param event Event to transmit to all the listeners.
+     */
     public void firePropertyChangeEvent(PropertyChangeEvent event){
         if(!propertyChangeListenerList.isEmpty()) {
             for (PropertyChangeListener listener : propertyChangeListenerList) {
                 listener.propertyChange(event);
-            }
-        }
-        else if(wpsClient != null){
-            switch(event.getPropertyName()){
-                case STATE_PROPERTY:
-                    //Nothing to do
-                    break;
-                case REFRESH_STATUS:
-                    setStatus(wpsClient.getJobStatus(id));
-                    break;
-                case GET_RESULTS:
-                    setResult(wpsClient.getJobResult(id));
-                    break;
-                case LOG_PROPERTY:
-                    //Nothing to do
-                    break;
             }
         }
     }

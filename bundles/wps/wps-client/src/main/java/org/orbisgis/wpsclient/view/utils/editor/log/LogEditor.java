@@ -61,6 +61,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 
+import static org.orbisgis.wpsclient.view.utils.editor.process.Job.LOG_PROPERTY;
+import static org.orbisgis.wpsclient.view.utils.editor.process.Job.STATE_PROPERTY;
+
 /**
  * UI for the configuration and the run of a WPS process.
  * It extends the EditorDockable interface to be able to be docked in OrbisGIS.
@@ -217,12 +220,12 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
-        if(event.getPropertyName().equals(ProcessEditableElement.LOG_PROPERTY)){
+        if(event.getPropertyName().equals(LOG_PROPERTY)){
             Job job = (Job) event.getSource();
             AbstractMap.SimpleEntry<String, Color> entry = (AbstractMap.SimpleEntry<String, Color>)event.getNewValue();
             componentMap.get(job.getId()).addLogText(entry.getKey());
         }
-        if(event.getPropertyName().equals(ProcessEditableElement.STATE_PROPERTY)){
+        if(event.getPropertyName().equals(STATE_PROPERTY)){
             Job job = (Job) event.getSource();
             switch((ProcessExecutionListener.ProcessState)event.getNewValue()){
                 case SUCCEEDED:

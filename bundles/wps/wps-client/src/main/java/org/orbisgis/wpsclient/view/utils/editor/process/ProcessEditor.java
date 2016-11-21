@@ -68,6 +68,7 @@ import java.net.URI;
 import java.util.*;
 import java.util.List;
 
+import static org.orbisgis.wpsclient.view.utils.editor.process.Job.*;
 import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor.ProcessExecutionType.BASH;
 import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor.ProcessExecutionType.STANDARD;
 
@@ -77,7 +78,7 @@ import static org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor.Pro
  *
  * @author Sylvain PALOMINOS
  */
-public class ProcessEditor extends JPanel implements EditorDockable, PropertyChangeListener {
+public class ProcessEditor extends JPanel implements EditorDockable {
 
     private static final int SCROLLBAR_UNIT_INCREMENT = 16;
     public static final String PROCESS_PROPERTY = "PROCESS_PROPERTY";
@@ -114,7 +115,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
         this.alive = true;
         this.wpsClient = wpsClient;
         this.processEditableElement = processEditableElement;
-        this.processEditableElement.addPropertyChangeListener(this);
         this.dataMap = new HashMap<>();
         this.defaultDataMap = defaultDataMap;
         dockingPanelParameters = new DockingPanelParameters();
@@ -215,29 +215,6 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
     public void setEditableElement(EditableElement editableElement) {
         this.processEditableElement = (ProcessEditableElement)editableElement;
         dockingPanelParameters.setTitle(processEditableElement.getProcessReference());
-        processEditableElement.addPropertyChangeListener(this);
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.LOG_PROPERTY)){
-            AbstractMap.Entry<String, Color> entry = (AbstractMap.Entry)propertyChangeEvent.getNewValue();
-        }
-        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.CANCEL)){
-            StatusInfo statusInfo = wpsClient.dismissJob((UUID)propertyChangeEvent.getNewValue());
-            Job job = processEditableElement.getJob(UUID.fromString(statusInfo.getJobID()));
-            job.setStatus(statusInfo);
-        }
-        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.REFRESH_STATUS)){
-            StatusInfo statusInfo = wpsClient.getJobStatus((UUID)propertyChangeEvent.getNewValue());
-            Job job = processEditableElement.getJob(UUID.fromString(statusInfo.getJobID()));
-            job.setStatus(statusInfo);
-        }
-        if(propertyChangeEvent.getPropertyName().equals(ProcessEditableElement.GET_RESULTS)){
-            Result result = wpsClient.getJobResult((UUID)propertyChangeEvent.getNewValue());
-            Job job = processEditableElement.getJob(UUID.fromString(result.getJobID()));
-            job.setResult(result);
-        }
     }
 
     /**
@@ -259,7 +236,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                 if (allDefined) {
                     //Run the process in a separated thread
                     StatusInfo statusInfo = wpsClient.executeProcess(uri, dataMap);
-                    Job job = processEditableElement.newJob(UUID.fromString(statusInfo.getJobID()));
+                    Job job = new Job(UUID.fromString(statusInfo.getJobID()), processEditableElement.getProcess());
 
                     //Then launch the process execution
                     wpsClient.validateInstance(this, job);
@@ -289,7 +266,7 @@ public class ProcessEditor extends JPanel implements EditorDockable, PropertyCha
                         if (allDefined) {
                             //Run the process in a separated thread
                             StatusInfo statusInfo = wpsClient.executeProcess(uri, map);
-                            Job job = processEditableElement.newJob(UUID.fromString(statusInfo.getJobID()));
+                            Job job = new Job(UUID.fromString(statusInfo.getJobID()), processEditableElement.getProcess());
 
                             //Then launch the process execution
                             wpsClient.validateInstance(this, job);

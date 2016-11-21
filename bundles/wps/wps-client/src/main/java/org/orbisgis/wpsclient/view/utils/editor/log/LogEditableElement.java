@@ -50,6 +50,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 
+import static org.orbisgis.wpsclient.view.utils.editor.process.Job.CANCEL;
+import static org.orbisgis.wpsclient.view.utils.editor.process.Job.LOG_PROPERTY;
+import static org.orbisgis.wpsclient.view.utils.editor.process.Job.STATE_PROPERTY;
+
 /**
  * EditableElement associated to the LogEditor.
  *
@@ -133,10 +137,10 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
-        if(event.getPropertyName().equals(ProcessEditableElement.STATE_PROPERTY)){
+        if(event.getPropertyName().equals(STATE_PROPERTY)){
             firePropertyChange(event);
         }
-        if(event.getPropertyName().equals(ProcessEditableElement.LOG_PROPERTY)){
+        if(event.getPropertyName().equals(LOG_PROPERTY)){
             firePropertyChange(event);
         }
     }
@@ -149,7 +153,7 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
 
     public void cancelProcess(UUID id) {
         Job job = jobMap.get(id);
-        job.firePropertyChangeEvent(new PropertyChangeEvent(this, ProcessEditableElement.CANCEL, id, id));
+        job.firePropertyChangeEvent(new PropertyChangeEvent(this, CANCEL, id, id));
         job.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Process cancelled by the user"));
     }
 }

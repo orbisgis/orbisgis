@@ -59,30 +59,23 @@ import java.util.List;
 
 /**
  * EditableElement of a process which contains all the information about a process instance
- * (input data, output data, state ...).
+ * (input data, output data, job).
  *
  * @author Sylvain PALOMINOS
  */
 
 public class ProcessEditableElement implements EditableElement {
-    public static final String STATE_PROPERTY = "STATE_PROPERTY";
-    public static final String LOG_PROPERTY = "LOG_PROPERTY";
-    public static final String CANCEL = "CANCEL";
-    public static final String REFRESH_STATUS = "REFRESH_STATUS";
-    public static final String GET_RESULTS = "GET_RESULTS";
     private ProcessOffering processOffering;
     private boolean isOpen;
 
     /** List of listeners for the processState*/
     private List<PropertyChangeListener> propertyChangeListenerList;
-    private Map<UUID, Job> jobMap;
     private Map<URI, Object> inputDataMap;
     private Map<URI, Object> outputDataMap;
 
     public ProcessEditableElement(ProcessOffering processOffering){
         this.processOffering = processOffering;
         this.propertyChangeListenerList = new ArrayList<>();
-        this.jobMap = new HashMap<>();
         this.outputDataMap = new HashMap<>();
         this.inputDataMap = new HashMap<>();
     }
@@ -154,10 +147,6 @@ public class ProcessEditableElement implements EditableElement {
         return processOffering.getProcess().getTitle().get(0).getValue();
     }
 
-    public Map<String, Color> getLogMap(UUID jobId){
-        return jobMap.get(jobId).getLogMap();
-    }
-
     public Map<URI, Object> getInputDataMap() {
         return inputDataMap;
     }
@@ -182,34 +171,9 @@ public class ProcessEditableElement implements EditableElement {
         return processOffering;
     }
 
-    public ProcessExecutionListener.ProcessState getProcessState(UUID jobId) {
-        return jobMap.get(jobId).getState();
-    }
-
-    public void firePropertyChangeEvent(PropertyChangeEvent event){
-        for(PropertyChangeListener pcl : propertyChangeListenerList){
-            pcl.propertyChange(event);
-        }
-    }
-
     public void setDefaultInputValues(Map<URI,Object> defaultInputValues) {
         for(Map.Entry<URI, Object> entry : defaultInputValues.entrySet()){
             inputDataMap.put(entry.getKey(), entry.getValue());
         }
-    }
-
-    public Job getJob(UUID jobID) {
-        if(jobMap.containsKey(jobID)) {
-            return jobMap.get(jobID);
-        }
-        else{
-            return null;
-        }
-    }
-
-    public Job newJob(UUID jobId) {
-        Job job = new Job(getProcess(), this, jobId);
-        this.jobMap.put(jobId, job);
-        return job;
     }
 }
