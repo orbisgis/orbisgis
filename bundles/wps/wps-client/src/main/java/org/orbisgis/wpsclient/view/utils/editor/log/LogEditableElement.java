@@ -41,7 +41,6 @@ import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.wpsclient.view.utils.editor.process.Job;
-import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -55,7 +54,8 @@ import static org.orbisgis.wpsclient.view.utils.editor.process.Job.LOG_PROPERTY;
 import static org.orbisgis.wpsclient.view.utils.editor.process.Job.STATE_PROPERTY;
 
 /**
- * EditableElement associated to the LogEditor.
+ * EditableElement associated to the LogEditor. It is used to communicate to the LogEditor the changes in the job state
+ * and process execution.
  *
  * @author Sylvain PALOMINOS
  */
@@ -75,7 +75,9 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        changeListenerList.add(listener);
+        if(!changeListenerList.contains(listener)) {
+            changeListenerList.add(listener);
+        }
     }
 
     @Override
@@ -155,5 +157,9 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
         Job job = jobMap.get(id);
         job.firePropertyChangeEvent(new PropertyChangeEvent(this, CANCEL, id, id));
         job.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Process cancelled by the user"));
+    }
+
+    public void removeProcess(UUID id) {
+        jobMap.remove(id);
     }
 }
