@@ -42,7 +42,7 @@ import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.LocalWpsServer;
 
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
-import org.orbisgis.wpsclient.InternalWpsClient;
+import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;

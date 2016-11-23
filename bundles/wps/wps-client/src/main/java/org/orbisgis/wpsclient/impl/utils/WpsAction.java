@@ -34,35 +34,34 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.geocatalog.impl.actions;
+package org.orbisgis.wpsclient.impl.utils;
 
 
-import org.orbisgis.wpsclient.impl.utils.WpsAction;
-import org.orbisgis.wpsclient.impl.utils.InternalWpsClientHandler;
+import org.orbisgis.sif.components.actions.DefaultAction;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
 
 /**
- * An action that request at least one selected data source and a WpsClient
+ * An action that request at least a InternalWpsClientHandler which will be used to dynamically get the
+ * InternalWpsClient.
  *
  * @author Sylvain PALOMINOS
  */
-public class WpsActionOnSelection extends WpsAction {
-    ListSelectionModel selModel;
+public class WpsAction extends DefaultAction {
+    private InternalWpsClientHandler internalWpsClientHandler;
 
     /**
      * Constructor for menu group
      * @param actionId Action identifier, should be unique for ActionCommands
      * @param actionLabel I18N label short label
      * @param isGroup if this action is an action group.
-     * @param selModel Selection model.
-     * @param wpsClientHandler Wps client handler containing the Wps Client.
+     * @param internalWpsClientHandler Internal Wps client handler containing the Wps Client.
      */
-    public WpsActionOnSelection(String actionId, String actionLabel, boolean isGroup, ListSelectionModel selModel,
-                                InternalWpsClientHandler wpsClientHandler) {
-        super(actionId, actionLabel, isGroup, wpsClientHandler);
-        this.selModel=selModel;
+    public WpsAction(String actionId, String actionLabel, boolean isGroup, InternalWpsClientHandler internalWpsClientHandler) {
+        super(actionId, actionLabel);
+        setMenuGroup(isGroup);
+        this.internalWpsClientHandler = internalWpsClientHandler;
     }
     /**
      * @param actionId Action identifier, should be unique for ActionCommands
@@ -70,17 +69,16 @@ public class WpsActionOnSelection extends WpsAction {
      * @param actionToolTip I18N tool tip text
      * @param icon Icon
      * @param actionListener Fire the event to this listener
-     * @param selModel Selection model.
-     * @param wpsClientHandler Wps client handler containing the Wps Client.
+     * @param internalWpsClientHandler Internal Wps client handler containing the Wps Client.
      */
-    public WpsActionOnSelection(String actionId, String actionLabel, String actionToolTip, Icon icon,
-                                ActionListener actionListener, ListSelectionModel selModel, InternalWpsClientHandler wpsClientHandler) {
-        super(actionId, actionLabel, actionToolTip, icon, actionListener, wpsClientHandler);
-        this.selModel=selModel;
+    public WpsAction(String actionId, String actionLabel, String actionToolTip, Icon icon,
+                     ActionListener actionListener, InternalWpsClientHandler internalWpsClientHandler) {
+        super(actionId, actionLabel, actionToolTip, icon, actionListener, null);
+        this.internalWpsClientHandler = internalWpsClientHandler;
     }
 
     @Override
     public boolean isEnabled() {
-        return super.isEnabled() && !selModel.isSelectionEmpty();
+        return super.isEnabled() && internalWpsClientHandler.getInternalWpsClient() != null;
     }
 }

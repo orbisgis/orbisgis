@@ -38,7 +38,7 @@ package org.orbisgis.wpsservicescripts;
 
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.LocalWpsServer;
-import org.orbisgis.wpsclient.InternalWpsClient;
+import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
