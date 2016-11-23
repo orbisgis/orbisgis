@@ -99,7 +99,7 @@ public class LogPanel extends JPanel {
         stopButton.setBorderPainted(false);
         stopButton.setContentAreaFilled(false);
         stopButton.putClientProperty("logPanel", this);
-        stopButton.addActionListener(EventHandler.create(ActionListener.class, logEditor, "cancelProcess", ""));
+        stopButton.addActionListener(EventHandler.create(ActionListener.class, logEditor, "cancelProcess", "source"));
         leftPanel.add(stopButton);
         this.add(leftPanel, "wrap, alignx right");
         setTime();

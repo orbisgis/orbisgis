@@ -194,6 +194,15 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         this.repaint();
     }
 
+    public void cancelProcess(Object source){
+        Object logPanelSource = ((JButton)source).getClientProperty("logPanel");
+        for(Map.Entry<UUID, LogPanel> entry : componentMap.entrySet()){
+            if(entry.getValue().equals(logPanelSource)){
+                lee.cancelProcess(entry.getKey());
+            }
+        }
+    }
+
     @Override
     public DockingPanelParameters getDockingParameters() {
         return dockingPanelParameters;

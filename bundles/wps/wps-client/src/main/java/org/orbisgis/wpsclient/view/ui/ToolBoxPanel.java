@@ -37,7 +37,6 @@
 
 package org.orbisgis.wpsclient.view.ui;
 
-import net.opengis.ows._2.KeywordsType;
 import net.opengis.ows._2.LanguageStringType;
 import net.opengis.ows._2.MetadataType;
 import net.opengis.wps._2_0.ProcessSummaryType;
@@ -54,7 +53,6 @@ import org.orbisgis.wpsclient.view.utils.filter.SearchFilter;
 import org.orbisgis.wpsclient.view.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.view.utils.TreeNodeWps;
 import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString;
 import org.orbisgis.wpsservice.LocalWpsServer;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
