@@ -57,6 +57,7 @@ import java.util.Date;
  */
 public class LogPanel extends JPanel {
 
+    /** One second in milliseconds. */
     private static final int ONE_SECOND = 1000;
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(LogPanel.class);
@@ -65,7 +66,6 @@ public class LogPanel extends JPanel {
     private JLabel icon;
     /** Running time of the process. */
     private JLabel time;
-    private JButton stopButton;
     /** Time in milliseconds when the process has started. */
     private long startTime;
     /** Timer of 1 second used to refresh the process running time. */
@@ -84,16 +84,18 @@ public class LogPanel extends JPanel {
         running = true;
         //Build the UI
         this.setLayout(new MigLayout("fill"));
+        //Sets the right panel with the icon and the process title
         JPanel rightPanel = new JPanel(new MigLayout("fill"));
         icon = new JLabel();
         rightPanel.add(icon);
         JLabel processLabel = new JLabel(processName);
         rightPanel.add(processLabel);
         this.add(rightPanel, "alignx left");
+        //Sets the left panel with the running time and the stop button.
         JPanel leftPanel = new JPanel(new MigLayout("fill"));
         time = new JLabel();
         leftPanel.add(time);
-        stopButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.STOP));
+        JButton stopButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.STOP));
         stopButton.setBorderPainted(false);
         stopButton.setContentAreaFilled(false);
         stopButton.putClientProperty("logPanel", this);
@@ -101,6 +103,7 @@ public class LogPanel extends JPanel {
         leftPanel.add(stopButton);
         this.add(leftPanel, "wrap, alignx right");
         setTime();
+        //Sets the main textArea which contains the log
         logArea = new JTextArea();
         logArea.setRows(3);
         ((DefaultCaret)logArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
@@ -139,6 +142,7 @@ public class LogPanel extends JPanel {
     public void setState(ProcessExecutionListener.ProcessState state){
         switch(state){
             case SUCCEEDED:
+            case ACCEPTED:
                 icon.setIcon(ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS));
                 break;
             case FAILED:

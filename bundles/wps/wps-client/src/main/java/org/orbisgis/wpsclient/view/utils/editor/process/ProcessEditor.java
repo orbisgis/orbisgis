@@ -538,7 +538,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         addButton.putClientProperty(PROCESS_PROPERTY, process);
         addButton.putClientProperty(PANEL_PROPERTY, parameterPanel);
         addButton.putClientProperty(SCROLLPANE_PROPERTY, scrollPane);
-        addButton.addActionListener(EventHandler.create(ActionListener.class, this, "addBashRow", "source"));
+        addButton.addActionListener(EventHandler.create(ActionListener.class, this, "onAddBashRow", "source"));
         addButton.setBorderPainted(false);
         addButton.setContentAreaFilled(false);
         parameterPanel.add(addButton, "wrap");

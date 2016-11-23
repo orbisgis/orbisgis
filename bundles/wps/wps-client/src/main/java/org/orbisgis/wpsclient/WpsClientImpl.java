@@ -493,7 +493,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         this.jobMap.put(job.getId(), job);
         //Adds the process information to the log managing classes (LogEditableElement, LogEditor and Job)
         ProcessEditableElement processEditableElement = (ProcessEditableElement) pe.getEditableElement();
-        le.addNewLog(processEditableElement, job);
+        le.addNewLog(processEditableElement.getProcess(), job);
         job.addPropertyChangeListener(this);
         job.addPropertyChangeListener(lee);
         //First test if the ProcessEditor has not been already deleted.

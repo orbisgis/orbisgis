@@ -69,10 +69,6 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
     /** List of listeners. */
     private List<PropertyChangeListener> changeListenerList = new ArrayList<>();
 
-    public void addJob(Job job){
-        this.jobMap.put(job.getId(), job);
-    }
-
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         if(!changeListenerList.contains(listener)) {
@@ -153,13 +149,29 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
         }
     }
 
+    /**
+     * Fire the property event for the cancelling of the given process.
+     * @param id Id of the process
+     */
     public void cancelProcess(UUID id) {
         Job job = jobMap.get(id);
         job.firePropertyChangeEvent(new PropertyChangeEvent(this, CANCEL, id, id));
         job.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Process cancelled by the user"));
     }
 
+    /**
+     * Removes a process. After the LogEditableElement won't communicate any Job state change.
+     * @param id Id of the job to remove.
+     */
     public void removeProcess(UUID id) {
         jobMap.remove(id);
+    }
+
+    /**
+     * Adds a job. The future Job state changes will be communicated to the listeners.
+     * @param job Job to follow.
+     */
+    public void addJob(Job job){
+        this.jobMap.put(job.getId(), job);
     }
 }
