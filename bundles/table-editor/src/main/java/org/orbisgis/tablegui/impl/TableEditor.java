@@ -110,7 +110,7 @@ import org.orbisgis.tablegui.impl.filters.WhereSQLFilterFactory;
 import org.orbisgis.tablegui.impl.jobs.ComputeFieldStatistics;
 import org.orbisgis.tablegui.impl.jobs.OptimalWidthJob;
 import org.orbisgis.tablegui.impl.jobs.SearchJob;
-import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -154,14 +154,14 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         private int currentSelectionNavigation = 0;
         private EditorManager editorManager;
         private ExecutorService executorService;
-        private WpsClient wpsClient;
+        private InternalWpsClient wpsClient;
 
         /**
          * Constructor
          * @param element Source to read and edit
          */
         public TableEditor(TableEditableElement element, DataManager dataManager, EditorManager editorManager,
-                           ExecutorService executorService, WpsClient wpsClient) {
+                           ExecutorService executorService, InternalWpsClient wpsClient) {
                 super(new BorderLayout());
                 this.editorManager = editorManager;
                 this.executorService = executorService;
@@ -336,7 +336,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 filterManager.setUserCanRemoveFilter(false);
                 FieldsContainsFilterFactory factory = new FieldsContainsFilterFactory(table);
                 filterManager.registerFilterFactory(factory);
-                // SQL Filter is only available if there is a primary key
+                // SQL filter is only available if there is a primary key
                 try(Connection connection = dataSource.getConnection()) {
                     int idPk = JDBCUtilities.getIntegerPrimaryKey(connection, tableEditableElement.getTableReference());
                     if(idPk > 0) {
@@ -367,7 +367,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
          * Reload filter GUI components
          */
         private void reloadFilters() {
-                LOGGER.debug("Reload Filter");
+                LOGGER.debug("Reload filter");
                 DefaultActiveFilter currentFilter = filterManager.getFilterValues().iterator().next();
                 filterManager.clearFilters();
                 filterManager.addFilter(currentFilter);
@@ -431,7 +431,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 JPopupMenu pop = new JPopupMenu();
                 boolean hasSelectedRows = table.getSelectedRowCount()>0;
                 if(hasSelectedRows) {
-                        JMenuItem addRowFilter = new JMenuItem(I18N.tr("Filter selected rows"),
+                        JMenuItem addRowFilter = new JMenuItem(I18N.tr("filter selected rows"),
                                 TableEditorIcon.getIcon("row_filter"));
                         addRowFilter.setToolTipText(I18N.tr("Show only the selected rows"));
                         addRowFilter.addActionListener(

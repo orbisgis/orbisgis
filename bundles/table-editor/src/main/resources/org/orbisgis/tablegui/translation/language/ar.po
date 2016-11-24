@@ -75,7 +75,7 @@ msgid ""
 msgstr "جاري طلب البحث. من فضلك انتظر لحظة، أو إلغائه."
 
 #: org/orbisgis/tablegui/impl/TableEditor.java:407
-msgid "Filter selected rows"
+msgid "filter selected rows"
 msgstr "تصفية الأسطر المختارة"
 
 #: org/orbisgis/tablegui/impl/TableEditor.java:409

@@ -77,7 +77,7 @@ msgid ""
 msgstr ""
 
 #: org/orbisgis/tablegui/impl/TableEditor.java:407
-msgid "Filter selected rows"
+msgid "filter selected rows"
 msgstr ""
 
 #: org/orbisgis/tablegui/impl/TableEditor.java:409

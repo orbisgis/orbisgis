@@ -65,9 +65,9 @@ import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
-import org.orbisgis.wpsclient.WpsClient;
-import org.orbisgis.wpsclient.view.utils.WpsClientHandler;
-import org.orbisgis.wpsclient.view.utils.editor.process.ProcessEditor;
+import org.orbisgis.wpsclient.api.InternalWpsClient;
+import org.orbisgis.wpsclient.impl.utils.InternalWpsClientHandler;
+import org.orbisgis.wpsclient.impl.editor.process.ProcessEditor;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -117,7 +117,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
         private DriverFunctionContainer driverFunctionContainer;
         private DataManager dataManager;
         private ExecutorService executorService = null;
-        private WpsClientHandler wpsClientHandler = new WpsClientHandler();
+        private InternalWpsClientHandler internalWpsClientHandler = new InternalWpsClientHandler();
 
         /**
          * For the Unit test purpose
@@ -138,12 +138,12 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
     }
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-    public void setWpsClient(WpsClient wpsClient) {
-        this.wpsClientHandler.setWpsClient(wpsClient);
+    public void setInternalWpsClient(InternalWpsClient wpsClient) {
+        this.internalWpsClientHandler.setInternalWpsClient(wpsClient);
     }
 
-    public void unsetWpsClient(WpsClient wpsClient) {
-        this.wpsClientHandler.setWpsClient(null);
+    public void unsetInternalWpsClient(InternalWpsClient wpsClient) {
+        this.internalWpsClientHandler.setInternalWpsClient(null);
     }
 
     @Reference
@@ -495,7 +495,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                     I18N.tr("Tools"),
                     true,
                     getListSelectionModel(),
-                    wpsClientHandler).setMenuGroup(true));
+                    internalWpsClientHandler).setMenuGroup(true));
             //Popup:GeometricProperties
             popupActions.addAction(new WpsActionOnSelection(PopupMenu.M_TOOLS_GEOMETRY_PROPERTIES,
                     I18N.tr("Geometry Properties"),
@@ -503,7 +503,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                     GeocatalogIcon.getIcon("geometry_properties"),
                     EventHandler.create(ActionListener.class, this, "openTool", ""),
                     getListSelectionModel(),
-                    wpsClientHandler).setParent(PopupMenu.M_TOOLS));
+                    internalWpsClientHandler).setParent(PopupMenu.M_TOOLS));
             //Popup:ReprojectGeometries
             popupActions.addAction(new WpsActionOnSelection(PopupMenu.M_TOOLS_REPROJECT_GEOMETRIES,
                     I18N.tr("Reproject geometries"),
@@ -511,7 +511,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                     GeocatalogIcon.getIcon("reproject_geometries"),
                     EventHandler.create(ActionListener.class, this, "openTool", ""),
                     getListSelectionModel(),
-                    wpsClientHandler).setParent(PopupMenu.M_TOOLS));
+                    internalWpsClientHandler).setParent(PopupMenu.M_TOOLS));
         }
 
         @Override
@@ -586,7 +586,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                             dataMap.put(geometricFieldURI, new String[]{"the_geom", "pk"});
                         }
                     }
-                    wpsClientHandler.getWpsClient().openProcess(geometryPropertyURI, dataMap, executionType);
+                    internalWpsClientHandler.getInternalWpsClient().openProcess(geometryPropertyURI, dataMap, executionType);
                     break;
                 case PopupMenu.M_TOOLS_REPROJECT_GEOMETRIES:
                     URI reprojectGeometryURI = URI.create("orbisgis:wps:official:reprojectGeometries");
@@ -616,7 +616,7 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                             dataMap.put(inputDataStoreURI, sources[0]);
                         }
                     }
-                    wpsClientHandler.getWpsClient().openProcess(reprojectGeometryURI, dataMap, executionType);
+                    internalWpsClientHandler.getInternalWpsClient().openProcess(reprojectGeometryURI, dataMap, executionType);
                     break;
             }
         }

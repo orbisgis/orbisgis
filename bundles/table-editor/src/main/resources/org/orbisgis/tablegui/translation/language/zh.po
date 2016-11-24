@@ -79,7 +79,7 @@ msgid ""
 msgstr "搜索请求已经启动。请稍等片刻，或取消它。"
 
 #: org/orbisgis/tablegui/impl/TableEditor.java:407
-msgid "Filter selected rows"
+msgid "filter selected rows"
 msgstr "过滤选择的行"
 
 #: org/orbisgis/tablegui/impl/TableEditor.java:409

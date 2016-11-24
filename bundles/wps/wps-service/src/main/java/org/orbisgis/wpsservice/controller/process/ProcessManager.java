@@ -237,7 +237,7 @@ public class ProcessManager {
     private void retrieveData(ProcessDescriptionType process, Class clazz, GroovyObject groovyObject, Map<URI, Object> dataMap){
         ProcessIdentifier pi = null;
         for(ProcessIdentifier proId : processIdList){
-            if(proId.getProcessDescriptionType().getIdentifier().equals(process.getIdentifier())){
+            if(proId.getProcessDescriptionType().getIdentifier().getValue().equals(process.getIdentifier().getValue())){
                 pi = proId;
             }
         }
@@ -269,7 +269,7 @@ public class ProcessManager {
     private GroovyObject createProcess(ProcessDescriptionType process, Class clazz, Map<URI, Object> dataMap){
         ProcessIdentifier pi = null;
         for(ProcessIdentifier proId : processIdList){
-            if(proId.getProcessDescriptionType().getIdentifier().equals(process.getIdentifier())){
+            if(proId.getProcessDescriptionType().getIdentifier().getValue().equals(process.getIdentifier().getValue())){
                 pi = proId;
             }
         }

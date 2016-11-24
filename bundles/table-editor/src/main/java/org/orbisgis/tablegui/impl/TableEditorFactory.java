@@ -44,8 +44,7 @@ import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.sif.edition.EditorFactory;
 import org.orbisgis.tablegui.api.TableEditableElement;
-import org.orbisgis.wpsclient.WpsClient;
-import org.orbisgis.wpsclient.WpsClientImpl;
+import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -67,7 +66,7 @@ public class TableEditorFactory implements EditorFactory {
         private DataManager dataManager;
         private EditorManager editorManager;
         private ExecutorService executorService;
-        private WpsClient wpsClient = null;
+        private InternalWpsClient wpsClient = null;
 
         @Override
         public DockingPanelLayout makeEditableLayout(EditableElement editable) {
@@ -106,11 +105,11 @@ public class TableEditorFactory implements EditorFactory {
         }
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL)
-    public void setWpsClient(WpsClient wpsClient) {
+    public void setInternalWpsClient(InternalWpsClient wpsClient) {
         this.wpsClient = wpsClient;
     }
 
-    public void unsetWpsClient(WpsClient wpsClient) {
+    public void unsetInternalWpsClient(InternalWpsClient wpsClient) {
         this.wpsClient = null;
     }
 

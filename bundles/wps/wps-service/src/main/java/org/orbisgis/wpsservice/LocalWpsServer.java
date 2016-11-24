@@ -42,6 +42,7 @@ import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.DataType;
 
 import java.io.*;
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -66,16 +67,16 @@ public interface LocalWpsServer extends WpsServer {
 
     /**
      * Remove the process corresponding to the given codeType.
-     * @param identifier CodeType identifier of the process.
+     * @param identifier URI identifier of the process.
      */
-    void removeProcess(CodeType identifier);
+    void removeProcess(URI identifier);
 
     /**
      * Verify if the process corresponding to the identifier is a valid and well formed groovy wps script.
-     * @param identifier CodeType identifier of the process to check.
+     * @param identifier URI identifier of the process to check.
      * @return True if the script is valid, false otherwise.
      */
-    boolean checkProcess(CodeType identifier);
+    boolean checkProcess(URI identifier);
 
     /**
      * Returns a map containing the sql table from OrbisGIS as key and if it is spatial or not as value.
