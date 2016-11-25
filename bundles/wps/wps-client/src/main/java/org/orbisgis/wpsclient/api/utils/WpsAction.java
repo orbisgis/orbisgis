@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.wpsclient.impl.utils;
+package org.orbisgis.wpsclient.api.utils;
 
 
 import org.orbisgis.sif.components.actions.DefaultAction;

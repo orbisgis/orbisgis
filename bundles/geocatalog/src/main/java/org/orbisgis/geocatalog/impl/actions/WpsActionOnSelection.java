@@ -37,8 +37,8 @@
 package org.orbisgis.geocatalog.impl.actions;
 
 
-import org.orbisgis.wpsclient.impl.utils.WpsAction;
-import org.orbisgis.wpsclient.impl.utils.InternalWpsClientHandler;
+import org.orbisgis.wpsclient.api.utils.WpsAction;
+import org.orbisgis.wpsclient.api.utils.InternalWpsClientHandler;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;

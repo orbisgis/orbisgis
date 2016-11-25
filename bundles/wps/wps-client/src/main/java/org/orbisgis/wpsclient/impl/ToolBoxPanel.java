@@ -48,6 +48,7 @@ import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
 import org.orbisgis.wpsclient.api.filter.IFilter;
+import org.orbisgis.wpsclient.api.utils.ProcessExecutionType;
 import org.orbisgis.wpsclient.impl.filter.SearchFilter;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.impl.utils.TreeNodeWps;
@@ -286,7 +287,7 @@ public class ToolBoxPanel extends JPanel {
                         //if the selected node is a PROCESS node, open a new instance.
                         if(selectedNode.getNodeType().equals(TreeNodeWps.NodeType.PROCESS)) {
                             wpsClient.openProcess(selectedNode.getIdentifier(), null,
-                                    ProcessEditor.ProcessExecutionType.STANDARD);
+                                    ProcessExecutionType.STANDARD);
                         }
                     }
                 }

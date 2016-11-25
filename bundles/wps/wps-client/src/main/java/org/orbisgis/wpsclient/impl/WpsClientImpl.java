@@ -55,6 +55,7 @@ import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.orbisgis.wpsclient.api.WpsClient;
+import org.orbisgis.wpsclient.api.utils.ProcessExecutionType;
 import org.orbisgis.wpsclient.impl.dataui.DataUIManager;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.api.utils.WpsJobStateListener;
@@ -482,7 +483,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
      */
     public void openProcess(){
         openProcess(toolBoxPanel.getSelectedNode().getIdentifier(),
-                new HashMap<URI, Object>(), ProcessEditor.ProcessExecutionType.STANDARD);
+                new HashMap<URI, Object>(), ProcessExecutionType.STANDARD);
     }
 
     /**
@@ -613,7 +614,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
     @Override
     public void openProcess(URI processIdentifier,
                             Map<URI, Object> defaultValuesMap,
-                            ProcessEditor.ProcessExecutionType type) {
+                            ProcessExecutionType type) {
         //Get the list of ProcessOffering
         List<ProcessOffering> listProcess = getProcessOffering(processIdentifier);
         if(listProcess == null || listProcess.isEmpty()){

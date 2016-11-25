@@ -66,7 +66,8 @@ import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.wpsclient.api.InternalWpsClient;
-import org.orbisgis.wpsclient.impl.utils.InternalWpsClientHandler;
+import org.orbisgis.wpsclient.api.utils.InternalWpsClientHandler;
+import org.orbisgis.wpsclient.api.utils.ProcessExecutionType;
 import org.orbisgis.wpsclient.impl.editor.process.ProcessEditor;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -566,10 +567,10 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                         LOGGER.error("Cannot run the tool, the source list is empty.");
                         return;
                     }
-                    ProcessEditor.ProcessExecutionType executionType = sources.length>1
-                            ? ProcessEditor.ProcessExecutionType.BASH
-                            : ProcessEditor.ProcessExecutionType.STANDARD;
-                    if(executionType.equals(ProcessEditor.ProcessExecutionType.BASH)) {
+                    ProcessExecutionType executionType = sources.length>1
+                            ? ProcessExecutionType.BASH
+                            : ProcessExecutionType.STANDARD;
+                    if(executionType.equals(ProcessExecutionType.BASH)) {
                         for (String table : sources) {
                             Map<URI, Object> map = new HashMap<>();
                             map.put(inputDataStoreURI, table);
@@ -599,9 +600,9 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                         return;
                     }
                     executionType = sources.length>1
-                            ? ProcessEditor.ProcessExecutionType.BASH
-                            : ProcessEditor.ProcessExecutionType.STANDARD;
-                    if(executionType.equals(ProcessEditor.ProcessExecutionType.BASH)) {
+                            ? ProcessExecutionType.BASH
+                            : ProcessExecutionType.STANDARD;
+                    if(executionType.equals(ProcessExecutionType.BASH)) {
                         for (String table : sources) {
                             Map<URI, Object> map = new HashMap<>();
                             map.put(inputDataStoreURI, table);

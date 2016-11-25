@@ -38,6 +38,7 @@
 package org.orbisgis.wpsclient.api;
 
 import net.opengis.wps._2_0.ProcessDescriptionType;
+import org.orbisgis.wpsclient.api.utils.ProcessExecutionType;
 import org.orbisgis.wpsclient.api.utils.WpsJobStateListener;
 import org.orbisgis.wpsclient.impl.editor.process.ProcessEditor;
 import org.orbisgis.wpsservice.model.DataType;
@@ -95,7 +96,7 @@ public interface InternalWpsClient extends WpsClient {
      */
     void openProcess(URI processIdentifier,
                      Map<URI, Object> defaultValuesMap,
-                     ProcessEditor.ProcessExecutionType executionType);
+                     ProcessExecutionType executionType);
 
 
     /*******************/

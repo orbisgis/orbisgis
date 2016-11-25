@@ -34,24 +34,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.wpsclient.impl.utils;
 
-import org.orbisgis.wpsclient.api.InternalWpsClient;
+package org.orbisgis.wpsclient.api.utils;
 
 /**
- * This class contains a Wps Client. It is used for the OrbisGIS components to have a dynamic link with the Wps Client.
+ * Enumeration containing the process execution modes.
  *
  * @author Sylvain PALOMINOS
  */
-public class InternalWpsClientHandler {
-
-    private InternalWpsClient internalWpsClient;
-
-    public void setInternalWpsClient(InternalWpsClient internalWpsClient) {
-        this.internalWpsClient = internalWpsClient;
-    }
-
-    public InternalWpsClient getInternalWpsClient() {
-        return internalWpsClient;
-    }
-}
+public enum ProcessExecutionType {STANDARD, BASH}

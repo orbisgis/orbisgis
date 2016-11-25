@@ -39,7 +39,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Private-Package>org.orbisgis.wpsclient.*</Private-Package>
                         <Bundle-Category>orbisgis</Bundle-Category>
                     </instructions>
                 </configuration>
