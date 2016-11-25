@@ -79,11 +79,15 @@ public interface LocalWpsServer extends WpsServer {
     boolean checkProcess(URI identifier);
 
     /**
-     * Returns a map containing the sql table from OrbisGIS as key and if it is spatial or not as value.
-     * @param onlySpatial If true, returns only the spatial table.
-     * @return A map containing the sql table from OrbisGIS as key and if it is spatial or not as value.
+     * Returns the list of the table from a database connected to OrbisGIS which contains the fields with the given
+     * dataTypes and without the given excludedTypes
+     *
+     * @param dataTypes Type of field accepted. If empty, accepts all the field.
+     * @param excludedTypes Type of field excluded.
+     *
+     * @return The list of valid tables.
      */
-    Map<String, Boolean> getGeocatalogTableList(boolean onlySpatial);
+    List<String> getTableList(List<DataType> dataTypes, List<DataType> excludedTypes);
 
     /**
      * Returns a map containing field information (table type, SRID, ...)

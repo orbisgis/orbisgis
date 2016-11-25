@@ -126,9 +126,14 @@ public class DataStoreUI implements DataUI {
         //Populate the comboBox with the available tables.
         boolean isSpatial = false;
         if(dataStore.getDataStoreTypeList() != null){
-            isSpatial = dataStore.getDataStoreTypeList().contains(DataType.GEOMETRY);
+            for(DataType dataType : dataStore.getDataStoreTypeList()) {
+                if(DataType.isSpatialType(dataType)) {
+                    isSpatial = true;
+                }
+            }
         }
-        populateWithTable(geocatalogComboBox, isSpatial, false);
+        populateWithTable(geocatalogComboBox, dataStore.getDataStoreTypeList(), dataStore.getExcludedTypeList(),
+                false, isSpatial);
         //Adds the listener on combo box item selection
         geocatalogComboBox.addActionListener(
                 EventHandler.create(ActionListener.class, this, "onGeocatalogTableSelected", "source"));
@@ -179,36 +184,39 @@ public class DataStoreUI implements DataUI {
      * spatial or not as value).
      * Once populated, the combo box will display an icon regarding if the table is spatial or not and the table name.
      * @param geocatalogComboBox The combo box to populate.
-     * @param isSpatialDataStore True if the DataStore is spatial, false otherwise.
+     * @param dataTypes Type of field accepted. If empty, accepts all the field.
+     * @param excludedTypes Type of field excluded.
      * @param isOutput True if the DataStore is an output, false otherwise.
+     * @param isSpatial True if the wanted table have to be spatial, false otherwise.
      */
-    private void populateWithTable(JComboBox<ContainerItem<Object>> geocatalogComboBox, boolean isSpatialDataStore,
-                                   boolean isOutput){
+    private void populateWithTable(JComboBox<ContainerItem<Object>> geocatalogComboBox,
+                                   List<DataType> dataTypes,
+                                   List<DataType> excludedTypes,
+                                   boolean isOutput,
+                                   boolean isSpatial){
         //Retrieve the table map
-        Map<String, Boolean> tableMap;
-        if(isSpatialDataStore) {
-            tableMap = wpsClient.getGeocatalogTableList(true);
+        List<String> tableList;
+        if(dataTypes.isEmpty() && isSpatial){
+            dataTypes.add(DataType.GEOMETRY);
         }
-        else {
-            tableMap = wpsClient.getGeocatalogTableList(false);
-        }
+        tableList = wpsClient.getTableList(dataTypes, excludedTypes);
         //If there is tables, build all the ContainerItem containing the JPanel representing a table
         ContainerItem<Object> selectedItem = (ContainerItem<Object>)geocatalogComboBox.getSelectedItem();
         geocatalogComboBox.removeAllItems();
         List<ContainerItem<Object>> containerItemList = new ArrayList<>();
-        if(tableMap != null && !tableMap.isEmpty()){
-            for (Map.Entry<String, Boolean> entry : tableMap.entrySet()) {
+        if(tableList != null && !tableList.isEmpty()){
+            for (String tableName : tableList) {
                 JPanel tablePanel = new JPanel(new MigLayout("ins 0, gap 0"));
                 //Sets the spatial icon regarding the entry value
-                if (entry.getValue()) {
+                if (isSpatial) {
                     tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.GEO_FILE)));
                 } else {
                     tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.FLAT_FILE)));
                 }
                 //Adds the table label contained in the entry key
-                tablePanel.add(new JLabel(entry.getKey()));
+                tablePanel.add(new JLabel(tableName));
                 //Save the ContainerItem in the list
-                containerItemList.add(new ContainerItem<Object>(tablePanel, entry.getKey()));
+                containerItemList.add(new ContainerItem<Object>(tablePanel, tableName));
             }
             //Sort the ContainerItem by alphabetical order
             Collections.sort(containerItemList);
@@ -247,9 +255,14 @@ public class DataStoreUI implements DataUI {
         Object selectedItem = comboBox.getSelectedItem();
         boolean isSpatial = false;
         if(dataStore.getDataStoreTypeList() != null){
-            isSpatial = dataStore.getDataStoreTypeList().contains(DataType.GEOMETRY);
+            for(DataType dataType : dataStore.getDataStoreTypeList()) {
+                if(DataType.isSpatialType(dataType)) {
+                    isSpatial = true;
+                }
+            }
         }
-        populateWithTable(comboBox, isSpatial, isOptional);
+        populateWithTable(comboBox, dataStore.getDataStoreTypeList(), dataStore.getExcludedTypeList(), isOptional,
+                isSpatial);
         if(selectedItem != null){
             comboBox.setSelectedItem(selectedItem);
         }

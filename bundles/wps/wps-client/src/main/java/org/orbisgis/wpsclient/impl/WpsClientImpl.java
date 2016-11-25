@@ -665,8 +665,8 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
     }
 
     @Override
-    public Map<String, Boolean> getGeocatalogTableList(boolean onlySpatial){
-        return wpsService.getGeocatalogTableList(onlySpatial);
+    public List<String> getTableList(List<DataType> dataTypes, List<DataType> excludedTypes){
+        return wpsService.getTableList(dataTypes, excludedTypes);
     }
 
     @Override

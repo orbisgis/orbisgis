@@ -302,44 +302,55 @@ public class LocalWpsServerImpl
     }
 
     @Override
-    public Map<String, Boolean> getGeocatalogTableList(boolean onlySpatial) {
-        Map<String, Boolean> mapTable = new HashMap<>();
+    public List<String> getTableList(List<DataType> dataTypes, List<DataType> excludedTypes) {
+        List<String> list = new ArrayList<>();
         String defaultSchema = (isH2)?"PUBLIC":"public";
         //Read the tableList to get the desired tables
         for(Map<String, String> map : tableList){
-            if(onlySpatial){
-                //Test if the table contains a geometrical field (if the table is spatial)
-                if(map.containsKey(GEOMETRY_TYPE)){
-                    if(map.containsKey(TABLE_LOCATION)) {
-                        TableLocation tablelocation = TableLocation.parse(map.get(TABLE_LOCATION), isH2);
-                        //If the table is in the default schema, just add its name
-                        if (tablelocation.getSchema(defaultSchema).equals(defaultSchema)) {
-                            mapTable.put(tablelocation.getTable(), map.containsKey(GEOMETRY_TYPE));
+            if(map.containsKey(TABLE_LOCATION)) {
+                TableLocation tablelocation = TableLocation.parse(map.get(TABLE_LOCATION), isH2);
+                boolean isValid = false;
+                if((dataTypes == null || dataTypes.isEmpty()) && (excludedTypes == null || excludedTypes.isEmpty())){
+                    isValid = true;
+                }
+                else if(map.containsKey(GEOMETRY_TYPE)) {
+                    try (Connection connection = dataManager.getDataSource().getConnection()) {
+                        Map<String, Integer> types = SFSUtilities.getGeometryTypes(connection, tablelocation);
+                        for (Map.Entry<String, Integer> entry : types.entrySet()) {
+                            if(dataTypes != null) {
+                                for (DataType dataType : dataTypes) {
+                                    if (DataType.testGeometryType(dataType, entry.getValue())) {
+                                        isValid = true;
+                                    }
+                                }
+                            }
+                            if(excludedTypes != null) {
+                                for (DataType dataType : excludedTypes) {
+                                    if (DataType.testGeometryType(dataType, entry.getValue())) {
+                                        isValid = false;
+                                    }
+                                }
+                            }
                         }
-                        //If not, add the schema name '.' the table name (SCHEMA.TABLE)
-                        else {
-                            mapTable.put(tablelocation.getSchema() + "." + tablelocation.getTable(),
-                                    map.containsKey(GEOMETRY_TYPE));
-                        }
+                    } catch (SQLException e) {
+                        LOGGER.error(I18N.tr("Unable to get the connection.\nCause : {0}.",
+                                e.getMessage()));
                     }
                 }
-            }
-            //Else add all the tables
-            else{
-                if(map.containsKey(TABLE_LOCATION)) {
-                    TableLocation tablelocation = TableLocation.parse(map.get(TABLE_LOCATION), isH2);
+
+                if (isValid) {
                     //If the table is in the default schema, just add its name
                     if (tablelocation.getSchema(defaultSchema).equals(defaultSchema)) {
-                        mapTable.put(tablelocation.getTable(), map.containsKey(GEOMETRY_TYPE));
+                        list.add(tablelocation.getTable());
                     }
                     //If not, add the schema name '.' the table name (SCHEMA.TABLE)
                     else {
-                        mapTable.put(tablelocation.getSchema() + "." + tablelocation.getTable(), map.containsKey(GEOMETRY_TYPE));
+                        list.add(tablelocation.getSchema() + "." + tablelocation.getTable());
                     }
                 }
             }
         }
-        return mapTable;
+        return list;
     }
 
     @Override
