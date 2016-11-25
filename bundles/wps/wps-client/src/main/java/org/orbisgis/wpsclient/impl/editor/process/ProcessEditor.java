@@ -46,6 +46,7 @@ import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.wpsclient.api.utils.ProcessExecutionType;
 import org.orbisgis.wpsclient.impl.WpsClientImpl;
 import org.orbisgis.wpsclient.api.dataui.DataUI;
 import org.orbisgis.wpsclient.impl.dataui.DataUIManager;
@@ -67,8 +68,8 @@ import java.net.URI;
 import java.util.*;
 import java.util.List;
 
-import static org.orbisgis.wpsclient.impl.editor.process.ProcessEditor.ProcessExecutionType.BASH;
-import static org.orbisgis.wpsclient.impl.editor.process.ProcessEditor.ProcessExecutionType.STANDARD;
+import static org.orbisgis.wpsclient.api.utils.ProcessExecutionType.BASH;
+import static org.orbisgis.wpsclient.api.utils.ProcessExecutionType.STANDARD;
 
 /**
  * UI for the configuration and the run of a WPS process.
@@ -114,9 +115,6 @@ public class ProcessEditor extends JPanel implements EditorDockable {
     private Map<URI, Object> dataMap;
     /** Map containing the default values of the process. */
     private Map<URI, Object> defaultDataMap;
-
-    /** Enumeration containing the process execution modes. */
-    public enum ProcessExecutionType{STANDARD, BASH}
 
     /**
      * Main constructor of the ProcessEditor.
