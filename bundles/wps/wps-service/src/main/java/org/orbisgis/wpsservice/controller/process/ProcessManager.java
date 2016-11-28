@@ -300,15 +300,20 @@ public class ProcessManager {
                             data = data.toString().split("\\t");
                         }
                     }
-                    if(Number.class.isAssignableFrom(f.getType()) && data != null) {
-                        try {
-                            Method valueOf = f.getType().getMethod("valueOf", String.class);
-                            if (valueOf != null) {
-                                valueOf.setAccessible(true);
-                                data = valueOf.invoke(this, data.toString());
+                    if(dataDescriptionType instanceof LiteralDataType) {
+                        if (Number.class.isAssignableFrom(f.getType()) && data != null) {
+                            try {
+                                Method valueOf = f.getType().getMethod("valueOf", String.class);
+                                if (valueOf != null) {
+                                    valueOf.setAccessible(true);
+                                    data = valueOf.invoke(this, data.toString());
+                                }
+                            } catch (NoSuchMethodException | InvocationTargetException e) {
+                                LOGGER.warn(I18N.tr("Unable to convert the LiteralData to the good script type."));
                             }
-                        } catch (NoSuchMethodException | InvocationTargetException e) {
-                            LOGGER.warn(I18N.tr("Unable to convert the LiteralData to the good script type."));
+                        }
+                        else if(data != null && (data.equals("true") || data.equals("false"))){
+                            data = data.equals("true");
                         }
                     }
                     f.set(groovyObject, data);

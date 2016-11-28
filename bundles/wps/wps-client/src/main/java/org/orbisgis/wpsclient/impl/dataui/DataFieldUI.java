@@ -265,7 +265,7 @@ public class DataFieldUI implements DataUI {
             boolean isOptional = (boolean) comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
             ContainerItem<Object> defaultItem = (ContainerItem<Object>)comboBox.getClientProperty(DEFAULT_ITEM_PROPERTY);
             //If the DataStore related to the DataField has been modified, reload the dataField values
-            if (dataField.isSourceModified() || comboBox.getSelectedItem().equals(defaultItem)) {
+            if (dataField.isSourceModified() || (comboBox.getSelectedItem() != null && comboBox.getSelectedItem().equals(defaultItem))) {
                 Object obj = dataMap.get(uri);
                 comboBox.removeItem(defaultItem);
                 dataField.setSourceModified(false);

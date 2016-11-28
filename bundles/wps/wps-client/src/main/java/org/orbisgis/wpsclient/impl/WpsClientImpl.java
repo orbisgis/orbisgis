@@ -254,7 +254,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         } catch (JAXBException e) {
             LoggerFactory.getLogger(WpsClient.class).error(
                     I18N.tr("Unable to marshall the request object : {0}.\nCause : {1}.",
-                            request.getClass().getName(), e.getMessage()));
+                            request.getClass().getName(), e.getMessage()!=null?e.getMessage():e.getCause().getMessage()));
             return null;
         }
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
@@ -771,7 +771,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
                 if(URI.create(input.getIdentifier().getValue()).equals(entry.getKey())){
                     //Build the data object containing the data on the input
                     Data data = new Data();
-                    data.getContent().add(entry.getValue());
+                    data.getContent().add(entry.getValue().toString());
                     //Build the DataInput object containing the input identifier and the data to process
                     DataInputType dataInput = new DataInputType();
                     dataInput.setId(entry.getKey().toString());

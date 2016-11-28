@@ -63,7 +63,7 @@ def processing() {
                 @LanguageString(value = "The spatial data source to create the graphe tables.", lang = "en"),
                 @LanguageString(value = "La source de données spatiales servant à la création des tables du graphe.", lang = "fr")
         ],
-        dataStoreTypes = ["GEOMETRY"])
+        dataStoreTypes = ["LINESTRING", "MULTILINESTRING"])
 String inputDataStore
 
 
@@ -78,7 +78,7 @@ String inputDataStore
                 @LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
         ],
         variableReference = "inputDataStore",
-        fieldTypes = ["GEOMETRY"])
+        fieldTypes = ["LINESTRING", "MULTILINESTRING"])
 String[] geometricField
 
 /** Snapping tolerance. */
