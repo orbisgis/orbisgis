@@ -40,12 +40,11 @@ package org.orbisgis.omanager.ui;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.ExecutorService;
 import javax.swing.*;
 
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.sif.components.DependencyMessageDialog;
-import org.orbisgis.sif.components.SQLMessageDialog;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.obr.RepositoryAdmin;
@@ -105,20 +104,28 @@ public class ActionDeploy  extends ActionBundle {
         }
         // If there is hidden dependency (needed & optional)
         // Ask user for validating additional download
-        boolean deploy = dependencyStr.length() != 0;
-        if(dependencyStr.length()>0) {
-            resourcesNames.insert(0,") ?\n");
-            resourcesNames.insert(0,BundleItem.getHumanReadableBytes(bytes));
-            resourcesNames.insert(0,"Do you want to download the following dependencies (Size : ");
-        }
-        if(DependencyMessageDialog.showModal(SwingUtilities.getWindowAncestor(frame),
-                I18N.tr("Dependencies downloading"), resourcesNames.toString(), dependencyStr.toString())
-                .equals(DependencyMessageDialog.CHOICE.OK)) {
-            try {
-                // Download the bundle and dependencies
-                resolver.deploy(start);
-            } catch (IllegalStateException ex) {
-                LOGGER.error(ex.getLocalizedMessage(),ex);
+        if(dependencyStr.length() != 0) {
+            if (dependencyStr.length() > 0) {
+                resourcesNames.insert(0, ") ?\n");
+                resourcesNames.insert(0, BundleItem.getHumanReadableBytes(bytes));
+                resourcesNames.insert(0, "Do you want to download the following dependencies (Size : ");
+            }
+            if (DependencyMessageDialog.showModal(SwingUtilities.getWindowAncestor(frame),
+                    I18N.tr("Dependencies downloading"), resourcesNames.toString(), dependencyStr.toString())
+                    .equals(DependencyMessageDialog.CHOICE.OK)) {
+
+                DeployBundleSwingWorker worker = new DeployBundleSwingWorker(resolver);
+                ServiceReference<ExecutorService> executorServiceReference = bundleContext.getServiceReference(ExecutorService.class);
+                ExecutorService executorService = null;
+                if(executorServiceReference != null){
+                    executorService = bundleContext.getService(executorServiceReference);
+                }
+                if(executorService != null){
+                    executorService.execute(worker);
+                }
+                else{
+                    worker.execute();
+                }
             }
         }
     }
@@ -188,6 +195,27 @@ public class ActionDeploy  extends ActionBundle {
             return(Long) depSize;
         } else {
             return 0L;
+        }
+    }
+
+    private class DeployBundleSwingWorker extends SwingWorkerPM {
+
+        private Resolver resolver;
+
+        public DeployBundleSwingWorker(Resolver resolver){
+            this.resolver = resolver;
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            setTaskName(I18N.tr("Downloading and installing dependencies"));
+            try {
+                // Download the bundle and dependencies
+                resolver.deploy(start);
+            } catch (IllegalStateException ex) {
+                LOGGER.error(ex.getLocalizedMessage(),ex);
+            }
+            return null;
         }
     }
 }
