@@ -160,6 +160,8 @@ public class LocalWpsServerImpl
             //Find if the database used is H2 or not.
             //If yes, make all the processes wait for the previous one.
             multiThreaded = testDBForMultiProcess();
+            //TODO Remove this user message and implements the parallel process execution
+            /*
             if (!multiThreaded) {
                 if (isH2) {
                     LOGGER.warn(I18N.tr("Warning, because of the H2 configuration," +
@@ -170,7 +172,7 @@ public class LocalWpsServerImpl
                     LOGGER.warn(I18N.tr("Warning, because of the database configuration," +
                             " the toolbox won't be able to run more than one process at the same time."));
                 }
-            }
+            }*/
             //Install database listeners
             dataManager.addDatabaseProgressionListener(this, StateEvent.DB_STATES.STATE_STATEMENT_END);
             //Call readDatabase when a SourceManager fire an event

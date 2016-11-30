@@ -109,16 +109,16 @@ public class ProcessManager {
                 if(processOffering == null){
                     return null;
                 }
-                //Check if the process is compatible with the DBMS connected to OrbisGIS.
+                //Check if the process is compatible with the DBMS_TITLE connected to OrbisGIS.
                 boolean isAcceptedDBMS = true;
                 for(MetadataType metadata : processOffering.getProcess().getMetadata()){
-                    if(metadata.getRole().equals(LocalWpsServer.ProcessProperty.DBMS.name())){
+                    if(metadata.getRole().equals(LocalWpsServer.ProcessMetadata.DBMS_TITLE.name())){
                         isAcceptedDBMS = false;
                     }
                 }
                 if(! isAcceptedDBMS){
                     for(MetadataType metadata : processOffering.getProcess().getMetadata()){
-                        if(metadata.getRole().equals(LocalWpsServer.ProcessProperty.DBMS.name()) &&
+                        if(metadata.getRole().equals(LocalWpsServer.ProcessMetadata.DBMS_TITLE.name()) &&
                             metadata.getTitle().toLowerCase().equals(wpsService.getDatabase().name().toLowerCase())){
                             isAcceptedDBMS = true;
                         }
@@ -129,33 +129,31 @@ public class ProcessManager {
                 }
 
                 //Sets the metadatas used by the OrbisGIS wps client
-                if(processOffering != null){
-                    MetadataType isRemovableMetadata = new MetadataType();
-                    isRemovableMetadata.setTitle(LocalWpsServer.ProcessProperty.IS_REMOVABLE.name());
-                    isRemovableMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
-                    isRemovableMetadata.setAbstractMetaData(isRemovable);
-                    processOffering.getProcess().getMetadata().add(isRemovableMetadata);
-                    if(nodePath != null) {
-                        MetadataType nodePathMetadata = new MetadataType();
-                        nodePathMetadata.setTitle(LocalWpsServer.ProcessProperty.NODE_PATH.name());
-                        nodePathMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
-                        nodePathMetadata.setAbstractMetaData(nodePath);
-                        processOffering.getProcess().getMetadata().add(nodePathMetadata);
-                    }
-                    if(category != null) {
-                        MetadataType iconArrayMetadata = new MetadataType();
-                        iconArrayMetadata.setTitle(LocalWpsServer.ProcessProperty.ICON_ARRAY.name());
-                        iconArrayMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
-                        String iconString = "";
-                        for (String icon : category) {
-                            if (!iconString.isEmpty()) {
-                                iconString += ";";
-                            }
-                            iconString += icon;
+                MetadataType isRemovableMetadata = new MetadataType();
+                isRemovableMetadata.setTitle(LocalWpsServer.ProcessMetadata.IS_REMOVABLE_TITLE.name());
+                isRemovableMetadata.setRole(LocalWpsServer.ProcessMetadata.METADATA_ROLE.name());
+                isRemovableMetadata.setAbstractMetaData(isRemovable);
+                processOffering.getProcess().getMetadata().add(isRemovableMetadata);
+                if(nodePath != null) {
+                    MetadataType nodePathMetadata = new MetadataType();
+                    nodePathMetadata.setTitle(LocalWpsServer.ProcessMetadata.NODE_PATH_TITLE.name());
+                    nodePathMetadata.setRole(LocalWpsServer.ProcessMetadata.METADATA_ROLE.name());
+                    nodePathMetadata.setAbstractMetaData(nodePath);
+                    processOffering.getProcess().getMetadata().add(nodePathMetadata);
+                }
+                if(category != null) {
+                    MetadataType iconArrayMetadata = new MetadataType();
+                    iconArrayMetadata.setTitle(LocalWpsServer.ProcessMetadata.ICON_ARRAY_TITLE.name());
+                    iconArrayMetadata.setRole(LocalWpsServer.ProcessMetadata.METADATA_ROLE.name());
+                    String iconString = "";
+                    for (String icon : category) {
+                        if (!iconString.isEmpty()) {
+                            iconString += ";";
                         }
-                        iconArrayMetadata.setAbstractMetaData(iconString);
-                        processOffering.getProcess().getMetadata().add(iconArrayMetadata);
+                        iconString += icon;
                     }
+                    iconArrayMetadata.setAbstractMetaData(iconString);
+                    processOffering.getProcess().getMetadata().add(iconArrayMetadata);
                 }
             } catch (MalformedScriptException e) {
                 LOGGER.error(I18N.tr("Unable to parse the process {0}.", scriptUri), e);

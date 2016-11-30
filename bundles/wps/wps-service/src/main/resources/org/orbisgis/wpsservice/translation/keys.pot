@@ -113,7 +113,7 @@ msgstr ""
 
 #: org/orbisgis/wpsservice/controller/process/ProcessManager.java:109
 #, java-format
-msgid "Error, the script is not compatible with the DBMS : {0}"
+msgid "Error, the script is not compatible with the DBMS_TITLE : {0}"
 msgstr ""
 
 #: org/orbisgis/wpsservice/controller/process/ProcessManager.java:144
