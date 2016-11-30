@@ -625,8 +625,8 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         //Get the process
         ProcessDescriptionType process = listProcess.get(0).getProcess();
         for(MetadataType metadata : process.getMetadata()){
-            if(metadata.getRole().toUpperCase().equals(LocalWpsServer.ProcessMetadata.METADATA_ROLE.name().toUpperCase()) &&
-                    metadata.getTitle().toUpperCase().equals(LocalWpsServer.ProcessMetadata.BASH_MODE_DISABLED.name().toUpperCase()) &&
+            if(metadata.getRole().toUpperCase().equals(LocalWpsServer.ProcessMetadata.BASH_MODE_ROLE.name().toUpperCase()) &&
+                    metadata.getTitle().toUpperCase().equals(LocalWpsServer.ProcessMetadata.DISABLED_TITLE.name().toUpperCase()) &&
                     type.equals(ProcessExecutionType.BASH)){
                 type = ProcessExecutionType.STANDARD;
                 defaultValuesMap = new HashMap<>();

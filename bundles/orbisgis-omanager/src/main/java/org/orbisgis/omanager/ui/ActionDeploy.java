@@ -44,7 +44,6 @@ import java.util.concurrent.ExecutorService;
 import javax.swing.*;
 
 import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.sif.components.DependencyMessageDialog;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.obr.RepositoryAdmin;

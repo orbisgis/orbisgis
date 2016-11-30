@@ -40,7 +40,7 @@
                 <configuration>
                     <instructions>
                         <Private-Package>org.orbisgis.wpsservice.*</Private-Package>
-                        <Bundle-Category>orbisgis</Bundle-Category>
+                        <Bundle-Category>OrbisGIS,WPS</Bundle-Category>
                     </instructions>
                 </configuration>
             </plugin>

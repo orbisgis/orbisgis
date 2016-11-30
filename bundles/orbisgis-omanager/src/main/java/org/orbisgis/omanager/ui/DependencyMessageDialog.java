@@ -34,15 +34,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.sif.components;
+package org.orbisgis.omanager.ui;
 
-import net.miginfocom.swing.MigLayout;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
@@ -50,6 +48,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 
+/**
+ * Dialog display when the user wants to install a bundle with dependencies.
+ *
+ * @author Sylvain PALOMINOS
+ */
 public class DependencyMessageDialog extends JDialog {
 
     private static final I18n I18N = I18nFactory.getI18n(DependencyMessageDialog.class);
@@ -133,7 +136,7 @@ public class DependencyMessageDialog extends JDialog {
     public class MainPane extends JPanel {
 
         private MainPane.MessagePane messagePane;
-        private MainPane.SQLPane sqlPane;
+        private DependencyPane dependencyPane;
 
         public MainPane() {
             setBorder(new EmptyBorder(8, 8, 8, 8));
@@ -151,15 +154,15 @@ public class DependencyMessageDialog extends JDialog {
             gbc.gridy++;
             gbc.weighty = 0;
 
-            sqlPane = new MainPane.SQLPane();
-            sqlPane.setVisible(false);
-            add(sqlPane, gbc);
+            dependencyPane = new DependencyPane();
+            dependencyPane.setVisible(false);
+            add(dependencyPane, gbc);
 
             messagePane.addExpandCollapseListener(new ChangeListener() {
 
                 @Override
                 public void stateChanged(ChangeEvent e) {
-                    sqlPane.setVisible(messagePane.isExpanded());
+                    dependencyPane.setVisible(messagePane.isExpanded());
                     Window window = SwingUtilities.windowForComponent(MainPane.this);
                     window.pack();
                 }
@@ -253,11 +256,11 @@ public class DependencyMessageDialog extends JDialog {
         /**
          * A panel to display the SQL query
          */
-        public class SQLPane extends JPanel {
+        public class DependencyPane extends JPanel {
 
             private static final int VISIBLE_ROW_COUNT = 8;
 
-            public SQLPane() {
+            public DependencyPane() {
                 setLayout(new BorderLayout());
                 JList<String> list = new JList<>();
                 list.setListData(details.split("\\n"));

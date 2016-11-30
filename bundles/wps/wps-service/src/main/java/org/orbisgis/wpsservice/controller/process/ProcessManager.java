@@ -109,16 +109,16 @@ public class ProcessManager {
                 if(processOffering == null){
                     return null;
                 }
-                //Check if the process is compatible with the DBMS_TITLE connected to OrbisGIS.
+                //Check if the process is compatible with the DBMS connected to OrbisGIS.
                 boolean isAcceptedDBMS = true;
                 for(MetadataType metadata : processOffering.getProcess().getMetadata()){
-                    if(metadata.getRole().equals(LocalWpsServer.ProcessMetadata.DBMS_TITLE.name())){
+                    if(metadata.getRole().equals(LocalWpsServer.ProcessMetadata.DBMS_ROLE.name())){
                         isAcceptedDBMS = false;
                     }
                 }
                 if(! isAcceptedDBMS){
                     for(MetadataType metadata : processOffering.getProcess().getMetadata()){
-                        if(metadata.getRole().equals(LocalWpsServer.ProcessMetadata.DBMS_TITLE.name()) &&
+                        if(metadata.getRole().equals(LocalWpsServer.ProcessMetadata.DBMS_ROLE.name()) &&
                             metadata.getTitle().toLowerCase().equals(wpsService.getDatabase().name().toLowerCase())){
                             isAcceptedDBMS = true;
                         }

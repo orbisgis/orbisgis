@@ -114,8 +114,8 @@ public interface LocalWpsServer extends WpsServer {
      */
     List<String> getFieldValueList(String tableName, String fieldName);
 
-    enum ProcessMetadata {IS_REMOVABLE_TITLE, NODE_PATH_TITLE, ICON_ARRAY_TITLE, METADATA_ROLE, DBMS_TITLE,
-        BASH_MODE_DISABLED, PARALLEL_EXECUTION_DISABLED}
+    enum ProcessMetadata {IS_REMOVABLE_TITLE, NODE_PATH_TITLE, ICON_ARRAY_TITLE, METADATA_ROLE, DBMS_ROLE,
+        BASH_MODE_ROLE, PARALLEL_EXECUTION_ROLE, ENABLED_TITLE, DISABLED_TITLE}
 
     /**
      * Adds to the server execution properties which will be set to the GroovyObject for the execution.
