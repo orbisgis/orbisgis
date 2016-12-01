@@ -50,6 +50,7 @@ import org.orbisgis.wpsservice.controller.utils.CancelClosure;
 import org.orbisgis.wpsservice.controller.utils.WpsSql;
 import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsservice.model.Enumeration;
+import org.orbisgis.wpsservice.utils.ProcessMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -112,13 +113,13 @@ public class ProcessManager {
                 //Check if the process is compatible with the DBMS connected to OrbisGIS.
                 boolean isAcceptedDBMS = true;
                 for(MetadataType metadata : processOffering.getProcess().getMetadata()){
-                    if(metadata.getRole().equals(LocalWpsServer.ProcessMetadata.DBMS_ROLE.name())){
+                    if(metadata.getRole().equalsIgnoreCase(ProcessMetadata.DBMS_TYPE_NAME)){
                         isAcceptedDBMS = false;
                     }
                 }
                 if(! isAcceptedDBMS){
                     for(MetadataType metadata : processOffering.getProcess().getMetadata()){
-                        if(metadata.getRole().equals(LocalWpsServer.ProcessMetadata.DBMS_ROLE.name()) &&
+                        if(metadata.getRole().equalsIgnoreCase(ProcessMetadata.DBMS_TYPE_NAME) &&
                             metadata.getTitle().toLowerCase().equals(wpsService.getDatabase().name().toLowerCase())){
                             isAcceptedDBMS = true;
                         }
@@ -130,21 +131,21 @@ public class ProcessManager {
 
                 //Sets the metadatas used by the OrbisGIS wps client
                 MetadataType isRemovableMetadata = new MetadataType();
-                isRemovableMetadata.setTitle(LocalWpsServer.ProcessMetadata.IS_REMOVABLE_TITLE.name());
-                isRemovableMetadata.setRole(LocalWpsServer.ProcessMetadata.METADATA_ROLE.name());
+                isRemovableMetadata.setTitle(ProcessMetadata.INTERNAL_METADATA.IS_REMOVABLE.name());
+                isRemovableMetadata.setRole(ProcessMetadata.INTERNAL_METADATA_NAME);
                 isRemovableMetadata.setAbstractMetaData(isRemovable);
                 processOffering.getProcess().getMetadata().add(isRemovableMetadata);
                 if(nodePath != null) {
                     MetadataType nodePathMetadata = new MetadataType();
-                    nodePathMetadata.setTitle(LocalWpsServer.ProcessMetadata.NODE_PATH_TITLE.name());
-                    nodePathMetadata.setRole(LocalWpsServer.ProcessMetadata.METADATA_ROLE.name());
+                    nodePathMetadata.setTitle(ProcessMetadata.INTERNAL_METADATA.NODE_PATH.name());
+                    nodePathMetadata.setRole(ProcessMetadata.INTERNAL_METADATA_NAME);
                     nodePathMetadata.setAbstractMetaData(nodePath);
                     processOffering.getProcess().getMetadata().add(nodePathMetadata);
                 }
                 if(category != null) {
                     MetadataType iconArrayMetadata = new MetadataType();
-                    iconArrayMetadata.setTitle(LocalWpsServer.ProcessMetadata.ICON_ARRAY_TITLE.name());
-                    iconArrayMetadata.setRole(LocalWpsServer.ProcessMetadata.METADATA_ROLE.name());
+                    iconArrayMetadata.setTitle(ProcessMetadata.INTERNAL_METADATA.ICON_ARRAY.name());
+                    iconArrayMetadata.setRole(ProcessMetadata.INTERNAL_METADATA_NAME);
                     String iconString = "";
                     for (String icon : category) {
                         if (!iconString.isEmpty()) {

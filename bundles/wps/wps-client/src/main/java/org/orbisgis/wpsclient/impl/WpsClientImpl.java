@@ -66,6 +66,7 @@ import org.orbisgis.wpsclient.impl.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.impl.editor.process.ProcessEditor;
 import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsservice.LocalWpsServer;
+import org.orbisgis.wpsservice.utils.ProcessMetadata;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -625,8 +626,8 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         //Get the process
         ProcessDescriptionType process = listProcess.get(0).getProcess();
         for(MetadataType metadata : process.getMetadata()){
-            if(metadata.getRole().toUpperCase().equals(LocalWpsServer.ProcessMetadata.BASH_MODE_ROLE.name().toUpperCase()) &&
-                    metadata.getTitle().toUpperCase().equals(LocalWpsServer.ProcessMetadata.DISABLED_TITLE.name().toUpperCase()) &&
+            if(metadata.getRole().equalsIgnoreCase(ProcessMetadata.CONFIGURATION_MODE_NAME) &&
+                    metadata.getTitle().equalsIgnoreCase(ProcessMetadata.CONFIGURATION_MODE.STANDARD_MODE_ONLY.name()) &&
                     type.equals(ProcessExecutionType.BASH)){
                 type = ProcessExecutionType.STANDARD;
                 defaultValuesMap = new HashMap<>();
