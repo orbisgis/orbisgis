@@ -102,6 +102,10 @@ public class QuoteUtilities {
 	 * @return The unquoted text.
 	 */
 	public static String unquoteText(String textToUnquote) {
+		//First of all, check if the text to unquote begins with '"' and ends with '";'
+		if(!(textToUnquote.charAt(0) == '"' && textToUnquote.substring(textToUnquote.length()-2).equals("\";"))){
+			return textToUnquote;
+		}
 		// new line to the begining so that sb.append( will be removed
 		// new line to the end so that a semi colon at the end will be removed.
 		textToUnquote = "\n" + textToUnquote + "\n";
