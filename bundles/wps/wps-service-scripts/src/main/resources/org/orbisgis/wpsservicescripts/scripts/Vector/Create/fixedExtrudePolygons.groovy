@@ -43,7 +43,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
 				])
 		],
 		metadata = [
-				@MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/")
+				@MetadataAttribute(title="H2GIS", role ="DBMS_TYPE", href = "http://www.h2gis.org/")
 		])
 def processing() {
 

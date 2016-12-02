@@ -42,14 +42,14 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * Panel that show all plugins, for advanced users.
+ * Show only filtered WPS plugins, for all users.
  * Must define a class for OSGi check reason.
- * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS
  */
 @Component(service = CustomPlugin.class)
-public class MainSystemPanel extends MainPanel {
-    public MainSystemPanel() {
-        super(Category.SYSTEM);
+public class MainWpsPluginPanel extends MainPanel {
+    public MainWpsPluginPanel() {
+        super(Category.WPS);
     }
 
     @Activate

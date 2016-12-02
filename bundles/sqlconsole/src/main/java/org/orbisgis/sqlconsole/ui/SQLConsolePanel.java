@@ -630,23 +630,7 @@ public class SQLConsolePanel extends JPanel {
                 bounds[0] = scriptPanel.getSelectionStart();
                 bounds[1] = scriptPanel.getSelectionEnd();
 
-                if (bounds[0] == bounds[1]) {
-                        bounds = getSqlBoundsBySeparatorRule(scriptPanel.getCaretPosition());
-                }
-
                 return bounds;
-        }
-
-        private int[] getSqlBoundsBySeparatorRule(int iCaretPos) {
-                int[] bounds = new int[2];
-
-                String sql = getText();
-
-                bounds[0] = lastIndexOfStateSep(sql, iCaretPos);
-                bounds[1] = indexOfStateSep(sql, iCaretPos);
-
-                return bounds;
-
         }
 
         private static int indexOfStateSep(String sql, int pos) {

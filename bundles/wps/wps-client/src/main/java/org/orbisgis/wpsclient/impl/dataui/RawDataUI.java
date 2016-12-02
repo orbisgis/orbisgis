@@ -141,10 +141,10 @@ public class RawDataUI implements DataUI {
             openPanel.setAcceptAllFileFilterUsed(true);
         }
         else{
-            openPanel.setAcceptAllFileFilterUsed(true);
             for(String type : rawData.getFileTypes()){
                 openPanel.addFilter(type, type);
             }
+            openPanel.setAcceptAllFileFilterUsed(true);
         }
 
         openPanel.setSingleSelection(!rawData.multiSelection());

@@ -40,9 +40,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.osgi.service.obr.Repository;
 import org.osgi.service.obr.RepositoryAdmin;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -51,10 +54,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Register repositories in the BundleContext
  *
  * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS
  */
-public class RegisterSavedRepositories extends SwingWorker<Boolean, Boolean>
+public class RegisterSavedRepositories extends SwingWorker<Boolean, Boolean> {
+    private static final I18n I18N = I18nFactory.getI18n(RegisterSavedRepositories.class);
 
-{
     private Set<URI> obrRepositories;
     private RepositoryAdmin repositoryAdmin;
     private final Logger logger = LoggerFactory.getLogger(RegisterSavedRepositories.class);
@@ -89,7 +93,15 @@ public class RegisterSavedRepositories extends SwingWorker<Boolean, Boolean>
                     try {
                         repositoryAdmin.addRepository(serverURI.toURL());
                     } catch (Exception ex) {
-                        logger.error(ex.getLocalizedMessage(), ex);
+                        //Tests if the exception is because of a problem accessing to the OrbisGIS nexus.
+                        if(ex.getCause() instanceof UnknownHostException &&
+                                ex.getCause().getMessage().equals(serverURI.getAuthority())){
+                            logger.error(I18N.tr("Unable to access to {0}. Please check your internet connexion.",
+                                    serverURI.getAuthority()));
+                        }
+                        else {
+                            logger.error(ex.getLocalizedMessage(), ex);
+                        }
                     }
                 }
             }

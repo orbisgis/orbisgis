@@ -50,6 +50,7 @@ import org.orbisgis.wpsservice.controller.utils.CancelClosure;
 import org.orbisgis.wpsservice.controller.utils.WpsSql;
 import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsservice.model.Enumeration;
+import org.orbisgis.wpsservice.utils.ProcessMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -112,13 +113,13 @@ public class ProcessManager {
                 //Check if the process is compatible with the DBMS connected to OrbisGIS.
                 boolean isAcceptedDBMS = true;
                 for(MetadataType metadata : processOffering.getProcess().getMetadata()){
-                    if(metadata.getRole().equals(LocalWpsServer.ProcessProperty.DBMS.name())){
+                    if(metadata.getRole().equalsIgnoreCase(ProcessMetadata.DBMS_TYPE_NAME)){
                         isAcceptedDBMS = false;
                     }
                 }
                 if(! isAcceptedDBMS){
                     for(MetadataType metadata : processOffering.getProcess().getMetadata()){
-                        if(metadata.getRole().equals(LocalWpsServer.ProcessProperty.DBMS.name()) &&
+                        if(metadata.getRole().equalsIgnoreCase(ProcessMetadata.DBMS_TYPE_NAME) &&
                             metadata.getTitle().toLowerCase().equals(wpsService.getDatabase().name().toLowerCase())){
                             isAcceptedDBMS = true;
                         }
@@ -129,33 +130,31 @@ public class ProcessManager {
                 }
 
                 //Sets the metadatas used by the OrbisGIS wps client
-                if(processOffering != null){
-                    MetadataType isRemovableMetadata = new MetadataType();
-                    isRemovableMetadata.setTitle(LocalWpsServer.ProcessProperty.IS_REMOVABLE.name());
-                    isRemovableMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
-                    isRemovableMetadata.setAbstractMetaData(isRemovable);
-                    processOffering.getProcess().getMetadata().add(isRemovableMetadata);
-                    if(nodePath != null) {
-                        MetadataType nodePathMetadata = new MetadataType();
-                        nodePathMetadata.setTitle(LocalWpsServer.ProcessProperty.NODE_PATH.name());
-                        nodePathMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
-                        nodePathMetadata.setAbstractMetaData(nodePath);
-                        processOffering.getProcess().getMetadata().add(nodePathMetadata);
-                    }
-                    if(category != null) {
-                        MetadataType iconArrayMetadata = new MetadataType();
-                        iconArrayMetadata.setTitle(LocalWpsServer.ProcessProperty.ICON_ARRAY.name());
-                        iconArrayMetadata.setRole(LocalWpsServer.ProcessProperty.ROLE.name());
-                        String iconString = "";
-                        for (String icon : category) {
-                            if (!iconString.isEmpty()) {
-                                iconString += ";";
-                            }
-                            iconString += icon;
+                MetadataType isRemovableMetadata = new MetadataType();
+                isRemovableMetadata.setTitle(ProcessMetadata.INTERNAL_METADATA.IS_REMOVABLE.name());
+                isRemovableMetadata.setRole(ProcessMetadata.INTERNAL_METADATA_NAME);
+                isRemovableMetadata.setAbstractMetaData(isRemovable);
+                processOffering.getProcess().getMetadata().add(isRemovableMetadata);
+                if(nodePath != null) {
+                    MetadataType nodePathMetadata = new MetadataType();
+                    nodePathMetadata.setTitle(ProcessMetadata.INTERNAL_METADATA.NODE_PATH.name());
+                    nodePathMetadata.setRole(ProcessMetadata.INTERNAL_METADATA_NAME);
+                    nodePathMetadata.setAbstractMetaData(nodePath);
+                    processOffering.getProcess().getMetadata().add(nodePathMetadata);
+                }
+                if(category != null) {
+                    MetadataType iconArrayMetadata = new MetadataType();
+                    iconArrayMetadata.setTitle(ProcessMetadata.INTERNAL_METADATA.ICON_ARRAY.name());
+                    iconArrayMetadata.setRole(ProcessMetadata.INTERNAL_METADATA_NAME);
+                    String iconString = "";
+                    for (String icon : category) {
+                        if (!iconString.isEmpty()) {
+                            iconString += ";";
                         }
-                        iconArrayMetadata.setAbstractMetaData(iconString);
-                        processOffering.getProcess().getMetadata().add(iconArrayMetadata);
+                        iconString += icon;
                     }
+                    iconArrayMetadata.setAbstractMetaData(iconString);
+                    processOffering.getProcess().getMetadata().add(iconArrayMetadata);
                 }
             } catch (MalformedScriptException e) {
                 LOGGER.error(I18N.tr("Unable to parse the process {0}.", scriptUri), e);
@@ -300,15 +299,20 @@ public class ProcessManager {
                             data = data.toString().split("\\t");
                         }
                     }
-                    if(Number.class.isAssignableFrom(f.getType()) && data != null) {
-                        try {
-                            Method valueOf = f.getType().getMethod("valueOf", String.class);
-                            if (valueOf != null) {
-                                valueOf.setAccessible(true);
-                                data = valueOf.invoke(this, data.toString());
+                    if(dataDescriptionType instanceof LiteralDataType) {
+                        if (Number.class.isAssignableFrom(f.getType()) && data != null) {
+                            try {
+                                Method valueOf = f.getType().getMethod("valueOf", String.class);
+                                if (valueOf != null) {
+                                    valueOf.setAccessible(true);
+                                    data = valueOf.invoke(this, data.toString());
+                                }
+                            } catch (NoSuchMethodException | InvocationTargetException e) {
+                                LOGGER.warn(I18N.tr("Unable to convert the LiteralData to the good script type."));
                             }
-                        } catch (NoSuchMethodException | InvocationTargetException e) {
-                            LOGGER.warn(I18N.tr("Unable to convert the LiteralData to the good script type."));
+                        }
+                        else if(data != null && (data.equals("true") || data.equals("false"))){
+                            data = data.equals("true");
                         }
                     }
                     f.set(groovyObject, data);

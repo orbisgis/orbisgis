@@ -37,6 +37,7 @@
 
 package org.orbisgis.wpsservice.model;
 
+import org.h2gis.utilities.GeometryTypeCodes;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
@@ -89,6 +90,16 @@ public enum DataType {
         } catch (URISyntaxException e) {
             LoggerFactory.getLogger(DataType.class).error(e.getMessage());
         }
+    }
+
+    public static boolean isSpatialType(DataType dataType){
+        return dataType.equals(GEOMETRY) ||
+                dataType.equals(POINT) ||
+                dataType.equals(LINESTRING) ||
+                dataType.equals(POLYGON) ||
+                dataType.equals(MULTIPOINT) ||
+                dataType.equals(MULTILINESTRING) ||
+                dataType.equals(MULTIPOLYGON);
     }
 
     public static DataType getDataTypeFromFieldType(String fieldType){
@@ -156,6 +167,32 @@ public enum DataType {
                 return (dbTypeName.equalsIgnoreCase(MULTILINESTRING.name()));
             case MULTIPOLYGON:
                 return (dbTypeName.equalsIgnoreCase(MULTIPOLYGON.name()));
+            default: return false;
+        }
+    }
+
+    public static boolean testGeometryType(DataType dataType, int type){
+        switch(dataType) {
+            case GEOMETRY:
+                return (type == GeometryTypeCodes.GEOMETRY) ||
+                        (type == GeometryTypeCodes.POINT) ||
+                        (type == GeometryTypeCodes.LINESTRING) ||
+                        (type == GeometryTypeCodes.POLYGON) ||
+                        (type == GeometryTypeCodes.MULTIPOINT) ||
+                        (type == GeometryTypeCodes.MULTILINESTRING) ||
+                        (type == GeometryTypeCodes.MULTIPOLYGON);
+            case POINT:
+                return type == GeometryTypeCodes.POINT;
+            case LINESTRING:
+                return type == GeometryTypeCodes.LINESTRING;
+            case POLYGON:
+                return type == GeometryTypeCodes.POLYGON;
+            case MULTIPOINT:
+                return type == GeometryTypeCodes.MULTIPOINT;
+            case MULTILINESTRING:
+                return type == GeometryTypeCodes.MULTILINESTRING;
+            case MULTIPOLYGON:
+                return type == GeometryTypeCodes.MULTIPOLYGON;
             default: return false;
         }
     }

@@ -40,8 +40,10 @@ package org.orbisgis.omanager.ui;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
-import javax.swing.Icon;
-import javax.swing.JOptionPane;
+import java.util.concurrent.ExecutorService;
+import javax.swing.*;
+
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.obr.RepositoryAdmin;
@@ -76,12 +78,13 @@ public class ActionDeploy  extends ActionBundle {
 
         // If the bundle has dependencies, store the dependency name, version and size
         Resource[] resources = resolver.getRequiredResources();
+        StringBuilder dependencyStr = new StringBuilder();
         if ((resources != null) && (resources.length > 0)) {
             for (Resource dependency : resources) {
-                resourcesNames.append(dependency.getPresentationName());
-                resourcesNames.append(" (");
-                resourcesNames.append(dependency.getVersion());
-                resourcesNames.append(")\n");
+                dependencyStr.append(dependency.getPresentationName());
+                dependencyStr.append(" (");
+                dependencyStr.append(dependency.getVersion());
+                dependencyStr.append(")\n");
                 bytes += getSize(dependency);
             }
         }
@@ -91,33 +94,37 @@ public class ActionDeploy  extends ActionBundle {
         if ((resources != null) && (resources.length > 0)) {
             for (Resource dependency : resources) {
                 bytes += getSize(dependency);
-                resourcesNames.append("Optional, ");
-                resourcesNames.append(dependency.getPresentationName());
-                resourcesNames.append(" (");
-                resourcesNames.append(dependency.getVersion());
-                resourcesNames.append(")\n");
+                dependencyStr.append("Optional, ");
+                dependencyStr.append(dependency.getPresentationName());
+                dependencyStr.append(" (");
+                dependencyStr.append(dependency.getVersion());
+                dependencyStr.append(")\n");
             }
         }
         // If there is hidden dependency (needed & optional)
         // Ask user for validating additional download
-        boolean deploy = true;
-        if(resourcesNames.length()>0) {
-            resourcesNames.insert(0,") ?\n");
-            resourcesNames.insert(0,BundleItem.getHumanReadableBytes(bytes));
-            resourcesNames.insert(0,"Do you want to download the following dependencies (Size : ");
-            String[] options = {I18N.tr("Yes"),
-                    I18N.tr("Cancel")};
-            int n = JOptionPane.showOptionDialog(frame, resourcesNames.toString(), I18N.tr("Dependencies downloading"),
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-            deploy = n==JOptionPane.YES_OPTION;
-        }
-        if(deploy) {
-            try {
-                // Download the bundle and dependencies
-                resolver.deploy(start);
-            } catch (IllegalStateException ex) {
-                LOGGER.error(ex.getLocalizedMessage(),ex);
+        if(dependencyStr.length() != 0) {
+            if (dependencyStr.length() > 0) {
+                resourcesNames.insert(0, ") ?\n");
+                resourcesNames.insert(0, BundleItem.getHumanReadableBytes(bytes));
+                resourcesNames.insert(0, "Do you want to download the following dependencies (Size : ");
+            }
+            if (DependencyMessageDialog.showModal(SwingUtilities.getWindowAncestor(frame),
+                    I18N.tr("Dependencies downloading"), resourcesNames.toString(), dependencyStr.toString())
+                    .equals(DependencyMessageDialog.CHOICE.OK)) {
+
+                DeployBundleSwingWorker worker = new DeployBundleSwingWorker(resolver);
+                ServiceReference<ExecutorService> executorServiceReference = bundleContext.getServiceReference(ExecutorService.class);
+                ExecutorService executorService = null;
+                if(executorServiceReference != null){
+                    executorService = bundleContext.getService(executorServiceReference);
+                }
+                if(executorService != null){
+                    executorService.execute(worker);
+                }
+                else{
+                    worker.execute();
+                }
             }
         }
     }
@@ -187,6 +194,27 @@ public class ActionDeploy  extends ActionBundle {
             return(Long) depSize;
         } else {
             return 0L;
+        }
+    }
+
+    private class DeployBundleSwingWorker extends SwingWorkerPM {
+
+        private Resolver resolver;
+
+        public DeployBundleSwingWorker(Resolver resolver){
+            this.resolver = resolver;
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            setTaskName(I18N.tr("Downloading and installing dependencies"));
+            try {
+                // Download the bundle and dependencies
+                resolver.deploy(start);
+            } catch (IllegalStateException ex) {
+                LOGGER.error(ex.getLocalizedMessage(),ex);
+            }
+            return null;
         }
     }
 }

@@ -49,7 +49,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = CustomPlugin.class)
 public class MainPluginPanel extends MainPanel {
     public MainPluginPanel() {
-        super(true);
+        super(Category.PLUGIN);
     }
 
     @Activate

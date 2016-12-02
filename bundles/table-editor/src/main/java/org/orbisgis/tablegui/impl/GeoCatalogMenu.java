@@ -39,7 +39,6 @@ package org.orbisgis.tablegui.impl;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.geocatalog.api.PopupMenu;
 import org.orbisgis.geocatalog.api.PopupTarget;
-import org.orbisgis.geocatalog.icons.GeocatalogIcon;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.tablegui.icons.TableEditorIcon;

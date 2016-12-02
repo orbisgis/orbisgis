@@ -126,7 +126,6 @@ public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
                         //Build the dataMap containing the process input
                         Map<URI, Object> dataMap = new HashMap<>();
                         dataMap.put(INPUT_TABLE, editable.getTableReference());
-                        dataMap.put(INPUT_FIELDS, null);
                         dataMap.put(INPUT_VALUES, values);
                         //Run the service
                         jobId = wpsClient.executeInternalProcess(PROCESS_URI, dataMap, this);

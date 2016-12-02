@@ -121,15 +121,15 @@ public interface InternalWpsClient extends WpsClient {
     List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes);
 
     /**
-     * Returns a map containing the sql table from a database connected to OrbisGIS as key and if it is spatial or not
-     * as value.
+     * Returns the list of the table from a database connected to OrbisGIS which contains the fields with the given
+     * dataTypes and without the given excludedTypes
      *
-     * @param onlySpatial If true, returns only the spatial table, otherwise returns all the tables.
+     * @param dataTypes Type of field accepted. If empty, accepts all the field.
+     * @param excludedTypes Type of field excluded.
      *
-     * @return A map containing the sql table from a database connected to OrbisGIS as key and if it is spatial or not
-     * as value.
+     * @return The list of valid tables.
      */
-    Map<String, Boolean> getGeocatalogTableList(boolean onlySpatial);
+    List<String> getTableList(List<DataType> dataTypes, List<DataType> excludedTypes);
 
     /**
      * Returns a map containing field information like table type, SRID...

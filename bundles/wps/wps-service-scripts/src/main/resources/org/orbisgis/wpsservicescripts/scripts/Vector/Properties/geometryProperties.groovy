@@ -50,8 +50,8 @@ import org.orbisgis.wpsgroovyapi.process.*
                 ])
         ],
         metadata = [
-                @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
-                @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
+                @MetadataAttribute(title="H2GIS", role ="DBMS_TYPE", href = "http://www.h2gis.org/"),
+                @MetadataAttribute(title="POSTGIS", role ="DBMS_TYPE", href = "http://postgis.net/")
         ],
         identifier = "orbisgis:wps:official:geometryProperties"
 )

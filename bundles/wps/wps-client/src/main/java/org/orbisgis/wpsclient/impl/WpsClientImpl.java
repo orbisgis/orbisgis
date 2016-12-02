@@ -66,6 +66,7 @@ import org.orbisgis.wpsclient.impl.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.impl.editor.process.ProcessEditor;
 import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsservice.LocalWpsServer;
+import org.orbisgis.wpsservice.utils.ProcessMetadata;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -254,7 +255,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         } catch (JAXBException e) {
             LoggerFactory.getLogger(WpsClient.class).error(
                     I18N.tr("Unable to marshall the request object : {0}.\nCause : {1}.",
-                            request.getClass().getName(), e.getMessage()));
+                            request.getClass().getName(), e.getMessage()!=null?e.getMessage():e.getCause().getMessage()));
             return null;
         }
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(out.toByteArray()));
@@ -624,6 +625,14 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         }
         //Get the process
         ProcessDescriptionType process = listProcess.get(0).getProcess();
+        for(MetadataType metadata : process.getMetadata()){
+            if(metadata.getRole().equalsIgnoreCase(ProcessMetadata.CONFIGURATION_MODE_NAME) &&
+                    metadata.getTitle().equalsIgnoreCase(ProcessMetadata.CONFIGURATION_MODE.STANDARD_MODE_ONLY.name()) &&
+                    type.equals(ProcessExecutionType.BASH)){
+                type = ProcessExecutionType.STANDARD;
+                defaultValuesMap = new HashMap<>();
+            }
+        }
         //Link the DataStore with the DataField and the DataField with the FieldValue
         link(process);
         //Open the ProcessEditor
@@ -665,8 +674,8 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
     }
 
     @Override
-    public Map<String, Boolean> getGeocatalogTableList(boolean onlySpatial){
-        return wpsService.getGeocatalogTableList(onlySpatial);
+    public List<String> getTableList(List<DataType> dataTypes, List<DataType> excludedTypes){
+        return wpsService.getTableList(dataTypes, excludedTypes);
     }
 
     @Override
@@ -771,7 +780,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
                 if(URI.create(input.getIdentifier().getValue()).equals(entry.getKey())){
                     //Build the data object containing the data on the input
                     Data data = new Data();
-                    data.getContent().add(entry.getValue());
+                    data.getContent().add(entry.getValue().toString());
                     //Build the DataInput object containing the input identifier and the data to process
                     DataInputType dataInput = new DataInputType();
                     dataInput.setId(entry.getKey().toString());
