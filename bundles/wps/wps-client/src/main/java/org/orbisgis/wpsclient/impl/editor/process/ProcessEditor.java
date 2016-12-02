@@ -149,14 +149,14 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         dockingPanelParameters.setDockActions(dockingActions.getActions());
         dockingActions.addPropertyChangeListener(new ActionDockingListener(dockingPanelParameters));
         DefaultAction runAction = new DefaultAction("ACTION_RUN",
-                "ACTION_RUN",
+                I18N.tr("Run the script"),
                 I18N.tr("Run the script"),
                 ToolBoxIcon.getIcon(ToolBoxIcon.EXECUTE),
                 EventHandler.create(ActionListener.class, this, "runProcess"),
                 null);
         dockingActions.addAction(runAction);
         toggleModeAction = new DefaultAction(ACTION_TOGGLE_MODE,
-                ACTION_TOGGLE_MODE,
+                I18N.tr("Toggle execution mode."),
                 I18N.tr("Uses the bash mode."),
                 ToolBoxIcon.getIcon(ToolBoxIcon.TOGGLE_MODE),
                 EventHandler.create(ActionListener.class, this, "toggleMode"),
