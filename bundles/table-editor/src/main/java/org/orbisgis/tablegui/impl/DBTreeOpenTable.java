@@ -87,7 +87,22 @@ public class DBTreeOpenTable implements PopupMenu {
             GeoCatalogTreeAction action = (GeoCatalogTreeAction)((JMenuItem) event.getSource()).getAction();
             for(GeoCatalogTreeNode node : action.getSelectedTreeNodes()) {
                 if(GeoCatalogTreeNode.NODE_TABLE.equals(node.getNodeType())) {
-                    editorManager.openEditable(new TableEditableElementImpl(node.getNodeIdentifier(), dataManager));
+                    //Gets the table name which is composed this way : CATALOG.SCHEMA.TABLE.
+                    //If the CATALOG is empty, just uses SCHEMA.TABLE
+                    //If the CATALOG is empty and the SCHEMA is empty or 'public' (case not matter), just uses TABLE
+                    String[] split = node.getNodeIdentifier().split("\\.");
+                    String tableName = "";
+                    switch(split.length){
+                        case 3:
+                            tableName+=split[split.length-3]+".";
+                        case 2:
+                            if(!tableName.isEmpty() || !split[split.length-2].equalsIgnoreCase("public")){
+                                tableName += split[split.length-2]+".";
+                            }
+                        case 1:
+                            tableName+=split[split.length-1];
+                    }
+                    editorManager.openEditable(new TableEditableElementImpl(tableName, dataManager));
                 }
             }
         }
