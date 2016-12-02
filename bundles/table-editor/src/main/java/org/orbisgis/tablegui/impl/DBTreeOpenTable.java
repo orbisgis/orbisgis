@@ -36,6 +36,7 @@
  */
 package org.orbisgis.tablegui.impl;
 
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeAction;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
@@ -87,20 +88,13 @@ public class DBTreeOpenTable implements PopupMenu {
             GeoCatalogTreeAction action = (GeoCatalogTreeAction)((JMenuItem) event.getSource()).getAction();
             for(GeoCatalogTreeNode node : action.getSelectedTreeNodes()) {
                 if(GeoCatalogTreeNode.NODE_TABLE.equals(node.getNodeType())) {
-                    //Gets the table name which is composed this way : CATALOG.SCHEMA.TABLE.
-                    //If the CATALOG is empty, just uses SCHEMA.TABLE
-                    //If the CATALOG is empty and the SCHEMA is empty or 'public' (case not matter), just uses TABLE
-                    String[] split = node.getNodeIdentifier().split("\\.");
-                    String tableName = "";
-                    switch(split.length){
-                        case 3:
-                            tableName+=split[split.length-3]+".";
-                        case 2:
-                            if(!tableName.isEmpty() || !split[split.length-2].equalsIgnoreCase("public")){
-                                tableName += split[split.length-2]+".";
-                            }
-                        case 1:
-                            tableName+=split[split.length-1];
+                    TableLocation tableLocation = TableLocation.parse(node.getNodeIdentifier());
+                    String tableName;
+                    if(tableLocation.getCatalog().isEmpty() && tableLocation.getSchema().equalsIgnoreCase("public")){
+                        tableName = tableLocation.getTable();
+                    }
+                    else{
+                        tableName = tableLocation.toString();
                     }
                     editorManager.openEditable(new TableEditableElementImpl(tableName, dataManager));
                 }
