@@ -31,18 +31,18 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
  * As an output, this annotation should be placed just before the variable.
  *
  * The following fields must be defined (mandatory) :
- *  - title : String
- *       Title of the output. Normally available for display to a human.
+ *  - title : String[]
+ *       Title of the output. Normally available for display to a human. It is composed either a
+ *       unique title or a translated title, its language, another title, its language ...
+ *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en]
  *  - variableReference : String
  *      Name of the variable of the DataStore.
  *
  * The following fields can be defined (optional) :
- *  - traducedTitles : LanguageString[]
- *      List of LanguageString containing the traduced titles.
- *  - resume : String
- *      Brief narrative description of the output. Normally available for display to a human.
- *  - traducedResumes : LanguageString[]
- *      List of LanguageString containing the traduced description.
+ *  - description : String[]
+ *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
+ *      composed either a unique description or a translated description, its language, another description, its language ...
+ *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en]
  *  - keywords : String
  *      Array of keywords that characterize the output.
  *  - traducedKeywords : Keyword[]

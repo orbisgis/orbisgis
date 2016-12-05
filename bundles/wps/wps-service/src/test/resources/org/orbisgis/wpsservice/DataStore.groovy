@@ -16,11 +16,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(title = ["DataStore test","en","Test du DataStore","fr"],
-        resume = "Test script using the DataStore ComplexData.",
-        translatedResumes = [
-                @LanguageString(value = "Test script using the DataStore ComplexData.", lang = "en"),
-                @LanguageString(value = "Scripts test pour l'usage du ComplexData DataStore.", lang = "fr")
-        ],
+        description = ["Test script using the DataStore ComplexData.","en",
+                "Scripts test pour l'usage du ComplexData DataStore.","fr"],
         keywords = ["test", "script", "wps"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [
@@ -53,11 +50,7 @@ def processing() {
 /** This DataStore is the input data source. */
 @DataStoreInput(
         title = ["Input DataStore","en","Entrée DataStore","fr"],
-        resume = "A DataStore input.",
-        translatedResumes = [
-                @LanguageString(value = "A DataStore input.", lang = "en"),
-                @LanguageString(value = "Une entrée DataStore.", lang = "fr")
-        ],
+        description = ["A DataStore input.","en","Une entrée DataStore.","fr"],
         keywords = ["input"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [
@@ -82,11 +75,7 @@ String inputDataStore
 /** This DataStore is the output data source. */
 @DataStoreOutput(
         title = ["Output DataStore","en","Sortie DataStore","fr"],
-        resume="A DataStore output",
-        translatedResumes = [
-                @LanguageString(value = "A DataStore output.", lang = "en"),
-                @LanguageString(value = "Une sortie DataStore.", lang = "fr")
-        ],
+        description = ["A DataStore output.","en","Une sortie DataStore.","fr"],
         keywords = ["output"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [

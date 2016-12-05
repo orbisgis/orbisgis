@@ -16,11 +16,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(title = ["RawData test","en","Test du RawData","fr"],
-        resume = "Test script using the RawData ComplexData.",
-        translatedResumes = [
-                @LanguageString(value = "Test script using the RawData ComplexData.", lang = "en"),
-                @LanguageString(value = "Scripts test pour l'usage du ComplexData RawData.", lang = "fr")
-        ],
+        description = ["Test script using the RawData ComplexData.","en",
+                "Scripts test pour l'usage du ComplexData RawData.","fr"],
         keywords = ["test", "script", "wps"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [
@@ -53,11 +50,7 @@ def processing() {
 /** This RawData is the input data source. */
 @RawDataInput(
         title = ["Input RawData","en","Entrée RawData","fr"],
-        resume = "A RawData input.",
-        translatedResumes = [
-                @LanguageString(value = "A RawData input.", lang = "en"),
-                @LanguageString(value = "Une entrée RawData.", lang = "fr")
-        ],
+        description = ["A RawData input.","en","Une entrée RawData.","fr"],
         keywords = ["input"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [
@@ -82,11 +75,7 @@ String inputRawData
 /** This RawData is the output data source. */
 @RawDataOutput(
         title = ["Output RawData","en","Sortie RawData","fr"],
-        resume="A RawData output",
-        translatedResumes = [
-                @LanguageString(value = "A RawData output.", lang = "en"),
-                @LanguageString(value = "Une sortie RawData.", lang = "fr")
-        ],
+        description = ["A RawData output.","en","Une sortie RawData.","fr"],
         keywords = ["output"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [

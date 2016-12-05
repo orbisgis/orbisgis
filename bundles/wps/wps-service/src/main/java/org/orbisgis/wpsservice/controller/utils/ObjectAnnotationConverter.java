@@ -81,25 +81,27 @@ public class ObjectAnnotationConverter {
         descriptionType.getTitle().clear();
         descriptionType.getTitle().addAll(titleList);
 
-        if(descriptionTypeAttribute.translatedResumes().length != DescriptionTypeAttribute.defaultTranslatedResumes.length) {
-            List<LanguageStringType> resumeList = new ArrayList<>();
-            for(LanguageString languageString : descriptionTypeAttribute.translatedResumes()){
-                LanguageStringType resume = new LanguageStringType();
-                resume.setValue(languageString.value());
-                resume.setLang(languageString.lang());
-                resumeList.add(resume);
-            }
-            descriptionType.getAbstract().clear();
-            descriptionType.getAbstract().addAll(resumeList);
-        }
-        else if(!descriptionTypeAttribute.resume().equals(DescriptionTypeAttribute.defaultResume)){
-            List<LanguageStringType> resumeList = new ArrayList<>();
+        List<LanguageStringType> descriptionList = new ArrayList<>();
+
+        String[] descriptions = descriptionTypeAttribute.description();
+
+        if(descriptions.length == 1){
             LanguageStringType resume = new LanguageStringType();
-            resume.setValue(descriptionTypeAttribute.resume());
-            resumeList.add(resume);
-            descriptionType.getAbstract().clear();
-            descriptionType.getAbstract().addAll(resumeList);
+            resume.setValue(descriptions[0]);
+            descriptionList.add(resume);
         }
+        else {
+            for (int i = 0; i < descriptions.length; i += 2) {
+                LanguageStringType resume = new LanguageStringType();
+                resume.setValue(descriptions[i]);
+                resume.setLang(descriptions[i + 1]);
+                descriptionList.add(resume);
+            }
+        }
+        descriptionType.getAbstract().clear();
+        descriptionType.getAbstract().addAll(descriptionList);
+
+
         if(!descriptionTypeAttribute.identifier().equals(DescriptionTypeAttribute.defaultIdentifier)){
             CodeType codeType = new CodeType();
             codeType.setValue(descriptionTypeAttribute.identifier());

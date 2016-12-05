@@ -20,11 +20,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(title = ["FieldValue test","en","Test du FieldValue","fr"],
-        resume = "Test script using the FieldValue ComplexData.",
-        translatedResumes = [
-                @LanguageString(value = "Test script using the FieldValue ComplexData.", lang = "en"),
-                @LanguageString(value = "Scripts test pour l'usage du ComplexData FieldValue.", lang = "fr")
-        ],
+        description = ["Test script using the FieldValue ComplexData.","en",
+                "Scripts test pour l'usage du ComplexData FieldValue.","fr"],
         keywords = ["test", "script", "wps"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [
@@ -66,11 +63,7 @@ String dataFieldInput
 /** This FieldValue is the input data source. */
 @FieldValueInput(
         title = ["Input FieldValue","en","Entrée FieldValue","fr"],
-        resume = "A FieldValue input.",
-        translatedResumes = [
-                @LanguageString(value = "A FieldValue input.", lang = "en"),
-                @LanguageString(value = "Une entrée FieldValue.", lang = "fr")
-        ],
+        description = ["A FieldValue input.","en","Une entrée FieldValue.","fr"],
         keywords = ["input"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [
@@ -104,11 +97,7 @@ String dataFieldOutput
 /** This FieldValue is the output data source. */
 @FieldValueOutput(
         title = ["Output FieldValue","en","Sortie FieldValue","fr"],
-        resume="A FieldValue output",
-        translatedResumes = [
-                @LanguageString(value = "A FieldValue output.", lang = "en"),
-                @LanguageString(value = "Une sortie FieldValue.", lang = "fr")
-        ],
+        description = ["A FieldValue output.","en","Une sortie FieldValue.","fr"],
         keywords = ["output"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [

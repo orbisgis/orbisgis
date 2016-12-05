@@ -29,16 +29,16 @@ import java.lang.annotation.RetentionPolicy
  * appropriate role identifier.
  *
  * The following fields must be defined (mandatory) :
- *  - title : String
- *       Title of a process, input, and output. Normally available for display to a human.
+ *  - title : String[]
+ *       Title of a process, input, and output. Normally available for display to a human. It is composed either a
+ *       unique title or a translated title, its language, another title, its language ...
+ *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en]
  *
  * The following fields can be defined (optional) :
- *  - translatedTitles : LanguageString[]
- *      List of LanguageString containing the translated titles.
- *  - resume : String
- *      Brief narrative description of a process, input, and output. Normally available for display to a human.
- *  - translatedResumes : LanguageString[]
- *      List of LanguageString containing the translated description.
+ *  - description : String[]
+ *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
+ *      composed either a unique description or a translated description, its language, another description, its language ...
+ *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en]
  *  - keywords : String
  *      Array of keywords that characterize a process, its inputs, and outputs.
  *  - translatedKeywords : Keyword[]
@@ -53,14 +53,19 @@ import java.lang.annotation.RetentionPolicy
 @Retention(RetentionPolicy.RUNTIME)
 @interface DescriptionTypeAttribute {
 
-    /** Title of a process, input, and output. Normally available for display to a human. */
+    /**
+     * Brief narrative description of a process, input, and output. Normally available for display to a human.It is
+     * composed either a unique description or a translated description, its language, another description, its language ...
+     * i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en]
+     */
     String[] title() default[]
 
-    /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
-    String resume() default ""
-
-    /** List of LanguageString containing the translated description. */
-    LanguageString[] translatedResumes() default []
+    /**
+     * Brief narrative description of a process, input, and output. Normally available for display to a human.It is
+     * composed either a unique description or a translated description, its language, another description, its language ...
+     * i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en]
+     */
+    String[] description() default []
 
     /** Array of keywords that characterize a process, its inputs, and outputs. */
     String[] keywords() default []

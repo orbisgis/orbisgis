@@ -18,11 +18,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(title = ["DataField test","en","Test du DataField","fr"],
-        resume = "Test script using the DataField ComplexData.",
-        translatedResumes = [
-                @LanguageString(value = "Test script using the DataField ComplexData.", lang = "en"),
-                @LanguageString(value = "Scripts test pour l'usage du DataField DataField.", lang = "fr")
-        ],
+        description = ["Test script using the DataField ComplexData.","en",
+                "Scripts test pour l'usage du DataField DataField.","fr"],
         keywords = ["test", "script", "wps"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [
@@ -59,11 +56,7 @@ String dataStoreInput
 /** This DataField is the input data source. */
 @DataFieldInput(
         title = ["Input DataField","en","Entrée DataField","fr"],
-        resume = "A DataField input.",
-        translatedResumes = [
-                @LanguageString(value = "A DataField input.", lang = "en"),
-                @LanguageString(value = "Une entrée DataField.", lang = "fr")
-        ],
+        description = ["A DataField input.","en","Une entrée DataField.","fr"],
         keywords = ["input"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [
@@ -93,11 +86,7 @@ String dataStoreOutput
 /** This DataField is the output data source. */
 @DataFieldOutput(
         title = ["Output DataField","en","Sortie DataField","fr"],
-        resume="A DataField output",
-        translatedResumes = [
-                @LanguageString(value = "A DataField output.", lang = "en"),
-                @LanguageString(value = "Une sortie DataField.", lang = "fr")
-        ],
+        description = ["A DataField output.","en","Une sortie DataField.","fr"],
         keywords = ["output"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [

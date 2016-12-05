@@ -16,11 +16,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(title = ["Enumeration test","en","Test du Enumeration","fr"],
-        resume = "Test script using the Enumeration ComplexData.",
-        translatedResumes = [
-                @LanguageString(value = "Test script using the Enumeration ComplexData.", lang = "en"),
-                @LanguageString(value = "Scripts test pour l'usage du ComplexData Enumeration.", lang = "fr")
-        ],
+        description = ["Test script using the Enumeration ComplexData.","en","Scripts test pour l'usage du ComplexData Enumeration.","fr"],
         keywords = ["test", "script", "wps"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [
@@ -54,11 +50,7 @@ def processing() {
 /** This Enumeration is the input data source. */
 @EnumerationInput(
         title = ["Input Enumeration","en","Entrée Enumeration","fr"],
-        resume = "A Enumeration input.",
-        translatedResumes = [
-                @LanguageString(value = "A Enumeration input.", lang = "en"),
-                @LanguageString(value = "Une entrée Enumeration.", lang = "fr")
-        ],
+        description = ["A Enumeration input.","en","Une entrée Enumeration.","fr"],
         keywords = ["input"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [
@@ -87,11 +79,8 @@ String[] inputEnumeration
 /** This Enumeration is the output data source. */
 @EnumerationOutput(
         title = ["Output Enumeration","en","Sortie Enumeration","fr"],
-        resume="A Enumeration output",
-        translatedResumes = [
-                @LanguageString(value = "A Enumeration output.", lang = "en"),
-                @LanguageString(value = "Une sortie Enumeration.", lang = "fr")
-        ],
+        description = ["A Enumeration output.","en",
+                "Une sortie Enumeration.","fr"],
         keywords = ["output"],
         translatedKeywords = [
                 @TranslatableString(translatableStrings = [
