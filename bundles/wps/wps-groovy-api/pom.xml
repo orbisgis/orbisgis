@@ -30,6 +30,11 @@
                         <artifactId>groovy-eclipse-compiler</artifactId>
                         <version>${groovy-eclipse-compiler-version}</version>
                     </dependency>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-eclipse-batch</artifactId>
+                        <version>2.3.7-01</version>
+                    </dependency>
                 </dependencies>
             </plugin>
             <plugin>

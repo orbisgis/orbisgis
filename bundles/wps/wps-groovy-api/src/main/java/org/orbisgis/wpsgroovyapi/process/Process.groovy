@@ -71,5 +71,7 @@ import org.orbisgis.wpsgroovyapi.attributes.ProcessAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([ProcessAttribute, DescriptionTypeAttribute])
+@ProcessAttribute
+@DescriptionTypeAttribute
+@AnnotationCollector
 public @interface Process {}

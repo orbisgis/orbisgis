@@ -62,25 +62,24 @@ public class ObjectAnnotationConverter {
 
     public static void annotationToObject(DescriptionTypeAttribute descriptionTypeAttribute,
                                           DescriptionType descriptionType){
-        if(descriptionTypeAttribute.translatedTitles().length != DescriptionTypeAttribute.defaultTranslatedTitles.length){
-            List<LanguageStringType> titleList = new ArrayList<>();
-            for(LanguageString languageString : descriptionTypeAttribute.translatedTitles()){
-                LanguageStringType title = new LanguageStringType();
-                title.setValue(languageString.value());
-                title.setLang(languageString.lang());
-                titleList.add(title);
+        List<LanguageStringType> titleList = new ArrayList<>();
+        //The title attribute can't be empty.
+        String[] titles = descriptionTypeAttribute.title();
+        if(titles.length == 1){
+            LanguageStringType string = new LanguageStringType();
+            string.setValue(titles[0]);
+            titleList.add(string);
+        }
+        else {
+            for (int i = 0; i < titles.length; i += 2) {
+                LanguageStringType string = new LanguageStringType();
+                string.setValue(titles[i]);
+                string.setLang(titles[i + 1]);
+                titleList.add(string);
             }
-            descriptionType.getTitle().clear();
-            descriptionType.getTitle().addAll(titleList);
         }
-        else if(!descriptionTypeAttribute.title().equals("")){
-            List<LanguageStringType> titleList = new ArrayList<>();
-            LanguageStringType title = new LanguageStringType();
-            title.setValue(descriptionTypeAttribute.title());
-            titleList.add(title);
-            descriptionType.getTitle().clear();
-            descriptionType.getTitle().addAll(titleList);
-        }
+        descriptionType.getTitle().clear();
+        descriptionType.getTitle().addAll(titleList);
 
         if(descriptionTypeAttribute.translatedResumes().length != DescriptionTypeAttribute.defaultTranslatedResumes.length) {
             List<LanguageStringType> resumeList = new ArrayList<>();

@@ -36,22 +36,27 @@
  */
 package org.orbisgis.wpsservice.controller.utils;
 
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyShell;
 import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.KeywordsType;
 import net.opengis.ows._2.LanguageStringType;
 import net.opengis.ows._2.MetadataType;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import net.opengis.wps._2_0.DescriptionType;
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString;
 import org.orbisgis.wpsgroovyapi.attributes.LanguageString;
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.TranslatableString;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.File;
 
 /**
  * This test class perform three test on the DescriptionType annotation parsing.
@@ -68,11 +73,7 @@ public class DescriptionTypeConvertTest {
 
     /** Field containing the full DescriptionTypeAttribute annotation. */
     @DescriptionTypeAttribute(
-            title = "DescriptionType attribute title",
-            translatedTitles = {
-                    @LanguageString(value = "DescriptionType attribute title", lang = "en"),
-                    @LanguageString(value = "Titre de l'attribut DescriptionType", lang = "fr")
-            },
+            title = {"DescriptionType attribute title","en","Titre de l'attribut DescriptionType","fr"},
             resume = "DescriptionType attribute resume",
             translatedResumes = {
                     @LanguageString(value = "DescriptionType attribute resume", lang = "en"),

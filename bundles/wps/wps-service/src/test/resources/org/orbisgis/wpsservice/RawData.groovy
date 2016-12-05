@@ -15,11 +15,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * Test script for the RawData
  * @author Sylvain PALOMINOS
  */
-@Process(title = "RawDataTest",
-        translatedTitles = [
-                @LanguageString(value = "RawData test", lang = "en"),
-                @LanguageString(value = "Test du RawData", lang = "fr")
-        ],
+@Process(title = ["RawData test","en","Test du RawData","fr"],
         resume = "Test script using the RawData ComplexData.",
         translatedResumes = [
                 @LanguageString(value = "Test script using the RawData ComplexData.", lang = "en"),
@@ -56,11 +52,7 @@ def processing() {
 
 /** This RawData is the input data source. */
 @RawDataInput(
-        title = "Input RawData",
-        translatedTitles = [
-                @LanguageString(value = "Input RawData", lang = "en"),
-                @LanguageString(value = "Entrée RawData", lang = "fr")
-        ],
+        title = ["Input RawData","en","Entrée RawData","fr"],
         resume = "A RawData input.",
         translatedResumes = [
                 @LanguageString(value = "A RawData input.", lang = "en"),
@@ -89,11 +81,7 @@ String inputRawData
 
 /** This RawData is the output data source. */
 @RawDataOutput(
-        title="Output RawData",
-        translatedTitles = [
-                @LanguageString(value = "Output RawData", lang = "en"),
-                @LanguageString(value = "Sortie RawData", lang = "fr")
-        ],
+        title = ["Output RawData","en","Sortie RawData","fr"],
         resume="A RawData output",
         translatedResumes = [
                 @LanguageString(value = "A RawData output.", lang = "en"),

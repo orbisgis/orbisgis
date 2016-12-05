@@ -15,11 +15,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * Test script for the Geometry
  * @author Sylvain PALOMINOS
  */
-@Process(title = "GeometryTest",
-        translatedTitles = [
-                @LanguageString(value = "Geometry test", lang = "en"),
-                @LanguageString(value = "Test du Geometry", lang = "fr")
-        ],
+@Process(title = ["Geometry test","en","Test du Geometry","fr"],
         resume = "Test script using the Geometry ComplexData.",
         translatedResumes = [
                 @LanguageString(value = "Test script using the Geometry ComplexData.", lang = "en"),
@@ -56,11 +52,7 @@ def processing() {
 
 /** This Geometry is the input data source. */
 @GeometryInput(
-        title = "Input Geometry",
-        translatedTitles = [
-                @LanguageString(value = "Input Geometry", lang = "en"),
-                @LanguageString(value = "Entrée Geometry", lang = "fr")
-        ],
+        title = ["Input Geometry","en","Entrée Geometry","fr"],
         resume = "A Geometry input.",
         translatedResumes = [
                 @LanguageString(value = "A Geometry input.", lang = "en"),
@@ -90,11 +82,7 @@ String inputGeometry
 
 /** This Geometry is the output data source. */
 @GeometryOutput(
-        title="Output Geometry",
-        translatedTitles = [
-                @LanguageString(value = "Output Geometry", lang = "en"),
-                @LanguageString(value = "Sortie Geometry", lang = "fr")
-        ],
+        title = ["Output Geometry","en","Sortie Geometry","fr"],
         resume="A Geometry output",
         translatedResumes = [
                 @LanguageString(value = "A Geometry output.", lang = "en"),

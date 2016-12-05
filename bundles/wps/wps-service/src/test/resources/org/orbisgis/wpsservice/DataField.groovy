@@ -17,11 +17,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * Test script for the DataField
  * @author Sylvain PALOMINOS
  */
-@Process(title = "DataFieldTest",
-        translatedTitles = [
-                @LanguageString(value = "DataField test", lang = "en"),
-                @LanguageString(value = "Test du DataField", lang = "fr")
-        ],
+@Process(title = ["DataField test","en","Test du DataField","fr"],
         resume = "Test script using the DataField ComplexData.",
         translatedResumes = [
                 @LanguageString(value = "Test script using the DataField ComplexData.", lang = "en"),
@@ -62,11 +58,7 @@ String dataStoreInput
 
 /** This DataField is the input data source. */
 @DataFieldInput(
-        title = "Input DataField",
-        translatedTitles = [
-                @LanguageString(value = "Input DataField", lang = "en"),
-                @LanguageString(value = "Entrée DataField", lang = "fr")
-        ],
+        title = ["Input DataField","en","Entrée DataField","fr"],
         resume = "A DataField input.",
         translatedResumes = [
                 @LanguageString(value = "A DataField input.", lang = "en"),
@@ -100,11 +92,7 @@ String dataStoreOutput
 
 /** This DataField is the output data source. */
 @DataFieldOutput(
-        title="Output DataField",
-        translatedTitles = [
-                @LanguageString(value = "Output DataField", lang = "en"),
-                @LanguageString(value = "Sortie DataField", lang = "fr")
-        ],
+        title = ["Output DataField","en","Sortie DataField","fr"],
         resume="A DataField output",
         translatedResumes = [
                 @LanguageString(value = "A DataField output.", lang = "en"),

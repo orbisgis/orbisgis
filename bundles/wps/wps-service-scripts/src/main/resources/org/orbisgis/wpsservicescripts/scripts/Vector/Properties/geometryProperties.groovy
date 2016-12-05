@@ -27,10 +27,10 @@ import org.orbisgis.wpsgroovyapi.process.*
  * @author Sylvain PALOMINOS
  */
 @Process(
-        translatedTitles = [
-                @LanguageString(value = "Geometry properties", lang = "en"),
-                @LanguageString(value = "Propriétés géométriques", lang = "fr")
-        ],
+        title = [
+                ["Geometry properties","en"],
+                ["Propriétés géométriques","fr"]
+        ]/*,
         translatedResumes = [
                 @LanguageString(value = "Compute some basic geometry properties.", lang = "en"),
                 @LanguageString(value = "Calcul des propriétés de base des géométries.", lang = "fr")
@@ -53,7 +53,7 @@ import org.orbisgis.wpsgroovyapi.process.*
                 @MetadataAttribute(title="H2GIS", role ="DBMS_TYPE", href = "http://www.h2gis.org/"),
                 @MetadataAttribute(title="POSTGIS", role ="DBMS_TYPE", href = "http://postgis.net/")
         ],
-        identifier = "orbisgis:wps:official:geometryProperties"
+        identifier = "orbisgis:wps:official:geometryProperties"*/
 )
 def processing() {
 //Build the start of the query
@@ -114,16 +114,16 @@ def processing() {
 
 /** This DataStore is the input data source. */
 @DataStoreInput(
-        translatedTitles = [
+        /*translatedTitles = [
                 @LanguageString(value = "Input spatial data", lang = "en"),
                 @LanguageString(value = "Données spatiales d'entrée", lang = "fr")
         ],
         translatedResumes = [
                 @LanguageString(value = "The spatial data source to compute the geometry properties.", lang = "en"),
                 @LanguageString(value = "La source de données spatiales pour le calcul des propriétés géométriques.", lang = "fr")
-        ],
-        dataStoreTypes = ["GEOMETRY"],
-        identifier = "orbisgis:wps:official:geometryProperties:inputDataStore"
+        ],*/
+        dataStoreTypes = ["GEOMETRY"]/*,
+        identifier = "orbisgis:wps:official:geometryProperties:inputDataStore"*/
 )
 String inputDataStore
 
@@ -133,21 +133,21 @@ String inputDataStore
 
 /** Name of the Geometric field of the DataStore inputDataStore. */
 @DataFieldInput(
-        translatedTitles = [
+        /*translatedTitles = [
                 @LanguageString(value = "Geometric field", lang = "en"),
                 @LanguageString(value = "Champ géométrique", lang = "fr")
         ],
         translatedResumes = [
                 @LanguageString(value = "The geometric field of the data source.", lang = "en"),
                 @LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
-        ],
-        variableReference = "orbisgis:wps:official:geometryProperties:inputDataStore",
-        identifier = "orbisgis:wps:official:geometryProperties:geometricField",
+        ],*/
+        variableReference = "orbisgis:wps:official:geometryProperties:inputDataStore",/*
+        identifier = "orbisgis:wps:official:geometryProperties:geometricField",*/
         fieldTypes = ["GEOMETRY"])
 String[] geometricField
 
 /** Name of the identifier field of the DataStore inputDataStore. */
-@DataFieldInput(
+@DataFieldInput(/*
         translatedTitles = [
                 @LanguageString(value = "Identifier field", lang = "en"),
                 @LanguageString(value = "Champ identifiant", lang = "fr")
@@ -155,13 +155,13 @@ String[] geometricField
         translatedResumes = [
                 @LanguageString(value = "A field used as an identifier.", lang = "en"),
                 @LanguageString(value = "Le champ utilisé comme identifiant.", lang = "fr")
-        ],
+        ],*/
 	    excludedTypes=["GEOMETRY"],
-        variableReference = "orbisgis:wps:official:geometryProperties:inputDataStore",
-        identifier = "orbisgis:wps:official:geometryProperties:idField")
+        variableReference = "orbisgis:wps:official:geometryProperties:inputDataStore"/*,
+        identifier = "orbisgis:wps:official:geometryProperties:idField"*/)
 String[] idField
 
-@EnumerationInput(
+@EnumerationInput(/*
         translatedTitles = [
                 @LanguageString(value = "Operation", lang = "en"),
                 @LanguageString(value = "Opération", lang = "fr")
@@ -169,7 +169,7 @@ String[] idField
         translatedResumes = [
                 @LanguageString(value = "Operation to compute the properties.", lang = "en"),
                 @LanguageString(value = "Opération à effectuer.", lang = "fr")
-        ],
+        ],*/
         values=["geomtype","srid", "length","perimeter","area", "dimension", "coorddim", "num_geoms", "num_pts", "issimple", "isvalid", "isempty"],
         translatedNames = [
                 @TranslatableString(translatableStrings = [
@@ -222,12 +222,12 @@ String[] idField
                 ])
         ],
         selectedValues = "geomtype",
-        multiSelection = true,
-        identifier = "orbisgis:wps:official:geometryProperties:operations")
+        multiSelection = true/*,
+        identifier = "orbisgis:wps:official:geometryProperties:operations"*/)
 String[] operations
 
 
-@LiteralDataInput(
+@LiteralDataInput(/*
         translatedTitles = [
                 @LanguageString(value = "Output table name", lang = "en"),
                 @LanguageString(value = "Nom de la table de sortie", lang = "fr")
@@ -236,7 +236,7 @@ String[] operations
                 @LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
                 @LanguageString(value = "Nom de la table contenant les résultats du traitement.", lang = "fr")
         ],
-        identifier = "orbisgis:wps:official:geometryProperties:outputTableName")
+        identifier = "orbisgis:wps:official:geometryProperties:outputTableName"*/)
 String outputTableName
 
 /*****************/
@@ -244,7 +244,7 @@ String outputTableName
 /*****************/
 
 /** String output of the process. */
-@LiteralDataOutput(
+@LiteralDataOutput(/*
         translatedTitles = [
                 @LanguageString(value = "Output message", lang = "en"),
                 @LanguageString(value = "Message de sortie", lang = "fr")
@@ -253,6 +253,6 @@ String outputTableName
                 @LanguageString(value = "The output message.", lang = "en"),
                 @LanguageString(value = "Le message de sortie.", lang = "fr")
         ],
-        identifier = "orbisgis:wps:official:geometryProperties:literalOutput")
+        identifier = "orbisgis:wps:official:geometryProperties:literalOutput"*/)
 String literalOutput
 

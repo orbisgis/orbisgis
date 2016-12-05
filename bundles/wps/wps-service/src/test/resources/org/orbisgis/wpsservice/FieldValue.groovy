@@ -19,11 +19,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * Test script for the FieldValue
  * @author Sylvain PALOMINOS
  */
-@Process(title = "FieldValueTest",
-        translatedTitles = [
-                @LanguageString(value = "FieldValue test", lang = "en"),
-                @LanguageString(value = "Test du FieldValue", lang = "fr")
-        ],
+@Process(title = ["FieldValue test","en","Test du FieldValue","fr"],
         resume = "Test script using the FieldValue ComplexData.",
         translatedResumes = [
                 @LanguageString(value = "Test script using the FieldValue ComplexData.", lang = "en"),
@@ -69,11 +65,7 @@ String dataFieldInput
 
 /** This FieldValue is the input data source. */
 @FieldValueInput(
-        title = "Input FieldValue",
-        translatedTitles = [
-                @LanguageString(value = "Input FieldValue", lang = "en"),
-                @LanguageString(value = "Entrée FieldValue", lang = "fr")
-        ],
+        title = ["Input FieldValue","en","Entrée FieldValue","fr"],
         resume = "A FieldValue input.",
         translatedResumes = [
                 @LanguageString(value = "A FieldValue input.", lang = "en"),
@@ -111,11 +103,7 @@ String dataFieldOutput
 
 /** This FieldValue is the output data source. */
 @FieldValueOutput(
-        title="Output FieldValue",
-        translatedTitles = [
-                @LanguageString(value = "Output FieldValue", lang = "en"),
-                @LanguageString(value = "Sortie FieldValue", lang = "fr")
-        ],
+        title = ["Output FieldValue","en","Sortie FieldValue","fr"],
         resume="A FieldValue output",
         translatedResumes = [
                 @LanguageString(value = "A FieldValue output.", lang = "en"),

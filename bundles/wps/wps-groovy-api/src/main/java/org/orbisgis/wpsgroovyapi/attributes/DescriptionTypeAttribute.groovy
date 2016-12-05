@@ -19,6 +19,7 @@
 
 package org.orbisgis.wpsgroovyapi.attributes
 
+
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
@@ -53,10 +54,7 @@ import java.lang.annotation.RetentionPolicy
 @interface DescriptionTypeAttribute {
 
     /** Title of a process, input, and output. Normally available for display to a human. */
-    String title()
-
-    /** List of LanguageString containing the translated titles. */
-    LanguageString[] translatedTitles() default []
+    String[] title() default[]
 
     /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
     String resume() default ""
@@ -81,7 +79,6 @@ import java.lang.annotation.RetentionPolicy
     /********************/
     /** default values **/
     /********************/
-    public static final LanguageString[] defaultTranslatedTitles = []
     public static final String defaultResume = ""
     public static final LanguageString[] defaultTranslatedResumes = []
     public static final String[] defaultKeywords = []

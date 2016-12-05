@@ -15,11 +15,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * Test script for the Enumeration
  * @author Sylvain PALOMINOS
  */
-@Process(title = "EnumerationTest",
-        translatedTitles = [
-                @LanguageString(value = "Enumeration test", lang = "en"),
-                @LanguageString(value = "Test du Enumeration", lang = "fr")
-        ],
+@Process(title = ["Enumeration test","en","Test du Enumeration","fr"],
         resume = "Test script using the Enumeration ComplexData.",
         translatedResumes = [
                 @LanguageString(value = "Test script using the Enumeration ComplexData.", lang = "en"),
@@ -57,11 +53,7 @@ def processing() {
 
 /** This Enumeration is the input data source. */
 @EnumerationInput(
-        title = "Input Enumeration",
-        translatedTitles = [
-                @LanguageString(value = "Input Enumeration", lang = "en"),
-                @LanguageString(value = "Entrée Enumeration", lang = "fr")
-        ],
+        title = ["Input Enumeration","en","Entrée Enumeration","fr"],
         resume = "A Enumeration input.",
         translatedResumes = [
                 @LanguageString(value = "A Enumeration input.", lang = "en"),
@@ -94,11 +86,7 @@ String[] inputEnumeration
 
 /** This Enumeration is the output data source. */
 @EnumerationOutput(
-        title="Output Enumeration",
-        translatedTitles = [
-                @LanguageString(value = "Output Enumeration", lang = "en"),
-                @LanguageString(value = "Sortie Enumeration", lang = "fr")
-        ],
+        title = ["Output Enumeration","en","Sortie Enumeration","fr"],
         resume="A Enumeration output",
         translatedResumes = [
                 @LanguageString(value = "A Enumeration output.", lang = "en"),

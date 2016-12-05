@@ -15,11 +15,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * Test script for the DataStore
  * @author Sylvain PALOMINOS
  */
-@Process(title = "DataStoreTest",
-        translatedTitles = [
-                @LanguageString(value = "DataStore test", lang = "en"),
-                @LanguageString(value = "Test du DataStore", lang = "fr")
-        ],
+@Process(title = ["DataStore test","en","Test du DataStore","fr"],
         resume = "Test script using the DataStore ComplexData.",
         translatedResumes = [
                 @LanguageString(value = "Test script using the DataStore ComplexData.", lang = "en"),
@@ -56,11 +52,7 @@ def processing() {
 
 /** This DataStore is the input data source. */
 @DataStoreInput(
-        title = "Input DataStore",
-        translatedTitles = [
-                @LanguageString(value = "Input DataStore", lang = "en"),
-                @LanguageString(value = "Entrée DataStore", lang = "fr")
-        ],
+        title = ["Input DataStore","en","Entrée DataStore","fr"],
         resume = "A DataStore input.",
         translatedResumes = [
                 @LanguageString(value = "A DataStore input.", lang = "en"),
@@ -89,11 +81,7 @@ String inputDataStore
 
 /** This DataStore is the output data source. */
 @DataStoreOutput(
-        title="Output DataStore",
-        translatedTitles = [
-                @LanguageString(value = "Output DataStore", lang = "en"),
-                @LanguageString(value = "Sortie DataStore", lang = "fr")
-        ],
+        title = ["Output DataStore","en","Sortie DataStore","fr"],
         resume="A DataStore output",
         translatedResumes = [
                 @LanguageString(value = "A DataStore output.", lang = "en"),
