@@ -17,21 +17,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
  */
 @Process(title = ["Enumeration test","en","Test du Enumeration","fr"],
         description = ["Test script using the Enumeration ComplexData.","en","Scripts test pour l'usage du ComplexData Enumeration.","fr"],
-        keywords = ["test", "script", "wps"],
-        translatedKeywords = [
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "test", lang = "en"),
-                        @LanguageString(value = "test", lang = "fr")
-                ]),
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "script", lang = "en"),
-                        @LanguageString(value = "scripte", lang = "fr")
-                ]),
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "wps", lang = "en"),
-                        @LanguageString(value = "wps", lang = "fr")
-                ])
-        ],
+        keywords = ["test,script,wps","en","test,scripte,wps","fr"],
         identifier = "orbisgis:test:enumerationLongProcess",
         metadata = [
                 @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
@@ -51,13 +37,7 @@ def processing() {
 @EnumerationInput(
         title = ["Input Enumeration","en","Entrée Enumeration","fr"],
         description = ["A Enumeration input.","en","Une entrée Enumeration.","fr"],
-        keywords = ["input"],
-        translatedKeywords = [
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "input", lang = "en"),
-                        @LanguageString(value = "entrée", lang = "fr")
-                ])
-        ],
+        keywords = ["input","en","sortie","fr"],
         multiSelection = true,
         isEditable = true,
         values = ["value1", "value2"],
@@ -81,13 +61,7 @@ String[] inputEnumeration
         title = ["Output Enumeration","en","Sortie Enumeration","fr"],
         description = ["A Enumeration output.","en",
                 "Une sortie Enumeration.","fr"],
-        keywords = ["output"],
-        translatedKeywords = [
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "output", lang = "en"),
-                        @LanguageString(value = "sortie", lang = "fr")
-                ])
-        ],
+        keywords = ["output","en","sortie","fr"],
         values = ["value1", "value2"],
         identifier = "orbisgis:test:enumerationLongProcess:output",
         metadata = [

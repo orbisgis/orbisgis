@@ -32,17 +32,19 @@ import java.lang.annotation.RetentionPolicy
  *  - title : String[]
  *       Title of a process, input, and output. Normally available for display to a human. It is composed either a
  *       unique title or a translated title, its language, another title, its language ...
- *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en]
+ *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en"]
  *
  * The following fields can be defined (optional) :
  *  - description : String[]
  *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
  *      composed either a unique description or a translated description, its language, another description, its language ...
- *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en]
- *  - keywords : String
- *      Array of keywords that characterize a process, its inputs, and outputs.
- *  - translatedKeywords : Keyword[]
- *      List of Keyword containing the keywords translations.
+ *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+ *  - keywords : String[]
+ *      Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
+ *      human. It is composed of a succession of two String : the keyword key, the human readable keyword list coma
+ *      separated and its language.
+ *      i.e. keywords = ["the keyword 1,the keyword 2", "en",
+ *                       "le mot clef 1, le mot clef 2", "fr"]
  *  - identifier : String
  *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
  *  - metadata : MetaData[]
@@ -56,22 +58,24 @@ import java.lang.annotation.RetentionPolicy
     /**
      * Brief narrative description of a process, input, and output. Normally available for display to a human.It is
      * composed either a unique description or a translated description, its language, another description, its language ...
-     * i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en]
+     * i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
      */
     String[] title() default[]
 
     /**
-     * Brief narrative description of a process, input, and output. Normally available for display to a human.It is
+     * Brief narrative description of a process, input, and output. Normally available for display to a human. It is
      * composed either a unique description or a translated description, its language, another description, its language ...
-     * i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en]
+     * i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
      */
     String[] description() default []
 
-    /** Array of keywords that characterize a process, its inputs, and outputs. */
+    /** Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
+     * human. It is composed of a succession of two String : the keyword key, the human readable keyword list coma
+     * separated and its language.
+     * i.e. keywords = ["the keyword 1,the keyword 2", "en",
+     *                  "le mot clef 1, le mot clef 2", "fr"]
+     */
     String[] keywords() default []
-
-    /** List of Keyword containing the keywords translations. */
-    TranslatableString[] translatedKeywords() default []
 
     /** Unambiguous identifier of a process, input, and output. */
     String identifier() default ""

@@ -108,39 +108,59 @@ public class ObjectAnnotationConverter {
             descriptionType.setIdentifier(codeType);
         }
 
-        if(descriptionTypeAttribute.translatedKeywords().length !=
-                DescriptionTypeAttribute.defaultTranslatedKeywords.length) {
-            List<KeywordsType> keywordTypeList = new ArrayList<>();
-            for(org.orbisgis.wpsgroovyapi.attributes.TranslatableString keyword : descriptionTypeAttribute.translatedKeywords()) {
-                KeywordsType keywordsType = new KeywordsType();
+        String[] keywords = descriptionTypeAttribute.keywords();
+        if(keywords.length == 1) {
+            LinkedList<KeywordsType> keywordTypeList = new LinkedList<>();
+            String[] split = keywords[0].split(",");
+            for(String str : split){
+                LanguageStringType keywordString = new LanguageStringType();
+                keywordString.setValue(str);
+
                 List<LanguageStringType> keywordList = new ArrayList<>();
-                for (LanguageString languageString : keyword.translatableStrings()) {
-                    LanguageStringType keywordString = new LanguageStringType();
-                    keywordString.setValue(languageString.value());
-                    keywordString.setLang(languageString.lang());
-                    keywordList.add(keywordString);
-                }
-                keywordsType.getKeyword().clear();
+                keywordList.add(keywordString);
+
+                KeywordsType keywordsType = new KeywordsType();
                 keywordsType.getKeyword().addAll(keywordList);
                 keywordTypeList.add(keywordsType);
             }
             descriptionType.getKeywords().clear();
             descriptionType.getKeywords().addAll(keywordTypeList);
         }
-        else if(descriptionTypeAttribute.keywords().length != DescriptionTypeAttribute.defaultKeywords.length){
-            List<KeywordsType> keywordList = new ArrayList<>();
-            for(String key : descriptionTypeAttribute.keywords()){
-                KeywordsType keyword = new KeywordsType();
-                List<LanguageStringType> stringList = new ArrayList<>();
-                LanguageStringType string = new LanguageStringType();
-                string.setValue(key);
-                stringList.add(string);
-                keyword.getKeyword().clear();
-                keyword.getKeyword().addAll(stringList);
-                keywordList.add(keyword);
+        else if(keywords.length != 0) {
+            LinkedList<KeywordsType> keywordTypeList = new LinkedList<>();
+            for(int i=0; i<keywords.length; i+=2){
+                if(keywordTypeList.isEmpty()){
+                    String language = keywords[i+1];
+                    String[] split = keywords[i].split(",");
+                    for(String str : split){
+                        LanguageStringType keywordString = new LanguageStringType();
+                        keywordString.setValue(str);
+                        keywordString.setLang(language);
+
+                        List<LanguageStringType> keywordList = new ArrayList<>();
+                        keywordList.add(keywordString);
+
+                        KeywordsType keywordsType = new KeywordsType();
+                        keywordsType.getKeyword().addAll(keywordList);
+                        keywordTypeList.add(keywordsType);
+                    }
+                }
+                else{
+                    String language = keywords[i+1];
+                    String[] split = keywords[i].split(",");
+                    for(int j=0; j<split.length; j++){
+                        String str = split[j];
+                        LanguageStringType keywordString = new LanguageStringType();
+                        keywordString.setValue(str);
+                        keywordString.setLang(language);
+
+                        List<LanguageStringType> keywordList = keywordTypeList.get(j).getKeyword();
+                        keywordList.add(keywordString);
+                    }
+                }
             }
             descriptionType.getKeywords().clear();
-            descriptionType.getKeywords().addAll(keywordList);
+            descriptionType.getKeywords().addAll(keywordTypeList);
         }
         if(descriptionTypeAttribute.metadata().length != DescriptionTypeAttribute.defaultMetadata.length){
             List<MetadataType> metadataList = new ArrayList<>();

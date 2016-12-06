@@ -34,7 +34,7 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
  *  - title : String[]
  *       Title of the output. Normally available for display to a human. It is composed either a
  *       unique title or a translated title, its language, another title, its language ...
- *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en]
+ *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en"]
  *  - variableReference : String
  *      Name of the variable of the DataField.
  *
@@ -42,11 +42,13 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
  *  - description : String[]
  *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
  *      composed either a unique description or a translated description, its language, another description, its language ...
- *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en]
- *  - keywords : String
- *      Array of keywords that characterize the output.
- *  - traducedKeywords : Keyword[]
- *      List of Keyword containing the keywords translations.
+ *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+ *  - keywords : String[]
+ *      Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
+ *      human. It is composed of a succession of two String : the keyword key, the human readable keyword list coma
+ *      separated and its language.
+ *      i.e. keywords = ["the keyword 1,the keyword 2", "en",
+ *                       "le mot clef 1, le mot clef 2", "fr"]
  *  - identifier : String
  *      Unambiguous identifier of the output. It should be a valid URI.
  *  - metadata : MetaData[]

@@ -20,21 +20,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
 @Process(title = ["DataField test","en","Test du DataField","fr"],
         description = ["Test script using the DataField ComplexData.","en",
                 "Scripts test pour l'usage du DataField DataField.","fr"],
-        keywords = ["test", "script", "wps"],
-        translatedKeywords = [
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "test", lang = "en"),
-                        @LanguageString(value = "test", lang = "fr")
-                ]),
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "script", lang = "en"),
-                        @LanguageString(value = "scripte", lang = "fr")
-                ]),
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "wps", lang = "en"),
-                        @LanguageString(value = "wps", lang = "fr")
-                ])
-        ],
+        keywords = ["test,script,wps", "en", "test,scripte,wps", "fr"],
         identifier = "orbisgis:test:datafield",
         metadata = [
                 @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
@@ -57,13 +43,7 @@ String dataStoreInput
 @DataFieldInput(
         title = ["Input DataField","en","Entrée DataField","fr"],
         description = ["A DataField input.","en","Une entrée DataField.","fr"],
-        keywords = ["input"],
-        translatedKeywords = [
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "input", lang = "en"),
-                        @LanguageString(value = "entrée", lang = "fr")
-                ])
-        ],
+        keywords = ["input","en","entrée","fr"],
         variableReference = "orbisgis:test:datastore:input",
         excludedTypes = ["BOOLEAN"],
         minOccurs = 0,
@@ -87,13 +67,7 @@ String dataStoreOutput
 @DataFieldOutput(
         title = ["Output DataField","en","Sortie DataField","fr"],
         description = ["A DataField output.","en","Une sortie DataField.","fr"],
-        keywords = ["output"],
-        translatedKeywords = [
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "output", lang = "en"),
-                        @LanguageString(value = "sortie", lang = "fr")
-                ])
-        ],
+        keywords = ["output","en","sortie","fr"],
         variableReference = "orbisgis:test:datastore:output",
         fieldTypes = ["GEOMETRY", "NUMBER"],
         multiSelection = true,

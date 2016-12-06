@@ -70,17 +70,7 @@ public class DescriptionTypeConvertTest {
     @DescriptionTypeAttribute(
             title = {"DescriptionType attribute title","en","Titre de l'attribut DescriptionType","fr"},
             description = {"DescriptionType attribute resume","en","Description de l'attribut DescriptionType","fr"},
-            keywords = {"DescriptionType","Attribute"},
-            translatedKeywords = {
-                    @TranslatableString(translatableStrings = {
-                            @LanguageString(value = "Attribute en", lang = "en"),
-                            @LanguageString(value = "Attribute fr", lang = "fr")
-                    }),
-                    @TranslatableString(translatableStrings = {
-                            @LanguageString(value = "DescriptionType en", lang = "en"),
-                            @LanguageString(value = "DescriptionType fr", lang = "fr")
-                    })
-            },
+            keywords = {"DescriptionType en,Attribute en", "en", "DescriptionType fr,Attribute fr", "fr"},
             identifier = "test:descriptionTypeAttribute",
             metadata = {
                     @MetadataAttribute(title = "metadata1", linkType = "simple", role = "role1", href = "href1"),
@@ -327,7 +317,7 @@ public class DescriptionTypeConvertTest {
     @DescriptionTypeAttribute(
             title = "DescriptionType attribute title",
             description = "DescriptionType attribute resume",
-            keywords = {"DescriptionType","Attribute"}
+            keywords = "DescriptionType,Attribute"
     )
     public Object simpleDescriptionTypeAttribute;
     /** Name of the field containing the simpleDescriptionTypeAttribute annotation. */
