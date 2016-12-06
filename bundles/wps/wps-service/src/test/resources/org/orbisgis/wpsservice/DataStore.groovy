@@ -1,12 +1,8 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-
 /********************/
 /** Process method **/
 /********************/
@@ -20,9 +16,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Scripts test pour l'usage du ComplexData DataStore.","fr"],
         keywords = ["test,script,wps","en","test,scripte,wps","fr"],
         identifier = "orbisgis:test:datastore",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
 )
 def processing() {
     dataStoreOutput = inputDataStore;
@@ -42,9 +36,7 @@ def processing() {
         minOccurs = 0,
         maxOccurs = 2,
         identifier = "orbisgis:test:datastore:input",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
         )
 String inputDataStore
 
@@ -58,9 +50,7 @@ String inputDataStore
         description = ["A DataStore output.","en","Une sortie DataStore.","fr"],
         keywords = ["output","en","sortie","fr"],
         identifier = "orbisgis:test:datastore:output",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
 )
 String dataStoreOutput
 

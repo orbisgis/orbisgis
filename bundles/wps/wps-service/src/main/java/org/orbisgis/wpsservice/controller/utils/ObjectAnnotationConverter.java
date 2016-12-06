@@ -162,13 +162,14 @@ public class ObjectAnnotationConverter {
             descriptionType.getKeywords().clear();
             descriptionType.getKeywords().addAll(keywordTypeList);
         }
-        if(descriptionTypeAttribute.metadata().length != DescriptionTypeAttribute.defaultMetadata.length){
+
+        String[] metadata = descriptionTypeAttribute.metadata();
+        if(metadata.length != 0){
             List<MetadataType> metadataList = new ArrayList<>();
-            for(MetadataAttribute metadataAttribute : descriptionTypeAttribute.metadata()){
+            for(int i=0; i<metadata.length; i+=2){
                 MetadataType metadataType = new MetadataType();
-                metadataType.setHref(metadataAttribute.href());
-                metadataType.setRole(metadataAttribute.role());
-                metadataType.setTitle(metadataAttribute.title());
+                metadataType.setRole(metadata[i]);
+                metadataType.setTitle(metadata[i+1]);
                 metadataList.add(metadataType);
             }
             descriptionType.getMetadata().clear();

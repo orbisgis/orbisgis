@@ -1,12 +1,8 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.output.EnumerationOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-
 /********************/
 /** Process method **/
 /********************/
@@ -19,9 +15,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
         description = ["Test script using the Enumeration ComplexData.","en","Scripts test pour l'usage du ComplexData Enumeration.","fr"],
         keywords = ["test,script,wps","en","test,scripte,wps","fr"],
         identifier = "orbisgis:test:enumerationLongProcess",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
 )
 def processing() {
     sleep(50000)
@@ -46,9 +40,7 @@ def processing() {
         minOccurs = 0,
         maxOccurs = 2,
         identifier = "orbisgis:test:enumerationLongProcess:input",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
         )
 String[] inputEnumeration
 
@@ -64,9 +56,7 @@ String[] inputEnumeration
         keywords = ["output","en","sortie","fr"],
         values = ["value1", "value2"],
         identifier = "orbisgis:test:enumerationLongProcess:output",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
 )
 String[] enumerationOutput
 

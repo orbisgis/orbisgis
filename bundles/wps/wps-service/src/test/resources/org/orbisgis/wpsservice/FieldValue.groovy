@@ -1,16 +1,12 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.FieldValueInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.FieldValueInput
 import org.orbisgis.wpsgroovyapi.output.DataFieldOutput
-import org.orbisgis.wpsgroovyapi.output.FieldValueOutput
 import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
+import org.orbisgis.wpsgroovyapi.output.FieldValueOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-
 /********************/
 /** Process method **/
 /********************/
@@ -24,9 +20,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Scripts test pour l'usage du ComplexData FieldValue.","fr"],
         keywords = ["test,script,wps","en","test,scripte,wps","fr"],
         identifier = "orbisgis:test:fieldvalue",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
 )
 def processing() {
     fieldValueOutput = inputFieldValue;
@@ -55,9 +49,7 @@ String dataFieldInput
         minOccurs = 0,
         maxOccurs = 2,
         identifier = "orbisgis:test:fieldvalue:input",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
         )
 String inputFieldValue
 
@@ -82,9 +74,7 @@ String dataFieldOutput
         variableReference = "orbisgis:test:datafield:output",
         multiSelection = true,
         identifier = "orbisgis:test:fieldvalue:output",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
 )
 String fieldValueOutput
 

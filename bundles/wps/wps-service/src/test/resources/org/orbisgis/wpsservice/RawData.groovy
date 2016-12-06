@@ -1,12 +1,8 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.RawDataInput
 import org.orbisgis.wpsgroovyapi.output.RawDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-
 /********************/
 /** Process method **/
 /********************/
@@ -20,9 +16,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Scripts test pour l'usage du ComplexData RawData.","fr"],
         keywords = ["test,script,wps","en","test,scripte,wps","fr"],
         identifier = "orbisgis:test:rawdata",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
 )
 def processing() {
         rawDataOutput = inputRawData;
@@ -42,9 +36,7 @@ def processing() {
         minOccurs = 0,
         maxOccurs = 2,
         identifier = "orbisgis:test:rawdata:input",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
         )
 String inputRawData
 
@@ -60,9 +52,7 @@ String inputRawData
         isFile = false,
         multiSelection = true,
         identifier = "orbisgis:test:rawdata:output",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
 )
 String rawDataOutput
 

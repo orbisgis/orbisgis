@@ -61,7 +61,7 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
  *  - keywords : String[]
  *      Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
- *      human. It is composed of a succession of two String : the keyword key, the human readable keyword list coma
+ *      human. It is composed of a succession of two String : the human readable keyword list coma
  *      separated and its language.
  *      i.e. keywords = ["the keyword 1,the keyword 2", "en",
  *                       "le mot clef 1, le mot clef 2", "fr"]

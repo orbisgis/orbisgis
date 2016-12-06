@@ -1,12 +1,8 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.GeometryInput
 import org.orbisgis.wpsgroovyapi.output.GeometryOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-
 /********************/
 /** Process method **/
 /********************/
@@ -20,9 +16,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Scripts test pour l'usage du ComplexData Geometry.","fr"],
         keywords = ["test,script,wps","en","test,scripte,wps","fr"],
         identifier = "orbisgis:test:geometry",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
 )
 def processing() {
     geometryOutput = inputGeometry;
@@ -43,9 +37,7 @@ def processing() {
         minOccurs = 0,
         maxOccurs = 2,
         identifier = "orbisgis:test:geometry:input",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
         )
 String inputGeometry
 
@@ -61,9 +53,7 @@ String inputGeometry
         dimension = 2,
         geometryTypes = ["POLYGON", "POINT"],
         identifier = "orbisgis:test:geometry:output",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
 )
 String geometryOutput
 

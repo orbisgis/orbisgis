@@ -1,14 +1,10 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
 import org.orbisgis.wpsgroovyapi.output.DataFieldOutput
 import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-
 /********************/
 /** Process method **/
 /********************/
@@ -22,9 +18,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Scripts test pour l'usage du DataField DataField.","fr"],
         keywords = ["test,script,wps", "en", "test,scripte,wps", "fr"],
         identifier = "orbisgis:test:datafield",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
 )
 def processing() {
     dataFieldOutput = inputDataField;
@@ -49,9 +43,7 @@ String dataStoreInput
         minOccurs = 0,
         maxOccurs = 2,
         identifier = "orbisgis:test:datafield:input",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
         )
 String inputDataField
 
@@ -72,9 +64,7 @@ String dataStoreOutput
         fieldTypes = ["GEOMETRY", "NUMBER"],
         multiSelection = true,
         identifier = "orbisgis:test:datafield:output",
-        metadata = [
-                @MetadataAttribute(title = "metadata", role = "website", href = "http://orbisgis.org/")
-        ]
+        metadata = ["website","metadata"]
 )
 String dataFieldOutput
 

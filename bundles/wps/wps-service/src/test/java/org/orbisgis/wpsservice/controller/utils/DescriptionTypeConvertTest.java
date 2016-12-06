@@ -72,10 +72,7 @@ public class DescriptionTypeConvertTest {
             description = {"DescriptionType attribute resume","en","Description de l'attribut DescriptionType","fr"},
             keywords = {"DescriptionType en,Attribute en", "en", "DescriptionType fr,Attribute fr", "fr"},
             identifier = "test:descriptionTypeAttribute",
-            metadata = {
-                    @MetadataAttribute(title = "metadata1", linkType = "simple", role = "role1", href = "href1"),
-                    @MetadataAttribute(title = "metadata2", linkType = "simple", role = "role2", href = "href2")
-            }
+            metadata = {"role1","metadata1","role2","metadata2"}
     )
     public Object fullDescriptionTypeAttribute;
     /** Name of the field containing the fullDescriptionTypeAttribute annotation. */
