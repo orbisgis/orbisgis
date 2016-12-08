@@ -67,13 +67,13 @@ public class ObjectAnnotationConverter {
         String[] titles = descriptionTypeAttribute.title();
         if(titles.length == 1){
             LanguageStringType string = new LanguageStringType();
-            string.setValue(titles[0]);
+            string.setValue(titles[0].trim());
             titleList.add(string);
         }
         else {
             for (int i = 0; i < titles.length; i += 2) {
                 LanguageStringType string = new LanguageStringType();
-                string.setValue(titles[i]);
+                string.setValue(titles[i].trim());
                 string.setLang(titles[i + 1]);
                 titleList.add(string);
             }
@@ -87,13 +87,13 @@ public class ObjectAnnotationConverter {
 
         if(descriptions.length == 1){
             LanguageStringType resume = new LanguageStringType();
-            resume.setValue(descriptions[0]);
+            resume.setValue(descriptions[0].trim());
             descriptionList.add(resume);
         }
         else {
             for (int i = 0; i < descriptions.length; i += 2) {
                 LanguageStringType resume = new LanguageStringType();
-                resume.setValue(descriptions[i]);
+                resume.setValue(descriptions[i].trim());
                 resume.setLang(descriptions[i + 1]);
                 descriptionList.add(resume);
             }
@@ -104,7 +104,7 @@ public class ObjectAnnotationConverter {
 
         if(!descriptionTypeAttribute.identifier().equals(DescriptionTypeAttribute.defaultIdentifier)){
             CodeType codeType = new CodeType();
-            codeType.setValue(descriptionTypeAttribute.identifier());
+            codeType.setValue(descriptionTypeAttribute.identifier().trim());
             descriptionType.setIdentifier(codeType);
         }
 
@@ -114,7 +114,7 @@ public class ObjectAnnotationConverter {
             String[] split = keywords[0].split(",");
             for(String str : split){
                 LanguageStringType keywordString = new LanguageStringType();
-                keywordString.setValue(str);
+                keywordString.setValue(str.trim());
 
                 List<LanguageStringType> keywordList = new ArrayList<>();
                 keywordList.add(keywordString);
@@ -134,7 +134,7 @@ public class ObjectAnnotationConverter {
                     String[] split = keywords[i].split(",");
                     for(String str : split){
                         LanguageStringType keywordString = new LanguageStringType();
-                        keywordString.setValue(str);
+                        keywordString.setValue(str.trim());
                         keywordString.setLang(language);
 
                         List<LanguageStringType> keywordList = new ArrayList<>();
@@ -151,7 +151,7 @@ public class ObjectAnnotationConverter {
                     for(int j=0; j<split.length; j++){
                         String str = split[j];
                         LanguageStringType keywordString = new LanguageStringType();
-                        keywordString.setValue(str);
+                        keywordString.setValue(str.trim());
                         keywordString.setLang(language);
 
                         List<LanguageStringType> keywordList = keywordTypeList.get(j).getKeyword();
@@ -211,24 +211,24 @@ public class ObjectAnnotationConverter {
                 return null;
             }
             ValueType value = new ValueType();
-            value.setValue(valueAttribute.value());
+            value.setValue(valueAttribute.value().trim());
             return value;
         }
         else if(valueAttribute.type().toUpperCase().equals(ValuesType.RANGE.name())){
             RangeType range = new RangeType();
             if(!valueAttribute.spacing().equals(ValuesAttribute.defaultSpacing)) {
                 ValueType spacing = new ValueType();
-                spacing.setValue(valueAttribute.spacing());
+                spacing.setValue(valueAttribute.spacing().trim());
                 range.setSpacing(spacing);
             }
             if(!valueAttribute.maximum().equals(ValuesAttribute.defaultMaximum)){
                 ValueType max = new ValueType();
-                max.setValue(valueAttribute.maximum());
+                max.setValue(valueAttribute.maximum().trim());
                 range.setMaximumValue(max);
             }
             if(!valueAttribute.minimum().equals(ValuesAttribute.defaultMinimum)){
                 ValueType min = new ValueType();
-                min.setValue(valueAttribute.minimum());
+                min.setValue(valueAttribute.minimum().trim());
                 range.setMinimumValue(min);
             }
             return range;
@@ -249,7 +249,7 @@ public class ObjectAnnotationConverter {
         DataType dataType = DataType.valueOf(literalDataDomainAttribute.dataType());
         DomainMetadataType domainDataType = new DomainMetadataType();
         domainDataType.setReference(dataType.getUri().toString());
-        domainDataType.setValue(dataType.name());
+        domainDataType.setValue(dataType.name().trim());
         literalDataDomain.setDataType(domainDataType);
 
         Object value = ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute.possibleLiteralValues());
@@ -263,7 +263,7 @@ public class ObjectAnnotationConverter {
             literalDataDomain.setValuesReference((ValuesReference) value);
         }
         ValueType defaultValue = new ValueType();
-        defaultValue.setValue(literalDataDomainAttribute.defaultValue());
+        defaultValue.setValue(literalDataDomainAttribute.defaultValue().trim());
         literalDataDomain.setDefaultValue(defaultValue);
 
         return literalDataDomain;
@@ -452,19 +452,49 @@ public class ObjectAnnotationConverter {
             Enumeration enumeration = new Enumeration(formatList, enumAttribute.values(), enumAttribute.selectedValues());
             enumeration.setEditable(enumAttribute.isEditable());
             enumeration.setMultiSelection(enumAttribute.multiSelection());
-            enumeration.setValuesNames(enumAttribute.names());
-            List<TranslatableString> translatedNameList = new ArrayList<>();
-            for(org.orbisgis.wpsgroovyapi.attributes.TranslatableString translatableString : enumAttribute.translatedNames()){
-                List<LanguageStringType> translatedName = new ArrayList<>();
-                for(LanguageString languageString : translatableString.translatableStrings()) {
-                    LanguageStringType language = new LanguageStringType();
-                    language.setLang(languageString.lang());
-                    language.setValue(languageString.value());
-                    translatedName.add(language);
+
+            String[] names = enumAttribute.names();
+            if(names.length == 1) {
+                String[] split = names[0].split(",");
+                TranslatableString[] translatableStrings = new TranslatableString[split.length];
+                for(int i=0; i<split.length; i++){
+                    TranslatableString string = new TranslatableString();
+                    LanguageStringType[] types = new LanguageStringType[1];
+                    LanguageStringType type = new LanguageStringType();
+                    type.setValue(split[i].trim());
+                    types[0] = type;
+                    string.setStrings(types);
+                    translatableStrings[i] = string;
                 }
-                translatedNameList.add(new TranslatableString(translatedName.toArray(new LanguageStringType[]{})));
+                enumeration.setValuesNames(translatableStrings);
             }
-            enumeration.setTranslatedNames(translatedNameList.toArray(new TranslatableString[]{}));
+            else if(names.length != 0) {
+                TranslatableString[] translatableStrings = null;
+                for(int i=0; i< names.length; i+=2) {
+                    String language = names[i + 1];
+                    String[] split = names[i].split(",");
+                    if(translatableStrings == null) {
+                        translatableStrings = new TranslatableString[split.length];
+                    }
+                    for (int j = 0; j < split.length; j++) {
+                        TranslatableString string = translatableStrings[j];
+                        if(string == null){
+                            string = new TranslatableString();
+                        }
+                        LanguageStringType[] types = string.getStrings();
+                        if(types == null || types.length == 0) {
+                            types = new LanguageStringType[names.length/2];
+                        }
+                        LanguageStringType type = new LanguageStringType();
+                        type.setValue(split[j].trim());
+                        type.setLang(language);
+                        types[i/2] = type;
+                        string.setStrings(types);
+                        translatableStrings[j] = string;
+                    }
+                }
+                enumeration.setValuesNames(translatableStrings);
+            }
             return enumeration;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());

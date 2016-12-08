@@ -198,7 +198,7 @@ public class WpsModelTest {
     @EnumerationAttribute(
             multiSelection = true,
             isEditable = true,
-            names = {"name1, name2, name3"},
+            names = {"name, name, name"},
             selectedValues = {"value1, value2"},
             values = {"value1, value2, value3"}
     )
@@ -247,11 +247,24 @@ public class WpsModelTest {
                     "'value1', 'value2' and 'value3'.";
             Assert.assertArrayEquals(errorMessage, enumeration.getValues(), new String[]{"value1, value2, value3"});
 
-            errorMessage = "Error, the enumeration 'valuesNames' field should contain two value : " +
-                    "'name1', 'name2' and 'name3'.";
-            Assert.assertArrayEquals(errorMessage, enumeration.getValuesNames(), new String[]{"name1, name2, name3"});
+            boolean valid = true;
+            errorMessage = "Error, the enumeration 'valuesNames' field should contain three value : " +
+                    "'name', 'name' and 'name'.";
+            if(enumeration.getValuesNames().length == 3) {
+                for (TranslatableString translatableString : enumeration.getValuesNames()) {
+                    if(translatableString.getStrings().length != 1 ||
+                            !translatableString.getStrings()[0].getValue().equals("name")){
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+            else{
+                valid = false;
+            }
+            Assert.assertTrue(errorMessage, valid);
 
-            errorMessage = "Error, the enumeration 'defaultValues' field should contain three value : " +
+            errorMessage = "Error, the enumeration 'defaultValues' field should contain two value : " +
                     "'value1' and 'value2'.";
             Assert.assertArrayEquals(errorMessage, enumeration.getDefaultValues(), new String[]{"value1, value2"});
 

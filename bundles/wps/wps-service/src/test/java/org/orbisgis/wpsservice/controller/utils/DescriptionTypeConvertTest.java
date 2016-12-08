@@ -182,12 +182,10 @@ public class DescriptionTypeConvertTest {
             List<MetadataType> metadataList = new ArrayList<>();
             MetadataType metadata1 = new MetadataType();
             metadata1.setTitle("metadata1");
-            metadata1.setHref("href1");
             metadata1.setRole("role1");
             metadataList.add(metadata1);
             MetadataType metadata2 = new MetadataType();
             metadata2.setTitle("metadata2");
-            metadata2.setHref("href2");
             metadata2.setRole("role2");
             metadataList.add(metadata2);
 
@@ -286,9 +284,7 @@ public class DescriptionTypeConvertTest {
             for(MetadataType meta1 : toTest.getMetadata()){
                 boolean isMetadataPresent = false;
                 for(MetadataType meta2 : descriptionType.getMetadata()){
-                    if(meta1.getHref().equals(meta2.getHref()) &&
-                            meta1.getRole().equals(meta2.getRole()) &&
-                            meta1.getTitle().equals(meta2.getTitle())){
+                    if(meta1.getRole().equals(meta2.getRole()) && meta1.getTitle().equals(meta2.getTitle())){
                         isMetadataPresent = true;
                     }
                 }

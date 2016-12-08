@@ -36,7 +36,7 @@ def processing() {
         isEditable = true,
         values = ["value1", "value2"],
         selectedValues = ["value2"],
-        names = ["name1", "name2"],
+        names = ["name1,name2","en","nom1,nom2","fr"],
         minOccurs = 0,
         maxOccurs = 2,
         identifier = "orbisgis:test:enumerationLongProcess:input",

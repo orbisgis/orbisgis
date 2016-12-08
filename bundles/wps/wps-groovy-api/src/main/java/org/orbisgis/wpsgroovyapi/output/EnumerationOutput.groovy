@@ -58,7 +58,11 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
  *  - isEditable : boolean
  *      Enable or not the user to use its own value.
  *  - names : String[]
- *      Displayable name of the values. If not specified, use the values as name.
+ *      Displayable name of the values. If not specified, use the values as name. The names attribute is composed of
+ *      pairs of String : the coma separated list of the names and the language of the names.
+ *      i.e.
+ *          names = ["name1,name2,name3","en",
+ *                   "nom1,nom2,nom3","fr"]
  *  - selectedValues : String[]
  *      Default selected values, can be empty.
  *
