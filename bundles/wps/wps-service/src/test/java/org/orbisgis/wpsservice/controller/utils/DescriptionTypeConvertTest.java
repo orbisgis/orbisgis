@@ -44,9 +44,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import net.opengis.wps._2_0.DescriptionType;
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString;
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute;
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

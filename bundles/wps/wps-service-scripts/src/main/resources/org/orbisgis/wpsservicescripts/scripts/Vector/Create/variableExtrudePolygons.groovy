@@ -1,7 +1,6 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Create
 
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString
+
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
@@ -21,31 +20,15 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(
-		translatedTitles = [
-				@LanguageString(value = "Variable extrude polygons", lang = "en"),
-				@LanguageString(value = "Extrusion de polygones variable", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "Extrude a polygon and extends it to a 3D representation, returning a geometry collection containing floor, ceiling and wall geometries.", lang = "en"),
-				@LanguageString(value = "Extrusion de polygones en l'étendant à une représentation en 3D, retournant une collection de géométries contenant les géométries du sol, du plafond et des murs.", lang = "fr")
-		],
-		translatedKeywords = [
-				@TranslatableString(translatableStrings = [
-						@LanguageString(value = "Vector", lang = "en"),
-						@LanguageString(value = "Vecteur", lang = "fr")
-				]),
-				@TranslatableString(translatableStrings = [
-						@LanguageString(value = "Geometry", lang = "en"),
-						@LanguageString(value = "Géometrie", lang = "fr")
-				]),
-				@TranslatableString(translatableStrings = [
-						@LanguageString(value = "Create", lang = "en"),
-						@LanguageString(value = "Création", lang = "fr")
-				])
-		],
-		metadata = [
-				@MetadataAttribute(title="H2GIS", role ="DBMS_TYPE", href = "http://www.h2gis.org/")
-		])
+		title = [
+				"Variable extrude polygons","en",
+				"Extrusion de polygones variable","fr"],
+		description = [
+				"Extrude a polygon and extends it to a 3D representation, returning a geometry collection containing floor, ceiling and wall geometries.","en",
+				"Extrusion de polygones en l'étendant à une représentation en 3D, retournant une collection de géométries contenant les géométries du sol, du plafond et des murs.","fr"],
+		keywords = ["Vecteur,Geometry,Create", "en",
+				"Vecteur,Géométrie,Création", "fr"],
+		properties = ["DBMS_TYPE", "H2GIS"])
 def processing() {
 
     //Build the start of the query
@@ -70,14 +53,12 @@ def processing() {
 /****************/
 
 @DataStoreInput(
-		translatedTitles = [
-				@LanguageString(value = "Input spatial data", lang = "en"),
-				@LanguageString(value = "Données spatiales d'entrée", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "The spatial data source that must be extruded.", lang = "en"),
-				@LanguageString(value = "La source de données qui doit etre extrudée.", lang = "fr")
-		],
+		title = [
+				"Input spatial data","en",
+				"Données spatiales d'entrée","fr"],
+		description = [
+				"The spatial data source that must be extruded.","en",
+				"La source de données qui doit etre extrudée.","fr"],
 		dataStoreTypes = ["GEOMETRY"])
 String inputDataStore
 
@@ -86,13 +67,13 @@ String inputDataStore
 /**********************/
 
 @DataFieldInput(
-		translatedTitles = [
-				@LanguageString(value = "Geometric field", lang = "en"),
-				@LanguageString(value = "Champ géométrique", lang = "fr")
+		title = [
+				"Geometric field","en"),
+				"Champ géométrique","fr")
 		],
-		translatedResumes = [
-				@LanguageString(value = "The geometric field of the data source.", lang = "en"),
-				@LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
+		description = [
+				"The geometric field of the data source.","en"),
+				"Le champ géométrique de la source de données.","fr")
 		],
 		variableReference = "inputDataStore",
         fieldTypes = ["GEOMETRY"])
@@ -100,28 +81,24 @@ String[] geometricField
 
 
 @DataFieldInput(
-		translatedTitles = [
-				@LanguageString(value = "Height of the polygons", lang = "en"),
-				@LanguageString(value = "Hauteur des polygones", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "A numeric field to specify the height of the polygon.", lang = "en"),
-				@LanguageString(value = "Le champ de valeurs numériques définissant la hauteur du polygone.", lang = "fr")
-		],
+		title = [
+				"Height of the polygons","en",
+				"Hauteur des polygones","fr"],
+		description = [
+				"A numeric field to specify the height of the polygon.","en",
+				"Le champ de valeurs numériques définissant la hauteur du polygone.","fr"],
         variableReference = "inputDataStore",
         fieldTypes = ["DOUBLE", "INTEGER", "LONG"])
 String[] height
 
 /** Fields to keep. */
 @DataFieldInput(
-		translatedTitles = [
-				@LanguageString(value = "Fields to keep", lang = "en"),
-				@LanguageString(value = "Champs à conserver", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "The fields that will be kept in the output.", lang = "en"),
-				@LanguageString(value = "Les champs qui seront conservés dans la table de sortie.", lang = "fr")
-		],
+		title = [
+				"Fields to keep","en",
+				"Champs à conserver","fr"],
+		description = [
+				"The fields that will be kept in the output.","en",
+				"Les champs qui seront conservés dans la table de sortie.","fr"],
 		excludedTypes=["GEOMETRY"],
 		multiSelection = true,
 		minOccurs = 0,
@@ -130,14 +107,12 @@ String[] fieldList
 
 
 @LiteralDataInput(
-		translatedTitles = [
-				@LanguageString(value = "Output table name", lang = "en"),
-				@LanguageString(value = "Nom de la table de sortie", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
-				@LanguageString(value = "Nom de la table contenant les résultats du traitement.", lang = "fr")
-		])
+		title = [
+				"Output table name","en",
+				"Nom de la table de sortie","fr"],
+		description = [
+				"Name of the table containing the result of the process.","en",
+				"Nom de la table contenant les résultats du traitement.","fr"])
 String outputTableName
 
 /*****************/
@@ -146,13 +121,11 @@ String outputTableName
 
 /** String output of the process. */
 @LiteralDataOutput(
-		translatedTitles = [
-				@LanguageString(value = "Output message", lang = "en"),
-				@LanguageString(value = "Message de sortie", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "The output message.", lang = "en"),
-				@LanguageString(value = "Le message de sortie.", lang = "fr")
-		])
+		title = [
+				"Output message","en",
+				"Message de sortie","fr"],
+		description = [
+				"The output message.","en",
+				"Le message de sortie.","fr"])
 String literalOutput
 

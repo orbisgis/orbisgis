@@ -1,7 +1,6 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Operators
 
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString
+
 import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
 import org.orbisgis.wpsgroovyapi.input.DataFieldInput
 import org.orbisgis.wpsgroovyapi.input.DataStoreInput
@@ -33,28 +32,16 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Erwan BOCHER
  */
 @Process(
-        translatedTitles = [
-                @LanguageString(value = "Variable distance buffer", lang = "en"),
-                @LanguageString(value = "Buffer à distance variable", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "Execute a buffer on a geometric field using another field to specify the distance.", lang = "en"),
-                @LanguageString(value = "Génère une zone tampon sur un champ géométrique en utilisant un autre champ pour définir la distance.", lang = "fr")
-        ],
-        translatedKeywords = [
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "Vector", lang = "en"),
-                        @LanguageString(value = "Vecteur", lang = "fr")
-                ]),
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "Geometry", lang = "en"),
-                        @LanguageString(value = "Géometrie", lang = "fr")
-                ])
-        ],
-        metadata = [
-                @MetadataAttribute(title="H2GIS", role ="DBMS_TYPE", href = "http://www.h2gis.org/"),
-                @MetadataAttribute(title="POSTGIS", role ="DBMS_TYPE", href = "http://postgis.net/")
-        ])
+        title = [
+                "Variable distance buffer","en",
+                "Buffer à distance variable","fr"],
+        description = [
+                "Execute a buffer on a geometric field using another field to specify the distance.","en",
+                "Génère une zone tampon sur un champ géométrique en utilisant un autre champ pour définir la distance.","fr"],
+        keywords = ["Vector,Geometry", "en",
+                "Vecteur,Géométrie", "fr"],
+        properties = ["DBMS_TYPE", "H2GIS",
+                "DBMS_TYPE", "POSTGIS"])
 def processing() {
 
     //Build the start of the query
@@ -104,14 +91,12 @@ def processing() {
 
 /** This DataStore is the input data source for the buffer. */
 @DataStoreInput(
-        translatedTitles = [
-                @LanguageString(value = "Input spatial data", lang = "en"),
-                @LanguageString(value = "Données spatiales d'entrée", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The spatial data source for the buffer.", lang = "en"),
-                @LanguageString(value = "La source de données spatiales pour le tampon.", lang = "fr")
-        ],
+        title = [
+                "Input spatial data","en",
+                "Données spatiales d'entrée","fr"],
+        description = [
+                "The spatial data source for the buffer.","en",
+                "La source de données spatiales pour le tampon.","fr"],
         dataStoreTypes = ["GEOMETRY"])
 String inputDataStore
 
@@ -120,68 +105,58 @@ String inputDataStore
 /**********************/
 
 @DataFieldInput(
-        translatedTitles = [
-                @LanguageString(value = "Geometric field", lang = "en"),
-                @LanguageString(value = "Champ géométrique", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The geometric field of the data source.", lang = "en"),
-                @LanguageString(value = "Le champ géométrique de la source de données.", lang = "fr")
-        ],
+        title = [
+                "Geometric field","en",
+                "Champ géométrique","fr"],
+        description = [
+                "The geometric field of the data source.","en",
+                "Le champ géométrique de la source de données.","fr"],
         variableReference = "inputDataStore",
         fieldTypes = ["GEOMETRY"])
 String[] geometricField
 
 
 @DataFieldInput(
-        translatedTitles = [
-                @LanguageString(value = "Size field", lang = "en"),
-                @LanguageString(value = "Champ taille", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "A numeric field to specify the size of the buffer.", lang = "en"),
-                @LanguageString(value = "Champ numérique contenant les tailles de tampon.", lang = "fr")
-        ],
+        title = [
+                "Size field","en",
+                "Champ taille","fr"],
+        description = [
+                "A numeric field to specify the size of the buffer.","en",
+                "Champ numérique contenant les tailles de tampon.","fr"],
         variableReference = "inputDataStore",
         fieldTypes = ["DOUBLE", "INTEGER", "LONG"])
 String[] bufferSize
 
 /** Mitre ratio limit (only affects mitered join style). */
 @LiteralDataInput(
-        translatedTitles = [
-                @LanguageString(value = "Mitre limit", lang = "en"),
-                @LanguageString(value = "Limite de mitre", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "Mitre ratio limit (only affects mitered join style)", lang = "en"),
-                @LanguageString(value = "Le rapport limite de mitre. (Utilisé uniquement pour le style de jointure mitre)", lang = "fr")
-        ],
+        title = [
+                "Mitre limit","en",
+                "Limite de mitre","fr"],
+        description = [
+                "Mitre ratio limit (only affects mitered join style)","en",
+                "Le rapport limite de mitre. (Utilisé uniquement pour le style de jointure mitre)","fr"],
         minOccurs = 0)
 Double mitreLimit = 5.0
 
 /** Number of segments used to approximate a quarter circle. */
 @LiteralDataInput(
-        translatedTitles = [
-                @LanguageString(value = "Segment number for a quarter circle", lang = "en"),
-                @LanguageString(value = "Nombre de segment pour un quart de cercle", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "Number of segments used to approximate a quarter circle.", lang = "en"),
-                @LanguageString(value = "Le nombre de segments utilisé pour approximer un quart de cercle.", lang = "fr")
-        ],
+        title = [
+                "Segment number for a quarter circle","en",
+                "Nombre de segment pour un quart de cercle","fr"],
+        description = [
+                "Number of segments used to approximate a quarter circle.","en",
+                "Le nombre de segments utilisé pour approximer un quart de cercle.","fr"],
         minOccurs = 0)
 Integer quadSegs = 8
 
 /** Endcap style. */
 @EnumerationInput(
-        translatedTitles = [
-                @LanguageString(value = "Endcap style", lang = "en"),
-                @LanguageString(value = "Style de l'extrémité", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The endcap style.", lang = "en"),
-                @LanguageString(value = "Le style de l'extrémité.", lang = "fr")
-        ],
+        title = [
+                "Endcap style","en",
+                "Style de l'extrémité","fr"],
+        description = [
+                "The endcap style.","en",
+                "Le style de l'extrémité.","fr"],
         values=["round", "flat", "butt", "square"],
         selectedValues = ["round"],
         minOccurs = 0)
@@ -189,14 +164,12 @@ String[] endcapStyle
 
 /** Join style. */
 @EnumerationInput(
-        translatedTitles = [
-                @LanguageString(value = "Join style", lang = "en"),
-                @LanguageString(value = "Style de jointure", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The join style.", lang = "en"),
-                @LanguageString(value = "Le style de jointure.", lang = "fr")
-        ],
+        title = [
+                "Join style","en",
+                "Style de jointure","fr"],
+        description = [
+                "The join style.","en",
+                "Le style de jointure.","fr"],
         values=["round", "mitre", "miter", "bevel"],
         selectedValues=["round"],
         minOccurs = 0)
@@ -204,14 +177,12 @@ String[] joinStyle
 
 /** Fields to keep. */
 @DataFieldInput(
-        translatedTitles = [
-                @LanguageString(value = "Fields to keep", lang = "en"),
-                @LanguageString(value = "Champs à conserver", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The fields that will be kept in the output.", lang = "en"),
-                @LanguageString(value = "Les champs qui seront conservés dans la table de sortie.", lang = "fr")
-        ],
+        title = [
+                "Fields to keep","en",
+                "Champs à conserver","fr"],
+        description = [
+                "The fields that will be kept in the output.","en",
+                "Les champs qui seront conservés dans la table de sortie.","fr"],
         excludedTypes=["GEOMETRY"],
         multiSelection = true,
         minOccurs = 0,
@@ -220,14 +191,12 @@ String[] fieldList
 
 
 @LiteralDataInput(
-        translatedTitles = [
-                @LanguageString(value = "Output table name", lang = "en"),
-                @LanguageString(value = "Nom de la table de sortie", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
-                @LanguageString(value = "Nom de la table contenant les résultats du traitement.", lang = "fr")
-        ])
+        title = [
+                "Output table name","en",
+                "Nom de la table de sortie","fr"],
+        description = [
+                "Name of the table containing the result of the process.","en",
+                "Nom de la table contenant les résultats du traitement.","fr"])
 String outputTableName
 
 /*****************/
@@ -236,13 +205,11 @@ String outputTableName
 
 /** String output of the process. */
 @LiteralDataOutput(
-        translatedTitles = [
-                @LanguageString(value = "Output message", lang = "en"),
-                @LanguageString(value = "Message de sortie", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The output message.", lang = "en"),
-                @LanguageString(value = "Le message de sortie.", lang = "fr")
-        ])
+        title = [
+                "Output message","en",
+                "Message de sortie","fr"],
+        description = [
+                "The output message.","en",
+                "Le message de sortie.","fr"])
 String literalOutput
 

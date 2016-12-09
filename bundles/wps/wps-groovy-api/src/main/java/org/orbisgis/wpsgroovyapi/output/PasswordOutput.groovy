@@ -49,5 +49,9 @@ import org.orbisgis.wpsgroovyapi.attributes.PasswordAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, PasswordAttribute, OutputAttribute, DescriptionTypeAttribute])
+@Field
+@PasswordAttribute
+@OutputAttribute
+@DescriptionTypeAttribute
+@AnnotationCollector
 @interface PasswordOutput {}

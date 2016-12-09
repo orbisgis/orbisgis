@@ -59,12 +59,4 @@ import java.lang.annotation.RetentionPolicy
     String language() default "en"
 
     String version() default ""
-
-
-
-    /********************/
-    /** default values **/
-    /********************/
-    public static final String defaultLanguage = "en"
-    public static final String defaultVersion = ""
 }

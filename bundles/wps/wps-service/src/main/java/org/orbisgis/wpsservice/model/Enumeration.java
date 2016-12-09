@@ -40,7 +40,6 @@ package org.orbisgis.wpsservice.model;
 import net.opengis.ows._2.LanguageStringType;
 import net.opengis.wps._2_0.ComplexDataType;
 import net.opengis.wps._2_0.Format;
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;

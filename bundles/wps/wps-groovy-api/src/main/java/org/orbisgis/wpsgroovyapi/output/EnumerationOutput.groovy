@@ -70,6 +70,9 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, EnumerationAttribute, OutputAttribute, DescriptionTypeAttribute])
-@interface EnumerationOutput {
-}
+@Field
+@EnumerationAttribute
+@OutputAttribute
+@DescriptionTypeAttribute
+@AnnotationCollector
+@interface EnumerationOutput {}

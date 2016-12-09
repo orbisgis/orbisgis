@@ -102,7 +102,7 @@ public class ObjectAnnotationConverter {
         descriptionType.getAbstract().addAll(descriptionList);
 
 
-        if(!descriptionTypeAttribute.identifier().equals(DescriptionTypeAttribute.defaultIdentifier)){
+        if(!descriptionTypeAttribute.identifier().isEmpty()){
             CodeType codeType = new CodeType();
             codeType.setValue(descriptionTypeAttribute.identifier().trim());
             descriptionType.setIdentifier(codeType);
@@ -182,7 +182,7 @@ public class ObjectAnnotationConverter {
         format.setMimeType(formatAttribute.mimeType());
         format.setSchema(URI.create(formatAttribute.schema()).toString());
         format.setDefault(formatAttribute.isDefaultFormat());
-        if(formatAttribute.maximumMegaBytes() == FormatAttribute.defaultMaximumMegaBytes) {
+        if(formatAttribute.maximumMegaBytes() == 0) {
             format.setMaximumMegabytes(null);
         }
         else{

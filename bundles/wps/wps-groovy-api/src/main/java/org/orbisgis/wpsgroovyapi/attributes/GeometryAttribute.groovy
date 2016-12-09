@@ -30,13 +30,4 @@ import java.lang.annotation.RetentionPolicy
     /** Dimension of the geometry (can be 2 or 3). */
     int dimension() default 2
 
-
-
-    /********************/
-    /** default values **/
-    /********************/
-    public static final boolean defaultGeometryTypes = []
-    public static final boolean defaultExcludedTypes = []
-    public static final boolean defaultDimension = 2
-
 }

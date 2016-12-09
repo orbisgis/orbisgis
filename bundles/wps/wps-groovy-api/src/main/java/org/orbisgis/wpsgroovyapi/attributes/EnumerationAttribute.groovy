@@ -86,16 +86,4 @@ import java.lang.annotation.RetentionPolicy
 
     /** Default selected values, can be empty.*/
     String[] selectedValues() default []
-
-
-
-    /********************/
-    /** default values **/
-    /********************/
-    public static final boolean defaultMultiSelection = false
-    public static final boolean defaultIsEditable = false
-    public static final String[] defaultValues = []
-    public static final String[] defaultNames = []
-    public static final String[] defaultSelectedValues = []
-    public static final LanguageString[] defaultTranslatedNames = []
 }

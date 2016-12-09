@@ -60,12 +60,4 @@ import java.lang.annotation.RetentionPolicy
 
     /** URI to the unit of the data */
     String uom() default ""
-
-
-
-    /********************/
-    /** default values **/
-    /********************/
-    public static final String defaultDataType = "NONE"
-    public static final String defaultUOM = ""
 }

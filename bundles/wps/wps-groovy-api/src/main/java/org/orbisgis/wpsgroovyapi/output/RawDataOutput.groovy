@@ -70,5 +70,9 @@ import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, RawDataAttribute, OutputAttribute, DescriptionTypeAttribute])
+@Field
+@RawDataAttribute
+@OutputAttribute
+@DescriptionTypeAttribute
+@AnnotationCollector
 @interface RawDataOutput {}

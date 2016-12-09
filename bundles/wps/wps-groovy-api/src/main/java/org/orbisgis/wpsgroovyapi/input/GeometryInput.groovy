@@ -84,5 +84,9 @@ import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, GeometryAttribute, InputAttribute, DescriptionTypeAttribute])
+@Field
+@GeometryAttribute
+@InputAttribute
+@DescriptionTypeAttribute
+@AnnotationCollector
 @interface GeometryInput {}

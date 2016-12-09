@@ -76,13 +76,4 @@ import java.lang.annotation.RetentionPolicy
 
     /** Indicates that this is the default/native domain. */
     boolean isDefault() default false
-
-
-
-    /********************/
-    /** default values **/
-    /********************/
-    public static final String defaultUOM = ""
-    public static final String defaultSelectedValue = ""
-    public static final boolean[] defaultIsDefault = false
 }

@@ -62,5 +62,9 @@ import org.orbisgis.wpsgroovyapi.attributes.LiteralDataAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, LiteralDataAttribute, OutputAttribute, DescriptionTypeAttribute])
+@Field
+@LiteralDataAttribute
+@OutputAttribute
+@DescriptionTypeAttribute
+@AnnotationCollector
 @interface LiteralDataOutput {}

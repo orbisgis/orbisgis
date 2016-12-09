@@ -72,15 +72,4 @@ import java.lang.annotation.RetentionPolicy
 
     /** Array of the file type not allowed for the raw data.*/
     String[] excludedTypes() default []
-
-
-
-    /********************/
-    /** default values **/
-    /********************/
-    public static final boolean defaultIsDirectory = true
-    public static final boolean defaultIsFile = true
-    public static final boolean defaultMultiSelection = false
-    public static final String[] defaultFileType = []
-    public static final String[] defaultExcludedType = []
 }

@@ -160,7 +160,7 @@ public class InputDescriptionTypeConvertTest {
             ////////////////////////////////////////////
 
             InputDescriptionType toTest = new InputDescriptionType();
-            toTest.setMaxOccurs(""+InputAttribute.defaultMaxOccurs);
+            toTest.setMaxOccurs("1"+InputAttribute.defaultMaxOccurs);
             toTest.setMinOccurs(new BigInteger(""+InputAttribute.defaultMinOccurs));
 
             ////////////////////////////////////

@@ -83,16 +83,4 @@ import java.lang.annotation.RetentionPolicy
     /** Reference to additional metadata about this item. It is composed of a succession of two String : the property
      * and the human readable keyword list coma separated and its language.*/
     String[] metadata() default []
-
-
-
-    /********************/
-    /** default values **/
-    /********************/
-    public static final String defaultResume = ""
-    public static final LanguageString[] defaultTranslatedResumes = []
-    public static final String[] defaultKeywords = []
-    public static final TranslatableString[] defaultTranslatedKeywords = []
-    public static final String defaultIdentifier = ""
-    public static final MetadataAttribute[] defaultMetadata = []
 }

@@ -77,13 +77,4 @@ import java.lang.annotation.RetentionPolicy
 
     /** Indicates that this format is the default format. One of the FormatAttribute shall be the default one.*/
     boolean isDefaultFormat() default false
-
-
-
-    /********************/
-    /** default values **/
-    /********************/
-    public static final String defaultEncoding = "simple"
-    public static final int defaultMaximumMegaBytes = 0
-    public static final boolean defaultIsDefaultFormat = false
 }

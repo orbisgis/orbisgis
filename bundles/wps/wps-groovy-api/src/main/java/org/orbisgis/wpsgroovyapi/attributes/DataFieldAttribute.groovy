@@ -73,13 +73,4 @@ import java.lang.annotation.RetentionPolicy
 
     /** Enable or not the user to select more than one field.*/
     boolean multiSelection() default false
-
-
-
-    /********************/
-    /** default values **/
-    /********************/
-    public static final String[] defaultFieldType = []
-    public static final String[] defaultExcludedType = []
-    public static final boolean defaultMultiSelection = []
 }

@@ -92,5 +92,9 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@AnnotationCollector([Field, EnumerationAttribute, InputAttribute, DescriptionTypeAttribute])
+@Field
+@EnumerationAttribute
+@InputAttribute
+@DescriptionTypeAttribute
+@AnnotationCollector
 @interface EnumerationInput {}

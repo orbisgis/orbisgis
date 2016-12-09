@@ -62,12 +62,4 @@ import java.lang.annotation.RetentionPolicy
      *  The type can be "GEOMETRY"
      */
     String[] excludedTypes() default []
-
-
-
-    /********************/
-    /** default values **/
-    /********************/
-    public static final String[] defaultDataStoreType = []
-    public static final String[] defaultExcludedType = []
 }
