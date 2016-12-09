@@ -387,6 +387,14 @@ public class ObjectAnnotationConverter {
     public static void annotationToObject(ProcessAttribute processAttribute, ProcessOffering processOffering){
         processOffering.getProcess().setLang(Locale.forLanguageTag(processAttribute.language()).toString());
         processOffering.setProcessVersion(processAttribute.version());
+        String[] properties = processAttribute.properties();
+        List<MetadataType> metadataList = processOffering.getProcess().getMetadata();
+        for(int i=0; i<properties.length; i+=2){
+            MetadataType metadata = new MetadataType();
+            metadata.setRole(properties[i]);
+            metadata.setTitle(properties[i+1]);
+            metadataList.add(metadata);
+        }
     }
 
     public static DataStore annotationToObject(DataStoreAttribute dataStoreAttribute, List<Format> formatList) {

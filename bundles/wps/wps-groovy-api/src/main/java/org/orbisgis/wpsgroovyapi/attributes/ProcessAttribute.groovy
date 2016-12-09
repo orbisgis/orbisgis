@@ -57,6 +57,8 @@ import java.lang.annotation.RetentionPolicy
 
     /** Language of the process. */
     String language() default "en"
-
+    /** Version of the process. */
     String version() default ""
+    /** Properties of the process. */
+    String[] properties() default[]
 }
