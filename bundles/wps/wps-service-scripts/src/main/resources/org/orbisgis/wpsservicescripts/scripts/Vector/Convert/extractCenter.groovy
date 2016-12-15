@@ -1,7 +1,7 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Convert
 
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
@@ -54,13 +54,13 @@ def processing() {
 /****************/
 
 /** This DataStore is the input data source. */
-@DataStoreInput(
+@JDBCTableInput(
 		title = ["Extract center","en",
 				"Extraction du centre","fr"],
 		description = [
 				"Extract the center of a geometry.","en",
 				"Extraction du centre d'une géométrie.","fr"],
-        dataStoreTypes = ["GEOMETRY"])
+        dataTypes = ["GEOMETRY"])
 String inputDataStore
 
 /**********************/
@@ -68,26 +68,26 @@ String inputDataStore
 /**********************/
 
 /** Name of the Geometric field of the DataStore inputDataStore. */
-@DataFieldInput(
+@JDBCTableFieldInput(
 		title = [
 				"Geometric field","en",
 				"Champ géométrique","fr"],
 		description = [
 				"The geometric field of the data source.","en",
 				"Le champ géométrique de la source de données.","fr"],
-        variableReference = "inputDataStore",
-        fieldTypes = ["GEOMETRY"])
+        jdbcTableReference = "inputDataStore",
+        dataTypes = ["GEOMETRY"])
 String[] geometricField
 
 /** Name of the identifier field of the DataStore inputDataStore. */
-@DataFieldInput(
+@JDBCTableFieldInput(
 		title = ["Identifier field","en",
 				"Champ identifiant","fr"],
 		description = [
 				"A field used as an identifier.","en",
 				"Champ utilisé comme identifiant.","fr"],
 		excludedTypes=["GEOMETRY"],
-		variableReference = "inputDataStore")
+		jdbcTableReference = "inputDataStore")
 String[] idField
 
 @EnumerationInput(

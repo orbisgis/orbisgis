@@ -47,11 +47,14 @@ import org.orbisgis.wpsgroovyapi.attributes.PasswordAttribute
  * Password input annotation.
  * A password is similar to a String literal data, by its value is hided
  *
+ * The following fields can be defined (optional) :
+ *  - minOccurs : int
+ *      Minimum number of times that values for this parameter are required. 0 means the input is optional.
+ *
+ *  - maxOccurs : int
+ *      Maximum number of times that this parameter may be present.
+ *
  * @author Sylvain PALOMINOS
  */
-@Field
-@PasswordAttribute
-@InputAttribute
-@DescriptionTypeAttribute
-@AnnotationCollector
+@AnnotationCollector([Field, PasswordAttribute, InputAttribute, DescriptionTypeAttribute])
 @interface PasswordInput {}

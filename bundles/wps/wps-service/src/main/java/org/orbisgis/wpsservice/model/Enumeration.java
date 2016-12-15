@@ -75,13 +75,11 @@ public class Enumeration extends ComplexDataType implements TranslatableComplexD
      * Main constructor.
      * @param formatList Formats of the data accepted.
      * @param valueList List of values.
-     * @param defaultValues Default value. If null, no default value.
      * @throws MalformedScriptException
      */
-    public Enumeration(List<Format> formatList, String[] valueList, String[] defaultValues) throws MalformedScriptException {
+    public Enumeration(List<Format> formatList, String[] valueList) throws MalformedScriptException {
         format = formatList;
         this.values = valueList;
-        this.defaultValues = defaultValues;
     }
 
     /**
@@ -158,7 +156,7 @@ public class Enumeration extends ComplexDataType implements TranslatableComplexD
     @Override
     public ComplexDataType getTranslatedData(String serverLanguage, String clientLanguages) {
         try {
-            Enumeration enumeration = new Enumeration(format, values, defaultValues);
+            Enumeration enumeration = new Enumeration(format, values);
             enumeration.setEditable(this.isEditable());
             enumeration.setMultiSelection(this.isMultiSelection());
             List<TranslatableString> translatedNames = new ArrayList<>();

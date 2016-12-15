@@ -41,32 +41,34 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the DataField complex data.
- * The DataField is a complex data that represents a DataSource field (i.e. a column of a table).
- * It is linked to a DataStore and its allowed types can be specified.
+ * Attributes for the JDBCTableField complex data.
+ * The JDBCTableField is a complex data that represents a JDBCTable field (i.e. a column of a table).
+ * It is linked to a JDBCTable and its allowed types can be specified.
  *
  * The following fields must be defined (mandatory) :
- *  - variableReference : String
- *      Name of the variable of the DataStore.
+ *  - jdbcTableReference : String
+ *      Name of the variable of the JDBCTable.
  *
  * The following fields can be defined (optional) :
- *  - fieldTypes : String[]
+ *  - dataTypes : String[]
  *      Array of the types allowed. If no types are specified, accepts all.
+ *
  *  - excludedTypes : String[]
  *      Array of the type forbidden. If no types are specified, accept all.
+ *
  *  - multiSelection : boolean
  *      Enable or not the user to select more than one field. Disabled by default.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface DataFieldAttribute {
+@interface JDBCTableFieldAttribute {
 
-    /** Name of the variable of the DataStore.*/
-    String variableReference()
+    /** Name of the variable of the JDBCTable or its identifier.*/
+    String jdbcTableReference()
 
     /** Array of the type allowed for the data field. If no types are specified, accept all.*/
-    String[] fieldTypes() default []
+    String[] dataTypes() default []
 
     /** Array of the type not allowed for the data field.*/
     String[] excludedTypes() default []

@@ -1,8 +1,8 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
-import org.orbisgis.wpsgroovyapi.input.FieldValueInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldValueInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 /********************/
@@ -45,7 +45,7 @@ def processing() {
 /****************/
 
 /** This DataStore is the input data source table. */
-@DataStoreInput(
+@JDBCTableInput(
         title = ["Table","en",
                 "Table","fr"],
         description = ["The table to edit.","en",
@@ -59,23 +59,23 @@ String tableName
 /**********************/
 
 /** Name of the PrimaryKey field of the DataStore tableName. */
-@DataFieldInput(
+@JDBCTableFieldInput(
         title = ["PKField","en",
                 "Champ clef primaire","fr"],
         description = ["The primary key field.","en",
                 "Le champ de la clef primaire.","fr"],
-        variableReference = "orbisgis:wps:official:deleteRows:tableName",
+        jdbcTableReference = "orbisgis:wps:official:deleteRows:tableName",
         identifier = "orbisgis:wps:official:deleteRows:pkField"
 )
 String[] pkField
 
 /** List of primary keys to remove from the table. */
-@FieldValueInput(
+@JDBCTableFieldValueInput(
         title = ["PKArray","en",
                 "Liste clef primaire","fr"],
         description = ["The array of the primary keys of the rows to remove.","en",
                 "La liste des clefs primaires dont les lignes sont à supprimer.","fr"],
-        variableReference = "orbisgis:wps:official:deleteRows:pkField",
+        jdbcTableFieldReference = "orbisgis:wps:official:deleteRows:pkField",
         multiSelection = true,
         identifier = "orbisgis:wps:official:deleteRows:pkToRemove"
 )

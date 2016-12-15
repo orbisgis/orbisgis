@@ -47,12 +47,16 @@ import java.lang.annotation.RetentionPolicy
  * The following fields can be defined (optional) :
  *  - isDirectory : boolean
  *      Indicates that the RawData can be a directory.
+ *
  *  - isFile : boolean
  *      Indicates that the RawData can be a file.
+ *
  *  - multiSelection : boolean
  *      Indicates that the user can select more than one file/directory.
+ *
  *  - fileTypes : String[]
  *      Array of the file type allowed for the raw data. If no types are specified, accept all.
+ *
  *  - excludedTypes : String[]
  *      Array of the file type not allowed for the raw data.
  *

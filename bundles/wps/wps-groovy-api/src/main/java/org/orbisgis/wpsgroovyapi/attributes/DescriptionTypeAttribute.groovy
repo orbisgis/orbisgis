@@ -39,6 +39,7 @@ import java.lang.annotation.RetentionPolicy
  *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
  *      composed either a unique description or a translated description, its language, another description, its language ...
  *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+ *
  *  - keywords : String[]
  *      Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
  *      human. It is composed of a succession of two String : the human readable keyword list coma
@@ -47,8 +48,12 @@ import java.lang.annotation.RetentionPolicy
  *                       "le mot clef 1, le mot clef 2", "fr"]
  *  - identifier : String
  *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
- *  - metadata : MetaData[]
- *      Reference to additional metadata about this item.
+ *
+ *  - metadata : String[]
+ *      Reference to additional metadata about this item. It is composed of a succession of three String : the metadata
+ *      role, the metadata title and the href, coma separated.
+ *      i.e. metadata = ["role1,title,href1",
+ *                       "role2,title,href2"]
  *
  * @author Sylvain PALOMINOS
  */
@@ -56,9 +61,9 @@ import java.lang.annotation.RetentionPolicy
 @interface DescriptionTypeAttribute {
 
     /**
-     * Brief narrative description of a process, input, and output. Normally available for display to a human.It is
-     * composed either a unique description or a translated description, its language, another description, its language ...
-     * i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+     * Title of a process, input, and output. Normally available for display to a human. It is composed either a unique
+     * title or a translated title, its language, another title, its language ...
+     * i.e. title = "title" or title = ["titleFr", "fr", "titleEn", "en"]
      */
     String[] title() default[]
 
@@ -80,7 +85,10 @@ import java.lang.annotation.RetentionPolicy
     /** Unambiguous identifier of a process, input, and output. */
     String identifier() default ""
 
-    /** Reference to additional metadata about this item. It is composed of a succession of two String : the property
-     * and the human readable keyword list coma separated and its language.*/
+    /** Reference to additional metadata about this item. It is composed of a succession of three String : the metadata
+     * role, the metadata title and the href, coma separated.
+     * i.e. metadata = ["role1,title,href1",
+     *                  "role2,title,href2"]
+     */
     String[] metadata() default []
 }

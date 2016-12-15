@@ -41,7 +41,7 @@ import net.opengis.ows._2.CodeType;
 import net.opengis.wps._2_0.Format;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
-import org.orbisgis.wpsgroovyapi.attributes.DataStoreAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.JDBCTableAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
@@ -66,13 +66,13 @@ public class DataStoreParser implements Parser{
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
         //Instantiate the DataStore and its formats
-        DataStoreAttribute dataStoreAttribute = f.getAnnotation(DataStoreAttribute.class);
+        JDBCTableAttribute JDBCTableAttribute = f.getAnnotation(JDBCTableAttribute.class);
         List<Format> formatList = new ArrayList<>();
         formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
         formatList.get(0).setDefault(true);
 
         //Instantiate the DataStore
-        DataStore dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
+        DataStore dataStore = ObjectAnnotationConverter.annotationToObject(JDBCTableAttribute, formatList);
 
         InputDescriptionType input = new InputDescriptionType();
         JAXBElement<DataStore> jaxbElement = new ObjectFactory().createDataStore(dataStore);
@@ -93,13 +93,13 @@ public class DataStoreParser implements Parser{
     @Override
     public OutputDescriptionType parseOutput(Field f, URI processId) {
         //Instantiate the DataStore and its formats
-        DataStoreAttribute dataStoreAttribute = f.getAnnotation(DataStoreAttribute.class);
+        JDBCTableAttribute JDBCTableAttribute = f.getAnnotation(JDBCTableAttribute.class);
         List<Format> formatList = new ArrayList<>();
         formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
         formatList.get(0).setDefault(true);
 
         //Instantiate the DataStore
-        DataStore dataStore = ObjectAnnotationConverter.annotationToObject(dataStoreAttribute, formatList);
+        DataStore dataStore = ObjectAnnotationConverter.annotationToObject(JDBCTableAttribute, formatList);
 
         OutputDescriptionType output = new OutputDescriptionType();
         JAXBElement<DataStore> jaxbElement = new ObjectFactory().createDataStore(dataStore);
@@ -118,6 +118,6 @@ public class DataStoreParser implements Parser{
 
     @Override
     public Class getAnnotation() {
-        return DataStoreAttribute.class;
+        return JDBCTableAttribute.class;
     }
 }

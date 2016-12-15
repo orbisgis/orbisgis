@@ -42,9 +42,6 @@ import net.opengis.ows._2.ValueType;
 import net.opengis.wps._2_0.LiteralDataType.LiteralDataDomain;
 import org.junit.Assert;
 import org.junit.Test;
-import org.orbisgis.wpsgroovyapi.attributes.LiteralDataDomainAttribute;
-import org.orbisgis.wpsgroovyapi.attributes.PossibleLiteralValuesChoiceAttribute;
-import org.orbisgis.wpsgroovyapi.attributes.ValuesAttribute;
 import org.orbisgis.wpsservice.model.DataType;
 
 import java.lang.annotation.Annotation;

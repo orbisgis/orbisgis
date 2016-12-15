@@ -56,24 +56,35 @@ import org.orbisgis.wpsgroovyapi.attributes.ProcessAttribute
  *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
  *      composed either a unique description or a translated description, its language, another description, its language ...
  *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+ *
  *  - keywords : String[]
  *      Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
- *      human. It is composed of a succession of two String : the keyword key, the human readable keyword list coma
+ *      human. It is composed of a succession of two String : the human readable keyword list coma
  *      separated and its language.
  *      i.e. keywords = ["the keyword 1,the keyword 2", "en",
  *                       "le mot clef 1, le mot clef 2", "fr"]
  *  - identifier : String
- *      Unambiguous identifier of the process. It should be a valid URI.
- *  - metadata : MetaData[]
- *      Reference to additional metadata about this item.
+ *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
+ *
+ *  - metadata : String[]
+ *      Reference to additional metadata about this item. It is composed of a succession of three String : the metadata
+ *      role, the metadata title and the href, coma separated.
+ *      i.e. metadata = ["role1,title,href1",
+ *                       "role2,title,href2"]
  *  - language : String
- *      Language of the process title and abstract.
+ *      Language of the process.
+ *
+ *  - version : String
+ *      Version of the process.
+ *
+ *  - properties : String[]
+ *      Properties of the process.
+ *      This attribute is composed of an array of two coma separated string : the first one is the property name and
+ *      the second is the property value.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
  */
-@ProcessAttribute
-@DescriptionTypeAttribute
-@AnnotationCollector
+@AnnotationCollector([ProcessAttribute, DescriptionTypeAttribute])
 public @interface Process {}

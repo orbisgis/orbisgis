@@ -1,7 +1,7 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
@@ -78,7 +78,7 @@ def processing() {
 /****************/
 
 /** This DataStore is the input data source table. */
-@DataStoreInput(
+@JDBCTableInput(
         title = ["Table","en",
                 "Table","fr"],
         description = ["The table to edit.","en",
@@ -91,13 +91,13 @@ String tableName
 /**********************/
 
 /** Field list concerned by the value insertion. */
-@DataFieldInput(
+@JDBCTableFieldInput(
         title = ["Fields","en",
                 "Champs","fr"],
         description = [
                 "The field concerned by the value insertion.","en",
                 "Les champs concernés par les insertions de valeurs.","fr"],
-        variableReference = "orbisgis:wps:official:insertValues:tableName",
+        jdbcTableReference = "orbisgis:wps:official:insertValues:tableName",
         multiSelection = true,
         minOccurs = 0,
         identifier = "orbisgis:wps:official:insertValues:fieldList")

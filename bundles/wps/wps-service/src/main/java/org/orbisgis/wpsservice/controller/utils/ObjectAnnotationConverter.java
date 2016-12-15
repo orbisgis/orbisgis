@@ -176,7 +176,7 @@ public class ObjectAnnotationConverter {
             descriptionType.getMetadata().addAll(metadataList);
         }
     }
-
+/*
     public static Format annotationToObject(FormatAttribute formatAttribute){
         Format format = new Format();
         format.setMimeType(formatAttribute.mimeType());
@@ -234,8 +234,8 @@ public class ObjectAnnotationConverter {
             return range;
         }
         return null;
-    }
-
+    }*/
+/*
     public static LiteralDataDomain annotationToObject(LiteralDataDomainAttribute literalDataDomainAttribute){
         LiteralDataDomain literalDataDomain = new LiteralDataDomain();
         literalDataDomain.setDefault(literalDataDomainAttribute.isDefault());
@@ -267,70 +267,69 @@ public class ObjectAnnotationConverter {
         literalDataDomain.setDefaultValue(defaultValue);
 
         return literalDataDomain;
-    }
+    }*/
 
     public static LiteralDataType annotationToObject(LiteralDataAttribute literalDataAttribute,
-                                                     LiteralDataDomain defaultDomain) {
+                                                     DomainMetadataType domainMetadataType) {
         LiteralDataType literalDataType = new LiteralDataType();
 
         List<Format> formatList = new ArrayList<>();
-        if(literalDataAttribute.formats().length == 0){
-            formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
-            formatList.get(0).setDefault(true);
-        }
-        else {
-            boolean isDefault = false;
-            for (FormatAttribute formatAttribute : literalDataAttribute.formats()) {
-                Format format = ObjectAnnotationConverter.annotationToObject(formatAttribute);
-                if(format.isDefault()){
-                    isDefault = true;
-                }
-                formatList.add(format);
-            }
-            if(!isDefault){
-                formatList.get(0).setDefault(true);
-            }
-        }
+        formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
+        formatList.get(0).setDefault(true);
         literalDataType.getFormat().clear();
         literalDataType.getFormat().addAll(formatList);
 
         List<LiteralDataType.LiteralDataDomain> lddList = new ArrayList<>();
-        if(literalDataAttribute.validDomains().length == 0){
-            if(defaultDomain != null){
-                lddList.add(defaultDomain);
-            }
-            else {
-                LiteralDataDomain literalDataDomain = new LiteralDataDomain();
-                literalDataDomain.setDefault(true);
-                AnyValue anyValue = new AnyValue();
-                literalDataDomain.setAnyValue(anyValue);
-                ValueType defaultValue = new ValueType();
-                defaultValue.setValue("");
-                literalDataDomain.setDefaultValue(defaultValue);
-                DomainMetadataType domainMetadataType = new DomainMetadataType();
-                domainMetadataType.setReference(DataType.STRING.getUri().toString());
-                domainMetadataType.setValue(DataType.STRING.name());
-                literalDataDomain.setDataType(domainMetadataType);
-                lddList.add(literalDataDomain);
-            }
+        if(literalDataAttribute.defaultDomain().isEmpty()){
+            LiteralDataDomain literalDataDomain = new LiteralDataDomain();
+            literalDataDomain.setDefault(true);
+            literalDataDomain.setAnyValue(new AnyValue());
+            lddList.add(literalDataDomain);
         }
         else {
-            boolean isDefault = false;
-            for (LiteralDataDomainAttribute literalDataDomainAttribute : literalDataAttribute.validDomains()) {
-                LiteralDataDomain ldd = ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute);
-                if(ldd.isDefault()){
-                    isDefault = true;
+            LiteralDataDomain ldd = getLiteralDataDomain(literalDataAttribute.defaultDomain(), domainMetadataType);
+            ldd.setDefault(true);
+            lddList.add(ldd);
+            if (literalDataAttribute.validDomains().length != 0) {
+                for (String literalDataDomain : literalDataAttribute.validDomains()) {
+                    lddList.add(getLiteralDataDomain(literalDataDomain, domainMetadataType));
                 }
-                lddList.add(ldd);
-            }
-            if(!isDefault){
-                lddList.get(0).setDefault(true);
             }
         }
         literalDataType.getLiteralDataDomain().clear();
         literalDataType.getLiteralDataDomain().addAll(lddList);
 
         return literalDataType;
+    }
+
+    private static LiteralDataDomain getLiteralDataDomain(String literalDataDomain, DomainMetadataType domainMetadataType){
+        LiteralDataDomain ldd = new LiteralDataDomain();
+        String[] split = literalDataDomain.split(",");
+        List<Object> listAllowedValues = ldd.getAllowedValues().getValueOrRange();
+        for (String domain : split) {
+            if (domain.contains(";")) {
+                String[] rangeAttributes = domain.split(";");
+                RangeType range = new RangeType();
+                ValueType minimum = new ValueType();
+                minimum.setValue(rangeAttributes[0]);
+                range.setMinimumValue(minimum);
+                if (!rangeAttributes[1].isEmpty()) {
+                    ValueType spacing = new ValueType();
+                    spacing.setValue(rangeAttributes[1]);
+                    range.setSpacing(spacing);
+                }
+                ValueType maximum = new ValueType();
+                maximum.setValue(rangeAttributes[2]);
+                range.setMaximumValue(maximum);
+                listAllowedValues.add(range);
+            } else {
+                ValueType value = new ValueType();
+                value.setValue(domain);
+                listAllowedValues.add(value);
+            }
+        }
+        ldd.setDataType(domainMetadataType);
+        return ldd;
     }
 
     public static RawData annotationToObject(RawDataAttribute rawDataAttribute, Format format) {
@@ -356,7 +355,7 @@ public class ObjectAnnotationConverter {
         input.setMaxOccurs(""+inputAttribute.maxOccurs());
         input.setMinOccurs(BigInteger.valueOf(inputAttribute.minOccurs()));
     }
-
+/*
     public static Object annotationToObject(
             PossibleLiteralValuesChoiceAttribute possibleLiteralValuesChoiceAttribute){
         if(possibleLiteralValuesChoiceAttribute.anyValues() ||
@@ -382,7 +381,7 @@ public class ObjectAnnotationConverter {
             return valuesReference;
         }
         return new AnyValue();
-    }
+    }*/
 
     public static void annotationToObject(ProcessAttribute processAttribute, ProcessOffering processOffering){
         processOffering.getProcess().setLang(Locale.forLanguageTag(processAttribute.language()).toString());
@@ -397,16 +396,16 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static DataStore annotationToObject(DataStoreAttribute dataStoreAttribute, List<Format> formatList) {
+    public static DataStore annotationToObject(JDBCTableAttribute JDBCTableAttribute, List<Format> formatList) {
         try {
             DataStore dataStore = new DataStore(formatList);
             List<DataType> dataTypeList = new ArrayList<>();
-            for(String type : Arrays.asList(dataStoreAttribute.dataStoreTypes())){
+            for(String type : Arrays.asList(JDBCTableAttribute.dataTypes())){
                 dataTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
             dataStore.setDataStoreTypeList(dataTypeList);
             List<DataType> excludedTypeList = new ArrayList<>();
-            for(String type : Arrays.asList(dataStoreAttribute.excludedTypes())){
+            for(String type : Arrays.asList(JDBCTableAttribute.excludedTypes())){
                 excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
             dataStore.setExcludedTypeList(excludedTypeList);
@@ -417,22 +416,22 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static DataField annotationToObject(DataFieldAttribute dataFieldAttribute, Format format, URI dataStoreUri) {
+    public static DataField annotationToObject(JDBCTableFieldAttribute JDBCTableFieldAttribute, Format format, URI dataStoreUri) {
         try {
             format.setDefault(true);
             List<DataType> dataTypeList = new ArrayList<>();
-            for(String type : Arrays.asList(dataFieldAttribute.fieldTypes())){
+            for(String type : Arrays.asList(JDBCTableFieldAttribute.dataTypes())){
                 dataTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
             List<DataType> excludedTypeList = new ArrayList<>();
-            for(String type : Arrays.asList(dataFieldAttribute.excludedTypes())){
+            for(String type : Arrays.asList(JDBCTableFieldAttribute.excludedTypes())){
                 excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
             }
             List<Format> formatList = new ArrayList<>();
             formatList.add(format);
             DataField dataField = new DataField(formatList, dataTypeList, dataStoreUri);
             dataField.setExcludedTypeList(excludedTypeList);
-            dataField.setMultiSelection(dataFieldAttribute.multiSelection());
+            dataField.setMultiSelection(JDBCTableFieldAttribute.multiSelection());
             return dataField;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
@@ -440,12 +439,12 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static FieldValue annotationToObject(FieldValueAttribute fieldvalueAttribute, Format format, URI dataFieldUri) {
+    public static FieldValue annotationToObject(JDBCTableFieldValueAttribute fieldvalueAttributeJDBCTable, Format format, URI dataFieldUri) {
         try {
             format.setDefault(true);
             List<Format> formatList = new ArrayList<>();
             formatList.add(format);
-            return new FieldValue(formatList, dataFieldUri, fieldvalueAttribute.multiSelection());
+            return new FieldValue(formatList, dataFieldUri, fieldvalueAttributeJDBCTable.multiSelection());
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;
@@ -457,7 +456,7 @@ public class ObjectAnnotationConverter {
             format.setDefault(true);
             List<Format> formatList = new ArrayList<>();
             formatList.add(format);
-            Enumeration enumeration = new Enumeration(formatList, enumAttribute.values(), enumAttribute.selectedValues());
+            Enumeration enumeration = new Enumeration(formatList, enumAttribute.values());
             enumeration.setEditable(enumAttribute.isEditable());
             enumeration.setMultiSelection(enumAttribute.multiSelection());
 

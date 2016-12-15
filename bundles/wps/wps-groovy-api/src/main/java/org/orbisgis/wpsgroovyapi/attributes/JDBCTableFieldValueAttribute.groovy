@@ -41,26 +41,25 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the SupportedCRS.
+ * Attributes for the JDBCTableFieldValue complex data.
+ * The JDBCTableFieldValue complex data represents a list of values contained by a JDBCTableField.
  *
  * The following fields must be defined (mandatory) :
- *  - crs : String[]
- *      Reference to a CRS definition. Should be a valid URI.
+ *  - jdbcTableFieldReference : String
+ *      Name of the variable of the JDBCTableField.
  *
  * The following fields can be defined (optional) :
- *  - isDefault : boolean
- *      Indicates that this CRS is the default CRS.
- *      One of the formats included in the BoundingBox structure shall have the attribute “isDefault” set to “true”.
+ *  - multiSelection : boolean
+ *      Indicates if more than one value can be selected.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface SupportedCRSAttribute {
-    /** Reference to a CRS definition. Should be a valid URI. */
-    String[] crs()
-    /**
-     * Indicates that this CRS is the default CRS.
-     * One of the formats included in the BoundingBox structure shall have the attribute “isDefault” set to “true”.
-     */
-    boolean isDefault() default false
+@interface JDBCTableFieldValueAttribute {
+
+    /** Name of the variable of the JDBCTableField.*/
+    String jdbcTableFieldReference()
+
+    /** Indicates if more than one value can be selected.*/
+    boolean multiSelection() default false
 }

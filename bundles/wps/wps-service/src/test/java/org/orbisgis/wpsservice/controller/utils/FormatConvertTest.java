@@ -39,7 +39,6 @@ package org.orbisgis.wpsservice.controller.utils;
 import net.opengis.wps._2_0.Format;
 import org.junit.Assert;
 import org.junit.Test;
-import org.orbisgis.wpsgroovyapi.attributes.FormatAttribute;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

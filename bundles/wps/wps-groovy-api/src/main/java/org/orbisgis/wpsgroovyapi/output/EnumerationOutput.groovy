@@ -32,9 +32,10 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
  *
  * The following fields must be defined (mandatory) :
  *  - title : String[]
- *       Title of the output. Normally available for display to a human. It is composed either a
+ *       Title of a process, input, and output. Normally available for display to a human. It is composed either a
  *       unique title or a translated title, its language, another title, its language ...
  *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en"]
+ *
  *  - values : String[]
  *      List of possible values.
  *
@@ -43,6 +44,7 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
  *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
  *      composed either a unique description or a translated description, its language, another description, its language ...
  *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+ *
  *  - keywords : String[]
  *      Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
  *      human. It is composed of a succession of two String : the human readable keyword list coma
@@ -50,29 +52,30 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
  *      i.e. keywords = ["the keyword 1,the keyword 2", "en",
  *                       "le mot clef 1, le mot clef 2", "fr"]
  *  - identifier : String
- *      Unambiguous identifier of the output. It should be a valid URI.
- *  - metadata : MetaData[]
- *      Reference to additional metadata about this item.
+ *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
+ *
+ *  - metadata : String[]
+ *      Reference to additional metadata about this item. It is composed of a succession of three String : the metadata
+ *      role, the metadata title and the href, coma separated.
+ *      i.e. metadata = ["role1,title,href1",
+ *                       "role2,title,href2"]
+ *
  *  - multiSelection : boolean
  *      Allow or not to select more than one value.
+ *
  *  - isEditable : boolean
  *      Enable or not the user to use its own value.
+ *
  *  - names : String[]
  *      Displayable name of the values. If not specified, use the values as name. The names attribute is composed of
  *      pairs of String : the coma separated list of the names and the language of the names.
  *      i.e.
  *          names = ["name1,name2,name3","en",
  *                   "nom1,nom2,nom3","fr"]
- *  - selectedValues : String[]
- *      Default selected values, can be empty.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
  */
-@Field
-@EnumerationAttribute
-@OutputAttribute
-@DescriptionTypeAttribute
-@AnnotationCollector
+@AnnotationCollector([Field, EnumerationAttribute, OutputAttribute, DescriptionTypeAttribute])
 @interface EnumerationOutput {}

@@ -39,28 +39,30 @@ package org.orbisgis.wpsgroovyapi.input
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
-import org.orbisgis.wpsgroovyapi.attributes.DataFieldAttribute
+import org.orbisgis.wpsgroovyapi.attributes.JDBCTableFieldAttribute
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
 
 /**
- * DataField input annotation.
- * The DataField is a complex data that represents a DataSource field (i.e. a column of a table).
+ * JDBCTableField input annotation.
+ * The JDBCTableField is a complex data that represents a JDBCTable field (i.e. a column of a table).
  * As an input, this annotation should be placed just before the variable.
  *
  * The following fields must be defined (mandatory) :
  *  - title : String[]
- *       Title of the input. Normally available for display to a human. It is composed either a
+ *       Title of a process, input, and output. Normally available for display to a human. It is composed either a
  *       unique title or a translated title, its language, another title, its language ...
  *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en"]
- *  - variableReference : String
- *      Name of the variable of the DataStore.
+ *
+ *  - jdbcTableReference : String
+ *      Name of the variable of the JDBCTable.
  *
  * The following fields can be defined (optional) :
  *  - description : String[]
  *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
  *      composed either a unique description or a translated description, its language, another description, its language ...
  *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+ *
  *  - keywords : String[]
  *      Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
  *      human. It is composed of a succession of two String : the human readable keyword list coma
@@ -68,17 +70,26 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *      i.e. keywords = ["the keyword 1,the keyword 2", "en",
  *                       "le mot clef 1, le mot clef 2", "fr"]
  *  - identifier : String
- *      Unambiguous identifier of the input. It should be a valid URI.
- *  - metadata : MetaData[]
- *      Reference to additional metadata about this item.
+ *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
+ *
+ *  - metadata : String[]
+ *      Reference to additional metadata about this item. It is composed of a succession of three String : the metadata
+ *      role, the metadata title and the href, coma separated.
+ *      i.e. metadata = ["role1,title,href1",
+ *                       "role2,title,href2"]
+ *
  *  - minOccurs : int
  *      Minimum number of times that values for this parameter are required. 0 means the input is optional.
+ *
  *  - maxOccurs : int
  *      Maximum number of times that this parameter may be present.
- *  - fieldTypes : String[]
+ *
+ *  - dataTypes : String[]
  *      Array of the types allowed. If no types are specified, accepts all.
+ *
  *  - excludedTypes : String[]
  *      Array of the type forbidden. If no types are specified, accept all.
+ *
  *  - multiSelection : boolean
  *      Enable or not the user to select more than one field. Disabled by default.
  *
@@ -86,9 +97,5 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@Field
-@DataFieldAttribute
-@InputAttribute
-@DescriptionTypeAttribute
-@AnnotationCollector
-@interface DataFieldInput {}
+@AnnotationCollector([Field, JDBCTableFieldAttribute, InputAttribute, DescriptionTypeAttribute])
+@interface JDBCTableFieldInput {}

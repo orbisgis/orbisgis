@@ -94,14 +94,14 @@ def processing() {
 /****************/
 
 /** This DataStore is the input data source. */
-@DataStoreInput(
+@JDBCTableInput(
         title = [
                 "Input spatial data","en",
                 "Données spatiales d'entrée","fr"],
         description = [
                 "The spatial data source to compute the geometry properties.","en",
                 "La source de données spatiales pour le calcul des propriétés géométriques.","fr"],
-        dataStoreTypes = ["GEOMETRY"],
+        dataTypes = ["GEOMETRY"],
         identifier = "orbisgis:wps:official:geometryProperties:inputDataStore")
 String inputDataStore
 
@@ -110,20 +110,20 @@ String inputDataStore
 /**********************/
 
 /** Name of the Geometric field of the DataStore inputDataStore. */
-@DataFieldInput(
+@JDBCTableFieldInput(
         title = [
                 "Geometric field","en",
                 "Champ géométrique","fr"],
         description = [
                 "The geometric field of the data source.","en",
                 "Le champ géométrique de la source de données.","fr"],
-        variableReference = "orbisgis:wps:official:geometryProperties:inputDataStore",
+        jdbcTableReference = "orbisgis:wps:official:geometryProperties:inputDataStore",
         identifier = "orbisgis:wps:official:geometryProperties:geometricField",
-        fieldTypes = ["GEOMETRY"])
+        dataTypes = ["GEOMETRY"])
 String[] geometricField
 
 /** Name of the identifier field of the DataStore inputDataStore. */
-@DataFieldInput(
+@JDBCTableFieldInput(
         title = [
                 "Identifier field","en",
                 "Champ identifiant","fr"],
@@ -131,7 +131,7 @@ String[] geometricField
                 "A field used as an identifier.","en",
                 "Le champ utilisé comme identifiant.","fr"],
 	    excludedTypes=["GEOMETRY"],
-        variableReference = "orbisgis:wps:official:geometryProperties:inputDataStore",
+        jdbcTableReference = "orbisgis:wps:official:geometryProperties:inputDataStore",
         identifier = "orbisgis:wps:official:geometryProperties:idField")
 String[] idField
 

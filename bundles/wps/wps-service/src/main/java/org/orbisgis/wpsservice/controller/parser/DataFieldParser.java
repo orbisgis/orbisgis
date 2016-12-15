@@ -41,7 +41,7 @@ import net.opengis.ows._2.CodeType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.Format;
 import net.opengis.wps._2_0.OutputDescriptionType;
-import org.orbisgis.wpsgroovyapi.attributes.DataFieldAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.JDBCTableFieldAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
@@ -64,18 +64,18 @@ public class DataFieldParser implements Parser {
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
         //Instantiate the DataField object
-        DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
+        JDBCTableFieldAttribute JDBCTableFieldAttribute = f.getAnnotation(JDBCTableFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataStoreUri;
         //If the dataStore attribute is not an URI, autoGenerate one.
-        if(!dataFieldAttribute.variableReference().contains(":")) {
-            dataStoreUri = URI.create(processId + ":input:" + dataFieldAttribute.variableReference());
+        if(!JDBCTableFieldAttribute.jdbcTableReference().contains(":")) {
+            dataStoreUri = URI.create(processId + ":input:" + JDBCTableFieldAttribute.jdbcTableReference());
         }
         //else, use it
         else {
-            dataStoreUri = URI.create(dataFieldAttribute.variableReference());
+            dataStoreUri = URI.create(JDBCTableFieldAttribute.jdbcTableReference());
         }
-        DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
+        DataField dataField = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldAttribute, format, dataStoreUri);
 
         //Instantiate the returned input
         InputDescriptionType input = new InputDescriptionType();
@@ -97,18 +97,18 @@ public class DataFieldParser implements Parser {
     @Override
     public OutputDescriptionType parseOutput(Field f, URI processId) {
         //Instantiate the DataField object
-        DataFieldAttribute dataFieldAttribute = f.getAnnotation(DataFieldAttribute.class);
+        JDBCTableFieldAttribute JDBCTableFieldAttribute = f.getAnnotation(JDBCTableFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataStoreUri;
         //If the dataStore attribute is not an URI, autoGenerate one.
-        if(!dataFieldAttribute.variableReference().contains(":")) {
-            dataStoreUri = URI.create(processId + ":output:" + dataFieldAttribute.variableReference());
+        if(!JDBCTableFieldAttribute.jdbcTableReference().contains(":")) {
+            dataStoreUri = URI.create(processId + ":output:" + JDBCTableFieldAttribute.jdbcTableReference());
         }
         //else, use it
         else {
-            dataStoreUri = URI.create(dataFieldAttribute.variableReference());
+            dataStoreUri = URI.create(JDBCTableFieldAttribute.jdbcTableReference());
         }
-        DataField dataField = ObjectAnnotationConverter.annotationToObject(dataFieldAttribute, format, dataStoreUri);
+        DataField dataField = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldAttribute, format, dataStoreUri);
 
         //Instantiate the returned output
         OutputDescriptionType output = new OutputDescriptionType();
@@ -128,6 +128,6 @@ public class DataFieldParser implements Parser {
 
     @Override
     public Class getAnnotation() {
-        return DataFieldAttribute.class;
+        return JDBCTableFieldAttribute.class;
     }
 }

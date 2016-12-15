@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
@@ -43,7 +43,7 @@ def processing() {
 /****************/
 
 /** This DataStore is the input data source table. */
-@DataStoreInput(
+@JDBCTableInput(
         title = ["Table","en",
                 "Table","fr"],
         description = ["Extract name, type and comments from the selected table.","en",

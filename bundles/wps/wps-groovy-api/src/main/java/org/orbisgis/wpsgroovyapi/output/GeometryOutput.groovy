@@ -32,7 +32,7 @@ import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute
  *
  * The following fields must be defined (mandatory) :
  *  - title : String[]
- *       Title of the output. Normally available for display to a human. It is composed either a
+ *       Title of a process, input, and output. Normally available for display to a human. It is composed either a
  *       unique title or a translated title, its language, another title, its language ...
  *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en"]
  *
@@ -41,6 +41,7 @@ import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute
  *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
  *      composed either a unique description or a translated description, its language, another description, its language ...
  *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+ *
  *  - keywords : String[]
  *      Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
  *      human. It is composed of a succession of two String : the human readable keyword list coma
@@ -48,17 +49,20 @@ import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute
  *      i.e. keywords = ["the keyword 1,the keyword 2", "en",
  *                       "le mot clef 1, le mot clef 2", "fr"]
  *  - identifier : String
- *      Unambiguous identifier of the output. It should be a valid URI.
- *  - metadata : MetaData[]
- *      Reference to additional metadata about this item.
- *  - isDirectory : boolean
- *      Indicates that the RawData can be a directory.
- *  - isFile : boolean
- *      Indicates that the RawData can be a file.
+ *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
+ *
+ *  - metadata : String[]
+ *      Reference to additional metadata about this item. It is composed of a succession of three String : the metadata
+ *      role, the metadata title and the href, coma separated.
+ *      i.e. metadata = ["role1,title,href1",
+ *                       "role2,title,href2"]
+ *
  *  - geometryTypes : String[]
  *      Array of geometry type allowed. If no types are specified, accept all.
+ *
  *  - excludedTypes : String[]
  *      Array of the type not allowed for the geometry.
+ *
  *  - dimension : int
  *      Dimension of the geometry (can be 2 or 3).
  *
@@ -66,9 +70,5 @@ import org.orbisgis.wpsgroovyapi.attributes.GeometryAttribute
  *
  * @author Sylvain PALOMINOS
  */
-@Field
-@GeometryAttribute
-@OutputAttribute
-@DescriptionTypeAttribute
-@AnnotationCollector
+@AnnotationCollector([Field, GeometryAttribute, OutputAttribute, DescriptionTypeAttribute])
 @interface GeometryOutput {}

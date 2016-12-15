@@ -1,11 +1,10 @@
 package org.orbisgis.wpsservicescripts.scripts.Network
 
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-
 
 
 /**
@@ -40,24 +39,24 @@ def processing() {
 /****************/
 
 /** This DataStore is the input data source. */
-@DataStoreInput(
+@JDBCTableInput(
         title = ["Input spatial data","en","Donnée spatiale d'entrée","fr"],
         description = [
                 "The spatial data source to create the graphe tables.","en",
                 "La source de données spatiales servant à la création des tables du graphe.","fr"],
-        dataStoreTypes = ["LINESTRING", "MULTILINESTRING"])
+        dataTypes = ["LINESTRING", "MULTILINESTRING"])
 String inputDataStore
 
 
 /** Name of the Geometric field of the DataStore inputDataStore. */
-@DataFieldInput(
+@JDBCTableFieldInput(
         title = ["Geometric field","en",
                 "Champ géométrique","fr"],
         description = [
                 "The geometric field of the data source.","en",
                 "Le champ géométrique de la source de données.","fr"],
-        variableReference = "inputDataStore",
-        fieldTypes = ["LINESTRING", "MULTILINESTRING"])
+        jdbcTableReference = "inputDataStore",
+        dataTypes = ["LINESTRING", "MULTILINESTRING"])
 String[] geometricField
 
 /** Snapping tolerance. */

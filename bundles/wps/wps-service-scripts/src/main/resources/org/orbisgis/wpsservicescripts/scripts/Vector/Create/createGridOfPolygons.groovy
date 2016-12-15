@@ -1,6 +1,6 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Create
 
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
@@ -39,13 +39,13 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-@DataStoreInput(
+@JDBCTableInput(
         title = ["Input spatial data","en",
                 "Données spatiales d'entrée","fr"],
         description = [
                 "The spatial data source to compute the grid. The extend of grid is based on the full extend of the table.","en",
                 "La source de données spatiales utilisée pour le calcul de la grille. L'étendue de la grille se base sur l'étendue de la table.","fr"],
-        dataStoreTypes = ["GEOMETRY"])
+        dataTypes = ["GEOMETRY"])
 String inputDataStore
 
 /**********************/

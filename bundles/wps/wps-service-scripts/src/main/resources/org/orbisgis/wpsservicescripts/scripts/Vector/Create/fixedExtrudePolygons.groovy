@@ -1,7 +1,7 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Create
 
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
@@ -48,29 +48,29 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-@DataStoreInput(
+@JDBCTableInput(
 		title = [
 				"Input spatial data","en",
 				"Données spatiales d'entrée","fr"],
 		description = [
 				"The spatial data source that must be extruded.","en",
 				"La source de données qui doit etre extrudée.","fr"],
-		dataStoreTypes = ["GEOMETRY"])
+		dataTypes = ["GEOMETRY"])
 String inputDataStore
 
 /**********************/
 /** INPUT Parameters **/
 /**********************/
 
-@DataFieldInput(
+@JDBCTableFieldInput(
 		title = [
 				"Geometric field","en",
 				"Champ géométrique","fr"],
 		description = [
 				"The geometric field of the data source.","en",
 				"Le champ géométrique de la source de données.","fr"],
-		variableReference = "inputDataStore",
-        fieldTypes = ["GEOMETRY"])
+		jdbcTableReference = "inputDataStore",
+        dataTypes = ["GEOMETRY"])
 String[] geometricField
 
 
@@ -84,7 +84,7 @@ String[] geometricField
 Double height = 1
 
 /** Fields to keep. */
-@DataFieldInput(
+@JDBCTableFieldInput(
 		title = [
 				"Fields to keep","en",
 				"Champs à conserver","fr"],
@@ -94,7 +94,7 @@ Double height = 1
 		excludedTypes=["GEOMETRY"],
 		multiSelection = true,
 		minOccurs = 0,
-        variableReference = "inputDataStore")
+        jdbcTableReference = "inputDataStore")
 String[] fieldList
 
 

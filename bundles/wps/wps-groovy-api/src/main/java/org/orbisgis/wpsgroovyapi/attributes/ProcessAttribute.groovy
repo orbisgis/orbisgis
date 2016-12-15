@@ -47,8 +47,14 @@ import java.lang.annotation.RetentionPolicy
  * The following fields can be defined (optional) :
  *  - language : String
  *      Language of the process.
+ *
  *  - version : String
  *      Version of the process.
+ *
+ *  - properties : String[]
+ *      Properties of the process.
+ *      This attribute is composed of an array of two coma separated string : the first one is the property name and
+ *      the second is the property value.
  *
  * @author Sylvain PALOMINOS
  */
@@ -59,6 +65,10 @@ import java.lang.annotation.RetentionPolicy
     String language() default "en"
     /** Version of the process. */
     String version() default ""
-    /** Properties of the process. */
+    /**
+     * Properties of the process.
+     * This attribute is composed of an array of two coma separated string : the first one is the property name and
+     * the second is the property value.
+     */
     String[] properties() default[]
 }

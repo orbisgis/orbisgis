@@ -1,9 +1,9 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
-import org.orbisgis.wpsgroovyapi.output.DataFieldOutput
-import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
+import org.orbisgis.wpsgroovyapi.output.JDBCTableFieldOutput
+import org.orbisgis.wpsgroovyapi.output.JDBCTableOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 /********************/
 /** Process method **/
@@ -29,16 +29,16 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-@DataStoreInput(title = "DataStore for the DataField",
+@JDBCTableInput(title = "DataStore for the DataField",
         identifier = "orbisgis:test:datastore:input")
 String dataStoreInput
 
 /** This DataField is the input data source. */
-@DataFieldInput(
+@JDBCTableFieldInput(
         title = ["Input DataField","en","Entrée DataField","fr"],
         description = ["A DataField input.","en","Une entrée DataField.","fr"],
         keywords = ["input","en","entrée","fr"],
-        variableReference = "orbisgis:test:datastore:input",
+        jdbcTableReference = "orbisgis:test:datastore:input",
         excludedTypes = ["BOOLEAN"],
         minOccurs = 0,
         maxOccurs = 2,
@@ -51,17 +51,17 @@ String inputDataField
 /** OUTPUT Data **/
 /*****************/
 
-@DataStoreOutput(title = "DataStore for the DataField",
+@JDBCTableOutput(title = "DataStore for the DataField",
         identifier = "orbisgis:test:datastore:output")
 String dataStoreOutput
 
 /** This DataField is the output data source. */
-@DataFieldOutput(
+@JDBCTableFieldOutput(
         title = ["Output DataField","en","Sortie DataField","fr"],
         description = ["A DataField output.","en","Une sortie DataField.","fr"],
         keywords = ["output","en","sortie","fr"],
-        variableReference = "orbisgis:test:datastore:output",
-        fieldTypes = ["GEOMETRY", "NUMBER"],
+        jdbcTableReference = "orbisgis:test:datastore:output",
+        dataTypes = ["GEOMETRY", "NUMBER"],
         multiSelection = true,
         identifier = "orbisgis:test:datafield:output",
         metadata = ["website","metadata"]

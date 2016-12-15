@@ -1,7 +1,7 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
-import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
+import org.orbisgis.wpsgroovyapi.output.JDBCTableOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 /********************/
 /** Process method **/
@@ -28,11 +28,11 @@ def processing() {
 /****************/
 
 /** This DataStore is the input data source. */
-@DataStoreInput(
+@JDBCTableInput(
         title = ["Input DataStore","en","Entrée DataStore","fr"],
         description = ["A DataStore input.","en","Une entrée DataStore.","fr"],
         keywords = ["input","en","entrée","fr"],
-        dataStoreTypes = ["GEOMETRY"],
+        dataTypes = ["GEOMETRY"],
         minOccurs = 0,
         maxOccurs = 2,
         identifier = "orbisgis:test:datastore:input",
@@ -45,7 +45,7 @@ String inputDataStore
 /*****************/
 
 /** This DataStore is the output data source. */
-@DataStoreOutput(
+@JDBCTableOutput(
         title = ["Output DataStore","en","Sortie DataStore","fr"],
         description = ["A DataStore output.","en","Une sortie DataStore.","fr"],
         keywords = ["output","en","sortie","fr"],

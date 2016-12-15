@@ -1,9 +1,7 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Operators
 
-
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
@@ -90,41 +88,41 @@ def processing() {
 /****************/
 
 /** This DataStore is the input data source for the buffer. */
-@DataStoreInput(
+@JDBCTableInput(
         title = [
                 "Input spatial data","en",
                 "Données spatiales d'entrée","fr"],
         description = [
                 "The spatial data source for the buffer.","en",
                 "La source de données spatiales pour le tampon.","fr"],
-        dataStoreTypes = ["GEOMETRY"])
+        dataTypes = ["GEOMETRY"])
 String inputDataStore
 
 /**********************/
 /** INPUT Parameters **/
 /**********************/
 
-@DataFieldInput(
+@JDBCTableFieldInput(
         title = [
                 "Geometric field","en",
                 "Champ géométrique","fr"],
         description = [
                 "The geometric field of the data source.","en",
                 "Le champ géométrique de la source de données.","fr"],
-        variableReference = "inputDataStore",
-        fieldTypes = ["GEOMETRY"])
+        jdbcTableReference = "inputDataStore",
+        dataTypes = ["GEOMETRY"])
 String[] geometricField
 
 
-@DataFieldInput(
+@JDBCTableFieldInput(
         title = [
                 "Size field","en",
                 "Champ taille","fr"],
         description = [
                 "A numeric field to specify the size of the buffer.","en",
                 "Champ numérique contenant les tailles de tampon.","fr"],
-        variableReference = "inputDataStore",
-        fieldTypes = ["DOUBLE", "INTEGER", "LONG"])
+        jdbcTableReference = "inputDataStore",
+        dataTypes = ["DOUBLE", "INTEGER", "LONG"])
 String[] bufferSize
 
 /** Mitre ratio limit (only affects mitered join style). */
@@ -176,7 +174,7 @@ String[] endcapStyle
 String[] joinStyle
 
 /** Fields to keep. */
-@DataFieldInput(
+@JDBCTableFieldInput(
         title = [
                 "Fields to keep","en",
                 "Champs à conserver","fr"],
@@ -186,7 +184,7 @@ String[] joinStyle
         excludedTypes=["GEOMETRY"],
         multiSelection = true,
         minOccurs = 0,
-        variableReference = "inputDataStore")
+        jdbcTableReference = "inputDataStore")
 String[] fieldList
 
 

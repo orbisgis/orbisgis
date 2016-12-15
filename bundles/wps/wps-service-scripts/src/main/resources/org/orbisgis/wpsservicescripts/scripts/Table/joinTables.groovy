@@ -1,7 +1,7 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
@@ -67,7 +67,7 @@ def processing() {
 /****************/
 
 /** This DataStore is the left data source. */
-@DataStoreInput(
+@JDBCTableInput(
 		title = ["Left data source","en",
 				"Source de données gauche","fr"],
 		description = [
@@ -76,7 +76,7 @@ def processing() {
 String leftDataStore
 
 /** This DataStore is the right data source. */
-@DataStoreInput(
+@JDBCTableInput(
 		title = [
 				"Right data source","en",
 				"Source de données droite","fr"],
@@ -90,26 +90,26 @@ String rightDataStore
 /**********************/
 
 /** Name of the identifier field of the left dataStore. */
-@DataFieldInput(
+@JDBCTableFieldInput(
 		title = [
 				"Left field(s)","en",
 				"Champ(s) gauche(s)","fr"],
 		description = [
 				"The field identifier of the left data source.","en",
 				"L'identifiant du/des champ(s) de la source de données gauche.","fr"],
-        variableReference = "leftDataStore",
+        jdbcTableReference = "leftDataStore",
         excludedTypes = ["GEOMETRY"])
 String[] leftField
 
 /** Name of the identifier field of the right dataStore. */
-@DataFieldInput(
+@JDBCTableFieldInput(
 		title = [
 				"Right field(s)","en",
 				"Champ(s) droit(s)","fr"],
 		description = [
 				"The field identifier of the right data source.","en",
 				"L'identifiant du/des champ(s) de la source de données droite.","fr"],
-        variableReference = "rightDataStore",
+        jdbcTableReference = "rightDataStore",
         excludedTypes = ["GEOMETRY"])
 String[] rightField
 

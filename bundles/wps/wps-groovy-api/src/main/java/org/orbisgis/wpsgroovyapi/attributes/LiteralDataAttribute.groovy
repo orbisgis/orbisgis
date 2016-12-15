@@ -46,22 +46,73 @@ import java.lang.annotation.RetentionPolicy
  * The LiteralData represents a number or a string.
  *
  *
- * The following fields must be defined (mandatory) :
- *
  * The following fields can be defined (optional) :
- *  - formats : FormatAttribute[]
- *      List of supported formats.
- *  - validDomains : LiteralDataDomains[]
- *      Valid domain for the literal data.
+ *  - defaultDomain : String[]
+ *      This attribute contains the definition of the default possible value domain. The domains can be simple values
+ *      ("foo", 2, 2.6589 ...) or value ranges with min, max and sometimes spacing (1;;42, 0;0.1;1 ...). If there is no
+ *      default domain, all the values are accepted.
+ *
+ *      The possible value choices can have three different patterns :
+ *          - value : A string representation of a possible value.
+ *          - min;;max : A range of valid values with a min value and a max value.
+ *          - min;spacing;max : A range of valid value with a spacing between two value, a min, and a max.
+ *      i.e. :
+ *      defaultDomain = ["0;;1, 1;1;100, 1000"]
+ *      The allowed values are value1 (the default one), value2, value3 or a value between 0 to 1, a value between 1
+ *      to 100 with a spacing of 1.
+ *
+ *  - validDomains : String[]
+ *      This attribute contains the definition of all the possible value domain. The domains can be simple values
+ *      ("foo", 2, 2.6589 ...) or value ranges with min, max and sometimes spacing (1;;42, 0;0.1;1 ...). If there is no
+ *      default domain, the domains should be ignored.
+ *
+ *      This attribute is composed of a list of coma separated values. The values are the possible value choices which
+ *      are define later. The very first value will be the default one. The possible value choices can have three
+ *      different patterns :
+ *          - value : A string representation of a possible value.
+ *          - min;;max : A range of valid values with a min value and a max value.
+ *          - min;spacing;max : A range of valid value with a spacing between two value, a min, and a max.
+ *      i.e.
+ *      validDomains = ["value1,value2,value3","0;;1,1;1;100"]
+ *      The allowed values are value1 (the default one), value2, value3 or a value between 0 to 1, a value between 1
+ *      to 100 with a spacing of 1.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface LiteralDataAttribute {
 
-    /** List of supported formats */
-    FormatAttribute[] formats() default []
+    /**
+     * This attribute contains the definition of the default possible value domain. The domains can be simple values
+     * ("foo", 2, 2.6589 ...) or value ranges with min, max and sometimes spacing (1;;42, 0;0.1;1 ...). If there is no
+     * default domain, all the values are accepted.
+     *
+     * The possible value choices can have three different patterns :
+     *  - value : A string representation of a possible value.
+     *  - min;;max : A range of valid values with a min value and a max value.
+     *  - min;spacing;max : A range of valid value with a spacing between two value, a min, and a max.
+     *  i.e. :
+     *  defaultDomain = ["0;;1, 1;1;100, 1000"]
+     *  The allowed values are value1 (the default one), value2, value3 or a value between 0 to 1, a value between 1
+     *  to 100 with a spacing of 1.
+     */
+    String defaultDomain() default ""
 
-    /** The valid domain for literal data */
-    LiteralDataDomainAttribute[] validDomains() default []
+    /**
+     * This attribute contains the definition of all the possible value domain. The domains can be simple values
+     * ("foo", 2, 2.6589 ...) or value ranges with min, max and sometimes spacing (1;;42, 0;0.1;1 ...). If there is no
+     * default domain, the domains should be ignored.
+     *
+     * This attribute is composed of a list of coma separated values. The values are the possible value choices which
+     * are define later. The very first value will be the default one. The possible value choices can have three
+     * different patterns :
+     *  - value : A string representation of a possible value.
+     *  - min;;max : A range of valid values with a min value and a max value.
+     *  - min;spacing;max : A range of valid value with a spacing between two value, a min, and a max.
+     *  i.e.
+     *  validDomains = ["value1,value2,value3","0;;1,1;1;100"]
+     *  The allowed values are value1 (the default one), value2, value3 or a value between 0 to 1, a value between 1
+     *  to 100 with a spacing of 1.
+     */
+    String[] validDomains() default []
 }

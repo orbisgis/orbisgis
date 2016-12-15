@@ -41,39 +41,26 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the valid domain of literal data.
- *
- * The following fields must be defined (mandatory) :
- *  - possibleLiteralValues : PossibleLiteralValuesChoiceAttribute
- *      Identifies a valid format for an input or output.
- *  - dataType : String
- *      Reference to the data type of this set of values.
+ * Attributes for the JDBCTable complex data.
+ * The JDBCTable complex data represents any data source (database, file ...).
  *
  * The following fields can be defined (optional) :
- *  - uom : String
- *      Indicates that this quantity has units and provides the unit of measurement.
- *  - defaultValue : String
- *      Default value for this quantity.
- *  - isDefault : boolean
- *      Indicates that this is the default/native domain.
+ * - dataTypes : String[]
+ *      List of field type that should be contained by the JDBCTable.
+ *
+ * - excludedTypes : String[]
+ *      List of field type forbidden for the JDBCTable. If the JDBCTable contains the type, it won't be available.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface LiteralDataDomainAttribute {
+@interface JDBCTableAttribute {
 
-    /** Identifies a valid format for an input or output. */
-    PossibleLiteralValuesChoiceAttribute possibleLiteralValues()
+    /** List of field type that should be contained by the JDBCTable. The type can be "GEOMETRY" */
+    String[] dataTypes() default []
 
-    /** Reference to the data type of this set of values. */
-    String dataType()
-
-    /** Indicates that this quantity has units and provides the unit of measurement. */
-    String uom() default ""
-
-    /** Default value for this quantity. */
-    String defaultValue() default ""
-
-    /** Indicates that this is the default/native domain. */
-    boolean isDefault() default false
+    /** List of field type forbidden for the JDBCTable. If the JDBCTable contains the type, it won't be available.
+     *  The type can be "GEOMETRY"
+     */
+    String[] excludedTypes() default []
 }

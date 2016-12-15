@@ -1,7 +1,7 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 /********************/
@@ -42,7 +42,7 @@ def processing() {
 /****************/
 
 /** This DataStore is the input data source table. */
-@DataStoreInput(
+@JDBCTableInput(
         title = ["Table","en","Table","fr"],
         description = ["The table to edit.","en","La table à éditer.","fr"],
         identifier = "orbisgis:wps:official:deleteColumns:tableName"
@@ -54,11 +54,11 @@ String tableName
 /**********************/
 
 /** Name of the columns of the DataStore tableName to remove. */
-@DataFieldInput(
+@JDBCTableFieldInput(
         title = ["Columns","en","Colonnes","fr"],
         description = ["The columns to remove names.","en",
                 "Le nom des colonnes à supprimer.","fr"],
-        variableReference = "orbisgis:wps:official:deleteColumns:tableName",
+        jdbcTableReference = "orbisgis:wps:official:deleteColumns:tableName",
         identifier = "orbisgis:wps:official:deleteColumns:columnNames"
 )
 String[] columnNames

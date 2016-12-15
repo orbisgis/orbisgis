@@ -39,7 +39,6 @@ package org.orbisgis.wpsservice.controller.utils;
 import net.opengis.ows._2.MetadataType;
 import org.junit.Assert;
 import org.junit.Test;
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

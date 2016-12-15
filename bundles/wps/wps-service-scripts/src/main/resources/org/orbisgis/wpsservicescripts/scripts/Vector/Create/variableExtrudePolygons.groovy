@@ -1,9 +1,7 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Create
 
-
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
@@ -52,21 +50,21 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-@DataStoreInput(
+@JDBCTableInput(
 		title = [
 				"Input spatial data","en",
 				"Données spatiales d'entrée","fr"],
 		description = [
 				"The spatial data source that must be extruded.","en",
 				"La source de données qui doit etre extrudée.","fr"],
-		dataStoreTypes = ["GEOMETRY"])
+		dataTypes = ["GEOMETRY"])
 String inputDataStore
 
 /**********************/
 /** INPUT Parameters **/
 /**********************/
 
-@DataFieldInput(
+@JDBCTableFieldInput(
 		title = [
 				"Geometric field","en"),
 				"Champ géométrique","fr")
@@ -80,19 +78,19 @@ String inputDataStore
 String[] geometricField
 
 
-@DataFieldInput(
+@JDBCTableFieldInput(
 		title = [
 				"Height of the polygons","en",
 				"Hauteur des polygones","fr"],
 		description = [
 				"A numeric field to specify the height of the polygon.","en",
 				"Le champ de valeurs numériques définissant la hauteur du polygone.","fr"],
-        variableReference = "inputDataStore",
-        fieldTypes = ["DOUBLE", "INTEGER", "LONG"])
+        jdbcTableReference = "inputDataStore",
+        dataTypes = ["DOUBLE", "INTEGER", "LONG"])
 String[] height
 
 /** Fields to keep. */
-@DataFieldInput(
+@JDBCTableFieldInput(
 		title = [
 				"Fields to keep","en",
 				"Champs à conserver","fr"],
@@ -102,7 +100,7 @@ String[] height
 		excludedTypes=["GEOMETRY"],
 		multiSelection = true,
 		minOccurs = 0,
-        variableReference = "inputDataStore")
+        jdbcTableReference = "inputDataStore")
 String[] fieldList
 
 

@@ -39,18 +39,18 @@ package org.orbisgis.wpsgroovyapi.input
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
-import org.orbisgis.wpsgroovyapi.attributes.DataStoreAttribute
+import org.orbisgis.wpsgroovyapi.attributes.JDBCTableAttribute
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
 
 /**
- * DataStore input annotation.
- * The DataStore complex data represents any data source (database, file ...).
+ * JDBCTable input annotation.
+ * The JDBCTable complex data represents any data source (database, file ...).
  * As an input, this annotation should be placed just before the variable.
  *
  * The following fields must be defined (mandatory) :
  *  - title : String[]
- *       Title of the input. Normally available for display to a human. It is composed either a
+ *       Title of a process, input, and output. Normally available for display to a human. It is composed either a
  *       unique title or a translated title, its language, another title, its language ...
  *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en"]
  *
@@ -59,6 +59,7 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
  *      composed either a unique description or a translated description, its language, another description, its language ...
  *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+ *
  *  - keywords : String[]
  *      Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
  *      human. It is composed of a succession of two String : the human readable keyword list coma
@@ -66,25 +67,29 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *      i.e. keywords = ["the keyword 1,the keyword 2", "en",
  *                       "le mot clef 1, le mot clef 2", "fr"]
  *  - identifier : String
- *      Unambiguous identifier of the input. It should be a valid URI.
- *  - metadata : MetaData[]
- *      Reference to additional metadata about this item.
+ *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
+ *
+ *  - metadata : String[]
+ *      Reference to additional metadata about this item. It is composed of a succession of three String : the metadata
+ *      role, the metadata title and the href, coma separated.
+ *      i.e. metadata = ["role1,title,href1",
+ *                       "role2,title,href2"]
+ *
  *  - minOccurs : int
  *      Minimum number of times that values for this parameter are required. 0 means the input is optional.
+ *
  *  - maxOccurs : int
  *      Maximum number of times that this parameter may be present.
- * - dataStoreTypes : String[]
- *      List of field type that should be contained by the DataStore.
+ *
+ * - dataTypes : String[]
+ *      List of field type that should be contained by the JDBCTable.
+ *
  * - excludedTypes : String[]
- *      List of field type forbidden for the DataSTore. If the DataStore contains the type, it won't be available.
+ *      List of field type forbidden for the JDBCTable. If the JDBCTable contains the type, it won't be available.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
  */
-@Field
-@DataStoreAttribute
-@InputAttribute
-@DescriptionTypeAttribute
-@AnnotationCollector
-@interface DataStoreInput {}
+@AnnotationCollector([Field, JDBCTableAttribute, InputAttribute, DescriptionTypeAttribute])
+@interface JDBCTableInput {}

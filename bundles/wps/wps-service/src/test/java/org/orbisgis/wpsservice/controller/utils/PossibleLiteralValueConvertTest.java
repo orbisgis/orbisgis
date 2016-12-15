@@ -39,8 +39,6 @@ package org.orbisgis.wpsservice.controller.utils;
 import net.opengis.ows._2.*;
 import org.junit.Assert;
 import org.junit.Test;
-import org.orbisgis.wpsgroovyapi.attributes.PossibleLiteralValuesChoiceAttribute;
-import org.orbisgis.wpsgroovyapi.attributes.ValuesAttribute;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;

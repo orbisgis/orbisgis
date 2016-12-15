@@ -365,7 +365,7 @@ public class LiteralDataParser implements Parser {
     public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
         InputDescriptionType input = new InputDescriptionType();
         LiteralDataType data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class),
-                getLiteralDataDomain(f, defaultValue));
+                getLiteralDataDomain(f));
         JAXBElement<LiteralDataType> jaxbElement = new net.opengis.wps._2_0.ObjectFactory().createLiteralData(data);
         input.setDataDescription(jaxbElement);
         //Instantiate the returned input

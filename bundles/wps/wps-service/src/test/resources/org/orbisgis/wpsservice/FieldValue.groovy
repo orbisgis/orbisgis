@@ -1,11 +1,11 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
-import org.orbisgis.wpsgroovyapi.input.FieldValueInput
-import org.orbisgis.wpsgroovyapi.output.DataFieldOutput
-import org.orbisgis.wpsgroovyapi.output.DataStoreOutput
-import org.orbisgis.wpsgroovyapi.output.FieldValueOutput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldValueInput
+import org.orbisgis.wpsgroovyapi.output.JDBCTableFieldOutput
+import org.orbisgis.wpsgroovyapi.output.JDBCTableOutput
+import org.orbisgis.wpsgroovyapi.output.JDBCTableFieldValueOutput
 import org.orbisgis.wpsgroovyapi.process.Process
 /********************/
 /** Process method **/
@@ -31,21 +31,21 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-@DataStoreInput(title = "DataStore for the FieldValue",
+@JDBCTableInput(title = "DataStore for the FieldValue",
         identifier = "orbisgis:test:datastore:input")
 String dataStoreInput
 
-@DataFieldInput(title = "DataField for the FieldValue",
+@JDBCTableFieldInput(title = "DataField for the FieldValue",
         identifier = "orbisgis:test:datafield:input",
-        variableReference = "orbisgis:test:datastore:input")
+        jdbcTableReference = "orbisgis:test:datastore:input")
 String dataFieldInput
 
 /** This FieldValue is the input data source. */
-@FieldValueInput(
+@JDBCTableFieldValueInput(
         title = ["Input FieldValue","en","Entrée FieldValue","fr"],
         description = ["A FieldValue input.","en","Une entrée FieldValue.","fr"],
         keywords = ["input","en","entrée","fr"],
-        variableReference = "orbisgis:test:datafield:input",
+        jdbcTableFieldReference = "orbisgis:test:datafield:input",
         minOccurs = 0,
         maxOccurs = 2,
         identifier = "orbisgis:test:fieldvalue:input",
@@ -57,21 +57,21 @@ String inputFieldValue
 /** OUTPUT Data **/
 /*****************/
 
-@DataStoreOutput(title = "DataStore for the FieldValue",
+@JDBCTableOutput(title = "DataStore for the FieldValue",
         identifier = "orbisgis:test:datastore:output")
 String dataStoreOutput
 
-@DataFieldOutput(title = "DataField for the FieldValue",
+@JDBCTableFieldOutput(title = "DataField for the FieldValue",
         identifier = "orbisgis:test:datafield:output",
-        variableReference = "orbisgis:test:datastore:output")
+        jdbcTableReference = "orbisgis:test:datastore:output")
 String dataFieldOutput
 
 /** This FieldValue is the output data source. */
-@FieldValueOutput(
+@JDBCTableFieldValueOutput(
         title = ["Output FieldValue","en","Sortie FieldValue","fr"],
         description = ["A FieldValue output.","en","Une sortie FieldValue.","fr"],
         keywords = ["output","en","sortie","fr"],
-        variableReference = "orbisgis:test:datafield:output",
+        jdbcTableFieldReference = "orbisgis:test:datafield:output",
         multiSelection = true,
         identifier = "orbisgis:test:fieldvalue:output",
         metadata = ["website","metadata"]

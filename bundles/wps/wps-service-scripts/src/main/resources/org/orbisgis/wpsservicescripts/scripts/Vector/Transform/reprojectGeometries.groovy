@@ -1,8 +1,8 @@
 package org.orbisgis.wpsservicescripts.scripts.Vector.Transform
 
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
-import org.orbisgis.wpsgroovyapi.input.FieldValueInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldValueInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
@@ -63,14 +63,14 @@ def processing() {
 /****************/
 
 /** This DataStore is the input data source. */
-@DataStoreInput(
+@JDBCTableInput(
 		title = [
 				"Input spatial data","en",
 				"Données spatiales d'entrée","fr"],
 		description = [
 				"The spatial data source to be reprojected.","en",
 				"La source de données spatiales pour la reprojection.","fr"],
-		dataStoreTypes = ["GEOMETRY"],
+		dataTypes = ["GEOMETRY"],
 		identifier = "orbisgis:wps:official:reprojectGeometries:inputDataStore"
 )
 String inputDataStore
@@ -81,29 +81,29 @@ String inputDataStore
 /**********************/
 
 /** Name of the Geometric field of the DataStore inputDataStore. */
-@DataFieldInput(
+@JDBCTableFieldInput(
 		title = [
 				"Geometric field","en",
 				"Champ géométrique","fr"],
 		description = [
 				"The geometric field of the data source.","en",
 				"Le champ géométrique de la source de données.","fr"],
-        variableReference = "orbisgis:wps:official:reprojectGeometries:inputDataStore",
-        fieldTypes = ["GEOMETRY"],
+        jdbcTableReference = "orbisgis:wps:official:reprojectGeometries:inputDataStore",
+        dataTypes = ["GEOMETRY"],
 		identifier = "orbisgis:wps:official:reprojectGeometries:geometryField"
 )
 String[] geometricField
 
 
 /** The spatial_ref SRID */
-@FieldValueInput(
+@JDBCTableFieldValueInput(
 		title = [
 				"SRID","en",
 				"SRID","fr"],
 		description = [
 				"The spatial reference system identifier.","en",
 				"L'identifiant du système de référence spatiale.","fr"],
-		variableReference = "\$public\$spatial_ref_sys\$srid\$",
+		jdbcTableFieldReference = "\$public\$spatial_ref_sys\$srid\$",
 		multiSelection = false,
 		identifier = "orbisgis:wps:official:reprojectGeometries:srid"
 )
@@ -111,7 +111,7 @@ String[] srid
 
 
 /** Fields to keep. */
-@DataFieldInput(
+@JDBCTableFieldInput(
 		title = [
 				"Fields to keep","en",
 				"Champs à conserver","fr"],
@@ -121,7 +121,7 @@ String[] srid
 		excludedTypes=["GEOMETRY"],
 		multiSelection = true,
 		minOccurs = 0,
-        variableReference = "orbisgis:wps:official:reprojectGeometries:inputDataStore",
+        jdbcTableReference = "orbisgis:wps:official:reprojectGeometries:inputDataStore",
 		identifier = "orbisgis:wps:official:reprojectGeometries:fieldList"
 )
 String[] fieldList

@@ -55,9 +55,9 @@ import java.util.List;
  */
 public class WpsModelTest {
     /** Field containing the DataFieldAttribute annotation. */
-    @DataFieldAttribute(
-            variableReference = "data store title",
-            fieldTypes = {"GEOMETRY", "NUMBER"},
+    @JDBCTableFieldAttribute(
+            jdbcTableReference = "data store title",
+            dataTypes = {"GEOMETRY", "NUMBER"},
             excludedTypes = {"MULTILINESTRING", "LONG"},
             multiSelection = true
     )
@@ -76,9 +76,9 @@ public class WpsModelTest {
             Field dataFieldField = this.getClass().getDeclaredField("dataFieldInput");
             for(Annotation annotation : dataFieldField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
-                if(annotation instanceof DataFieldAttribute){
+                if(annotation instanceof JDBCTableFieldAttribute){
                     annotationFound = true;
-                    DataFieldAttribute descriptionTypeAnnotation = (DataFieldAttribute) annotation;
+                    JDBCTableFieldAttribute descriptionTypeAnnotation = (JDBCTableFieldAttribute) annotation;
                     Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
                     format.setDefault(true);
                     datafield = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format,
@@ -132,8 +132,8 @@ public class WpsModelTest {
 
 
     /** Field containing the DataStoreAttribute annotation. */
-    @DataStoreAttribute(
-            dataStoreTypes = {"GEOMETRY", "NUMBER"},
+    @JDBCTableAttribute(
+            dataTypes = {"GEOMETRY", "NUMBER"},
             excludedTypes = {"MULTILINESTRING", "LONG"}
     )
     public Object dataStoreInput;
@@ -151,9 +151,9 @@ public class WpsModelTest {
             Field dataStoreField = this.getClass().getDeclaredField("dataStoreInput");
             for(Annotation annotation : dataStoreField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
-                if(annotation instanceof DataStoreAttribute){
+                if(annotation instanceof JDBCTableAttribute){
                     annotationFound = true;
-                    DataStoreAttribute descriptionTypeAnnotation = (DataStoreAttribute) annotation;
+                    JDBCTableAttribute descriptionTypeAnnotation = (JDBCTableAttribute) annotation;
                     List<Format> format = new ArrayList<>();
                     format.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
                     format.get(0).setDefault(true);
@@ -202,7 +202,7 @@ public class WpsModelTest {
             selectedValues = {"value1, value2"},
             values = {"value1, value2, value3"}
     )
-    public Object enumerationInput;
+    public String[] enumerationInput = {"value1, value2"};
 
     /**
      * Test if the decoding and convert of the Enumeration annotation into its java object is valid.
@@ -279,9 +279,9 @@ public class WpsModelTest {
 
 
     /** Field containing the FieldValueAttribute annotation. */
-    @FieldValueAttribute(
+    @JDBCTableFieldValueAttribute(
             multiSelection = true,
-            variableReference = "dataFieldTitle"
+            jdbcTableFieldReference = "dataFieldTitle"
     )
     public Object fieldValueInput;
 
@@ -298,9 +298,9 @@ public class WpsModelTest {
             Field fieldValueField = this.getClass().getDeclaredField("fieldValueInput");
             for(Annotation annotation : fieldValueField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
-                if(annotation instanceof FieldValueAttribute){
+                if(annotation instanceof JDBCTableFieldValueAttribute){
                     annotationFound = true;
-                    FieldValueAttribute descriptionTypeAnnotation = (FieldValueAttribute) annotation;
+                    JDBCTableFieldValueAttribute descriptionTypeAnnotation = (JDBCTableFieldValueAttribute) annotation;
                     Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
                     format.setDefault(true);
                     fieldValue = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format,
