@@ -62,7 +62,7 @@ import java.util.*;
 public class ObjectAnnotationConverter {
 
     /**
-     * Builds a BoundingBoxDataObject from a BoundingBoxAttribute annotation.
+     * Builds a BoundingBoxData Object from a BoundingBoxAttribute annotation.
      * @param boundingBoxAttribute Groovy annotation to decode to build the Java object.
      * @return A BoundingBoxData object with the data from the BoundingBoxAttribute annotation.
      */
@@ -124,6 +124,11 @@ public class ObjectAnnotationConverter {
         return supportedCRS;
     }
 
+    /**
+     * Builds a DescriptionType Object from a DescriptionTypeAttribute annotation.
+     * @param descriptionTypeAttribute Groovy annotation to decode to build the Java object.
+     * @param descriptionType A DescriptionType object with the data from the DescriptionTypeAttribute annotation.
+     */
     public static void annotationToObject(DescriptionTypeAttribute descriptionTypeAttribute,
                                           DescriptionType descriptionType){
         //First check if there is at least one title.
@@ -217,9 +222,9 @@ public class ObjectAnnotationConverter {
         //Case of several keyword language (i.e. keywords=["key1,key2,key3","en","clef1,clef2,clef3","fr"])
         else if(keywords.length != 0 && keywords.length%2 == 0) {
             LinkedList<KeywordsType> keywordTypeList = new LinkedList<>();
-            //Each time take a par of string : the keywords and the language.
+            //Each time take a pair of string : the keywords and the language.
             //Then split the keywords string with the ',' character, put the keyword in a LanguageStringType object
-            // with its language and then put the first keyword LanguageStringType  in the first KeywordsType object,
+            // with its language and then put the first keyword LanguageStringType in the first KeywordsType object,
             // the second keyword in the second KeywordsType object ...
             //Repeat the operation for each language.
             //
@@ -280,6 +285,125 @@ public class ObjectAnnotationConverter {
             return;
         }
     }
+
+    /**
+     * Builds an Enumeration Object from an EnumerationAttribute annotation.
+     * @param enumAttribute Groovy annotation to decode to build the Java object.
+     * @param format Format of the Enumeration ComplexType.
+     * @return An Enumeration object with the data from the EnumerationAttribute annotation.
+     */
+    public static Enumeration annotationToObject(EnumerationAttribute enumAttribute, Format format) {
+        //Creates the format list
+        format.setDefault(true);
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(format);
+        //Creates the enumeration Object and set it
+        Enumeration enumeration = new Enumeration(formatList, enumAttribute.values());
+        enumeration.setEditable(enumAttribute.isEditable());
+        enumeration.setMultiSelection(enumAttribute.multiSelection());
+
+        //Decodes the Groovy annotation 'names' attribute and store each name in a LanguageStringType with its language
+        String[] names = enumAttribute.names();
+        //In the case where is only one language
+        if(names.length == 1) {
+            //Splits the names
+            String[] split = names[0].split(",");
+            TranslatableString[] translatableStrings = new TranslatableString[split.length];
+            //Populate the TranslatableString array with all the names
+            for(int i=0; i<split.length; i++){
+                //Creates the LanguageStringType Object containing the name
+                LanguageStringType type = new LanguageStringType();
+                type.setValue(split[i].trim());
+                //Store the LanguageStringType Object in an array
+                LanguageStringType[] types = new LanguageStringType[1];
+                types[0] = type;
+                //Store the array in a TranslatableString object
+                TranslatableString string = new TranslatableString();
+                string.setStrings(types);
+                //Store the TranslatableString
+                translatableStrings[i] = string;
+            }
+            enumeration.setValuesNames(translatableStrings);
+        }
+        //Case of several names language (i.e. names=["name1,name2,name3","en","nom1,nom2,nom3","fr"])
+        else if(names.length != 0 && names.length%2==0) {
+            TranslatableString[] translatableStringArray = new TranslatableString[names[0].split(",").length];
+            //Each time take a pair of string : the names and the language.
+            //Then split the names string with the ',' character, put the name in a LanguageStringType object
+            // with its language and then put the first name LanguageStringType in the first TranslatableString object,
+            // the second name in the second TranslatableString object ...
+            //Repeat the operation for each language.
+            //
+            //Example :
+            // names=["name1,name2,name3","en","nom1,nom2,nom3","fr"] becomes
+            //
+            //TranslatableString {
+            //          LanguageStringType[]{LanguageStringType{"name1","en"},LanguageStringType{"nom1","fr"}},
+            //          LanguageStringType[]{LanguageStringType{"name2","en"},LanguageStringType{"nom2","fr"}},
+            //          LanguageStringType[]{LanguageStringType{"name3","en"},LanguageStringType{"nom3","fr"}}
+            // }
+            //For each languages, uses the a pair of String : the names and the language.
+            for(int i=0; i< names.length; i+=2) {
+                String[] splitNames = names[i].split(",");
+                String language = names[i + 1];
+                //For each name
+                for (int j = 0; j < splitNames.length; j++) {
+                    //Gets the TranslatableString object that should contains the name
+                    TranslatableString translatableString = translatableStringArray[j];
+                    //If the TranslatableString at the index of the name is null, then creates it
+                    if(translatableString == null){
+                        translatableString = new TranslatableString();
+                    }
+                    //Gets the LanguageStringType array that should contains the name
+                    LanguageStringType[] languageStringArray = translatableString.getStrings();
+                    //If the TranslatableString LanguageStringType array is null, then creates it
+                    if(languageStringArray == null || languageStringArray.length == 0) {
+                        languageStringArray = new LanguageStringType[names.length/2];
+                    }
+                    //Creates the name LanguageStringType Object
+                    LanguageStringType languageString = new LanguageStringType();
+                    //Sets the name
+                    languageString.setValue(splitNames[j].trim());
+                    //Sets the language
+                    languageString.setLang(language);
+                    //Store it in the LanguageStringType array
+                    languageStringArray[i/2] = languageString;
+                    //Store the LanguageStringType array in the TranslatableString
+                    translatableString.setStrings(languageStringArray);
+                    translatableStringArray[j] = translatableString;
+                }
+            }
+            enumeration.setValuesNames(translatableStringArray);
+        }
+        return enumeration;
+    }
+
+    /**
+     * Builds an GeometryData Object from an geometryAttribute annotation.
+     * @param geometryAttribute Groovy annotation to decode to build the Java object.
+     * @param format Format of the Enumeration ComplexType.
+     * @return An GeometryData object with the data from the GeometryAttribute annotation.
+     */
+    public static GeometryData annotationToObject(GeometryAttribute geometryAttribute, Format format) {
+        format.setDefault(true);
+        List<DataType> geometryTypeList = new ArrayList<>();
+        //For each field type value from the groovy annotation, test if it is contain in the FieldType enumeration.
+        for(String type : Arrays.asList(geometryAttribute.geometryTypes())){
+            geometryTypeList.add(DataType.getDataTypeFromFieldType(type));
+        }
+        List<DataType> excludedTypeList = new ArrayList<>();
+        //For each excluded type value from the groovy annotation, test if it is contain in the FieldType enumeration.
+        for(String type : Arrays.asList(geometryAttribute.excludedTypes())){
+            excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
+        }
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(format);
+        GeometryData geometryData = new GeometryData(formatList, geometryTypeList);
+        geometryData.setDimension(geometryAttribute.dimension());
+        geometryData.setExcludedTypeList(excludedTypeList);
+        return geometryData;
+    }
+
 /*
     public static Format annotationToObject(FormatAttribute formatAttribute){
         Format format = new Format();
@@ -405,7 +529,7 @@ public class ObjectAnnotationConverter {
 
         return literalDataType;
     }
-
+/*
     private static LiteralDataDomain getLiteralDataDomain(String literalDataDomain, DomainMetadataType domainMetadataType){
         LiteralDataDomain ldd = new LiteralDataDomain();
         String[] split = literalDataDomain.split(",");
@@ -434,7 +558,7 @@ public class ObjectAnnotationConverter {
         }
         ldd.setDataType(domainMetadataType);
         return ldd;
-    }
+    }*/
 
     public static RawData annotationToObject(RawDataAttribute rawDataAttribute, Format format) {
         try {
@@ -549,89 +673,6 @@ public class ObjectAnnotationConverter {
             List<Format> formatList = new ArrayList<>();
             formatList.add(format);
             return new FieldValue(formatList, dataFieldUri, fieldvalueAttributeJDBCTable.multiSelection());
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
-        }
-    }
-
-    public static Enumeration annotationToObject(EnumerationAttribute enumAttribute, Format format) {
-        try{
-            format.setDefault(true);
-            List<Format> formatList = new ArrayList<>();
-            formatList.add(format);
-            Enumeration enumeration = new Enumeration(formatList, enumAttribute.values());
-            enumeration.setEditable(enumAttribute.isEditable());
-            enumeration.setMultiSelection(enumAttribute.multiSelection());
-
-            String[] names = enumAttribute.names();
-            if(names.length == 1) {
-                String[] split = names[0].split(",");
-                TranslatableString[] translatableStrings = new TranslatableString[split.length];
-                for(int i=0; i<split.length; i++){
-                    TranslatableString string = new TranslatableString();
-                    LanguageStringType[] types = new LanguageStringType[1];
-                    LanguageStringType type = new LanguageStringType();
-                    type.setValue(split[i].trim());
-                    types[0] = type;
-                    string.setStrings(types);
-                    translatableStrings[i] = string;
-                }
-                enumeration.setValuesNames(translatableStrings);
-            }
-            else if(names.length != 0) {
-                TranslatableString[] translatableStrings = null;
-                for(int i=0; i< names.length; i+=2) {
-                    String language = names[i + 1];
-                    String[] split = names[i].split(",");
-                    if(translatableStrings == null) {
-                        translatableStrings = new TranslatableString[split.length];
-                    }
-                    for (int j = 0; j < split.length; j++) {
-                        TranslatableString string = translatableStrings[j];
-                        if(string == null){
-                            string = new TranslatableString();
-                        }
-                        LanguageStringType[] types = string.getStrings();
-                        if(types == null || types.length == 0) {
-                            types = new LanguageStringType[names.length/2];
-                        }
-                        LanguageStringType type = new LanguageStringType();
-                        type.setValue(split[j].trim());
-                        type.setLang(language);
-                        types[i/2] = type;
-                        string.setStrings(types);
-                        translatableStrings[j] = string;
-                    }
-                }
-                enumeration.setValuesNames(translatableStrings);
-            }
-            return enumeration;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
-        }
-    }
-
-    public static GeometryData annotationToObject(GeometryAttribute geometryAttribute, Format format) {
-        try{
-            format.setDefault(true);
-            List<DataType> geometryTypeList = new ArrayList<>();
-            //For each field type value from the groovy annotation, test if it is contain in the FieldType enumeration.
-            for(String type : Arrays.asList(geometryAttribute.geometryTypes())){
-                geometryTypeList.add(DataType.getDataTypeFromFieldType(type));
-            }
-            List<DataType> excludedTypeList = new ArrayList<>();
-            //For each excluded type value from the groovy annotation, test if it is contain in the FieldType enumeration.
-            for(String type : Arrays.asList(geometryAttribute.excludedTypes())){
-                excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
-            }
-            List<Format> formatList = new ArrayList<>();
-            formatList.add(format);
-            GeometryData geometryData = new GeometryData(formatList, geometryTypeList);
-            geometryData.setDimension(geometryAttribute.dimension());
-            geometryData.setExcludedTypeList(excludedTypeList);
-            return geometryData;
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;
