@@ -38,6 +38,7 @@
 package org.orbisgis.wpsservice.controller.utils;
 
 import net.opengis.ows._2.*;
+import net.opengis.wms.BoundingBox;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.Format;
@@ -53,24 +54,94 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * Class able to convert annotation into object and object into annotation.
+ * Class able to convert groovy annotation into java object and object into annotation.
  *
  * @author Sylvain PALOMINOS
  **/
 
 public class ObjectAnnotationConverter {
 
+    /**
+     * Builds a BoundingBoxDataObject from a BoundingBoxAttribute annotation.
+     * @param boundingBoxAttribute Groovy annotation to decode to build the Java object.
+     * @return A BoundingBoxData object with the data from the BoundingBoxAttribute annotation.
+     */
+    public static BoundingBoxData annotationToObject(BoundingBoxAttribute boundingBoxAttribute){
+        BoundingBoxData boundingBoxData = new BoundingBoxData();
+        List<SupportedCRS> supportedCRSList = boundingBoxData.getSupportedCRS();
+        SupportedCRS defaultCRS = getCRS(boundingBoxAttribute.defaultCRS(), true);
+        if(supportedCRSList == null){
+            //TODO : throw an exception.
+            return null;
+        }
+        supportedCRSList.add(defaultCRS);
+        if(boundingBoxAttribute.supportedCRS().length != 0){
+            for(String crsStr : boundingBoxAttribute.supportedCRS()) {
+                SupportedCRS crs = getCRS(crsStr, false);
+                if(crs != null){
+                    supportedCRSList.add(crs);
+                }
+            }
+        }
+        return boundingBoxData;
+    }
+
+    /**
+     * Create the SupportedCRS object from a string representation of a CRS like EPSG:2041.
+     *
+     * @param crs String representation of the CRS.
+     * @param isDefault True if the SupportedCRS is the default one.
+     * @return The supported CRS.
+     */
+    private static SupportedCRS getCRS(String crs, boolean isDefault){
+        if(crs == null || crs.isEmpty()){
+            return null;
+        }
+        SupportedCRS supportedCRS = new SupportedCRS();
+        supportedCRS.setDefault(isDefault);
+
+        String[] splitCrs = crs.split(":");
+        String authority = splitCrs[0].toUpperCase();
+        switch(authority){
+            case "EPSG":
+                supportedCRS.setValue("http://www.opengis.net/def/crs/"+authority+"/8.9.2/"+splitCrs[1]);
+                break;
+            case "IAU":
+                supportedCRS.setValue("http://www.opengis.net/def/crs/"+authority+"/0/"+splitCrs[1]);
+                break;
+            case "AUTO":
+                supportedCRS.setValue("http://www.opengis.net/def/crs/"+authority+"/1.3/"+splitCrs[1]);
+                break;
+            case "OGC":
+                supportedCRS.setValue("http://www.opengis.net/def/crs/"+authority+"/0/"+splitCrs[1]);
+                break;
+            case "IGNF":
+                supportedCRS.setValue("http://registre.ign.fr/ign/IGNF/crs/IGNF/"+splitCrs[1]);
+                break;
+            default:
+                return null;
+        }
+        return supportedCRS;
+    }
+
     public static void annotationToObject(DescriptionTypeAttribute descriptionTypeAttribute,
                                           DescriptionType descriptionType){
+        //First check if there is at least one title.
+        if(descriptionTypeAttribute.title().length == 0){
+            //TODO : throw an exception.
+            return;
+        }
+        //Then adds the titles
         List<LanguageStringType> titleList = new ArrayList<>();
-        //The title attribute can't be empty.
         String[] titles = descriptionTypeAttribute.title();
+        //Case of only one title without language
         if(titles.length == 1){
             LanguageStringType string = new LanguageStringType();
             string.setValue(titles[0].trim());
             titleList.add(string);
         }
-        else {
+        //Case of several titles with their language
+        else if(titles.length%2 == 0){
             for (int i = 0; i < titles.length; i += 2) {
                 LanguageStringType string = new LanguageStringType();
                 string.setValue(titles[i].trim());
@@ -78,19 +149,24 @@ public class ObjectAnnotationConverter {
                 titleList.add(string);
             }
         }
+        else{
+            //TODO : throw an exception.
+            return;
+        }
         descriptionType.getTitle().clear();
         descriptionType.getTitle().addAll(titleList);
 
+        //Descriptions
         List<LanguageStringType> descriptionList = new ArrayList<>();
-
         String[] descriptions = descriptionTypeAttribute.description();
-
+        //Case of only one description without language
         if(descriptions.length == 1){
             LanguageStringType resume = new LanguageStringType();
             resume.setValue(descriptions[0].trim());
             descriptionList.add(resume);
         }
-        else {
+        //Case of several description with their language
+        else if(descriptions.length%2 == 0){
             for (int i = 0; i < descriptions.length; i += 2) {
                 LanguageStringType resume = new LanguageStringType();
                 resume.setValue(descriptions[i].trim());
@@ -98,73 +174,97 @@ public class ObjectAnnotationConverter {
                 descriptionList.add(resume);
             }
         }
+        //Case of more than one description but not well formed (pair of a description with its language)
+        else if(descriptions.length>0){
+            //TODO : throw an exception.
+            return;
+        }
         descriptionType.getAbstract().clear();
         descriptionType.getAbstract().addAll(descriptionList);
 
-
+        //Identifier
         if(!descriptionTypeAttribute.identifier().isEmpty()){
             CodeType codeType = new CodeType();
             codeType.setValue(descriptionTypeAttribute.identifier().trim());
             descriptionType.setIdentifier(codeType);
         }
 
+        //Keywords
         String[] keywords = descriptionTypeAttribute.keywords();
+        //Case of only one keyword language (i.e. keywords="key1,key2,key3")
         if(keywords.length == 1) {
-            LinkedList<KeywordsType> keywordTypeList = new LinkedList<>();
+            LinkedList<KeywordsType> keywordsTypeList = new LinkedList<>();
+            //Splits the keyword string with the ',' character
             String[] split = keywords[0].split(",");
+            //For each keyword :
             for(String str : split){
+                //Create the LanguageStringType containing the keyword as value and nothing as language
                 LanguageStringType keywordString = new LanguageStringType();
                 keywordString.setValue(str.trim());
-
+                //Creates the keywordList which will contains one keyword, but in several languages.
+                // (In this case there is only one language)
                 List<LanguageStringType> keywordList = new ArrayList<>();
                 keywordList.add(keywordString);
-
+                //Creates the KeywordsType object containing the list of translation of a keyword
                 KeywordsType keywordsType = new KeywordsType();
                 keywordsType.getKeyword().addAll(keywordList);
-                keywordTypeList.add(keywordsType);
+                //Add it to the keywordsType list
+                keywordsTypeList.add(keywordsType);
             }
             descriptionType.getKeywords().clear();
-            descriptionType.getKeywords().addAll(keywordTypeList);
+            descriptionType.getKeywords().addAll(keywordsTypeList);
         }
-        else if(keywords.length != 0) {
+        //Case of several keyword language (i.e. keywords=["key1,key2,key3","en","clef1,clef2,clef3","fr"])
+        else if(keywords.length != 0 && keywords.length%2 == 0) {
             LinkedList<KeywordsType> keywordTypeList = new LinkedList<>();
+            //Each time take a par of string : the keywords and the language.
+            //Then split the keywords string with the ',' character, put the keyword in a LanguageStringType object
+            // with its language and then put the first keyword LanguageStringType  in the first KeywordsType object,
+            // the second keyword in the second KeywordsType object ...
+            //Repeat the operation for each language.
+            //
+            //Example :
+            // keywords=["key1,key2,key3","en","clef1,clef2,clef3","fr"] becomes
+            //
+            //List<LanguageStringType> {
+            //          KeywordsType{LanguageStringType{"key1","en"},LanguageStringType{"clef1","fr"}},
+            //          KeywordsType{LanguageStringType{"key2","en"},LanguageStringType{"clef2","fr"}},
+            //          KeywordsType{LanguageStringType{"key3","en"},LanguageStringType{"clef3","fr"}}
+            // }
             for(int i=0; i<keywords.length; i+=2){
+                String language = keywords[i+1];
+                String[] split = keywords[i].split(",");
+                //If the KeywordsType object haven't already been created, create them
                 if(keywordTypeList.isEmpty()){
-                    String language = keywords[i+1];
-                    String[] split = keywords[i].split(",");
-                    for(String str : split){
-                        LanguageStringType keywordString = new LanguageStringType();
-                        keywordString.setValue(str.trim());
-                        keywordString.setLang(language);
-
-                        List<LanguageStringType> keywordList = new ArrayList<>();
-                        keywordList.add(keywordString);
-
+                    for (String ignored : split) {
                         KeywordsType keywordsType = new KeywordsType();
-                        keywordsType.getKeyword().addAll(keywordList);
+                        keywordsType.getKeyword().addAll(new ArrayList<LanguageStringType>());
                         keywordTypeList.add(keywordsType);
                     }
                 }
-                else{
-                    String language = keywords[i+1];
-                    String[] split = keywords[i].split(",");
-                    for(int j=0; j<split.length; j++){
-                        String str = split[j];
-                        LanguageStringType keywordString = new LanguageStringType();
-                        keywordString.setValue(str.trim());
-                        keywordString.setLang(language);
+                //Adds all the keywords to the good KeywordsType
+                for(int j=0; j<split.length; j++){
+                    String str = split[j];
+                    LanguageStringType keywordString = new LanguageStringType();
+                    keywordString.setValue(str.trim());
+                    keywordString.setLang(language);
 
-                        List<LanguageStringType> keywordList = keywordTypeList.get(j).getKeyword();
-                        keywordList.add(keywordString);
-                    }
+                    List<LanguageStringType> keywordList = keywordTypeList.get(j).getKeyword();
+                    keywordList.add(keywordString);
                 }
             }
             descriptionType.getKeywords().clear();
             descriptionType.getKeywords().addAll(keywordTypeList);
         }
+        //Case of more than one keyword but not well formed (pair of a keyword with its language)
+        else if(keywords.length>0){
+            //TODO : throw an exception.
+            return;
+        }
 
         String[] metadata = descriptionTypeAttribute.metadata();
-        if(metadata.length != 0){
+        //Check if the metadata is composed of pairs of string
+        if(metadata.length != 0 && metadata.length%2==0){
             List<MetadataType> metadataList = new ArrayList<>();
             for(int i=0; i<metadata.length; i+=2){
                 MetadataType metadataType = new MetadataType();
@@ -174,6 +274,10 @@ public class ObjectAnnotationConverter {
             }
             descriptionType.getMetadata().clear();
             descriptionType.getMetadata().addAll(metadataList);
+        }
+        else{
+            //TODO : throw an exception.
+            return;
         }
     }
 /*
