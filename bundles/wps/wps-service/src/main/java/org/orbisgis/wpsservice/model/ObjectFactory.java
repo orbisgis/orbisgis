@@ -55,8 +55,8 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _DataStore_QNAME = new QName("http://orbisgis.org", "DataStore");
-    private final static QName _DataField_QNAME = new QName("http://orbisgis.org", "DataField");
+    private final static QName _JDBCTable_QNAME = new QName("http://orbisgis.org", "JDBCTable");
+    private final static QName _JDBCTableField_QNAME = new QName("http://orbisgis.org", "JDBCTableField");
     private final static QName _FieldValue_QNAME = new QName("http://orbisgis.org", "FieldValue");
     private final static QName _Enumeration_QNAME = new QName("http://orbisgis.org", "Enumeration");
     private final static QName _GeometryData_QNAME = new QName("http://orbisgis.org", "Geometry");
@@ -72,40 +72,40 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DataStore }
+     * Create an instance of {@link JDBCTable }
      *
      */
-    public DataStore createDataStore() { return new DataStore(); }
+    public JDBCTable createJDBCTable() { return new JDBCTable(); }
 
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DataStore }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link JDBCTable }{@code >}}
      *
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
-            name="DataStore",
+            name="JDBCTable",
             substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
             substitutionHeadName="DataDescription")
-    public JAXBElement<DataStore> createDataStore(DataStore dataStore) {
-        return new JAXBElement<>(_DataStore_QNAME, DataStore.class, dataStore);
+    public JAXBElement<JDBCTable> createJDBCTable(JDBCTable JDBCTable) {
+        return new JAXBElement<>(_JDBCTable_QNAME, JDBCTable.class, JDBCTable);
     }
 
     /**
-     * Create an instance of {@link DataField }
+     * Create an instance of {@link JDBCTableField }
      *
      */
-    public DataField createDataField() { return new DataField(); }
+    public JDBCTableField createJDBCTableField() { return new JDBCTableField(); }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DataField }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link JDBCTableField }{@code >}}
      *
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
-            name="DataField",
+            name="JDBCTableField",
             substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
             substitutionHeadName="DataDescription")
-    public JAXBElement<DataField> createDataField(DataField dataField) {
-        return new JAXBElement<>(_DataField_QNAME, DataField.class, dataField);
+    public JAXBElement<JDBCTableField> createDataField(JDBCTableField jdbcTableField) {
+        return new JAXBElement<>(_JDBCTableField_QNAME, JDBCTableField.class, jdbcTableField);
     }
 
     /**

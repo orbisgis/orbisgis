@@ -72,7 +72,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  **/
 
-public class DataFieldUI implements DataUI {
+public class JDBCTableFieldUI implements DataUI {
 
     /** Size constants **/
     private static final int MAX_JLIST_ROW_COUNT_VERTICAL = 5;
@@ -91,7 +91,7 @@ public class DataFieldUI implements DataUI {
     private static final String NULL_ITEM = "NULL_ITEM";
     private static final String MAX_JLIST_ROW_COUNT = "MAX_JLIST_ROW_COUNT";
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(DataFieldUI.class);
+    private static final I18n I18N = I18nFactory.getI18n(JDBCTableFieldUI.class);
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -103,12 +103,12 @@ public class DataFieldUI implements DataUI {
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-        DataField dataField = null;
+        JDBCTableField jdbcTableField = null;
         boolean isOptional = false;
         //Retrieve the DataField
         //If it is an input, find if it is optional.
         if(inputOrOutput instanceof InputDescriptionType){
-            dataField = (DataField)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            jdbcTableField = (JDBCTableField)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
             if(((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"))){
                 isOptional = true;
             }
@@ -117,10 +117,10 @@ public class DataFieldUI implements DataUI {
             return null;
         }
 
-        if(dataField == null){
+        if(jdbcTableField == null){
             return panel;
         }
-        if(dataField.isMultiSelection()){
+        if(jdbcTableField.isMultiSelection()){
             JList<ContainerItem<Object>> list = new JList<>();
             DefaultListModel<ContainerItem<Object>> model = new DefaultListModel<>();
             list.setModel(model);
@@ -138,7 +138,7 @@ public class DataFieldUI implements DataUI {
             list.setVisibleRowCount(MIN_JLIST_ROW_COUNT);
             URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
             list.putClientProperty(URI_PROPERTY, uri);
-            list.putClientProperty(DATA_FIELD_PROPERTY, dataField);
+            list.putClientProperty(DATA_FIELD_PROPERTY, jdbcTableField);
             list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
             list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
             list.putClientProperty(FIELD_TITLE_PROPERTY, URI.create(inputOrOutput.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_")));
@@ -173,7 +173,7 @@ public class DataFieldUI implements DataUI {
             }
             JScrollPane listScroller = new JScrollPane(list);
             panel.add(listScroller, "growx, wrap");
-            dataField.setSourceModified(true);
+            jdbcTableField.setSourceModified(true);
         }
         else {
             //ComboBox the field list
@@ -183,7 +183,7 @@ public class DataFieldUI implements DataUI {
             ContainerItem<Object> defaultItem = new ContainerItem<Object>(I18N.tr("Select a field"), I18N.tr("Select a field"));
             URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
             comboBox.putClientProperty(URI_PROPERTY, uri);
-            comboBox.putClientProperty(DATA_FIELD_PROPERTY, dataField);
+            comboBox.putClientProperty(DATA_FIELD_PROPERTY, jdbcTableField);
             comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
             comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
             comboBox.putClientProperty(DEFAULT_ITEM_PROPERTY, defaultItem);
@@ -259,18 +259,18 @@ public class DataFieldUI implements DataUI {
     public void onComboBoxEntered(Object source){
         if(source instanceof JComboBox) {
             JComboBox<ContainerItem<Object>> comboBox = (JComboBox) source;
-            DataField dataField = (DataField) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
+            JDBCTableField jdbcTableField = (JDBCTableField) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
             HashMap<URI, Object> dataMap = (HashMap) comboBox.getClientProperty(DATA_MAP_PROPERTY);
             URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
             boolean isOptional = (boolean) comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
             ContainerItem<Object> defaultItem = (ContainerItem<Object>)comboBox.getClientProperty(DEFAULT_ITEM_PROPERTY);
             //If the DataStore related to the DataField has been modified, reload the dataField values
-            if (dataField.isSourceModified() || (comboBox.getSelectedItem() != null && comboBox.getSelectedItem().equals(defaultItem))) {
+            if (jdbcTableField.isSourceModified() || (comboBox.getSelectedItem() != null && comboBox.getSelectedItem().equals(defaultItem))) {
                 Object obj = dataMap.get(uri);
                 comboBox.removeItem(defaultItem);
-                dataField.setSourceModified(false);
+                jdbcTableField.setSourceModified(false);
                 comboBox.removeAllItems();
-                List<ContainerItem<Object>> listContainer = populateWithFields(dataField, dataMap);
+                List<ContainerItem<Object>> listContainer = populateWithFields(jdbcTableField, dataMap);
                 for(ContainerItem<Object> container : listContainer){
                     comboBox.addItem(container);
                 }
@@ -314,7 +314,7 @@ public class DataFieldUI implements DataUI {
                 comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, comboBox.getToolTipText());
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
-                String dataFieldStr = dataField.getDataStoreIdentifier().toString();
+                String dataFieldStr = jdbcTableField.getDataStoreIdentifier().toString();
                 comboBox.setToolTipText(I18N.tr("First configure the DataStore {0}.",
                         dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1)));
                 ToolTipManager.sharedInstance().mouseMoved(
@@ -325,17 +325,17 @@ public class DataFieldUI implements DataUI {
         }
         else if(source instanceof JList){
             JList<ContainerItem<Object>> list = (JList) source;
-            DataField dataField = (DataField) list.getClientProperty(DATA_FIELD_PROPERTY);
+            JDBCTableField jdbcTableField = (JDBCTableField) list.getClientProperty(DATA_FIELD_PROPERTY);
             int maxRow = (int) list.getClientProperty(MAX_JLIST_ROW_COUNT);
             URI uri = (URI) list.getClientProperty(URI_PROPERTY);
             Map<URI, Object> dataMap = (Map) list.getClientProperty(DATA_MAP_PROPERTY);
             DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
             //If the DataStore related to the DataField has been modified, reload the dataField values
-            if (dataField.isSourceModified()) {
-                dataField.setSourceModified(false);
+            if (jdbcTableField.isSourceModified()) {
+                jdbcTableField.setSourceModified(false);
                 model.removeAllElements();
-                if (dataMap.get(dataField.getDataStoreIdentifier()) != null) {
-                    List<ContainerItem<Object>> listContainer = populateWithFields(dataField, dataMap);
+                if (dataMap.get(jdbcTableField.getDataStoreIdentifier()) != null) {
+                    List<ContainerItem<Object>> listContainer = populateWithFields(jdbcTableField, dataMap);
                     for(ContainerItem<Object> container : listContainer){
                         model.addElement(container);
                     }
@@ -349,7 +349,7 @@ public class DataFieldUI implements DataUI {
                 list.putClientProperty(TOOLTIP_TEXT_PROPERTY, list.getToolTipText());
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
-                String dataFieldStr = dataField.getDataStoreIdentifier().toString();
+                String dataFieldStr = jdbcTableField.getDataStoreIdentifier().toString();
                 if(dataFieldStr.contains("$")){
                     String[] split = dataFieldStr.split("\\$");
                     if(split.length == 2){
@@ -403,7 +403,7 @@ public class DataFieldUI implements DataUI {
             JComboBox<ContainerItem<Object>> comboBox = (JComboBox)source;
             if(comboBox.getSelectedItem() != null) {
                 ContainerItem<Object> selectedItem = (ContainerItem<Object>)comboBox.getSelectedItem();
-                DataField dataField = (DataField) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
+                JDBCTableField jdbcTableField = (JDBCTableField) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
                 Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
                 URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
                 boolean isOptional = (boolean)comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
@@ -415,8 +415,8 @@ public class DataFieldUI implements DataUI {
                     dataMap.put(uri, selectedItem.getLabel());
                 }
                 //Tells to the fieldValues that the datafield has been modified
-                if(dataField.getListFieldValue() != null) {
-                    for (FieldValue fieldValue : dataField.getListFieldValue()) {
+                if(jdbcTableField.getListFieldValue() != null) {
+                    for (FieldValue fieldValue : jdbcTableField.getListFieldValue()) {
                         fieldValue.setDataFieldModified(true);
                     }
                 }
@@ -435,7 +435,7 @@ public class DataFieldUI implements DataUI {
                         fieldList += "\t"+model.getElementAt(i).getLabel();
                     }
                 }
-                DataField dataField = (DataField) list.getClientProperty(DATA_FIELD_PROPERTY);
+                JDBCTableField jdbcTableField = (JDBCTableField) list.getClientProperty(DATA_FIELD_PROPERTY);
                 Map<URI, Object> dataMap = (Map<URI, Object>) list.getClientProperty(DATA_MAP_PROPERTY);
                 URI uri = (URI) list.getClientProperty(URI_PROPERTY);
                 boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
@@ -454,12 +454,12 @@ public class DataFieldUI implements DataUI {
      * Populate the given comboBox with the table fields name list.
      * Also display the fields information like if it is spatial or not, the SRID, the dimension ...
      */
-    private List<ContainerItem<Object>> populateWithFields(DataField dataField, Map<URI, Object> dataMap){
+    private List<ContainerItem<Object>> populateWithFields(JDBCTableField jdbcTableField, Map<URI, Object> dataMap){
         //Retrieve the table name list
         List<ContainerItem<Object>> listContainer = new ArrayList<>();
         String tableName = null;
-        if(dataField.getDataStoreIdentifier().toString().contains("$")){
-            String[] split = dataField.getDataStoreIdentifier().toString().split("\\$");
+        if(jdbcTableField.getDataStoreIdentifier().toString().contains("$")){
+            String[] split = jdbcTableField.getDataStoreIdentifier().toString().split("\\$");
             if(split.length == 3){
                 tableName = split[1]+"."+split[2];
             }
@@ -467,15 +467,15 @@ public class DataFieldUI implements DataUI {
                 tableName = split[1];
             }
         }
-        else if(dataMap.get(dataField.getDataStoreIdentifier()) != null){
-            tableName = dataMap.get(dataField.getDataStoreIdentifier()).toString();
+        else if(dataMap.get(jdbcTableField.getDataStoreIdentifier()) != null){
+            tableName = dataMap.get(jdbcTableField.getDataStoreIdentifier()).toString();
         }
         if(tableName == null){
             listContainer.add(new ContainerItem<Object>(I18N.tr("Select a field"), I18N.tr("Select a field")));
             return listContainer;
         }
         List<String> fieldNameList = wpsClient.getTableFieldList(tableName,
-                dataField.getFieldTypeList(), dataField.getExcludedTypeList());
+                jdbcTableField.getFieldTypeList(), jdbcTableField.getExcludedTypeList());
         //If there is tables, retrieve their information to format the display in the comboBox
         if(fieldNameList != null && !fieldNameList.isEmpty()){
             for (String fieldName : fieldNameList) {

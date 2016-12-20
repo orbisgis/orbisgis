@@ -71,7 +71,7 @@ public class WpsModelTest {
         try {
             boolean annotationFound = false;
             //Retrieve the DataField object
-            DataField datafield = null;
+            JDBCTableField datafield = null;
             //Inspect all the annotation of the field to get the DescriptionTypeAttribute one
             Field dataFieldField = this.getClass().getDeclaredField("dataFieldInput");
             for(Annotation annotation : dataFieldField.getDeclaredAnnotations()){
@@ -146,7 +146,7 @@ public class WpsModelTest {
         try {
             boolean annotationFound = false;
             //Retrieve the DataField object
-            DataStore dataStore = null;
+            JDBCTable JDBCTable = null;
             //Inspect all the annotation of the field to get the DescriptionTypeAttribute one
             Field dataStoreField = this.getClass().getDeclaredField("dataStoreInput");
             for(Annotation annotation : dataStoreField.getDeclaredAnnotations()){
@@ -157,12 +157,12 @@ public class WpsModelTest {
                     List<Format> format = new ArrayList<>();
                     format.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
                     format.get(0).setDefault(true);
-                    dataStore = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format);
+                    JDBCTable = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format);
                 }
             }
 
             //If the annotation hasn't been found, the test has failed.
-            if(!annotationFound || dataStore == null){
+            if(!annotationFound || JDBCTable == null){
                 Assert.fail("Unable to get the annotation '@DataFieldAttribute' from the field.");
             }
 
@@ -172,16 +172,16 @@ public class WpsModelTest {
 
             String errorMessage = "Error, the dataStore 'excludedTypeList' field should contain two value : " +
                     "'MULTILINESTRING' and 'LONG'.";
-            boolean condition = dataStore.getExcludedTypeList().size() == 2 &&
-                    dataStore.getExcludedTypeList().contains(DataType.MULTILINESTRING) &&
-                    dataStore.getExcludedTypeList().contains(DataType.LONG);
+            boolean condition = JDBCTable.getExcludedTypeList().size() == 2 &&
+                    JDBCTable.getExcludedTypeList().contains(DataType.MULTILINESTRING) &&
+                    JDBCTable.getExcludedTypeList().contains(DataType.LONG);
             Assert.assertTrue(errorMessage, condition);
 
             errorMessage = "Error, the dataStore 'dataStoreTypeList' field should contain two value : " +
                     "'GEOMETRY' and 'NUMBER'.";
-            condition = dataStore.getDataStoreTypeList().size() == 2 &&
-                    dataStore.getDataStoreTypeList().contains(DataType.GEOMETRY) &&
-                    dataStore.getDataStoreTypeList().contains(DataType.NUMBER);
+            condition = JDBCTable.getDataStoreTypeList().size() == 2 &&
+                    JDBCTable.getDataStoreTypeList().contains(DataType.GEOMETRY) &&
+                    JDBCTable.getDataStoreTypeList().contains(DataType.NUMBER);
             Assert.assertTrue(errorMessage, condition);
 
 

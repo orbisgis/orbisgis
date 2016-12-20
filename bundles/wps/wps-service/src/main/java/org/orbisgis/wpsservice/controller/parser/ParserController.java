@@ -38,8 +38,6 @@
 package org.orbisgis.wpsservice.controller.parser;
 
 import groovy.lang.GroovyClassLoader;
-import groovy.lang.GroovyObject;
-import groovy.lang.GroovyRuntimeException;
 import groovy.lang.GroovyShell;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
@@ -47,8 +45,6 @@ import net.opengis.wps._2_0.ProcessDescriptionType;
 import net.opengis.wps._2_0.ProcessOffering;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute;
-import org.orbisgis.wpsservice.LocalWpsServerImpl;
-import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +52,9 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,8 +80,8 @@ public class ParserController {
         parserList = new ArrayList<>();
         parserList.add(new LiteralDataParser());
         parserList.add(new BoundingBoxParser());
-        parserList.add(new DataStoreParser());
-        parserList.add(new DataFieldParser());
+        parserList.add(new JDBCTableParser());
+        parserList.add(new JDBCTableFieldParser());
         parserList.add(new FieldValueParser());
         parserList.add(new EnumerationParser());
         parserList.add(new RawDataParser());
@@ -211,11 +205,11 @@ public class ParserController {
     private void link(ProcessDescriptionType p){
         //Link the DataField with its DataStore
         for(InputDescriptionType i : p.getInput()){
-            if(i.getDataDescription().getValue() instanceof DataField){
-                DataField dataField = (DataField)i.getDataDescription().getValue();
-                for(InputDescriptionType dataStore : p.getInput()){
-                    if(dataStore.getIdentifier().getValue().equals(dataField.getDataStoreIdentifier().toString())){
-                        ((DataStore)dataStore.getDataDescription().getValue()).addDataField(dataField);
+            if(i.getDataDescription().getValue() instanceof JDBCTableField){
+                JDBCTableField jdbcTableField = (JDBCTableField)i.getDataDescription().getValue();
+                for(InputDescriptionType jdbcTable : p.getInput()){
+                    if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getDataStoreIdentifier().toString())){
+                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addDataField(jdbcTableField);
                     }
                 }
             }
@@ -226,20 +220,20 @@ public class ParserController {
                 FieldValue fieldValue = (FieldValue)i.getDataDescription().getValue();
                 for(InputDescriptionType input : p.getInput()){
                     if(input.getIdentifier().getValue().equals(fieldValue.getDataFieldIdentifier().toString())){
-                        DataField dataField = (DataField)input.getDataDescription().getValue();
-                        dataField.addFieldValue(fieldValue);
-                        fieldValue.setDataStoredIdentifier(dataField.getDataStoreIdentifier());
+                        JDBCTableField jdbcTableField = (JDBCTableField)input.getDataDescription().getValue();
+                        jdbcTableField.addFieldValue(fieldValue);
+                        fieldValue.setDataStoredIdentifier(jdbcTableField.getDataStoreIdentifier());
                     }
                 }
             }
         }
         //Link the DataField with its DataStore
         for(OutputDescriptionType o : p.getOutput()){
-            if(o.getDataDescription().getValue() instanceof DataField){
-                DataField dataField = (DataField)o.getDataDescription().getValue();
-                for(OutputDescriptionType dataStore : p.getOutput()){
-                    if(dataStore.getIdentifier().getValue().equals(dataField.getDataStoreIdentifier().toString())){
-                        ((DataStore)dataStore.getDataDescription().getValue()).addDataField(dataField);
+            if(o.getDataDescription().getValue() instanceof JDBCTableField){
+                JDBCTableField jdbcTableField = (JDBCTableField)o.getDataDescription().getValue();
+                for(OutputDescriptionType jdbcTable : p.getOutput()){
+                    if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getDataStoreIdentifier().toString())){
+                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addDataField(jdbcTableField);
                     }
                 }
             }
@@ -250,9 +244,9 @@ public class ParserController {
                 FieldValue fieldValue = (FieldValue)o.getDataDescription().getValue();
                 for(OutputDescriptionType output : p.getOutput()){
                     if(output.getIdentifier().getValue().equals(fieldValue.getDataFieldIdentifier().toString())){
-                        DataField dataField = (DataField)output.getDataDescription().getValue();
-                        dataField.addFieldValue(fieldValue);
-                        fieldValue.setDataStoredIdentifier(dataField.getDataStoreIdentifier());
+                        JDBCTableField jdbcTableField = (JDBCTableField)output.getDataDescription().getValue();
+                        jdbcTableField.addFieldValue(fieldValue);
+                        fieldValue.setDataStoredIdentifier(jdbcTableField.getDataStoreIdentifier());
                     }
                 }
             }

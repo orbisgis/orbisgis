@@ -55,7 +55,7 @@ import java.util.List;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DataField", propOrder = {"dataStoreIdentifier", "fieldTypeList",
         "excludedTypeList", "listFieldValue", "multiSelection"})
-public class DataField extends ComplexDataType {
+public class JDBCTableField extends ComplexDataType {
 
     /** Identifier of the parent DataStore */
     @XmlElement(name = "DataStoreId", namespace = "http://orbisgis.org")
@@ -85,7 +85,7 @@ public class DataField extends ComplexDataType {
      * @param dataStoreURI Identifier of the parent dataStore.
      * @throws MalformedScriptException
      */
-    public DataField(List<Format> formatList, List<DataType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
+    public JDBCTableField(List<Format> formatList, List<DataType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
         format = formatList;
         listFieldValue = new ArrayList<>();
         this.fieldTypeList = fieldTypeList;
@@ -95,7 +95,7 @@ public class DataField extends ComplexDataType {
     /**
      * Protected empty constructor used in the ObjectFactory class for JAXB.
      */
-    protected DataField(){
+    protected JDBCTableField(){
         super();
         fieldTypeList = null;
         excludedTypeList = null;
@@ -164,7 +164,7 @@ public class DataField extends ComplexDataType {
         for(DataType excludedType : excludedTypeList){
             for(DataType dataType : fieldTypeList){
                 if(excludedType.equals(dataType)){
-                    throw new MalformedScriptException(DataField.class, "excludedTypeList", I18N.tr("A same DataType is" +
+                    throw new MalformedScriptException(JDBCTableField.class, "excludedTypeList", I18N.tr("A same DataType is" +
                             " accepted and excluded."));
                 }
             }

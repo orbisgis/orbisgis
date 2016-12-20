@@ -54,7 +54,7 @@ import java.util.List;
  **/
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "DataStore", propOrder = {"dataStoreTypeList", "excludedTypeList", "listDataField"})
-public class DataStore extends ComplexDataType {
+public class JDBCTable extends ComplexDataType {
     /** List of field type that should be contained by the DataStore.*/
     @XmlElement(name = "DataStoreType", namespace = "http://orbisgis.org")
     private List<DataType> dataStoreTypeList;
@@ -63,44 +63,44 @@ public class DataStore extends ComplexDataType {
     private List<DataType> excludedTypeList;
     /** List of DataField liked to the DataStore */
     @XmlElement(name = "DataField", namespace = "http://orbisgis.org")
-    private List<DataField> listDataField;
+    private List<JDBCTableField> listJDBCTableField;
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(DataStore.class);
+    private static final I18n I18N = I18nFactory.getI18n(JDBCTable.class);
 
     /**
      * Main constructor
      * @param formatList List of formats accepted.
      * @throws MalformedScriptException
      */
-    public DataStore(List<Format> formatList) throws MalformedScriptException {
+    public JDBCTable(List<Format> formatList) throws MalformedScriptException {
         format = formatList;
         dataStoreTypeList = new ArrayList<>();
         excludedTypeList = new ArrayList<>();
-        listDataField = new ArrayList<>();
+        listJDBCTableField = new ArrayList<>();
     }
 
     /**
      * Protected empty constructor used in the ObjectFactory class for JAXB.
      */
-    protected DataStore(){
+    protected JDBCTable(){
         super();
-        listDataField = null;
+        listJDBCTableField = null;
     }
 
     /**
      * Adds a DataField as a 'child' of the DataStore.
-     * @param dataField DataField to add.
+     * @param jdbcTableField DataField to add.
      */
-    public void addDataField(DataField dataField){
-        this.listDataField.add(dataField);
+    public void addDataField(JDBCTableField jdbcTableField){
+        this.listJDBCTableField.add(jdbcTableField);
     }
 
     /**
      * Return the list of 'child' DataField.
      * @return List of DataField.
      */
-    public List<DataField> getListDataField(){
-        return listDataField;
+    public List<JDBCTableField> getListJDBCTableField(){
+        return listJDBCTableField;
     }
 
     /**
@@ -111,7 +111,7 @@ public class DataStore extends ComplexDataType {
         for(DataType dataStoreType : dataStoreTypeList){
             for(DataType excludedType : excludedTypeList){
                 if(dataStoreType.equals(excludedType)){
-                    throw new MalformedScriptException(DataField.class, "dataStoreTypeList", I18N.tr("A same DataType is" +
+                    throw new MalformedScriptException(JDBCTableField.class, "dataStoreTypeList", I18N.tr("A same DataType is" +
                             " accepted and excluded."));
                 }
             }
@@ -135,7 +135,7 @@ public class DataStore extends ComplexDataType {
         for(DataType excludedType : excludedTypeList){
             for(DataType dataType : dataStoreTypeList){
                 if(excludedType.equals(dataType)){
-                    throw new MalformedScriptException(DataField.class, "excludedTypeList", I18N.tr("A same DataType is" +
+                    throw new MalformedScriptException(JDBCTableField.class, "excludedTypeList", I18N.tr("A same DataType is" +
                             " accepted and excluded."));
                 }
             }

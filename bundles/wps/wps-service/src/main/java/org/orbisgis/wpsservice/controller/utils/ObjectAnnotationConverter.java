@@ -38,7 +38,6 @@
 package org.orbisgis.wpsservice.controller.utils;
 
 import net.opengis.ows._2.*;
-import net.opengis.wms.BoundingBox;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.Format;
@@ -62,17 +61,18 @@ import java.util.*;
 public class ObjectAnnotationConverter {
 
     /**
-     * Builds a BoundingBoxData Object from a BoundingBoxAttribute annotation.
+     * Builds a {@link BoundingBoxData} Object from a BoundingBoxAttribute annotation.
      * @param boundingBoxAttribute Groovy annotation to decode to build the Java object.
-     * @return A BoundingBoxData object with the data from the BoundingBoxAttribute annotation.
+     * @return A {@link BoundingBoxData} object with the data from the {@link BoundingBoxAttribute} annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
      */
-    public static BoundingBoxData annotationToObject(BoundingBoxAttribute boundingBoxAttribute){
+    public static BoundingBoxData annotationToObject(BoundingBoxAttribute boundingBoxAttribute)
+            throws MalformedScriptException {
         BoundingBoxData boundingBoxData = new BoundingBoxData();
         List<SupportedCRS> supportedCRSList = boundingBoxData.getSupportedCRS();
         SupportedCRS defaultCRS = getCRS(boundingBoxAttribute.defaultCRS(), true);
-        if(supportedCRSList == null){
-            //TODO : throw an exception.
-            return null;
+        if(defaultCRS == null){
+            throw new MalformedScriptException(BoundingBoxAttribute.class, "CRS", "The default CRS should be defined.");
         }
         supportedCRSList.add(defaultCRS);
         if(boundingBoxAttribute.supportedCRS().length != 0){
@@ -87,10 +87,10 @@ public class ObjectAnnotationConverter {
     }
 
     /**
-     * Create the SupportedCRS object from a string representation of a CRS like EPSG:2041.
+     * Create the {@link SupportedCRS} object from a string representation of a CRS like EPSG:2041.
      *
-     * @param crs String representation of the CRS.
-     * @param isDefault True if the SupportedCRS is the default one.
+     * @param crs {@link String} representation of the CRS.
+     * @param isDefault True if the {@link SupportedCRS} is the default one.
      * @return The supported CRS.
      */
     private static SupportedCRS getCRS(String crs, boolean isDefault){
@@ -125,16 +125,17 @@ public class ObjectAnnotationConverter {
     }
 
     /**
-     * Builds a DescriptionType Object from a DescriptionTypeAttribute annotation.
+     * Builds a {@link DescriptionType} Object from a {@link DescriptionTypeAttribute} annotation.
      * @param descriptionTypeAttribute Groovy annotation to decode to build the Java object.
-     * @param descriptionType A DescriptionType object with the data from the DescriptionTypeAttribute annotation.
+     * @param descriptionType A {@link DescriptionType} object with the data from the {@link DescriptionTypeAttribute}
+     *                        annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
      */
     public static void annotationToObject(DescriptionTypeAttribute descriptionTypeAttribute,
-                                          DescriptionType descriptionType){
+                                          DescriptionType descriptionType) throws MalformedScriptException {
         //First check if there is at least one title.
         if(descriptionTypeAttribute.title().length == 0){
-            //TODO : throw an exception.
-            return;
+            throw new MalformedScriptException(DescriptionTypeAttribute.class, "title", "The title should be defined.");
         }
         //Then adds the titles
         List<LanguageStringType> titleList = new ArrayList<>();
@@ -155,8 +156,8 @@ public class ObjectAnnotationConverter {
             }
         }
         else{
-            //TODO : throw an exception.
-            return;
+            throw new MalformedScriptException(DescriptionTypeAttribute.class, "title", "The title should be composed " +
+                    "of pairs of String : the title and its language.");
         }
         descriptionType.getTitle().clear();
         descriptionType.getTitle().addAll(titleList);
@@ -181,8 +182,8 @@ public class ObjectAnnotationConverter {
         }
         //Case of more than one description but not well formed (pair of a description with its language)
         else if(descriptions.length>0){
-            //TODO : throw an exception.
-            return;
+            throw new MalformedScriptException(DescriptionTypeAttribute.class, "description", "The description should " +
+                    "be composed of pairs of String : the description and its language.");
         }
         descriptionType.getAbstract().clear();
         descriptionType.getAbstract().addAll(descriptionList);
@@ -263,8 +264,8 @@ public class ObjectAnnotationConverter {
         }
         //Case of more than one keyword but not well formed (pair of a keyword with its language)
         else if(keywords.length>0){
-            //TODO : throw an exception.
-            return;
+            throw new MalformedScriptException(DescriptionTypeAttribute.class, "keywords", "The keywords should " +
+                    "be composed of pairs of String : the coma separated keywords and their language.");
         }
 
         String[] metadata = descriptionTypeAttribute.metadata();
@@ -281,18 +282,20 @@ public class ObjectAnnotationConverter {
             descriptionType.getMetadata().addAll(metadataList);
         }
         else{
-            //TODO : throw an exception.
-            return;
+            throw new MalformedScriptException(DescriptionTypeAttribute.class, "metadata", "The metadata should " +
+                    "be composed of pairs of String : the property and its value.");
         }
     }
 
     /**
-     * Builds an Enumeration Object from an EnumerationAttribute annotation.
+     * Builds an {@link Enumeration} Object from an {@link EnumerationAttribute} annotation.
      * @param enumAttribute Groovy annotation to decode to build the Java object.
-     * @param format Format of the Enumeration ComplexType.
-     * @return An Enumeration object with the data from the EnumerationAttribute annotation.
+     * @param format {@link Format} of the {@link Enumeration} ComplexType.
+     * @return An {@link Enumeration} object with the data from the {@link EnumerationAttribute} annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
      */
-    public static Enumeration annotationToObject(EnumerationAttribute enumAttribute, Format format) {
+    public static Enumeration annotationToObject(EnumerationAttribute enumAttribute, Format format)
+            throws MalformedScriptException {
         //Creates the format list
         format.setDefault(true);
         List<Format> formatList = new ArrayList<>();
@@ -379,12 +382,14 @@ public class ObjectAnnotationConverter {
     }
 
     /**
-     * Builds an GeometryData Object from an geometryAttribute annotation.
+     * Builds an {@link GeometryData} Object from an {@link GeometryAttribute} annotation.
      * @param geometryAttribute Groovy annotation to decode to build the Java object.
-     * @param format Format of the Enumeration ComplexType.
-     * @return An GeometryData object with the data from the GeometryAttribute annotation.
+     * @param format {@link Format} of the {@link Enumeration} ComplexType.
+     * @return An {@link GeometryData} object with the data from the {@link GeometryAttribute} annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
      */
-    public static GeometryData annotationToObject(GeometryAttribute geometryAttribute, Format format) {
+    public static GeometryData annotationToObject(GeometryAttribute geometryAttribute, Format format)
+            throws MalformedScriptException {
         format.setDefault(true);
         List<DataType> geometryTypeList = new ArrayList<>();
         //For each field type value from the groovy annotation, test if it is contain in the FieldType enumeration.
@@ -402,6 +407,72 @@ public class ObjectAnnotationConverter {
         geometryData.setDimension(geometryAttribute.dimension());
         geometryData.setExcludedTypeList(excludedTypeList);
         return geometryData;
+    }
+
+    /**
+     * Builds an {@link InputDescriptionType} Object from an {@link InputAttribute} annotation.
+     * @param inputAttribute Groovy annotation to decode to build the Java object.
+     * @param input The {@link InputDescriptionType} object with the data from the {@link InputAttribute} annotation.
+     */
+    public static void annotationToObject(InputAttribute inputAttribute, InputDescriptionType input){
+        input.setMaxOccurs(""+inputAttribute.maxOccurs());
+        input.setMinOccurs(BigInteger.valueOf(inputAttribute.minOccurs()));
+    }
+
+    /**
+     * Builds an {@link JDBCTable} Object from an {@link JDBCTableAttribute} annotation.
+     * @param jdbcTableAttribute Groovy annotation to decode to build the Java object.
+     * @param formatList The list of the {@link Format} for the {@link JDBCTable}.
+     * @return The {@link JDBCTable} object with the data from the {@link JDBCTableAttribute} annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
+    public static JDBCTable annotationToObject(JDBCTableAttribute jdbcTableAttribute, List<Format> formatList)
+            throws MalformedScriptException {
+        JDBCTable jdbcTable = new JDBCTable(formatList);
+        List<DataType> dataTypeList = new ArrayList<>();
+        for(String type : Arrays.asList(jdbcTableAttribute.dataTypes())){
+            dataTypeList.add(DataType.getDataTypeFromFieldType(type));
+        }
+        jdbcTable.setDataStoreTypeList(dataTypeList);
+        List<DataType> excludedTypeList = new ArrayList<>();
+        for(String type : Arrays.asList(jdbcTableAttribute.excludedTypes())){
+            excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
+        }
+        jdbcTable.setExcludedTypeList(excludedTypeList);
+        return jdbcTable;
+    }
+
+    /**
+     * Builds an {@link JDBCTable} Object from an {@link JDBCTableAttribute} annotation.
+     * @param jdbcTableAttribute Groovy annotation to decode to build the Java object.
+     * @param format The {@link Format} for the {@link JDBCTable}.
+     * @return The {@link JDBCTable} object with the data from the {@link JDBCTableAttribute} annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
+    /**
+     *
+     * @param jdbcTableFieldAttribute
+     * @param format
+     * @param dataStoreUri
+     * @return
+     */
+    public static JDBCTableField annotationToObject(JDBCTableFieldAttribute jdbcTableFieldAttribute, Format format,
+                                                    URI dataStoreUri) throws MalformedScriptException {
+        format.setDefault(true);
+        List<DataType> dataTypeList = new ArrayList<>();
+        for(String type : Arrays.asList(jdbcTableFieldAttribute.dataTypes())){
+            dataTypeList.add(DataType.getDataTypeFromFieldType(type));
+        }
+        List<DataType> excludedTypeList = new ArrayList<>();
+        for(String type : Arrays.asList(jdbcTableFieldAttribute.excludedTypes())){
+            excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
+        }
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(format);
+        JDBCTableField jdbcTableField = new JDBCTableField(formatList, dataTypeList, dataStoreUri);
+        jdbcTableField.setExcludedTypeList(excludedTypeList);
+        jdbcTableField.setMultiSelection(jdbcTableFieldAttribute.multiSelection());
+        return jdbcTableField;
     }
 
 /*
@@ -578,11 +649,6 @@ public class ObjectAnnotationConverter {
             return null;
         }
     }
-
-    public static void annotationToObject(InputAttribute inputAttribute, InputDescriptionType input){
-        input.setMaxOccurs(""+inputAttribute.maxOccurs());
-        input.setMinOccurs(BigInteger.valueOf(inputAttribute.minOccurs()));
-    }
 /*
     public static Object annotationToObject(
             PossibleLiteralValuesChoiceAttribute possibleLiteralValuesChoiceAttribute){
@@ -621,49 +687,6 @@ public class ObjectAnnotationConverter {
             metadata.setRole(properties[i]);
             metadata.setTitle(properties[i+1]);
             metadataList.add(metadata);
-        }
-    }
-
-    public static DataStore annotationToObject(JDBCTableAttribute JDBCTableAttribute, List<Format> formatList) {
-        try {
-            DataStore dataStore = new DataStore(formatList);
-            List<DataType> dataTypeList = new ArrayList<>();
-            for(String type : Arrays.asList(JDBCTableAttribute.dataTypes())){
-                dataTypeList.add(DataType.getDataTypeFromFieldType(type));
-            }
-            dataStore.setDataStoreTypeList(dataTypeList);
-            List<DataType> excludedTypeList = new ArrayList<>();
-            for(String type : Arrays.asList(JDBCTableAttribute.excludedTypes())){
-                excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
-            }
-            dataStore.setExcludedTypeList(excludedTypeList);
-            return dataStore;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
-        }
-    }
-
-    public static DataField annotationToObject(JDBCTableFieldAttribute JDBCTableFieldAttribute, Format format, URI dataStoreUri) {
-        try {
-            format.setDefault(true);
-            List<DataType> dataTypeList = new ArrayList<>();
-            for(String type : Arrays.asList(JDBCTableFieldAttribute.dataTypes())){
-                dataTypeList.add(DataType.getDataTypeFromFieldType(type));
-            }
-            List<DataType> excludedTypeList = new ArrayList<>();
-            for(String type : Arrays.asList(JDBCTableFieldAttribute.excludedTypes())){
-                excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
-            }
-            List<Format> formatList = new ArrayList<>();
-            formatList.add(format);
-            DataField dataField = new DataField(formatList, dataTypeList, dataStoreUri);
-            dataField.setExcludedTypeList(excludedTypeList);
-            dataField.setMultiSelection(JDBCTableFieldAttribute.multiSelection());
-            return dataField;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
         }
     }
 

@@ -66,7 +66,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  **/
 
-public class DataStoreUI implements DataUI {
+public class JDBCTableUI implements DataUI {
 
     /** Constant used to pass object as client property throw JComponents **/
     private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
@@ -77,7 +77,7 @@ public class DataStoreUI implements DataUI {
     private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
     private static final String IS_OUTPUT_PROPERTY = "IS_OUTPUT_PROPERTY";
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(DataStoreUI.class);
+    private static final I18n I18N = I18nFactory.getI18n(JDBCTableUI.class);
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -101,12 +101,12 @@ public class DataStoreUI implements DataUI {
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         //Main panel which contains all the UI
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-        DataStore dataStore;
+        JDBCTable jdbcTable;
         boolean isOptional = false;
         /** Retrieve the DataStore from the DescriptionType. **/
         if(inputOrOutput instanceof InputDescriptionType){
             InputDescriptionType input = (InputDescriptionType)inputOrOutput;
-            dataStore = (DataStore)input.getDataDescription().getValue();
+            jdbcTable = (JDBCTable)input.getDataDescription().getValue();
             //As an input, the DataStore can be optional.
             if(input.getMinOccurs().equals(new BigInteger("0"))){
                 isOptional = true;
@@ -125,14 +125,14 @@ public class DataStoreUI implements DataUI {
         geocatalogComboBox.setRenderer(new JPanelListRenderer());
         //Populate the comboBox with the available tables.
         boolean isSpatial = false;
-        if(dataStore.getDataStoreTypeList() != null){
-            for(DataType dataType : dataStore.getDataStoreTypeList()) {
+        if(jdbcTable.getDataStoreTypeList() != null){
+            for(DataType dataType : jdbcTable.getDataStoreTypeList()) {
                 if(DataType.isSpatialType(dataType)) {
                     isSpatial = true;
                 }
             }
         }
-        populateWithTable(geocatalogComboBox, dataStore.getDataStoreTypeList(), dataStore.getExcludedTypeList(),
+        populateWithTable(geocatalogComboBox, jdbcTable.getDataStoreTypeList(), jdbcTable.getExcludedTypeList(),
                 false, isSpatial);
         //Adds the listener on combo box item selection
         geocatalogComboBox.addActionListener(
@@ -145,7 +145,7 @@ public class DataStoreUI implements DataUI {
         URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
         geocatalogComboBox.putClientProperty(URI_PROPERTY, uri);
         geocatalogComboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
-        geocatalogComboBox.putClientProperty(DATA_STORE_PROPERTY, dataStore);
+        geocatalogComboBox.putClientProperty(DATA_STORE_PROPERTY, jdbcTable);
         geocatalogComboBox.putClientProperty(IS_OUTPUT_PROPERTY, false);
         geocatalogComboBox.setBackground(Color.WHITE);
         geocatalogComboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
@@ -250,18 +250,18 @@ public class DataStoreUI implements DataUI {
         //Retrieve the client properties
         JComboBox<ContainerItem<Object>> comboBox = (JComboBox)source;
         //Refreshes the list of tables displayed
-        DataStore dataStore = (DataStore)comboBox.getClientProperty(DATA_STORE_PROPERTY);
+        JDBCTable jdbcTable = (JDBCTable)comboBox.getClientProperty(DATA_STORE_PROPERTY);
         boolean isOptional = (boolean)comboBox.getClientProperty(IS_OUTPUT_PROPERTY);
         Object selectedItem = comboBox.getSelectedItem();
         boolean isSpatial = false;
-        if(dataStore.getDataStoreTypeList() != null){
-            for(DataType dataType : dataStore.getDataStoreTypeList()) {
+        if(jdbcTable.getDataStoreTypeList() != null){
+            for(DataType dataType : jdbcTable.getDataStoreTypeList()) {
                 if(DataType.isSpatialType(dataType)) {
                     isSpatial = true;
                 }
             }
         }
-        populateWithTable(comboBox, dataStore.getDataStoreTypeList(), dataStore.getExcludedTypeList(), isOptional,
+        populateWithTable(comboBox, jdbcTable.getDataStoreTypeList(), jdbcTable.getExcludedTypeList(), isOptional,
                 isSpatial);
         if(selectedItem != null){
             comboBox.setSelectedItem(selectedItem);
@@ -323,7 +323,7 @@ public class DataStoreUI implements DataUI {
         //Retrieve the client properties
         Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
         URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
-        DataStore dataStore = (DataStore) comboBox.getClientProperty(DATA_STORE_PROPERTY);
+        JDBCTable jdbcTable = (JDBCTable) comboBox.getClientProperty(DATA_STORE_PROPERTY);
         String tableName;
         if(comboBox.getSelectedItem() instanceof ContainerItem) {
             tableName = ((ContainerItem) comboBox.getSelectedItem()).getLabel();
@@ -332,9 +332,9 @@ public class DataStoreUI implements DataUI {
             tableName = comboBox.getSelectedItem().toString();
         }
         //Tells all the dataField linked that the data source is loaded
-        if(dataStore.getListDataField() != null) {
-            for (DataField dataField : dataStore.getListDataField()) {
-                dataField.setSourceModified(true);
+        if(jdbcTable.getListJDBCTableField() != null) {
+            for (JDBCTableField jdbcTableField : jdbcTable.getListJDBCTableField()) {
+                jdbcTableField.setSourceModified(true);
             }
         }
         dataMap.put(uri, tableName);

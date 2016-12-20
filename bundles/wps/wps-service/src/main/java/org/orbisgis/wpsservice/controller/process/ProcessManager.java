@@ -43,7 +43,6 @@ import net.opengis.ows._2.MetadataType;
 import net.opengis.wps._2_0.*;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
-import org.orbisgis.wpsservice.LocalWpsServer;
 import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
 import org.orbisgis.wpsservice.controller.utils.CancelClosure;
@@ -292,7 +291,7 @@ public class ProcessManager {
                     // which is coma separated.
                     DataDescriptionType dataDescriptionType = i.getDataDescription().getValue();
                     if(dataDescriptionType instanceof FieldValue ||
-                            dataDescriptionType instanceof DataField ||
+                            dataDescriptionType instanceof JDBCTableField ||
                             dataDescriptionType instanceof Enumeration ||
                             dataDescriptionType instanceof RawData){
                         if(data != null) {

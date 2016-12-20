@@ -46,7 +46,7 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
-import org.orbisgis.wpsservice.model.DataField;
+import org.orbisgis.wpsservice.model.JDBCTableField;
 import org.orbisgis.wpsservice.model.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
@@ -59,7 +59,7 @@ import java.net.URI;
  * @author Sylvain PALOMINOS
  **/
 
-public class DataFieldParser implements Parser {
+public class JDBCTableFieldParser implements Parser {
 
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
@@ -75,11 +75,11 @@ public class DataFieldParser implements Parser {
         else {
             dataStoreUri = URI.create(JDBCTableFieldAttribute.jdbcTableReference());
         }
-        DataField dataField = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldAttribute, format, dataStoreUri);
+        JDBCTableField jdbcTableField = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldAttribute, format, dataStoreUri);
 
         //Instantiate the returned input
         InputDescriptionType input = new InputDescriptionType();
-        JAXBElement<DataField> jaxbElement = new ObjectFactory().createDataField(dataField);
+        JAXBElement<JDBCTableField> jaxbElement = new ObjectFactory().createDataField(jdbcTableField);
         input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
@@ -108,11 +108,11 @@ public class DataFieldParser implements Parser {
         else {
             dataStoreUri = URI.create(JDBCTableFieldAttribute.jdbcTableReference());
         }
-        DataField dataField = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldAttribute, format, dataStoreUri);
+        JDBCTableField jdbcTableField = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldAttribute, format, dataStoreUri);
 
         //Instantiate the returned output
         OutputDescriptionType output = new OutputDescriptionType();
-        JAXBElement<DataField> jaxbElement = new ObjectFactory().createDataField(dataField);
+        JAXBElement<JDBCTableField> jaxbElement = new ObjectFactory().createDataField(jdbcTableField);
         output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);

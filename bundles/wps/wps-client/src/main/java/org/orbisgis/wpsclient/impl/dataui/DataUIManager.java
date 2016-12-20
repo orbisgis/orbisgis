@@ -67,8 +67,8 @@ public class DataUIManager {
         dataUIMap = new HashMap<>();
         linkClassUI(LiteralDataType.class, new LiteralDataUI(), wpsClient);
         linkClassUI(RawData.class, new RawDataUI(), wpsClient);
-        linkClassUI(DataStore.class, new DataStoreUI(), wpsClient);
-        linkClassUI(DataField.class, new DataFieldUI(), wpsClient);
+        linkClassUI(JDBCTable.class, new JDBCTableUI(), wpsClient);
+        linkClassUI(JDBCTableField.class, new JDBCTableFieldUI(), wpsClient);
         linkClassUI(FieldValue.class, new FieldValueUI(), wpsClient);
         linkClassUI(Enumeration.class, new EnumerationUI(), wpsClient);
         linkClassUI(GeometryData.class, new GeometryUI(), wpsClient);

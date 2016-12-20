@@ -431,11 +431,11 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
     private void link(ProcessDescriptionType p){
         //Link the DataField with its DataStore
         for(InputDescriptionType i : p.getInput()){
-            if(i.getDataDescription().getValue() instanceof DataField){
-                DataField dataField = (DataField)i.getDataDescription().getValue();
-                for(InputDescriptionType dataStore : p.getInput()){
-                    if(dataStore.getIdentifier().getValue().equals(dataField.getDataStoreIdentifier().toString())){
-                        ((DataStore)dataStore.getDataDescription().getValue()).addDataField(dataField);
+            if(i.getDataDescription().getValue() instanceof JDBCTableField){
+                JDBCTableField jdbcTableField = (JDBCTableField)i.getDataDescription().getValue();
+                for(InputDescriptionType jdbcTable : p.getInput()){
+                    if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getDataStoreIdentifier().toString())){
+                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addDataField(jdbcTableField);
                     }
                 }
             }
@@ -446,20 +446,20 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
                 FieldValue fieldValue = (FieldValue)i.getDataDescription().getValue();
                 for(InputDescriptionType input : p.getInput()){
                     if(input.getIdentifier().getValue().equals(fieldValue.getDataFieldIdentifier().toString())){
-                        DataField dataField = (DataField)input.getDataDescription().getValue();
-                        dataField.addFieldValue(fieldValue);
-                        fieldValue.setDataStoredIdentifier(dataField.getDataStoreIdentifier());
+                        JDBCTableField jdbcTableField = (JDBCTableField)input.getDataDescription().getValue();
+                        jdbcTableField.addFieldValue(fieldValue);
+                        fieldValue.setDataStoredIdentifier(jdbcTableField.getDataStoreIdentifier());
                     }
                 }
             }
         }
         //Link the DataField with its DataStore
         for(OutputDescriptionType o : p.getOutput()){
-            if(o.getDataDescription().getValue() instanceof DataField){
-                DataField dataField = (DataField)o.getDataDescription().getValue();
-                for(OutputDescriptionType dataStore : p.getOutput()){
-                    if(dataStore.getIdentifier().getValue().equals(dataField.getDataStoreIdentifier().toString())){
-                        ((DataStore)dataStore.getDataDescription().getValue()).addDataField(dataField);
+            if(o.getDataDescription().getValue() instanceof JDBCTableField){
+                JDBCTableField jdbcTableField = (JDBCTableField)o.getDataDescription().getValue();
+                for(OutputDescriptionType jdbcTable : p.getOutput()){
+                    if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getDataStoreIdentifier().toString())){
+                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addDataField(jdbcTableField);
                     }
                 }
             }
@@ -470,9 +470,9 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
                 FieldValue fieldValue = (FieldValue)o.getDataDescription().getValue();
                 for(OutputDescriptionType output : p.getOutput()){
                     if(output.getIdentifier().getValue().equals(fieldValue.getDataFieldIdentifier().toString())){
-                        DataField dataField = (DataField)output.getDataDescription().getValue();
-                        dataField.addFieldValue(fieldValue);
-                        fieldValue.setDataStoredIdentifier(dataField.getDataStoreIdentifier());
+                        JDBCTableField jdbcTableField = (JDBCTableField)output.getDataDescription().getValue();
+                        jdbcTableField.addFieldValue(fieldValue);
+                        fieldValue.setDataStoredIdentifier(jdbcTableField.getDataStoreIdentifier());
                     }
                 }
             }
