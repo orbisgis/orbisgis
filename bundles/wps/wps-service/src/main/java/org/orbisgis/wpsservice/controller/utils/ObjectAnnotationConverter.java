@@ -585,7 +585,7 @@ public class ObjectAnnotationConverter {
             literalDataDomain.setAnyValue(new AnyValue());
             lddList.add(literalDataDomain);
         }
-        else {
+        /*else {
             LiteralDataDomain ldd = getLiteralDataDomain(literalDataAttribute.defaultDomain(), domainMetadataType);
             ldd.setDefault(true);
             lddList.add(ldd);
@@ -594,7 +594,7 @@ public class ObjectAnnotationConverter {
                     lddList.add(getLiteralDataDomain(literalDataDomain, domainMetadataType));
                 }
             }
-        }
+        }*/
         literalDataType.getLiteralDataDomain().clear();
         literalDataType.getLiteralDataDomain().addAll(lddList);
 
