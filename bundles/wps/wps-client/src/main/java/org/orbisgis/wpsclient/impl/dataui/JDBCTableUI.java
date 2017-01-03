@@ -297,7 +297,7 @@ public class JDBCTableUI implements DataUI {
 
     /**
      * When a table is selected in the geocatalog field, empty the textField for a new table,
-     * save the selected table and tell the child DataField that there is a modification.
+     * save the selected table and tell the child JDBCTableField that there is a modification.
      * @param source Source geocatalog JComboBox
      */
     public void onGeocatalogTableSelected(Object source){
@@ -307,7 +307,7 @@ public class JDBCTableUI implements DataUI {
         }
         String tableName0 = comboBox.getItemAt(0).getLabel();
         //If the ComboBox is empty, don't do anything.
-        //The process won't launch util the user sets the DataStore
+        //The process won't launch util the user sets the JDBCTable
         if(comboBox.getItemCount()>0 && tableName0.isEmpty()){
             return;
         }

@@ -79,7 +79,7 @@ public class JDBCTableFieldValueParser implements Parser {
 
         //Instantiate the returned input
         InputDescriptionType input = new InputDescriptionType();
-        JAXBElement<JDBCTableFieldValue> jaxbElement = new ObjectFactory().createFieldValue(JDBCTableFieldValue);
+        JAXBElement<JDBCTableFieldValue> jaxbElement = new ObjectFactory().createJDBCTableFieldValue(JDBCTableFieldValue);
         input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
@@ -112,7 +112,7 @@ public class JDBCTableFieldValueParser implements Parser {
 
         //Instantiate the returned output
         OutputDescriptionType output = new OutputDescriptionType();
-        JAXBElement<JDBCTableFieldValue> jaxbElement = new ObjectFactory().createFieldValue(JDBCTableFieldValue);
+        JAXBElement<JDBCTableFieldValue> jaxbElement = new ObjectFactory().createJDBCTableFieldValue(JDBCTableFieldValue);
         output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);

@@ -26,7 +26,7 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
 import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute
 
 /**
- * DataField output annotation.
+ * RawData output annotation.
  * The RawData is a complex data that represents a file or directory.
  * As an output, this annotation should be placed just before the variable.
  *

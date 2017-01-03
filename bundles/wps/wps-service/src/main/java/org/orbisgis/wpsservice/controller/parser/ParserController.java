@@ -199,17 +199,17 @@ public class ParserController {
 
     /**
      * Links the input and output with the 'parent'.
-     * i.e. : The DataStore contains a list of DataField related.
+     * i.e. : The DataStore contains a list of JDBCTableField related.
      * @param p Process to link.
      */
     private void link(ProcessDescriptionType p){
-        //Link the DataField with its DataStore
+        //Link the JDBCTableField with its DataStore
         for(InputDescriptionType i : p.getInput()){
             if(i.getDataDescription().getValue() instanceof JDBCTableField){
                 JDBCTableField jdbcTableField = (JDBCTableField)i.getDataDescription().getValue();
                 for(InputDescriptionType jdbcTable : p.getInput()){
                     if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getJDBCTableIdentifier().toString())){
-                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addDataField(jdbcTableField);
+                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCTableField(jdbcTableField);
                     }
                 }
             }
@@ -233,7 +233,7 @@ public class ParserController {
                 JDBCTableField jdbcTableField = (JDBCTableField)o.getDataDescription().getValue();
                 for(OutputDescriptionType jdbcTable : p.getOutput()){
                     if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getJDBCTableIdentifier().toString())){
-                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addDataField(jdbcTableField);
+                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCTableField(jdbcTableField);
                     }
                 }
             }

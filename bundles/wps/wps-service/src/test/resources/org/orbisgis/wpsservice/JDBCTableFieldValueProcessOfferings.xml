@@ -77,7 +77,7 @@
                 </ns5:JDBCTable>
             </ns3:Output>
             <ns3:Output>
-                <ns1:Title>JDBCTableDataField for the JDBCTableFieldValue</ns1:Title>
+                <ns1:Title>JDBCTableField for the JDBCTableFieldValue</ns1:Title>
                 <ns1:Abstract/>
                 <ns1:Keywords/>
                 <ns1:Identifier>orbisgis:test:jdbctablefield:output</ns1:Identifier>
@@ -102,6 +102,7 @@
                 <ns5:JDBCTableFieldValue multiSelection="true">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                     <ns5:JDBCTableFieldId>orbisgis:test:jdbctablefield:output</ns5:JDBCTableFieldId>
+                    <ns5:JDBCTableId>orbisgis:test:jdbctable:output</ns5:JDBCTableId>
                     <ns5:JDBCTableId>orbisgis:test:jdbctable:output</ns5:JDBCTableId>
                 </ns5:JDBCTableFieldValue>
             </ns3:Output>

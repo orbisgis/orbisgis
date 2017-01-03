@@ -54,7 +54,7 @@ import java.lang.reflect.Field;
 import java.net.URI;
 
 /**
- * Parser for the DataField input/output annotations.
+ * Parser for the JDBCTableField input/output annotations.
  *
  * @author Sylvain PALOMINOS
  **/
@@ -63,7 +63,7 @@ public class JDBCTableFieldParser implements Parser {
 
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
-        //Instantiate the DataField object
+        //Instantiate the JDBCTableField object
         JDBCTableFieldAttribute JDBCTableFieldAttribute = f.getAnnotation(JDBCTableFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataStoreUri;
@@ -79,7 +79,7 @@ public class JDBCTableFieldParser implements Parser {
 
         //Instantiate the returned input
         InputDescriptionType input = new InputDescriptionType();
-        JAXBElement<JDBCTableField> jaxbElement = new ObjectFactory().createDataField(jdbcTableField);
+        JAXBElement<JDBCTableField> jaxbElement = new ObjectFactory().createJDBCTableField(jdbcTableField);
         input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
@@ -96,7 +96,7 @@ public class JDBCTableFieldParser implements Parser {
 
     @Override
     public OutputDescriptionType parseOutput(Field f, URI processId) {
-        //Instantiate the DataField object
+        //Instantiate the JDBCTableField object
         JDBCTableFieldAttribute JDBCTableFieldAttribute = f.getAnnotation(JDBCTableFieldAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataStoreUri;
@@ -112,7 +112,7 @@ public class JDBCTableFieldParser implements Parser {
 
         //Instantiate the returned output
         OutputDescriptionType output = new OutputDescriptionType();
-        JAXBElement<JDBCTableField> jaxbElement = new ObjectFactory().createDataField(jdbcTableField);
+        JAXBElement<JDBCTableField> jaxbElement = new ObjectFactory().createJDBCTableField(jdbcTableField);
         output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);

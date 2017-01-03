@@ -48,21 +48,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DataStore represent a data source which can be an SQL table, a JSON file, a Shape file ...
+ * JDBCTable represent a data source which can be an SQL table, a JSON file, a Shape file ...
  *
  * @author Sylvain PALOMINOS
  **/
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DataStore", propOrder = {"dataStoreTypeList", "excludedTypeList", "listDataField"})
+@XmlType(name = "JDBCTable", propOrder = {"dataTypeList", "excludedTypeList", "listJDBCTableField"})
 public class JDBCTable extends ComplexDataType {
-    /** List of field type that should be contained by the DataStore.*/
-    @XmlElement(name = "DataStoreType", namespace = "http://orbisgis.org")
-    private List<DataType> dataStoreTypeList;
-    /** List of field type forbidden for the DataSTore. If the DataStore contains the type, it won't be available.*/
+    /** List of field type that should be contained by the JDBCTable.*/
+    @XmlElement(name = "JDBCTableType", namespace = "http://orbisgis.org")
+    private List<DataType> dataTypeList;
+    /** List of field type forbidden for the DataSTore. If the JDBCTable contains the type, it won't be available.*/
     @XmlElement(name = "ExcludedType", namespace = "http://orbisgis.org")
     private List<DataType> excludedTypeList;
-    /** List of DataField liked to the DataStore */
-    @XmlElement(name = "DataField", namespace = "http://orbisgis.org")
+    /** List of JDBCTableField liked to the JDBCTable */
+    @XmlElement(name = "JDBCTableField", namespace = "http://orbisgis.org")
     private List<JDBCTableField> listJDBCTableField;
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(JDBCTable.class);
@@ -74,7 +74,7 @@ public class JDBCTable extends ComplexDataType {
      */
     public JDBCTable(List<Format> formatList) throws MalformedScriptException {
         format = formatList;
-        dataStoreTypeList = new ArrayList<>();
+        dataTypeList = new ArrayList<>();
         excludedTypeList = new ArrayList<>();
         listJDBCTableField = new ArrayList<>();
     }
@@ -88,52 +88,52 @@ public class JDBCTable extends ComplexDataType {
     }
 
     /**
-     * Adds a DataField as a 'child' of the DataStore.
-     * @param jdbcTableField DataField to add.
+     * Adds a JDBCTableField as a 'child' of the JDBCTable.
+     * @param jdbcTableField JDBCTableField to add.
      */
-    public void addDataField(JDBCTableField jdbcTableField){
+    public void addJDBCTableField(JDBCTableField jdbcTableField){
         this.listJDBCTableField.add(jdbcTableField);
     }
 
     /**
-     * Return the list of 'child' DataField.
-     * @return List of DataField.
+     * Return the list of 'child' JDBCTableField.
+     * @return List of JDBCTableField.
      */
     public List<JDBCTableField> getListJDBCTableField(){
         return listJDBCTableField;
     }
 
     /**
-     * Sets the list of types that should be contained by the DataStore.
-     * @param dataStoreTypeList List of DataType.
+     * Sets the list of types that should be contained by the JDBCTable.
+     * @param dataTypeList List of DataType.
      */
-    public void setDataStoreTypeList(List<DataType> dataStoreTypeList) throws MalformedScriptException {
-        for(DataType dataStoreType : dataStoreTypeList){
+    public void setDataTypeList(List<DataType> dataTypeList) throws MalformedScriptException {
+        for(DataType dataStoreType : dataTypeList){
             for(DataType excludedType : excludedTypeList){
                 if(dataStoreType.equals(excludedType)){
-                    throw new MalformedScriptException(JDBCTableField.class, "dataStoreTypeList", I18N.tr("A same DataType is" +
+                    throw new MalformedScriptException(JDBCTableField.class, "dataTypeList", I18N.tr("A same DataType is" +
                             " accepted and excluded."));
                 }
             }
         }
-        this.dataStoreTypeList = dataStoreTypeList;
+        this.dataTypeList = dataTypeList;
     }
 
     /**
-     * Returns the list of types that should be contained by the DataStore.
+     * Returns the list of types that should be contained by the JDBCTable.
      * @return List of DataType.
      */
     public List<DataType> getDataTypeList() {
-        return dataStoreTypeList;
+        return dataTypeList;
     }
 
     /**
-     * Sets the list of excluded type for the DataStore.
+     * Sets the list of excluded type for the JDBCTable.
      * @param excludedTypeList List of excluded DataType.
      */
     public void setExcludedTypeList(List<DataType> excludedTypeList) throws MalformedScriptException {
         for(DataType excludedType : excludedTypeList){
-            for(DataType dataType : dataStoreTypeList){
+            for(DataType dataType : dataTypeList){
                 if(excludedType.equals(dataType)){
                     throw new MalformedScriptException(JDBCTableField.class, "excludedTypeList", I18N.tr("A same DataType is" +
                             " accepted and excluded."));

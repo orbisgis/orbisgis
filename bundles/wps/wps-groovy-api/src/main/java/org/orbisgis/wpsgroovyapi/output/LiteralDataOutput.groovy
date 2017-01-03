@@ -26,7 +26,7 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 import org.orbisgis.wpsgroovyapi.attributes.LiteralDataAttribute
 
 /**
- * DataField output annotation.
+ * LiteralData output annotation.
  * The LiteralData represents a number or a string.
  * As an output, this annotation should be placed just before the variable.
  *

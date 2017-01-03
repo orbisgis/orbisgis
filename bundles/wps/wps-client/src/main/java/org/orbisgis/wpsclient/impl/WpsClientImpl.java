@@ -424,8 +424,8 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         refreshAvailableScripts();
     }
     /**
-     * Link the deiffrents input/output together like the DataStore with its DataFields,
-     * the DataFields with its JDBCTableFieldValues ...
+     * Link the different input/output together like the JDBCTable with its JDBCTableFields,
+     * the JDBCTableFields with its JDBCTableFieldValues ...
      * @param p Process to link.
      */
     private void link(ProcessDescriptionType p){
@@ -435,7 +435,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
                 JDBCTableField jdbcTableField = (JDBCTableField)i.getDataDescription().getValue();
                 for(InputDescriptionType jdbcTable : p.getInput()){
                     if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getJDBCTableIdentifier().toString())){
-                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addDataField(jdbcTableField);
+                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCTableField(jdbcTableField);
                     }
                 }
             }
@@ -459,7 +459,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
                 JDBCTableField jdbcTableField = (JDBCTableField)o.getDataDescription().getValue();
                 for(OutputDescriptionType jdbcTable : p.getOutput()){
                     if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getJDBCTableIdentifier().toString())){
-                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addDataField(jdbcTableField);
+                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCTableField(jdbcTableField);
                     }
                 }
             }

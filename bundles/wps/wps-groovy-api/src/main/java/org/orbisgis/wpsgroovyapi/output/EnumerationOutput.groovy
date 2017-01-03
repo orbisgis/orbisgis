@@ -26,7 +26,7 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 
 /**
- * DataField output annotation.
+ * Enumeration output annotation.
  * The Enumeration complex data represents a selection of values from a predefined list.
  * As an output, this annotation should be placed just before the variable.
  *

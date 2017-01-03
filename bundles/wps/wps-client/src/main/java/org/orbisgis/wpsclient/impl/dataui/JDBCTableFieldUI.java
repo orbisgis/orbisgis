@@ -253,7 +253,7 @@ public class JDBCTableFieldUI implements DataUI {
     }
 
     /**
-     * When the mouse entered the JComboBox, update it according to his DataStore parent.
+     * When the mouse entered the JComboBox, update it according to his JDBCTable parent.
      * @param source The source JComboBox.
      */
     public void onComboBoxEntered(Object source){
@@ -264,7 +264,7 @@ public class JDBCTableFieldUI implements DataUI {
             URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
             boolean isOptional = (boolean) comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
             ContainerItem<Object> defaultItem = (ContainerItem<Object>)comboBox.getClientProperty(DEFAULT_ITEM_PROPERTY);
-            //If the DataStore related to the DataField has been modified, reload the dataField values
+            //If the JDBCTable related to the JDBCTableField has been modified, reload the dataField values
             if (jdbcTableField.isSourceModified() || (comboBox.getSelectedItem() != null && comboBox.getSelectedItem().equals(defaultItem))) {
                 Object obj = dataMap.get(uri);
                 comboBox.removeItem(defaultItem);
@@ -307,7 +307,7 @@ public class JDBCTableFieldUI implements DataUI {
                 }
             }
 
-            //If the comboBox doesn't contains any values, it mean that the DataStore hasn't been well selected.
+            //If the comboBox doesn't contains any values, it mean that the JDBCTable hasn't been well selected.
             //So show a tooltip text to warn the user.
             if (comboBox.getItemCount() == 0) {
                 comboBox.putClientProperty(INITIAL_DELAY_PROPERTY, ToolTipManager.sharedInstance().getInitialDelay());
@@ -315,7 +315,7 @@ public class JDBCTableFieldUI implements DataUI {
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
                 String dataFieldStr = jdbcTableField.getJDBCTableIdentifier().toString();
-                comboBox.setToolTipText(I18N.tr("First configure the DataStore {0}.",
+                comboBox.setToolTipText(I18N.tr("First configure the JDBCTable {0}.",
                         dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1)));
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(comboBox, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
@@ -330,7 +330,7 @@ public class JDBCTableFieldUI implements DataUI {
             URI uri = (URI) list.getClientProperty(URI_PROPERTY);
             Map<URI, Object> dataMap = (Map) list.getClientProperty(DATA_MAP_PROPERTY);
             DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
-            //If the DataStore related to the DataField has been modified, reload the dataField values
+            //If the JDBCTable related to the JDBCTableField has been modified, reload the dataField values
             if (jdbcTableField.isSourceModified()) {
                 jdbcTableField.setSourceModified(false);
                 model.removeAllElements();
@@ -342,7 +342,7 @@ public class JDBCTableFieldUI implements DataUI {
                 }
             }
 
-            //If the comboBox doesn't contains any values, it mean that the DataStore hasn't been well selected.
+            //If the comboBox doesn't contains any values, it mean that the JDBCTable hasn't been well selected.
             //So show a tooltip text to warn the user.
             if (model.getSize() == 0) {
                 list.putClientProperty(INITIAL_DELAY_PROPERTY, ToolTipManager.sharedInstance().getInitialDelay());
@@ -358,10 +358,10 @@ public class JDBCTableFieldUI implements DataUI {
                     else if(split.length == 3){
                         dataFieldStr = split[1]+"."+split[2];
                     }
-                    list.setToolTipText(I18N.tr("First configure the DataField {0}", dataFieldStr));
+                    list.setToolTipText(I18N.tr("First configure the JDBCTableField {0}", dataFieldStr));
                 }
                 else {
-                    list.setToolTipText(I18N.tr("First configure the DataStore {0}",
+                    list.setToolTipText(I18N.tr("First configure the JDBCTable {0}",
                             dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1)));
                 }
                 ToolTipManager.sharedInstance().mouseMoved(

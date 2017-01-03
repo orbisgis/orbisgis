@@ -53,7 +53,7 @@ import java.util.List;
 public class JDBCTableFieldValue extends ComplexDataType {
 
     /** Identifier of the 'parent' JDBCTableField */
-    @XmlElement(name = "DataFieldId", namespace = "http://orbisgis.org")
+    @XmlElement(name = "JDBCTableFieldId", namespace = "http://orbisgis.org")
     private URI jdbcTableFieldIdentifier;
     /** Indicates if the JDBCTableFieldValue should be reloaded because of a modification of the parent JDBCTableField.*/
     @XmlTransient
@@ -92,7 +92,7 @@ public class JDBCTableFieldValue extends ComplexDataType {
     }
 
     /**
-     * Sets the URI of the parent DataField.
+     * Sets the URI of the parent JDBCTableField.
      * @param jdbcTableFieldIdentifier URI of the JDBCTableField.
      */
     public void setJDBCTableFieldIdentifierIdentifier(URI jdbcTableFieldIdentifier){

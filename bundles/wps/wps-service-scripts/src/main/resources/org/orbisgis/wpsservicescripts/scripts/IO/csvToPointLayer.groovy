@@ -12,12 +12,12 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /**
  * This process creates a Point layer from a .CSV file.
  * The user has to specify (mandatory) :
- *  - The input CSV file (DataStore)
+ *  - The input CSV file (JDBCTable)
  *  - The CSV separators (Enumeration)
  *  - If the field name is on the first line (LiteralData)
- *  - The X field (DataField)
- *  - The Y field (DataField)
- *  - The Output data source (DataStore)
+ *  - The X field (JDBCTableField)
+ *  - The Y field (JDBCTableField)
+ *  - The Output data source (JDBCTable)
  *
  * The user can specify (optional):
  *  - The input csv EPSG code (Enumeration)

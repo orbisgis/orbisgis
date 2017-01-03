@@ -104,7 +104,7 @@ public class ObjectFactory {
             name="JDBCTableField",
             substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
             substitutionHeadName="DataDescription")
-    public JAXBElement<JDBCTableField> createDataField(JDBCTableField jdbcTableField) {
+    public JAXBElement<JDBCTableField> createJDBCTableField(JDBCTableField jdbcTableField) {
         return new JAXBElement<>(_JDBCTableField_QNAME, JDBCTableField.class, jdbcTableField);
     }
 
@@ -122,7 +122,7 @@ public class ObjectFactory {
             name="JDBCTableFieldValue",
             substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
             substitutionHeadName="DataDescription")
-    public JAXBElement<JDBCTableFieldValue> createFieldValue(JDBCTableFieldValue jdbcTableFieldValue) {
+    public JAXBElement<JDBCTableFieldValue> createJDBCTableFieldValue(JDBCTableFieldValue jdbcTableFieldValue) {
         return new JAXBElement<>(_JDBCTableFieldValue_QNAME, JDBCTableFieldValue.class, jdbcTableFieldValue);
     }
 

@@ -12,11 +12,11 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /**
  * This process insert the given values in the given table.
  * The user has to specify (mandatory):
- *  - The input table (DataStore)
+ *  - The input table (JDBCTable)
  *  - The values to insert (LiteralData)
  *
  * The user can specify (optional) :
- *  - The field list concerned by the value insertion (DataField)
+ *  - The field list concerned by the value insertion (JDBCTableField)
  *
  * @author Sylvain PALOMINOS
  */

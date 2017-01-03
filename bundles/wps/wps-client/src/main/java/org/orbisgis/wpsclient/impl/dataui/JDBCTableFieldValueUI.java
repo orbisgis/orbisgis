@@ -216,7 +216,7 @@ public class JDBCTableFieldValueUI implements DataUI {
     }
 
     /**
-     * Update the JList according to if DataField parent.
+     * Update the JList according to if JDBCTableField parent.
      * @param source the source JList.
      */
     public void refreshList(Object source){
@@ -278,7 +278,7 @@ public class JDBCTableFieldValueUI implements DataUI {
             Map<URI, Object> dataMap = (Map) list.getClientProperty(DATA_MAP_PROPERTY);
             boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
             DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
-            //If the DataField related to the jdbcTableFieldValue has been modified, reload the dataField values
+            //If the JDBCTableField related to the jdbcTableFieldValue has been modified, reload the dataField values
             if(jdbcTableFieldValue.isJDBCTableFieldModified()) {
                 jdbcTableFieldValue.setJDBCTableFieldModified(false);
                 String tableName = null;
@@ -348,7 +348,7 @@ public class JDBCTableFieldValueUI implements DataUI {
                 }
             }
 
-            //If the jList doesn't contains any values, it mean that the DataField hasn't been well selected.
+            //If the jList doesn't contains any values, it mean that the JDBCTableField hasn't been well selected.
             //So show a tooltip text to warn the user.
             if(list.getModel().getSize() == 0) {
                 list.putClientProperty(INITIAL_DELAY_PROPERTY, ToolTipManager.sharedInstance().getInitialDelay());
@@ -364,10 +364,10 @@ public class JDBCTableFieldValueUI implements DataUI {
                     else if(split.length == 4){
                         fieldValueStr = split[1]+"."+split[2]+"."+split[3];
                     }
-                    list.setToolTipText(I18N.tr("First configure the DataField {0}.", fieldValueStr));
+                    list.setToolTipText(I18N.tr("First configure the JDBCTableField {0}.", fieldValueStr));
                 }
                 else {
-                    list.setToolTipText(I18N.tr("First configure the DataField {0}",
+                    list.setToolTipText(I18N.tr("First configure the JDBCTableField {0}",
                             fieldValueStr.substring(fieldValueStr.lastIndexOf(":") + 1)));
                 }
                 model.addElement(defaultElement);
