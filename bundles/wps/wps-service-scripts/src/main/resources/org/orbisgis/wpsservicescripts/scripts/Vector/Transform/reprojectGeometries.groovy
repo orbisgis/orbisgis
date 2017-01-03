@@ -16,10 +16,10 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /**
  * This process reproject a geometry table using the SQL function.
  * The user has to specify (mandatory):
- *  - The input spatial data source (DataStore)
+ *  - The input spatial data source (JDBCTable)
  *  - The geometry column (LiteralData)
  *  - The SRID value selected from the spatial_ref table
- *  - The output data source (DataStore)
+ *  - The output data source (JDBCTable)
  *
  * @return A database table or a file.
  * @author Erwan Bocher
@@ -51,7 +51,7 @@ def processing() {
 		}
 	}
 
- 	query +=  " FROM "+inputDataStore+";"
+ 	query +=  " FROM "+inputJDBCTable+";"
 	logger.warn(query)
     //Execute the query
     sql.execute(query)
@@ -62,7 +62,7 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the input data source. */
+/** This JDBCTable is the input data source. */
 @JDBCTableInput(
 		title = [
 				"Input spatial data","en",
@@ -71,16 +71,16 @@ def processing() {
 				"The spatial data source to be reprojected.","en",
 				"La source de données spatiales pour la reprojection.","fr"],
 		dataTypes = ["GEOMETRY"],
-		identifier = "orbisgis:wps:official:reprojectGeometries:inputDataStore"
+		identifier = "orbisgis:wps:official:reprojectGeometries:inputJDBCTable"
 )
-String inputDataStore
+String inputJDBCTable
 
 
 /**********************/
 /** INPUT Parameters **/
 /**********************/
 
-/** Name of the Geometric field of the DataStore inputDataStore. */
+/** Name of the Geometric field of the JDBCTable inputJDBCTable. */
 @JDBCTableFieldInput(
 		title = [
 				"Geometric field","en",
@@ -88,7 +88,7 @@ String inputDataStore
 		description = [
 				"The geometric field of the data source.","en",
 				"Le champ géométrique de la source de données.","fr"],
-        jdbcTableReference = "orbisgis:wps:official:reprojectGeometries:inputDataStore",
+        jdbcTableReference = "orbisgis:wps:official:reprojectGeometries:inputJDBCTable",
         dataTypes = ["GEOMETRY"],
 		identifier = "orbisgis:wps:official:reprojectGeometries:geometryField"
 )
@@ -121,7 +121,7 @@ String[] srid
 		excludedTypes=["GEOMETRY"],
 		multiSelection = true,
 		minOccurs = 0,
-        jdbcTableReference = "orbisgis:wps:official:reprojectGeometries:inputDataStore",
+        jdbcTableReference = "orbisgis:wps:official:reprojectGeometries:inputJDBCTable",
 		identifier = "orbisgis:wps:official:reprojectGeometries:fieldList"
 )
 String[] fieldList

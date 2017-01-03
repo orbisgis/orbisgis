@@ -433,7 +433,7 @@ public class ObjectAnnotationConverter {
         for(String type : Arrays.asList(jdbcTableAttribute.dataTypes())){
             dataTypeList.add(DataType.getDataTypeFromFieldType(type));
         }
-        jdbcTable.setDataStoreTypeList(dataTypeList);
+        jdbcTable.setDataTypeList(dataTypeList);
         List<DataType> excludedTypeList = new ArrayList<>();
         for(String type : Arrays.asList(jdbcTableAttribute.excludedTypes())){
             excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
@@ -453,11 +453,11 @@ public class ObjectAnnotationConverter {
      *
      * @param jdbcTableFieldAttribute
      * @param format
-     * @param dataStoreUri
+     * @param jdbcTableUri
      * @return
      */
     public static JDBCTableField annotationToObject(JDBCTableFieldAttribute jdbcTableFieldAttribute, Format format,
-                                                    URI dataStoreUri) throws MalformedScriptException {
+                                                    URI jdbcTableUri) throws MalformedScriptException {
         format.setDefault(true);
         List<DataType> dataTypeList = new ArrayList<>();
         for(String type : Arrays.asList(jdbcTableFieldAttribute.dataTypes())){
@@ -469,7 +469,7 @@ public class ObjectAnnotationConverter {
         }
         List<Format> formatList = new ArrayList<>();
         formatList.add(format);
-        JDBCTableField jdbcTableField = new JDBCTableField(formatList, dataTypeList, dataStoreUri);
+        JDBCTableField jdbcTableField = new JDBCTableField(formatList, dataTypeList, jdbcTableUri);
         jdbcTableField.setExcludedTypeList(excludedTypeList);
         jdbcTableField.setMultiSelection(jdbcTableFieldAttribute.multiSelection());
         return jdbcTableField;

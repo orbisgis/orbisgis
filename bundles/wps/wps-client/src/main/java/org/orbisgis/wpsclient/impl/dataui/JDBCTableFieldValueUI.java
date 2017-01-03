@@ -195,7 +195,7 @@ public class JDBCTableFieldValueUI implements DataUI {
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon(ToolBoxIcon.FIELD_VALUE);
+        return ToolBoxIcon.getIcon(ToolBoxIcon.JDBC_TABLE_FIELD_VALUE);
     }
 
     /**

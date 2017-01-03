@@ -27,7 +27,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
 
     //Build the start of the query
-    String query = "CREATE TABLE "+outputTableName+" AS SELECT * from ST_MakeGrid('"+inputDataStore+"',"+x_distance+","+y_distance+")"
+    String query = "CREATE TABLE "+outputTableName+" AS SELECT * from ST_MakeGrid('"+inputJDBCTable+"',"+x_distance+","+y_distance+")"
     
     //Execute the query
     sql.execute(query)
@@ -46,7 +46,7 @@ def processing() {
                 "The spatial data source to compute the grid. The extend of grid is based on the full extend of the table.","en",
                 "La source de données spatiales utilisée pour le calcul de la grille. L'étendue de la grille se base sur l'étendue de la table.","fr"],
         dataTypes = ["GEOMETRY"])
-String inputDataStore
+String inputJDBCTable
 
 /**********************/
 /** INPUT Parameters **/

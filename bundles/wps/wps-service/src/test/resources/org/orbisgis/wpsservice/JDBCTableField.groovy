@@ -31,7 +31,7 @@ def processing() {
 
 @JDBCTableInput(title = "JDBCTable for the JDBCTableField",
         identifier = "orbisgis:test:jdbctable:input")
-String dataStoreInput
+String jdbcTableInput
 
 /** This JDBCTableField is the input data source. */
 @JDBCTableFieldInput(
@@ -53,7 +53,7 @@ String inputJDBCTableField
 
 @JDBCTableOutput(title = "JDBCTable for the JDBCTableField",
         identifier = "orbisgis:test:jdbctable:output")
-String dataStoreOutput
+String jdbcTableOutput
 
 /** This JDBCTableField is the output data source. */
 @JDBCTableFieldOutput(

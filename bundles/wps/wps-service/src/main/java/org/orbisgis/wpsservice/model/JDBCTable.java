@@ -58,7 +58,7 @@ public class JDBCTable extends ComplexDataType {
     /** List of field type that should be contained by the JDBCTable.*/
     @XmlElement(name = "JDBCTableType", namespace = "http://orbisgis.org")
     private List<DataType> dataTypeList;
-    /** List of field type forbidden for the DataSTore. If the JDBCTable contains the type, it won't be available.*/
+    /** List of field type forbidden for the JDBCTable. If the JDBCTable contains the type, it won't be available.*/
     @XmlElement(name = "ExcludedType", namespace = "http://orbisgis.org")
     private List<DataType> excludedTypeList;
     /** List of JDBCTableField liked to the JDBCTable */
@@ -108,9 +108,9 @@ public class JDBCTable extends ComplexDataType {
      * @param dataTypeList List of DataType.
      */
     public void setDataTypeList(List<DataType> dataTypeList) throws MalformedScriptException {
-        for(DataType dataStoreType : dataTypeList){
+        for(DataType dataType : dataTypeList){
             for(DataType excludedType : excludedTypeList){
-                if(dataStoreType.equals(excludedType)){
+                if(dataType.equals(excludedType)){
                     throw new MalformedScriptException(JDBCTableField.class, "dataTypeList", I18N.tr("A same DataType is" +
                             " accepted and excluded."));
                 }

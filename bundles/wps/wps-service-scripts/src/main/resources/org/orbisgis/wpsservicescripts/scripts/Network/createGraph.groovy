@@ -26,7 +26,7 @@ def processing() {
         slope=false;
     }
 	
-    String query = " SELECT ST_GRAPH('"   + inputDataStore + "', '"+geometricField[0]+"',"+tolerance+ ", "+ slope+ ")"
+    String query = " SELECT ST_GRAPH('"   + inputJDBCTable + "', '"+geometricField[0]+"',"+tolerance+ ", "+ slope+ ")"
 
     //Execute the query
     sql.execute(query)
@@ -38,24 +38,24 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the input data source. */
+/** This JDBCTable is the input data source. */
 @JDBCTableInput(
         title = ["Input spatial data","en","Donnée spatiale d'entrée","fr"],
         description = [
                 "The spatial data source to create the graphe tables.","en",
                 "La source de données spatiales servant à la création des tables du graphe.","fr"],
         dataTypes = ["LINESTRING", "MULTILINESTRING"])
-String inputDataStore
+String inputJDBCTable
 
 
-/** Name of the Geometric field of the DataStore inputDataStore. */
+/** Name of the Geometric field of the JDBCTable inputJDBCTable. */
 @JDBCTableFieldInput(
         title = ["Geometric field","en",
                 "Champ géométrique","fr"],
         description = [
                 "The geometric field of the data source.","en",
                 "Le champ géométrique de la source de données.","fr"],
-        jdbcTableReference = "inputDataStore",
+        jdbcTableReference = "inputJDBCTable",
         dataTypes = ["LINESTRING", "MULTILINESTRING"])
 String[] geometricField
 

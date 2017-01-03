@@ -59,8 +59,8 @@ import java.util.*;
 import java.util.List;
 
 /**
- * DataUI implementation for DataStore.
- * This class generate an interactive UI dedicated to the configuration of a DataStore.
+ * DataUI implementation for JDBCTable.
+ * This class generate an interactive UI dedicated to the configuration of a JDBCTable.
  * The interface generated will be used in the ProcessEditor.
  *
  * @author Sylvain PALOMINOS
@@ -94,7 +94,7 @@ public class JDBCTableUI implements DataUI {
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon(ToolBoxIcon.DATA_STORE);
+        return ToolBoxIcon.getIcon(ToolBoxIcon.JDBC_TABLE);
     }
 
     @Override
@@ -103,11 +103,11 @@ public class JDBCTableUI implements DataUI {
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         JDBCTable jdbcTable;
         boolean isOptional = false;
-        /** Retrieve the DataStore from the DescriptionType. **/
+        /** Retrieve the JDBCTable from the DescriptionType. **/
         if(inputOrOutput instanceof InputDescriptionType){
             InputDescriptionType input = (InputDescriptionType)inputOrOutput;
             jdbcTable = (JDBCTable)input.getDataDescription().getValue();
-            //As an input, the DataStore can be optional.
+            //As an input, the JDBCTable can be optional.
             if(input.getMinOccurs().equals(new BigInteger("0"))){
                 isOptional = true;
             }
@@ -121,7 +121,7 @@ public class JDBCTableUI implements DataUI {
         //Instantiate the comboBox containing the table list
         JComboBox<ContainerItem<Object>> geocatalogComboBox = new JComboBox<>();
         JPanel geocatalogComponent = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-        //If the DataStore is an input, uses a custom comboBox renderer to show an icon, the table name, the SRID ...
+        //If the JDBCTable is an input, uses a custom comboBox renderer to show an icon, the table name, the SRID ...
         geocatalogComboBox.setRenderer(new JPanelListRenderer());
         //Populate the comboBox with the available tables.
         boolean isSpatial = false;
@@ -154,7 +154,7 @@ public class JDBCTableUI implements DataUI {
         if(isOptional){
             geocatalogComboBox.add(new JPanel());
         }
-        //Register the geocatalog combo box as a property in the DataStore type box
+        //Register the geocatalog combo box as a property in the JDBCTable type box
         if(!isOptional) {
             if (geocatalogComboBox.getItemCount() > 0) {
                 if (dataMap.containsKey(uri)) {
@@ -186,7 +186,7 @@ public class JDBCTableUI implements DataUI {
      * @param geocatalogComboBox The combo box to populate.
      * @param dataTypes Type of field accepted. If empty, accepts all the field.
      * @param excludedTypes Type of field excluded.
-     * @param isOutput True if the DataStore is an output, false otherwise.
+     * @param isOutput True if the JDBCTable is an output, false otherwise.
      * @param isSpatial True if the wanted table have to be spatial, false otherwise.
      */
     private void populateWithTable(JComboBox<ContainerItem<Object>> geocatalogComboBox,

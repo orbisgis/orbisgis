@@ -223,7 +223,7 @@ public class JDBCTableFieldUI implements DataUI {
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon(ToolBoxIcon.DATA_FIELD);
+        return ToolBoxIcon.getIcon(ToolBoxIcon.JDBC_TABLE_FIELD);
     }
 
     /**

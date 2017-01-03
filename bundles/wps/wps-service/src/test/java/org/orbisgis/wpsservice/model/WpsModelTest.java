@@ -97,7 +97,7 @@ public class WpsModelTest {
 
             String errorMessage = "Error, the JDBCTableField 'jdbcTableUri' field should be 'jdbctable:uri' instead of "+
                     jdbcTableField.getJDBCTableIdentifier().toString();
-            Assert.assertEquals(errorMessage, URI.create("datastore:uri"), jdbcTableField.getJDBCTableIdentifier());
+            Assert.assertEquals(errorMessage, URI.create("jdbctable:uri"), jdbcTableField.getJDBCTableIdentifier());
 
             errorMessage = "Error, the JDBCTableField 'isMultiSelection' field should be 'true' instead of "+
                     jdbcTableField.isMultiSelection();
@@ -131,7 +131,7 @@ public class WpsModelTest {
 
 
 
-    /** Field containing the DataStoreAttribute annotation. */
+    /** Field containing the JDBCTableAttribute annotation. */
     @JDBCTableAttribute(
             dataTypes = {"GEOMETRY", "NUMBER"},
             excludedTypes = {"MULTILINESTRING", "LONG"}
@@ -139,10 +139,10 @@ public class WpsModelTest {
     public Object jdbcTableInput;
 
     /**
-     * Test if the decoding and convert of the DataStore annotation into its java object is valid.
+     * Test if the decoding and convert of the JDBCTable annotation into its java object is valid.
      */
     @Test
-    public void testDataStoreAttributeConvert(){
+    public void testJDBCTableAttributeConvert(){
         try {
             boolean annotationFound = false;
             //Retrieve the JDBCTable object
@@ -320,7 +320,7 @@ public class WpsModelTest {
                     jdbcTableFieldValue.isJDBCTableFieldModified();
             Assert.assertTrue(errorMessage, jdbcTableFieldValue.isJDBCTableFieldModified());
 
-            errorMessage = "Error, the JDBCTableFieldValue 'isDataStoreModified' field should be 'true' instead of "+
+            errorMessage = "Error, the JDBCTableFieldValue 'isJDBCTableModified' field should be 'true' instead of "+
                     jdbcTableFieldValue.isJDBCTableModified();
             Assert.assertTrue(errorMessage, jdbcTableFieldValue.isJDBCTableModified());
 

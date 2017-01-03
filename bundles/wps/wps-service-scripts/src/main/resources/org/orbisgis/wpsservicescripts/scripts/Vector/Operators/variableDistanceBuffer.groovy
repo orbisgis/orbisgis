@@ -14,9 +14,9 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /**
  * This process execute a buffer on a spatial data source using the ST_Buffer().
  * The user has to specify (mandatory):
- *  - The input spatial data source (DataStore)
- *  - The BufferSize (FieldData)
- *  - The output data source (DataStore)
+ *  - The input spatial data source (JDBCTable)
+ *  - The BufferSize (JDBCTableField)
+ *  - The output data source (JDBCTable)
  *
  * The user can specify (optional) :
  *  - The number of segments used to approximate a quarter circle (LiteralData)
@@ -75,7 +75,7 @@ def processing() {
         }
     }
 
-	query+=" FROM "+inputDataStore+";"
+	query+=" FROM "+inputJDBCTable+";"
 
     //Execute the query
     sql.execute(query)
@@ -87,7 +87,7 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the input data source for the buffer. */
+/** This JDBCTable is the input data source for the buffer. */
 @JDBCTableInput(
         title = [
                 "Input spatial data","en",
@@ -96,7 +96,7 @@ def processing() {
                 "The spatial data source for the buffer.","en",
                 "La source de données spatiales pour le tampon.","fr"],
         dataTypes = ["GEOMETRY"])
-String inputDataStore
+String inputJDBCTable
 
 /**********************/
 /** INPUT Parameters **/
@@ -109,7 +109,7 @@ String inputDataStore
         description = [
                 "The geometric field of the data source.","en",
                 "Le champ géométrique de la source de données.","fr"],
-        jdbcTableReference = "inputDataStore",
+        jdbcTableReference = "inputJDBCTable",
         dataTypes = ["GEOMETRY"])
 String[] geometricField
 
@@ -121,7 +121,7 @@ String[] geometricField
         description = [
                 "A numeric field to specify the size of the buffer.","en",
                 "Champ numérique contenant les tailles de tampon.","fr"],
-        jdbcTableReference = "inputDataStore",
+        jdbcTableReference = "inputJDBCTable",
         dataTypes = ["DOUBLE", "INTEGER", "LONG"])
 String[] bufferSize
 
@@ -184,7 +184,7 @@ String[] joinStyle
         excludedTypes=["GEOMETRY"],
         multiSelection = true,
         minOccurs = 0,
-        jdbcTableReference = "inputDataStore")
+        jdbcTableReference = "inputJDBCTable")
 String[] fieldList
 
 

@@ -67,7 +67,7 @@ public class JDBCTableFieldValueParser implements Parser {
         JDBCTableFieldValueAttribute JDBCTableFieldValueAttribute = f.getAnnotation(JDBCTableFieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataFieldUri;
-        //If the dataStore attribute is not an URI, autoGenerate one.
+        //If the jdbcTable attribute is not an URI, autoGenerate one.
         if(!JDBCTableFieldValueAttribute.jdbcTableFieldReference().contains(":")) {
             dataFieldUri = URI.create(processId + ":input:" + JDBCTableFieldValueAttribute.jdbcTableFieldReference());
         }
@@ -100,7 +100,7 @@ public class JDBCTableFieldValueParser implements Parser {
         JDBCTableFieldValueAttribute JDBCTableFieldValueAttribute = f.getAnnotation(JDBCTableFieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataFieldUri;
-        //If the dataStore attribute is not an URI, autoGenerate one.
+        //If the jdbcTable attribute is not an URI, autoGenerate one.
         if(!JDBCTableFieldValueAttribute.jdbcTableFieldReference().contains(":")) {
             dataFieldUri = URI.create(processId + ":input:" + JDBCTableFieldValueAttribute.jdbcTableFieldReference());
         }

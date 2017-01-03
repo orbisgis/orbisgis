@@ -60,7 +60,7 @@ public class JDBCTableField extends ComplexDataType {
     /** Identifier of the parent JDBCTable */
     @XmlElement(name = "JDBCTableId", namespace = "http://orbisgis.org")
     private URI jdbcTableIdentifier;
-    /** Indicates if the JDBCTableField should be reloaded because of a modification of the parent DataStore.*/
+    /** Indicates if the JDBCTableField should be reloaded because of a modification of the parent JDBCTable.*/
     @XmlTransient
     private boolean isSourceModified = true;
     /** List of type accepted for the field.*/
@@ -82,14 +82,14 @@ public class JDBCTableField extends ComplexDataType {
      * Main constructor.
      * @param formatList Formats of the data accepted.
      * @param dataTypeList List of the type accepted for this field.
-     * @param dataStoreURI Identifier of the parent dataStore.
+     * @param jdbcTableURI Identifier of the parent jdbcTable.
      * @throws MalformedScriptException
      */
-    public JDBCTableField(List<Format> formatList, List<DataType> dataTypeList, URI dataStoreURI) throws MalformedScriptException {
+    public JDBCTableField(List<Format> formatList, List<DataType> dataTypeList, URI jdbcTableURI) throws MalformedScriptException {
         format = formatList;
         jdbcTableFieldValueList = new ArrayList<>();
         this.dataTypeList = dataTypeList;
-        this.jdbcTableIdentifier = dataStoreURI;
+        this.jdbcTableIdentifier = jdbcTableURI;
     }
 
     /**
@@ -120,7 +120,7 @@ public class JDBCTableField extends ComplexDataType {
     }
 
     /**
-     * Sets if the parent dataStore has been modified
+     * Sets if the parent jdbcTable has been modified
      * @param isSourceModified True if the parent JDBCTable has been modified, false otherwise.
      */
     public void setSourceModified(boolean isSourceModified) {

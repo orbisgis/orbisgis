@@ -37,7 +37,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "OrbisGIS,ST_Transform,ST_SetSRID,ST_MakePoint,exemple","en"],
         properties = ["DBMS_TYPE","H2GIS"])
 def processing() {
-    outputTableName = dataStoreOutputName
+    outputTableName = jdbcTableOutputName
     //Open the CSV file
     File csvFile = new File(csvDataInput[0])
     String csvRead = "CSVRead('"+csvFile.absolutePath+"', NULL, 'fieldSeparator="+separator+"')";
@@ -58,7 +58,7 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the input CSV file containing the points coordinates. It should be formed this way :
+/** This JDBCTable is the input CSV file containing the points coordinates. It should be formed this way :
  * |ID|X|Y|
  * |--|-|-|
  * |1 |1|1|
@@ -119,12 +119,12 @@ String[] inputEPSG
         minOccurs=0)
 String[] outputEPSG
 
-/** Output DataStore name. */
+/** Output JDBCTable name. */
 @LiteralDataInput(
-        title = ["DataStore name","en","Nom du DataStore","fr"],
-        description = ["The DataStore name.","en",
-                "Le nom du DataStore.","fr"])
-String dataStoreOutputName
+        title = ["JDBCTable name","en","Nom du JDBCTable","fr"],
+        description = ["The JDBCTable name.","en",
+                "Le nom du JDBCTable.","fr"])
+String jdbcTableOutputName
 
 /************/
 /** OUTPUT **/

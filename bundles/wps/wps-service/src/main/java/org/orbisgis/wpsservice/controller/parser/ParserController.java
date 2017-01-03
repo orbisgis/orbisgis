@@ -199,11 +199,11 @@ public class ParserController {
 
     /**
      * Links the input and output with the 'parent'.
-     * i.e. : The DataStore contains a list of JDBCTableField related.
+     * i.e. : The JDBCTable contains a list of JDBCTableField related.
      * @param p Process to link.
      */
     private void link(ProcessDescriptionType p){
-        //Link the JDBCTableField with its DataStore
+        //Link the JDBCTableField with its JDBCTable
         for(InputDescriptionType i : p.getInput()){
             if(i.getDataDescription().getValue() instanceof JDBCTableField){
                 JDBCTableField jdbcTableField = (JDBCTableField)i.getDataDescription().getValue();

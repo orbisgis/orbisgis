@@ -13,9 +13,9 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /**
  * This process execute a buffer on a spatial data source using the ST_Buffer() function.
  * The user has to specify (mandatory):
- *  - The input spatial data source (DataStore)
+ *  - The input spatial data source (JDBCTable)
  *  - The BufferSize (LiteralData)
- *  - The output data source (DataStore)
+ *  - The output data source (JDBCTable)
  *
  * The user can specify (optional) :
  *  - The number of segments used to approximate a quarter circle (LiteralData)
@@ -75,7 +75,7 @@ def processing() {
         }
     }
 
-	query+=" FROM "+inputDataStore+";"
+	query+=" FROM "+inputJDBCTable+";"
 
     //Execute the query
     sql.execute(query)
@@ -87,7 +87,7 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the input data source for the buffer. */
+/** This JDBCTable is the input data source for the buffer. */
 @JDBCTableInput(
         title = [
                 "Input spatial data","en",
@@ -96,13 +96,13 @@ def processing() {
                 "The spatial data source for the buffer.","en",
                 "La source de données spatiales pour le tampon.","fr"],
         dataTypes = "GEOMETRY")
-String inputDataStore
+String inputJDBCTable
 
 /**********************/
 /** INPUT Parameters **/
 /**********************/
 
-/** Name of the Geometric field of the DataStore inputDataStore. */
+/** Name of the Geometric field of the JDBCTable inputJDBCTable. */
 @JDBCTableFieldInput(
         title = [
                 "Geometric field","en",
@@ -110,7 +110,7 @@ String inputDataStore
         description = [
                 "The geometric field of the data source.","en",
                 "Le champ géométrique de la source de données.","fr"],
-        jdbcTableReference = "inputDataStore",
+        jdbcTableReference = "inputJDBCTable",
         dataTypes = ["GEOMETRY"])
 String geometricField
 
@@ -155,9 +155,8 @@ Integer quadSegs = 8
                 "The endcap style.","en",
                 "Le style de l'extrémité.","fr"],
         values=["round", "flat", "butt", "square"],
-        selectedValues = ["round"],
         minOccurs = 0)
-String[] endcapStyle
+String[] endcapStyle = ["round"]
 
 /** Join style. */
 @EnumerationInput(
@@ -168,9 +167,8 @@ String[] endcapStyle
                 "The join style.","en",
                 "Le style de jointure.","fr"],
         values=["round", "mitre", "miter", "bevel"],
-        selectedValues = ["round"],
         minOccurs = 0)
-String[] joinStyle
+String[] joinStyle = ["round"]
 
 /** Fields to keep. */
 @JDBCTableFieldInput(
@@ -183,7 +181,7 @@ String[] joinStyle
         excludedTypes=["GEOMETRY"],
         multiSelection = true,
         minOccurs = 0,
-        jdbcTableReference = "inputDataStore")
+        jdbcTableReference = "inputJDBCTable")
 String[] fieldList
 
 

@@ -15,7 +15,7 @@
                 <ns1:Title>JDBCTable for the JDBCTableField</ns1:Title>
                 <ns1:Abstract/>
                 <ns1:Keywords/>
-                <ns1:Identifier>orbisgis:test:datastore:input</ns1:Identifier>
+                <ns1:Identifier>orbisgis:test:jdbctablefield:input</ns1:Identifier>
                 <ns5:JDBCTable isSpatial="false" isAutoImport="true">
                     <ns3:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
                     <ns5:JDBCTableField multiSelection="false">

@@ -10,10 +10,10 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /**
  * This process extract the center of a geometry table using  SQL functions.
  * The user has to specify (mandatory):
- *  - The input spatial data source (DataStore)
+ *  - The input spatial data source (JDBCTable)
  *  - The geometry column (LiteralData)
  *  - The geometry operation (centroid or interior point)
- *  - The output data source (DataStore)
+ *  - The output data source (JDBCTable)
  *
  * @return A datadase table.
  * @author Erwan Bocher
@@ -41,7 +41,7 @@ def processing() {
 		query += " ST_PointOnSurface("+geometricField[0]+""
 	}
     //Build the end of the query
-    query += ") AS the_geom ,"+ idField[0]+ " FROM "+inputDataStore+";"
+    query += ") AS the_geom ,"+ idField[0]+ " FROM "+inputJDBCTable+";"
 
     //Execute the query
     sql.execute(query)
@@ -53,7 +53,7 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the input data source. */
+/** This JDBCTable is the input data source. */
 @JDBCTableInput(
 		title = ["Extract center","en",
 				"Extraction du centre","fr"],
@@ -61,13 +61,13 @@ def processing() {
 				"Extract the center of a geometry.","en",
 				"Extraction du centre d'une géométrie.","fr"],
         dataTypes = ["GEOMETRY"])
-String inputDataStore
+String inputJDBCTable
 
 /**********************/
 /** INPUT Parameters **/
 /**********************/
 
-/** Name of the Geometric field of the DataStore inputDataStore. */
+/** Name of the Geometric field of the JDBCTable inputJDBCTable. */
 @JDBCTableFieldInput(
 		title = [
 				"Geometric field","en",
@@ -75,11 +75,11 @@ String inputDataStore
 		description = [
 				"The geometric field of the data source.","en",
 				"Le champ géométrique de la source de données.","fr"],
-        jdbcTableReference = "inputDataStore",
+        jdbcTableReference = "inputJDBCTable",
         dataTypes = ["GEOMETRY"])
 String[] geometricField
 
-/** Name of the identifier field of the DataStore inputDataStore. */
+/** Name of the identifier field of the JDBCTable inputJDBCTable. */
 @JDBCTableFieldInput(
 		title = ["Identifier field","en",
 				"Champ identifiant","fr"],
@@ -87,7 +87,7 @@ String[] geometricField
 				"A field used as an identifier.","en",
 				"Champ utilisé comme identifiant.","fr"],
 		excludedTypes=["GEOMETRY"],
-		jdbcTableReference = "inputDataStore")
+		jdbcTableReference = "inputJDBCTable")
 String[] idField
 
 @EnumerationInput(
@@ -97,9 +97,8 @@ String[] idField
 				"Operation to extract the points.","en",
 				"Opération d'extraction des points.","fr"],
         values=["centroid", "interior"],
-        names=["Centroid", "Interior"],
-        selectedValues = "centroid")
-String[] operation
+        names=["Centroid", "Interior"])
+String[] operation = ["centroid"]
 
 
 @LiteralDataInput(

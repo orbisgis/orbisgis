@@ -13,7 +13,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /**
  * This process is used to extrude 3D polygons.
  *
- * @return A datadase table.
+ * @return A database table.
  * @author Erwan BOCHER
  * @author Sylvain PALOMINOS
  */
@@ -24,7 +24,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
 		description = [
 				"Extrude a polygon and extends it to a 3D representation, returning a geometry collection containing floor, ceiling and wall geometries.","en",
 				"Extrusion de polygones en l'étendant à une représentation en 3D, retournant une collection de géométries contenant les géométries du sol, du plafond et des murs.","fr"],
-		keywords = ["Vecteur,Geometry,Create", "en",
+		keywords = ["Vector,Geometry,Create", "en",
 				"Vecteur,Géométrie,Création", "fr"],
 		properties = ["DBMS_TYPE", "H2GIS"])
 def processing() {
@@ -38,7 +38,7 @@ def processing() {
 		}
 	}
 
-	query+=" FROM "+inputDataStore+";"
+	query+=" FROM "+inputJDBCTable+";"
 
     //Execute the query
     sql.execute(query)
@@ -58,7 +58,7 @@ def processing() {
 				"The spatial data source that must be extruded.","en",
 				"La source de données qui doit etre extrudée.","fr"],
 		dataTypes = ["GEOMETRY"])
-String inputDataStore
+String inputJDBCTable
 
 /**********************/
 /** INPUT Parameters **/
@@ -66,15 +66,15 @@ String inputDataStore
 
 @JDBCTableFieldInput(
 		title = [
-				"Geometric field","en"),
-				"Champ géométrique","fr")
+				"Geometric field","en",
+				"Champ géométrique","fr"
 		],
 		description = [
-				"The geometric field of the data source.","en"),
-				"Le champ géométrique de la source de données.","fr")
+				"The geometric field of the data source.","en",
+				"Le champ géométrique de la source de données.","fr"
 		],
-		variableReference = "inputDataStore",
-        fieldTypes = ["GEOMETRY"])
+		jdbcTableReference = "inputJDBCTable",
+        dataTypes = ["GEOMETRY"])
 String[] geometricField
 
 
@@ -85,7 +85,7 @@ String[] geometricField
 		description = [
 				"A numeric field to specify the height of the polygon.","en",
 				"Le champ de valeurs numériques définissant la hauteur du polygone.","fr"],
-        jdbcTableReference = "inputDataStore",
+        jdbcTableReference = "inputJDBCTable",
         dataTypes = ["DOUBLE", "INTEGER", "LONG"])
 String[] height
 
@@ -100,7 +100,7 @@ String[] height
 		excludedTypes=["GEOMETRY"],
 		multiSelection = true,
 		minOccurs = 0,
-        jdbcTableReference = "inputDataStore")
+        jdbcTableReference = "inputJDBCTable")
 String[] fieldList
 
 

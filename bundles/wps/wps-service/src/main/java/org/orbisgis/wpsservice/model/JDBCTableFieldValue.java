@@ -49,7 +49,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "JDBCTableFieldValue", propOrder = {"dataFieldIdentifier", "dataStoreIdentifier", "multiSelection"})
+@XmlType(name = "JDBCTableFieldValue", propOrder = {"dataFieldIdentifier", "jdbcTableIdentifier", "multiSelection"})
 public class JDBCTableFieldValue extends ComplexDataType {
 
     /** Identifier of the 'parent' JDBCTableField */
@@ -59,7 +59,7 @@ public class JDBCTableFieldValue extends ComplexDataType {
     @XmlTransient
     private boolean isJDBCTableFieldModified = true;
     /** Identifier of the 'parent' JDBCTable */
-    @XmlElement(name = "DataStoreId", namespace = "http://orbisgis.org")
+    @XmlElement(name = "JDBCTableId", namespace = "http://orbisgis.org")
     private URI jdbcTableIdentifier;
     /** Indicates if the JDBCTableFieldValue should be reloaded because of a modification of the parent JDBCTable.*/
     @XmlTransient
@@ -149,7 +149,7 @@ public class JDBCTableFieldValue extends ComplexDataType {
     }
 
     /**
-     * Sets if the parent DataStore has been modified
+     * Sets if the parent JDBCTable has been modified
      * @param isJDBCTableModified True if the parent JDBCTable has been modified, false otherwise.
      */
     public void setJDBCTableModified(boolean isJDBCTableModified) {

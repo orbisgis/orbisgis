@@ -77,7 +77,7 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the input data source table. */
+/** This JDBCTable is the input data source table. */
 @JDBCTableInput(
         title = ["Table","en",
                 "Table","fr"],

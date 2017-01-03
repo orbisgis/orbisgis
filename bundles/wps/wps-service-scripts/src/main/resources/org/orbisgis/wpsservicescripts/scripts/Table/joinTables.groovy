@@ -31,14 +31,14 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
 
 	if(createIndex!=null && createIndex==true){
-		sql.execute "create index on "+ rightDataStore + "("+ rightField[0] +")"
-		sql.execute "create index on "+ leftDataStore + "("+ leftField[0] +")"
+		sql.execute "create index on "+ rightJDBCTable + "("+ rightField[0] +")"
+		sql.execute "create index on "+ leftJDBCTable + "("+ leftField[0] +")"
 	}
 
 	String query = "CREATE TABLE "+outputTableName+" AS SELECT * FROM "
 
 	if(operation[0].equals("left")){
-		query += leftDataStore + "JOIN " + rightDataStore + " ON " + leftDataStore+ "."+ leftField[0]+ "="+ rightDataStore+"."+ rightField[0];
+		query += leftJDBCTable + "JOIN " + rightJDBCTable + " ON " + leftJDBCTable+ "."+ leftField[0]+ "="+ rightJDBCTable+"."+ rightField[0];
 	}
 	else if (operation[0].equals("left")){
 
@@ -66,16 +66,16 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the left data source. */
+/** This JDBCTable is the left data source. */
 @JDBCTableInput(
 		title = ["Left data source","en",
 				"Source de données gauche","fr"],
 		description = [
 				"The left data source used for the join.","en",
 				"La source de données gauche utilisée pour la jointure.","fr"])
-String leftDataStore
+String leftJDBCTable
 
-/** This DataStore is the right data source. */
+/** This JDBCTable is the right data source. */
 @JDBCTableInput(
 		title = [
 				"Right data source","en",
@@ -83,13 +83,13 @@ String leftDataStore
 		description = [
 				"The right data source used for the join.","en",
 				"La source de données droite utilisée pour la jointure.","fr"])
-String rightDataStore
+String rightJDBCTable
 
 /**********************/
 /** INPUT Parameters **/
 /**********************/
 
-/** Name of the identifier field of the left dataStore. */
+/** Name of the identifier field of the left jdbcTable. */
 @JDBCTableFieldInput(
 		title = [
 				"Left field(s)","en",
@@ -97,11 +97,11 @@ String rightDataStore
 		description = [
 				"The field identifier of the left data source.","en",
 				"L'identifiant du/des champ(s) de la source de données gauche.","fr"],
-        jdbcTableReference = "leftDataStore",
+        jdbcTableReference = "leftJDBCTable",
         excludedTypes = ["GEOMETRY"])
 String[] leftField
 
-/** Name of the identifier field of the right dataStore. */
+/** Name of the identifier field of the right jdbcTable. */
 @JDBCTableFieldInput(
 		title = [
 				"Right field(s)","en",
@@ -109,7 +109,7 @@ String[] leftField
 		description = [
 				"The field identifier of the right data source.","en",
 				"L'identifiant du/des champ(s) de la source de données droite.","fr"],
-        jdbcTableReference = "rightDataStore",
+        jdbcTableReference = "rightJDBCTable",
         excludedTypes = ["GEOMETRY"])
 String[] rightField
 
@@ -122,9 +122,8 @@ String[] rightField
 				"Type de jointure.","fr"],
         values=["left","right", "union"],
         names=["Left join","Right join", "Union join" ],
-        selectedValues = "left",
 		multiSelection = false)
-String[] operation
+String[] operation = ["left"]
 
 
 @LiteralDataInput(

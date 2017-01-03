@@ -14,11 +14,11 @@ import org.orbisgis.wpsgroovyapi.process.*
 /**
  * This process extract the center of a geometry table using the SQL function.
  * The user has to specify (mandatory):
- *  - The input spatial data source (DataStore)
+ *  - The input spatial data source (JDBCTable)
  *  - The geometry column (LiteralData)
  *  - A column identifier (LiteralData)
  *  - The geometry operations (centroid or interior point)
- *  - The output data source (DataStore)
+ *  - The output data source (JDBCTable)
  *
  * @return A database table or a file.
  * @author Erwan Bocher
@@ -81,7 +81,7 @@ def processing() {
 
 
     //Add the field id
-    query += idField[0] + " FROM "+inputDataStore+";"
+    query += idField[0] + " FROM "+inputJDBCTable+";"
 
     //Execute the query
     sql.execute(query)
@@ -93,7 +93,7 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the input data source. */
+/** This JDBCTable is the input data source. */
 @JDBCTableInput(
         title = [
                 "Input spatial data","en",
@@ -102,14 +102,14 @@ def processing() {
                 "The spatial data source to compute the geometry properties.","en",
                 "La source de données spatiales pour le calcul des propriétés géométriques.","fr"],
         dataTypes = ["GEOMETRY"],
-        identifier = "orbisgis:wps:official:geometryProperties:inputDataStore")
-String inputDataStore
+        identifier = "orbisgis:wps:official:geometryProperties:inputJDBCTable")
+String inputJDBCTable
 
 /**********************/
 /** INPUT Parameters **/
 /**********************/
 
-/** Name of the Geometric field of the DataStore inputDataStore. */
+/** Name of the Geometric field of the JDBCTable inputJDBCTable. */
 @JDBCTableFieldInput(
         title = [
                 "Geometric field","en",
@@ -117,12 +117,12 @@ String inputDataStore
         description = [
                 "The geometric field of the data source.","en",
                 "Le champ géométrique de la source de données.","fr"],
-        jdbcTableReference = "orbisgis:wps:official:geometryProperties:inputDataStore",
+        jdbcTableReference = "orbisgis:wps:official:geometryProperties:inputJDBCTable",
         identifier = "orbisgis:wps:official:geometryProperties:geometricField",
         dataTypes = ["GEOMETRY"])
 String[] geometricField
 
-/** Name of the identifier field of the DataStore inputDataStore. */
+/** Name of the identifier field of the JDBCTable inputJDBCTable. */
 @JDBCTableFieldInput(
         title = [
                 "Identifier field","en",
@@ -131,7 +131,7 @@ String[] geometricField
                 "A field used as an identifier.","en",
                 "Le champ utilisé comme identifiant.","fr"],
 	    excludedTypes=["GEOMETRY"],
-        jdbcTableReference = "orbisgis:wps:official:geometryProperties:inputDataStore",
+        jdbcTableReference = "orbisgis:wps:official:geometryProperties:inputJDBCTable",
         identifier = "orbisgis:wps:official:geometryProperties:idField")
 String[] idField
 

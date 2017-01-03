@@ -61,8 +61,6 @@ public class PasswordParser implements Parser {
 
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
-
-        //Instantiate the DataStore and its formats
         Password password = new Password();
         InputDescriptionType input = new InputDescriptionType();
         JAXBElement<Password> jaxbElement = new ObjectFactory().createPassword(password);
@@ -82,8 +80,6 @@ public class PasswordParser implements Parser {
 
     @Override
     public OutputDescriptionType parseOutput(Field f, URI processId) {
-
-        //Instantiate the DataStore and its formats
         Password password = new Password();
         OutputDescriptionType output = new OutputDescriptionType();
         JAXBElement<Password> jaxbElement = new ObjectFactory().createPassword(password);

@@ -52,14 +52,14 @@ import java.io.File;
 
 public class ToolBoxIcon {
 
-    public static final String DATA_STORE = "datastore";
+    public static final String JDBC_TABLE = "jdbc_table";
     public static final String FLAT_FILE = "flatfile";
     public static final String GEO_FILE = "geofile";
     public static final String BROWSE = "browse";
     public static final String OPTIONS = "options";
-    public static final String DATA_FIELD = "datafield";
+    public static final String JDBC_TABLE_FIELD = "jdbc_table_field";
     public static final String ENUMERATION = "enumeration";
-    public static final String FIELD_VALUE = "fieldvalue";
+    public static final String JDBC_TABLE_FIELD_VALUE = "jdbc_table_field_value";
     public static final String STRING = "string";
     public static final String NUMBER = "number";
     public static final String BOOLEAN = "boolean";

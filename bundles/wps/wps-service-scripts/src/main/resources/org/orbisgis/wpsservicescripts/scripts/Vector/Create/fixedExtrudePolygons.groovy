@@ -36,7 +36,7 @@ def processing() {
 		}
 	}
 
-	query+=" FROM "+inputDataStore+";"
+	query+=" FROM "+inputJDBCTable+";"
 
     //Execute the query
     sql.execute(query)
@@ -56,7 +56,7 @@ def processing() {
 				"The spatial data source that must be extruded.","en",
 				"La source de données qui doit etre extrudée.","fr"],
 		dataTypes = ["GEOMETRY"])
-String inputDataStore
+String inputJDBCTable
 
 /**********************/
 /** INPUT Parameters **/
@@ -69,7 +69,7 @@ String inputDataStore
 		description = [
 				"The geometric field of the data source.","en",
 				"Le champ géométrique de la source de données.","fr"],
-		jdbcTableReference = "inputDataStore",
+		jdbcTableReference = "inputJDBCTable",
         dataTypes = ["GEOMETRY"])
 String[] geometricField
 
@@ -94,7 +94,7 @@ Double height = 1
 		excludedTypes=["GEOMETRY"],
 		multiSelection = true,
 		minOccurs = 0,
-        jdbcTableReference = "inputDataStore")
+        jdbcTableReference = "inputJDBCTable")
 String[] fieldList
 
 

@@ -56,7 +56,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Parser for the groovy DataStore annotations.
+ * Parser for the groovy JDBCTable annotations.
  *
  * @author Sylvain PALOMINOS
  **/
@@ -65,13 +65,13 @@ public class JDBCTableParser implements Parser{
 
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
-        //Instantiate the DataStore and its formats
+        //Instantiate the JDBCTable and its formats
         JDBCTableAttribute jdbcTableAttribute = f.getAnnotation(JDBCTableAttribute.class);
         List<Format> formatList = new ArrayList<>();
         formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
         formatList.get(0).setDefault(true);
 
-        //Instantiate the DataStore
+        //Instantiate the JDBCTable
         JDBCTable jdbcTable = ObjectAnnotationConverter.annotationToObject(jdbcTableAttribute, formatList);
 
         InputDescriptionType input = new InputDescriptionType();
@@ -92,13 +92,13 @@ public class JDBCTableParser implements Parser{
 
     @Override
     public OutputDescriptionType parseOutput(Field f, URI processId) {
-        //Instantiate the DataStore and its formats
+        //Instantiate the JDBCTable and its formats
         JDBCTableAttribute JDBCTableAttribute = f.getAnnotation(JDBCTableAttribute.class);
         List<Format> formatList = new ArrayList<>();
         formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
         formatList.get(0).setDefault(true);
 
-        //Instantiate the DataStore
+        //Instantiate the JDBCTable
         JDBCTable jdbcTable = ObjectAnnotationConverter.annotationToObject(JDBCTableAttribute, formatList);
 
         OutputDescriptionType output = new OutputDescriptionType();
