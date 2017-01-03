@@ -65,8 +65,8 @@ import java.util.*;
 import java.util.List;
 
 /**
- * DataUI implementation for DataField.
- * This class generate an interactive UI dedicated to the configuration of a DataField.
+ * DataUI implementation for JDBCTableField.
+ * This class generate an interactive UI dedicated to the configuration of a JDBCTableField.
  * The interface generated will be used in the ProcessEditor.
  *
  * @author Sylvain PALOMINOS
@@ -105,7 +105,7 @@ public class JDBCTableFieldUI implements DataUI {
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         JDBCTableField jdbcTableField = null;
         boolean isOptional = false;
-        //Retrieve the DataField
+        //Retrieve the JDBCTable
         //If it is an input, find if it is optional.
         if(inputOrOutput instanceof InputDescriptionType){
             jdbcTableField = (JDBCTableField)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
@@ -314,7 +314,7 @@ public class JDBCTableFieldUI implements DataUI {
                 comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, comboBox.getToolTipText());
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
-                String dataFieldStr = jdbcTableField.getDataStoreIdentifier().toString();
+                String dataFieldStr = jdbcTableField.getJDBCTableIdentifier().toString();
                 comboBox.setToolTipText(I18N.tr("First configure the DataStore {0}.",
                         dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1)));
                 ToolTipManager.sharedInstance().mouseMoved(
@@ -334,7 +334,7 @@ public class JDBCTableFieldUI implements DataUI {
             if (jdbcTableField.isSourceModified()) {
                 jdbcTableField.setSourceModified(false);
                 model.removeAllElements();
-                if (dataMap.get(jdbcTableField.getDataStoreIdentifier()) != null) {
+                if (dataMap.get(jdbcTableField.getJDBCTableIdentifier()) != null) {
                     List<ContainerItem<Object>> listContainer = populateWithFields(jdbcTableField, dataMap);
                     for(ContainerItem<Object> container : listContainer){
                         model.addElement(container);
@@ -349,7 +349,7 @@ public class JDBCTableFieldUI implements DataUI {
                 list.putClientProperty(TOOLTIP_TEXT_PROPERTY, list.getToolTipText());
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
-                String dataFieldStr = jdbcTableField.getDataStoreIdentifier().toString();
+                String dataFieldStr = jdbcTableField.getJDBCTableIdentifier().toString();
                 if(dataFieldStr.contains("$")){
                     String[] split = dataFieldStr.split("\\$");
                     if(split.length == 2){
@@ -415,9 +415,9 @@ public class JDBCTableFieldUI implements DataUI {
                     dataMap.put(uri, selectedItem.getLabel());
                 }
                 //Tells to the fieldValues that the datafield has been modified
-                if(jdbcTableField.getListFieldValue() != null) {
-                    for (FieldValue fieldValue : jdbcTableField.getListFieldValue()) {
-                        fieldValue.setDataFieldModified(true);
+                if(jdbcTableField.getJDBCTableFieldValueList() != null) {
+                    for (JDBCTableFieldValue jdbcTableFieldValue : jdbcTableField.getJDBCTableFieldValueList()) {
+                        jdbcTableFieldValue.setJDBCTableFieldModified(true);
                     }
                 }
             }
@@ -458,8 +458,8 @@ public class JDBCTableFieldUI implements DataUI {
         //Retrieve the table name list
         List<ContainerItem<Object>> listContainer = new ArrayList<>();
         String tableName = null;
-        if(jdbcTableField.getDataStoreIdentifier().toString().contains("$")){
-            String[] split = jdbcTableField.getDataStoreIdentifier().toString().split("\\$");
+        if(jdbcTableField.getJDBCTableIdentifier().toString().contains("$")){
+            String[] split = jdbcTableField.getJDBCTableIdentifier().toString().split("\\$");
             if(split.length == 3){
                 tableName = split[1]+"."+split[2];
             }
@@ -467,15 +467,15 @@ public class JDBCTableFieldUI implements DataUI {
                 tableName = split[1];
             }
         }
-        else if(dataMap.get(jdbcTableField.getDataStoreIdentifier()) != null){
-            tableName = dataMap.get(jdbcTableField.getDataStoreIdentifier()).toString();
+        else if(dataMap.get(jdbcTableField.getJDBCTableIdentifier()) != null){
+            tableName = dataMap.get(jdbcTableField.getJDBCTableIdentifier()).toString();
         }
         if(tableName == null){
             listContainer.add(new ContainerItem<Object>(I18N.tr("Select a field"), I18N.tr("Select a field")));
             return listContainer;
         }
         List<String> fieldNameList = wpsClient.getTableFieldList(tableName,
-                jdbcTableField.getFieldTypeList(), jdbcTableField.getExcludedTypeList());
+                jdbcTableField.getDataTypeList(), jdbcTableField.getExcludedTypeList());
         //If there is tables, retrieve their information to format the display in the comboBox
         if(fieldNameList != null && !fieldNameList.isEmpty()){
             for (String fieldName : fieldNameList) {

@@ -53,25 +53,25 @@ import java.util.List;
  **/
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DataField", propOrder = {"dataStoreIdentifier", "fieldTypeList",
-        "excludedTypeList", "listFieldValue", "multiSelection"})
+@XmlType(name = "JDBCTableField", propOrder = {"jdbcTableIdentifier", "dataTypeList",
+        "excludedTypeList", "jdbcTableFieldValueList", "multiSelection"})
 public class JDBCTableField extends ComplexDataType {
 
-    /** Identifier of the parent DataStore */
-    @XmlElement(name = "DataStoreId", namespace = "http://orbisgis.org")
-    private URI dataStoreIdentifier;
-    /** Indicates if the DataField should be reloaded because of a modification of the parent DataStore.*/
+    /** Identifier of the parent JDBCTable */
+    @XmlElement(name = "JDBCTableId", namespace = "http://orbisgis.org")
+    private URI jdbcTableIdentifier;
+    /** Indicates if the JDBCTableField should be reloaded because of a modification of the parent DataStore.*/
     @XmlTransient
     private boolean isSourceModified = true;
     /** List of type accepted for the field.*/
     @XmlElement(name = "FieldType", namespace = "http://orbisgis.org")
-    private List<DataType> fieldTypeList;
+    private List<DataType> dataTypeList;
     /** List of type excluded for the field.*/
     @XmlElement(name = "ExcludedType", namespace = "http://orbisgis.org")
     private List<DataType> excludedTypeList;
-    /** List of FieldValue liked to the DataField */
-    @XmlElement(name = "FieldValue", namespace = "http://orbisgis.org")
-    private List<FieldValue> listFieldValue;
+    /** List of JDBCTableFieldValue liked to the JDBCTableField */
+    @XmlElement(name = "JDBCTableFieldValue", namespace = "http://orbisgis.org")
+    private List<JDBCTableFieldValue> jdbcTableFieldValueList;
     /** Indicates if the use can choose more than one field*/
     @XmlAttribute(name = "multiSelection")
     private boolean multiSelection = false;
@@ -81,15 +81,15 @@ public class JDBCTableField extends ComplexDataType {
     /**
      * Main constructor.
      * @param formatList Formats of the data accepted.
-     * @param fieldTypeList List of the type accepted for this field.
+     * @param dataTypeList List of the type accepted for this field.
      * @param dataStoreURI Identifier of the parent dataStore.
      * @throws MalformedScriptException
      */
-    public JDBCTableField(List<Format> formatList, List<DataType> fieldTypeList, URI dataStoreURI) throws MalformedScriptException {
+    public JDBCTableField(List<Format> formatList, List<DataType> dataTypeList, URI dataStoreURI) throws MalformedScriptException {
         format = formatList;
-        listFieldValue = new ArrayList<>();
-        this.fieldTypeList = fieldTypeList;
-        this.dataStoreIdentifier = dataStoreURI;
+        jdbcTableFieldValueList = new ArrayList<>();
+        this.dataTypeList = dataTypeList;
+        this.jdbcTableIdentifier = dataStoreURI;
     }
 
     /**
@@ -97,23 +97,23 @@ public class JDBCTableField extends ComplexDataType {
      */
     protected JDBCTableField(){
         super();
-        fieldTypeList = null;
+        dataTypeList = null;
         excludedTypeList = null;
-        listFieldValue = null;
-        dataStoreIdentifier = null;
+        jdbcTableFieldValueList = null;
+        jdbcTableIdentifier = null;
     }
 
     /**
-     * Returns the identifier of the parent DataStore.
-     * @return The identifier of the DataStore.
+     * Returns the identifier of the parent JDBCTable.
+     * @return The identifier of the JDBCTable.
      */
-    public URI getDataStoreIdentifier(){
-        return dataStoreIdentifier;
+    public URI getJDBCTableIdentifier(){
+        return jdbcTableIdentifier;
     }
 
     /**
-     * Tells if the parent DataStore has been modified since last time it was checked.
-     * @return True if the parent DataStore has been modified, false otherwise.
+     * Tells if the parent JDBCTable has been modified since last time it was checked.
+     * @return True if the parent JDBCTable has been modified, false otherwise.
      */
     public boolean isSourceModified() {
         return isSourceModified;
@@ -121,13 +121,13 @@ public class JDBCTableField extends ComplexDataType {
 
     /**
      * Sets if the parent dataStore has been modified
-     * @param isSourceModified True if the parent DataStore has been modified, false otherwise.
+     * @param isSourceModified True if the parent JDBCTable has been modified, false otherwise.
      */
     public void setSourceModified(boolean isSourceModified) {
         this.isSourceModified = isSourceModified;
-        if(listFieldValue != null) {
-            for (FieldValue fieldValue : listFieldValue) {
-                fieldValue.setDataStoreModified(isSourceModified);
+        if(jdbcTableFieldValueList != null) {
+            for (JDBCTableFieldValue jdbcTableFieldValue : jdbcTableFieldValueList) {
+                jdbcTableFieldValue.setJDBCTableModified(isSourceModified);
             }
         }
     }
@@ -136,24 +136,24 @@ public class JDBCTableField extends ComplexDataType {
      * Returns the list of valid type for the field.
      * @return List of accepted DataType.
      */
-    public List<DataType> getFieldTypeList() {
-        return fieldTypeList;
+    public List<DataType> getDataTypeList() {
+        return dataTypeList;
     }
 
     /**
-     * Adds a FieldValue as a 'child' of the DataField.
-     * @param fieldValue FieldValue to add.
+     * Adds a JDBCTableFieldValue as a 'child' of the JDBCTableField.
+     * @param jdbcTableFieldValue JDBCTableFieldValue to add.
      */
-    public void addFieldValue(FieldValue fieldValue){
-        this.listFieldValue.add(fieldValue);
+    public void addJDBCTableFieldValue(JDBCTableFieldValue jdbcTableFieldValue){
+        this.jdbcTableFieldValueList.add(jdbcTableFieldValue);
     }
 
     /**
-     * Return the list of 'child' FieldValue.
-     * @return List of FieldValue.
+     * Return the list of 'child' JDBCTableFieldValue.
+     * @return List of JDBCTableFieldValue.
      */
-    public List<FieldValue> getListFieldValue(){
-        return listFieldValue;
+    public List<JDBCTableFieldValue> getJDBCTableFieldValueList(){
+        return jdbcTableFieldValueList;
     }
 
     /**
@@ -162,7 +162,7 @@ public class JDBCTableField extends ComplexDataType {
      */
     public void setExcludedTypeList(List<DataType> excludedTypeList) throws MalformedScriptException {
         for(DataType excludedType : excludedTypeList){
-            for(DataType dataType : fieldTypeList){
+            for(DataType dataType : dataTypeList){
                 if(excludedType.equals(dataType)){
                     throw new MalformedScriptException(JDBCTableField.class, "excludedTypeList", I18N.tr("A same DataType is" +
                             " accepted and excluded."));

@@ -82,7 +82,7 @@ public class ParserController {
         parserList.add(new BoundingBoxParser());
         parserList.add(new JDBCTableParser());
         parserList.add(new JDBCTableFieldParser());
-        parserList.add(new FieldValueParser());
+        parserList.add(new JDBCTableFieldValueParser());
         parserList.add(new EnumerationParser());
         parserList.add(new RawDataParser());
         parserList.add(new GeometryParser());
@@ -208,45 +208,45 @@ public class ParserController {
             if(i.getDataDescription().getValue() instanceof JDBCTableField){
                 JDBCTableField jdbcTableField = (JDBCTableField)i.getDataDescription().getValue();
                 for(InputDescriptionType jdbcTable : p.getInput()){
-                    if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getDataStoreIdentifier().toString())){
+                    if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getJDBCTableIdentifier().toString())){
                         ((JDBCTable)jdbcTable.getDataDescription().getValue()).addDataField(jdbcTableField);
                     }
                 }
             }
         }
-        //Link the FieldValue with its DataField and its DataStore
+        //Link the JDBCTableFieldValue with its JDBCTableField and its JDBCTable
         for(InputDescriptionType i : p.getInput()){
-            if(i.getDataDescription().getValue() instanceof FieldValue){
-                FieldValue fieldValue = (FieldValue)i.getDataDescription().getValue();
+            if(i.getDataDescription().getValue() instanceof JDBCTableFieldValue){
+                JDBCTableFieldValue jdbcTableFieldValue = (JDBCTableFieldValue)i.getDataDescription().getValue();
                 for(InputDescriptionType input : p.getInput()){
-                    if(input.getIdentifier().getValue().equals(fieldValue.getDataFieldIdentifier().toString())){
+                    if(input.getIdentifier().getValue().equals(jdbcTableFieldValue.getJDBCTableFieldIdentifier().toString())){
                         JDBCTableField jdbcTableField = (JDBCTableField)input.getDataDescription().getValue();
-                        jdbcTableField.addFieldValue(fieldValue);
-                        fieldValue.setDataStoredIdentifier(jdbcTableField.getDataStoreIdentifier());
+                        jdbcTableField.addJDBCTableFieldValue(jdbcTableFieldValue);
+                        jdbcTableFieldValue.setJDBCTableIdentifier(jdbcTableField.getJDBCTableIdentifier());
                     }
                 }
             }
         }
-        //Link the DataField with its DataStore
+        //Link the JDBCTableField with its JDBCTable
         for(OutputDescriptionType o : p.getOutput()){
             if(o.getDataDescription().getValue() instanceof JDBCTableField){
                 JDBCTableField jdbcTableField = (JDBCTableField)o.getDataDescription().getValue();
                 for(OutputDescriptionType jdbcTable : p.getOutput()){
-                    if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getDataStoreIdentifier().toString())){
+                    if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getJDBCTableIdentifier().toString())){
                         ((JDBCTable)jdbcTable.getDataDescription().getValue()).addDataField(jdbcTableField);
                     }
                 }
             }
         }
-        //Link the FieldValue with its DataField and its DataStore
+        //Link the JDBCTableFieldValue with its JDBCTableField and its JDBCTable
         for(OutputDescriptionType o : p.getOutput()){
-            if(o.getDataDescription().getValue() instanceof FieldValue){
-                FieldValue fieldValue = (FieldValue)o.getDataDescription().getValue();
+            if(o.getDataDescription().getValue() instanceof JDBCTableFieldValue){
+                JDBCTableFieldValue jdbcTableFieldValue = (JDBCTableFieldValue)o.getDataDescription().getValue();
                 for(OutputDescriptionType output : p.getOutput()){
-                    if(output.getIdentifier().getValue().equals(fieldValue.getDataFieldIdentifier().toString())){
+                    if(output.getIdentifier().getValue().equals(jdbcTableFieldValue.getJDBCTableFieldIdentifier().toString())){
                         JDBCTableField jdbcTableField = (JDBCTableField)output.getDataDescription().getValue();
-                        jdbcTableField.addFieldValue(fieldValue);
-                        fieldValue.setDataStoredIdentifier(jdbcTableField.getDataStoreIdentifier());
+                        jdbcTableField.addJDBCTableFieldValue(jdbcTableFieldValue);
+                        jdbcTableFieldValue.setJDBCTableIdentifier(jdbcTableField.getJDBCTableIdentifier());
                     }
                 }
             }

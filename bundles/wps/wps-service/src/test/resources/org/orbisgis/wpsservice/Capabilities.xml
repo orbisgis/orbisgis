@@ -70,10 +70,10 @@
     </ns1:OperationsMetadata>
     <ns3:Contents>
         <ns3:ProcessSummary jobControlOptions="async-execute">
-            <ns1:Title xml:lang="en">DataStore test</ns1:Title>
-            <ns1:Title xml:lang="fr">Test du DataStore</ns1:Title>
-            <ns1:Abstract xml:lang="en">Test script using the DataStore ComplexData.</ns1:Abstract>
-            <ns1:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData DataStore.</ns1:Abstract>
+            <ns1:Title xml:lang="en">JDBCTable test</ns1:Title>
+            <ns1:Title xml:lang="fr">Test du JDBCTable</ns1:Title>
+            <ns1:Abstract xml:lang="en">Test script using the JDBCTable ComplexData.</ns1:Abstract>
+            <ns1:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData JDBCTable.</ns1:Abstract>
             <ns1:Keywords>
                 <ns1:Keyword xml:lang="en">test</ns1:Keyword>
                 <ns1:Keyword xml:lang="fr">test</ns1:Keyword>
@@ -86,14 +86,14 @@
                 <ns1:Keyword xml:lang="en">wps</ns1:Keyword>
                 <ns1:Keyword xml:lang="fr">wps</ns1:Keyword>
             </ns1:Keywords>
-            <ns1:Identifier>orbisgis:test:datastore</ns1:Identifier>
+            <ns1:Identifier>orbisgis:test:jdbctable</ns1:Identifier>
             <ns1:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
         </ns3:ProcessSummary>
         <ns3:ProcessSummary jobControlOptions="async-execute">
-            <ns1:Title xml:lang="en">DataField test</ns1:Title>
-            <ns1:Title xml:lang="fr">Test du DataField</ns1:Title>
-            <ns1:Abstract xml:lang="en">Test script using the DataField ComplexData.</ns1:Abstract>
-            <ns1:Abstract xml:lang="fr">Scripts test pour l'usage du DataField DataField.</ns1:Abstract>
+            <ns1:Title xml:lang="en">JDBCTableField test</ns1:Title>
+            <ns1:Title xml:lang="fr">Test du JDBCTableField</ns1:Title>
+            <ns1:Abstract xml:lang="en">Test script using the JDBCTableField ComplexData.</ns1:Abstract>
+            <ns1:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData JDBCTableField.</ns1:Abstract>
             <ns1:Keywords>
                 <ns1:Keyword xml:lang="en">test</ns1:Keyword>
                 <ns1:Keyword xml:lang="fr">test</ns1:Keyword>
@@ -106,14 +106,14 @@
                 <ns1:Keyword xml:lang="en">wps</ns1:Keyword>
                 <ns1:Keyword xml:lang="fr">wps</ns1:Keyword>
             </ns1:Keywords>
-            <ns1:Identifier>orbisgis:test:datafield</ns1:Identifier>
+            <ns1:Identifier>orbisgis:test:jdbctablefield</ns1:Identifier>
             <ns1:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
         </ns3:ProcessSummary>
         <ns3:ProcessSummary jobControlOptions="async-execute">
-            <ns1:Title xml:lang="en">FieldValue test</ns1:Title>
-            <ns1:Title xml:lang="fr">Test du FieldValue</ns1:Title>
-            <ns1:Abstract xml:lang="en">Test script using the FieldValue ComplexData.</ns1:Abstract>
-            <ns1:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData FieldValue.</ns1:Abstract>
+            <ns1:Title xml:lang="en">JDBCTableFieldValue test</ns1:Title>
+            <ns1:Title xml:lang="fr">Test du JDBCTableFieldValue</ns1:Title>
+            <ns1:Abstract xml:lang="en">Test script using the JDBCTableFieldValue ComplexData.</ns1:Abstract>
+            <ns1:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData JDBCTableFieldValue.</ns1:Abstract>
             <ns1:Keywords>
                 <ns1:Keyword xml:lang="en">test</ns1:Keyword>
                 <ns1:Keyword xml:lang="fr">test</ns1:Keyword>
@@ -126,7 +126,7 @@
                 <ns1:Keyword xml:lang="en">wps</ns1:Keyword>
                 <ns1:Keyword xml:lang="fr">wps</ns1:Keyword>
             </ns1:Keywords>
-            <ns1:Identifier>orbisgis:test:fieldvalue</ns1:Identifier>
+            <ns1:Identifier>orbisgis:test:jdbctablefieldvalue</ns1:Identifier>
             <ns1:Metadata ns2:type="simple" ns2:href="http://orbisgis.org/" ns2:role="website" ns2:title="metadata"/>
         </ns3:ProcessSummary>
         <ns3:ProcessSummary jobControlOptions="async-execute">

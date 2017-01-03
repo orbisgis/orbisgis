@@ -69,7 +69,7 @@ public class DataUIManager {
         linkClassUI(RawData.class, new RawDataUI(), wpsClient);
         linkClassUI(JDBCTable.class, new JDBCTableUI(), wpsClient);
         linkClassUI(JDBCTableField.class, new JDBCTableFieldUI(), wpsClient);
-        linkClassUI(FieldValue.class, new FieldValueUI(), wpsClient);
+        linkClassUI(JDBCTableFieldValue.class, new JDBCTableFieldValueUI(), wpsClient);
         linkClassUI(Enumeration.class, new EnumerationUI(), wpsClient);
         linkClassUI(GeometryData.class, new GeometryUI(), wpsClient);
         linkClassUI(Password.class, new PasswordUI(), wpsClient);

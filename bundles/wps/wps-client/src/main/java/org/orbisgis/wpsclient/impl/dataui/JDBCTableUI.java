@@ -125,14 +125,14 @@ public class JDBCTableUI implements DataUI {
         geocatalogComboBox.setRenderer(new JPanelListRenderer());
         //Populate the comboBox with the available tables.
         boolean isSpatial = false;
-        if(jdbcTable.getDataStoreTypeList() != null){
-            for(DataType dataType : jdbcTable.getDataStoreTypeList()) {
+        if(jdbcTable.getDataTypeList() != null){
+            for(DataType dataType : jdbcTable.getDataTypeList()) {
                 if(DataType.isSpatialType(dataType)) {
                     isSpatial = true;
                 }
             }
         }
-        populateWithTable(geocatalogComboBox, jdbcTable.getDataStoreTypeList(), jdbcTable.getExcludedTypeList(),
+        populateWithTable(geocatalogComboBox, jdbcTable.getDataTypeList(), jdbcTable.getExcludedTypeList(),
                 false, isSpatial);
         //Adds the listener on combo box item selection
         geocatalogComboBox.addActionListener(
@@ -254,14 +254,14 @@ public class JDBCTableUI implements DataUI {
         boolean isOptional = (boolean)comboBox.getClientProperty(IS_OUTPUT_PROPERTY);
         Object selectedItem = comboBox.getSelectedItem();
         boolean isSpatial = false;
-        if(jdbcTable.getDataStoreTypeList() != null){
-            for(DataType dataType : jdbcTable.getDataStoreTypeList()) {
+        if(jdbcTable.getDataTypeList() != null){
+            for(DataType dataType : jdbcTable.getDataTypeList()) {
                 if(DataType.isSpatialType(dataType)) {
                     isSpatial = true;
                 }
             }
         }
-        populateWithTable(comboBox, jdbcTable.getDataStoreTypeList(), jdbcTable.getExcludedTypeList(), isOptional,
+        populateWithTable(comboBox, jdbcTable.getDataTypeList(), jdbcTable.getExcludedTypeList(), isOptional,
                 isSpatial);
         if(selectedItem != null){
             comboBox.setSelectedItem(selectedItem);

@@ -57,7 +57,7 @@ public class ObjectFactory {
 
     private final static QName _JDBCTable_QNAME = new QName("http://orbisgis.org", "JDBCTable");
     private final static QName _JDBCTableField_QNAME = new QName("http://orbisgis.org", "JDBCTableField");
-    private final static QName _FieldValue_QNAME = new QName("http://orbisgis.org", "FieldValue");
+    private final static QName _JDBCTableFieldValue_QNAME = new QName("http://orbisgis.org", "JDBCTableFieldValue");
     private final static QName _Enumeration_QNAME = new QName("http://orbisgis.org", "Enumeration");
     private final static QName _GeometryData_QNAME = new QName("http://orbisgis.org", "Geometry");
     private final static QName _RawData_QNAME = new QName("http://orbisgis.org", "RawData");
@@ -109,21 +109,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FieldValue }
+     * Create an instance of {@link JDBCTableFieldValue }
      *
      */
-    public FieldValue createFieldValue() { return new FieldValue(); }
+    public JDBCTableFieldValue createJDBCTableFieldValue() { return new JDBCTableFieldValue(); }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FieldValue }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link JDBCTableFieldValue }{@code >}}
      *
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
-            name="FieldValue",
+            name="JDBCTableFieldValue",
             substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
             substitutionHeadName="DataDescription")
-    public JAXBElement<FieldValue> createFieldValue(FieldValue fieldValue) {
-        return new JAXBElement<>(_FieldValue_QNAME, FieldValue.class, fieldValue);
+    public JAXBElement<JDBCTableFieldValue> createFieldValue(JDBCTableFieldValue jdbcTableFieldValue) {
+        return new JAXBElement<>(_JDBCTableFieldValue_QNAME, JDBCTableFieldValue.class, jdbcTableFieldValue);
     }
 
     /**

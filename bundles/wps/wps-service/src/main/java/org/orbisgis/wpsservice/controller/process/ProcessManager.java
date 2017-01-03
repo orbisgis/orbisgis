@@ -287,10 +287,10 @@ public class ProcessManager {
                 if(f != null) {
                     f.setAccessible(true);
                     Object data = dataMap.get(URI.create(i.getIdentifier().getValue()));
-                    //If the descriptionType contains a FieldValue, a DataField or an Enumeration, parse the value
+                    //If the descriptionType contains a JDBCTableFieldValue, a JDBCTableField or an Enumeration, parse the value
                     // which is coma separated.
                     DataDescriptionType dataDescriptionType = i.getDataDescription().getValue();
-                    if(dataDescriptionType instanceof FieldValue ||
+                    if(dataDescriptionType instanceof JDBCTableFieldValue ||
                             dataDescriptionType instanceof JDBCTableField ||
                             dataDescriptionType instanceof Enumeration ||
                             dataDescriptionType instanceof RawData){

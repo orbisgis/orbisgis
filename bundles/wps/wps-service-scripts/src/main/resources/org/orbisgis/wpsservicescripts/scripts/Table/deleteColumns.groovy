@@ -11,8 +11,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /**
  * This process deletes the given columns from the given table.
  * The user has to specify (mandatory):
- *  - The input table (DataStore)
- *  - The column to delete (DataField)
+ *  - The input table (JDBCTable)
+ *  - The column to delete (jJDBCTableFieldValue)
  *
  * @author Sylvain PALOMINOS
  */

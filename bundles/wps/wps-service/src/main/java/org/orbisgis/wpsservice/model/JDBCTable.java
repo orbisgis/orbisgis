@@ -123,7 +123,7 @@ public class JDBCTable extends ComplexDataType {
      * Returns the list of types that should be contained by the DataStore.
      * @return List of DataType.
      */
-    public List<DataType> getDataStoreTypeList() {
+    public List<DataType> getDataTypeList() {
         return dataStoreTypeList;
     }
 

@@ -68,14 +68,14 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
- * DataUI implementation for FieldValue.
- * This class generate an interactive UI dedicated to the configuration of a FieldValue.
+ * DataUI implementation for JDBCTableFieldValue.
+ * This class generate an interactive UI dedicated to the configuration of a JDBCTableFieldValue.
  * The interface generated will be used in the ProcessEditor.
  *
  * @author Sylvain PALOMINOS
  **/
 
-public class FieldValueUI implements DataUI {
+public class JDBCTableFieldValueUI implements DataUI {
 
     /** Size constants **/
     private static final int JLIST_VERTICAL_MAX_ROW_COUNT = 10;
@@ -94,7 +94,7 @@ public class FieldValueUI implements DataUI {
     private static final String MAX_JLIST_ROW_COUNT = "MAX_JLIST_ROW_COUNT";
     private static final String DEFAULT_ELEMENT_PROPERTY = "DEFAULT_ELEMENT_PROPERTY";
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(FieldValueUI.class);
+    private static final I18n I18N = I18nFactory.getI18n(JDBCTableFieldValueUI.class);
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -107,11 +107,11 @@ public class FieldValueUI implements DataUI {
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-        FieldValue fieldValue = null;
-        //Retrieve the FieldValue and if it is optional
+        JDBCTableFieldValue jdbcTableFieldValue = null;
+        //Retrieve the JDBCTableFieldValue and if it is optional
         boolean isOptional = false;
         if(inputOrOutput instanceof InputDescriptionType){
-            fieldValue = (FieldValue)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            jdbcTableFieldValue = (JDBCTableFieldValue)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
             if(((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"))){
                 isOptional = true;
             }
@@ -120,7 +120,7 @@ public class FieldValueUI implements DataUI {
             return null;
         }
 
-        if(fieldValue == null){
+        if(jdbcTableFieldValue == null){
             return panel;
         }
         //Build and set the JList containing all the field values
@@ -141,7 +141,7 @@ public class FieldValueUI implements DataUI {
         list.putClientProperty(DEFAULT_ELEMENT_PROPERTY, defaultElement);
         URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
         list.putClientProperty(URI_PROPERTY, uri);
-        list.putClientProperty(FIELD_VALUE_PROPERTY, fieldValue);
+        list.putClientProperty(FIELD_VALUE_PROPERTY, jdbcTableFieldValue);
         list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
         list.putClientProperty(ORIENTATION_PROPERTY, orientation);
@@ -269,7 +269,7 @@ public class FieldValueUI implements DataUI {
         @Override
         protected Object doInBackground() throws Exception {
             WaitLayerUI layerUI = (WaitLayerUI)list.getClientProperty(LAYERUI_PROPERTY);
-            FieldValue fieldValue = (FieldValue)list.getClientProperty(FIELD_VALUE_PROPERTY);
+            JDBCTableFieldValue jdbcTableFieldValue = (JDBCTableFieldValue)list.getClientProperty(FIELD_VALUE_PROPERTY);
             ContainerItem<Object> defaultElement = (ContainerItem<Object>)list.getClientProperty(DEFAULT_ELEMENT_PROPERTY);
             this.setTaskName(I18N.tr("Updating the field values"));
             Orientation orientation = (Orientation)list.getClientProperty(ORIENTATION_PROPERTY);
@@ -278,13 +278,13 @@ public class FieldValueUI implements DataUI {
             Map<URI, Object> dataMap = (Map) list.getClientProperty(DATA_MAP_PROPERTY);
             boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
             DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
-            //If the DataField related to the FieldValue has been modified, reload the dataField values
-            if(fieldValue.isDataFieldModified()) {
-                fieldValue.setDataFieldModified(false);
+            //If the DataField related to the jdbcTableFieldValue has been modified, reload the dataField values
+            if(jdbcTableFieldValue.isJDBCTableFieldModified()) {
+                jdbcTableFieldValue.setJDBCTableFieldModified(false);
                 String tableName = null;
                 String fieldName = null;
-                if(fieldValue.getDataFieldIdentifier().toString().contains("$")){
-                    String[] split = fieldValue.getDataFieldIdentifier().toString().split("\\$");
+                if(jdbcTableFieldValue.getJDBCTableFieldIdentifier().toString().contains("$")){
+                    String[] split = jdbcTableFieldValue.getJDBCTableFieldIdentifier().toString().split("\\$");
                     if(split.length == 4) {
                         tableName = split[1]+"."+split[2];
                         fieldName = split[3];
@@ -297,19 +297,19 @@ public class FieldValueUI implements DataUI {
                         return null;
                     }
                 }
-                else if (dataMap.get(fieldValue.getDataStoreIdentifier()) != null){
-                    tableName = dataMap.get(fieldValue.getDataStoreIdentifier()).toString();
-                    fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
+                else if (dataMap.get(jdbcTableFieldValue.getJDBCTableIdentifier()) != null){
+                    tableName = dataMap.get(jdbcTableFieldValue.getJDBCTableIdentifier()).toString();
+                    fieldName = dataMap.get(jdbcTableFieldValue.getJDBCTableFieldIdentifier()).toString();
                 }
-                else if(fieldValue.getDataStoreIdentifier().toString().contains("$")){
-                    String[] split = fieldValue.getDataStoreIdentifier().toString().split("\\$");
+                else if(jdbcTableFieldValue.getJDBCTableIdentifier().toString().contains("$")){
+                    String[] split = jdbcTableFieldValue.getJDBCTableIdentifier().toString().split("\\$");
                     if(split.length == 3){
                         tableName = split[1]+"."+split[2];
                     }
                     else if(split.length == 2){
                         tableName = split[1];
                     }
-                    fieldName = dataMap.get(fieldValue.getDataFieldIdentifier()).toString();
+                    fieldName = dataMap.get(jdbcTableFieldValue.getJDBCTableFieldIdentifier()).toString();
                 }
                 if(tableName != null && fieldName != null) {
                     layerUI.start();
@@ -355,7 +355,7 @@ public class FieldValueUI implements DataUI {
                 list.putClientProperty(TOOLTIP_TEXT_PROPERTY, list.getToolTipText());
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
-                String fieldValueStr = fieldValue.getDataFieldIdentifier().toString();
+                String fieldValueStr = jdbcTableFieldValue.getJDBCTableFieldIdentifier().toString();
                 if(fieldValueStr.contains("$")){
                     String[] split = fieldValueStr.split("\\$");
                     if(split.length == 3){
@@ -405,7 +405,7 @@ public class FieldValueUI implements DataUI {
     /**
      * Wait layer displayed on doing an update on the list.
      */
-    class WaitLayerUI extends LayerUI<JComponent> implements ActionListener {
+    private class WaitLayerUI extends LayerUI<JComponent> implements ActionListener {
         private boolean mIsRunning;
         private boolean mIsFadingOut;
         private Timer mTimer;

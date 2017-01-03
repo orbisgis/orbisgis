@@ -46,7 +46,7 @@ import org.orbisgis.wpsgroovyapi.attributes.JDBCTableFieldValueAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
-import org.orbisgis.wpsservice.model.FieldValue;
+import org.orbisgis.wpsservice.model.JDBCTableFieldValue;
 import org.orbisgis.wpsservice.model.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
@@ -54,16 +54,16 @@ import java.lang.reflect.Field;
 import java.net.URI;
 
 /**
- * Parser for the FieldValue input/output annotations.
+ * Parser for the JDBCTableFieldValue input/output annotations.
  *
  * @author Sylvain PALOMINOS
  **/
 
-public class FieldValueParser implements Parser {
+public class JDBCTableFieldValueParser implements Parser {
 
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
-        //Instantiate the FieldValue object
+        //Instantiate the JDBCTableFieldValue object
         JDBCTableFieldValueAttribute JDBCTableFieldValueAttribute = f.getAnnotation(JDBCTableFieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataFieldUri;
@@ -75,11 +75,11 @@ public class FieldValueParser implements Parser {
         else {
             dataFieldUri = URI.create(JDBCTableFieldValueAttribute.jdbcTableFieldReference());
         }
-        FieldValue fieldValue = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldValueAttribute, format, dataFieldUri);
+        JDBCTableFieldValue JDBCTableFieldValue = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldValueAttribute, format, dataFieldUri);
 
         //Instantiate the returned input
         InputDescriptionType input = new InputDescriptionType();
-        JAXBElement<FieldValue> jaxbElement = new ObjectFactory().createFieldValue(fieldValue);
+        JAXBElement<JDBCTableFieldValue> jaxbElement = new ObjectFactory().createFieldValue(JDBCTableFieldValue);
         input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
@@ -96,7 +96,7 @@ public class FieldValueParser implements Parser {
 
     @Override
     public OutputDescriptionType parseOutput(Field f, URI processId) {
-        //Instantiate the FieldValue object
+        //Instantiate the JDBCTableFieldValue object
         JDBCTableFieldValueAttribute JDBCTableFieldValueAttribute = f.getAnnotation(JDBCTableFieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI dataFieldUri;
@@ -108,11 +108,11 @@ public class FieldValueParser implements Parser {
         else {
             dataFieldUri = URI.create(JDBCTableFieldValueAttribute.jdbcTableFieldReference());
         }
-        FieldValue fieldValue = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldValueAttribute, format, dataFieldUri);
+        JDBCTableFieldValue JDBCTableFieldValue = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldValueAttribute, format, dataFieldUri);
 
         //Instantiate the returned output
         OutputDescriptionType output = new OutputDescriptionType();
-        JAXBElement<FieldValue> jaxbElement = new ObjectFactory().createFieldValue(fieldValue);
+        JAXBElement<JDBCTableFieldValue> jaxbElement = new ObjectFactory().createFieldValue(JDBCTableFieldValue);
         output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);

@@ -12,9 +12,9 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /**
  * This process removes the given rows from the given table.
  * The user has to specify (mandatory):
- *  - The input table (DataStore)
- *  - The primary key field (DataField)
- *  - The primary keys of the rows to remove (FieldValue)
+ *  - The input table (JDBCTable)
+ *  - The primary key field (JDBCTableField)
+ *  - The primary keys of the rows to remove (JDBCTableFieldValue)
  *
  * @author Sylvain PALOMINOS
  */
@@ -44,7 +44,7 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the input data source table. */
+/** This JDBCTable is the input data source table. */
 @JDBCTableInput(
         title = ["Table","en",
                 "Table","fr"],
@@ -58,7 +58,7 @@ String tableName
 /** INPUT Parameters **/
 /**********************/
 
-/** Name of the PrimaryKey field of the DataStore tableName. */
+/** Name of the PrimaryKey field of the JDBCTable tableName. */
 @JDBCTableFieldInput(
         title = ["PKField","en",
                 "Champ clef primaire","fr"],

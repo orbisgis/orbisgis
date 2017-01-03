@@ -85,8 +85,8 @@ public class WpsServerImplTest {
             f = new File(url.toURI());
             localWpsServer.addLocalSource(f, null, true, "test");
 
-            url = this.getClass().getResource("FieldValue.groovy");
-            Assert.assertNotNull("Unable to load the script 'FieldValue.groovy'", url);
+            url = this.getClass().getResource("JDBCTableFieldValue.groovy");
+            Assert.assertNotNull("Unable to load the script 'JDBCTableFieldValue.groovy'", url);
             f = new File(url.toURI());
             localWpsServer.addLocalSource(f, null, true, "test");
 

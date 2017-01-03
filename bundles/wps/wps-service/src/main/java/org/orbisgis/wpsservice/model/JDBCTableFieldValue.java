@@ -45,25 +45,25 @@ import java.net.URI;
 import java.util.List;
 
 /**
- * FieldValue represent one or more values from a DataField.
+ * JDBCTableFieldValue represent one or more values from a JDBCTableField.
  * @author Sylvain PALOMINOS
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "FieldValue", propOrder = {"dataFieldIdentifier", "dataStoreIdentifier", "multiSelection"})
-public class FieldValue extends ComplexDataType {
+@XmlType(name = "JDBCTableFieldValue", propOrder = {"dataFieldIdentifier", "dataStoreIdentifier", "multiSelection"})
+public class JDBCTableFieldValue extends ComplexDataType {
 
-    /** Identifier of the 'parent' DataField */
+    /** Identifier of the 'parent' JDBCTableField */
     @XmlElement(name = "DataFieldId", namespace = "http://orbisgis.org")
-    private URI dataFieldIdentifier;
-    /** Indicates if the FieldValue should be reloaded because of a modification of the parent DataField.*/
+    private URI jdbcTableFieldIdentifier;
+    /** Indicates if the JDBCTableFieldValue should be reloaded because of a modification of the parent JDBCTableField.*/
     @XmlTransient
-    private boolean isDataFieldModified = true;
-    /** Identifier of the 'parent' DataStore */
+    private boolean isJDBCTableFieldModified = true;
+    /** Identifier of the 'parent' JDBCTable */
     @XmlElement(name = "DataStoreId", namespace = "http://orbisgis.org")
-    private URI dataStoreIdentifier;
-    /** Indicates if the FieldValue should be reloaded because of a modification of the parent DataStore.*/
+    private URI jdbcTableIdentifier;
+    /** Indicates if the JDBCTableFieldValue should be reloaded because of a modification of the parent JDBCTable.*/
     @XmlTransient
-    private boolean isDataStoreModified = true;
+    private boolean isJDBCTableModified = true;
     /** Enable the selection of more than one value if true.*/
     @XmlAttribute(name = "multiSelection")
     private boolean multiSelection;
@@ -71,88 +71,89 @@ public class FieldValue extends ComplexDataType {
     /**
      * Main constructor
      * @param formatList Formats of the data accepted.
-     * @param dataFieldIdentifier Identifier of the 'parent' dataField.
+     * @param jdbcTableFieldIdentifier Identifier of the 'parent' JDBCTableField.
      * @param multiSelection Enable or not the selection of more than one value.
      * @throws MalformedScriptException
      */
-    public FieldValue(List<Format> formatList, URI dataFieldIdentifier, boolean multiSelection) throws MalformedScriptException {
+    public JDBCTableFieldValue(List<Format> formatList, URI jdbcTableFieldIdentifier, boolean multiSelection)
+            throws MalformedScriptException {
         format = formatList;
         this.multiSelection = multiSelection;
-        this.dataFieldIdentifier = dataFieldIdentifier;
+        this.jdbcTableFieldIdentifier = jdbcTableFieldIdentifier;
     }
 
     /**
      * Protected empty constructor used in the ObjectFactory class for JAXB.
      */
-    protected FieldValue(){
+    protected JDBCTableFieldValue(){
         super();
-        dataFieldIdentifier = null;
-        dataStoreIdentifier = null;
+        jdbcTableFieldIdentifier = null;
+        jdbcTableIdentifier = null;
     }
 
     /**
      * Sets the URI of the parent DataField.
-     * @param dataFieldIdentifier URI of the DataField.
+     * @param jdbcTableFieldIdentifier URI of the JDBCTableField.
      */
-    public void setDataFieldIdentifier(URI dataFieldIdentifier){
-        this.dataFieldIdentifier = dataFieldIdentifier;
+    public void setJDBCTableFieldIdentifierIdentifier(URI jdbcTableFieldIdentifier){
+        this.jdbcTableFieldIdentifier = jdbcTableFieldIdentifier;
     }
 
     /**
-     * Returns the DataField identifier.
-     * @return The DataField identifier.
+     * Returns the JDBCTableField identifier.
+     * @return The JDBCTableField identifier.
      */
-    public URI getDataFieldIdentifier(){
-        return dataFieldIdentifier;
+    public URI getJDBCTableFieldIdentifier(){
+        return jdbcTableFieldIdentifier;
     }
 
     /**
-     * Tells if the parent DataField has been modified since last time it was checked.
-     * @return True if the parent DataField has been modified, false otherwise.
+     * Tells if the parent JDBCTableField has been modified since last time it was checked.
+     * @return True if the parent JDBCTableField has been modified, false otherwise.
      */
-    public boolean isDataFieldModified() {
-        return isDataFieldModified;
+    public boolean isJDBCTableFieldModified() {
+        return isJDBCTableFieldModified;
     }
 
     /**
-     * Sets if the parent DataField has been modified
-     * @param isDataFieldModified True if the parent DataField has been modified, false otherwise.
+     * Sets if the parent JDBCTableField has been modified
+     * @param isJDBCTableFieldModified True if the parent JDBCTableField has been modified, false otherwise.
      */
-    public void setDataFieldModified(boolean isDataFieldModified) {
-        this.isDataFieldModified = isDataFieldModified;
+    public void setJDBCTableFieldModified(boolean isJDBCTableFieldModified) {
+        this.isJDBCTableFieldModified = isJDBCTableFieldModified;
     }
 
 
     /**
-     * Sets the URI of the parent DataStore.
-     * @param dataStoreIdentifier URI of the DataStore.
+     * Sets the URI of the parent JDBCTable.
+     * @param jdbcTableIdentifier URI of the JDBCTable.
      */
-    public void setDataStoredIdentifier(URI dataStoreIdentifier){
-        this.dataStoreIdentifier = dataStoreIdentifier;
+    public void setJDBCTableIdentifier(URI jdbcTableIdentifier){
+        this.jdbcTableIdentifier = jdbcTableIdentifier;
     }
 
     /**
-     * Returns the DataStore identifier.
-     * @return The DataStore identifier.
+     * Returns the JDBCTable identifier.
+     * @return The JDBCTable identifier.
      */
-    public URI getDataStoreIdentifier(){
-        return dataStoreIdentifier;
+    public URI getJDBCTableIdentifier(){
+        return jdbcTableIdentifier;
     }
 
     /**
-     * Tells if the parent DataStore has been modified since last time it was checked.
-     * @return True if the parent DataField has been modified, false otherwise.
+     * Tells if the parent JDBCTable has been modified since last time it was checked.
+     * @return True if the parent JDBCTableField has been modified, false otherwise.
      */
-    public boolean isDataStoreModified() {
-        return isDataStoreModified;
+    public boolean isJDBCTableModified() {
+        return isJDBCTableModified;
     }
 
     /**
      * Sets if the parent DataStore has been modified
-     * @param isDataStoreModified True if the parent DataStore has been modified, false otherwise.
+     * @param isJDBCTableModified True if the parent JDBCTable has been modified, false otherwise.
      */
-    public void setDataStoreModified(boolean isDataStoreModified) {
-        this.isDataStoreModified = isDataStoreModified;
+    public void setJDBCTableModified(boolean isJDBCTableModified) {
+        this.isJDBCTableModified = isJDBCTableModified;
     }
 
     /**
