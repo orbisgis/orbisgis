@@ -44,6 +44,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import net.opengis.wps._2_0.DescriptionType;
+import org.orbisgis.wpsservice.model.MalformedScriptException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -79,7 +80,7 @@ public class DescriptionTypeConvertTest {
      * Test if the decoding and convert of the full DescriptionTypeAttribute annotation into its java object is valid.
      */
     @Test
-    public void testFullDescriptionTypeAttributeConvert(){
+    public void testFullDescriptionTypeAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
             //Retrieve the DescriptionType object
@@ -317,7 +318,7 @@ public class DescriptionTypeConvertTest {
      * Test if the decoding and convert of the simple DescriptionTypeAttribute annotation into its java object is valid.
      */
     @Test
-    public void testSimpleDescriptionTypeAttributeConvert(){
+    public void testSimpleDescriptionTypeAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
             //Retrieve the DescriptionType object
@@ -524,7 +525,7 @@ public class DescriptionTypeConvertTest {
      * Test if the decoding and convert of the minimal DescriptionTypeAttribute annotation into its java object is valid.
      */
     @Test
-    public void testMinimalDescriptionTypeAttributeConvert(){
+    public void testMinimalDescriptionTypeAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
             //Retrieve the DescriptionType object

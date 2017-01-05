@@ -17,7 +17,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
         description = ["Test script using the JDBCTableField ComplexData.","en",
                 "Scripts test pour l'usage du ComplexData JDBCTableField.","fr"],
         keywords = ["test,script,wps", "en", "test,scripte,wps", "fr"],
-        identifier = "orbisgis:test:jdbcTableField",
+        identifier = "orbisgis:test:jdbctablefield",
         metadata = ["website","metadata"]
 )
 def processing() {

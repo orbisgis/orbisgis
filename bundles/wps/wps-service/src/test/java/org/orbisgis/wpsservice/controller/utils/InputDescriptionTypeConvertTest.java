@@ -103,7 +103,7 @@ public class InputDescriptionTypeConvertTest {
 
             //Test the max occurs
             String messageMaxOccurs = "The max occurs value is not the one expected (" +
-                    inputDescriptionType.getMaxOccurs() + " instead of " + toTest.getMaxOccurs();
+                    inputDescriptionType.getMaxOccurs() + " instead of " + toTest.getMaxOccurs() + ")";
             boolean conditionMaxOccurs = inputDescriptionType.getMaxOccurs().equals(toTest.getMaxOccurs());
             Assert.assertTrue(messageMaxOccurs, conditionMaxOccurs);
 
@@ -160,7 +160,7 @@ public class InputDescriptionTypeConvertTest {
             ////////////////////////////////////////////
 
             InputDescriptionType toTest = new InputDescriptionType();
-            toTest.setMaxOccurs("1"+InputAttribute.defaultMaxOccurs);
+            toTest.setMaxOccurs("" + InputAttribute.defaultMaxOccurs);
             toTest.setMinOccurs(new BigInteger(""+InputAttribute.defaultMinOccurs));
 
             ////////////////////////////////////

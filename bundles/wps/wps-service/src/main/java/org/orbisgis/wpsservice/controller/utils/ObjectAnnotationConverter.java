@@ -270,20 +270,22 @@ public class ObjectAnnotationConverter {
 
         String[] metadata = descriptionTypeAttribute.metadata();
         //Check if the metadata is composed of pairs of string
-        if(metadata.length != 0 && metadata.length%2==0){
-            List<MetadataType> metadataList = new ArrayList<>();
-            for(int i=0; i<metadata.length; i+=2){
-                MetadataType metadataType = new MetadataType();
-                metadataType.setRole(metadata[i]);
-                metadataType.setTitle(metadata[i+1]);
-                metadataList.add(metadataType);
+        if(metadata.length != 0) {
+            if (metadata.length % 2 == 0){
+                List<MetadataType> metadataList = new ArrayList<>();
+                for (int i = 0; i < metadata.length; i += 2) {
+                    MetadataType metadataType = new MetadataType();
+                    metadataType.setRole(metadata[i]);
+                    metadataType.setTitle(metadata[i + 1]);
+                    metadataList.add(metadataType);
+                }
+                descriptionType.getMetadata().clear();
+                descriptionType.getMetadata().addAll(metadataList);
             }
-            descriptionType.getMetadata().clear();
-            descriptionType.getMetadata().addAll(metadataList);
-        }
-        else{
-            throw new MalformedScriptException(DescriptionTypeAttribute.class, "metadata", "The metadata should " +
-                    "be composed of pairs of String : the property and its value.");
+            else{
+                throw new MalformedScriptException(DescriptionTypeAttribute.class, "metadata", "The metadata should " +
+                        "be composed of pairs of String : the property and its value.");
+            }
         }
     }
 
@@ -511,7 +513,7 @@ public class ObjectAnnotationConverter {
         //Build the literalDataDomain list
 
         //Sets the default domain
-        LiteralDataDomain dataDomain = createLiteralDataDomain(dataType, literalDataAttribute.defaultDomain(), false);
+        LiteralDataDomain dataDomain = createLiteralDataDomain(dataType, literalDataAttribute.defaultDomain(), true);
         if(dataDomain == null){
             throw new MalformedScriptException(LiteralDataAttribute.class, "validDomains", "The valid " +
                     "domains should be a coma separated list of ranges with this pattern : min;;max / " +

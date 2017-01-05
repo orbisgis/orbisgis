@@ -598,7 +598,7 @@ public class WpsServerImplTest {
                         " should be null",
                 statusInfo.getPercentCompleted());
 
-        try {sleep(100);} catch (InterruptedException e) {}
+        try {sleep(100);} catch (InterruptedException ignored) {}
 
         //Now test the getStatus request
         UUID jobId = UUID.fromString(((StatusInfo)resultObject).getJobID());
