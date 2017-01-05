@@ -92,9 +92,8 @@ import java.lang.annotation.RetentionPolicy
      *  - min;;max : A range of valid values with a min value and a max value.
      *  - min;spacing;max : A range of valid value with a spacing between two value, a min, and a max.
      *  i.e. :
-     *  defaultDomain = ["0;;1, 1;1;100, 1000"]
-     *  The allowed values are value1 (the default one), value2, value3 or a value between 0 to 1, a value between 1
-     *  to 100 with a spacing of 1.
+     *  defaultDomain = "0;;1, 1;1;100, 1000"
+     *  The allowed values are a value between 0 and 1, a value between 1 and 100 with a spacing of 1 and the value 1000.
      */
     String defaultDomain() default ""
 
@@ -111,8 +110,8 @@ import java.lang.annotation.RetentionPolicy
      *  - min;spacing;max : A range of valid value with a spacing between two value, a min, and a max.
      *  i.e.
      *  validDomains = ["value1,value2,value3","0;;1,1;1;100"]
-     *  The allowed values are value1 (the default one), value2, value3 or a value between 0 to 1, a value between 1
-     *  to 100 with a spacing of 1.
+     *  The allowed values are value1 (the default one), value2, value3 or a value between 0 and 1, a value between 1
+     *  and 100 with a spacing of 1.
      */
     String[] validDomains() default []
 }

@@ -443,18 +443,12 @@ public class ObjectAnnotationConverter {
     }
 
     /**
-     * Builds an {@link JDBCTable} Object from an {@link JDBCTableAttribute} annotation.
-     * @param jdbcTableAttribute Groovy annotation to decode to build the Java object.
+     * Builds an {@link JDBCTableField} Object from an {@link JDBCTableFieldAttribute} annotation.
+     * @param jdbcTableFieldAttribute Groovy annotation to decode to build the Java object.
      * @param format The {@link Format} for the {@link JDBCTable}.
-     * @return The {@link JDBCTable} object with the data from the {@link JDBCTableAttribute} annotation.
+     * @param jdbcTableUri The URI of the parent {@link JDBCTable} object.
+     * @return The {@link JDBCTableField} object with the data from the {@link JDBCTableFieldAttribute} annotation.
      * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
-     */
-    /**
-     *
-     * @param jdbcTableFieldAttribute
-     * @param format
-     * @param jdbcTableUri
-     * @return
      */
     public static JDBCTableField annotationToObject(JDBCTableFieldAttribute jdbcTableFieldAttribute, Format format,
                                                     URI jdbcTableUri) throws MalformedScriptException {
@@ -475,161 +469,138 @@ public class ObjectAnnotationConverter {
         return jdbcTableField;
     }
 
-/*
-    public static Format annotationToObject(FormatAttribute formatAttribute){
-        Format format = new Format();
-        format.setMimeType(formatAttribute.mimeType());
-        format.setSchema(URI.create(formatAttribute.schema()).toString());
-        format.setDefault(formatAttribute.isDefaultFormat());
-        if(formatAttribute.maximumMegaBytes() == 0) {
-            format.setMaximumMegabytes(null);
-        }
-        else{
-            format.setMaximumMegabytes(BigInteger.valueOf(formatAttribute.maximumMegaBytes()));
-        }
-        format.setEncoding(formatAttribute.encoding());
-        return format;
+    /**
+     * Builds an {@link JDBCTableFieldValue} Object from an {@link JDBCTableFieldValueAttribute} annotation.
+     * @param jdbcTableFieldValueAttribute Groovy annotation to decode to build the Java object.
+     * @param format The {@link Format} for the {@link JDBCTable}.
+     * @param jdbcTableFieldUri The URI of the parent {@link JDBCTableField} object.
+     * @return The {@link JDBCTableFieldValue} object with the data from the {@link JDBCTableFieldValueAttribute}
+     *          annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
+    public static JDBCTableFieldValue annotationToObject(JDBCTableFieldValueAttribute jdbcTableFieldValueAttribute,
+                                                         Format format, URI jdbcTableFieldUri)
+            throws MalformedScriptException {
+        format.setDefault(true);
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(format);
+        return new JDBCTableFieldValue(formatList, jdbcTableFieldUri, jdbcTableFieldValueAttribute.multiSelection());
     }
 
-    public static MetadataType annotationToObject(MetadataAttribute descriptionTypeAttribute){
-        URI href = URI.create(descriptionTypeAttribute.href());
-        URI role = URI.create(descriptionTypeAttribute.role());
-        String title = descriptionTypeAttribute.title();
-
-        MetadataType metadata = new MetadataType();
-        metadata.setHref(href.toString());
-        metadata.setRole(role.toString());
-        metadata.setTitle(title);
-
-        return metadata;
-    }
-
-    public static Object annotationToObject(ValuesAttribute valueAttribute){
-        if(valueAttribute.type().toUpperCase().equals(ValuesType.VALUE.name())){
-            if(valueAttribute.value().equals(ValuesAttribute.defaultValue)){
-                return null;
-            }
-            ValueType value = new ValueType();
-            value.setValue(valueAttribute.value().trim());
-            return value;
-        }
-        else if(valueAttribute.type().toUpperCase().equals(ValuesType.RANGE.name())){
-            RangeType range = new RangeType();
-            if(!valueAttribute.spacing().equals(ValuesAttribute.defaultSpacing)) {
-                ValueType spacing = new ValueType();
-                spacing.setValue(valueAttribute.spacing().trim());
-                range.setSpacing(spacing);
-            }
-            if(!valueAttribute.maximum().equals(ValuesAttribute.defaultMaximum)){
-                ValueType max = new ValueType();
-                max.setValue(valueAttribute.maximum().trim());
-                range.setMaximumValue(max);
-            }
-            if(!valueAttribute.minimum().equals(ValuesAttribute.defaultMinimum)){
-                ValueType min = new ValueType();
-                min.setValue(valueAttribute.minimum().trim());
-                range.setMinimumValue(min);
-            }
-            return range;
-        }
-        return null;
-    }*/
-/*
-    public static LiteralDataDomain annotationToObject(LiteralDataDomainAttribute literalDataDomainAttribute){
-        LiteralDataDomain literalDataDomain = new LiteralDataDomain();
-        literalDataDomain.setDefault(literalDataDomainAttribute.isDefault());
-        if(!literalDataDomainAttribute.uom().isEmpty()){
-            DomainMetadataType uom = new DomainMetadataType();
-            URI uomUri = URI.create(literalDataDomainAttribute.uom());
-            uom.setValue(uomUri.getPath());
-            uom.setReference(uomUri.toString());
-            literalDataDomain.setUOM(uom);
-        }
-        DataType dataType = DataType.valueOf(literalDataDomainAttribute.dataType());
-        DomainMetadataType domainDataType = new DomainMetadataType();
-        domainDataType.setReference(dataType.getUri().toString());
-        domainDataType.setValue(dataType.name().trim());
-        literalDataDomain.setDataType(domainDataType);
-
-        Object value = ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute.possibleLiteralValues());
-        if(value instanceof AllowedValues){
-            literalDataDomain.setAllowedValues((AllowedValues)value);
-        }
-        else if(value instanceof AnyValue){
-            literalDataDomain.setAnyValue((AnyValue) value);
-        }
-        else if(value instanceof ValuesReference){
-            literalDataDomain.setValuesReference((ValuesReference) value);
-        }
-        ValueType defaultValue = new ValueType();
-        defaultValue.setValue(literalDataDomainAttribute.defaultValue().trim());
-        literalDataDomain.setDefaultValue(defaultValue);
-
-        return literalDataDomain;
-    }*/
-
-    public static LiteralDataType annotationToObject(LiteralDataAttribute literalDataAttribute,
-                                                     DomainMetadataType domainMetadataType) {
+    public static LiteralDataType annotationToObject(LiteralDataAttribute literalDataAttribute, DataType dataType)
+            throws MalformedScriptException {
         LiteralDataType literalDataType = new LiteralDataType();
 
+        //Sets the format of the literalData
         List<Format> formatList = new ArrayList<>();
         formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
         formatList.get(0).setDefault(true);
         literalDataType.getFormat().clear();
         literalDataType.getFormat().addAll(formatList);
 
-        List<LiteralDataType.LiteralDataDomain> lddList = new ArrayList<>();
-        if(literalDataAttribute.defaultDomain().isEmpty()){
-            LiteralDataDomain literalDataDomain = new LiteralDataDomain();
-            literalDataDomain.setDefault(true);
-            literalDataDomain.setAnyValue(new AnyValue());
-            lddList.add(literalDataDomain);
+        //Sets the data domain of the literalData
+        List<LiteralDataDomain> lddList = new ArrayList<>();
+        //Build the literalDataDomain list
+
+        //Sets the default domain
+        LiteralDataDomain dataDomain = createLiteralDataDomain(dataType, literalDataAttribute.defaultDomain(), false);
+        if(dataDomain == null){
+            throw new MalformedScriptException(LiteralDataAttribute.class, "validDomains", "The valid " +
+                    "domains should be a coma separated list of ranges with this pattern : min;;max / " +
+                    "min;spacing;max or a simple value");
         }
-        /*else {
-            LiteralDataDomain ldd = getLiteralDataDomain(literalDataAttribute.defaultDomain(), domainMetadataType);
-            ldd.setDefault(true);
-            lddList.add(ldd);
-            if (literalDataAttribute.validDomains().length != 0) {
-                for (String literalDataDomain : literalDataAttribute.validDomains()) {
-                    lddList.add(getLiteralDataDomain(literalDataDomain, domainMetadataType));
+        lddList.add(dataDomain);
+
+        //Sets the others domains if defined
+        if(literalDataAttribute.validDomains().length != 0){
+            for(String validDomain : literalDataAttribute.validDomains()){
+                dataDomain = createLiteralDataDomain(dataType, validDomain, false);
+                if(dataDomain == null){
+                    throw new MalformedScriptException(LiteralDataAttribute.class, "validDomains", "The valid " +
+                            "domains should be a coma separated list of ranges with this pattern : min;;max / " +
+                            "min;spacing;max or a simple value");
                 }
+                lddList.add(dataDomain);
             }
-        }*/
+        }
+
         literalDataType.getLiteralDataDomain().clear();
         literalDataType.getLiteralDataDomain().addAll(lddList);
 
         return literalDataType;
     }
-/*
-    private static LiteralDataDomain getLiteralDataDomain(String literalDataDomain, DomainMetadataType domainMetadataType){
-        LiteralDataDomain ldd = new LiteralDataDomain();
-        String[] split = literalDataDomain.split(",");
-        List<Object> listAllowedValues = ldd.getAllowedValues().getValueOrRange();
-        for (String domain : split) {
-            if (domain.contains(";")) {
-                String[] rangeAttributes = domain.split(";");
-                RangeType range = new RangeType();
-                ValueType minimum = new ValueType();
-                minimum.setValue(rangeAttributes[0]);
-                range.setMinimumValue(minimum);
-                if (!rangeAttributes[1].isEmpty()) {
-                    ValueType spacing = new ValueType();
-                    spacing.setValue(rangeAttributes[1]);
-                    range.setSpacing(spacing);
-                }
-                ValueType maximum = new ValueType();
-                maximum.setValue(rangeAttributes[2]);
-                range.setMaximumValue(maximum);
-                listAllowedValues.add(range);
-            } else {
-                ValueType value = new ValueType();
-                value.setValue(domain);
-                listAllowedValues.add(value);
-            }
+
+    /**
+     * Creates a {@link LiteralDataDomain} object from its string representation.
+     * @param dataType DataType of the domain.
+     * @param literalDataDomainStr String representation of the domain.
+     * @param isDefault True if the domain is the default one, false otherwise.
+     * @return The LiteralDataDomain.
+     */
+    private static LiteralDataDomain createLiteralDataDomain(DataType dataType, String literalDataDomainStr,
+                                                             boolean isDefault){
+        LiteralDataDomain LiteralDataDomain = new LiteralDataDomain();
+        LiteralDataDomain.setDefault(isDefault);
+        DomainMetadataType domainMetadataType = new DomainMetadataType();
+        domainMetadataType.setValue(dataType.name());
+        domainMetadataType.setReference(dataType.getUri().toString());
+        LiteralDataDomain.setDataType(domainMetadataType);
+        //If no values was specified, allow any value
+        if(literalDataDomainStr.isEmpty()){
+            LiteralDataDomain.setAnyValue(new AnyValue());
         }
-        ldd.setDataType(domainMetadataType);
-        return ldd;
-    }*/
+        else{
+            AllowedValues allowedValues = new AllowedValues();
+            List<Object> valueOrRangeList = new ArrayList<>();
+            String[] splitDomains = literalDataDomainStr.split(",");
+            for(String domain : splitDomains){
+                Object allowedValue = createAllowedValue(domain);
+                if(allowedValue == null){
+                    return null;
+                }
+                valueOrRangeList.add(allowedValue);
+            }
+            allowedValues.getValueOrRange().addAll(valueOrRangeList);
+            LiteralDataDomain.setAllowedValues(allowedValues);
+        }
+        return LiteralDataDomain;
+    }
+
+    /**
+     * Create the allowed value Object ({@link RangeType} or {@link ValueType}) from its string representation.
+     * @param allowedValue String representation of the allowedValue.
+     * @return {@link RangeType} or {@link ValueType} Object.
+     */
+    private static Object createAllowedValue(String allowedValue){
+        String allowedValueStr = allowedValue.trim();
+        if(allowedValueStr.contains(";")){
+            String[] domainValues = allowedValueStr.split(";");
+            //Test if the domain is well formed (min;;max or min;spacing;max). If not, throw an exception
+            if(domainValues[0].isEmpty() || domainValues[2].isEmpty()){
+                return null;
+            }
+            RangeType rangeType = new RangeType();
+            ValueType minValue = new ValueType();
+            minValue.setValue(domainValues[0]);
+            rangeType.setMinimumValue(minValue);
+            if(!domainValues[1].isEmpty()) {
+                ValueType spacingValue = new ValueType();
+                spacingValue.setValue(domainValues[1]);
+                rangeType.setSpacing(spacingValue);
+            }
+            ValueType maxValue = new ValueType();
+            maxValue.setValue(domainValues[0]);
+            rangeType.setMaximumValue(maxValue);
+
+            return rangeType;
+        }
+        else{
+            ValueType value = new ValueType();
+            value.setValue(allowedValueStr);
+
+            return value;
+        }
+    }
 
     public static RawData annotationToObject(RawDataAttribute rawDataAttribute, Format format) {
         try {
@@ -649,33 +620,6 @@ public class ObjectAnnotationConverter {
             return null;
         }
     }
-/*
-    public static Object annotationToObject(
-            PossibleLiteralValuesChoiceAttribute possibleLiteralValuesChoiceAttribute){
-        if(possibleLiteralValuesChoiceAttribute.anyValues() ||
-                (possibleLiteralValuesChoiceAttribute.allowedValues().length != 0 &&
-                        !possibleLiteralValuesChoiceAttribute.reference().isEmpty())){
-            return new AnyValue();
-        }
-        else if(possibleLiteralValuesChoiceAttribute.allowedValues().length != 0){
-            AllowedValues allowedValues = new AllowedValues();
-            List<Object> valueList = new ArrayList<>();
-            for(ValuesAttribute va : possibleLiteralValuesChoiceAttribute.allowedValues()){
-                valueList.add(ObjectAnnotationConverter.annotationToObject(va));
-            }
-            allowedValues.getValueOrRange().clear();
-            allowedValues.getValueOrRange().addAll(valueList);
-            return allowedValues;
-        }
-        else if (!possibleLiteralValuesChoiceAttribute.reference().isEmpty()){
-            ValuesReference valuesReference = new ValuesReference();
-            URI uri = URI.create(possibleLiteralValuesChoiceAttribute.reference());
-            valuesReference.setValue(uri.getPath());
-            valuesReference.setReference(uri.toString());
-            return valuesReference;
-        }
-        return new AnyValue();
-    }*/
 
     public static void annotationToObject(ProcessAttribute processAttribute, ProcessOffering processOffering){
         processOffering.getProcess().setLang(Locale.forLanguageTag(processAttribute.language()).toString());
@@ -687,18 +631,6 @@ public class ObjectAnnotationConverter {
             metadata.setRole(properties[i]);
             metadata.setTitle(properties[i+1]);
             metadataList.add(metadata);
-        }
-    }
-
-    public static JDBCTableFieldValue annotationToObject(JDBCTableFieldValueAttribute jdbcTableFieldvalueAttribute, Format format, URI jdbcTableFieldUri) {
-        try {
-            format.setDefault(true);
-            List<Format> formatList = new ArrayList<>();
-            formatList.add(format);
-            return new JDBCTableFieldValue(formatList, jdbcTableFieldUri, jdbcTableFieldvalueAttribute.multiSelection());
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
         }
     }
 }
