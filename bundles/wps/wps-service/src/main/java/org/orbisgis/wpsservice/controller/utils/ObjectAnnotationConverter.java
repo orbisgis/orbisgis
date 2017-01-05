@@ -420,7 +420,7 @@ public class ObjectAnnotationConverter {
     }
 
     /**
-     * Builds an {@link JDBCTable} Object from an {@link JDBCTableAttribute} annotation.
+     * Builds a {@link JDBCTable} Object from an {@link JDBCTableAttribute} annotation.
      * @param jdbcTableAttribute Groovy annotation to decode to build the Java object.
      * @param formatList The list of the {@link Format} for the {@link JDBCTable}.
      * @return The {@link JDBCTable} object with the data from the {@link JDBCTableAttribute} annotation.
@@ -443,7 +443,7 @@ public class ObjectAnnotationConverter {
     }
 
     /**
-     * Builds an {@link JDBCTableField} Object from an {@link JDBCTableFieldAttribute} annotation.
+     * Builds a {@link JDBCTableField} Object from an {@link JDBCTableFieldAttribute} annotation.
      * @param jdbcTableFieldAttribute Groovy annotation to decode to build the Java object.
      * @param format The {@link Format} for the {@link JDBCTable}.
      * @param jdbcTableUri The URI of the parent {@link JDBCTable} object.
@@ -470,7 +470,7 @@ public class ObjectAnnotationConverter {
     }
 
     /**
-     * Builds an {@link JDBCTableFieldValue} Object from an {@link JDBCTableFieldValueAttribute} annotation.
+     * Builds a {@link JDBCTableFieldValue} Object from an {@link JDBCTableFieldValueAttribute} annotation.
      * @param jdbcTableFieldValueAttribute Groovy annotation to decode to build the Java object.
      * @param format The {@link Format} for the {@link JDBCTable}.
      * @param jdbcTableFieldUri The URI of the parent {@link JDBCTableField} object.
@@ -487,6 +487,14 @@ public class ObjectAnnotationConverter {
         return new JDBCTableFieldValue(formatList, jdbcTableFieldUri, jdbcTableFieldValueAttribute.multiSelection());
     }
 
+    /**
+     * Builds a {@link LiteralDataType} Object from an {@link LiteralDataAttribute} annotation.
+     * @param literalDataAttribute Groovy annotation to decode to build the Java object.
+     * @param dataType The {@link DataType} for the {@link LiteralDataType}.
+     * @return The {@link LiteralDataType} object with the data from the {@link LiteralDataAttribute}
+     *          annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
     public static LiteralDataType annotationToObject(LiteralDataAttribute literalDataAttribute, DataType dataType)
             throws MalformedScriptException {
         LiteralDataType literalDataType = new LiteralDataType();
@@ -528,6 +536,47 @@ public class ObjectAnnotationConverter {
         literalDataType.getLiteralDataDomain().addAll(lddList);
 
         return literalDataType;
+    }
+
+    /**
+     * Builds a {@link RawData} Object from an {@link RawDataAttribute} annotation.
+     * @param rawDataAttribute Groovy annotation to decode to build the Java object.
+     * @param format The {@link Format} for the {@link RawData}.
+     * @return The {@link RawData} object with the data from the {@link RawDataAttribute}
+     *          annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
+    public static RawData annotationToObject(RawDataAttribute rawDataAttribute, Format format)
+            throws MalformedScriptException {
+        //Instantiate the RawData
+        format.setDefault(true);
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(format);
+        RawData rawData = new RawData(formatList);
+        rawData.setFile(rawDataAttribute.isFile());
+        rawData.setDirectory(rawDataAttribute.isDirectory());
+        rawData.setMultiSelection(rawDataAttribute.multiSelection());
+        rawData.setFileTypes(rawDataAttribute.fileTypes());
+        rawData.setExcludedTypes(rawDataAttribute.excludedTypes());
+        return rawData;
+    }
+
+    /**
+     * Sets a {@link ProcessOffering} Object from an {@link ProcessAttribute} annotation.
+     * @param processAttribute Groovy annotation to decode to build the Java object.
+     * @param processOffering The {@link ProcessOffering} Object to set.
+     */
+    public static void annotationToObject(ProcessAttribute processAttribute, ProcessOffering processOffering){
+        processOffering.getProcess().setLang(Locale.forLanguageTag(processAttribute.language()).toString());
+        processOffering.setProcessVersion(processAttribute.version());
+        String[] properties = processAttribute.properties();
+        List<MetadataType> metadataList = processOffering.getProcess().getMetadata();
+        for(int i=0; i<properties.length; i+=2){
+            MetadataType metadata = new MetadataType();
+            metadata.setRole(properties[i]);
+            metadata.setTitle(properties[i+1]);
+            metadataList.add(metadata);
+        }
     }
 
     /**
@@ -599,38 +648,6 @@ public class ObjectAnnotationConverter {
             value.setValue(allowedValueStr);
 
             return value;
-        }
-    }
-
-    public static RawData annotationToObject(RawDataAttribute rawDataAttribute, Format format) {
-        try {
-            //Instantiate the RawData
-            format.setDefault(true);
-            List<Format> formatList = new ArrayList<>();
-            formatList.add(format);
-            RawData rawData = new RawData(formatList);
-            rawData.setFile(rawDataAttribute.isFile());
-            rawData.setDirectory(rawDataAttribute.isDirectory());
-            rawData.setMultiSelection(rawDataAttribute.multiSelection());
-            rawData.setFileTypes(rawDataAttribute.fileTypes());
-            rawData.setExcludedTypes(rawDataAttribute.excludedTypes());
-            return rawData;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
-        }
-    }
-
-    public static void annotationToObject(ProcessAttribute processAttribute, ProcessOffering processOffering){
-        processOffering.getProcess().setLang(Locale.forLanguageTag(processAttribute.language()).toString());
-        processOffering.setProcessVersion(processAttribute.version());
-        String[] properties = processAttribute.properties();
-        List<MetadataType> metadataList = processOffering.getProcess().getMetadata();
-        for(int i=0; i<properties.length; i+=2){
-            MetadataType metadata = new MetadataType();
-            metadata.setRole(properties[i]);
-            metadata.setTitle(properties[i+1]);
-            metadataList.add(metadata);
         }
     }
 }
