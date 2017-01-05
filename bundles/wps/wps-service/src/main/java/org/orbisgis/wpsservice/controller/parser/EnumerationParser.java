@@ -47,6 +47,7 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.Enumeration;
+import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.orbisgis.wpsservice.model.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
@@ -62,7 +63,7 @@ import java.net.URI;
 public class EnumerationParser implements Parser{
 
     @Override
-    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
         EnumerationAttribute enumerationAttribute = f.getAnnotation(EnumerationAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         Enumeration enumeration = ObjectAnnotationConverter.annotationToObject(enumerationAttribute, format);
@@ -84,7 +85,7 @@ public class EnumerationParser implements Parser{
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, URI processId) {
+    public OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException {
         EnumerationAttribute enumerationAttribute = f.getAnnotation(EnumerationAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         Enumeration enumeration = ObjectAnnotationConverter.annotationToObject(enumerationAttribute, format);

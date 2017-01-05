@@ -46,6 +46,7 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
+import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.orbisgis.wpsservice.model.ObjectFactory;
 import org.orbisgis.wpsservice.model.RawData;
 
@@ -62,7 +63,7 @@ import java.net.URI;
 public class RawDataParser implements Parser {
 
     @Override
-    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class), format);
@@ -84,7 +85,7 @@ public class RawDataParser implements Parser {
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, URI processId) {
+    public OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class), format);

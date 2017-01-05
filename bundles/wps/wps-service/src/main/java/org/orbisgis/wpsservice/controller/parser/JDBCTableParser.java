@@ -47,6 +47,7 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.JDBCTable;
+import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.orbisgis.wpsservice.model.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
@@ -64,7 +65,7 @@ import java.util.List;
 public class JDBCTableParser implements Parser{
 
     @Override
-    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
         //Instantiate the JDBCTable and its formats
         JDBCTableAttribute jdbcTableAttribute = f.getAnnotation(JDBCTableAttribute.class);
         List<Format> formatList = new ArrayList<>();
@@ -91,7 +92,7 @@ public class JDBCTableParser implements Parser{
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, URI processId) {
+    public OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException {
         //Instantiate the JDBCTable and its formats
         JDBCTableAttribute JDBCTableAttribute = f.getAnnotation(JDBCTableAttribute.class);
         List<Format> formatList = new ArrayList<>();

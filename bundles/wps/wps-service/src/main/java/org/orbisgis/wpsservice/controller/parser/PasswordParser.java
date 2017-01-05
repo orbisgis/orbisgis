@@ -44,6 +44,7 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.PasswordAttribute;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
+import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.orbisgis.wpsservice.model.ObjectFactory;
 import org.orbisgis.wpsservice.model.Password;
 
@@ -60,7 +61,7 @@ import java.net.URI;
 public class PasswordParser implements Parser {
 
     @Override
-    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
+    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
         Password password = new Password();
         InputDescriptionType input = new InputDescriptionType();
         JAXBElement<Password> jaxbElement = new ObjectFactory().createPassword(password);
@@ -79,7 +80,7 @@ public class PasswordParser implements Parser {
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, URI processId) {
+    public OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException {
         Password password = new Password();
         OutputDescriptionType output = new OutputDescriptionType();
         JAXBElement<Password> jaxbElement = new ObjectFactory().createPassword(password);

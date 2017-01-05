@@ -37,14 +37,20 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
+import net.opengis.ows._2.CodeType;
 import net.opengis.wps._2_0.*;
 import org.orbisgis.wpsgroovyapi.attributes.BoundingBoxAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
+import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
+import org.orbisgis.wpsservice.model.MalformedScriptException;
 
+import javax.xml.bind.JAXBElement;
 import java.lang.reflect.Field;
 import java.net.URI;
 
 /**
- * BoundingBox parser< Not yet implemented.
+ * Parser for the BoundingBox input/output annotations.
  *
  * @author Sylvain PALOMINOS
  **/
@@ -52,13 +58,44 @@ import java.net.URI;
 public class BoundingBoxParser implements Parser {
 
     @Override
-    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) {
-        return null;
+    public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
+        BoundingBoxAttribute boundingBoxAttribute = f.getAnnotation(BoundingBoxAttribute.class);
+        BoundingBoxData boundingBoxData = ObjectAnnotationConverter.annotationToObject(boundingBoxAttribute);
+
+        InputDescriptionType input = new InputDescriptionType();
+        JAXBElement<BoundingBoxData> jaxbElement = new ObjectFactory().createBoundingBoxData(boundingBoxData);
+        input.setDataDescription(jaxbElement);
+
+        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
+        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
+
+        if(input.getIdentifier() == null){
+            CodeType codeType = new CodeType();
+            codeType.setValue(processId+":input:"+f.getName());
+            input.setIdentifier(codeType);
+        }
+
+        return input;
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, URI processId) {
-        return null;
+    public OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException {
+        BoundingBoxAttribute boundingBoxAttribute = f.getAnnotation(BoundingBoxAttribute.class);
+        BoundingBoxData boundingBoxData = ObjectAnnotationConverter.annotationToObject(boundingBoxAttribute);
+
+        OutputDescriptionType output = new OutputDescriptionType();
+        JAXBElement<BoundingBoxData> jaxbElement = new ObjectFactory().createBoundingBoxData(boundingBoxData);
+        output.setDataDescription(jaxbElement);
+
+        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
+
+        if(output.getIdentifier() == null){
+            CodeType codeType = new CodeType();
+            codeType.setValue(processId+":output:"+f.getName());
+            output.setIdentifier(codeType);
+        }
+
+        return output;
     }
 
     @Override
