@@ -66,16 +66,16 @@ public class JDBCTableFieldValueParser implements Parser {
         //Instantiate the JDBCTableFieldValue object
         JDBCTableFieldValueAttribute JDBCTableFieldValueAttribute = f.getAnnotation(JDBCTableFieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
-        URI dataFieldUri;
+        URI jdbcTableFieldUri;
         //If the jdbcTable attribute is not an URI, autoGenerate one.
         if(!JDBCTableFieldValueAttribute.jdbcTableFieldReference().contains(":")) {
-            dataFieldUri = URI.create(processId + ":input:" + JDBCTableFieldValueAttribute.jdbcTableFieldReference());
+            jdbcTableFieldUri = URI.create(processId + ":input:" + JDBCTableFieldValueAttribute.jdbcTableFieldReference());
         }
         //else, use it
         else {
-            dataFieldUri = URI.create(JDBCTableFieldValueAttribute.jdbcTableFieldReference());
+            jdbcTableFieldUri = URI.create(JDBCTableFieldValueAttribute.jdbcTableFieldReference());
         }
-        JDBCTableFieldValue JDBCTableFieldValue = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldValueAttribute, format, dataFieldUri);
+        JDBCTableFieldValue JDBCTableFieldValue = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldValueAttribute, format, jdbcTableFieldUri);
 
         //Instantiate the returned input
         InputDescriptionType input = new InputDescriptionType();
@@ -99,16 +99,16 @@ public class JDBCTableFieldValueParser implements Parser {
         //Instantiate the JDBCTableFieldValue object
         JDBCTableFieldValueAttribute JDBCTableFieldValueAttribute = f.getAnnotation(JDBCTableFieldValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
-        URI dataFieldUri;
+        URI jdbcTableFieldUri;
         //If the jdbcTable attribute is not an URI, autoGenerate one.
         if(!JDBCTableFieldValueAttribute.jdbcTableFieldReference().contains(":")) {
-            dataFieldUri = URI.create(processId + ":input:" + JDBCTableFieldValueAttribute.jdbcTableFieldReference());
+            jdbcTableFieldUri = URI.create(processId + ":input:" + JDBCTableFieldValueAttribute.jdbcTableFieldReference());
         }
         //else, use it
         else {
-            dataFieldUri = URI.create(JDBCTableFieldValueAttribute.jdbcTableFieldReference());
+            jdbcTableFieldUri = URI.create(JDBCTableFieldValueAttribute.jdbcTableFieldReference());
         }
-        JDBCTableFieldValue JDBCTableFieldValue = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldValueAttribute, format, dataFieldUri);
+        JDBCTableFieldValue JDBCTableFieldValue = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldValueAttribute, format, jdbcTableFieldUri);
 
         //Instantiate the returned output
         OutputDescriptionType output = new OutputDescriptionType();

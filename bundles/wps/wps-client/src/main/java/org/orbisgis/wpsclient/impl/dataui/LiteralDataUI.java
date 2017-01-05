@@ -189,10 +189,10 @@ public class LiteralDataUI implements DataUI {
             comboBox.addItem(literalData.getLiteralDataDomain().get(0).getDataType().getValue());
 
             //JPanel containing the component to set the input value
-            JComponent dataField = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+            JComponent jdbcTableField = new JPanel(new MigLayout("fill, ins 0, gap 0"));
 
             comboBox.putClientProperty(LITERAL_DATA_PROPERTY, literalData);
-            comboBox.putClientProperty(DATA_FIELD_PROPERTY, dataField);
+            comboBox.putClientProperty(DATA_FIELD_PROPERTY, jdbcTableField);
             comboBox.putClientProperty(URI_PROPERTY, URI.create(input.getIdentifier().getValue()));
             comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
             comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, input.getMinOccurs().equals(new BigInteger("0")));
@@ -207,7 +207,7 @@ public class LiteralDataUI implements DataUI {
             if(comboBox.getItemCount() > 1){
                 panel.add(comboBox, "growx, wrap");
             }
-            panel.add(dataField, "growx, wrap");
+            panel.add(jdbcTableField, "growx, wrap");
             return panel;
         }
         return null;
@@ -215,7 +215,7 @@ public class LiteralDataUI implements DataUI {
 
     /**
      * Call on selecting the type of data to use.
-     * For each type registered in the JComboBox adapts the dataField panel.
+     * For each type registered in the JComboBox adapts the jdbcTableField panel.
      * Also add a listener to save the data value set by the user
      * @param source The comboBox containing the data type to use.
      */
@@ -583,7 +583,7 @@ public class LiteralDataUI implements DataUI {
                 break;
         }
         dataComponent.setToolTipText(comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY).toString());
-        //Adds to the dataField the dataComponent
+        //Adds to the jdbcTableField the dataComponent
         JPanel panel = (JPanel) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
         panel.removeAll();
         panel.add(dataComponent, "growx, wrap");

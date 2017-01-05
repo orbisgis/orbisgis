@@ -331,7 +331,7 @@ public class JDBCTableUI implements DataUI {
         else{
             tableName = comboBox.getSelectedItem().toString();
         }
-        //Tells all the dataField linked that the data source is loaded
+        //Tells all the jdbcTableField linked that the data source is loaded
         if(jdbcTable.getListJDBCTableField() != null) {
             for (JDBCTableField jdbcTableField : jdbcTable.getListJDBCTableField()) {
                 jdbcTableField.setSourceModified(true);

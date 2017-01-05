@@ -278,7 +278,7 @@ public class JDBCTableFieldValueUI implements DataUI {
             Map<URI, Object> dataMap = (Map) list.getClientProperty(DATA_MAP_PROPERTY);
             boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
             DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
-            //If the JDBCTableField related to the jdbcTableFieldValue has been modified, reload the dataField values
+            //If the JDBCTableField related to the jdbcTableFieldValue has been modified, reload the jdbcTableField values
             if(jdbcTableFieldValue.isJDBCTableFieldModified()) {
                 jdbcTableFieldValue.setJDBCTableFieldModified(false);
                 String tableName = null;

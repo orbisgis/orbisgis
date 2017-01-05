@@ -690,12 +690,12 @@ public class ObjectAnnotationConverter {
         }
     }
 
-    public static JDBCTableFieldValue annotationToObject(JDBCTableFieldValueAttribute fieldvalueAttributeJDBCTable, Format format, URI dataFieldUri) {
+    public static JDBCTableFieldValue annotationToObject(JDBCTableFieldValueAttribute jdbcTableFieldvalueAttribute, Format format, URI jdbcTableFieldUri) {
         try {
             format.setDefault(true);
             List<Format> formatList = new ArrayList<>();
             formatList.add(format);
-            return new JDBCTableFieldValue(formatList, dataFieldUri, fieldvalueAttributeJDBCTable.multiSelection());
+            return new JDBCTableFieldValue(formatList, jdbcTableFieldUri, jdbcTableFieldvalueAttribute.multiSelection());
         } catch (MalformedScriptException e) {
             LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
             return null;

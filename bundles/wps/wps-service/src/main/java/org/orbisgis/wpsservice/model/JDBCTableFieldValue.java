@@ -49,7 +49,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "JDBCTableFieldValue", propOrder = {"dataFieldIdentifier", "jdbcTableIdentifier", "multiSelection"})
+@XmlType(name = "JDBCTableFieldValue", propOrder = {"jdbcTableFieldIdentifier", "jdbcTableIdentifier", "multiSelection"})
 public class JDBCTableFieldValue extends ComplexDataType {
 
     /** Identifier of the 'parent' JDBCTableField */

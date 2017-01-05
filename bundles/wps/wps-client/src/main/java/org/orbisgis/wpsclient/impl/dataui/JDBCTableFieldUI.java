@@ -264,7 +264,7 @@ public class JDBCTableFieldUI implements DataUI {
             URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
             boolean isOptional = (boolean) comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
             ContainerItem<Object> defaultItem = (ContainerItem<Object>)comboBox.getClientProperty(DEFAULT_ITEM_PROPERTY);
-            //If the JDBCTable related to the JDBCTableField has been modified, reload the dataField values
+            //If the JDBCTable related to the JDBCTableField has been modified, reload the jdbcTableField values
             if (jdbcTableField.isSourceModified() || (comboBox.getSelectedItem() != null && comboBox.getSelectedItem().equals(defaultItem))) {
                 Object obj = dataMap.get(uri);
                 comboBox.removeItem(defaultItem);
@@ -314,9 +314,9 @@ public class JDBCTableFieldUI implements DataUI {
                 comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, comboBox.getToolTipText());
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
-                String dataFieldStr = jdbcTableField.getJDBCTableIdentifier().toString();
+                String jdbcTableFieldStr = jdbcTableField.getJDBCTableIdentifier().toString();
                 comboBox.setToolTipText(I18N.tr("First configure the JDBCTable {0}.",
-                        dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1)));
+                        jdbcTableFieldStr.substring(jdbcTableFieldStr.lastIndexOf(":") + 1)));
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(comboBox, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
             }
@@ -330,7 +330,7 @@ public class JDBCTableFieldUI implements DataUI {
             URI uri = (URI) list.getClientProperty(URI_PROPERTY);
             Map<URI, Object> dataMap = (Map) list.getClientProperty(DATA_MAP_PROPERTY);
             DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
-            //If the JDBCTable related to the JDBCTableField has been modified, reload the dataField values
+            //If the JDBCTable related to the JDBCTableField has been modified, reload the jdbcTableField values
             if (jdbcTableField.isSourceModified()) {
                 jdbcTableField.setSourceModified(false);
                 model.removeAllElements();
@@ -349,20 +349,20 @@ public class JDBCTableFieldUI implements DataUI {
                 list.putClientProperty(TOOLTIP_TEXT_PROPERTY, list.getToolTipText());
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
-                String dataFieldStr = jdbcTableField.getJDBCTableIdentifier().toString();
-                if(dataFieldStr.contains("$")){
-                    String[] split = dataFieldStr.split("\\$");
+                String jdbcTableFieldStr = jdbcTableField.getJDBCTableIdentifier().toString();
+                if(jdbcTableFieldStr.contains("$")){
+                    String[] split = jdbcTableFieldStr.split("\\$");
                     if(split.length == 2){
-                        dataFieldStr = split[1];
+                        jdbcTableFieldStr = split[1];
                     }
                     else if(split.length == 3){
-                        dataFieldStr = split[1]+"."+split[2];
+                        jdbcTableFieldStr = split[1]+"."+split[2];
                     }
-                    list.setToolTipText(I18N.tr("First configure the JDBCTableField {0}", dataFieldStr));
+                    list.setToolTipText(I18N.tr("First configure the JDBCTableField {0}", jdbcTableFieldStr));
                 }
                 else {
                     list.setToolTipText(I18N.tr("First configure the JDBCTable {0}",
-                            dataFieldStr.substring(dataFieldStr.lastIndexOf(":") + 1)));
+                            jdbcTableFieldStr.substring(jdbcTableFieldStr.lastIndexOf(":") + 1)));
                 }
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(list, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
@@ -414,7 +414,7 @@ public class JDBCTableFieldUI implements DataUI {
                 else{
                     dataMap.put(uri, selectedItem.getLabel());
                 }
-                //Tells to the fieldValues that the datafield has been modified
+                //Tells to the jdbcTableFieldValues that the jdbcTableField has been modified
                 if(jdbcTableField.getJDBCTableFieldValueList() != null) {
                     for (JDBCTableFieldValue jdbcTableFieldValue : jdbcTableField.getJDBCTableFieldValueList()) {
                         jdbcTableFieldValue.setJDBCTableFieldModified(true);

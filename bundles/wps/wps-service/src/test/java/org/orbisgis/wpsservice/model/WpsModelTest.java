@@ -280,7 +280,7 @@ public class WpsModelTest {
     /** Field containing the JDBCTableFieldValueAttribute annotation. */
     @JDBCTableFieldValueAttribute(
             multiSelection = true,
-            jdbcTableFieldReference = "dataFieldTitle"
+            jdbcTableFieldReference = "jdbcTableFieldTitle"
     )
     public Object jdbcTableFieldValueInput;
 
@@ -427,8 +427,8 @@ public class WpsModelTest {
             //Retrieve the RawData object
             RawData rawData = null;
             //Inspect all the annotation of the field to get the RawDataAttribute one
-            Field rawDataField = this.getClass().getDeclaredField("rawDataInput");
-            for(Annotation annotation : rawDataField.getDeclaredAnnotations()){
+            Field rawjdbcTableField = this.getClass().getDeclaredField("rawDataInput");
+            for(Annotation annotation : rawjdbcTableField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
                 if(annotation instanceof RawDataAttribute){
                     annotationFound = true;
