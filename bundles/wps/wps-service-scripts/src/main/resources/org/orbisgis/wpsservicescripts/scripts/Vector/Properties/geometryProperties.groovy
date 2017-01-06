@@ -145,10 +145,9 @@ String[] idField
         values=["geomtype","srid", "length","perimeter","area", "dimension", "coorddim", "num_geoms", "num_pts", "issimple", "isvalid", "isempty"],
         names = ["Geometry type,SRID,Length,Perimeter,Area,Geometry dimension,Coordinate dimension,Number of geometries,Number of points,Is simple,Is valid,Is empty","en",
                 "Type de géométrie,SRID,Longueur,Périmètre,Surface,Dimension de la géométrie,Dimension des coordonnées,Nombre de géométries,Nombre de points,Est simple,Est valide,Est vide","fr"],
-        selectedValues = "geomtype",
         multiSelection = true,
         identifier = "orbisgis:wps:official:geometryProperties:operations")
-String[] operations
+String[] operations = ["geomtype"]
 
 
 @LiteralDataInput(

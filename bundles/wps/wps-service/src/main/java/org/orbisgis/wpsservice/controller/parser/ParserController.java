@@ -97,7 +97,7 @@ public class ParserController {
             groovyClassLoader.clearCache();
             return groovyClassLoader.parseClass(groovyFile);
         } catch (Exception e) {
-            LOGGER.error(I18N.tr("Can not parse the process : {0}.", sourceFileURI));
+            LOGGER.error(I18N.tr("Can not parse the process : {0}\n Cause : {1}.", sourceFileURI, e.getLocalizedMessage()));
         }
         return null;
     }

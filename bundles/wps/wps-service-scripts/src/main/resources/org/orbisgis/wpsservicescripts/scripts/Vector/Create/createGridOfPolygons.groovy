@@ -20,7 +20,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Création d'une grille de polygones","fr"],
         description = [
                 "Create a grid of polygons.","en",
-                "Création d'une grille de polygones.""fr"],
+                "Création d'une grille de polygones.","fr"],
         keywords = ["Vector,Geometry,Create", "en",
                 "Vecteur,Géométrie,Création", "fr"],
         properties = ["DBMS_TYPE", "H2GIS"])

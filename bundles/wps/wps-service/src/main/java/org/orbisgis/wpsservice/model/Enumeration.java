@@ -176,18 +176,18 @@ public class Enumeration extends ComplexDataType implements TranslatableComplexD
                     }
                     LanguageStringType language = new LanguageStringType();
                     if (clientLanguageTranslation != null) {
-                        language.setLang(clientLanguageTranslation);
-                        language.setValue(clientLanguages);
+                        language.setValue(clientLanguageTranslation);
+                        language.setLang(clientLanguages);
                     } else if (subClientLanguageTranslation != null) {
-                        language.setLang(subClientLanguageTranslation);
-                        language.setValue(clientLanguages.substring(0, 2));
+                        language.setValue(subClientLanguageTranslation);
+                        language.setLang(clientLanguages.substring(0, 2));
                     } else if (serverLanguageTranslation != null) {
-                        language.setLang(serverLanguageTranslation);
-                        language.setValue(serverLanguage);
+                        language.setValue(serverLanguageTranslation);
+                        language.setLang(serverLanguage);
                     }
                     else {
-                        language.setLang(translatableString.getStrings()[0].getValue());
-                        language.setValue(translatableString.getStrings()[0].getLang());
+                        language.setValue(translatableString.getStrings()[0].getValue());
+                        language.setLang(translatableString.getStrings()[0].getLang());
                     }
                     TranslatableString str = new TranslatableString();
                     str.setStrings(new LanguageStringType[]{language});

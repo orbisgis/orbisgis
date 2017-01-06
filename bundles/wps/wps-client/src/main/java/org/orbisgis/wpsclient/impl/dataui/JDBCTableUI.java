@@ -196,7 +196,8 @@ public class JDBCTableUI implements DataUI {
                                    boolean isSpatial){
         //Retrieve the table map
         List<String> tableList;
-        if(dataTypes.isEmpty() && isSpatial){
+        if((dataTypes == null || dataTypes.isEmpty()) && isSpatial){
+            dataTypes = new ArrayList<>();
             dataTypes.add(DataType.GEOMETRY);
         }
         tableList = wpsClient.getTableList(dataTypes, excludedTypes);

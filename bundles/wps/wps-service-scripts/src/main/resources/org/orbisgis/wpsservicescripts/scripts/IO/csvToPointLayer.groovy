@@ -51,7 +51,7 @@ def processing() {
         sql.execute(create + " AS SELECT "+idField+", ST_MakePoint("+xField+", "+yField+") THE_GEOM FROM "+csvRead+";");
     }
 
-    literalOutput = "Process done"
+    literalDataOutput = "Process done"
 }
 
 /****************/
@@ -80,10 +80,9 @@ String[] csvDataInput
         description = ["The CSV separator.","en",
                 "Le séparateur CSV.","fr"],
         values=[",", "\t", " ", ";"],
-        names=["coma", "tabulation", "space", "semicolon"],
-        selectedValues = ";",
+        names=["coma, tabulation, space, semicolon","en"],
         isEditable = true)
-String[] separator
+String[] separator = [";"]
 
 @LiteralDataInput(
         title = ["Id field","en","Champ identifiant","fr"],

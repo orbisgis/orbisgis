@@ -112,7 +112,7 @@ String inputJDBCTable
                 "Le champ géométrique de la source de données.","fr"],
         jdbcTableReference = "inputJDBCTable",
         dataTypes = ["GEOMETRY"])
-String geometricField
+String[] geometricField
 
 /** Size of the buffer. */
 @LiteralDataInput(

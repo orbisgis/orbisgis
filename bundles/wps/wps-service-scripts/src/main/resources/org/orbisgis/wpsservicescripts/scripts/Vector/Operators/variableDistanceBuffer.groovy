@@ -156,9 +156,8 @@ Integer quadSegs = 8
                 "The endcap style.","en",
                 "Le style de l'extrémité.","fr"],
         values=["round", "flat", "butt", "square"],
-        selectedValues = ["round"],
         minOccurs = 0)
-String[] endcapStyle
+String[] endcapStyle = ["round"]
 
 /** Join style. */
 @EnumerationInput(
@@ -169,9 +168,8 @@ String[] endcapStyle
                 "The join style.","en",
                 "Le style de jointure.","fr"],
         values=["round", "mitre", "miter", "bevel"],
-        selectedValues=["round"],
         minOccurs = 0)
-String[] joinStyle
+String[] joinStyle = ["round"]
 
 /** Fields to keep. */
 @JDBCTableFieldInput(

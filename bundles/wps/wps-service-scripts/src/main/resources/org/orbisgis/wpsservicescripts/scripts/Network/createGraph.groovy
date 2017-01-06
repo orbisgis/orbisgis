@@ -65,7 +65,7 @@ String[] geometricField
                 "Tolérance d'accrochage","fr"],
         description = [
                 "The tolerance value is used specify the side length of a square Envelope around each node used to snap together other nodes within the same Envelope.","en",
-                "La valeur de tolérance est utilisée pour fixer la taille du coté du carré de l'enveloppe autour de chaque noeud  qui est utilisée pour rassembler les noeuds appartenant à la meme enveloppe.","fr"],)
+                "La valeur de tolérance est utilisée pour fixer la taille du coté du carré de l'enveloppe autour de chaque noeud  qui est utilisée pour rassembler les noeuds appartenant à la meme enveloppe.","fr"])
 Double tolerance 
 
 @LiteralDataInput(
