@@ -66,6 +66,7 @@ import org.orbisgis.wpsclient.impl.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.impl.editor.process.ProcessEditor;
 import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsservice.LocalWpsServer;
+import org.orbisgis.wpsservice.utils.DefaultNamespacePrefixMapper;
 import org.orbisgis.wpsservice.utils.ProcessMetadata;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -241,6 +242,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         try {
             marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
             unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         } catch (JAXBException e) {
             LoggerFactory.getLogger(WpsClient.class).error(

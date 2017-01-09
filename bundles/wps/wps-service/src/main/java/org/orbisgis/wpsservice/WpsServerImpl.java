@@ -48,6 +48,7 @@ import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.controller.utils.Job;
 import org.orbisgis.wpsservice.model.JaxbContainer;
+import org.orbisgis.wpsservice.utils.DefaultNamespacePrefixMapper;
 import org.orbisgis.wpsservice.utils.ProcessTranslator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -619,6 +620,7 @@ public class WpsServerImpl implements WpsServer {
                 //Marshall the WpsService answer
                 Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+                marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
                 marshaller.marshal(result, out);
             } catch (JAXBException e) {
                 LOGGER.error(I18N.tr("Unable to parse the outcoming xml.\nCause : {0}.", e.getMessage()));
