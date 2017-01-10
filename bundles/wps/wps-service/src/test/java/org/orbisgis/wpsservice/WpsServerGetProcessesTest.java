@@ -45,7 +45,6 @@ import net.opengis.wps._2_0.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsservice.model.JaxbContainer;
-import org.orbisgis.wpsservice.utils.DefaultNamespacePrefixMapper;
 
 /**
  * This test class perform tests about groovy wps scripts.
@@ -70,7 +69,6 @@ public class WpsServerGetProcessesTest {
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -106,7 +104,6 @@ public class WpsServerGetProcessesTest {
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -141,7 +138,6 @@ public class WpsServerGetProcessesTest {
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -176,7 +172,6 @@ public class WpsServerGetProcessesTest {
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -211,7 +206,6 @@ public class WpsServerGetProcessesTest {
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -246,7 +240,6 @@ public class WpsServerGetProcessesTest {
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService

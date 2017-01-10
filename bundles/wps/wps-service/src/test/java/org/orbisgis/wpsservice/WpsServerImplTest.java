@@ -44,7 +44,6 @@ import net.opengis.wps._2_0.ObjectFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.orbisgis.wpsservice.model.JaxbContainer;
-import org.orbisgis.wpsservice.utils.DefaultNamespacePrefixMapper;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -454,7 +453,6 @@ public class WpsServerImplTest {
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(element, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -498,7 +496,6 @@ public class WpsServerImplTest {
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(describeProcess, out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -566,7 +563,6 @@ public class WpsServerImplTest {
         //Marshall the Execute object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         ByteArrayOutputStream outExecute = new ByteArrayOutputStream();
         marshaller.marshal(element, outExecute);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -742,7 +738,6 @@ public class WpsServerImplTest {
         //Marshall the Execute object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         ByteArrayOutputStream outExecute = new ByteArrayOutputStream();
         marshaller.marshal(element, outExecute);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -854,7 +849,6 @@ public class WpsServerImplTest {
         element.setSections(sectionsType);
         //Marshall the DescribeProcess object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(factory.createGetCapabilities(element), out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -881,7 +875,6 @@ public class WpsServerImplTest {
         element.setAcceptLanguages(acceptLanguages);
         //Marshall the DescribeProcess object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         out = new ByteArrayOutputStream();
         marshaller.marshal(factory.createGetCapabilities(element), out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -911,7 +904,6 @@ public class WpsServerImplTest {
         element.setAcceptVersions(acceptVersionsType);
         //Marshall the DescribeProcess object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         out = new ByteArrayOutputStream();
         marshaller.marshal(factory.createGetCapabilities(element), out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -949,7 +941,6 @@ public class WpsServerImplTest {
         element.setAcceptLanguages(acceptLanguages);
         //Marshall the DescribeProcess object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshaller.marshal(factory.createGetCapabilities(element), out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -978,7 +969,6 @@ public class WpsServerImplTest {
         element.setAcceptLanguages(acceptLanguages);
         //Marshall the DescribeProcess object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         out = new ByteArrayOutputStream();
         marshaller.marshal(factory.createGetCapabilities(element), out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
@@ -1009,7 +999,6 @@ public class WpsServerImplTest {
         element.setAcceptLanguages(acceptLanguages);
         //Marshall the DescribeProcess object into an OutputStream
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        marshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DefaultNamespacePrefixMapper());
         out = new ByteArrayOutputStream();
         marshaller.marshal(factory.createGetCapabilities(element), out);
         //Write the OutputStream content into an Input stream before sending it to the wpsService
