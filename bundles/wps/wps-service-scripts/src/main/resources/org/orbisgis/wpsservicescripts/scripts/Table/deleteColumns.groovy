@@ -1,14 +1,9 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
-import org.orbisgis.wpsgroovyapi.input.FieldValueInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-
 /********************/
 /** Process method **/
 /********************/
@@ -16,34 +11,19 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /**
  * This process deletes the given columns from the given table.
  * The user has to specify (mandatory):
- *  - The input table (DataStore)
- *  - The column to delete (DataField)
+ *  - The input table (JDBCTable)
+ *  - The column to delete (jJDBCTableFieldValue)
  *
  * @author Sylvain PALOMINOS
  */
 @Process(
-        translatedTitles = [
-                @LanguageString(value = "Delete columns", lang = "en"),
-                @LanguageString(value = "Suppression de colonnes", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "Delete columns from a table.", lang = "en"),
-                @LanguageString(value = "Supprime des colonnes d'une table.", lang = "fr")
-        ],
-        translatedKeywords = [
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "Table", lang = "en"),
-                        @LanguageString(value = "Table", lang = "fr")
-                ]),
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "Delete", lang = "en"),
-                        @LanguageString(value = "Suppression", lang = "fr")
-                ])
-        ],
-        metadata = [
-                @MetadataAttribute(title="H2GIS", role ="DBMS_TYPE", href = "http://www.h2gis.org/"),
-                @MetadataAttribute(title="POSTGIS", role ="DBMS_TYPE", href = "http://postgis.net/")
-        ],
+        title = ["Delete columns","en","Suppression de colonnes","fr"],
+        description = ["Delete columns from a table.","en",
+                "Supprime des colonnes d'une table.","fr"],
+        keywords = ["Table,Delete","en",
+                "Table,Suppression","fr"],
+        properties = ["DBMS_TYPE", "H2GIS",
+                "DBMS_TYPE", "POSTGIS"],
         identifier = "orbisgis:wps:official:deleteColumns"
 )
 def processing() {
@@ -61,16 +41,10 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the input data source table. */
-@DataStoreInput(
-        translatedTitles = [
-                @LanguageString(value = "Table", lang = "en"),
-                @LanguageString(value = "Table", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The table to edit.", lang = "en"),
-                @LanguageString(value = "La table à éditer.", lang = "fr")
-        ],
+/** This JDBCTable is the input data source table. */
+@JDBCTableInput(
+        title = ["Table","en","Table","fr"],
+        description = ["The table to edit.","en","La table à éditer.","fr"],
         identifier = "orbisgis:wps:official:deleteColumns:tableName"
 )
 String tableName
@@ -79,17 +53,12 @@ String tableName
 /** INPUT Parameters **/
 /**********************/
 
-/** Name of the columns of the DataStore tableName to remove. */
-@DataFieldInput(
-        translatedTitles = [
-                @LanguageString(value = "Columns", lang = "en"),
-                @LanguageString(value = "Colonnes", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The columns to remove names.", lang = "en"),
-                @LanguageString(value = "Le nom des colonnes à supprimer.", lang = "fr")
-        ],
-        variableReference = "orbisgis:wps:official:deleteColumns:tableName",
+/** Name of the columns of the JDBCTable tableName to remove. */
+@JDBCTableFieldInput(
+        title = ["Columns","en","Colonnes","fr"],
+        description = ["The columns to remove names.","en",
+                "Le nom des colonnes à supprimer.","fr"],
+        jdbcTableReference = "orbisgis:wps:official:deleteColumns:tableName",
         identifier = "orbisgis:wps:official:deleteColumns:columnNames"
 )
 String[] columnNames
@@ -97,14 +66,10 @@ String[] columnNames
 
 /** Output message. */
 @LiteralDataOutput(
-        translatedTitles = [
-                @LanguageString(value = "Output message", lang = "en"),
-                @LanguageString(value = "Message de sortie", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The output message.", lang = "en"),
-                @LanguageString(value = "Le message de sortie.", lang = "fr")
-        ],
+        title = ["Output message","en",
+                "Message de sortie","fr"],
+        description = ["The output message.","en",
+                "Le message de sortie.","fr"],
         identifier = "orbisgis:wps:official:deleteColumns:literalOutput")
 String literalOutput
 

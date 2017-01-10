@@ -45,6 +45,8 @@ import net.opengis.wps._2_0.ProcessOffering;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.ProcessAttribute;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
+import org.orbisgis.wpsservice.model.MalformedScriptException;
+
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.List;
@@ -58,7 +60,7 @@ public class ProcessParser {
     public ProcessOffering parseProcess(List<InputDescriptionType> inputList,
                                         List<OutputDescriptionType> outputList,
                                         Method processingMethod,
-                                        URI processURI){
+                                        URI processURI) throws MalformedScriptException {
         ProcessDescriptionType process = new ProcessDescriptionType();
         ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(DescriptionTypeAttribute.class),
                 process);

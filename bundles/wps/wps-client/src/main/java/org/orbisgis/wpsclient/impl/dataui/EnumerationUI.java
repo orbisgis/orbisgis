@@ -116,7 +116,8 @@ public class EnumerationUI implements DataUI {
                 enumeration.getValuesNames().length > 0 &&
                 enumeration.getValuesNames().length == enumeration.getValues().length){
             for(int i=0; i<enumeration.getValues().length; i++){
-                model.addElement(new ContainerItem<>(enumeration.getValues()[i], enumeration.getValuesNames()[i]));
+                model.addElement(new ContainerItem<>(enumeration.getValues()[i],
+                        enumeration.getValuesNames()[i].getStrings()[0].getValue()));
             }
         }
         else{

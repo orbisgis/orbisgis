@@ -1,11 +1,11 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
-import org.orbisgis.wpsgroovyapi.input.*
-import org.orbisgis.wpsgroovyapi.output.*
-import org.orbisgis.wpsgroovyapi.process.*
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
+import org.orbisgis.wpsgroovyapi.input.EnumerationInput
+import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
+import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
+import org.orbisgis.wpsgroovyapi.process.Process
 
 /********************/
 /** Process method **/
@@ -20,39 +20,25 @@ import org.orbisgis.wpsgroovyapi.process.*
  * @author Sylvain PALOMINOS
  */
 @Process(
-		translatedTitles = [
-				@LanguageString(value = "Table join", lang = "en"),
-				@LanguageString(value = "Jointure de table", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "Join two tables.", lang = "en"),
-				@LanguageString(value = "Jointure de deux tables.", lang = "fr")
-		],
-		translatedKeywords = [
-				@TranslatableString(translatableStrings = [
-						@LanguageString(value = "Table", lang = "en"),
-						@LanguageString(value = "Table", lang = "fr")
-				]),
-				@TranslatableString(translatableStrings = [
-						@LanguageString(value = "Join", lang = "en"),
-						@LanguageString(value = "Jointure", lang = "fr")
-				])
-		],
-		metadata = [
-				@MetadataAttribute(title="H2GIS", role ="DBMS_TYPE", href = "http://www.h2gis.org/"),
-				@MetadataAttribute(title="POSTGIS", role ="DBMS_TYPE", href = "http://postgis.net/")
-		])
+		title = ["Table join","en",
+				"Jointure de table","fr"],
+		description = ["Join two tables.","en",
+				"Jointure de deux tables.","fr"],
+		keywords = ["Table,Join", "en",
+				"Table,Jointure", "fr"],
+		properties = ["DBMS_TYPE", "H2GIS",
+				"DBMS_TYPE", "POSTGIS"])
 def processing() {
 
 	if(createIndex!=null && createIndex==true){
-		sql.execute "create index on "+ rightDataStore + "("+ rightField[0] +")"
-		sql.execute "create index on "+ leftDataStore + "("+ leftField[0] +")"
+		sql.execute "create index on "+ rightJDBCTable + "("+ rightField[0] +")"
+		sql.execute "create index on "+ leftJDBCTable + "("+ leftField[0] +")"
 	}
 
 	String query = "CREATE TABLE "+outputTableName+" AS SELECT * FROM "
 
 	if(operation[0].equals("left")){
-		query += leftDataStore + "JOIN " + rightDataStore + " ON " + leftDataStore+ "."+ leftField[0]+ "="+ rightDataStore+"."+ rightField[0];
+		query += leftJDBCTable + "JOIN " + rightJDBCTable + " ON " + leftJDBCTable+ "."+ leftField[0]+ "="+ rightJDBCTable+"."+ rightField[0];
 	}
 	else if (operation[0].equals("left")){
 
@@ -80,101 +66,83 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the left data source. */
-@DataStoreInput(
-		translatedTitles = [
-				@LanguageString(value = "Left data source", lang = "en"),
-				@LanguageString(value = "Source de données gauche", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "The left data source used for the join.", lang = "en"),
-				@LanguageString(value = "La source de données gauche utilisée pour la jointure.", lang = "fr")
-		])
-String leftDataStore
+/** This JDBCTable is the left data source. */
+@JDBCTableInput(
+		title = ["Left data source","en",
+				"Source de données gauche","fr"],
+		description = [
+				"The left data source used for the join.","en",
+				"La source de données gauche utilisée pour la jointure.","fr"])
+String leftJDBCTable
 
-/** This DataStore is the right data source. */
-@DataStoreInput(
-		translatedTitles = [
-				@LanguageString(value = "Right data source", lang = "en"),
-				@LanguageString(value = "Source de données droite", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "The right data source used for the join.", lang = "en"),
-				@LanguageString(value = "La source de données droite utilisée pour la jointure.", lang = "fr")
-		])
-String rightDataStore
+/** This JDBCTable is the right data source. */
+@JDBCTableInput(
+		title = [
+				"Right data source","en",
+				"Source de données droite","fr"],
+		description = [
+				"The right data source used for the join.","en",
+				"La source de données droite utilisée pour la jointure.","fr"])
+String rightJDBCTable
 
 /**********************/
 /** INPUT Parameters **/
 /**********************/
 
-/** Name of the identifier field of the left dataStore. */
-@DataFieldInput(
-		translatedTitles = [
-				@LanguageString(value = "Left field(s)", lang = "en"),
-				@LanguageString(value = "Champ(s) gauche(s)", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "The field identifier of the left data source.", lang = "en"),
-				@LanguageString(value = "L'identifiant du/des champ(s) de la source de données gauche.", lang = "fr")
-		],
-        variableReference = "leftDataStore",
+/** Name of the identifier field of the left jdbcTable. */
+@JDBCTableFieldInput(
+		title = [
+				"Left field(s)","en",
+				"Champ(s) gauche(s)","fr"],
+		description = [
+				"The field identifier of the left data source.","en",
+				"L'identifiant du/des champ(s) de la source de données gauche.","fr"],
+        jdbcTableReference = "leftJDBCTable",
         excludedTypes = ["GEOMETRY"])
 String[] leftField
 
-/** Name of the identifier field of the right dataStore. */
-@DataFieldInput(
-		translatedTitles = [
-				@LanguageString(value = "Right field(s)", lang = "en"),
-				@LanguageString(value = "Champ(s) droit(s)", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "The field identifier of the right data source.", lang = "en"),
-				@LanguageString(value = "L'identifiant du/des champ(s) de la source de données droite.", lang = "fr")
-		],
-        variableReference = "rightDataStore",
+/** Name of the identifier field of the right jdbcTable. */
+@JDBCTableFieldInput(
+		title = [
+				"Right field(s)","en",
+				"Champ(s) droit(s)","fr"],
+		description = [
+				"The field identifier of the right data source.","en",
+				"L'identifiant du/des champ(s) de la source de données droite.","fr"],
+        jdbcTableReference = "rightJDBCTable",
         excludedTypes = ["GEOMETRY"])
 String[] rightField
 
 
 @EnumerationInput(
-		translatedTitles = [
-				@LanguageString(value = "Operation", lang = "en"),
-				@LanguageString(value = "Opération", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "Types of join.", lang = "en"),
-				@LanguageString(value = "Type de jointure.", lang = "fr")
-		],
+		title = ["Operation","en",
+				"Opération","fr"],
+		description = [
+				"Types of join.","en",
+				"Type de jointure.","fr"],
         values=["left","right", "union"],
         names=["Left join","Right join", "Union join" ],
-        selectedValues = "left",
 		multiSelection = false)
-String[] operation
+String[] operation = ["left"]
 
 
 @LiteralDataInput(
-		translatedTitles = [
-				@LanguageString(value = "Create indexes", lang = "en"),
-				@LanguageString(value = "Création d'indexes", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "Create an index on each field identifiers to perform the join.", lang = "en"),
-				@LanguageString(value = "Création d'un index sur chacun des identifiants des champs avant la jointure.", lang = "fr")
-		],
+		title = [
+				"Create indexes","en",
+				"Création d'indexes","fr"],
+		description = [
+				"Create an index on each field identifiers to perform the join.","en",
+				"Création d'un index sur chacun des identifiants des champs avant la jointure.","fr"],
 		minOccurs = 0)
 Boolean createIndex
 
 
 @LiteralDataInput(
-		translatedTitles = [
-				@LanguageString(value = "Output table name", lang = "en"),
-				@LanguageString(value = "Nom de la table de sortie", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "Name of the table containing the result of the process.", lang = "en"),
-				@LanguageString(value = "Nom de la table contenant le résultat de la jointure.", lang = "fr")
-		])
+		title = ["Output table name","en",
+				"Nom de la table de sortie","fr"],
+		description = [
+				"Name of the table containing the result of the process.","en",
+				"Nom de la table contenant le résultat de la jointure.","fr"])
 String outputTableName
 
 /*****************/
@@ -183,13 +151,10 @@ String outputTableName
 
 /** String output of the process. */
 @LiteralDataOutput(
-		translatedTitles = [
-				@LanguageString(value = "Output message", lang = "en"),
-				@LanguageString(value = "Message de sortie", lang = "fr")
-		],
-		translatedResumes = [
-				@LanguageString(value = "The output message.", lang = "en"),
-				@LanguageString(value = "Le message de sortie.", lang = "fr")
-		])
+		title = ["Output message","en",
+				"Message de sortie","fr"],
+		description = [
+				"The output message.","en",
+				"Le message de sortie.","fr"])
 String literalOutput
 

@@ -51,12 +51,16 @@ import java.lang.annotation.RetentionPolicy
  * The following fields can be defined (optional) :
  *  - multiSelection : boolean
  *      Allow or not to select more than one value.
+ *
  *  - isEditable : boolean
  *      Enable or not the user to use its own value.
+ *
  *  - names : String[]
- *      Displayable name of the values. If not specified, use the values as name.
- *  - selectedValues : String[]
- *      Default selected values, can be empty.
+ *      Displayable name of the values. If not specified, use the values as name. The names attribute is composed of
+ *      pairs of String : the coma separated list of the names and the language of the names.
+ *      i.e.
+ *          names = ["name1,name2,name3","en",
+ *                   "nom1,nom2,nom3","fr"]
  *
  * @author Sylvain PALOMINOS
  */
@@ -72,23 +76,11 @@ import java.lang.annotation.RetentionPolicy
     /** List of possible values.*/
     String[] values()
 
-    /** Displayable name of the values. If not specified, use the values as name. */
+    /** Displayable name of the values. If not specified, use the values as name. The names attribute is composed of
+     * pairs of String : the coma separated list of the names and the language of the names.
+     * i.e.
+     *      names = ["name1,name2,name3","en",
+     *               "nom1,nom2,nom3","fr"]
+     */
     String[] names() default []
-
-    TranslatableString[] translatedNames() default []
-
-    /** Default selected values, can be empty.*/
-    String[] selectedValues() default []
-
-
-
-    /********************/
-    /** default values **/
-    /********************/
-    public static final boolean defaultMultiSelection = false
-    public static final boolean defaultIsEditable = false
-    public static final String[] defaultValues = []
-    public static final String[] defaultNames = []
-    public static final String[] defaultSelectedValues = []
-    public static final LanguageString[] defaultTranslatedNames = []
 }

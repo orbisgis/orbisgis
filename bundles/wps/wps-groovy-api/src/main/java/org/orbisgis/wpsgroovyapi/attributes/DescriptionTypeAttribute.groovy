@@ -19,6 +19,7 @@
 
 package org.orbisgis.wpsgroovyapi.attributes
 
+
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
@@ -28,64 +29,66 @@ import java.lang.annotation.RetentionPolicy
  * appropriate role identifier.
  *
  * The following fields must be defined (mandatory) :
- *  - title : String
- *       Title of a process, input, and output. Normally available for display to a human.
+ *  - title : String[]
+ *       Title of a process, input, and output. Normally available for display to a human. It is composed either a
+ *       unique title or a translated title, its language, another title, its language ...
+ *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en"]
  *
  * The following fields can be defined (optional) :
- *  - translatedTitles : LanguageString[]
- *      List of LanguageString containing the translated titles.
- *  - resume : String
- *      Brief narrative description of a process, input, and output. Normally available for display to a human.
- *  - translatedResumes : LanguageString[]
- *      List of LanguageString containing the translated description.
- *  - keywords : String
- *      Array of keywords that characterize a process, its inputs, and outputs.
- *  - translatedKeywords : Keyword[]
- *      List of Keyword containing the keywords translations.
+ *  - description : String[]
+ *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
+ *      composed either a unique description or a translated description, its language, another description, its language ...
+ *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+ *
+ *  - keywords : String[]
+ *      Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
+ *      human. It is composed of a succession of two String : the human readable keyword list coma
+ *      separated and its language.
+ *      i.e. keywords = ["the keyword 1,the keyword 2", "en",
+ *                       "le mot clef 1, le mot clef 2", "fr"]
  *  - identifier : String
  *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
- *  - metadata : MetaData[]
- *      Reference to additional metadata about this item.
+ *
+ *  - metadata : String[]
+ *      Reference to additional metadata about this item. It is composed of a succession of three String : the metadata
+ *      role, the metadata title and the href, coma separated.
+ *      i.e. metadata = ["role1,title,href1",
+ *                       "role2,title,href2"]
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface DescriptionTypeAttribute {
 
-    /** Title of a process, input, and output. Normally available for display to a human. */
-    String title()
+    /**
+     * Title of a process, input, and output. Normally available for display to a human. It is composed either a unique
+     * title or a translated title, its language, another title, its language ...
+     * i.e. title = "title" or title = ["titleFr", "fr", "titleEn", "en"]
+     */
+    String[] title() default[]
 
-    /** List of LanguageString containing the translated titles. */
-    LanguageString[] translatedTitles() default []
+    /**
+     * Brief narrative description of a process, input, and output. Normally available for display to a human. It is
+     * composed either a unique description or a translated description, its language, another description, its language ...
+     * i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+     */
+    String[] description() default []
 
-    /** Brief narrative description of a process, input, and output. Normally available for display to a human. */
-    String resume() default ""
-
-    /** List of LanguageString containing the translated description. */
-    LanguageString[] translatedResumes() default []
-
-    /** Array of keywords that characterize a process, its inputs, and outputs. */
+    /** Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
+     * human. It is composed of a succession of two String : the human readable keyword list coma
+     * separated and its language.
+     * i.e. keywords = ["the keyword 1,the keyword 2", "en",
+     *                  "le mot clef 1, le mot clef 2", "fr"]
+     */
     String[] keywords() default []
-
-    /** List of Keyword containing the keywords translations. */
-    TranslatableString[] translatedKeywords() default []
 
     /** Unambiguous identifier of a process, input, and output. */
     String identifier() default ""
 
-    /** Reference to additional metadata about this item. */
-    MetadataAttribute[] metadata() default []
-
-
-
-    /********************/
-    /** default values **/
-    /********************/
-    public static final LanguageString[] defaultTranslatedTitles = []
-    public static final String defaultResume = ""
-    public static final LanguageString[] defaultTranslatedResumes = []
-    public static final String[] defaultKeywords = []
-    public static final TranslatableString[] defaultTranslatedKeywords = []
-    public static final String defaultIdentifier = ""
-    public static final MetadataAttribute[] defaultMetadata = []
+    /** Reference to additional metadata about this item. It is composed of a succession of three String : the metadata
+     * role, the metadata title and the href, coma separated.
+     * i.e. metadata = ["role1,title,href1",
+     *                  "role2,title,href2"]
+     */
+    String[] metadata() default []
 }

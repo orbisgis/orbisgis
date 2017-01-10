@@ -1,13 +1,9 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-
 /**
  * This process is used to describe the columns of a table
  * 
@@ -16,28 +12,14 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(
-        translatedTitles = [
-                @LanguageString(value = "Describe columns", lang = "en"),
-                @LanguageString(value = "Décrire les colonnes", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "Extract the name, type and comment from all fields of a table.", lang = "en"),
-                @LanguageString(value = "Extrait le nom, le type et le commentaire de chacun des champs d'un table.", lang = "fr")
-        ],
-        translatedKeywords = [
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "Table", lang = "en"),
-                        @LanguageString(value = "Table", lang = "fr")
-                ]),
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "Describe", lang = "en"),
-                        @LanguageString(value = "Descrition", lang = "fr")
-                ])
-        ],
-        metadata = [
-                @MetadataAttribute(title="H2GIS", role ="DBMS_TYPE", href = "http://www.h2gis.org/"),
-                @MetadataAttribute(title="POSTGIS", role ="DBMS_TYPE", href = "http://postgis.net/")
-        ])
+        title = ["Describe columns","en",
+                "Décrire les colonnes","fr"],
+        description = ["Extract the name, type and comment from all fields of a table.","en",
+                "Extrait le nom, le type et le commentaire de chacun des champs d'un table.","fr"],
+        keywords = ["Table,Describe", "en",
+                "Table,Description", "fr"],
+        properties = ["DBMS_TYPE", "H2GIS",
+                "DBMS_TYPE", "POSTGIS"])
 def processing() {
     
     literalOutput = "No descriptions have been extracted."
@@ -60,39 +42,29 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the input data source table. */
-@DataStoreInput(
-        translatedTitles = [
-                @LanguageString(value = "Table", lang = "en"),
-                @LanguageString(value = "Table", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "Extract name, type and comments from the selected table.", lang = "en"),
-                @LanguageString(value = "Extrait les noms, les types et les commentaires de la table.", lang = "fr")
-        ])
+/** This JDBCTable is the input data source table. */
+@JDBCTableInput(
+        title = ["Table","en",
+                "Table","fr"],
+        description = ["Extract name, type and comments from the selected table.","en",
+                "Extrait les noms, les types et les commentaires de la table.","fr"])
 String tableName
 
 @LiteralDataInput(
-        translatedTitles = [
-                @LanguageString(value = "Output table name", lang = "en"),
-                @LanguageString(value = "Nom de la table de sortie", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "Name of the table containing the descriptions.", lang = "en"),
-                @LanguageString(value = "Nom de la table contenant les descriptions.", lang = "fr")
-        ])
+        title = ["Output table name","en",
+                "Nom de la table de sortie","fr"],
+        description = [
+                "Name of the table containing the descriptions.","en",
+                "Nom de la table contenant les descriptions.","fr"])
 String outputTableName
 
 
 /** Output message. */
 @LiteralDataOutput(
-        translatedTitles = [
-                @LanguageString(value = "Output message", lang = "en"),
-                @LanguageString(value = "Message de sortie", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The output message.", lang = "en"),
-                @LanguageString(value = "Le message de sortie.", lang = "fr")
-        ])
+        title = ["Output message","en",
+                "Message de sortie","fr"],
+        description = [
+                "The output message.","en",
+                "Le message de sortie.","fr"])
 String literalOutput
 

@@ -41,6 +41,8 @@ import net.opengis.wps._2_0.LiteralDataType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.*;
+import org.orbisgis.wpsservice.model.DataType;
+import org.orbisgis.wpsservice.model.MalformedScriptException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -55,24 +57,10 @@ public class LiteralDataTypeConvertTest {
 
     /** Field containing the full LiteralDataAttribute annotation. */
     @LiteralDataAttribute(
-            formats = {
-                    @FormatAttribute(mimeType = "mimetype", schema = "schema"),
-                    @FormatAttribute(mimeType = "mimetype", schema = "schema")
-            },
-            validDomains = {
-                    @LiteralDataDomainAttribute(
-                            possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(),
-                            dataType = "STRING",
-                            defaultValue = "value"
-                    ),
-                    @LiteralDataDomainAttribute(
-                            possibleLiteralValues = @PossibleLiteralValuesChoiceAttribute(),
-                            dataType = "STRING",
-                            defaultValue = "value"
-                    )
-            }
+            defaultDomain = "1;1;100",
+            validDomains = {"5,10,15","20;;30"}
     )
-    public Object fullLiteralDataAttribute;
+    public int fullLiteralDataAttribute;
     /** Name of the field containing the fullLiteralDataAttribute annotation. */
     private static final String FULL_LITERAL_DATA_ATTRIBUTE_FIELD_NAME = "fullLiteralDataAttribute";
 
@@ -80,7 +68,7 @@ public class LiteralDataTypeConvertTest {
      * Test if the decoding and convert of the full literalData annotation into its java object is valid.
      */
     @Test
-    public void testFullLiteralDataAttributeConvert() {
+    public void testFullLiteralDataAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
             //Retrieve the LiteralData object
@@ -92,7 +80,7 @@ public class LiteralDataTypeConvertTest {
                 if (annotation instanceof LiteralDataAttribute) {
                     annotationFound = true;
                     LiteralDataAttribute literalDataAnnotation = (LiteralDataAttribute) annotation;
-                    literalDataType = ObjectAnnotationConverter.annotationToObject(literalDataAnnotation, null);
+                    literalDataType = ObjectAnnotationConverter.annotationToObject(literalDataAnnotation, DataType.INTEGER);
                 }
             }
 
@@ -149,7 +137,7 @@ public class LiteralDataTypeConvertTest {
 
     /** Field containing the minimal LiteralDataAttribute annotation. */
     @LiteralDataAttribute()
-    public Object minimalLiteralDataAttribute;
+    public int minimalLiteralDataAttribute;
     /** Name of the field containing the minimalLiteralDataAttribute annotation. */
     private static final String MINIMAL_LITERAL_DATA_ATTRIBUTE_FIELD_NAME = "minimalLiteralDataAttribute";
 
@@ -157,7 +145,7 @@ public class LiteralDataTypeConvertTest {
      * Test if the decoding and convert of the minimal literalData annotation into its java object is valid.
      */
     @Test
-    public void testMinimalLiteralDataAttributeConvert() {
+    public void testMinimalLiteralDataAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
             //Retrieve the LiteralData object
@@ -169,7 +157,7 @@ public class LiteralDataTypeConvertTest {
                 if (annotation instanceof LiteralDataAttribute) {
                     annotationFound = true;
                     LiteralDataAttribute literalDataAnnotation = (LiteralDataAttribute) annotation;
-                    literalDataType = ObjectAnnotationConverter.annotationToObject(literalDataAnnotation, null);
+                    literalDataType = ObjectAnnotationConverter.annotationToObject(literalDataAnnotation, DataType.INTEGER);
                 }
             }
 

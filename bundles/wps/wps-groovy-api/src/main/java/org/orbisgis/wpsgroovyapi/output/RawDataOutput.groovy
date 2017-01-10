@@ -26,41 +26,49 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
 import org.orbisgis.wpsgroovyapi.attributes.RawDataAttribute
 
 /**
- * DataField output annotation.
+ * RawData output annotation.
  * The RawData is a complex data that represents a file or directory.
  * As an output, this annotation should be placed just before the variable.
  *
  * The following fields must be defined (mandatory) :
- *  - title : String
- *       Title of the output. Normally available for display to a human.
+ *  - title : String[]
+ *       Title of a process, input, and output. Normally available for display to a human. It is composed either a
+ *       unique title or a translated title, its language, another title, its language ...
+ *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en"]
  *
  * The following fields can be defined (optional) :
- *  - traducedTitles : LanguageString[]
- *      List of LanguageString containing the traduced titles.
- *  - resume : String
- *      Brief narrative description of the output. Normally available for display to a human.
- *  - traducedResumes : LanguageString[]
- *      List of LanguageString containing the traduced description.
- *  - keywords : String
- *      Array of keywords that characterize the output.
- *  - traducedKeywords : Keyword[]
- *      List of Keyword containing the keywords translations.
+ *  - description : String[]
+ *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
+ *      composed either a unique description or a translated description, its language, another description, its language ...
+ *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+ *
+ *  - keywords : String[]
+ *      Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
+ *      human. It is composed of a succession of two String : the human readable keyword list coma
+ *      separated and its language.
+ *      i.e. keywords = ["the keyword 1,the keyword 2", "en",
+ *                       "le mot clef 1, le mot clef 2", "fr"]
  *  - identifier : String
- *      Unambiguous identifier of the output. It should be a valid URI.
- *  - metadata : MetaData[]
- *      Reference to additional metadata about this item.
+ *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
+ *
+ *  - metadata : String[]
+ *      Reference to additional metadata about this item. It is composed of a succession of three String : the metadata
+ *      role, the metadata title and the href, coma separated.
+ *      i.e. metadata = ["role1,title,href1",
+ *                       "role2,title,href2"]
+ *
  *  - isDirectory : boolean
  *      Indicates that the RawData can be a directory.
+ *
  *  - isFile : boolean
  *      Indicates that the RawData can be a file.
- *  - isDirectory : boolean
- *      Indicates that the RawData can be a directory.
- *  - isFile : boolean
- *      Indicates that the RawData can be a file.
+ *
  *  - multiSelection : boolean
  *      Indicates that the user can select more than one file/directory.
+ *
  *  - fileTypes : String[]
  *      Array of the file type allowed for the raw data. If no types are specified, accept all.
+ *
  *  - excludedTypes : String[]
  *      Array of the file type not allowed for the raw data.
  *
