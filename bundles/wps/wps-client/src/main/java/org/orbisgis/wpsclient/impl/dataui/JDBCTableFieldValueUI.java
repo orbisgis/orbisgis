@@ -127,6 +127,12 @@ public class JDBCTableFieldValueUI implements DataUI {
         JList<ContainerItem<Object>> list = new JList<>();
         DefaultListModel<ContainerItem<Object>> model = new DefaultListModel<>();
         list.setModel(model);
+        if(jdbcTableFieldValue.isMultiSelection()) {
+            list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        }
+        else {
+            list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        }
         int maxRow;
         if(orientation.equals(Orientation.VERTICAL)){
             maxRow = JLIST_VERTICAL_MAX_ROW_COUNT;
@@ -343,6 +349,22 @@ public class JDBCTableFieldValueUI implements DataUI {
                     }
                     if (!isOptional && list.getModel().getSize() > 0) {
                         list.setSelectedIndex(0);
+                        if(dataMap.containsKey(uri) && dataMap.get(uri) != null){
+                            List<Integer> indexList = new ArrayList<>();
+                            String[] elements = dataMap.get(uri).toString().split("\\t");
+                            for(int j = 0; j < elements.length; j++) {
+                                for (int i = 0; i < model.getSize(); i++) {
+                                    if (model.getElementAt(i).getLabel().toUpperCase().equals(elements[j].toUpperCase())) {
+                                        indexList.add(i);
+                                    }
+                                }
+                            }
+                            int[] indexes = new int[indexList.size()];
+                            for(int i=0; i<indexList.size(); i++){
+                                indexes[i] = indexList.get(i);
+                            }
+                            list.setSelectedIndices(indexes);
+                        }
                     }
                     layerUI.stop();
                 }
@@ -373,22 +395,6 @@ public class JDBCTableFieldValueUI implements DataUI {
                 model.addElement(defaultElement);
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
-            }
-            else{
-                if(dataMap.containsKey(uri) && dataMap.get(uri) != null){
-                    List<Integer> indexList = new ArrayList<>();
-                    String[] elements = dataMap.get(uri).toString().split("\\t");
-                    for (int i = 0; i < Math.min(model.getSize(), elements.length); i++) {
-                        if (model.getElementAt(i).getLabel().toUpperCase().equals(elements[i].toUpperCase())) {
-                            indexList.add(i);
-                        }
-                    }
-                    int[] indexes = new int[indexList.size()];
-                    for(int i=0; i<indexList.size(); i++){
-                        indexes[i] = indexList.get(i);
-                    }
-                    list.setSelectedIndices(indexes);
-                }
             }
             if(model.getSize()>maxRow){
                 list.setVisibleRowCount(maxRow);

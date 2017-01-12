@@ -168,7 +168,7 @@ public class JDBCTableFieldValue extends ComplexDataType {
      * Tells if more than one value can be selected.
      * @return True if more than one value can be selected, false otherwise.
      */
-    public boolean getMultiSelection(){
+    public boolean isMultiSelection(){
         return multiSelection;
     }
 }
