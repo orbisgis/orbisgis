@@ -325,7 +325,7 @@ public class WpsModelTest {
             Assert.assertTrue(errorMessage, jdbcTableFieldValue.isJDBCTableModified());
 
             errorMessage = "Error, the JDBCTableFieldValue 'multiSelection' field should be 'true' instead of "+
-                    jdbcTableFieldValue.getMultiSelection();
+                    jdbcTableFieldValue.isMultiSelection();
             Assert.assertTrue(errorMessage, jdbcTableFieldValue.isJDBCTableModified());
 
             errorMessage = "Error, the JDBCTableFieldValue 'getJDBCTableFieldIdentifier' field should be " +
