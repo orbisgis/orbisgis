@@ -47,7 +47,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * Filter functions by their names
+ * filter functions by their names
  * @author Nicolas Fortin
  */
 public class NameFilterFactory implements FilterFactory<FunctionFilter,DefaultActiveFilter> {

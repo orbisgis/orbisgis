@@ -71,7 +71,7 @@ public interface ResultSetProviderFactory {
          * The returned result set may preserve the {@link java.sql.ResultSet#getRow()} of the entire table without
          * filtering.
          * @param pm ProgressMonitor allows to display the process and cancel it.
-         * @param extent Filter entities by this envelope
+         * @param extent filter entities by this envelope
          * @param fields a list of column names to keep in the select... from
          * @return The content of the table
          * @throws java.sql.SQLException

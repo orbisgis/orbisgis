@@ -49,34 +49,67 @@ import org.orbisgis.wpsgroovyapi.attributes.LiteralDataAttribute
  * As an input, this annotation should be placed just before the variable.
  *
  * The following fields must be defined (mandatory) :
- *  - title : String
- *       Title of the input. Normally available for display to a human.
+ *  - title : String[]
+ *       Title of a process, input, and output. Normally available for display to a human. It is composed either a
+ *       unique title or a translated title, its language, another title, its language ...
+ *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en"]
  *
  * The following fields can be defined (optional) :
- *  - traducedTitles : LanguageString[]
- *      List of LanguageString containing the traduced titles.
- *  - resume : String
- *      Brief narrative description of the input. Normally available for display to a human.
- *  - traducedResumes : LanguageString[]
- *      List of LanguageString containing the traduced description.
- *  - keywords : String
- *      Array of keywords that characterize the input.
- *  - traducedKeywords : Keyword[]
- *      List of Keyword containing the keywords translations.
+ *  - description : String[]
+ *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
+ *      composed either a unique description or a translated description, its language, another description, its language ...
+ *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+ *
+ *  - keywords : String[]
+ *      Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
+ *      human. It is composed of a succession of two String : the human readable keyword list coma
+ *      separated and its language.
+ *      i.e. keywords = ["the keyword 1,the keyword 2", "en",
+ *                       "le mot clef 1, le mot clef 2", "fr"]
  *  - identifier : String
- *      Unambiguous identifier of the input. It should be a valid URI.
- *  - metadata : MetaData[]
- *      Reference to additional metadata about this item.
+ *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
+ *
+ *  - metadata : String[]
+ *      Reference to additional metadata about this item. It is composed of a succession of three String : the metadata
+ *      role, the metadata title and the href, coma separated.
+ *      i.e. metadata = ["role1,title,href1",
+ *                       "role2,title,href2"]
+ *
  *  - minOccurs : int
  *      Minimum number of times that values for this parameter are required. 0 means the input is optional.
+ *
  *  - maxOccurs : int
  *      Maximum number of times that this parameter may be present.
- *  - extensions : String[]
- *      File extension accepted. If no extension are specified, all the format are accepted.
- *  - isSpatial : boolean
- *      Indicates if the data represented is spatial or not.
- *  - isCreateTable : boolean
- *      Indicates if the toolbox should load the file and give back the table name or just give the file name.
+ *
+ *  - defaultDomain : String[]
+ *      This attribute contains the definition of the default possible value domain. The domains can be simple values
+ *      ("foo", 2, 2.6589 ...) or value ranges with min, max and sometimes spacing (1;;42, 0;0.1;1 ...). If there is no
+ *      default domain, all the values are accepted.
+ *
+ *      The possible value choices can have three different patterns :
+ *          - value : A string representation of a possible value.
+ *          - min;;max : A range of valid values with a min value and a max value.
+ *          - min;spacing;max : A range of valid value with a spacing between two value, a min, and a max.
+ *      i.e. :
+ *      defaultDomain = ["0;;1, 1;1;100, 1000"]
+ *      The allowed values are value1 (the default one), value2, value3 or a value between 0 to 1, a value between 1
+ *      to 100 with a spacing of 1.
+ *
+ *  - validDomains : String[]
+ *      This attribute contains the definition of all the possible value domain. The domains can be simple values
+ *      ("foo", 2, 2.6589 ...) or value ranges with min, max and sometimes spacing (1;;42, 0;0.1;1 ...). If there is no
+ *      default domain, the domains should be ignored.
+ *
+ *      This attribute is composed of a list of coma separated values. The values are the possible value choices which
+ *      are define later. The very first value will be the default one. The possible value choices can have three
+ *      different patterns :
+ *          - value : A string representation of a possible value.
+ *          - min;;max : A range of valid values with a min value and a max value.
+ *          - min;spacing;max : A range of valid value with a spacing between two value, a min, and a max.
+ *      i.e.
+ *      validDomains = ["value1,value2,value3","0;;1,1;1;100"]
+ *      The allowed values are value1 (the default one), value2, value3 or a value between 0 to 1, a value between 1
+ *      to 100 with a spacing of 1.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *

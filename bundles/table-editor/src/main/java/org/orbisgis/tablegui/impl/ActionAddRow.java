@@ -37,7 +37,6 @@
 
 package org.orbisgis.tablegui.impl;
 
-import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.editorjdbc.AskValidRow;
 import org.orbisgis.sif.UIFactory;
@@ -45,8 +44,8 @@ import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.wpsclient.WpsClient;
-import org.orbisgis.wpsclient.view.utils.WpsJobStateListener;
+import org.orbisgis.wpsclient.api.InternalWpsClient;
+import org.orbisgis.wpsclient.api.utils.WpsJobStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -69,25 +68,24 @@ import java.util.UUID;
  */
 public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
     /** Title of the wps process to use. */
-    private static final URI PROCESS_TITLE = URI.create("wps:orbisgis:internal:InsertValues");
+    private static final URI PROCESS_URI = URI.create("orbisgis:wps:official:insertValues");
     /** Name of the process input containing the table name. */
-    private static final URI INPUT_TABLE = URI.create("wps:orbisgis:internal:InsertValues:Table");
+    private static final URI INPUT_TABLE = URI.create("orbisgis:wps:official:insertValues:tableName");
     /** Name of the process input containing the values to add. */
-    private static final URI INPUT_VALUES = URI.create("wps:orbisgis:internal:InsertValues:Values");
-    private static final URI INPUT_FIELDS = URI.create("wps:orbisgis:internal:InsertValues:Fields");
+    private static final URI INPUT_VALUES = URI.create("orbisgis:wps:official:insertValues:values");
+    private static final URI INPUT_FIELDS = URI.create("orbisgis:wps:official:insertValues:fieldList");
     private final TableEditableElement editable;
     private static final I18n I18N = I18nFactory.getI18n(ActionAddRow.class);
     private final Logger LOGGER = LoggerFactory.getLogger(ActionAddRow.class);
     private TableEditor tableEditor;
-    private WpsClient wpsClient;
-    private ProcessDescriptionType process;
+    private InternalWpsClient wpsClient;
     private UUID jobId;
 
     /**
      * Constructor
      * @param editable Table editable instance
      */
-    public ActionAddRow(TableEditableElement editable, TableEditor tableEditor, WpsClient wpsClient) {
+    public ActionAddRow(TableEditableElement editable, TableEditor tableEditor, InternalWpsClient wpsClient) {
         super(I18N.tr("Add a row"), TableEditorIcon.getIcon("add_row"));
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
         putValue(ActionTools.MENU_ID, TableEditorActions.A_ADD_ROW);
@@ -97,19 +95,13 @@ public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
                 EventHandler.create(PropertyChangeListener.class, this, "updateEnabledState"));
         this.tableEditor = tableEditor;
         this.wpsClient = wpsClient;
-        process = wpsClient.getInternalProcess(PROCESS_TITLE);
     }
 
     /**
      * Enable this action only if edition is enabled
      */
     public void updateEnabledState() {
-        if(wpsClient == null || process == null) {
-            setEnabled(false);
-        }
-        else{
-            setEnabled(editable.isEditing());
-        }
+        setEnabled(editable.isEditing() && wpsClient != null);
     }
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
@@ -118,7 +110,7 @@ public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
             try {
                 AskValidRow rowInput = new AskValidRow(I18N.tr("New row"), source, editable.getTableReference());
                 if(UIFactory.showDialog(rowInput)) {
-                    if(wpsClient != null && process != null){
+                    if(wpsClient != null){
                         //Get the string containing the values to add separated by a coma.
                         String values = "";
                         for(Object o : rowInput.getRow()){
@@ -134,13 +126,12 @@ public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
                         //Build the dataMap containing the process input
                         Map<URI, Object> dataMap = new HashMap<>();
                         dataMap.put(INPUT_TABLE, editable.getTableReference());
-                        dataMap.put(INPUT_FIELDS, null);
                         dataMap.put(INPUT_VALUES, values);
                         //Run the service
-                        jobId = wpsClient.executeInternalProcess(process, dataMap, this);
+                        jobId = wpsClient.executeInternalProcess(PROCESS_URI, dataMap, this);
                     }
                     else{
-                        LOGGER.error(I18N.tr("Unable to get the process {0} from the WpsService.", PROCESS_TITLE));
+                        LOGGER.error(I18N.tr("Unable to get the process {0} from the WpsService.", PROCESS_URI));
                     }
                 }
             } catch (Exception ex) {
@@ -150,7 +141,7 @@ public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
     }
 
     @Override
-    public UUID getJobId() {
+    public UUID getJobID() {
         return jobId;
     }
 

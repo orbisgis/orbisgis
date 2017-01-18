@@ -76,7 +76,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * Filter Search [JTextField] in [JComboBox(fields)] [Button(search)].
+ * filter Search [JTextField] in [JComboBox(fields)] [Button(search)].
  * @author Nicolas Fortin
  */
 public class FieldsContainsFilterFactory implements FilterFactory<TableSelectionFilter,DefaultActiveFilter> {
@@ -156,7 +156,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 private final FilterParameters params;
                 private final String searchChars;
                 private final Set<Integer> filteredRows = new IntegerUnion();
-                /** Not null if work is done on Where SQL Filter */
+                /** Not null if work is done on Where SQL filter */
                 private TableSelectionFilter  externalFilter = null;
 
                 public FieldsContainsFilter(FilterParameters params) {

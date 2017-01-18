@@ -90,7 +90,7 @@ public class FunctionListModel extends AbstractListModel<FunctionElement> {
     /**
      * Set the list filters, and refresh the list of functions
      * through {@code refreshFunctionList}.
-     * @param filters Filter list, not null
+     * @param filters filter list, not null
      */
     public void setFilters(List<FunctionFilter> filters) {
             this.filters = new ArrayList<FunctionFilter>(filters);

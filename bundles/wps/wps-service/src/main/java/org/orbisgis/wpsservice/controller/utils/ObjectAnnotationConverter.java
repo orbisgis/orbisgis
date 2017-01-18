@@ -53,425 +53,603 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * Class able to convert annotation into object and object into annotation.
+ * Class able to convert groovy annotation into java object and object into annotation.
  *
  * @author Sylvain PALOMINOS
  **/
 
 public class ObjectAnnotationConverter {
 
-    public static void annotationToObject(DescriptionTypeAttribute descriptionTypeAttribute,
-                                          DescriptionType descriptionType){
-        if(descriptionTypeAttribute.translatedTitles().length != DescriptionTypeAttribute.defaultTranslatedTitles.length){
-            List<LanguageStringType> titleList = new ArrayList<>();
-            for(LanguageString languageString : descriptionTypeAttribute.translatedTitles()){
-                LanguageStringType title = new LanguageStringType();
-                title.setValue(languageString.value());
-                title.setLang(languageString.lang());
-                titleList.add(title);
+    /**
+     * Builds a {@link BoundingBoxData} Object from a BoundingBoxAttribute annotation.
+     * @param boundingBoxAttribute Groovy annotation to decode to build the Java object.
+     * @return A {@link BoundingBoxData} object with the data from the {@link BoundingBoxAttribute} annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
+    public static BoundingBoxData annotationToObject(BoundingBoxAttribute boundingBoxAttribute)
+            throws MalformedScriptException {
+        BoundingBoxData boundingBoxData = new BoundingBoxData();
+        List<SupportedCRS> supportedCRSList = boundingBoxData.getSupportedCRS();
+        SupportedCRS defaultCRS = getCRS(boundingBoxAttribute.defaultCRS(), true);
+        if(defaultCRS == null){
+            throw new MalformedScriptException(BoundingBoxAttribute.class, "CRS", "The default CRS should be defined.");
+        }
+        supportedCRSList.add(defaultCRS);
+        if(boundingBoxAttribute.supportedCRS().length != 0){
+            for(String crsStr : boundingBoxAttribute.supportedCRS()) {
+                SupportedCRS crs = getCRS(crsStr, false);
+                if(crs != null){
+                    supportedCRSList.add(crs);
+                }
             }
-            descriptionType.getTitle().clear();
-            descriptionType.getTitle().addAll(titleList);
         }
-        else if(!descriptionTypeAttribute.title().equals("")){
-            List<LanguageStringType> titleList = new ArrayList<>();
-            LanguageStringType title = new LanguageStringType();
-            title.setValue(descriptionTypeAttribute.title());
-            titleList.add(title);
-            descriptionType.getTitle().clear();
-            descriptionType.getTitle().addAll(titleList);
-        }
+        return boundingBoxData;
+    }
 
-        if(descriptionTypeAttribute.translatedResumes().length != DescriptionTypeAttribute.defaultTranslatedResumes.length) {
-            List<LanguageStringType> resumeList = new ArrayList<>();
-            for(LanguageString languageString : descriptionTypeAttribute.translatedResumes()){
-                LanguageStringType resume = new LanguageStringType();
-                resume.setValue(languageString.value());
-                resume.setLang(languageString.lang());
-                resumeList.add(resume);
+    /**
+     * Create the {@link SupportedCRS} object from a string representation of a CRS like EPSG:2041.
+     *
+     * @param crs {@link String} representation of the CRS.
+     * @param isDefault True if the {@link SupportedCRS} is the default one.
+     * @return The supported CRS.
+     */
+    private static SupportedCRS getCRS(String crs, boolean isDefault){
+        if(crs == null || crs.isEmpty()){
+            return null;
+        }
+        SupportedCRS supportedCRS = new SupportedCRS();
+        supportedCRS.setDefault(isDefault);
+
+        String[] splitCrs = crs.split(":");
+        String authority = splitCrs[0].toUpperCase();
+        switch(authority){
+            case "EPSG":
+                supportedCRS.setValue("http://www.opengis.net/def/crs/"+authority+"/8.9.2/"+splitCrs[1]);
+                break;
+            case "IAU":
+                supportedCRS.setValue("http://www.opengis.net/def/crs/"+authority+"/0/"+splitCrs[1]);
+                break;
+            case "AUTO":
+                supportedCRS.setValue("http://www.opengis.net/def/crs/"+authority+"/1.3/"+splitCrs[1]);
+                break;
+            case "OGC":
+                supportedCRS.setValue("http://www.opengis.net/def/crs/"+authority+"/0/"+splitCrs[1]);
+                break;
+            case "IGNF":
+                supportedCRS.setValue("http://registre.ign.fr/ign/IGNF/crs/IGNF/"+splitCrs[1]);
+                break;
+            default:
+                return null;
+        }
+        return supportedCRS;
+    }
+
+    /**
+     * Builds a {@link DescriptionType} Object from a {@link DescriptionTypeAttribute} annotation.
+     * @param descriptionTypeAttribute Groovy annotation to decode to build the Java object.
+     * @param descriptionType A {@link DescriptionType} object with the data from the {@link DescriptionTypeAttribute}
+     *                        annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
+    public static void annotationToObject(DescriptionTypeAttribute descriptionTypeAttribute,
+                                          DescriptionType descriptionType) throws MalformedScriptException {
+        //First check if there is at least one title.
+        if(descriptionTypeAttribute.title().length == 0){
+            throw new MalformedScriptException(DescriptionTypeAttribute.class, "title", "The title should be defined.");
+        }
+        //Then adds the titles
+        List<LanguageStringType> titleList = new ArrayList<>();
+        String[] titles = descriptionTypeAttribute.title();
+        //Case of only one title without language
+        if(titles.length == 1){
+            LanguageStringType string = new LanguageStringType();
+            string.setValue(titles[0].trim());
+            titleList.add(string);
+        }
+        //Case of several titles with their language
+        else if(titles.length%2 == 0){
+            for (int i = 0; i < titles.length; i += 2) {
+                LanguageStringType string = new LanguageStringType();
+                string.setValue(titles[i].trim());
+                string.setLang(titles[i + 1]);
+                titleList.add(string);
             }
-            descriptionType.getAbstract().clear();
-            descriptionType.getAbstract().addAll(resumeList);
         }
-        else if(!descriptionTypeAttribute.resume().equals(DescriptionTypeAttribute.defaultResume)){
-            List<LanguageStringType> resumeList = new ArrayList<>();
+        else{
+            throw new MalformedScriptException(DescriptionTypeAttribute.class, "title", "The title should be composed " +
+                    "of pairs of String : the title and its language.");
+        }
+        descriptionType.getTitle().clear();
+        descriptionType.getTitle().addAll(titleList);
+
+        //Descriptions
+        List<LanguageStringType> descriptionList = new ArrayList<>();
+        String[] descriptions = descriptionTypeAttribute.description();
+        //Case of only one description without language
+        if(descriptions.length == 1){
             LanguageStringType resume = new LanguageStringType();
-            resume.setValue(descriptionTypeAttribute.resume());
-            resumeList.add(resume);
-            descriptionType.getAbstract().clear();
-            descriptionType.getAbstract().addAll(resumeList);
+            resume.setValue(descriptions[0].trim());
+            descriptionList.add(resume);
         }
-        if(!descriptionTypeAttribute.identifier().equals(DescriptionTypeAttribute.defaultIdentifier)){
+        //Case of several description with their language
+        else if(descriptions.length%2 == 0){
+            for (int i = 0; i < descriptions.length; i += 2) {
+                LanguageStringType resume = new LanguageStringType();
+                resume.setValue(descriptions[i].trim());
+                resume.setLang(descriptions[i + 1]);
+                descriptionList.add(resume);
+            }
+        }
+        //Case of more than one description but not well formed (pair of a description with its language)
+        else if(descriptions.length>0){
+            throw new MalformedScriptException(DescriptionTypeAttribute.class, "description", "The description should " +
+                    "be composed of pairs of String : the description and its language.");
+        }
+        descriptionType.getAbstract().clear();
+        descriptionType.getAbstract().addAll(descriptionList);
+
+        //Identifier
+        if(!descriptionTypeAttribute.identifier().isEmpty()){
             CodeType codeType = new CodeType();
-            codeType.setValue(descriptionTypeAttribute.identifier());
+            codeType.setValue(descriptionTypeAttribute.identifier().trim());
             descriptionType.setIdentifier(codeType);
         }
 
-        if(descriptionTypeAttribute.translatedKeywords().length !=
-                DescriptionTypeAttribute.defaultTranslatedKeywords.length) {
-            List<KeywordsType> keywordTypeList = new ArrayList<>();
-            for(org.orbisgis.wpsgroovyapi.attributes.TranslatableString keyword : descriptionTypeAttribute.translatedKeywords()) {
-                KeywordsType keywordsType = new KeywordsType();
+        //Keywords
+        String[] keywords = descriptionTypeAttribute.keywords();
+        //Case of only one keyword language (i.e. keywords="key1,key2,key3")
+        if(keywords.length == 1) {
+            LinkedList<KeywordsType> keywordsTypeList = new LinkedList<>();
+            //Splits the keyword string with the ',' character
+            String[] split = keywords[0].split(",");
+            //For each keyword :
+            for(String str : split){
+                //Create the LanguageStringType containing the keyword as value and nothing as language
+                LanguageStringType keywordString = new LanguageStringType();
+                keywordString.setValue(str.trim());
+                //Creates the keywordList which will contains one keyword, but in several languages.
+                // (In this case there is only one language)
                 List<LanguageStringType> keywordList = new ArrayList<>();
-                for (LanguageString languageString : keyword.translatableStrings()) {
+                keywordList.add(keywordString);
+                //Creates the KeywordsType object containing the list of translation of a keyword
+                KeywordsType keywordsType = new KeywordsType();
+                keywordsType.getKeyword().addAll(keywordList);
+                //Add it to the keywordsType list
+                keywordsTypeList.add(keywordsType);
+            }
+            descriptionType.getKeywords().clear();
+            descriptionType.getKeywords().addAll(keywordsTypeList);
+        }
+        //Case of several keyword language (i.e. keywords=["key1,key2,key3","en","clef1,clef2,clef3","fr"])
+        else if(keywords.length != 0 && keywords.length%2 == 0) {
+            LinkedList<KeywordsType> keywordTypeList = new LinkedList<>();
+            //Each time take a pair of string : the keywords and the language.
+            //Then split the keywords string with the ',' character, put the keyword in a LanguageStringType object
+            // with its language and then put the first keyword LanguageStringType in the first KeywordsType object,
+            // the second keyword in the second KeywordsType object ...
+            //Repeat the operation for each language.
+            //
+            //Example :
+            // keywords=["key1,key2,key3","en","clef1,clef2,clef3","fr"] becomes
+            //
+            //List<LanguageStringType> {
+            //          KeywordsType{LanguageStringType{"key1","en"},LanguageStringType{"clef1","fr"}},
+            //          KeywordsType{LanguageStringType{"key2","en"},LanguageStringType{"clef2","fr"}},
+            //          KeywordsType{LanguageStringType{"key3","en"},LanguageStringType{"clef3","fr"}}
+            // }
+            for(int i=0; i<keywords.length; i+=2){
+                String language = keywords[i+1];
+                String[] split = keywords[i].split(",");
+                //If the KeywordsType object haven't already been created, create them
+                if(keywordTypeList.isEmpty()){
+                    for (String ignored : split) {
+                        KeywordsType keywordsType = new KeywordsType();
+                        keywordsType.getKeyword().addAll(new ArrayList<LanguageStringType>());
+                        keywordTypeList.add(keywordsType);
+                    }
+                }
+                //Adds all the keywords to the good KeywordsType
+                for(int j=0; j<split.length; j++){
+                    String str = split[j];
                     LanguageStringType keywordString = new LanguageStringType();
-                    keywordString.setValue(languageString.value());
-                    keywordString.setLang(languageString.lang());
+                    keywordString.setValue(str.trim());
+                    keywordString.setLang(language);
+
+                    List<LanguageStringType> keywordList = keywordTypeList.get(j).getKeyword();
                     keywordList.add(keywordString);
                 }
-                keywordsType.getKeyword().clear();
-                keywordsType.getKeyword().addAll(keywordList);
-                keywordTypeList.add(keywordsType);
             }
             descriptionType.getKeywords().clear();
             descriptionType.getKeywords().addAll(keywordTypeList);
         }
-        else if(descriptionTypeAttribute.keywords().length != DescriptionTypeAttribute.defaultKeywords.length){
-            List<KeywordsType> keywordList = new ArrayList<>();
-            for(String key : descriptionTypeAttribute.keywords()){
-                KeywordsType keyword = new KeywordsType();
-                List<LanguageStringType> stringList = new ArrayList<>();
-                LanguageStringType string = new LanguageStringType();
-                string.setValue(key);
-                stringList.add(string);
-                keyword.getKeyword().clear();
-                keyword.getKeyword().addAll(stringList);
-                keywordList.add(keyword);
-            }
-            descriptionType.getKeywords().clear();
-            descriptionType.getKeywords().addAll(keywordList);
+        //Case of more than one keyword but not well formed (pair of a keyword with its language)
+        else if(keywords.length>0){
+            throw new MalformedScriptException(DescriptionTypeAttribute.class, "keywords", "The keywords should " +
+                    "be composed of pairs of String : the coma separated keywords and their language.");
         }
-        if(descriptionTypeAttribute.metadata().length != DescriptionTypeAttribute.defaultMetadata.length){
-            List<MetadataType> metadataList = new ArrayList<>();
-            for(MetadataAttribute metadataAttribute : descriptionTypeAttribute.metadata()){
-                MetadataType metadataType = new MetadataType();
-                metadataType.setHref(metadataAttribute.href());
-                metadataType.setRole(metadataAttribute.role());
-                metadataType.setTitle(metadataAttribute.title());
-                metadataList.add(metadataType);
+
+        String[] metadata = descriptionTypeAttribute.metadata();
+        //Check if the metadata is composed of pairs of string
+        if(metadata.length != 0) {
+            if (metadata.length % 2 == 0){
+                List<MetadataType> metadataList = new ArrayList<>();
+                for (int i = 0; i < metadata.length; i += 2) {
+                    MetadataType metadataType = new MetadataType();
+                    metadataType.setRole(metadata[i]);
+                    metadataType.setTitle(metadata[i + 1]);
+                    metadataList.add(metadataType);
+                }
+                descriptionType.getMetadata().clear();
+                descriptionType.getMetadata().addAll(metadataList);
             }
-            descriptionType.getMetadata().clear();
-            descriptionType.getMetadata().addAll(metadataList);
+            else{
+                throw new MalformedScriptException(DescriptionTypeAttribute.class, "metadata", "The metadata should " +
+                        "be composed of pairs of String : the property and its value.");
+            }
         }
     }
 
-    public static Format annotationToObject(FormatAttribute formatAttribute){
-        Format format = new Format();
-        format.setMimeType(formatAttribute.mimeType());
-        format.setSchema(URI.create(formatAttribute.schema()).toString());
-        format.setDefault(formatAttribute.isDefaultFormat());
-        if(formatAttribute.maximumMegaBytes() == FormatAttribute.defaultMaximumMegaBytes) {
-            format.setMaximumMegabytes(null);
+    /**
+     * Builds an {@link Enumeration} Object from an {@link EnumerationAttribute} annotation.
+     * @param enumAttribute Groovy annotation to decode to build the Java object.
+     * @param format {@link Format} of the {@link Enumeration} ComplexType.
+     * @return An {@link Enumeration} object with the data from the {@link EnumerationAttribute} annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
+    public static Enumeration annotationToObject(EnumerationAttribute enumAttribute, Format format)
+            throws MalformedScriptException {
+        //Creates the format list
+        format.setDefault(true);
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(format);
+        //Creates the enumeration Object and set it
+        Enumeration enumeration = new Enumeration(formatList, enumAttribute.values());
+        enumeration.setEditable(enumAttribute.isEditable());
+        enumeration.setMultiSelection(enumAttribute.multiSelection());
+
+        //Decodes the Groovy annotation 'names' attribute and store each name in a LanguageStringType with its language
+        String[] names = enumAttribute.names();
+        //In the case where is only one language
+        if(names.length == 1) {
+            //Splits the names
+            String[] split = names[0].split(",");
+            TranslatableString[] translatableStrings = new TranslatableString[split.length];
+            //Populate the TranslatableString array with all the names
+            for(int i=0; i<split.length; i++){
+                //Creates the LanguageStringType Object containing the name
+                LanguageStringType type = new LanguageStringType();
+                type.setValue(split[i].trim());
+                //Store the LanguageStringType Object in an array
+                LanguageStringType[] types = new LanguageStringType[1];
+                types[0] = type;
+                //Store the array in a TranslatableString object
+                TranslatableString string = new TranslatableString();
+                string.setStrings(types);
+                //Store the TranslatableString
+                translatableStrings[i] = string;
+            }
+            enumeration.setValuesNames(translatableStrings);
         }
-        else{
-            format.setMaximumMegabytes(BigInteger.valueOf(formatAttribute.maximumMegaBytes()));
+        //Case of several names language (i.e. names=["name1,name2,name3","en","nom1,nom2,nom3","fr"])
+        else if(names.length != 0 && names.length%2==0) {
+            TranslatableString[] translatableStringArray = new TranslatableString[names[0].split(",").length];
+            //Each time take a pair of string : the names and the language.
+            //Then split the names string with the ',' character, put the name in a LanguageStringType object
+            // with its language and then put the first name LanguageStringType in the first TranslatableString object,
+            // the second name in the second TranslatableString object ...
+            //Repeat the operation for each language.
+            //
+            //Example :
+            // names=["name1,name2,name3","en","nom1,nom2,nom3","fr"] becomes
+            //
+            //TranslatableString {
+            //          LanguageStringType[]{LanguageStringType{"name1","en"},LanguageStringType{"nom1","fr"}},
+            //          LanguageStringType[]{LanguageStringType{"name2","en"},LanguageStringType{"nom2","fr"}},
+            //          LanguageStringType[]{LanguageStringType{"name3","en"},LanguageStringType{"nom3","fr"}}
+            // }
+            //For each languages, uses the a pair of String : the names and the language.
+            for(int i=0; i< names.length; i+=2) {
+                String[] splitNames = names[i].split(",");
+                String language = names[i + 1];
+                //For each name
+                for (int j = 0; j < splitNames.length; j++) {
+                    //Gets the TranslatableString object that should contains the name
+                    TranslatableString translatableString = translatableStringArray[j];
+                    //If the TranslatableString at the index of the name is null, then creates it
+                    if(translatableString == null){
+                        translatableString = new TranslatableString();
+                    }
+                    //Gets the LanguageStringType array that should contains the name
+                    LanguageStringType[] languageStringArray = translatableString.getStrings();
+                    //If the TranslatableString LanguageStringType array is null, then creates it
+                    if(languageStringArray == null || languageStringArray.length == 0) {
+                        languageStringArray = new LanguageStringType[names.length/2];
+                    }
+                    //Creates the name LanguageStringType Object
+                    LanguageStringType languageString = new LanguageStringType();
+                    //Sets the name
+                    languageString.setValue(splitNames[j].trim());
+                    //Sets the language
+                    languageString.setLang(language);
+                    //Store it in the LanguageStringType array
+                    languageStringArray[i/2] = languageString;
+                    //Store the LanguageStringType array in the TranslatableString
+                    translatableString.setStrings(languageStringArray);
+                    translatableStringArray[j] = translatableString;
+                }
+            }
+            enumeration.setValuesNames(translatableStringArray);
         }
-        format.setEncoding(formatAttribute.encoding());
-        return format;
+        return enumeration;
     }
 
-    public static MetadataType annotationToObject(MetadataAttribute descriptionTypeAttribute){
-        URI href = URI.create(descriptionTypeAttribute.href());
-        URI role = URI.create(descriptionTypeAttribute.role());
-        String title = descriptionTypeAttribute.title();
-
-        MetadataType metadata = new MetadataType();
-        metadata.setHref(href.toString());
-        metadata.setRole(role.toString());
-        metadata.setTitle(title);
-
-        return metadata;
+    /**
+     * Builds an {@link GeometryData} Object from an {@link GeometryAttribute} annotation.
+     * @param geometryAttribute Groovy annotation to decode to build the Java object.
+     * @param format {@link Format} of the {@link Enumeration} ComplexType.
+     * @return An {@link GeometryData} object with the data from the {@link GeometryAttribute} annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
+    public static GeometryData annotationToObject(GeometryAttribute geometryAttribute, Format format)
+            throws MalformedScriptException {
+        format.setDefault(true);
+        List<DataType> geometryTypeList = new ArrayList<>();
+        //For each field type value from the groovy annotation, test if it is contain in the FieldType enumeration.
+        for(String type : Arrays.asList(geometryAttribute.geometryTypes())){
+            geometryTypeList.add(DataType.getDataTypeFromFieldType(type));
+        }
+        List<DataType> excludedTypeList = new ArrayList<>();
+        //For each excluded type value from the groovy annotation, test if it is contain in the FieldType enumeration.
+        for(String type : Arrays.asList(geometryAttribute.excludedTypes())){
+            excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
+        }
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(format);
+        GeometryData geometryData = new GeometryData(formatList, geometryTypeList);
+        geometryData.setDimension(geometryAttribute.dimension());
+        geometryData.setExcludedTypeList(excludedTypeList);
+        return geometryData;
     }
 
-    public static Object annotationToObject(ValuesAttribute valueAttribute){
-        if(valueAttribute.type().toUpperCase().equals(ValuesType.VALUE.name())){
-            if(valueAttribute.value().equals(ValuesAttribute.defaultValue)){
-                return null;
-            }
-            ValueType value = new ValueType();
-            value.setValue(valueAttribute.value());
-            return value;
-        }
-        else if(valueAttribute.type().toUpperCase().equals(ValuesType.RANGE.name())){
-            RangeType range = new RangeType();
-            if(!valueAttribute.spacing().equals(ValuesAttribute.defaultSpacing)) {
-                ValueType spacing = new ValueType();
-                spacing.setValue(valueAttribute.spacing());
-                range.setSpacing(spacing);
-            }
-            if(!valueAttribute.maximum().equals(ValuesAttribute.defaultMaximum)){
-                ValueType max = new ValueType();
-                max.setValue(valueAttribute.maximum());
-                range.setMaximumValue(max);
-            }
-            if(!valueAttribute.minimum().equals(ValuesAttribute.defaultMinimum)){
-                ValueType min = new ValueType();
-                min.setValue(valueAttribute.minimum());
-                range.setMinimumValue(min);
-            }
-            return range;
-        }
-        return null;
+    /**
+     * Builds an {@link InputDescriptionType} Object from an {@link InputAttribute} annotation.
+     * @param inputAttribute Groovy annotation to decode to build the Java object.
+     * @param input The {@link InputDescriptionType} object with the data from the {@link InputAttribute} annotation.
+     */
+    public static void annotationToObject(InputAttribute inputAttribute, InputDescriptionType input){
+        input.setMaxOccurs(""+inputAttribute.maxOccurs());
+        input.setMinOccurs(BigInteger.valueOf(inputAttribute.minOccurs()));
     }
 
-    public static LiteralDataDomain annotationToObject(LiteralDataDomainAttribute literalDataDomainAttribute){
-        LiteralDataDomain literalDataDomain = new LiteralDataDomain();
-        literalDataDomain.setDefault(literalDataDomainAttribute.isDefault());
-        if(!literalDataDomainAttribute.uom().isEmpty()){
-            DomainMetadataType uom = new DomainMetadataType();
-            URI uomUri = URI.create(literalDataDomainAttribute.uom());
-            uom.setValue(uomUri.getPath());
-            uom.setReference(uomUri.toString());
-            literalDataDomain.setUOM(uom);
+    /**
+     * Builds a {@link JDBCTable} Object from an {@link JDBCTableAttribute} annotation.
+     * @param jdbcTableAttribute Groovy annotation to decode to build the Java object.
+     * @param formatList The list of the {@link Format} for the {@link JDBCTable}.
+     * @return The {@link JDBCTable} object with the data from the {@link JDBCTableAttribute} annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
+    public static JDBCTable annotationToObject(JDBCTableAttribute jdbcTableAttribute, List<Format> formatList)
+            throws MalformedScriptException {
+        JDBCTable jdbcTable = new JDBCTable(formatList);
+        List<DataType> dataTypeList = new ArrayList<>();
+        for(String type : Arrays.asList(jdbcTableAttribute.dataTypes())){
+            dataTypeList.add(DataType.getDataTypeFromFieldType(type));
         }
-        DataType dataType = DataType.valueOf(literalDataDomainAttribute.dataType());
-        DomainMetadataType domainDataType = new DomainMetadataType();
-        domainDataType.setReference(dataType.getUri().toString());
-        domainDataType.setValue(dataType.name());
-        literalDataDomain.setDataType(domainDataType);
-
-        Object value = ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute.possibleLiteralValues());
-        if(value instanceof AllowedValues){
-            literalDataDomain.setAllowedValues((AllowedValues)value);
+        jdbcTable.setDataTypeList(dataTypeList);
+        List<DataType> excludedTypeList = new ArrayList<>();
+        for(String type : Arrays.asList(jdbcTableAttribute.excludedTypes())){
+            excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
         }
-        else if(value instanceof AnyValue){
-            literalDataDomain.setAnyValue((AnyValue) value);
-        }
-        else if(value instanceof ValuesReference){
-            literalDataDomain.setValuesReference((ValuesReference) value);
-        }
-        ValueType defaultValue = new ValueType();
-        defaultValue.setValue(literalDataDomainAttribute.defaultValue());
-        literalDataDomain.setDefaultValue(defaultValue);
-
-        return literalDataDomain;
+        jdbcTable.setExcludedTypeList(excludedTypeList);
+        return jdbcTable;
     }
 
-    public static LiteralDataType annotationToObject(LiteralDataAttribute literalDataAttribute,
-                                                     LiteralDataDomain defaultDomain) {
+    /**
+     * Builds a {@link JDBCTableField} Object from an {@link JDBCTableFieldAttribute} annotation.
+     * @param jdbcTableFieldAttribute Groovy annotation to decode to build the Java object.
+     * @param format The {@link Format} for the {@link JDBCTable}.
+     * @param jdbcTableUri The URI of the parent {@link JDBCTable} object.
+     * @return The {@link JDBCTableField} object with the data from the {@link JDBCTableFieldAttribute} annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
+    public static JDBCTableField annotationToObject(JDBCTableFieldAttribute jdbcTableFieldAttribute, Format format,
+                                                    URI jdbcTableUri) throws MalformedScriptException {
+        format.setDefault(true);
+        List<DataType> dataTypeList = new ArrayList<>();
+        for(String type : Arrays.asList(jdbcTableFieldAttribute.dataTypes())){
+            dataTypeList.add(DataType.getDataTypeFromFieldType(type));
+        }
+        List<DataType> excludedTypeList = new ArrayList<>();
+        for(String type : Arrays.asList(jdbcTableFieldAttribute.excludedTypes())){
+            excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
+        }
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(format);
+        JDBCTableField jdbcTableField = new JDBCTableField(formatList, dataTypeList, jdbcTableUri);
+        jdbcTableField.setExcludedTypeList(excludedTypeList);
+        jdbcTableField.setMultiSelection(jdbcTableFieldAttribute.multiSelection());
+        return jdbcTableField;
+    }
+
+    /**
+     * Builds a {@link JDBCTableFieldValue} Object from an {@link JDBCTableFieldValueAttribute} annotation.
+     * @param jdbcTableFieldValueAttribute Groovy annotation to decode to build the Java object.
+     * @param format The {@link Format} for the {@link JDBCTable}.
+     * @param jdbcTableFieldUri The URI of the parent {@link JDBCTableField} object.
+     * @return The {@link JDBCTableFieldValue} object with the data from the {@link JDBCTableFieldValueAttribute}
+     *          annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
+    public static JDBCTableFieldValue annotationToObject(JDBCTableFieldValueAttribute jdbcTableFieldValueAttribute,
+                                                         Format format, URI jdbcTableFieldUri)
+            throws MalformedScriptException {
+        format.setDefault(true);
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(format);
+        return new JDBCTableFieldValue(formatList, jdbcTableFieldUri, jdbcTableFieldValueAttribute.multiSelection());
+    }
+
+    /**
+     * Builds a {@link LiteralDataType} Object from an {@link LiteralDataAttribute} annotation.
+     * @param literalDataAttribute Groovy annotation to decode to build the Java object.
+     * @param dataType The {@link DataType} for the {@link LiteralDataType}.
+     * @return The {@link LiteralDataType} object with the data from the {@link LiteralDataAttribute}
+     *          annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
+    public static LiteralDataType annotationToObject(LiteralDataAttribute literalDataAttribute, DataType dataType)
+            throws MalformedScriptException {
         LiteralDataType literalDataType = new LiteralDataType();
 
+        //Sets the format of the literalData
         List<Format> formatList = new ArrayList<>();
-        if(literalDataAttribute.formats().length == 0){
-            formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
-            formatList.get(0).setDefault(true);
-        }
-        else {
-            boolean isDefault = false;
-            for (FormatAttribute formatAttribute : literalDataAttribute.formats()) {
-                Format format = ObjectAnnotationConverter.annotationToObject(formatAttribute);
-                if(format.isDefault()){
-                    isDefault = true;
-                }
-                formatList.add(format);
-            }
-            if(!isDefault){
-                formatList.get(0).setDefault(true);
-            }
-        }
+        formatList.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
+        formatList.get(0).setDefault(true);
         literalDataType.getFormat().clear();
         literalDataType.getFormat().addAll(formatList);
 
-        List<LiteralDataType.LiteralDataDomain> lddList = new ArrayList<>();
-        if(literalDataAttribute.validDomains().length == 0){
-            if(defaultDomain != null){
-                lddList.add(defaultDomain);
-            }
-            else {
-                LiteralDataDomain literalDataDomain = new LiteralDataDomain();
-                literalDataDomain.setDefault(true);
-                AnyValue anyValue = new AnyValue();
-                literalDataDomain.setAnyValue(anyValue);
-                ValueType defaultValue = new ValueType();
-                defaultValue.setValue("");
-                literalDataDomain.setDefaultValue(defaultValue);
-                DomainMetadataType domainMetadataType = new DomainMetadataType();
-                domainMetadataType.setReference(DataType.STRING.getUri().toString());
-                domainMetadataType.setValue(DataType.STRING.name());
-                literalDataDomain.setDataType(domainMetadataType);
-                lddList.add(literalDataDomain);
-            }
+        //Sets the data domain of the literalData
+        List<LiteralDataDomain> lddList = new ArrayList<>();
+        //Build the literalDataDomain list
+
+        //Sets the default domain
+        LiteralDataDomain dataDomain = createLiteralDataDomain(dataType, literalDataAttribute.defaultDomain(), true);
+        if(dataDomain == null){
+            throw new MalformedScriptException(LiteralDataAttribute.class, "validDomains", "The valid " +
+                    "domains should be a coma separated list of ranges with this pattern : min;;max / " +
+                    "min;spacing;max or a simple value");
         }
-        else {
-            boolean isDefault = false;
-            for (LiteralDataDomainAttribute literalDataDomainAttribute : literalDataAttribute.validDomains()) {
-                LiteralDataDomain ldd = ObjectAnnotationConverter.annotationToObject(literalDataDomainAttribute);
-                if(ldd.isDefault()){
-                    isDefault = true;
+        lddList.add(dataDomain);
+
+        //Sets the others domains if defined
+        if(literalDataAttribute.validDomains().length != 0){
+            for(String validDomain : literalDataAttribute.validDomains()){
+                dataDomain = createLiteralDataDomain(dataType, validDomain, false);
+                if(dataDomain == null){
+                    throw new MalformedScriptException(LiteralDataAttribute.class, "validDomains", "The valid " +
+                            "domains should be a coma separated list of ranges with this pattern : min;;max / " +
+                            "min;spacing;max or a simple value");
                 }
-                lddList.add(ldd);
-            }
-            if(!isDefault){
-                lddList.get(0).setDefault(true);
+                lddList.add(dataDomain);
             }
         }
+
         literalDataType.getLiteralDataDomain().clear();
         literalDataType.getLiteralDataDomain().addAll(lddList);
 
         return literalDataType;
     }
 
-    public static RawData annotationToObject(RawDataAttribute rawDataAttribute, Format format) {
-        try {
-            //Instantiate the RawData
-            format.setDefault(true);
-            List<Format> formatList = new ArrayList<>();
-            formatList.add(format);
-            RawData rawData = new RawData(formatList);
-            rawData.setFile(rawDataAttribute.isFile());
-            rawData.setDirectory(rawDataAttribute.isDirectory());
-            rawData.setMultiSelection(rawDataAttribute.multiSelection());
-            rawData.setFileTypes(rawDataAttribute.fileTypes());
-            rawData.setExcludedTypes(rawDataAttribute.excludedTypes());
-            return rawData;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
-        }
+    /**
+     * Builds a {@link RawData} Object from an {@link RawDataAttribute} annotation.
+     * @param rawDataAttribute Groovy annotation to decode to build the Java object.
+     * @param format The {@link Format} for the {@link RawData}.
+     * @return The {@link RawData} object with the data from the {@link RawDataAttribute}
+     *          annotation.
+     * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
+     */
+    public static RawData annotationToObject(RawDataAttribute rawDataAttribute, Format format)
+            throws MalformedScriptException {
+        //Instantiate the RawData
+        format.setDefault(true);
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(format);
+        RawData rawData = new RawData(formatList);
+        rawData.setFile(rawDataAttribute.isFile());
+        rawData.setDirectory(rawDataAttribute.isDirectory());
+        rawData.setMultiSelection(rawDataAttribute.multiSelection());
+        rawData.setFileTypes(rawDataAttribute.fileTypes());
+        rawData.setExcludedTypes(rawDataAttribute.excludedTypes());
+        return rawData;
     }
 
-    public static void annotationToObject(InputAttribute inputAttribute, InputDescriptionType input){
-        input.setMaxOccurs(""+inputAttribute.maxOccurs());
-        input.setMinOccurs(BigInteger.valueOf(inputAttribute.minOccurs()));
-    }
-
-    public static Object annotationToObject(
-            PossibleLiteralValuesChoiceAttribute possibleLiteralValuesChoiceAttribute){
-        if(possibleLiteralValuesChoiceAttribute.anyValues() ||
-                (possibleLiteralValuesChoiceAttribute.allowedValues().length != 0 &&
-                        !possibleLiteralValuesChoiceAttribute.reference().isEmpty())){
-            return new AnyValue();
-        }
-        else if(possibleLiteralValuesChoiceAttribute.allowedValues().length != 0){
-            AllowedValues allowedValues = new AllowedValues();
-            List<Object> valueList = new ArrayList<>();
-            for(ValuesAttribute va : possibleLiteralValuesChoiceAttribute.allowedValues()){
-                valueList.add(ObjectAnnotationConverter.annotationToObject(va));
-            }
-            allowedValues.getValueOrRange().clear();
-            allowedValues.getValueOrRange().addAll(valueList);
-            return allowedValues;
-        }
-        else if (!possibleLiteralValuesChoiceAttribute.reference().isEmpty()){
-            ValuesReference valuesReference = new ValuesReference();
-            URI uri = URI.create(possibleLiteralValuesChoiceAttribute.reference());
-            valuesReference.setValue(uri.getPath());
-            valuesReference.setReference(uri.toString());
-            return valuesReference;
-        }
-        return new AnyValue();
-    }
-
+    /**
+     * Sets a {@link ProcessOffering} Object from an {@link ProcessAttribute} annotation.
+     * @param processAttribute Groovy annotation to decode to build the Java object.
+     * @param processOffering The {@link ProcessOffering} Object to set.
+     */
     public static void annotationToObject(ProcessAttribute processAttribute, ProcessOffering processOffering){
         processOffering.getProcess().setLang(Locale.forLanguageTag(processAttribute.language()).toString());
         processOffering.setProcessVersion(processAttribute.version());
-    }
-
-    public static DataStore annotationToObject(DataStoreAttribute dataStoreAttribute, List<Format> formatList) {
-        try {
-            DataStore dataStore = new DataStore(formatList);
-            List<DataType> dataTypeList = new ArrayList<>();
-            for(String type : Arrays.asList(dataStoreAttribute.dataStoreTypes())){
-                dataTypeList.add(DataType.getDataTypeFromFieldType(type));
-            }
-            dataStore.setDataStoreTypeList(dataTypeList);
-            List<DataType> excludedTypeList = new ArrayList<>();
-            for(String type : Arrays.asList(dataStoreAttribute.excludedTypes())){
-                excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
-            }
-            dataStore.setExcludedTypeList(excludedTypeList);
-            return dataStore;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
+        String[] properties = processAttribute.properties();
+        List<MetadataType> metadataList = processOffering.getProcess().getMetadata();
+        for(int i=0; i<properties.length; i+=2){
+            MetadataType metadata = new MetadataType();
+            metadata.setRole(properties[i]);
+            metadata.setTitle(properties[i+1]);
+            metadataList.add(metadata);
         }
     }
 
-    public static DataField annotationToObject(DataFieldAttribute dataFieldAttribute, Format format, URI dataStoreUri) {
-        try {
-            format.setDefault(true);
-            List<DataType> dataTypeList = new ArrayList<>();
-            for(String type : Arrays.asList(dataFieldAttribute.fieldTypes())){
-                dataTypeList.add(DataType.getDataTypeFromFieldType(type));
-            }
-            List<DataType> excludedTypeList = new ArrayList<>();
-            for(String type : Arrays.asList(dataFieldAttribute.excludedTypes())){
-                excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
-            }
-            List<Format> formatList = new ArrayList<>();
-            formatList.add(format);
-            DataField dataField = new DataField(formatList, dataTypeList, dataStoreUri);
-            dataField.setExcludedTypeList(excludedTypeList);
-            dataField.setMultiSelection(dataFieldAttribute.multiSelection());
-            return dataField;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
+    /**
+     * Creates a {@link LiteralDataDomain} object from its string representation.
+     * @param dataType DataType of the domain.
+     * @param literalDataDomainStr String representation of the domain.
+     * @param isDefault True if the domain is the default one, false otherwise.
+     * @return The LiteralDataDomain.
+     */
+    private static LiteralDataDomain createLiteralDataDomain(DataType dataType, String literalDataDomainStr,
+                                                             boolean isDefault){
+        LiteralDataDomain LiteralDataDomain = new LiteralDataDomain();
+        LiteralDataDomain.setDefault(isDefault);
+        DomainMetadataType domainMetadataType = new DomainMetadataType();
+        domainMetadataType.setValue(dataType.name());
+        domainMetadataType.setReference(dataType.getUri().toString());
+        LiteralDataDomain.setDataType(domainMetadataType);
+        //If no values was specified, allow any value
+        if(literalDataDomainStr.isEmpty()){
+            LiteralDataDomain.setAnyValue(new AnyValue());
         }
-    }
-
-    public static FieldValue annotationToObject(FieldValueAttribute fieldvalueAttribute, Format format, URI dataFieldUri) {
-        try {
-            format.setDefault(true);
-            List<Format> formatList = new ArrayList<>();
-            formatList.add(format);
-            return new FieldValue(formatList, dataFieldUri, fieldvalueAttribute.multiSelection());
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
-        }
-    }
-
-    public static Enumeration annotationToObject(EnumerationAttribute enumAttribute, Format format) {
-        try{
-            format.setDefault(true);
-            List<Format> formatList = new ArrayList<>();
-            formatList.add(format);
-            Enumeration enumeration = new Enumeration(formatList, enumAttribute.values(), enumAttribute.selectedValues());
-            enumeration.setEditable(enumAttribute.isEditable());
-            enumeration.setMultiSelection(enumAttribute.multiSelection());
-            enumeration.setValuesNames(enumAttribute.names());
-            List<TranslatableString> translatedNameList = new ArrayList<>();
-            for(org.orbisgis.wpsgroovyapi.attributes.TranslatableString translatableString : enumAttribute.translatedNames()){
-                List<LanguageStringType> translatedName = new ArrayList<>();
-                for(LanguageString languageString : translatableString.translatableStrings()) {
-                    LanguageStringType language = new LanguageStringType();
-                    language.setLang(languageString.lang());
-                    language.setValue(languageString.value());
-                    translatedName.add(language);
+        else{
+            AllowedValues allowedValues = new AllowedValues();
+            List<Object> valueOrRangeList = new ArrayList<>();
+            String[] splitDomains = literalDataDomainStr.split(",");
+            for(String domain : splitDomains){
+                Object allowedValue = createAllowedValue(domain);
+                if(allowedValue == null){
+                    return null;
                 }
-                translatedNameList.add(new TranslatableString(translatedName.toArray(new LanguageStringType[]{})));
+                valueOrRangeList.add(allowedValue);
             }
-            enumeration.setTranslatedNames(translatedNameList.toArray(new TranslatableString[]{}));
-            return enumeration;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
+            allowedValues.getValueOrRange().addAll(valueOrRangeList);
+            LiteralDataDomain.setAllowedValues(allowedValues);
         }
+        return LiteralDataDomain;
     }
 
-    public static GeometryData annotationToObject(GeometryAttribute geometryAttribute, Format format) {
-        try{
-            format.setDefault(true);
-            List<DataType> geometryTypeList = new ArrayList<>();
-            //For each field type value from the groovy annotation, test if it is contain in the FieldType enumeration.
-            for(String type : Arrays.asList(geometryAttribute.geometryTypes())){
-                geometryTypeList.add(DataType.getDataTypeFromFieldType(type));
+    /**
+     * Create the allowed value Object ({@link RangeType} or {@link ValueType}) from its string representation.
+     * @param allowedValue String representation of the allowedValue.
+     * @return {@link RangeType} or {@link ValueType} Object.
+     */
+    private static Object createAllowedValue(String allowedValue){
+        String allowedValueStr = allowedValue.trim();
+        if(allowedValueStr.contains(";")){
+            String[] domainValues = allowedValueStr.split(";");
+            //Test if the domain is well formed (min;;max or min;spacing;max). If not, throw an exception
+            if(domainValues[0].isEmpty() || domainValues[2].isEmpty()){
+                return null;
             }
-            List<DataType> excludedTypeList = new ArrayList<>();
-            //For each excluded type value from the groovy annotation, test if it is contain in the FieldType enumeration.
-            for(String type : Arrays.asList(geometryAttribute.excludedTypes())){
-                excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
+            RangeType rangeType = new RangeType();
+            ValueType minValue = new ValueType();
+            minValue.setValue(domainValues[0]);
+            rangeType.setMinimumValue(minValue);
+            if(!domainValues[1].isEmpty()) {
+                ValueType spacingValue = new ValueType();
+                spacingValue.setValue(domainValues[1]);
+                rangeType.setSpacing(spacingValue);
             }
-            List<Format> formatList = new ArrayList<>();
-            formatList.add(format);
-            GeometryData geometryData = new GeometryData(formatList, geometryTypeList);
-            geometryData.setDimension(geometryAttribute.dimension());
-            geometryData.setExcludedTypeList(excludedTypeList);
-            return geometryData;
-        } catch (MalformedScriptException e) {
-            LoggerFactory.getLogger(ObjectAnnotationConverter.class).error(e.getMessage());
-            return null;
+            ValueType maxValue = new ValueType();
+            maxValue.setValue(domainValues[0]);
+            rangeType.setMaximumValue(maxValue);
+
+            return rangeType;
+        }
+        else{
+            ValueType value = new ValueType();
+            value.setValue(allowedValueStr);
+
+            return value;
         }
     }
 }

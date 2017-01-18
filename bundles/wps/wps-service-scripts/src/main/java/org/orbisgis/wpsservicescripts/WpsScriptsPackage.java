@@ -42,13 +42,14 @@ import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.LocalWpsServer;
 
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
-import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import java.io.*;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -106,7 +107,7 @@ public class WpsScriptsPackage {
     /**
      * The WPS client of OrbisGIS.
      */
-    protected WpsClient wpsClient;
+    protected InternalWpsClient wpsClient;
 
     /**
      * List of identifier of the processes loaded by this plusgin.
@@ -173,7 +174,7 @@ public class WpsScriptsPackage {
      */
     protected void removeAllScripts(){
         for(CodeType idProcess : listIdProcess){
-            localWpsService.removeProcess(idProcess);
+            localWpsService.removeProcess(URI.create(idProcess.getValue()));
         }
     }
 

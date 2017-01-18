@@ -42,6 +42,7 @@ import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.DataType;
 
 import java.io.*;
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -66,23 +67,27 @@ public interface LocalWpsServer extends WpsServer {
 
     /**
      * Remove the process corresponding to the given codeType.
-     * @param identifier CodeType identifier of the process.
+     * @param identifier URI identifier of the process.
      */
-    void removeProcess(CodeType identifier);
+    void removeProcess(URI identifier);
 
     /**
      * Verify if the process corresponding to the identifier is a valid and well formed groovy wps script.
-     * @param identifier CodeType identifier of the process to check.
+     * @param identifier URI identifier of the process to check.
      * @return True if the script is valid, false otherwise.
      */
-    boolean checkProcess(CodeType identifier);
+    boolean checkProcess(URI identifier);
 
     /**
-     * Returns a map containing the sql table from OrbisGIS as key and if it is spatial or not as value.
-     * @param onlySpatial If true, returns only the spatial table.
-     * @return A map containing the sql table from OrbisGIS as key and if it is spatial or not as value.
+     * Returns the list of the table from a database connected to OrbisGIS which contains the fields with the given
+     * dataTypes and without the given excludedTypes
+     *
+     * @param dataTypes Type of field accepted. If empty, accepts all the field.
+     * @param excludedTypes Type of field excluded.
+     *
+     * @return The list of valid tables.
      */
-    Map<String, Boolean> getGeocatalogTableList(boolean onlySpatial);
+    List<String> getTableList(List<DataType> dataTypes, List<DataType> excludedTypes);
 
     /**
      * Returns a map containing field information (table type, SRID, ...)
@@ -108,8 +113,6 @@ public interface LocalWpsServer extends WpsServer {
      * @return The list of distinct values of the field.
      */
     List<String> getFieldValueList(String tableName, String fieldName);
-
-    enum ProcessProperty{IS_REMOVABLE, NODE_PATH, ICON_ARRAY, ROLE, DBMS}
 
     /**
      * Adds to the server execution properties which will be set to the GroovyObject for the execution.

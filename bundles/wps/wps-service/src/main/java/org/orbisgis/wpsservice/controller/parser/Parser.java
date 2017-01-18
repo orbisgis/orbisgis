@@ -39,6 +39,7 @@ package org.orbisgis.wpsservice.controller.parser;
 
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
+import org.orbisgis.wpsservice.model.MalformedScriptException;
 
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -59,7 +60,7 @@ public interface Parser {
      * @param processId The process identifier.
      * @return Parsed DataDescription.
      */
-    InputDescriptionType parseInput(Field f, Object defaultValue, URI processId);
+    InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) throws MalformedScriptException;
 
     /**
      * Parse the given field as an output and returns the corresponding DataDescription.
@@ -67,7 +68,7 @@ public interface Parser {
      * @param processId The process identifier.
      * @return Parsed DataDescription.
      */
-    OutputDescriptionType parseOutput(Field f, URI processId);
+    OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException;
 
     /**
      * Returns the groovy annotation associated to this parser.

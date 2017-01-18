@@ -1,14 +1,10 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
-import org.orbisgis.wpsgroovyapi.input.FieldValueInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldValueInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-
 /********************/
 /** Process method **/
 /********************/
@@ -16,36 +12,22 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /**
  * This process removes the given rows from the given table.
  * The user has to specify (mandatory):
- *  - The input table (DataStore)
- *  - The primary key field (DataField)
- *  - The primary keys of the rows to remove (FieldValue)
+ *  - The input table (JDBCTable)
+ *  - The primary key field (JDBCTableField)
+ *  - The primary keys of the rows to remove (JDBCTableFieldValue)
  *
  * @author Sylvain PALOMINOS
  */
 @Process(
-        translatedTitles = [
-                @LanguageString(value = "Delete rows", lang = "en"),
-                @LanguageString(value = "Suppression de lignes", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "Delete rows from a table.", lang = "en"),
-                @LanguageString(value = "Supprime des lignes d'une table.", lang = "fr")
-        ],
-        translatedKeywords = [
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "Table", lang = "en"),
-                        @LanguageString(value = "Table", lang = "fr")
-                ]),
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "Delete", lang = "en"),
-                        @LanguageString(value = "Suppression", lang = "fr")
-                ])
-        ],
-        metadata = [
-                @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
-                @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
-        ],
-        identifier = "wps:orbisgis:internal:DeleteValues"
+        title = ["Delete rows","en",
+                "Suppression de lignes","fr"],
+        description = ["Delete rows from a table.","en",
+                "Supprime des lignes d'une table.","fr"],
+        keywords = ["Table,Delete", "en",
+                "Table,Suppression", "fr"],
+        properties = ["DBMS_TYPE", "H2GIS",
+                "DBMS_TYPE", "POSTGIS"],
+        identifier = "orbisgis:wps:official:deleteRows"
 )
 def processing() {
     //Build the start of the query
@@ -62,17 +44,13 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the input data source table. */
-@DataStoreInput(
-        translatedTitles = [
-                @LanguageString(value = "Table", lang = "en"),
-                @LanguageString(value = "Table", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The table to edit.", lang = "en"),
-                @LanguageString(value = "La table à éditer.", lang = "fr")
-        ],
-        identifier = "wps:orbisgis:internal:DeleteValues:Table"
+/** This JDBCTable is the input data source table. */
+@JDBCTableInput(
+        title = ["Table","en",
+                "Table","fr"],
+        description = ["The table to edit.","en",
+                "La table à éditer.","fr"],
+        identifier = "orbisgis:wps:official:deleteRows:tableName"
 )
 String tableName
 
@@ -80,46 +58,35 @@ String tableName
 /** INPUT Parameters **/
 /**********************/
 
-/** Name of the PrimaryKey field of the DataStore tableName. */
-@DataFieldInput(
-        translatedTitles = [
-                @LanguageString(value = "PKField", lang = "en"),
-                @LanguageString(value = "Champ clef primaire", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The primary key field.", lang = "en"),
-                @LanguageString(value = "Le champ de la clef primaire.", lang = "fr")
-        ],
-        variableReference = "tableName",
-        identifier = "wps:orbisgis:internal:DeleteValues:PKField"
+/** Name of the PrimaryKey field of the JDBCTable tableName. */
+@JDBCTableFieldInput(
+        title = ["PKField","en",
+                "Champ clef primaire","fr"],
+        description = ["The primary key field.","en",
+                "Le champ de la clef primaire.","fr"],
+        jdbcTableReference = "orbisgis:wps:official:deleteRows:tableName",
+        identifier = "orbisgis:wps:official:deleteRows:pkField"
 )
 String[] pkField
 
 /** List of primary keys to remove from the table. */
-@FieldValueInput(
-        translatedTitles = [
-                @LanguageString(value = "PKArray", lang = "en"),
-                @LanguageString(value = "Liste clef primaire", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The array of the primary keys of the rows to remove.", lang = "en"),
-                @LanguageString(value = "La liste des clefs primaires dont les lignes sont à supprimer.", lang = "fr")
-        ],
-        variableReference = "pkField",
+@JDBCTableFieldValueInput(
+        title = ["PKArray","en",
+                "Liste clef primaire","fr"],
+        description = ["The array of the primary keys of the rows to remove.","en",
+                "La liste des clefs primaires dont les lignes sont à supprimer.","fr"],
+        jdbcTableFieldReference = "orbisgis:wps:official:deleteRows:pkField",
         multiSelection = true,
-        identifier = "wps:orbisgis:internal:DeleteValues:PKArray"
+        identifier = "orbisgis:wps:official:deleteRows:pkToRemove"
 )
 String[] pkToRemove
 
 /** Output message. */
 @LiteralDataOutput(
-        translatedTitles = [
-                @LanguageString(value = "Output message", lang = "en"),
-                @LanguageString(value = "Message de sortie", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The output message.", lang = "en"),
-                @LanguageString(value = "Le message de sortie.", lang = "fr")
-        ])
+        title = ["Output message","en",
+                "Message de sortie","fr"],
+        description = ["The output message.","en",
+                "Le message de sortie.","fr"],
+        identifier = "orbisgis:wps:official:deleteRows:literalOutput")
 String literalOutput
 

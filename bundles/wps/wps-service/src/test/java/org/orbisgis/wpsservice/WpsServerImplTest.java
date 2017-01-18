@@ -75,18 +75,18 @@ public class WpsServerImplTest {
         localWpsServer.init();
 
         try {
-            URL url = this.getClass().getResource("DataStore.groovy");
-            Assert.assertNotNull("Unable to load the script 'DataStore.groovy'", url);
+            URL url = this.getClass().getResource("JDBCTable.groovy");
+            Assert.assertNotNull("Unable to load the script 'JDBCTable.groovy'", url);
             File f = new File(url.toURI());
             localWpsServer.addLocalSource(f, null, true, "test");
 
-            url = this.getClass().getResource("DataField.groovy");
-            Assert.assertNotNull("Unable to load the script 'DataField.groovy'", url);
+            url = this.getClass().getResource("JDBCTableField.groovy");
+            Assert.assertNotNull("Unable to load the script 'JDBCTableField.groovy'", url);
             f = new File(url.toURI());
             localWpsServer.addLocalSource(f, null, true, "test");
 
-            url = this.getClass().getResource("FieldValue.groovy");
-            Assert.assertNotNull("Unable to load the script 'FieldValue.groovy'", url);
+            url = this.getClass().getResource("JDBCTableFieldValue.groovy");
+            Assert.assertNotNull("Unable to load the script 'JDBCTableFieldValue.groovy'", url);
             f = new File(url.toURI());
             localWpsServer.addLocalSource(f, null, true, "test");
 
@@ -488,7 +488,7 @@ public class WpsServerImplTest {
      * @throws IOException
      */
     @Test
-    public void testDataStoreScript() throws JAXBException, IOException {
+    public void testJDBCTableScript() throws JAXBException, IOException {
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         //Build the DescribeProcess object
         File describeProcessFile = new File(this.getClass().getResource("DescribeProcess.xml").getFile());
@@ -522,9 +522,9 @@ public class WpsServerImplTest {
         Assert.assertNotNull("Error on unmarshalling the WpsService answer, the process identifier should not be null",
                 processOffering.getProcess().getIdentifier());
         Assert.assertEquals("Error on unmarshalling the WpsService answer," +
-                " the process identifier should be 'orbisgis:test:datastore'",
+                " the process identifier should be 'orbisgis:test:jdbctable'",
                 processOffering.getProcess().getIdentifier().getValue(),
-                "orbisgis:test:datastore");
+                "orbisgis:test:jdbctable");
         Assert.assertNull("Error on unmarshalling the WpsService answer, the process offering any should be null",
                 processOffering.getAny());
         Assert.assertNotNull("Error on unmarshalling the WpsService answer, the process offering job control options " +
@@ -598,7 +598,7 @@ public class WpsServerImplTest {
                         " should be null",
                 statusInfo.getPercentCompleted());
 
-        try {sleep(100);} catch (InterruptedException e) {}
+        try {sleep(100);} catch (InterruptedException ignored) {}
 
         //Now test the getStatus request
         UUID jobId = UUID.fromString(((StatusInfo)resultObject).getJobID());

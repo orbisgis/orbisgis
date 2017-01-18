@@ -1,14 +1,10 @@
 package org.orbisgis.wpsservicescripts.scripts.Table
 
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute
-import org.orbisgis.wpsgroovyapi.input.DataFieldInput
-import org.orbisgis.wpsgroovyapi.input.DataStoreInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-
 /********************/
 /** Process method **/
 /********************/
@@ -16,42 +12,24 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /**
  * This process insert the given values in the given table.
  * The user has to specify (mandatory):
- *  - The input table (DataStore)
+ *  - The input table (JDBCTable)
  *  - The values to insert (LiteralData)
  *
  * The user can specify (optional) :
- *  - The field list concerned by the value insertion (DataField)
+ *  - The field list concerned by the value insertion (JDBCTableField)
  *
  * @author Sylvain PALOMINOS
  */
 @Process(
-        translatedTitles = [
-                @LanguageString(value = "Insert values", lang = "en"),
-                @LanguageString(value = "Insertion de valeurs", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "Insert values into a table.", lang = "en"),
-                @LanguageString(value = "Insert de valeurs dans une table.", lang = "fr")
-        ],
-        translatedKeywords = [
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "Table", lang = "en"),
-                        @LanguageString(value = "Table", lang = "fr")
-                ]),
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "Insert", lang = "en"),
-                        @LanguageString(value = "Insertion", lang = "fr")
-                ]),
-                @TranslatableString(translatableStrings = [
-                        @LanguageString(value = "Values", lang = "en"),
-                        @LanguageString(value = "Valeurs", lang = "fr")
-                ])
-        ],
-        metadata = [
-                @MetadataAttribute(title="h2gis", role ="DBMS", href = "http://www.h2gis.org/"),
-                @MetadataAttribute(title="postgis", role ="DBMS", href = "http://postgis.net/")
-        ],
-        identifier = "wps:orbisgis:internal:InsertValues")
+        title = ["Insert values","en",
+                "Insertion de valeurs","fr"],
+        description = ["Insert values into a table.","en",
+                "Insert de valeurs dans une table.","fr"],
+        keywords = ["Table,Insert,Values", "en",
+                "Table,Insertion,Valeurs", "fr"],
+        properties = ["DBMS_TYPE", "H2GIS",
+                "DBMS_TYPE", "POSTGIS"],
+        identifier = "orbisgis:wps:official:insertValues")
 def processing() {
     //Build the query
     String queryBase = "INSERT INTO " + tableName;
@@ -99,17 +77,13 @@ def processing() {
 /** INPUT Data **/
 /****************/
 
-/** This DataStore is the input data source table. */
-@DataStoreInput(
-        translatedTitles = [
-                @LanguageString(value = "Table", lang = "en"),
-                @LanguageString(value = "Table", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The table to edit.", lang = "en"),
-                @LanguageString(value = "La table à éditer.", lang = "fr")
-        ],
-        identifier = "wps:orbisgis:internal:InsertValues:Table")
+/** This JDBCTable is the input data source table. */
+@JDBCTableInput(
+        title = ["Table","en",
+                "Table","fr"],
+        description = ["The table to edit.","en",
+                "La table à éditer.","fr"],
+        identifier = "orbisgis:wps:official:insertValues:tableName")
 String tableName
 
 /**********************/
@@ -117,43 +91,35 @@ String tableName
 /**********************/
 
 /** Field list concerned by the value insertion. */
-@DataFieldInput(
-        translatedTitles = [
-                @LanguageString(value = "Fields", lang = "en"),
-                @LanguageString(value = "Champs", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The field concerned by the value insertion.", lang = "en"),
-                @LanguageString(value = "Les champs concernés par les insertions de valeurs.", lang = "fr")
-        ],
-        variableReference = "tableName",
+@JDBCTableFieldInput(
+        title = ["Fields","en",
+                "Champs","fr"],
+        description = [
+                "The field concerned by the value insertion.","en",
+                "Les champs concernés par les insertions de valeurs.","fr"],
+        jdbcTableReference = "orbisgis:wps:official:insertValues:tableName",
         multiSelection = true,
         minOccurs = 0,
-        identifier = "wps:orbisgis:internal:InsertValues:Fields")
+        identifier = "orbisgis:wps:official:insertValues:fieldList")
 String[] fieldList
 
 /** Coma separated values to insert. */
 @LiteralDataInput(
-        translatedTitles = [
-                @LanguageString(value = "Values", lang = "en"),
-                @LanguageString(value = "Valeurs", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The input values. The values should be separated by a ',' and rows by ';'", lang = "en"),
-                @LanguageString(value = "Les valeurs à insérer. Elles doivent etre séparées par une ',' et les lignes par un ';'", lang = "fr")
-        ],
-        identifier = "wps:orbisgis:internal:InsertValues:Values")
+        title = ["Values","en",
+                "Valeurs","fr"],
+        description = [
+                "The input values. The values should be separated by a ',' and rows by ';'","en",
+                "Les valeurs à insérer. Elles doivent etre séparées par une ',' et les lignes par un ';'","fr"],
+        identifier = "orbisgis:wps:official:insertValues:values")
 String values
 
 /** String output of the process. */
 @LiteralDataOutput(
-        translatedTitles = [
-                @LanguageString(value = "Output message", lang = "en"),
-                @LanguageString(value = "Message de sortie", lang = "fr")
-        ],
-        translatedResumes = [
-                @LanguageString(value = "The output message.", lang = "en"),
-                @LanguageString(value = "Le message de sortie.", lang = "fr")
-        ])
+        title = ["Output message","en",
+                "Message de sortie","fr"],
+        description = [
+                "The output message.","en",
+                "Le message de sortie.","fr"],
+        identifier = "orbisgis:wps:official:insertValues:literalOutput")
 String literalOutput
 

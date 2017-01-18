@@ -59,7 +59,7 @@ public class SourceTypeIs implements FilterFactory<IFilter,DefaultActiveFilter> 
     private static final I18n I18N = I18nFactory.getI18n(SourceTypeIs.class);
     private Map<String,IFilter> filters = new HashMap<String,IFilter>();
     private List<ContainerItemProperties> filterLabelsId = new ArrayList<ContainerItemProperties>();
-    private static final String DEFAULT_FILTER = "geocatalog.filters.GeoFilter"; //Filter shown in the GUI by default
+    private static final String DEFAULT_FILTER = "geocatalog.filters.GeoFilter"; //filter shown in the GUI by default
     
     /**
      * Add a new type filter

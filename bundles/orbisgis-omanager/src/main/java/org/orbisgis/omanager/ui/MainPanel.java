@@ -104,6 +104,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
     private static final int PROPERTY_TEXT_SIZE_INCREMENT = 3;
     private static final int PROPERTY_TITLE_SIZE_INCREMENT = 4;
     private static final String DEFAULT_CATEGORY = "orbisgis";
+    private static final String WPS_CATEGORY = "wps";
     private ItemFilterStatusFactory.Status radioFilterStatus = ItemFilterStatusFactory.Status.ALL;
     private Map<String,ImageIcon> buttonIcons = new HashMap<>();
 
@@ -128,14 +129,16 @@ public class MainPanel extends JPanel implements CustomPlugin {
      * in ms Launch a search if the user don't type any character within this time.
      */
     private static final long LAUNCH_SEARCH_IDLE_TIME = 300;
-    private final boolean isPlugin;
+    private final Category category;
+    /** Enumeration of the categories */
+    enum Category{PLUGIN, SYSTEM, WPS}
     /**
      * Constructor of the main plugin panel
-     * @param isPlugin specify plugin category
+     * @param category specify plugin category
      */
-    public MainPanel(boolean isPlugin) {
+    public MainPanel(Category category) {
         super(new BorderLayout());
-        this.isPlugin=isPlugin;
+        this.category=category;
     }
 
     /**
@@ -144,7 +147,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
     protected void initialize(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
         initRepositoryTracker();
-        actionFactory = new ActionBundleFactory(bundleContext,this, isPlugin);
+        actionFactory = new ActionBundleFactory(bundleContext,this, category.equals(Category.SYSTEM));
         // Main Panel (South button, center Split Pane)
         // Buttons on south of main panel
         JPanel southButtons = new JPanel();
@@ -369,8 +372,11 @@ public class MainPanel extends JPanel implements CustomPlugin {
         if(radioFilter!=null) {
             filters.add(radioFilter);
         }
-        
-        if(isPlugin){
+
+        if(category.equals(Category.WPS)){
+            filters.add(new ItemFilterCategory(WPS_CATEGORY));
+        }
+        else if(category.equals(Category.PLUGIN)){
             filters.add(new ItemFilterCategory(DEFAULT_CATEGORY));
         }
         
@@ -607,18 +613,27 @@ public class MainPanel extends JPanel implements CustomPlugin {
 
     @Override
     public String getName() {
-        if(isPlugin){
-            return I18N.tr("Plugins");
+        switch(category){
+            case WPS:
+                return I18N.tr("Wps plugins");
+            case SYSTEM:
+                return I18N.tr("Systems");
+            case PLUGIN:
+            default:
+                return I18N.tr("Plugins");
         }
-        return I18N.tr("Systems");
     }
 
     @Override
     public Icon getIcon() {
-        if (isPlugin) {
-            return new ImageIcon(MainPanel.class.getResource("defaultIcon.png"));
-        } else {
-            return new ImageIcon(MainPanel.class.getResource("plugin_system.png"));
+        switch(category){
+            case WPS:
+                return new ImageIcon(MainPanel.class.getResource("plugin_system.png"));
+            case SYSTEM:
+                return new ImageIcon(MainPanel.class.getResource("plugin_system.png"));
+            case PLUGIN:
+            default:
+                return new ImageIcon(MainPanel.class.getResource("defaultIcon.png"));
         }
     }
     

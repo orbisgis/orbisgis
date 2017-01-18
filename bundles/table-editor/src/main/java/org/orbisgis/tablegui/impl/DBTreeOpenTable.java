@@ -36,6 +36,7 @@
  */
 package org.orbisgis.tablegui.impl;
 
+import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeAction;
 import org.orbisgis.geocatalogtree.api.GeoCatalogTreeNode;
@@ -88,7 +89,15 @@ public class DBTreeOpenTable implements PopupMenu {
             GeoCatalogTreeAction action = (GeoCatalogTreeAction)((JMenuItem) event.getSource()).getAction();
             for(GeoCatalogTreeNode node : action.getSelectedTreeNodes()) {
                 if(GeoCatalogTreeNode.NODE_TABLE.equals(node.getNodeType())) {
-                    editorManager.openEditable(new TableEditableElementImpl(node.getNodeIdentifier(), dataManager));
+                    TableLocation tableLocation = TableLocation.parse(node.getNodeIdentifier());
+                    String tableName;
+                    if(tableLocation.getCatalog().isEmpty() && tableLocation.getSchema().equalsIgnoreCase("public")){
+                        tableName = tableLocation.getTable();
+                    }
+                    else{
+                        tableName = tableLocation.toString();
+                    }
+                    editorManager.openEditable(new TableEditableElementImpl(tableName, dataManager));
                 }
             }
         }

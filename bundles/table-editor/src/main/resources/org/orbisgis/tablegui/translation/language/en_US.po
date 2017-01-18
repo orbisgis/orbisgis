@@ -75,8 +75,8 @@ msgid ""
 msgstr "Searching request is already launched. Please wait a moment, or cancel it."
 
 #: org/orbisgis/tablegui/impl/TableEditor.java:407
-msgid "Filter selected rows"
-msgstr "Filter selected rows"
+msgid "filter selected rows"
+msgstr "filter selected rows"
 
 #: org/orbisgis/tablegui/impl/TableEditor.java:409
 msgid "Show only the selected rows"

@@ -65,7 +65,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * Filter GUI and functionality is a generic concept of OrbisGIS GUI.
+ * filter GUI and functionality is a generic concept of OrbisGIS GUI.
  * This manager help to 
  *  - introduce easily a filtering system
  *  - show the same GUI for the same functionality over all frames
@@ -113,7 +113,7 @@ public class FilterFactoryManager<FilterInterface,FilterSerialisation extends Ac
         if(defaultFilterFactory.isEmpty()) {
             defaultFilterFactory = filterFactory.getFactoryId();
         }
-        //TODO if some filters are already shown, refresh all factories combo box (Future Plugin-Filter ?)
+        //TODO if some filters are already shown, refresh all factories combo box (Future Plugin-filter ?)
     }
     
      /**
@@ -299,9 +299,9 @@ public class FilterFactoryManager<FilterInterface,FilterSerialisation extends Ac
                 if(factoryAndFilter!=null) {
                     Component factoryList = ((BorderLayout)((JPanel)factoryAndFilter).getLayout()).getLayoutComponent(BorderLayout.WEST);
                     if(!(factoryList instanceof JComboBox || factoryList instanceof JLabel)) {
-                        //Could not find Filter Factory list
-                        //You must update onFilterChanged according to the change on Filter Factory ComboBox panel layout
-                        LOGGER.debug("Error: Could not find Filter Factory list");
+                        //Could not find filter Factory list
+                        //You must update onFilterChanged according to the change on filter Factory ComboBox panel layout
+                        LOGGER.debug("Error: Could not find filter Factory list");
                     } else {
                         if(factoryList instanceof JComboBox) {
                             String itemLabel = ((JComboBox)factoryList).getSelectedItem().toString();
@@ -465,10 +465,10 @@ public class FilterFactoryManager<FilterInterface,FilterSerialisation extends Ac
         }
         //GridLayout with 1 column (vertical stack) and n(0) rows
         filterListPanel = new JPanel(new GridLayout(0,1));
-        //Filter List must take all horizontal space
+        //filter List must take all horizontal space
         //CENTER will expand the content to take all avaible place
         buttonAndFilterList.add(filterListPanel, BorderLayout.CENTER);
-        //Add the AddFilter button and Filter list in the main filter panel
+        //Add the AddFilter button and filter list in the main filter panel
         return buttonAndFilterList;
     }
 }

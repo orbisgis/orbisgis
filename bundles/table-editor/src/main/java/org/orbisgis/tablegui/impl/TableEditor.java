@@ -110,6 +110,7 @@ import org.orbisgis.tablegui.impl.filters.WhereSQLFilterFactory;
 import org.orbisgis.tablegui.impl.jobs.ComputeFieldStatistics;
 import org.orbisgis.tablegui.impl.jobs.OptimalWidthJob;
 import org.orbisgis.tablegui.impl.jobs.SearchJob;
+import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.orbisgis.wpsclient.WpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,14 +160,14 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         private int currentSelectionNavigation = 0;
         private EditorManager editorManager;
         private ExecutorService executorService;
-        private WpsClient wpsClient;
+        private InternalWpsClient wpsClient;
 
         /**
          * Constructor
          * @param element Source to read and edit
          */
         public TableEditor(TableEditableElement element, DataManager dataManager, EditorManager editorManager,
-                           ExecutorService executorService, WpsClient wpsClient) {
+                           ExecutorService executorService, InternalWpsClient wpsClient) {
                 super(new BorderLayout());
                 this.editorManager = editorManager;
                 this.executorService = executorService;
@@ -216,16 +217,16 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
         /**
          * Return the actions available on the top of the table editor
-         * @return 
+         * @return
          */
         private List<Action> getDockActions() {
                 List<Action> actions = new LinkedList<>();
                 actions.add(new DefaultAction(TableEditorActions.A_REFRESH, I18N.tr("Refresh table content"),
                         TableEditorIcon.getIcon("table_refresh"),
                         EventHandler.create(ActionListener.class, this, "onMenuRefresh"))
-                        .setLogicalGroup(TableEditorActions.LGROUP_READ));  
-                
-                actions.add(new ActionFilteredRow(tableEditableElement, this));                
+                        .setLogicalGroup(TableEditorActions.LGROUP_READ));
+
+                actions.add(new ActionFilteredRow(tableEditableElement, this));
 
                 actions.add(new DefaultAction(TableEditorActions.A_PREVIOUS_SELECTION, I18N.tr("Previous selection"),
                         I18N.tr("Go to previous selected row"),TableEditorIcon.getIcon("selection-previous"),
@@ -247,7 +248,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 }
                 actions.add(new ActionUndo(tableEditableElement, undoManager));
                 actions.add(new ActionRedo(tableEditableElement, undoManager));
-                actions.add(new ActionEdition(tableEditableElement));                
+                actions.add(new ActionEdition(tableEditableElement));
                 return actions;
         }
 
@@ -259,7 +260,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 if (!onUpdateEditableSelection.getAndSet(true)) {
                     // Convert primary key value into row number
                     try {
-                            SortedSet<Integer> modelRows = tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement.getSelection());                        
+                            SortedSet<Integer> modelRows = tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement.getSelection());
                             setRowSelection(modelRows, -1);
                             if (tableEditableElement.isFiltered()) {
                             tableSorter.setRowsFilter( getTableModelSelection(0));
@@ -268,7 +269,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                                 // Scroll to first selection
                                 scrollToRow(modelRows.first() - 1);
                             }
-                        
+
                     } catch (EditableElementException | SQLException ex) {
                         LOGGER.error(ex.getLocalizedMessage(), ex);
                     } finally {
@@ -276,7 +277,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     }
                 }
         }
-        
+
         /**
          * The rows have been filtered
          */
@@ -289,7 +290,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 onMenuClearFilter();
                 onFiltered.set(false);
             }
-            
+
         }
 
         /**
@@ -303,7 +304,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         /**
          * Return true if the row is visible
          * @param row
-         * @return 
+         * @return
          */
         private boolean isRowVisible(int row) {
             return table.getVisibleRect().intersects(table.getCellRect(row, 0, true));
@@ -365,17 +366,17 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         public void onPopupBecomeVisible() {
                 cellHighlight.setLocation(popupCellAdress);
         }
-        
+
         /**
          * Create the filter panel
-         * @return 
+         * @return
          */
         private JComponent makeFilterManager() {
                 JPanel filterComp = filterManager.makeFilterPanel(false);
                 filterManager.setUserCanRemoveFilter(false);
                 FieldsContainsFilterFactory factory = new FieldsContainsFilterFactory(table);
                 filterManager.registerFilterFactory(factory);
-                // SQL Filter is only available if there is a primary key
+                // SQL filter is only available if there is a primary key
                 try(Connection connection = dataSource.getConnection()) {
                     int idPk = JDBCUtilities.getIntegerPrimaryKey(connection, tableEditableElement.getTableReference());
                     if(idPk > 0) {
@@ -406,15 +407,15 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
          * Reload filter GUI components
          */
         private void reloadFilters() {
-                LOGGER.debug("Reload Filter");
+                LOGGER.debug("Reload filter");
                 DefaultActiveFilter currentFilter = filterManager.getFilterValues().iterator().next();
                 filterManager.clearFilters();
                 filterManager.addFilter(currentFilter);
         }
-        
+
         /**
          * Create the table and its actions
-         * @return 
+         * @return
          */
         private JComponent makeTable() {
                 table = new JTable();
@@ -473,7 +474,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         
         /**
          * Create popup menu when the user click on a cell
-         * @return 
+         * @return
          */
         private JPopupMenu makeTableCellPopup() {
                 JPopupMenu pop = new JPopupMenu();
@@ -902,7 +903,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 //Set the row count at left
                 tableRowHeader = new TableRowHeader(table);
                 tableScrollPane.setRowHeaderView(tableRowHeader);
-                              
+
                 //Apply the selection
                 try {
                     setRowSelection(tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement
@@ -912,14 +913,14 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     IntegerUnion selectedModelIndex = getTableModelSelection(0);
                     tableSorter.setRowsFilter(selectedModelIndex);
                 }
-                    
+
                     if (!table.getSelectionModel().isSelectionEmpty()) {
                         scrollToRow(table.getSelectionModel().getMinSelectionIndex());
                     }
                 } catch (EditableElementException |SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
-                
+
                 table.getSelectionModel().addListSelectionListener(
                         EventHandler.create(ListSelectionListener.class,this,
                         "onTableSelectionChange",""));
@@ -932,7 +933,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 updateTitle();
                 // Add a selection listener on the editable element
                 tableEditableElement.addPropertyChangeListener(TableEditableElement.PROP_SELECTION,
-                        editableSelectionListener);                
+                        editableSelectionListener);
                 // Add a filter listener on the editable element
                 tableEditableElement.addPropertyChangeListener(TableEditableElement.PROP_FILTERED,
                         filterListener);
@@ -942,7 +943,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         }
         private void initPopupActions() {
                 if(tableEditableElement.isEditable()) {
-                    popupActions.addAction(new ActionRemoveColumn(this, this));
+                    popupActions.addAction(new ActionRemoveColumn(this, wpsClient));
                 }
         }
         /**
@@ -1402,11 +1403,11 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
     }
 
     /**
-     * Return the DataSourceRowSorter to filter or short the data of the table 
-     * @return 
+     * Return the DataSourceRowSorter to filter or short the data of the table
+     * @return
      */
     public DataSourceRowSorter getDataSourceRowSorter() {
         return tableSorter;
-    }    
-    
+    }
+
 }

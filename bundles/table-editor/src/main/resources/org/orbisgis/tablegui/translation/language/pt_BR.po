@@ -77,7 +77,7 @@ msgid ""
 msgstr "O pedido de pesquisa já está sendo executado. Tenha a bondade de esperar um momento ou cancele-o."
 
 #: org/orbisgis/tablegui/impl/TableEditor.java:407
-msgid "Filter selected rows"
+msgid "filter selected rows"
 msgstr "Filtrar linhas selecionadas"
 
 #: org/orbisgis/tablegui/impl/TableEditor.java:409

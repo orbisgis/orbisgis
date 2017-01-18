@@ -44,9 +44,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import net.opengis.wps._2_0.DescriptionType;
-import org.orbisgis.wpsgroovyapi.attributes.TranslatableString;
-import org.orbisgis.wpsgroovyapi.attributes.LanguageString;
-import org.orbisgis.wpsgroovyapi.attributes.MetadataAttribute;
+import org.orbisgis.wpsservice.model.MalformedScriptException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -68,32 +66,11 @@ public class DescriptionTypeConvertTest {
 
     /** Field containing the full DescriptionTypeAttribute annotation. */
     @DescriptionTypeAttribute(
-            title = "DescriptionType attribute title",
-            translatedTitles = {
-                    @LanguageString(value = "DescriptionType attribute title", lang = "en"),
-                    @LanguageString(value = "Titre de l'attribut DescriptionType", lang = "fr")
-            },
-            resume = "DescriptionType attribute resume",
-            translatedResumes = {
-                    @LanguageString(value = "DescriptionType attribute resume", lang = "en"),
-                    @LanguageString(value = "Description de l'attribut DescriptionType", lang = "fr")
-            },
-            keywords = {"DescriptionType","Attribute"},
-            translatedKeywords = {
-                    @TranslatableString(translatableStrings = {
-                            @LanguageString(value = "Attribute en", lang = "en"),
-                            @LanguageString(value = "Attribute fr", lang = "fr")
-                    }),
-                    @TranslatableString(translatableStrings = {
-                            @LanguageString(value = "DescriptionType en", lang = "en"),
-                            @LanguageString(value = "DescriptionType fr", lang = "fr")
-                    })
-            },
+            title = {"DescriptionType attribute title","en","Titre de l'attribut DescriptionType","fr"},
+            description = {"DescriptionType attribute resume","en","Description de l'attribut DescriptionType","fr"},
+            keywords = {"DescriptionType en,Attribute en", "en", "DescriptionType fr,Attribute fr", "fr"},
             identifier = "test:descriptionTypeAttribute",
-            metadata = {
-                    @MetadataAttribute(title = "metadata1", linkType = "simple", role = "role1", href = "href1"),
-                    @MetadataAttribute(title = "metadata2", linkType = "simple", role = "role2", href = "href2")
-            }
+            metadata = {"role1","metadata1","role2","metadata2"}
     )
     public Object fullDescriptionTypeAttribute;
     /** Name of the field containing the fullDescriptionTypeAttribute annotation. */
@@ -103,7 +80,7 @@ public class DescriptionTypeConvertTest {
      * Test if the decoding and convert of the full DescriptionTypeAttribute annotation into its java object is valid.
      */
     @Test
-    public void testFullDescriptionTypeAttributeConvert(){
+    public void testFullDescriptionTypeAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
             //Retrieve the DescriptionType object
@@ -203,12 +180,10 @@ public class DescriptionTypeConvertTest {
             List<MetadataType> metadataList = new ArrayList<>();
             MetadataType metadata1 = new MetadataType();
             metadata1.setTitle("metadata1");
-            metadata1.setHref("href1");
             metadata1.setRole("role1");
             metadataList.add(metadata1);
             MetadataType metadata2 = new MetadataType();
             metadata2.setTitle("metadata2");
-            metadata2.setHref("href2");
             metadata2.setRole("role2");
             metadataList.add(metadata2);
 
@@ -307,9 +282,7 @@ public class DescriptionTypeConvertTest {
             for(MetadataType meta1 : toTest.getMetadata()){
                 boolean isMetadataPresent = false;
                 for(MetadataType meta2 : descriptionType.getMetadata()){
-                    if(meta1.getHref().equals(meta2.getHref()) &&
-                            meta1.getRole().equals(meta2.getRole()) &&
-                            meta1.getTitle().equals(meta2.getTitle())){
+                    if(meta1.getRole().equals(meta2.getRole()) && meta1.getTitle().equals(meta2.getTitle())){
                         isMetadataPresent = true;
                     }
                 }
@@ -334,8 +307,8 @@ public class DescriptionTypeConvertTest {
     /** Field containing the simple DescriptionTypeAttribute annotation. */
     @DescriptionTypeAttribute(
             title = "DescriptionType attribute title",
-            resume = "DescriptionType attribute resume",
-            keywords = {"DescriptionType","Attribute"}
+            description = "DescriptionType attribute resume",
+            keywords = "DescriptionType,Attribute"
     )
     public Object simpleDescriptionTypeAttribute;
     /** Name of the field containing the simpleDescriptionTypeAttribute annotation. */
@@ -345,7 +318,7 @@ public class DescriptionTypeConvertTest {
      * Test if the decoding and convert of the simple DescriptionTypeAttribute annotation into its java object is valid.
      */
     @Test
-    public void testSimpleDescriptionTypeAttributeConvert(){
+    public void testSimpleDescriptionTypeAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
             //Retrieve the DescriptionType object
@@ -552,7 +525,7 @@ public class DescriptionTypeConvertTest {
      * Test if the decoding and convert of the minimal DescriptionTypeAttribute annotation into its java object is valid.
      */
     @Test
-    public void testMinimalDescriptionTypeAttributeConvert(){
+    public void testMinimalDescriptionTypeAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
             //Retrieve the DescriptionType object

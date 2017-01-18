@@ -53,18 +53,18 @@ import org.orbisgis.wpsservice.model.JaxbContainer;
  * @author Sylvain PALOMINOS
  */
 public class WpsServerGetProcessesTest {
-    WpsServer wpsServer;
+    private WpsServer wpsServer;
 
     /**
-     * Test the DataStore script DescribeProcess request.
+     * Test the JDBCTable script DescribeProcess request.
      */
     @Test
-    public void testDataStoreScript() throws JAXBException, IOException {
+    public void testJDBCTableScript() throws JAXBException, IOException {
         //Start the wpsService
         initWpsService();
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         //Build the DescribeProcess object
-        File describeProcessFile = new File(this.getClass().getResource("DataStoreDescribeProcess.xml").getFile());
+        File describeProcessFile = new File(this.getClass().getResource("JDBCTableDescribeProcess.xml").getFile());
         Object describeProcess = unmarshaller.unmarshal(describeProcessFile);
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
@@ -78,7 +78,7 @@ public class WpsServerGetProcessesTest {
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         Object resultObject = unmarshaller.unmarshal(resultXml);
-        File f = new File(this.getClass().getResource("DataStoreProcessOfferings.xml").getFile());
+        File f = new File(this.getClass().getResource("JDBCTableProcessOfferings.xml").getFile());
         Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
@@ -91,15 +91,15 @@ public class WpsServerGetProcessesTest {
     }
 
     /**
-     * Test the DataField script DescribeProcess request.
+     * Test the JDBCTableField script DescribeProcess request.
      */
     @Test
-    public void testDataFieldScript() throws JAXBException, IOException {
+    public void testJDBCTableFieldScript() throws JAXBException, IOException {
         //Start the wpsService
         initWpsService();
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         //Build the DescribeProcess object
-        File describeProcessFile = new File(this.getClass().getResource("DataFieldDescribeProcess.xml").getFile());
+        File describeProcessFile = new File(this.getClass().getResource("JDBCTableFieldDescribeProcess.xml").getFile());
         Object describeProcess = unmarshaller.unmarshal(describeProcessFile);
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
@@ -113,7 +113,7 @@ public class WpsServerGetProcessesTest {
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         Object resultObject = unmarshaller.unmarshal(resultXml);
-        File f = new File(this.getClass().getResource("DataFieldProcessOfferings.xml").getFile());
+        File f = new File(this.getClass().getResource("JDBCTableFieldProcessOfferings.xml").getFile());
         Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
@@ -125,15 +125,15 @@ public class WpsServerGetProcessesTest {
     }
 
     /**
-     * Test the DataField script DescribeProcess request.
+     * Test the JDBCTableField script DescribeProcess request.
      */
     @Test
-    public void testFieldValueScript() throws JAXBException, IOException {
+    public void testJDBCTableFieldValueScript() throws JAXBException, IOException {
         //Start the wpsService
         initWpsService();
         Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
         //Build the DescribeProcess object
-        File describeProcessFile = new File(this.getClass().getResource("FieldValueDescribeProcess.xml").getFile());
+        File describeProcessFile = new File(this.getClass().getResource("JDBCTableFieldValueDescribeProcess.xml").getFile());
         Object describeProcess = unmarshaller.unmarshal(describeProcessFile);
         //Marshall the DescribeProcess object into an OutputStream
         Marshaller marshaller = JaxbContainer.JAXBCONTEXT.createMarshaller();
@@ -147,7 +147,7 @@ public class WpsServerGetProcessesTest {
         InputStream resultXml = new ByteArrayInputStream(xml.toByteArray());
         //Unmarshall the result and check that the object is the same as the resource unmashalled xml.
         Object resultObject = unmarshaller.unmarshal(resultXml);
-        File f = new File(this.getClass().getResource("FieldValueProcessOfferings.xml").getFile());
+        File f = new File(this.getClass().getResource("JDBCTableFieldValueProcessOfferings.xml").getFile());
         Object resourceObject = unmarshaller.unmarshal(f);
 
         String message = "Error on unmarshalling the WpsService answer, the object is not the one expected.\n\n";
@@ -271,17 +271,17 @@ public class WpsServerGetProcessesTest {
             localWpsService.init();
             //Try to load the groovy scripts
             try {
-                URL url = this.getClass().getResource("DataStore.groovy");
+                URL url = this.getClass().getResource("JDBCTable.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
                     localWpsService.addLocalSource(f, null, true, "test");
                 }
-                url = this.getClass().getResource("DataField.groovy");
+                url = this.getClass().getResource("JDBCTableField.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
                     localWpsService.addLocalSource(f, null, true, "test");
                 }
-                url = this.getClass().getResource("FieldValue.groovy");
+                url = this.getClass().getResource("JDBCTableFieldValue.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
                     localWpsService.addLocalSource(f, null, true, "test");

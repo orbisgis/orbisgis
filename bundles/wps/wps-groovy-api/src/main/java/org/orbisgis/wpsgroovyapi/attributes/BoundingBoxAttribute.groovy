@@ -47,21 +47,23 @@ import java.lang.annotation.RetentionPolicy
  * analysis region.
  *
  * The following fields must be defined (mandatory) :
- *  - format : FormatAttribute[]
- *      Identifies a valid format for an input or output.
+ *  - defaultCRS : String
+ *      Default CRS of the BoundingBox. Should be a string with the pattern : authority:code, like EPSG:2000.
  *
  * The following fields can be defined (optional) :
- *  - supportedCRSList : SupportedCRSAttribute[]
- *      List of CRS supported by the BoundingBox data.
+ *  - supportedCRSList : String[]
+ *      List of CRS supported by the BoundingBox data without the default one. Should be a string with the pattern :
+ *      authority:code, like EPSG:2000.
  *
  * @author Sylvain PALOMINOS
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface BoundingBoxAttribute {
 
-    /** Identifies a valid format for an input or output. */
-    FormatAttribute[] format()
+    /** Default CRS of the BoundingBox. Should be a string with the pattern : authority:code, like EPSG:2000. */
+    String defaultCRS()
 
-    /** List of CRS supported by the BoundingBox data. */
-    SupportedCRSAttribute[] supportedCRSList()
+    /** List of CRS supported by the BoundingBox data without the default one. Should be a string with the pattern :
+     *  authority:code, like EPSG:2000. */
+    String[] supportedCRS() default []
 }

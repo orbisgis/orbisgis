@@ -55,9 +55,9 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _DataStore_QNAME = new QName("http://orbisgis.org", "DataStore");
-    private final static QName _DataField_QNAME = new QName("http://orbisgis.org", "DataField");
-    private final static QName _FieldValue_QNAME = new QName("http://orbisgis.org", "FieldValue");
+    private final static QName _JDBCTable_QNAME = new QName("http://orbisgis.org", "JDBCTable");
+    private final static QName _JDBCTableField_QNAME = new QName("http://orbisgis.org", "JDBCTableField");
+    private final static QName _JDBCTableFieldValue_QNAME = new QName("http://orbisgis.org", "JDBCTableFieldValue");
     private final static QName _Enumeration_QNAME = new QName("http://orbisgis.org", "Enumeration");
     private final static QName _GeometryData_QNAME = new QName("http://orbisgis.org", "Geometry");
     private final static QName _RawData_QNAME = new QName("http://orbisgis.org", "RawData");
@@ -72,58 +72,58 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DataStore }
+     * Create an instance of {@link JDBCTable }
      *
      */
-    public DataStore createDataStore() { return new DataStore(); }
+    public JDBCTable createJDBCTable() { return new JDBCTable(); }
 
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DataStore }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link JDBCTable }{@code >}}
      *
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
-            name="DataStore",
+            name="JDBCTable",
             substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
             substitutionHeadName="DataDescription")
-    public JAXBElement<DataStore> createDataStore(DataStore dataStore) {
-        return new JAXBElement<>(_DataStore_QNAME, DataStore.class, dataStore);
+    public JAXBElement<JDBCTable> createJDBCTable(JDBCTable JDBCTable) {
+        return new JAXBElement<>(_JDBCTable_QNAME, JDBCTable.class, JDBCTable);
     }
 
     /**
-     * Create an instance of {@link DataField }
+     * Create an instance of {@link JDBCTableField }
      *
      */
-    public DataField createDataField() { return new DataField(); }
+    public JDBCTableField createJDBCTableField() { return new JDBCTableField(); }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DataField }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link JDBCTableField }{@code >}}
      *
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
-            name="DataField",
+            name="JDBCTableField",
             substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
             substitutionHeadName="DataDescription")
-    public JAXBElement<DataField> createDataField(DataField dataField) {
-        return new JAXBElement<>(_DataField_QNAME, DataField.class, dataField);
+    public JAXBElement<JDBCTableField> createJDBCTableField(JDBCTableField jdbcTableField) {
+        return new JAXBElement<>(_JDBCTableField_QNAME, JDBCTableField.class, jdbcTableField);
     }
 
     /**
-     * Create an instance of {@link FieldValue }
+     * Create an instance of {@link JDBCTableFieldValue }
      *
      */
-    public FieldValue createFieldValue() { return new FieldValue(); }
+    public JDBCTableFieldValue createJDBCTableFieldValue() { return new JDBCTableFieldValue(); }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link FieldValue }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link JDBCTableFieldValue }{@code >}}
      *
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
-            name="FieldValue",
+            name="JDBCTableFieldValue",
             substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
             substitutionHeadName="DataDescription")
-    public JAXBElement<FieldValue> createFieldValue(FieldValue fieldValue) {
-        return new JAXBElement<>(_FieldValue_QNAME, FieldValue.class, fieldValue);
+    public JAXBElement<JDBCTableFieldValue> createJDBCTableFieldValue(JDBCTableFieldValue jdbcTableFieldValue) {
+        return new JAXBElement<>(_JDBCTableFieldValue_QNAME, JDBCTableFieldValue.class, jdbcTableFieldValue);
     }
 
     /**

@@ -46,26 +46,41 @@ import org.orbisgis.wpsgroovyapi.attributes.ProcessAttribute
  * its main method
  *
  * The following fields must be defined (mandatory) :
- *  - title : String
- *       Title of the process. Normally available for display to a human.
+ *  - title : String[]
+ *       Title of a process, input, and output. Normally available for display to a human. It is composed either a
+ *       unique title or a translated title, its language, another title, its language ...
+ *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en"]
  *
  * The following fields can be defined (optional) :
- *  - traducedTitles : LanguageString[]
- *      List of LanguageString containing the traduced titles.
- *  - resume : String
- *      Brief narrative description of the process. Normally available for display to a human.
- *  - traducedResumes : LanguageString[]
- *      List of LanguageString containing the traduced description.
- *  - keywords : String
- *      Array of keywords that characterize the process.
- *  - traducedKeywords : Keyword[]
- *      List of Keyword containing the keywords translations.
+ *  - description : String[]
+ *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is
+ *      composed either a unique description or a translated description, its language, another description, its language ...
+ *      i.e. description = "description" or description = ["descriptionFr", "fr", "descriptionEn", "en"]
+ *
+ *  - keywords : String[]
+ *      Array of keywords that characterize a process, its inputs, and outputs. Normally available for display to a
+ *      human. It is composed of a succession of two String : the human readable keyword list coma
+ *      separated and its language.
+ *      i.e. keywords = ["the keyword 1,the keyword 2", "en",
+ *                       "le mot clef 1, le mot clef 2", "fr"]
  *  - identifier : String
- *      Unambiguous identifier of the process. It should be a valid URI.
- *  - metadata : MetaData[]
- *      Reference to additional metadata about this item.
+ *      Unambiguous identifier of a process, input, and output. It should be a valid URI.
+ *
+ *  - metadata : String[]
+ *      Reference to additional metadata about this item. It is composed of a succession of three String : the metadata
+ *      role, the metadata title and the href, coma separated.
+ *      i.e. metadata = ["role1,title,href1",
+ *                       "role2,title,href2"]
  *  - language : String
- *      Language of the process title and abstract.
+ *      Language of the process.
+ *
+ *  - version : String
+ *      Version of the process.
+ *
+ *  - properties : String[]
+ *      Properties of the process.
+ *      This attribute is composed of an array of two coma separated string : the first one is the property name and
+ *      the second is the property value.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *

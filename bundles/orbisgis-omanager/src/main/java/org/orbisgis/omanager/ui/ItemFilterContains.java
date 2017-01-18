@@ -40,7 +40,7 @@ package org.orbisgis.omanager.ui;
 import java.util.regex.Pattern;
 
 /**
- * Filter for text field search.
+ * filter for text field search.
  * @author Nicolas Fortin
  */
 public class ItemFilterContains implements ItemFilter<BundleListModel> {

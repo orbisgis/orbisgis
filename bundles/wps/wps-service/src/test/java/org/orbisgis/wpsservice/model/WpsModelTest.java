@@ -54,71 +54,71 @@ import java.util.List;
  *@author Sylvain PALOMINOS
  */
 public class WpsModelTest {
-    /** Field containing the DataFieldAttribute annotation. */
-    @DataFieldAttribute(
-            variableReference = "data store title",
-            fieldTypes = {"GEOMETRY", "NUMBER"},
+    /** Field containing the JDBCTableFieldAttribute annotation. */
+    @JDBCTableFieldAttribute(
+            jdbcTableReference = "jdbcTable title",
+            dataTypes = {"GEOMETRY", "NUMBER"},
             excludedTypes = {"MULTILINESTRING", "LONG"},
             multiSelection = true
     )
-    public Object dataFieldInput;
+    public Object jdbcTableFieldInput;
 
     /**
-     * Test if the decoding and convert of the DataField annotation into its java object is valid.
+     * Test if the decoding and convert of the JDBCTableField annotation into its java object is valid.
      */
     @Test
-    public void testDataFieldAttributeConvert(){
+    public void testJDBCTableFieldAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
-            //Retrieve the DataField object
-            DataField datafield = null;
+            //Retrieve the JDBCTableField object
+            JDBCTableField jdbcTableField = null;
             //Inspect all the annotation of the field to get the DescriptionTypeAttribute one
-            Field dataFieldField = this.getClass().getDeclaredField("dataFieldInput");
-            for(Annotation annotation : dataFieldField.getDeclaredAnnotations()){
+            Field jdbcTableFieldField = this.getClass().getDeclaredField("jdbcTableFieldInput");
+            for(Annotation annotation : jdbcTableFieldField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
-                if(annotation instanceof DataFieldAttribute){
+                if(annotation instanceof JDBCTableFieldAttribute){
                     annotationFound = true;
-                    DataFieldAttribute descriptionTypeAnnotation = (DataFieldAttribute) annotation;
+                    JDBCTableFieldAttribute descriptionTypeAnnotation = (JDBCTableFieldAttribute) annotation;
                     Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
                     format.setDefault(true);
-                    datafield = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format,
-                            URI.create("datastore:uri"));
+                    jdbcTableField = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format,
+                            URI.create("jdbctable:uri"));
                 }
             }
 
             //If the annotation hasn't been found, the test has failed.
-            if(!annotationFound || datafield == null){
-                Assert.fail("Unable to get the annotation '@DataFieldAttribute' from the field.");
+            if(!annotationFound || jdbcTableField == null){
+                Assert.fail("Unable to get the annotation '@JDBCTableFieldAttribute' from the field.");
             }
 
-            ////////////////////////
-            // Test the DataField //
-            ////////////////////////
+            /////////////////////////////
+            // Test the JDBCTableField //
+            /////////////////////////////
 
-            String errorMessage = "Error, the DataField 'dataStoreUri' field should be 'datastore:uri' instead of "+
-                    datafield.getDataStoreIdentifier().toString();
-            Assert.assertEquals(errorMessage, URI.create("datastore:uri"), datafield.getDataStoreIdentifier());
+            String errorMessage = "Error, the JDBCTableField 'jdbcTableUri' field should be 'jdbctable:uri' instead of "+
+                    jdbcTableField.getJDBCTableIdentifier().toString();
+            Assert.assertEquals(errorMessage, URI.create("jdbctable:uri"), jdbcTableField.getJDBCTableIdentifier());
 
-            errorMessage = "Error, the DataField 'isMultiSelection' field should be 'true' instead of "+
-                    datafield.isMultiSelection();
-            Assert.assertTrue(errorMessage, datafield.isMultiSelection());
+            errorMessage = "Error, the JDBCTableField 'isMultiSelection' field should be 'true' instead of "+
+                    jdbcTableField.isMultiSelection();
+            Assert.assertTrue(errorMessage, jdbcTableField.isMultiSelection());
 
-            errorMessage = "Error, the DataField 'isSourceModified' field should be 'true' instead of "+
-                    datafield.isSourceModified();
-            Assert.assertTrue(errorMessage, datafield.isMultiSelection());
+            errorMessage = "Error, the JDBCTableField 'isSourceModified' field should be 'true' instead of "+
+                    jdbcTableField.isSourceModified();
+            Assert.assertTrue(errorMessage, jdbcTableField.isMultiSelection());
 
-            errorMessage = "Error, the DataField 'getExcludedTypeList' field should contain two value : " +
+            errorMessage = "Error, the JDBCTableField 'getExcludedTypeList' field should contain two value : " +
                     "'MULTILINESTRING' and 'LONG'.";
-            boolean condition = datafield.getExcludedTypeList().size() == 2 &&
-                    datafield.getExcludedTypeList().contains(DataType.MULTILINESTRING) &&
-                    datafield.getExcludedTypeList().contains(DataType.LONG);
+            boolean condition = jdbcTableField.getExcludedTypeList().size() == 2 &&
+                    jdbcTableField.getExcludedTypeList().contains(DataType.MULTILINESTRING) &&
+                    jdbcTableField.getExcludedTypeList().contains(DataType.LONG);
             Assert.assertTrue(errorMessage, condition);
 
-            errorMessage = "Error, the DataField 'getFieldTypeList' field should contain two value : " +
+            errorMessage = "Error, the JDBCTableField 'getDataTypeList' field should contain two value : " +
                     "'GEOMETRY' and 'NUMBER'.";
-            condition = datafield.getFieldTypeList().size() == 2 &&
-                    datafield.getFieldTypeList().contains(DataType.GEOMETRY) &&
-                    datafield.getFieldTypeList().contains(DataType.NUMBER);
+            condition = jdbcTableField.getDataTypeList().size() == 2 &&
+                    jdbcTableField.getDataTypeList().contains(DataType.GEOMETRY) &&
+                    jdbcTableField.getDataTypeList().contains(DataType.NUMBER);
             Assert.assertTrue(errorMessage, condition);
 
 
@@ -131,57 +131,57 @@ public class WpsModelTest {
 
 
 
-    /** Field containing the DataStoreAttribute annotation. */
-    @DataStoreAttribute(
-            dataStoreTypes = {"GEOMETRY", "NUMBER"},
+    /** Field containing the JDBCTableAttribute annotation. */
+    @JDBCTableAttribute(
+            dataTypes = {"GEOMETRY", "NUMBER"},
             excludedTypes = {"MULTILINESTRING", "LONG"}
     )
-    public Object dataStoreInput;
+    public Object jdbcTableInput;
 
     /**
-     * Test if the decoding and convert of the DataStore annotation into its java object is valid.
+     * Test if the decoding and convert of the JDBCTable annotation into its java object is valid.
      */
     @Test
-    public void testDataStoreAttributeConvert(){
+    public void testJDBCTableAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
-            //Retrieve the DataField object
-            DataStore dataStore = null;
+            //Retrieve the JDBCTable object
+            JDBCTable jdbcTable = null;
             //Inspect all the annotation of the field to get the DescriptionTypeAttribute one
-            Field dataStoreField = this.getClass().getDeclaredField("dataStoreInput");
-            for(Annotation annotation : dataStoreField.getDeclaredAnnotations()){
+            Field jdbcTableField = this.getClass().getDeclaredField("jdbcTableInput");
+            for(Annotation annotation : jdbcTableField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
-                if(annotation instanceof DataStoreAttribute){
+                if(annotation instanceof JDBCTableAttribute){
                     annotationFound = true;
-                    DataStoreAttribute descriptionTypeAnnotation = (DataStoreAttribute) annotation;
+                    JDBCTableAttribute descriptionTypeAnnotation = (JDBCTableAttribute) annotation;
                     List<Format> format = new ArrayList<>();
                     format.add(FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION));
                     format.get(0).setDefault(true);
-                    dataStore = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format);
+                    jdbcTable = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format);
                 }
             }
 
             //If the annotation hasn't been found, the test has failed.
-            if(!annotationFound || dataStore == null){
-                Assert.fail("Unable to get the annotation '@DataFieldAttribute' from the field.");
+            if(!annotationFound || jdbcTable == null){
+                Assert.fail("Unable to get the annotation '@JDBCTableAttribute' from the field.");
             }
 
             ////////////////////////
-            // Test the DataStore //
+            // Test the JDBCTable //
             ////////////////////////
 
-            String errorMessage = "Error, the dataStore 'excludedTypeList' field should contain two value : " +
+            String errorMessage = "Error, the JDBCTable 'excludedTypeList' field should contain two value : " +
                     "'MULTILINESTRING' and 'LONG'.";
-            boolean condition = dataStore.getExcludedTypeList().size() == 2 &&
-                    dataStore.getExcludedTypeList().contains(DataType.MULTILINESTRING) &&
-                    dataStore.getExcludedTypeList().contains(DataType.LONG);
+            boolean condition = jdbcTable.getExcludedTypeList().size() == 2 &&
+                    jdbcTable.getExcludedTypeList().contains(DataType.MULTILINESTRING) &&
+                    jdbcTable.getExcludedTypeList().contains(DataType.LONG);
             Assert.assertTrue(errorMessage, condition);
 
-            errorMessage = "Error, the dataStore 'dataStoreTypeList' field should contain two value : " +
+            errorMessage = "Error, the JDBCTable 'dataTypeList' field should contain two value : " +
                     "'GEOMETRY' and 'NUMBER'.";
-            condition = dataStore.getDataStoreTypeList().size() == 2 &&
-                    dataStore.getDataStoreTypeList().contains(DataType.GEOMETRY) &&
-                    dataStore.getDataStoreTypeList().contains(DataType.NUMBER);
+            condition = jdbcTable.getDataTypeList().size() == 2 &&
+                    jdbcTable.getDataTypeList().contains(DataType.GEOMETRY) &&
+                    jdbcTable.getDataTypeList().contains(DataType.NUMBER);
             Assert.assertTrue(errorMessage, condition);
 
 
@@ -198,17 +198,16 @@ public class WpsModelTest {
     @EnumerationAttribute(
             multiSelection = true,
             isEditable = true,
-            names = {"name1, name2, name3"},
-            selectedValues = {"value1, value2"},
+            names = {"name, name, name"},
             values = {"value1, value2, value3"}
     )
-    public Object enumerationInput;
+    public String[] enumerationInput = {"value1, value2"};
 
     /**
      * Test if the decoding and convert of the Enumeration annotation into its java object is valid.
      */
     @Test
-    public void testEnumerationAttributeConvert(){
+    public void testEnumerationAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
             //Retrieve the Enumeration object
@@ -232,7 +231,7 @@ public class WpsModelTest {
             }
 
             ////////////////////////
-            // Test the DataField //
+            // Test the JDBCTableField //
             ////////////////////////
 
             String errorMessage = "Error, the enumeration 'isMultiSelection' field should be 'true' instead of "+
@@ -247,13 +246,26 @@ public class WpsModelTest {
                     "'value1', 'value2' and 'value3'.";
             Assert.assertArrayEquals(errorMessage, enumeration.getValues(), new String[]{"value1, value2, value3"});
 
-            errorMessage = "Error, the enumeration 'valuesNames' field should contain two value : " +
-                    "'name1', 'name2' and 'name3'.";
-            Assert.assertArrayEquals(errorMessage, enumeration.getValuesNames(), new String[]{"name1, name2, name3"});
+            boolean valid = true;
+            errorMessage = "Error, the enumeration 'valuesNames' field should contain three value : " +
+                    "'name', 'name' and 'name'.";
+            if(enumeration.getValuesNames().length == 3) {
+                for (TranslatableString translatableString : enumeration.getValuesNames()) {
+                    if(translatableString.getStrings().length != 1 ||
+                            !translatableString.getStrings()[0].getValue().equals("name")){
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+            else{
+                valid = false;
+            }
+            Assert.assertTrue(errorMessage, valid);
 
-            errorMessage = "Error, the enumeration 'defaultValues' field should contain three value : " +
+            /*errorMessage = "Error, the enumeration 'defaultValues' field should contain two value : " +
                     "'value1' and 'value2'.";
-            Assert.assertArrayEquals(errorMessage, enumeration.getDefaultValues(), new String[]{"value1, value2"});
+            Assert.assertArrayEquals(errorMessage, enumeration.getDefaultValues(), new String[]{"value1, value2"});*/
 
 
         } catch (NoSuchFieldException e) {
@@ -265,60 +277,60 @@ public class WpsModelTest {
 
 
 
-    /** Field containing the FieldValueAttribute annotation. */
-    @FieldValueAttribute(
+    /** Field containing the JDBCTableFieldValueAttribute annotation. */
+    @JDBCTableFieldValueAttribute(
             multiSelection = true,
-            variableReference = "dataFieldTitle"
+            jdbcTableFieldReference = "jdbcTableFieldTitle"
     )
-    public Object fieldValueInput;
+    public Object jdbcTableFieldValueInput;
 
     /**
-     * Test if the decoding and convert of the FieldValue annotation into its java object is valid.
+     * Test if the decoding and convert of the JDBCTableFieldValueAttribute annotation into its java object is valid.
      */
     @Test
-    public void testFieldValueAttributeConvert(){
+    public void testFieldValueAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
-            //Retrieve the FieldValue object
-            FieldValue fieldValue = null;
-            //Inspect all the annotation of the field to get the FieldValueAttribute one
-            Field fieldValueField = this.getClass().getDeclaredField("fieldValueInput");
-            for(Annotation annotation : fieldValueField.getDeclaredAnnotations()){
+            //Retrieve the JDBCTableFieldValue object
+            JDBCTableFieldValue jdbcTableFieldValue = null;
+            //Inspect all the annotation of the field to get the JDBCTableFieldValueAttribute one
+            Field jdbcTableFieldValueField = this.getClass().getDeclaredField("jdbcTableFieldValueInput");
+            for(Annotation annotation : jdbcTableFieldValueField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
-                if(annotation instanceof FieldValueAttribute){
+                if(annotation instanceof JDBCTableFieldValueAttribute){
                     annotationFound = true;
-                    FieldValueAttribute descriptionTypeAnnotation = (FieldValueAttribute) annotation;
+                    JDBCTableFieldValueAttribute descriptionTypeAnnotation = (JDBCTableFieldValueAttribute) annotation;
                     Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
                     format.setDefault(true);
-                    fieldValue = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format,
-                            URI.create("uri:datafield"));
+                    jdbcTableFieldValue = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format,
+                            URI.create("uri:jdbctablefieldvalue"));
                 }
             }
 
             //If the annotation hasn't been found, the test has failed.
-            if(!annotationFound || fieldValue == null){
-                Assert.fail("Unable to get the annotation '@FieldValueAttribute' from the field.");
+            if(!annotationFound || jdbcTableFieldValue == null){
+                Assert.fail("Unable to get the annotation '@JDBCTableFieldValueAttribute' from the field.");
             }
 
-            /////////////////////////
-            // Test the FieldValue //
-            /////////////////////////
+            //////////////////////////////////
+            // Test the JDBCTableFieldValue //
+            //////////////////////////////////
 
-            String errorMessage = "Error, the fieldValue 'isDataFieldModified' field should be 'true' instead of "+
-                    fieldValue.isDataFieldModified();
-            Assert.assertTrue(errorMessage, fieldValue.isDataFieldModified());
+            String errorMessage = "Error, the JDBCTableFieldValue 'isJDBCTableFieldModified' field should be 'true' instead of "+
+                    jdbcTableFieldValue.isJDBCTableFieldModified();
+            Assert.assertTrue(errorMessage, jdbcTableFieldValue.isJDBCTableFieldModified());
 
-            errorMessage = "Error, the fieldValue 'isDataStoreModified' field should be 'true' instead of "+
-                    fieldValue.isDataStoreModified();
-            Assert.assertTrue(errorMessage, fieldValue.isDataStoreModified());
+            errorMessage = "Error, the JDBCTableFieldValue 'isJDBCTableModified' field should be 'true' instead of "+
+                    jdbcTableFieldValue.isJDBCTableModified();
+            Assert.assertTrue(errorMessage, jdbcTableFieldValue.isJDBCTableModified());
 
-            errorMessage = "Error, the fieldValue 'multiSelection' field should be 'true' instead of "+
-                    fieldValue.getMultiSelection();
-            Assert.assertTrue(errorMessage, fieldValue.isDataStoreModified());
+            errorMessage = "Error, the JDBCTableFieldValue 'multiSelection' field should be 'true' instead of "+
+                    jdbcTableFieldValue.isMultiSelection();
+            Assert.assertTrue(errorMessage, jdbcTableFieldValue.isJDBCTableModified());
 
-            errorMessage = "Error, the fieldValue 'getDataFieldIdentifier' field should be " +
-                    URI.create("uri:datafield");
-            Assert.assertEquals(errorMessage, fieldValue.getDataFieldIdentifier(), URI.create("uri:datafield"));
+            errorMessage = "Error, the JDBCTableFieldValue 'getJDBCTableFieldIdentifier' field should be " +
+                    URI.create("uri:jdbctablefieldvalue");
+            Assert.assertEquals(errorMessage, jdbcTableFieldValue.getJDBCTableFieldIdentifier(), URI.create("uri:jdbctablefieldvalue"));
 
 
         } catch (NoSuchFieldException e) {
@@ -342,7 +354,7 @@ public class WpsModelTest {
      * Test if the decoding and convert of the Geometry annotation into its java object is valid.
      */
     @Test
-    public void testGeometryAttributeConvert(){
+    public void testGeometryAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
             //Retrieve the Geometry object
@@ -409,14 +421,14 @@ public class WpsModelTest {
      * Test if the decoding and convert of the RawData annotation into its java object is valid.
      */
     @Test
-    public void testRawDataAttributeConvert(){
+    public void testRawDataAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
             //Retrieve the RawData object
             RawData rawData = null;
             //Inspect all the annotation of the field to get the RawDataAttribute one
-            Field rawDataField = this.getClass().getDeclaredField("rawDataInput");
-            for(Annotation annotation : rawDataField.getDeclaredAnnotations()){
+            Field rawjdbcTableField = this.getClass().getDeclaredField("rawDataInput");
+            for(Annotation annotation : rawjdbcTableField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
                 if(annotation instanceof RawDataAttribute){
                     annotationFound = true;

@@ -38,7 +38,7 @@ package org.orbisgis.wpsservicescripts;
 
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.LocalWpsServer;
-import org.orbisgis.wpsclient.WpsClient;
+import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -114,7 +114,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
      * @param wpsClient
      */
     @Reference
-    public void setWpsClient(WpsClient wpsClient) {
+    public void setInternalWpsClient(InternalWpsClient wpsClient) {
         this.wpsClient = wpsClient;
     }
 
@@ -122,7 +122,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
      * OSGI method used to remove from the plugin the WpsClient. (Be careful before any modification)
      * @param wpsClient
      */
-    public void unsetWpsClient(WpsClient wpsClient) {
+    public void unsetInternalWpsClient(InternalWpsClient wpsClient) {
         this.wpsClient = null;
     }
 
@@ -177,6 +177,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
             customLoadScript("scripts/Table/describeColumns.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
             customLoadScript("scripts/Table/insertValues.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
             customLoadScript("scripts/Table/joinTables.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
+            customLoadScript("scripts/Table/deleteColumns.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
             customLoadScript("scripts/Vector/Convert/extractCenter.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Convert"));
             customLoadScript("scripts/Vector/Create/createGridOfPoints.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Create"));
             customLoadScript("scripts/Vector/Create/createGridOfPolygons.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Create"));
