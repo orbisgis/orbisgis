@@ -41,6 +41,7 @@ import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
 import org.orbisgis.corejdbc.DataSourceService;
+import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.orbisgis.wpsservice.controller.execution.ProcessWorker;
@@ -49,6 +50,8 @@ import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.controller.utils.Job;
 import org.orbisgis.wpsservice.model.JaxbContainer;
 import org.orbisgis.wpsservice.utils.ProcessTranslator;
+import org.orbisgis.wpsservice.utils.WpsServerProperties;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -76,6 +79,8 @@ import java.util.concurrent.ExecutorService;
  */
 public class WpsServerImpl implements WpsServer {
 
+    private static final String SERVER_PROPERTIES = "wpsServer.properties";
+    private static final String BASIC_SERVER_PROPERTIES = "basicWpsServer.properties";
     /** Execution options */
     private static final String OPTION_SYNC_EXEC = "sync-execute";
     private static final String OPTION_ASYNC_EXEC = "async-execute";
@@ -119,8 +124,13 @@ public class WpsServerImpl implements WpsServer {
     protected boolean multiThreaded = true;
     private boolean processRunning = false;
     private LinkedList<ProcessWorker> workerFIFO;
+    /** Properties of the wps server */
+    private WpsServerProperties wpsServerProperties;
 
     private enum SectionName {ServiceIdentification, ServiceProvider, OperationMetadata, Contents, Languages, All}
+
+
+
 
 
     /**********************************************/
@@ -150,6 +160,37 @@ public class WpsServerImpl implements WpsServer {
      * Generates the basic WPSCapabilitiesType of the WpsService from a resource file
      */
     private void initWpsService(){
+        if(coreWorkspace != null) {
+            Properties wpsServerProperties = new Properties();
+            //Load the property file
+            File propertiesFile = new File(coreWorkspace.getWorkspaceFolder() + File.separator + SERVER_PROPERTIES);
+            if (propertiesFile.exists()) {
+                try {
+                    wpsServerProperties.load(new FileInputStream(propertiesFile));
+                } catch (IOException e) {
+                    LOGGER.warn(I18N.tr("Unable to restore previous configuration of the ToolBox, will uses the default" +
+                            " one."));
+                    URL basicPropertiesUrl = this.getClass().getClassLoader().getResource(BASIC_SERVER_PROPERTIES);
+                    if(basicPropertiesUrl != null) {
+                        propertiesFile = new File(basicPropertiesUrl.getFile());
+                        try {
+                            wpsServerProperties.load(new FileInputStream(propertiesFile));
+                        } catch (IOException e1) {
+                            LOGGER.warn(I18N.tr("Unable to load the basic configuration of the ToolBox."));
+                            wpsServerProperties = new Properties();
+                        }
+                    }
+                    else {
+                        LOGGER.warn(I18N.tr("Unable to load the basic configuration of the ToolBox."));
+                        wpsServerProperties = new Properties();
+                    }
+                }
+            }
+        }
+        else{
+            LOGGER.warn("Warning, no CoreWorkspace found. Unable to load the previous state.");
+        }
+        /*
         //Get the basic WpsCapabilitiesType from the WpsServiceBasicCapabilities.xml file
         WPSCapabilitiesType capabilitiesType = null;
         try {
@@ -201,7 +242,7 @@ public class WpsServerImpl implements WpsServer {
 
         //Generate the jobControlOption list
         jobControlOptions = new ArrayList<>();
-        jobControlOptions.add(OPTION_ASYNC_EXEC);
+        jobControlOptions.add(OPTION_ASYNC_EXEC);*/
     }
 
     /*******************************************************************/
@@ -702,5 +743,14 @@ public class WpsServerImpl implements WpsServer {
             LOGGER.error(I18N.tr("Unable to generate the XMLGregorianCalendar object.\nCause : {0}.", e.getMessage()));
         }
         return date;
+    }
+
+    private String getServerProperty(String propertyName){
+        if(wpsServerProperties.containsKey(propertyName)){
+            return wpsServerProperties.get(propertyName).toString();
+        }
+        else{
+            return null;
+        }
     }
 }
