@@ -204,6 +204,7 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
         return tableReference;
     }
 
+    @Override
     public boolean isEditing() {
         return editing;
     }
@@ -211,6 +212,7 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
     /**
      * @param editing New state of this editable
      */
+    @Override
     public void setEditing(boolean editing) {
         boolean oldValue = this.editing;
         this.editing = editing;

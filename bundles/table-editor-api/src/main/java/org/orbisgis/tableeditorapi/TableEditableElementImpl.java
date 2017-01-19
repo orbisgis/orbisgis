@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.tablegui.impl;
+package org.orbisgis.tableeditorapi;
 
 import java.util.Collections;
 import java.util.Set;
@@ -43,7 +43,6 @@ import java.util.SortedSet;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.editorjdbc.EditableSourceImpl;
-import org.orbisgis.tablegui.api.TableEditableElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -61,6 +60,7 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
         // Properties
         protected LongUnion selectedGeometries;
         private final I18n i18n = I18nFactory.getI18n(TableEditableElementImpl.class);
+        private boolean isFiltered;
 
         /**
          * Constructor
@@ -104,5 +104,20 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
         @Override
         public String getTypeId() {
                 return TYPE_ID;
+        }
+
+        @Override
+        public boolean isFiltered() {
+                return isFiltered;
+        }
+
+        @Override
+        public void setFiltered(boolean isFiltered) {
+            // Can filter only if there is selected geometries
+            if(isFiltered || !selectedGeometries.isEmpty()) {
+                boolean oldValue = this.isFiltered;
+                this.isFiltered = isFiltered;
+                propertyChangeSupport.firePropertyChange(PROP_FILTERED, oldValue, this.isFiltered);
+            }
         }
 }

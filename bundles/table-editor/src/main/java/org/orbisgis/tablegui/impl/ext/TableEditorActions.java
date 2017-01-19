@@ -45,21 +45,22 @@ import org.orbisgis.sif.components.actions.ActionFactoryService;
  */
 public interface TableEditorActions extends ActionFactoryService<SourceTable> {
     //LGROUP_EDITION
-    public static final String A_EDITION = "A_EDITION";
-    public static final String A_SAVE = "A_SAVE";
-    public static final String A_UNDO = "A_UNDO";
-    public static final String A_REDO = "A_REDO";
-    public static final String A_CANCEL = "A_CANCEL";
+    String A_EDITION = "A_EDITION";
+    String A_SAVE = "A_SAVE";
+    String A_UNDO = "A_UNDO";
+    String A_REDO = "A_REDO";
+    String A_CANCEL = "A_CANCEL";
     //LGROUP_MODIFICATION_GROUP
-    public static final String A_ADD_FIELD = "A_ADD_FIELD";
-    public static final String A_ADD_ROW = "A_ADD_ROW";
-    public static final String A_REMOVE_ROW = "A_REMOVE_ROW";
+    String A_ADD_FIELD = "A_ADD_FIELD";
+    String A_ADD_ROW = "A_ADD_ROW";
+    String A_REMOVE_ROW = "A_REMOVE_ROW";
     //GROUP READ
-    public static final String A_REFRESH = "A_REFRESH";
-    public static final String A_PREVIOUS_SELECTION = "A_PREVIOUS_SELECTION";
-    public static final String A_NEXT_SELECTION = "A_NEXT_SELECTION";
+    String A_REFRESH = "A_REFRESH";
+    String A_PREVIOUS_SELECTION = "A_PREVIOUS_SELECTION";
+    String A_NEXT_SELECTION = "A_NEXT_SELECTION";
 
-    public static final String LGROUP_READ = "LGROUP_READ";
-    public static final String LGROUP_EDITION = "LGROUP_EDITION";
-    public static final String LGROUP_MODIFICATION_GROUP = "LGROUP_MODIFICATION_GROUP";
+    String LGROUP_READ = "LGROUP_READ";
+    String LGROUP_EDITION = "LGROUP_EDITION";
+    String LGROUP_MODIFICATION_GROUP = "LGROUP_MODIFICATION_GROUP";
+
 }
