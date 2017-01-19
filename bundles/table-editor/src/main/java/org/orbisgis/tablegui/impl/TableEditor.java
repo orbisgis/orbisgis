@@ -111,7 +111,6 @@ import org.orbisgis.tablegui.impl.jobs.ComputeFieldStatistics;
 import org.orbisgis.tablegui.impl.jobs.OptimalWidthJob;
 import org.orbisgis.tablegui.impl.jobs.SearchJob;
 import org.orbisgis.wpsclient.api.InternalWpsClient;
-import org.orbisgis.wpsclient.WpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -137,8 +136,6 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         // Property selection change Event trigered by TableEditableElement
         // is ignored if onUpdateEditableSelection is true
         private AtomicBoolean onUpdateEditableSelection = new AtomicBoolean(false);
-        //Property filter is activate or not
-        private AtomicBoolean onFiltered = new AtomicBoolean(false);
         private AtomicBoolean filterRunning = new AtomicBoolean(false);
         private FilterFactoryManager<TableSelectionFilter,DefaultActiveFilter> filterManager =
                 new FilterFactoryManager<>();
@@ -226,7 +223,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         EventHandler.create(ActionListener.class, this, "onMenuRefresh"))
                         .setLogicalGroup(TableEditorActions.LGROUP_READ));
 
-                actions.add(new ActionFilteredRow(tableEditableElement, this));
+                actions.add(new ActionFilteredRow(tableEditableElement));
 
                 actions.add(new DefaultAction(TableEditorActions.A_PREVIOUS_SELECTION, I18N.tr("Previous selection"),
                         I18N.tr("Go to previous selected row"),TableEditorIcon.getIcon("selection-previous"),
@@ -262,9 +259,6 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     try {
                             SortedSet<Integer> modelRows = tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement.getSelection());
                             setRowSelection(modelRows, -1);
-                            if (tableEditableElement.isFiltered()) {
-                            tableSorter.setRowsFilter( getTableModelSelection(0));
-                        }
                             if (!modelRows.isEmpty()) {
                                 // Scroll to first selection
                                 scrollToRow(modelRows.first() - 1);
@@ -282,15 +276,11 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
          * The rows have been filtered
          */
         public void onFilterChange(){
-            if (!onFiltered.getAndSet(true)) {
+            if(tableEditableElement.isFiltered()) {
                 onMenuFilterRows();
-                onFiltered.set(true);
-            }
-            else{
+            } else {
                 onMenuClearFilter();
-                onFiltered.set(false);
             }
-
         }
 
         /**
@@ -606,6 +596,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
          */
         public void onMenuClearFilter() {
                 tableSorter.setRowsFilter(null);
+                tableEditableElement.setFiltered(false);
         }
         /**
          * Invert the current table selection
@@ -854,7 +845,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
         @Override
         public boolean match(EditableElement editableElement) {
-                return true;
+           return editableElement instanceof MapElement || editableElement instanceof TableEditableElement;
         }
 
         /**
@@ -1351,6 +1342,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 List<String> columnNames = new ArrayList<>();
                 try {
                     try {
+                        if(!table.isOpen()) {
+                            table.open(getProgressMonitor());
+                        }
                         ResultSetMetaData meta = table.getRowSet().getMetaData();
                         for (int col = 1; col < meta.getColumnCount(); col++) {
                             columnNames.add(meta.getColumnName(col));

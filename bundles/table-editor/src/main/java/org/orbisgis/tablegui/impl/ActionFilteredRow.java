@@ -39,12 +39,14 @@ package org.orbisgis.tablegui.impl;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractAction;
-import static javax.swing.Action.NAME;
-import static javax.swing.Action.SMALL_ICON;
+
+import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tableeditorapi.TableEditableElementImpl;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
+import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -56,18 +58,23 @@ public class ActionFilteredRow extends AbstractAction{
 
     private final TableEditableElement tableEditableElement;
     private final I18n I18N = I18nFactory.getI18n(ActionFilteredRow.class);
-    private final TableEditor tableEditor;
     
     /**
      * Constructor
-     * @param editable Editable instance
+     * @param tableEditableElement Editable instance
      */
-    public ActionFilteredRow(TableEditableElement tableEditableElement, TableEditor tableEditor) {
+    public ActionFilteredRow(TableEditableElement tableEditableElement) {
         this.tableEditableElement = tableEditableElement;
-        this.tableEditor=tableEditor;
         changeLabelAndIcon();
         tableEditableElement.addPropertyChangeListener(TableEditableElementImpl.PROP_FILTERED,
                 EventHandler.create(PropertyChangeListener.class,this,"changeLabelAndIcon"));
+        tableEditableElement.addPropertyChangeListener(TableEditableElementImpl.PROP_SELECTION,
+                EventHandler.create(PropertyChangeListener.class,this,"changeSelection"));
+    }
+
+    public void changeSelection() {
+       setEnabled(tableEditableElement.isFiltered() | !tableEditableElement.getSelection().isEmpty());
+       changeLabelAndIcon();
     }
 
     /**
@@ -86,13 +93,7 @@ public class ActionFilteredRow extends AbstractAction{
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        if (tableEditableElement.isFiltered()) {
-            tableEditor.onMenuClearFilter();
-            tableEditableElement.setFiltered(false);
-        } else {
-            tableEditor.onMenuFilterRows();
-            tableEditableElement.setFiltered(true);
-        }
+        tableEditableElement.setFiltered(!tableEditableElement.isFiltered());
     }
     
 }

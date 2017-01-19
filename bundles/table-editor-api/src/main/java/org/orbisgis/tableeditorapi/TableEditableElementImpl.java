@@ -113,8 +113,11 @@ public class TableEditableElementImpl extends EditableSourceImpl implements Tabl
 
         @Override
         public void setFiltered(boolean isFiltered) {
+            // Can filter only if there is selected geometries
+            if(isFiltered || !selectedGeometries.isEmpty()) {
                 boolean oldValue = this.isFiltered;
                 this.isFiltered = isFiltered;
                 propertyChangeSupport.firePropertyChange(PROP_FILTERED, oldValue, this.isFiltered);
+            }
         }
 }
