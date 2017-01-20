@@ -36,10 +36,21 @@
  */
 package org.orbisgis.wpsservice.utils;
 
+import net.opengis.ows._2.CodeType;
+import net.opengis.ows._2.KeywordsType;
+import net.opengis.ows._2.LanguageStringType;
+import net.opengis.ows._2.ServiceIdentification;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
-import java.util.List;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Properties;
 
 /**
@@ -51,8 +62,13 @@ public class WpsServerProperties {
 
     /** CoreWorkspace of OrbisGIS */
     private CoreWorkspace coreWorkspace;
+    private static final Logger LOGGER = LoggerFactory.getLogger(WpsServerProperties.class);
+    private static final I18n I18N = I18nFactory.getI18n(WpsServerProperties.class);
+    private static final String SERVER_PROPERTIES = "wpsServer.properties";
+    private static final String BASIC_SERVER_PROPERTIES = "basicWpsServer.properties";
 
-    private Properties properties;
+    public GlobalProperties GLOBAL_PROPERTIES;
+    public ServiceIdentificationProperties SERVICE_IDENTIFICATION_PROPERTIES;
 
     @Reference
     public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
@@ -63,62 +79,155 @@ public class WpsServerProperties {
     }
 
     public WpsServerProperties(){
+        if(coreWorkspace != null) {
+            Properties wpsProperties = new Properties();
+            //Load the property file
+            File propertiesFile = new File(coreWorkspace.getWorkspaceFolder() + File.separator + SERVER_PROPERTIES);
+            if (propertiesFile.exists()) {
+                try {
+                    wpsProperties.load(new FileInputStream(propertiesFile));
+                } catch (IOException e) {
+                    LOGGER.warn(I18N.tr("Unable to restore the wps properties."));
+                    wpsProperties = new Properties();
+                }
+            }
+            try {
+                GLOBAL_PROPERTIES = new GlobalProperties(wpsProperties).;
+            } catch (Exception e) {
+                LOGGER.error(I18N.tr("Unable to load the server configuration.\nCause : {0}\nLoading the default configuration.", e.getMessage()));
 
+                URL url = this.getClass().getClassLoader().getResource(BASIC_SERVER_PROPERTIES);
+                if(url == null){
+                    LOGGER.error(I18N.tr("Unable to find the basic server properties file."));
+                }
+                else {
+                    Properties properties = new Properties();
+                    try {
+                        GLOBAL_PROPERTIES = new GlobalProperties(properties);
+                    } catch (Exception ex) {
+                        LOGGER.error(I18N.tr("Unable to load the server configuration.\nCause : {0}\nLoading the default configuration.", ex.getMessage()));
+                        GLOBAL_PROPERTIES = null;
+                    }
+                }
+            }
+        }
+        else{
+            LOGGER.warn("Warning, no CoreWorkspace found. Unable to load the previous state.");
+        }
     }
 
-    public static final String SERVICE = "SERVICE";
-    public static final String SERVER_VERSION = "SERVER_VERSION";
-    public static final String ACCEPTED_VERSIONS = "ACCEPTED_VERSIONS";
-    public static final String ACCEPTED_LANGUAGES = "ACCEPTED_LANGUAGES";
-    public static final String ACCEPTED_FORMATS = "ACCEPTED_FORMATS";
-    public static final String SECTIONS = "SECTIONS";
-    public static final String SERVICE_TYPE = "SERVICE_TYPE";
-    public static final String SERVICE_TYPE_VERSION = "SERVICE_TYPE_VERSION";
-    public static final String TITLE = "TITLE";
-    public static final String ABSTRACT = "ABSTRACT";
-    public static final String KEYWORDS = "KEYWORDS";
-    public static final String FEES = "FEES";
-    public static final String ACCESS_CONSTRAINTS = "ACCESS_CONSTRAINTS";
-    public static final String PROVIDER_NAME = "PROVIDER_NAME";
-    public static final String PROVIDER_SITE = "PROVIDER_SITE";
-    public static final String SERVICE_CONTACT = "SERVICE_CONTACT";
 
-    public boolean match(String property, Object o){
-        switch(property){
-            case SERVICE:
-            case SERVER_VERSION:
-                return o.equals(properties.getProperty(property));
-            case ACCEPTED_VERSIONS:
-            case ACCEPTED_LANGUAGES:
-            case ACCEPTED_FORMATS:
-                String[] splitProperty = property.split(",");
-                if(o instanceof List){
+    /** Global properties of the server */
+    public class GlobalProperties{
+        /** Service provided by the server, WPS by default */
+        public final String SERVICE;
+        /** Version of the server. */
+        public final String SERVER_VERSION;
+        /** Supported version of the WPS (1.0.0, 2.0.0 ...). */
+        public final String[] SUPPORTED_VERSIONS;
+        /** Default languages. */
+        public final String DEFAULT_LANGUAGE;
+        /** Supported languages. */
+        public final String[] SUPPORTED_LANGUAGES;
+        /** Supported format for the communication with the client. */
+        public final String[] SUPPORTED_FORMATS;
+        /** Default languages. */
+        public final String JOB_CONTROL_OPTIONS;
 
-                }
-                break;
-            case SECTIONS:
-                break;
-            case SERVICE_TYPE:
-                break;
-            case SERVICE_TYPE_VERSION:
-                break;
-            case TITLE:
-                break;
-            case ABSTRACT:
-                break;
-            case KEYWORDS:
-                break;
-            case FEES:
-                break;
-            case ACCESS_CONSTRAINTS:
-                break;
-            case PROVIDER_NAME:
-                break;
-            case PROVIDER_SITE:
-                break;
-            case SERVICE_CONTACT:
-                break;
+        public GlobalProperties(Properties properties) throws Exception {
+            SERVICE = properties.getProperty("SERVICE");
+
+            SERVER_VERSION = properties.getProperty("SERVER_VERSION");
+
+            String supportedVersions = properties.getProperty("SUPPORTED_VERSIONS");
+            if(supportedVersions == null || supportedVersions.isEmpty()){
+                throw new Exception("The property 'SUPPORTED_VERSIONS' isn't defined");
+            }
+            SUPPORTED_VERSIONS = properties.getProperty("SUPPORTED_VERSIONS").split(",");
+
+            String supportedLanguages = properties.getProperty("SUPPORTED_LANGUAGES");
+            if(supportedLanguages == null || supportedLanguages.isEmpty()){
+                throw new Exception("The property 'SUPPORTED_LANGUAGES' isn't defined");
+            }
+            SUPPORTED_LANGUAGES = properties.getProperty("SUPPORTED_LANGUAGES").split(",");
+
+            DEFAULT_LANGUAGE = properties.getProperty("DEFAULT_LANGUAGE");
+
+            String supportedFormats = properties.getProperty("SUPPORTED_FORMATS");
+            if(supportedFormats == null || supportedFormats.isEmpty()){
+                throw new Exception("The property 'SUPPORTED_FORMATS' isn't defined");
+            }
+            SUPPORTED_FORMATS = properties.getProperty("SUPPORTED_FORMATS").split(",");
+
+            JOB_CONTROL_OPTIONS = properties.getProperty("JOB_CONTROL_OPTIONS");
         }
-        return true;
+    }
+
+    /** Global properties of the server */
+    public class ServiceIdentificationProperties{
+        /** Service provided by the server, WPS by default */
+        public final CodeType SERVICE_TYPE;
+        /** Version of the server. */
+        public final String[] SERVICE_TYPE_VERSIONS;
+        /** Supported version of the WPS (1.0.0, 2.0.0 ...). */
+        public final LanguageStringType[] TITLE;
+        /** Default languages. */
+        public final LanguageStringType[] ABSTRACT;
+        /** Supported languages. */
+        public final KeywordsType[] KEYWORDS;
+        /** Supported format for the communication with the client. */
+        public final String FEES;
+        /** Default languages. */
+        public final String[] ACCESS_CONSTRAINTS;
+
+        public ServiceIdentificationProperties(Properties properties) throws Exception {
+            SERVICE_TYPE = new CodeType();
+            SERVICE_TYPE.setValue(properties.getProperty("SERVICE_TYPE"));
+
+            String serviceTypeVersions = properties.getProperty("SERVICE_TYPE_VERSIONS");
+            if(serviceTypeVersions == null || serviceTypeVersions.isEmpty()){
+                throw new Exception("The property 'SERVICE_TYPE_VERSIONS' isn't defined");
+            }
+            SERVICE_TYPE_VERSIONS = properties.getProperty("SERVICE_TYPE_VERSIONS").split(",");
+
+            String title = properties.getProperty("TITLE");
+            if(title == null || title.isEmpty()){
+                throw new Exception("The property 'TITLE' isn't defined");
+            }
+            String[] titleSplit = title.split(",");
+            if(titleSplit.length != GLOBAL_PROPERTIES.SUPPORTED_LANGUAGES.length){
+                throw new Exception("The property 'TITLE' doesn't contain the good number of string.");
+            }
+            TITLE = new LanguageStringType[titleSplit.length];
+            for(int i=0; i<titleSplit.length; i++){
+                TITLE[i] = new LanguageStringType();
+                TITLE[i].setValue(titleSplit[i]);
+                TITLE[i].setLang(GLOBAL_PROPERTIES.SUPPORTED_LANGUAGES[i]);
+            }
+
+            String abstract_ = properties.getProperty("ABSTRACT");
+            if(abstract_ == null || abstract_.isEmpty()){
+                throw new Exception("The property 'ABSTRACT' isn't defined");
+            }
+            String[] abstractSplit = abstract_.split(",");
+            if(abstractSplit.length != GLOBAL_PROPERTIES.SUPPORTED_LANGUAGES.length){
+                throw new Exception("The property 'ABSTRACT' doesn't contain the good number of string.");
+            }
+            ABSTRACT = new LanguageStringType[abstractSplit.length];
+            for(int i=0; i<abstractSplit.length; i++){
+                ABSTRACT[i] = new LanguageStringType();
+                ABSTRACT[i].setValue(abstractSplit[i]);
+                ABSTRACT[i].setLang(GLOBAL_PROPERTIES.SUPPORTED_LANGUAGES[i]);
+            }
+
+            FEES = properties.getProperty("FEES");
+
+
+            String accessConstraints = properties.getProperty("ACCESS_CONSTRAINTS");
+            if(accessConstraints == null || accessConstraints.isEmpty()){
+                throw new Exception("The property 'ACCESS_CONSTRAINTS' isn't defined");
+            }
+            ACCESS_CONSTRAINTS = properties.getProperty("ACCESS_CONSTRAINTS").split(",");
+        }
     }
 }

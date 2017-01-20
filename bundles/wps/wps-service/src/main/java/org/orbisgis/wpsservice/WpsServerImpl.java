@@ -41,7 +41,6 @@ import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
 import org.orbisgis.corejdbc.DataSourceService;
-import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.orbisgis.wpsservice.controller.execution.ProcessWorker;
@@ -51,7 +50,6 @@ import org.orbisgis.wpsservice.controller.utils.Job;
 import org.orbisgis.wpsservice.model.JaxbContainer;
 import org.orbisgis.wpsservice.utils.ProcessTranslator;
 import org.orbisgis.wpsservice.utils.WpsServerProperties;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -67,7 +65,6 @@ import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.*;
 import java.net.URI;
-import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 
@@ -79,15 +76,6 @@ import java.util.concurrent.ExecutorService;
  */
 public class WpsServerImpl implements WpsServer {
 
-    private static final String SERVER_PROPERTIES = "wpsServer.properties";
-    private static final String BASIC_SERVER_PROPERTIES = "basicWpsServer.properties";
-    /** Execution options */
-    private static final String OPTION_SYNC_EXEC = "sync-execute";
-    private static final String OPTION_ASYNC_EXEC = "async-execute";
-    /** Server version. */
-    private static final String SERVER_VERSION = "2.0.0";
-    /** Server default language. */
-    private static final String DEFAULT_LANGUAGE = "en";
     /** Logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(WpsServerImpl.class);
     /** JAXB object factory for the WPS objects. */
@@ -95,16 +83,10 @@ public class WpsServerImpl implements WpsServer {
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(WpsServerImpl.class);
 
-    /** Server supported languages. */
-    private List<String> supportedLanguages;
-    /** List of the jobControlOption available (like ASYNC_EXECUTE, SYNC_EXECUTE) */
-    private List<String> jobControlOptions;
     /** List of basic capabilities.
      * There should be one basic capabilities for each languages supported by the server.
      * The basic capabilities is used to build the answer to the GetCapabilities request.*/
     private List<WPSCapabilitiesType> basicCapabilities;
-    /** The default wps capabilities. */
-    private WPSCapabilitiesType defaultBasicCapabilities;
     /** Process manager which contains all the loaded scripts. */
     private ProcessManager processManager;
     /** DataSource Service from OrbisGIS */
@@ -125,7 +107,7 @@ public class WpsServerImpl implements WpsServer {
     private boolean processRunning = false;
     private LinkedList<ProcessWorker> workerFIFO;
     /** Properties of the wps server */
-    private WpsServerProperties wpsServerProperties;
+    private WpsServerProperties wpsProp;
 
     private enum SectionName {ServiceIdentification, ServiceProvider, OperationMetadata, Contents, Languages, All}
 
@@ -144,105 +126,13 @@ public class WpsServerImpl implements WpsServer {
         basicCapabilities = new ArrayList<>();
         dataProcessingManager = new DataProcessingManager();
         jobMap = new HashMap<>();
-        supportedLanguages = new ArrayList<>();
-        supportedLanguages.add(DEFAULT_LANGUAGE);
-        supportedLanguages.add("fr");
         propertiesMap = new HashMap<>();
         //Initialisation of the wps service itself
-        initWpsService();
+        wpsProp = new WpsServerProperties();
         //Creates the attribute for the processes execution
         processManager = new ProcessManager(dataSourceService, this);
         workerFIFO = new LinkedList<>();
-    }
 
-    /**
-     * Initialize everything about the Wps Service
-     * Generates the basic WPSCapabilitiesType of the WpsService from a resource file
-     */
-    private void initWpsService(){
-        if(coreWorkspace != null) {
-            Properties wpsServerProperties = new Properties();
-            //Load the property file
-            File propertiesFile = new File(coreWorkspace.getWorkspaceFolder() + File.separator + SERVER_PROPERTIES);
-            if (propertiesFile.exists()) {
-                try {
-                    wpsServerProperties.load(new FileInputStream(propertiesFile));
-                } catch (IOException e) {
-                    LOGGER.warn(I18N.tr("Unable to restore previous configuration of the ToolBox, will uses the default" +
-                            " one."));
-                    URL basicPropertiesUrl = this.getClass().getClassLoader().getResource(BASIC_SERVER_PROPERTIES);
-                    if(basicPropertiesUrl != null) {
-                        propertiesFile = new File(basicPropertiesUrl.getFile());
-                        try {
-                            wpsServerProperties.load(new FileInputStream(propertiesFile));
-                        } catch (IOException e1) {
-                            LOGGER.warn(I18N.tr("Unable to load the basic configuration of the ToolBox."));
-                            wpsServerProperties = new Properties();
-                        }
-                    }
-                    else {
-                        LOGGER.warn(I18N.tr("Unable to load the basic configuration of the ToolBox."));
-                        wpsServerProperties = new Properties();
-                    }
-                }
-            }
-        }
-        else{
-            LOGGER.warn("Warning, no CoreWorkspace found. Unable to load the previous state.");
-        }
-        /*
-        //Get the basic WpsCapabilitiesType from the WpsServiceBasicCapabilities.xml file
-        WPSCapabilitiesType capabilitiesType = null;
-        try {
-            //Create the unmarshaller
-            Unmarshaller unmarshaller = JaxbContainer.JAXBCONTEXT.createUnmarshaller();
-            if(unmarshaller != null) {
-                //Get the URL of the wps service basic capabilities resource file
-                URL url = this.getClass().getResource("WpsServiceBasicCapabilities.xml");
-                if (url != null) {
-                    //Unmarshall the wps capabilities
-                    Object unmarshalledObject = unmarshaller.unmarshal(url.openStream());
-                    if (unmarshalledObject instanceof JAXBElement) {
-                        //Retrieve the capabilities
-                        Object value = ((JAXBElement) unmarshalledObject).getValue();
-                        if (value instanceof WPSCapabilitiesType) {
-                            capabilitiesType = (WPSCapabilitiesType) value;
-                        } else {
-                            LOGGER.error(I18N.tr("The unmarshalled WPSCapabilitiesType is not a valid" +
-                                    " WPSCapabilitiesType."));
-                        }
-                    } else if(unmarshalledObject != null) {
-                        LOGGER.error(I18N.tr("The unmarshalled WPSCapabilitiesType is invalid."));
-                    } else {
-                        LOGGER.error(I18N.tr("The unmarshalled WPSCapabilitiesType is null."));
-                    }
-                } else {
-                    LOGGER.error(I18N.tr("Unable to load the WpsServiceBasicCapabilities.xml file containing the " +
-                            "service basic capabilities."));
-                }
-            } else {
-                LOGGER.error(I18N.tr("Unable to create the unmarshaller"));
-            }
-        } catch (JAXBException | IOException e) {
-            LOGGER.error(I18N.tr("Error on using the unmarshaller.\nCause : {0}.", e.getMessage()));
-        }
-        if(capabilitiesType != null){
-            defaultBasicCapabilities = capabilitiesType;
-        }
-        else{
-            defaultBasicCapabilities = wpsObjectFactory.createWPSCapabilitiesType();
-            defaultBasicCapabilities.setVersion(SERVER_VERSION);
-            CapabilitiesBaseType.Languages languages = new CapabilitiesBaseType.Languages();
-            languages.getLanguage().add(DEFAULT_LANGUAGE);
-            defaultBasicCapabilities.setLanguages(languages);
-            defaultBasicCapabilities.setContents(new Contents());
-            defaultBasicCapabilities.setOperationsMetadata(new OperationsMetadata());
-        }
-        basicCapabilities.add(defaultBasicCapabilities);
-
-        //Generate the jobControlOption list
-        jobControlOptions = new ArrayList<>();
-        jobControlOptions.add(OPTION_ASYNC_EXEC);*/
     }
 
     /*******************************************************************/
@@ -263,11 +153,20 @@ public class WpsServerImpl implements WpsServer {
         //Accepted versions check
         //If the version is not supported, add an ExceptionType with the error.
         if(getCapabilities.getAcceptVersions() != null &&
-                getCapabilities.getAcceptVersions().getVersion() != null &&
-                !getCapabilities.getAcceptVersions().getVersion().contains(SERVER_VERSION)){
-            ExceptionType exceptionType = new ExceptionType();
-            exceptionType.setExceptionCode("VersionNegotiationFailed");
-            exceptionReport.getException().add(exceptionType);
+                getCapabilities.getAcceptVersions().getVersion() != null){
+            boolean isVersionAccepted = false;
+            for(String version1 : getCapabilities.getAcceptVersions().getVersion()){
+                for(String version2 : wpsProp.GLOBAL_PROPERTIES.SUPPORTED_VERSIONS){
+                    if(version1.equals(version2)){
+                        isVersionAccepted = true;
+                    }
+                }
+            }
+            if(isVersionAccepted) {
+                ExceptionType exceptionType = new ExceptionType();
+                exceptionType.setExceptionCode("VersionNegotiationFailed");
+                exceptionReport.getException().add(exceptionType);
+            }
         }
         //Sections check
         //Check if all the section values are one of the 'SectionName' enum values.
@@ -299,7 +198,7 @@ public class WpsServerImpl implements WpsServer {
         //TODO be able to manage the AcceptFormat parameter
         //Languages check
         //If the language is not supported, add an ExceptionType with the error.
-        String requestLanguage = DEFAULT_LANGUAGE;
+        String requestLanguage = wpsProp.GLOBAL_PROPERTIES.DEFAULT_LANGUAGE;
         if(getCapabilities.getAcceptLanguages() != null &&
                 getCapabilities.getAcceptLanguages().getLanguage() != null &&
                 !getCapabilities.getAcceptLanguages().getLanguage().isEmpty()) {
@@ -307,9 +206,10 @@ public class WpsServerImpl implements WpsServer {
             boolean isAnyLanguage = requestedLanguages.contains("*");
             boolean languageFound = false;
             //First try to find the first languages requested by the client which is supported by the server
-            for (String language : requestedLanguages) {
-                if (supportedLanguages.contains(language)) {
-                    requestLanguage = language;
+            for (String language1 : requestedLanguages) {
+                for(String language2 : wpsProp.GLOBAL_PROPERTIES.SUPPORTED_LANGUAGES)
+                if (language2.equals(language1)) {
+                    requestLanguage = language1;
                     languageFound = true;
                     break;
                 }
@@ -320,7 +220,7 @@ public class WpsServerImpl implements WpsServer {
                     //avoid to test "*" language
                     if(!language.equals("*")) {
                         String baseLanguage = language.substring(0, 2);
-                        for (String serverLanguage : supportedLanguages) {
+                        for (String serverLanguage : wpsProp.GLOBAL_PROPERTIES.SUPPORTED_LANGUAGES) {
                             if (serverLanguage.substring(0, 2).equals(baseLanguage)) {
                                 requestLanguage = language;
                                 languageFound = true;
@@ -332,7 +232,7 @@ public class WpsServerImpl implements WpsServer {
             }
             //If not language was found, try to use any language if allowed
             if(!languageFound  && isAnyLanguage){
-                requestLanguage = DEFAULT_LANGUAGE;
+                requestLanguage = wpsProp.GLOBAL_PROPERTIES.DEFAULT_LANGUAGE;
                 languageFound = true;
             }
             //If no compatible language has been found and not any language are accepted
@@ -346,14 +246,14 @@ public class WpsServerImpl implements WpsServer {
 
         if(!exceptionReport.getException().isEmpty()){
             exceptionReport.setLang(requestLanguage);
-            exceptionReport.setVersion(SERVER_VERSION);
+            exceptionReport.setVersion(wpsProp.GLOBAL_PROPERTIES.SERVER_VERSION);
             return exceptionReport;
         }
 
         /** Building of the WPSCapabilitiesTypeAnswer **/
 
         //Retrieve the basic capabilities which have the good language
-        WPSCapabilitiesType capabilities = null;
+        //WPSCapabilitiesType capabilities = null;
         for(WPSCapabilitiesType capabilitiesType : basicCapabilities){
             if(capabilitiesType.getLanguages().getLanguage().contains(requestLanguage)){
                 capabilities = capabilitiesType;
@@ -365,17 +265,40 @@ public class WpsServerImpl implements WpsServer {
         //TODO add the UpdateSequence element
         //Copy the content of the basicCapabilities into the new one
         WPSCapabilitiesType capabilitiesType = new WPSCapabilitiesType();
-        capabilitiesType.setExtension(capabilities.getExtension());
-        capabilitiesType.setUpdateSequence(capabilities.getUpdateSequence());
-        capabilitiesType.setVersion(capabilities.getVersion());
+        capabilitiesType.setExtension(new WPSCapabilitiesType.Extension());
+        capabilitiesType.setExtension(new WPSCapabilitiesType.Extension());
+        capabilitiesType.setUpdateSequence(wpsProp.GLOBAL_PROPERTIES.SERVER_VERSION);
+        capabilitiesType.setVersion(wpsProp.GLOBAL_PROPERTIES.SERVER_VERSION);
         if(requestedSections.contains(SectionName.All) || requestedSections.contains(SectionName.Languages)) {
-            capabilitiesType.setLanguages(capabilities.getLanguages());
+            CapabilitiesBaseType.Languages languages = new CapabilitiesBaseType.Languages();
+            for(String language : wpsProp.GLOBAL_PROPERTIES.SUPPORTED_LANGUAGES) {
+                languages.getLanguage().add(language);
+            }
+            capabilitiesType.setLanguages(languages);
         }
         if(requestedSections.contains(SectionName.All) || requestedSections.contains(SectionName.OperationMetadata)) {
             capabilitiesType.setOperationsMetadata(capabilities.getOperationsMetadata());
         }
         if(requestedSections.contains(SectionName.All) || requestedSections.contains(SectionName.ServiceIdentification)) {
-            capabilitiesType.setServiceIdentification(capabilities.getServiceIdentification());
+            ServiceIdentification serviceIdentification = new ServiceIdentification();
+            serviceIdentification.setFees(wpsProp.SERVICE_IDENTIFICATION_PROPERTIES.FEES);
+            serviceIdentification.setServiceType(wpsProp.SERVICE_IDENTIFICATION_PROPERTIES.SERVICE_TYPE);
+            for(String version : wpsProp.SERVICE_IDENTIFICATION_PROPERTIES.SERVICE_TYPE_VERSIONS) {
+                serviceIdentification.getServiceTypeVersion().add(version);
+            }
+            for(LanguageStringType title : wpsProp.SERVICE_IDENTIFICATION_PROPERTIES.TITLE) {
+                serviceIdentification.getTitle().add(title);
+            }
+            for(LanguageStringType abstract_ : wpsProp.SERVICE_IDENTIFICATION_PROPERTIES.TITLE) {
+                serviceIdentification.getAbstract().add(abstract_);
+            }
+            for(KeywordsType keywords : wpsProp.SERVICE_IDENTIFICATION_PROPERTIES.KEYWORDS) {
+                serviceIdentification.getKeywords().add(keywords);
+            }
+            for(String constraint : wpsProp.SERVICE_IDENTIFICATION_PROPERTIES.ACCESS_CONSTRAINTS) {
+                serviceIdentification.getAccessConstraints().add(constraint);
+            }
+            capabilitiesType.setServiceIdentification(serviceIdentification);
         }
         if(requestedSections.contains(SectionName.All) || requestedSections.contains(SectionName.ServiceProvider)) {
             capabilitiesType.setServiceProvider(capabilities.getServiceProvider());
@@ -743,14 +666,5 @@ public class WpsServerImpl implements WpsServer {
             LOGGER.error(I18N.tr("Unable to generate the XMLGregorianCalendar object.\nCause : {0}.", e.getMessage()));
         }
         return date;
-    }
-
-    private String getServerProperty(String propertyName){
-        if(wpsServerProperties.containsKey(propertyName)){
-            return wpsServerProperties.get(propertyName).toString();
-        }
-        else{
-            return null;
-        }
     }
 }
