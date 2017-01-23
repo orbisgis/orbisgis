@@ -166,7 +166,7 @@ public class WpsServerImplTest {
                 capabilities.getContents().getProcessSummary().isEmpty());
 
         //extensions tests
-        Assert.assertNull("The wps server service identification extension should be null.",
+        Assert.assertNotNull("The wps server service identification extension should not be null.",
                 capabilities.getExtension());
 
         //service identification tests
@@ -277,9 +277,8 @@ public class WpsServerImplTest {
                 capabilities.getServiceProvider().getProviderSite().getActuate());
 
         ResponsiblePartySubsetType serviceContact = capabilities.getServiceProvider().getServiceContact();
-        Assert.assertNotNull("The wps server service contact should not be null",
-                serviceContact);
-        Assert.assertNull("The wps server service contact individual name should be null",
+        Assert.assertNull("The wps server service contact should be null", serviceContact);
+        /*Assert.assertNull("The wps server service contact individual name should be null",
                 serviceContact.getIndividualName());
         Assert.assertNull("The wps server service contact individual name should be null",
                 serviceContact.getPositionName());
@@ -314,7 +313,7 @@ public class WpsServerImplTest {
         Assert.assertNull("The wps server service contact info contact instructions should be null",
                 serviceContact.getContactInfo().getContactInstructions());
         Assert.assertNull("The wps server service contact role should be null",
-                serviceContact.getRole());
+                serviceContact.getRole());*/
 
         //operation metadata tests
         Assert.assertNotNull("The wps server operation metadata should not be null",

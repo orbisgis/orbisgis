@@ -36,9 +36,7 @@
  */
 package org.orbisgis.wpsservice.utils;
 
-import net.opengis.ows._2.CodeType;
-import net.opengis.ows._2.KeywordsType;
-import net.opengis.ows._2.LanguageStringType;
+import net.opengis.ows._2.*;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -70,6 +68,8 @@ public class WpsServerProperties {
 
     public GlobalProperties GLOBAL_PROPERTIES;
     public ServiceIdentificationProperties SERVICE_IDENTIFICATION_PROPERTIES;
+    public ServiceProviderProperties SERVICE_PROVIDER_PROPERTIES;
+    public OperationsMetadataProperties OPERATIONS_METADATA_PROPERTIES;
 
     @Reference
     public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
@@ -80,8 +80,8 @@ public class WpsServerProperties {
     }
 
     public WpsServerProperties(){
+        Properties wpsProperties = null;
         if(coreWorkspace != null) {
-            Properties wpsProperties = new Properties();
             //Load the property file
             File propertiesFile = new File(coreWorkspace.getWorkspaceFolder() + File.separator + SERVER_PROPERTIES);
             if (propertiesFile.exists()) {
@@ -89,33 +89,41 @@ public class WpsServerProperties {
                     wpsProperties.load(new FileInputStream(propertiesFile));
                 } catch (IOException e) {
                     LOGGER.warn(I18N.tr("Unable to restore the wps properties."));
-                    wpsProperties = new Properties();
+                    wpsProperties = null;
                 }
             }
-            try {
-                GLOBAL_PROPERTIES = new GlobalProperties(wpsProperties);
-                SERVICE_IDENTIFICATION_PROPERTIES = new ServiceIdentificationProperties(wpsProperties);
-            } catch (Exception e) {
-                LOGGER.error(I18N.tr("Unable to load the server configuration.\nCause : {0}\nLoading the default configuration.", e.getMessage()));
-
-                URL url = this.getClass().getClassLoader().getResource(BASIC_SERVER_PROPERTIES);
-                if(url == null){
-                    LOGGER.error(I18N.tr("Unable to find the basic server properties file."));
-                }
-                else {
-                    Properties properties = new Properties();
-                    try {
-                        GLOBAL_PROPERTIES = new GlobalProperties(properties);
-                        SERVICE_IDENTIFICATION_PROPERTIES = new ServiceIdentificationProperties(properties);
-                    } catch (Exception ex) {
-                        LOGGER.error(I18N.tr("Unable to load the server configuration.\nCause : {0}\nLoading the default configuration.", ex.getMessage()));
-                        GLOBAL_PROPERTIES = null;
-                    }
+            if (wpsProperties != null) {
+                try {
+                    GLOBAL_PROPERTIES = new GlobalProperties(wpsProperties);
+                    SERVICE_IDENTIFICATION_PROPERTIES = new ServiceIdentificationProperties(wpsProperties);
+                    SERVICE_PROVIDER_PROPERTIES = new ServiceProviderProperties(wpsProperties);
+                    OPERATIONS_METADATA_PROPERTIES = new OperationsMetadataProperties(wpsProperties);
+                } catch (Exception e) {
+                    LOGGER.error(I18N.tr("Unable to load the server configuration.\nCause : {0}\nLoading the default configuration.", e.getMessage()));
+                    wpsProperties = null;
                 }
             }
         }
-        else{
-            LOGGER.warn(I18N.tr("Warning, no CoreWorkspace found. Unable to load the previous state."));
+        if(wpsProperties == null){
+            wpsProperties = new Properties();
+            LOGGER.warn(I18N.tr("Warning, unable to load the wps server previous state."));
+            URL url = this.getClass().getResource(BASIC_SERVER_PROPERTIES);
+            if(url == null){
+                LOGGER.error(I18N.tr("Unable to find the basic server properties file."));
+            }
+            else {
+                try {
+                    File propertiesFile = new File(url.getFile());
+                    wpsProperties.load(new FileInputStream(propertiesFile));
+                    GLOBAL_PROPERTIES = new GlobalProperties(wpsProperties);
+                    SERVICE_IDENTIFICATION_PROPERTIES = new ServiceIdentificationProperties(wpsProperties);
+                    SERVICE_PROVIDER_PROPERTIES = new ServiceProviderProperties(wpsProperties);
+                    OPERATIONS_METADATA_PROPERTIES = new OperationsMetadataProperties(wpsProperties);
+                } catch (Exception ex) {
+                    LOGGER.error(I18N.tr("Unable to load the server configuration.\nCause : {0}\nLoading the default configuration.", ex.getMessage()));
+                    GLOBAL_PROPERTIES = null;
+                }
+            }
         }
     }
 
@@ -135,7 +143,7 @@ public class WpsServerProperties {
         /** Supported format for the communication with the client. */
         public final String[] SUPPORTED_FORMATS;
         /** Default languages. */
-        public final String JOB_CONTROL_OPTIONS;
+        public final String[] JOB_CONTROL_OPTIONS;
 
         public GlobalProperties(Properties properties) throws Exception {
             SERVICE = properties.getProperty("SERVICE");
@@ -162,7 +170,11 @@ public class WpsServerProperties {
             }
             SUPPORTED_FORMATS = properties.getProperty("SUPPORTED_FORMATS").split(",");
 
-            JOB_CONTROL_OPTIONS = properties.getProperty("JOB_CONTROL_OPTIONS");
+            String jobControlOptions = properties.getProperty("JOB_CONTROL_OPTIONS");
+            if(jobControlOptions == null || jobControlOptions.isEmpty()){
+                throw new Exception(I18N.tr("The property 'JOB_CONTROL_OPTIONS' isn't defined"));
+            }
+            JOB_CONTROL_OPTIONS = properties.getProperty("JOB_CONTROL_OPTIONS").split(",");
         }
     }
 
@@ -261,19 +273,22 @@ public class WpsServerProperties {
                             "for each languages."));
                 }
             }
-            KEYWORDS = new KeywordsType[keywordsByLanguage.length];
+            KEYWORDS = new KeywordsType[keywordsByLanguage[0].length];
+            for(int i=0; i<keywordsByLanguage[0].length; i++){
+                KEYWORDS[i] = new KeywordsType();
+            }
             //For each keyword (index j) add its languageStringType with the language (index i) to have the keywordType
             // (build this way : [ {key[0],lang[0]}, {key[2],lang[0]}, {key[2],lang[0]} ],
             //                   [ {key[0],lang[1]}, {key[2],lang[1]}, {key[2],lang[1]} ]
-            for(int j=0; j<keywordsByLanguage.length; j++){ //Keyword loop
+            for(int j=0; j<keywordsByLanguage[0].length; j++){ //Keyword loop
                 List<LanguageStringType> keywordList = new ArrayList<>();
-                for(int i = 0; i<keywordsByLanguage[0].length; i++){// Language loop
+                for(int i = 0; i<keywordsByLanguage.length; i++){// Language loop
                     LanguageStringType keyword = new LanguageStringType();
                     keyword.setLang(GLOBAL_PROPERTIES.SUPPORTED_LANGUAGES[i]);
                     keyword.setValue(keywordsByLanguage[i][j]);
                     keywordList.add(keyword);
                 }
-                KEYWORDS[j].getKeyword().addAll(keywordList)
+                KEYWORDS[j].getKeyword().addAll(keywordList);
             }
 
             FEES = properties.getProperty("FEES");
@@ -284,6 +299,148 @@ public class WpsServerProperties {
                 throw new Exception(I18N.tr("The property 'ACCESS_CONSTRAINTS' isn't defined"));
             }
             ACCESS_CONSTRAINTS = properties.getProperty("ACCESS_CONSTRAINTS").split(",");
+        }
+    }
+
+    /** Properties associated to the service provider part of the server */
+    public class ServiceProviderProperties{
+        /** Service provider name. */
+        public final String PROVIDER_NAME;
+        /** Reference to the most relevant web site of the service provider. */
+        public final OnlineResourceType PROVIDER_SITE;
+
+        public ServiceProviderProperties(Properties properties) throws Exception {
+            PROVIDER_NAME = properties.getProperty("PROVIDER_NAME");
+            PROVIDER_SITE = new OnlineResourceType();
+            PROVIDER_SITE.setHref(properties.getProperty("PROVIDER_SITE"));
+        }
+    }
+
+    /** Properties associated to the operations metadata part of the server */
+    public class OperationsMetadataProperties{
+        /** Get capabilities operation. */
+        public final Operation GET_CAPABILITIES_OPERATION;
+        /** Describe process operation. */
+        public final Operation DESCRIBE_PROCESS_OPERATION;
+        /** Execute operation. */
+        public final Operation EXECUTE_OPERATION;
+        /** Get status operation. */
+        public final Operation GET_STATUS_OPERATION;
+        /** Get result operation. */
+        public final Operation GET_RESULT_OPERATION;
+        /** DIsmiss operation. */
+        public final Operation DISMISS_OPERATION;
+
+        public OperationsMetadataProperties(Properties properties) throws Exception {
+            ObjectFactory objectFactory = new ObjectFactory();
+            if(properties.getProperty("GETCAPABILITIES_GET_HREF") != null &&
+                    properties.getProperty("GETCAPABILITIES_POST_HREF") != null) {
+                GET_CAPABILITIES_OPERATION = new Operation();
+                GET_CAPABILITIES_OPERATION.setName("GetCapabilities");
+                DCP dcp = new DCP();
+                HTTP http = new HTTP();
+                RequestMethodType get = new RequestMethodType();
+                get.setHref(properties.getProperty("GETCAPABILITIES_GET_HREF"));
+                http.getGetOrPost().add(objectFactory.createHTTPGet(get));
+                RequestMethodType post = new RequestMethodType();
+                post.setHref(properties.getProperty("GETCAPABILITIES_POST_HREF"));
+                http.getGetOrPost().add(objectFactory.createHTTPGet(post));
+                dcp.setHTTP(http);
+                GET_CAPABILITIES_OPERATION.getDCP().add(dcp);
+            }
+            else{
+                GET_CAPABILITIES_OPERATION = null;
+            }
+            if(properties.getProperty("DESCRIBEPROCESS_GET_HREF") != null &&
+                    properties.getProperty("DESCRIBEPROCESS_POST_HREF") != null) {
+                DESCRIBE_PROCESS_OPERATION = new Operation();
+                DESCRIBE_PROCESS_OPERATION.setName("DescribeProcess");
+                DCP dcp = new DCP();
+                HTTP http = new HTTP();
+                RequestMethodType get = new RequestMethodType();
+                get.setHref(properties.getProperty("DESCRIBEPROCESS_GET_HREF"));
+                http.getGetOrPost().add(objectFactory.createHTTPGet(get));
+                RequestMethodType post = new RequestMethodType();
+                post.setHref(properties.getProperty("DESCRIBEPROCESS_POST_HREF"));
+                http.getGetOrPost().add(objectFactory.createHTTPGet(post));
+                dcp.setHTTP(http);
+                DESCRIBE_PROCESS_OPERATION.getDCP().add(dcp);
+            }
+            else{
+                DESCRIBE_PROCESS_OPERATION = null;
+            }
+            if(properties.getProperty("EXECUTE_GET_HREF") != null &&
+                    properties.getProperty("EXECUTE_POST_HREF") != null) {
+                EXECUTE_OPERATION = new Operation();
+                EXECUTE_OPERATION.setName("Execute");
+                DCP dcp = new DCP();
+                HTTP http = new HTTP();
+                RequestMethodType get = new RequestMethodType();
+                get.setHref(properties.getProperty("EXECUTE_GET_HREF"));
+                http.getGetOrPost().add(objectFactory.createHTTPGet(get));
+                RequestMethodType post = new RequestMethodType();
+                post.setHref(properties.getProperty("EXECUTE_POST_HREF"));
+                http.getGetOrPost().add(objectFactory.createHTTPGet(post));
+                dcp.setHTTP(http);
+                EXECUTE_OPERATION.getDCP().add(dcp);
+            }
+            else{
+                EXECUTE_OPERATION = null;
+            }
+            if(properties.getProperty("GETSTATUS_GET_HREF") != null &&
+                    properties.getProperty("GETSTATUS_POST_HREF") != null) {
+                GET_STATUS_OPERATION = new Operation();
+                GET_STATUS_OPERATION.setName("GetStatus");
+                DCP dcp = new DCP();
+                HTTP http = new HTTP();
+                RequestMethodType get = new RequestMethodType();
+                get.setHref(properties.getProperty("GETSTATUS_GET_HREF"));
+                http.getGetOrPost().add(objectFactory.createHTTPGet(get));
+                RequestMethodType post = new RequestMethodType();
+                post.setHref(properties.getProperty("GETSTATUS_POST_HREF"));
+                http.getGetOrPost().add(objectFactory.createHTTPGet(post));
+                dcp.setHTTP(http);
+                GET_STATUS_OPERATION.getDCP().add(dcp);
+            }
+            else{
+                GET_STATUS_OPERATION = null;
+            }
+            if(properties.getProperty("GETRESULT_GET_HREF") != null &&
+                    properties.getProperty("GETRESULT_POST_HREF") != null) {
+                GET_RESULT_OPERATION = new Operation();
+                GET_RESULT_OPERATION.setName("GetResult");
+                DCP dcp = new DCP();
+                HTTP http = new HTTP();
+                RequestMethodType get = new RequestMethodType();
+                get.setHref(properties.getProperty("GETRESULT_GET_HREF"));
+                http.getGetOrPost().add(objectFactory.createHTTPGet(get));
+                RequestMethodType post = new RequestMethodType();
+                post.setHref(properties.getProperty("GETRESULT_POST_HREF"));
+                http.getGetOrPost().add(objectFactory.createHTTPGet(post));
+                dcp.setHTTP(http);
+                GET_RESULT_OPERATION.getDCP().add(dcp);
+            }
+            else{
+                GET_RESULT_OPERATION = null;
+            }
+            if(properties.getProperty("DISMISS_GET_HREF") != null &&
+                    properties.getProperty("DISMISS_POST_HREF") != null) {
+                DISMISS_OPERATION = new Operation();
+                DISMISS_OPERATION.setName("Dismiss");
+                DCP dcp = new DCP();
+                HTTP http = new HTTP();
+                RequestMethodType get = new RequestMethodType();
+                get.setHref(properties.getProperty("DISMISS_GET_HREF"));
+                http.getGetOrPost().add(objectFactory.createHTTPGet(get));
+                RequestMethodType post = new RequestMethodType();
+                post.setHref(properties.getProperty("DISMISS_POST_HREF"));
+                http.getGetOrPost().add(objectFactory.createHTTPGet(post));
+                dcp.setHTTP(http);
+                DISMISS_OPERATION.getDCP().add(dcp);
+            }
+            else{
+                DISMISS_OPERATION = null;
+            }
         }
     }
 }

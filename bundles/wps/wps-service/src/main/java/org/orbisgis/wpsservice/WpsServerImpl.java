@@ -78,15 +78,9 @@ public class WpsServerImpl implements WpsServer {
 
     /** Logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(WpsServerImpl.class);
-    /** JAXB object factory for the WPS objects. */
-    private static final ObjectFactory wpsObjectFactory = new ObjectFactory();
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(WpsServerImpl.class);
 
-    /** List of basic capabilities.
-     * There should be one basic capabilities for each languages supported by the server.
-     * The basic capabilities is used to build the answer to the GetCapabilities request.*/
-    private List<WPSCapabilitiesType> basicCapabilities;
     /** Process manager which contains all the loaded scripts. */
     private ProcessManager processManager;
     /** DataSource Service from OrbisGIS */
@@ -123,7 +117,6 @@ public class WpsServerImpl implements WpsServer {
      * Initialization of the WpsServiceImpl.
      */
     public void init(){
-        basicCapabilities = new ArrayList<>();
         dataProcessingManager = new DataProcessingManager();
         jobMap = new HashMap<>();
         propertiesMap = new HashMap<>();
@@ -162,7 +155,7 @@ public class WpsServerImpl implements WpsServer {
                     }
                 }
             }
-            if(isVersionAccepted) {
+            if(!isVersionAccepted) {
                 ExceptionType exceptionType = new ExceptionType();
                 exceptionType.setExceptionCode("VersionNegotiationFailed");
                 exceptionReport.getException().add(exceptionType);
@@ -252,20 +245,9 @@ public class WpsServerImpl implements WpsServer {
 
         /** Building of the WPSCapabilitiesTypeAnswer **/
 
-        //Retrieve the basic capabilities which have the good language
-        //WPSCapabilitiesType capabilities = null;
-        for(WPSCapabilitiesType capabilitiesType : basicCapabilities){
-            if(capabilitiesType.getLanguages().getLanguage().contains(requestLanguage)){
-                capabilities = capabilitiesType;
-            }
-        }
-        if(capabilities == null){
-            capabilities = defaultBasicCapabilities;
-        }
         //TODO add the UpdateSequence element
         //Copy the content of the basicCapabilities into the new one
         WPSCapabilitiesType capabilitiesType = new WPSCapabilitiesType();
-        capabilitiesType.setExtension(new WPSCapabilitiesType.Extension());
         capabilitiesType.setExtension(new WPSCapabilitiesType.Extension());
         capabilitiesType.setUpdateSequence(wpsProp.GLOBAL_PROPERTIES.SERVER_VERSION);
         capabilitiesType.setVersion(wpsProp.GLOBAL_PROPERTIES.SERVER_VERSION);
@@ -277,7 +259,17 @@ public class WpsServerImpl implements WpsServer {
             capabilitiesType.setLanguages(languages);
         }
         if(requestedSections.contains(SectionName.All) || requestedSections.contains(SectionName.OperationMetadata)) {
-            capabilitiesType.setOperationsMetadata(capabilities.getOperationsMetadata());
+            OperationsMetadata operationsMetadata = new OperationsMetadata();
+            List<Operation> operationList = new ArrayList<>();
+            operationList.add(wpsProp.OPERATIONS_METADATA_PROPERTIES.DESCRIBE_PROCESS_OPERATION);
+            operationList.add(wpsProp.OPERATIONS_METADATA_PROPERTIES.DISMISS_OPERATION);
+            operationList.add(wpsProp.OPERATIONS_METADATA_PROPERTIES.EXECUTE_OPERATION);
+            operationList.add(wpsProp.OPERATIONS_METADATA_PROPERTIES.GET_CAPABILITIES_OPERATION);
+            operationList.add(wpsProp.OPERATIONS_METADATA_PROPERTIES.GET_RESULT_OPERATION);
+            operationList.add(wpsProp.OPERATIONS_METADATA_PROPERTIES.GET_STATUS_OPERATION);
+            operationList.removeAll(Collections.singleton(null));
+            operationsMetadata.getOperation().addAll(operationList);
+            capabilitiesType.setOperationsMetadata(operationsMetadata);
         }
         if(requestedSections.contains(SectionName.All) || requestedSections.contains(SectionName.ServiceIdentification)) {
             ServiceIdentification serviceIdentification = new ServiceIdentification();
@@ -289,7 +281,7 @@ public class WpsServerImpl implements WpsServer {
             for(LanguageStringType title : wpsProp.SERVICE_IDENTIFICATION_PROPERTIES.TITLE) {
                 serviceIdentification.getTitle().add(title);
             }
-            for(LanguageStringType abstract_ : wpsProp.SERVICE_IDENTIFICATION_PROPERTIES.TITLE) {
+            for(LanguageStringType abstract_ : wpsProp.SERVICE_IDENTIFICATION_PROPERTIES.ABSTRACT) {
                 serviceIdentification.getAbstract().add(abstract_);
             }
             for(KeywordsType keywords : wpsProp.SERVICE_IDENTIFICATION_PROPERTIES.KEYWORDS) {
@@ -301,7 +293,10 @@ public class WpsServerImpl implements WpsServer {
             capabilitiesType.setServiceIdentification(serviceIdentification);
         }
         if(requestedSections.contains(SectionName.All) || requestedSections.contains(SectionName.ServiceProvider)) {
-            capabilitiesType.setServiceProvider(capabilities.getServiceProvider());
+            ServiceProvider serviceProvider = new ServiceProvider();
+            serviceProvider.setProviderName(wpsProp.SERVICE_PROVIDER_PROPERTIES.PROVIDER_NAME);
+            serviceProvider.setProviderSite(wpsProp.SERVICE_PROVIDER_PROPERTIES.PROVIDER_SITE);
+            capabilitiesType.setServiceProvider(serviceProvider);
         }
 
         /** Sets the Contents **/
@@ -311,10 +306,10 @@ public class WpsServerImpl implements WpsServer {
             List<ProcessDescriptionType> processList = getProcessList();
             for (ProcessDescriptionType process : processList) {
                 ProcessDescriptionType translatedProcess = ProcessTranslator.getTranslatedProcess(
-                        process, requestLanguage, DEFAULT_LANGUAGE);
+                        process, requestLanguage, wpsProp.GLOBAL_PROPERTIES.DEFAULT_LANGUAGE);
                 ProcessSummaryType processSummaryType = new ProcessSummaryType();
                 processSummaryType.getJobControlOptions().clear();
-                processSummaryType.getJobControlOptions().addAll(jobControlOptions);
+                processSummaryType.getJobControlOptions().addAll(Arrays.asList(wpsProp.GLOBAL_PROPERTIES.JOB_CONTROL_OPTIONS));
                 processSummaryType.setIdentifier(translatedProcess.getIdentifier());
                 processSummaryType.getMetadata().clear();
                 processSummaryType.getMetadata().addAll(translatedProcess.getMetadata());
@@ -358,14 +353,15 @@ public class WpsServerImpl implements WpsServer {
                 ProcessOffering po = new ProcessOffering();
                 po.setProcessVersion(processOffering.getProcessVersion());
                 po.getJobControlOptions().clear();
-                po.getJobControlOptions().addAll(jobControlOptions);
+                po.getJobControlOptions().addAll(Arrays.asList(wpsProp.GLOBAL_PROPERTIES.JOB_CONTROL_OPTIONS));
                 //Get the translated process and add it to the ProcessOffering
                 List<DataTransmissionModeType> listTransmission = new ArrayList<>();
                 listTransmission.add(DataTransmissionModeType.VALUE);
                 po.getOutputTransmission().clear();
                 po.getOutputTransmission().addAll(listTransmission);
                 ProcessDescriptionType process = processOffering.getProcess();
-                po.setProcess(ProcessTranslator.getTranslatedProcess(process, describeProcess.getLang(), DEFAULT_LANGUAGE));
+                po.setProcess(ProcessTranslator.getTranslatedProcess(process, describeProcess.getLang(),
+                        wpsProp.GLOBAL_PROPERTIES.DEFAULT_LANGUAGE));
                 processOfferingList.add(po);
             }
         }
