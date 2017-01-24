@@ -101,7 +101,7 @@ public class WpsServerImpl implements WpsServer {
     private boolean processRunning = false;
     private LinkedList<ProcessWorker> workerFIFO;
     /** Properties of the wps server */
-    private WpsServerProperties wpsProp;
+    protected WpsServerProperties wpsProp;
 
     private enum SectionName {ServiceIdentification, ServiceProvider, OperationMetadata, Contents, Languages, All}
 

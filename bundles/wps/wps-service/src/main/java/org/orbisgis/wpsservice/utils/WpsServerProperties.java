@@ -47,6 +47,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,22 +100,20 @@ public class WpsServerProperties {
                     SERVICE_PROVIDER_PROPERTIES = new ServiceProviderProperties(wpsProperties);
                     OPERATIONS_METADATA_PROPERTIES = new OperationsMetadataProperties(wpsProperties);
                 } catch (Exception e) {
-                    LOGGER.error(I18N.tr("Unable to load the server configuration.\nCause : {0}\nLoading the default configuration.", e.getMessage()));
+                    LOGGER.warn(I18N.tr("Unable to load the server configuration.\nCause : {0}\nLoading the default configuration.", e.getMessage()));
                     wpsProperties = null;
                 }
             }
         }
         if(wpsProperties == null){
             wpsProperties = new Properties();
-            LOGGER.warn(I18N.tr("Warning, unable to load the wps server previous state."));
             URL url = this.getClass().getResource(BASIC_SERVER_PROPERTIES);
             if(url == null){
                 LOGGER.error(I18N.tr("Unable to find the basic server properties file."));
             }
             else {
                 try {
-                    File propertiesFile = new File(url.getFile());
-                    wpsProperties.load(new FileInputStream(propertiesFile));
+                    wpsProperties.load(new InputStreamReader(url.openStream()));
                     GLOBAL_PROPERTIES = new GlobalProperties(wpsProperties);
                     SERVICE_IDENTIFICATION_PROPERTIES = new ServiceIdentificationProperties(wpsProperties);
                     SERVICE_PROVIDER_PROPERTIES = new ServiceProviderProperties(wpsProperties);
