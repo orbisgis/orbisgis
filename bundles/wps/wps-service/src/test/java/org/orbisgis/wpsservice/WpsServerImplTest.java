@@ -52,6 +52,7 @@ import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 
@@ -278,80 +279,27 @@ public class WpsServerImplTest {
 
         ResponsiblePartySubsetType serviceContact = capabilities.getServiceProvider().getServiceContact();
         Assert.assertNull("The wps server service contact should be null", serviceContact);
-        /*Assert.assertNull("The wps server service contact individual name should be null",
-                serviceContact.getIndividualName());
-        Assert.assertNull("The wps server service contact individual name should be null",
-                serviceContact.getPositionName());
-        Assert.assertNotNull("The wps server service contact info name should not be null",
-                serviceContact.getContactInfo());
-        Assert.assertNull("The wps server service contact info phone should be null",
-                serviceContact.getContactInfo().getPhone());
-        Assert.assertNotNull("The wps server service contact info address should not be null",
-                serviceContact.getContactInfo().getAddress());
-        Assert.assertNotNull("The wps server service contact info address delivery point should not be null",
-                serviceContact.getContactInfo().getAddress().getDeliveryPoint());
-        Assert.assertTrue("The wps server service contact info address delivery point should be empty",
-                serviceContact.getContactInfo().getAddress().getDeliveryPoint().isEmpty());
-        Assert.assertNull("The wps server service contact info address city should be null",
-                serviceContact.getContactInfo().getAddress().getCity());
-        Assert.assertNull("The wps server service contact info address administrative area should be null",
-                serviceContact.getContactInfo().getAddress().getAdministrativeArea());
-        Assert.assertNull("The wps server service contact info address postal code should be null",
-                serviceContact.getContactInfo().getAddress().getPostalCode());
-        Assert.assertNull("The wps server service contact info address country should be null",
-                serviceContact.getContactInfo().getAddress().getCountry());
-        Assert.assertNotNull("The wps server service contact info address email should not be null",
-                serviceContact.getContactInfo().getAddress().getElectronicMailAddress());
-        Assert.assertFalse("The wps server service contact info address email should not be empty",
-                serviceContact.getContactInfo().getAddress().getElectronicMailAddress().isEmpty());
-        Assert.assertEquals("The wps server service contact info address email should be 'info_at_orbisgis.org",
-                serviceContact.getContactInfo().getAddress().getElectronicMailAddress().get(0), "info_at_orbisgis.org");
-        Assert.assertNull("The wps server service contact info online resource should be null",
-                serviceContact.getContactInfo().getOnlineResource());
-        Assert.assertNull("The wps server service contact info hours of service should be null",
-                serviceContact.getContactInfo().getHoursOfService());
-        Assert.assertNull("The wps server service contact info contact instructions should be null",
-                serviceContact.getContactInfo().getContactInstructions());
-        Assert.assertNull("The wps server service contact role should be null",
-                serviceContact.getRole());*/
 
         //operation metadata tests
         Assert.assertNotNull("The wps server operation metadata should not be null",
                 capabilities.getOperationsMetadata());
         Assert.assertNotNull("The wps server operation metadata operation should not be null",
                 capabilities.getOperationsMetadata().getOperation());
-        Assert.assertEquals("The wps server operation metadata operation should contains five elements",
+        Assert.assertEquals("The wps server operation metadata operation should contains six elements",
                 capabilities.getOperationsMetadata().getOperation().size(), 6);
-        Assert.assertNotNull("The wps server operation metadata operation one should not be null",
-                capabilities.getOperationsMetadata().getOperation().get(0));
-        String errorMessage = testOperation(
-                capabilities.getOperationsMetadata().getOperation().get(0), "GetCapabilities");
-        Assert.assertNull(errorMessage, errorMessage);
-        Assert.assertNotNull("The wps server operation metadata operation two should not be null",
-                capabilities.getOperationsMetadata().getOperation().get(1));
-        errorMessage = testOperation(
-                capabilities.getOperationsMetadata().getOperation().get(1), "DescribeProcess");
-        Assert.assertNull(errorMessage, errorMessage);
-        Assert.assertNotNull("The wps server operation metadata operation three should not be null",
-                capabilities.getOperationsMetadata().getOperation().get(2));
-        errorMessage = testOperation(
-                capabilities.getOperationsMetadata().getOperation().get(2), "Execute");
-        Assert.assertNull(errorMessage, errorMessage);
-        Assert.assertNotNull("The wps server operation metadata operation four should not be null",
-                capabilities.getOperationsMetadata().getOperation().get(3));
-        errorMessage = testOperation(
-                capabilities.getOperationsMetadata().getOperation().get(3), "GetStatus");
-        Assert.assertNull(errorMessage, errorMessage);
-        Assert.assertNotNull("The wps server operation metadata operation five should not be null",
-                capabilities.getOperationsMetadata().getOperation().get(4));
-        errorMessage = testOperation(
-                capabilities.getOperationsMetadata().getOperation().get(4), "GetResult");
-        Assert.assertNull(errorMessage, errorMessage);
-        Assert.assertNotNull("The wps server operation metadata operation six should not be null",
-                capabilities.getOperationsMetadata().getOperation().get(5));
-        errorMessage = testOperation(
-                capabilities.getOperationsMetadata().getOperation().get(5), "Dismiss");
-        Assert.assertNull(errorMessage, errorMessage);
+        String[] operations={"GetCapabilities", "DescribeProcess", "Execute", "GetStatus", "GetResult", "Dismiss"};
+        List<Operation> serverOperations = capabilities.getOperationsMetadata().getOperation();
+        for(String operation : operations){
+            boolean isOperationFound = false;
+            for(Operation serverOperation : serverOperations){
+                if(serverOperation.getName().equals(operation)){
+                    isOperationFound = true;
+                    String errorMessage = testOperation(serverOperation, operation);
+                    Assert.assertNull(errorMessage, errorMessage);
+                }
+            }
+            Assert.assertTrue("The operation "+operation+" is not found.", isOperationFound);
+        }
         Assert.assertNotNull("The wps server operation metadata parameter should not be null",
                 capabilities.getOperationsMetadata().getParameter());
         Assert.assertTrue("The wps server operation metadata parameter should be empty",
@@ -374,11 +322,11 @@ public class WpsServerImplTest {
                 capabilities.getLanguages().getLanguage().get(0), "en");
 
         //version tests
-        Assert.assertEquals("The wps server version should be '2.0.0'",
-                capabilities.getVersion(), "2.0.0");
+        Assert.assertEquals("The wps server version should be '1.0.0'",
+                capabilities.getVersion(), "1.0.0");
 
         //update sequence tests
-        Assert.assertNull("The wps server update sequence should be null",
+        Assert.assertNotNull("The wps server update sequence should not be null",
                 capabilities.getUpdateSequence());
     }
 
