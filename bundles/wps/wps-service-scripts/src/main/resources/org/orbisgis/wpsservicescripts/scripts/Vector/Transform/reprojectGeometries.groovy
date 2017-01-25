@@ -121,7 +121,7 @@ String[] srid
 		excludedTypes=["GEOMETRY"],
 		multiSelection = true,
 		minOccurs = 0,
-        jdbcTableReference = "orbisgis:wps:official:reprojectGeometries:inputJDBCTable",
+        	jdbcTableReference = "orbisgis:wps:official:reprojectGeometries:inputJDBCTable",
 		identifier = "orbisgis:wps:official:reprojectGeometries:fieldList"
 )
 String[] fieldList

@@ -17,39 +17,26 @@ import org.orbisgis.wpsgroovyapi.process.Process
  *  - If the field name is on the first line (LiteralData)
  *  - The X field (JDBCTableField)
  *  - The Y field (JDBCTableField)
- *  - The Output data source (JDBCTable)
- *
- * The user can specify (optional):
- *  - The input csv EPSG code (Enumeration)
- *  - The output csv EPSG code (Enumeration)
+ *  - The Output data source (JDBCTable) *
  *
  * @return The point layer data source created from a CSV file.
  *
- * @see http://www.h2gis.org/docs/dev/ST_Transform/
- * @see http://www.h2gis.org/docs/dev/ST_SetSRID/
  * @see http://www.h2gis.org/docs/dev/ST_SeST_MakePointSRID/
  * @author Sylvain PALOMINOS
  */
 @Process(title = ["Point layer from CSV","en","Couche ponctuelle depuis un CSV","fr"],
         description = ["Creates a point layer from a CSV file containing the id of the point, its X and Y coordinate.","en",
-                "Création d'une couche ponctuelle depuis un fichier CSV contenant l'identifiant du point ainsi que ses coordonnées X et Y.","fr"],
-        keywords = ["OrbisGIS,ST_Transform,ST_SetSRID,ST_MakePoint,example","en",
-                "OrbisGIS,ST_Transform,ST_SetSRID,ST_MakePoint,exemple","en"],
+                "Création d'une table de geometries ponctuelles à partir d'un fichier CSV contenant l'identifiant du point ainsi que ses coordonnées X et Y.","fr"],
+        keywords = ["OrbisGIS,Importer, Fichier","fr",
+                "OrbisGIS,Import, File","en"],
         properties = ["DBMS_TYPE","H2GIS"])
 def processing() {
     outputTableName = jdbcTableOutputName
     //Open the CSV file
     File csvFile = new File(csvDataInput[0])
     String csvRead = "CSVRead('"+csvFile.absolutePath+"', NULL, 'fieldSeparator="+separator+"')";
-    String create = "CREATE TABLE "+outputTableName+"(ID INT PRIMARY KEY, THE_GEOM GEOMETRY)";
-    //Execute the SQL query
-    if(inputEPSG != null && outputEPSG != null){
-        sql.execute(create+" AS SELECT "+idField+", " +
-                "ST_TRANSFORM(ST_SETSRID(ST_MakePoint("+xField+", "+yField+"), "+inputEPSG[0]+"), "+outputEPSG[0]+") THE_GEOM FROM "+csvRead+";");
-    }
-    else{
-        sql.execute(create + " AS SELECT "+idField+", ST_MakePoint("+xField+", "+yField+") THE_GEOM FROM "+csvRead+";");
-    }
+    String create = "CREATE TABLE "+ outputTableName+"(ID INT PRIMARY KEY, THE_GEOM GEOMETRY)";    
+    sql.execute(create + " AS SELECT "+idField+", ST_MakePoint("+xField+", "+yField+") THE_GEOM FROM "+csvRead+";");    
 
     literalDataOutput = "Process done"
 }
@@ -102,27 +89,13 @@ String xField
                 "Le champ de la coordonnée Y.","fr"])
 String yField
 
-@EnumerationInput(
-        title = ["Input EPSG","en","EPSG d'entrée","fr"],
-        description = ["The input CSV EPSG code.","en",
-                "Le code EPSG du fichier CSV.","fr"],
-        values=["4326", "2154"],
-        minOccurs=0)
-String[] inputEPSG
 
-@EnumerationInput(
-        title = ["Output EPSG","en","EPSG de sortie","fr"],
-        description = ["The output .csv EPSG code.","en",
-                "Le code EPSG de la couche en sortie.","fr"],
-        values=["4326", "2154"],
-        minOccurs=0)
-String[] outputEPSG
 
 /** Output JDBCTable name. */
 @LiteralDataInput(
-        title = ["JDBCTable name","en","Nom du JDBCTable","fr"],
-        description = ["The JDBCTable name.","en",
-                "Le nom du JDBCTable.","fr"])
+        title = ["Output points table","en","Table de points","fr"],
+        description = ["Name of the output table.","en",
+                "Nom de la table de sortie.","fr"])
 String jdbcTableOutputName
 
 /************/
@@ -131,6 +104,6 @@ String jdbcTableOutputName
 @LiteralDataOutput(
         title = ["Output message","en",
                 "Message de sortie","fr"],
-        description = ["The output message.","en",
-                "Le message de sortie.","fr"])
+        description = ["Output message.","en",
+                "Message de sortie.","fr"])
 String literalDataOutput
