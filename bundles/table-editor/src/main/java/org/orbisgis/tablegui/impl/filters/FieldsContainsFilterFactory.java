@@ -68,7 +68,7 @@ import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactory;
 import org.orbisgis.sif.edition.EditableElementException;
-import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

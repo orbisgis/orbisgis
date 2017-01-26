@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.tablegui.api;
+package org.orbisgis.tableeditorapi;
 
 import org.orbisgis.editorjdbc.EditableSource;
 
@@ -44,10 +44,12 @@ import java.util.SortedSet;
 /**
  * Transfer this class to {@link org.orbisgis.sif.edition.EditorManager} in order to open a new table editor
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public interface TableEditableElement extends EditableSource {
     // Properties names
     public static final String PROP_SELECTION = "selection";
+    public static final String PROP_FILTERED = "filtered";
 
     /**
      * @return Primary keys of the selected rows in the table
@@ -59,4 +61,17 @@ public interface TableEditableElement extends EditableSource {
      * @param selection Row's id
      */
     public void setSelection(Set<Long> selection);
+    
+    
+    /**
+     * Return true if a filter is enable on the table
+     * @return 
+     */
+    public boolean isFiltered();
+    
+    /**
+     * Set if a filter is enable or not on the table
+     * @param isFiltered 
+     */
+    public void setFiltered(boolean isFiltered);
 }

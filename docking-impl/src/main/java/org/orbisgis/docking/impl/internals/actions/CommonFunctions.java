@@ -64,7 +64,7 @@ public class CommonFunctions {
                 cAction.setSelected((Boolean)selected);
             }
         }
-        onActionPropertyChangeDecorateable((CDecorateableAction)cAction,action,propertyChangeEvent);
+        onActionPropertyChangeDecorateable(cAction,action,propertyChangeEvent);
     }
     /**
      * Propagate property change from Action to CAction.

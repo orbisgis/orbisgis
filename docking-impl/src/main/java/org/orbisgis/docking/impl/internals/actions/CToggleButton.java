@@ -37,10 +37,13 @@
 package org.orbisgis.docking.impl.internals.actions;
 
 import bibliothek.gui.dock.common.action.CRadioButton;
+import bibliothek.gui.dock.common.intern.action.CDecorateableAction;
+
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Action;
 
 /**
@@ -48,11 +51,22 @@ import javax.swing.Action;
  */
 public class CToggleButton extends CRadioButton implements CActionHolder {
     private Action action;
+    private AtomicBoolean propagateChange = new AtomicBoolean(true);
+
 
     public CToggleButton(Action action) {
         this.action = action;
         // Read properties from the action
-        onActionPropertyChange(new PropertyChangeEvent(action,null,null,null));
+        CommonFunctions.onActionPropertyChangeDecorateable(this, action , new PropertyChangeEvent(action,null,null,null));
+        Object val = action.getValue(Action.SELECTED_KEY);
+        if(val != null) {
+            try {
+                propagateChange.set(false);
+                setSelected((Boolean) val);
+            } finally {
+                propagateChange.set(true);
+            }
+        }
         // Listen to action property changes
         action.addPropertyChangeListener(
                 EventHandler.create(PropertyChangeListener.class, this, "onActionPropertyChange", ""));
@@ -60,8 +74,10 @@ public class CToggleButton extends CRadioButton implements CActionHolder {
 
     @Override
     protected void changed() {
-        action.putValue(Action.SELECTED_KEY,isSelected());
-        action.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,Action.SELECTED_KEY));
+        if(propagateChange.get()) {
+            action.putValue(Action.SELECTED_KEY, isSelected());
+            action.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, Action.SELECTED_KEY));
+        }
     }
 
     /**

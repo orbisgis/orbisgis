@@ -118,8 +118,12 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
 
     public RepositoryAdmin addingService(ServiceReference<RepositoryAdmin> reference) {
         repoAdmin = bundleContext.getService(reference);
-        propertyChangeSupport.firePropertyChange(PROP_REPOSITORIES,new HashSet<Repository>(),getRepositories());
-        propertyChangeSupport.firePropertyChange(PROP_RESOURCES,new HashSet<Resource>(),getResources());
+        if(propertyChangeSupport.hasListeners(PROP_REPOSITORIES)) {
+            propertyChangeSupport.firePropertyChange(PROP_REPOSITORIES, new HashSet<Repository>(), getRepositories());
+        }
+        if(propertyChangeSupport.hasListeners(PROP_RESOURCES)) {
+            propertyChangeSupport.firePropertyChange(PROP_RESOURCES, new HashSet<Resource>(), getResources());
+        }
         return repoAdmin;
     }
 

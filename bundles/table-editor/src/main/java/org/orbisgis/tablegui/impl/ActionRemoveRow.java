@@ -40,7 +40,7 @@ package org.orbisgis.tablegui.impl;
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.sif.components.actions.ActionTools;
-import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.wpsclient.api.InternalWpsClient;

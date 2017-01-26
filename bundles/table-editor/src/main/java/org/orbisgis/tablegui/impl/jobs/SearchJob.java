@@ -46,7 +46,7 @@ import javax.swing.SwingUtilities;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.impl.filters.TableSelectionFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

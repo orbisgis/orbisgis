@@ -34,7 +34,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Public-Package>org.orbisgis.tablegui.api</Public-Package>
                         <Private-Package>org.orbisgis.tablegui.*</Private-Package>
                     </instructions>
                 </configuration>
@@ -130,6 +129,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wps-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>table-editor-api</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

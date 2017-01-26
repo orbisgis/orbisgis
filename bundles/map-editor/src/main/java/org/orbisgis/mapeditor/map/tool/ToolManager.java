@@ -49,7 +49,6 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -74,7 +73,6 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,9 +91,7 @@ import javax.sql.RowSet;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import org.orbisgis.corejdbc.CreateTable;
 import org.orbisgis.corejdbc.ReversibleRowSet;
-import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.*;
 import org.orbisgis.coremap.map.MapTransform;
 import org.orbisgis.coremap.map.TransformListener;
@@ -109,13 +105,11 @@ import org.orbisgis.coremap.renderer.se.parameter.ParameterException;
 import org.orbisgis.coremap.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.coremap.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.coremap.renderer.se.stroke.PenStroke;
-import org.orbisgis.mapeditor.map.CachedResultSetContainer;
 import org.orbisgis.mapeditor.map.tool.Automaton.Code;
 import org.orbisgis.mapeditor.map.tools.PanTool;
 import org.orbisgis.mapeditor.map.tools.ToolUtilities;
 import org.orbisgis.mapeditor.map.tools.ZoomInTool;
 import org.orbisgis.mapeditor.map.tools.ZoomOutTool;
-import org.orbisgis.commons.progress.NullProgressMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -555,6 +549,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
 
         /**
          * Seems to be a cache of values for Automatons
+         * @param values
          */
         public void setValues(double[] values) {
                 this.values = values;

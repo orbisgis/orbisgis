@@ -100,7 +100,7 @@ import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
-import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.SourceTable;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
@@ -145,6 +145,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         private PropertyChangeListener editableSelectionListener =
                 EventHandler.create(PropertyChangeListener.class,this,
                 "onEditableSelectionChange");
+        private PropertyChangeListener filterListener =
+                EventHandler.create(PropertyChangeListener.class,this,
+                "onFilterChange");
         private ActionCommands popupActions = new ActionCommands();
         private DataSource dataSource;
         private DataManager dataManager;
@@ -209,12 +212,18 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             }
         }
 
+        /**
+         * Return the actions available on the top of the table editor
+         * @return
+         */
         private List<Action> getDockActions() {
                 List<Action> actions = new LinkedList<>();
                 actions.add(new DefaultAction(TableEditorActions.A_REFRESH, I18N.tr("Refresh table content"),
                         TableEditorIcon.getIcon("table_refresh"),
                         EventHandler.create(ActionListener.class, this, "onMenuRefresh"))
                         .setLogicalGroup(TableEditorActions.LGROUP_READ));
+
+                actions.add(new ActionFilteredRow(tableEditableElement));
 
                 actions.add(new DefaultAction(TableEditorActions.A_PREVIOUS_SELECTION, I18N.tr("Previous selection"),
                         I18N.tr("Go to previous selected row"),TableEditorIcon.getIcon("selection-previous"),
@@ -248,18 +257,30 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 if (!onUpdateEditableSelection.getAndSet(true)) {
                     // Convert primary key value into row number
                     try {
-                        SortedSet<Integer> modelRows = tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement.getSelection());
-                        setRowSelection(modelRows, -1);
-                        if(!modelRows.isEmpty()) {
-                            // Scroll to first selection
-                            scrollToRow(modelRows.first() - 1);
-                        }
+                            SortedSet<Integer> modelRows = tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement.getSelection());
+                            setRowSelection(modelRows, -1);
+                            if (!modelRows.isEmpty()) {
+                                // Scroll to first selection
+                                scrollToRow(modelRows.first() - 1);
+                            }
+
                     } catch (EditableElementException | SQLException ex) {
                         LOGGER.error(ex.getLocalizedMessage(), ex);
                     } finally {
                             onUpdateEditableSelection.set(false);
                     }
                 }
+        }
+
+        /**
+         * The rows have been filtered
+         */
+        public void onFilterChange(){
+            if(tableEditableElement.isFiltered()) {
+                onMenuFilterRows();
+            } else {
+                onMenuClearFilter();
+            }
         }
 
         /**
@@ -270,8 +291,12 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             return table.rowAtPoint(viewport.getViewPosition());
         }
 
+        /**
+         * Return true if the row is visible
+         * @param row
+         * @return
+         */
         private boolean isRowVisible(int row) {
-            JViewport viewport = tableScrollPane.getViewport();
             return table.getVisibleRect().intersects(table.getCellRect(row, 0, true));
         }
 
@@ -331,6 +356,11 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         public void onPopupBecomeVisible() {
                 cellHighlight.setLocation(popupCellAdress);
         }
+
+        /**
+         * Create the filter panel
+         * @return
+         */
         private JComponent makeFilterManager() {
                 JPanel filterComp = filterManager.makeFilterPanel(false);
                 filterManager.setUserCanRemoveFilter(false);
@@ -372,6 +402,11 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 filterManager.clearFilters();
                 filterManager.addFilter(currentFilter);
         }
+
+        /**
+         * Create the table and its actions
+         * @return
+         */
         private JComponent makeTable() {
                 table = new JTable();
                 table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
@@ -427,11 +462,15 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 }
         }
         
+        /**
+         * Create popup menu when the user click on a cell
+         * @return
+         */
         private JPopupMenu makeTableCellPopup() {
                 JPopupMenu pop = new JPopupMenu();
                 boolean hasSelectedRows = table.getSelectedRowCount()>0;
-                if(hasSelectedRows) {
-                        JMenuItem addRowFilter = new JMenuItem(I18N.tr("filter selected rows"),
+                if(hasSelectedRows && !tableSorter.isFiltered()) {
+                        JMenuItem addRowFilter = new JMenuItem(I18N.tr("Filter selected rows"),
                                 TableEditorIcon.getIcon("row_filter"));
                         addRowFilter.setToolTipText(I18N.tr("Show only the selected rows"));
                         addRowFilter.addActionListener(
@@ -441,7 +480,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 }
                 if(tableSorter.isFiltered()) {
                         JMenuItem removeRowFilter = new JMenuItem(
-                                I18N.tr("Clear row filter"), TableEditorIcon.getIcon("remove"));
+                                I18N.tr("Clear row filter"), TableEditorIcon.getIcon("row_filter_remove"));
                         removeRowFilter.setToolTipText(I18N.tr("Show all rows"));
                         removeRowFilter.addActionListener(
                                 EventHandler.create(ActionListener.class,
@@ -557,6 +596,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
          */
         public void onMenuClearFilter() {
                 tableSorter.setRowsFilter(null);
+                tableEditableElement.setFiltered(false);
         }
         /**
          * Invert the current table selection
@@ -766,7 +806,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
          * @param zeroBaseDiff JTable selection is 0 based. Set 1 in order to get a 1 based row identifier selection.
          * @return Select row id
          */
-        private IntegerUnion getTableModelSelection(int zeroBaseDiff) {
+        public IntegerUnion getTableModelSelection(int zeroBaseDiff) {
             IntegerUnion selectionModelRowId = new IntegerUnion();
             for (int viewRowId : table.getSelectedRows()) {
                 selectionModelRowId.add(tableSorter.convertRowIndexToModel(viewRowId) + zeroBaseDiff);
@@ -805,7 +845,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
         @Override
         public boolean match(EditableElement editableElement) {
-                return true;
+           return editableElement instanceof MapElement || editableElement instanceof TableEditableElement;
         }
 
         /**
@@ -854,16 +894,24 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 //Set the row count at left
                 tableRowHeader = new TableRowHeader(table);
                 tableScrollPane.setRowHeaderView(tableRowHeader);
+
                 //Apply the selection
                 try {
                     setRowSelection(tableEditableElement.getRowSet().getRowNumberFromRowPk(tableEditableElement
                             .getSelection()), -1);
+                    //Apply the filtered row action
+                if(tableEditableElement.isFiltered()){
+                    IntegerUnion selectedModelIndex = getTableModelSelection(0);
+                    tableSorter.setRowsFilter(selectedModelIndex);
+                }
+
                     if (!table.getSelectionModel().isSelectionEmpty()) {
                         scrollToRow(table.getSelectionModel().getMinSelectionIndex());
                     }
                 } catch (EditableElementException |SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
+
                 table.getSelectionModel().addListSelectionListener(
                         EventHandler.create(ListSelectionListener.class,this,
                         "onTableSelectionChange",""));
@@ -877,6 +925,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 // Add a selection listener on the editable element
                 tableEditableElement.addPropertyChangeListener(TableEditableElement.PROP_SELECTION,
                         editableSelectionListener);
+                // Add a filter listener on the editable element
+                tableEditableElement.addPropertyChangeListener(TableEditableElement.PROP_FILTERED,
+                        filterListener);
                 dockingPanelParameters.setDockActions(getDockActions());
                 initPopupActions();
                 tableScrollPane.getVerticalScrollBar().setBlockIncrement((int)(table.getHeight() / (TABLE_SCROLL_PERC / 100.)));
@@ -909,6 +960,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                                 LOGGER.debug("Close table "+dockingPanelParameters.getTitle());
                                 tableEditableElement.close(new NullProgressMonitor());                                
                                 tableEditableElement.removePropertyChangeListener(editableSelectionListener);
+                                tableEditableElement.removePropertyChangeListener(filterListener);
                         } catch (UnsupportedOperationException | EditableElementException ex) {
                                 LOGGER.error(ex.getLocalizedMessage(),ex);
                         }
@@ -1290,6 +1342,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 List<String> columnNames = new ArrayList<>();
                 try {
                     try {
+                        if(!table.isOpen()) {
+                            table.open(getProgressMonitor());
+                        }
                         ResultSetMetaData meta = table.getRowSet().getMetaData();
                         for (int col = 1; col < meta.getColumnCount(); col++) {
                             columnNames.add(meta.getColumnName(col));
@@ -1340,4 +1395,13 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             return true;
         }
     }
+
+    /**
+     * Return the DataSourceRowSorter to filter or short the data of the table
+     * @return
+     */
+    public DataSourceRowSorter getDataSourceRowSorter() {
+        return tableSorter;
+    }
+
 }
