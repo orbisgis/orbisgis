@@ -403,12 +403,13 @@ public class JDBCTableFieldUI implements DataUI {
             JComboBox<ContainerItem<Object>> comboBox = (JComboBox)source;
             if(comboBox.getSelectedItem() != null) {
                 ContainerItem<Object> selectedItem = (ContainerItem<Object>)comboBox.getSelectedItem();
+                Object defaultItem = comboBox.getClientProperty(DEFAULT_ITEM_PROPERTY);
                 JDBCTableField jdbcTableField = (JDBCTableField) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
                 Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
                 URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
                 boolean isOptional = (boolean)comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
                 dataMap.remove(uri);
-                if (isOptional && selectedItem.getLabel().isEmpty()) {
+                if ((isOptional && selectedItem.getLabel().isEmpty()) || selectedItem.equals(defaultItem)) {
                     dataMap.put(uri, null);
                 }
                 else{
