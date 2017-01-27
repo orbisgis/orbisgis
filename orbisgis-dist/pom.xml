@@ -81,7 +81,7 @@
                             <overWriteIfNewer>true</overWriteIfNewer>
                             <excludeTransitive>false</excludeTransitive>
                             <stripVersion>true</stripVersion>
-                            <includeArtifactIds>pax-logging-api, logback-classic,logback-core,logback-jackson,logback-json-classic,logback-json-core</includeArtifactIds>
+                            <includeArtifactIds>org.apache.felix.gogo.shell,org.apache.felix.gogo.command, pax-logging-api, logback-classic,logback-core,logback-jackson,logback-json-classic,logback-json-core</includeArtifactIds>
                         </configuration>
                     </execution>
                     <execution>
@@ -101,7 +101,7 @@
                             <excludeGroupIds>ch.qos.logback, com.fifesoft, com.miglayout, com.vividsolutions, org.postgis,
                                 org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla, com.lowagie, rhino,
                                 org.easymock, net.sf.kxml, xmlpull</excludeGroupIds>
-                            <excludeArtifactIds>pax-logging-api, slf4j-api, markdown4j, org.apache.felix.scr.ds-annotations,org.osgi.core,
+                            <excludeArtifactIds>org.apache.felix.gogo.shell,org.apache.felix.gogo.command, pax-logging-api, slf4j-api, markdown4j, org.apache.felix.scr.ds-annotations,org.osgi.core,
                                 animal-sniffer-annotations, org.apache.felix.scr.annotations, org.osgi.compendium, cm-API</excludeArtifactIds>
                         </configuration>
                     </execution>

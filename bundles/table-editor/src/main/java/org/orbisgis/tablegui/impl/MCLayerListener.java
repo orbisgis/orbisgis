@@ -42,7 +42,7 @@ import org.orbisgis.coremap.layerModel.LayerCollectionEvent;
 import org.orbisgis.coremap.layerModel.LayerListener;
 import org.orbisgis.coremap.layerModel.LayerListenerEvent;
 import org.orbisgis.coremap.layerModel.SelectionEvent;
-import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tableeditorapi.TableEditableElement;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

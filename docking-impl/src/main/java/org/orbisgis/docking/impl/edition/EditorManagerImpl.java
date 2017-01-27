@@ -55,14 +55,17 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -85,6 +88,7 @@ public class EditorManagerImpl implements EditorManager {
     private MainWindow mainWindow;
     private EditorFactoryTracker editorFactoryTracker;
     private EditorPanelTracker editorPanelTracker;
+    private static final Logger LOGGER = LoggerFactory.getLogger(EditorManagerImpl.class);
 
 
 
@@ -236,8 +240,8 @@ public class EditorManagerImpl implements EditorManager {
         return editors;
     }
 
-    @Override
-    public void openEditable(EditableElement editableElement) {
+    private void doOpenEditable(EditableElement editableElement) {
+
         Set<EditableElement> ignoreModifiedEditables = new HashSet<EditableElement>();
         // Open the element in editors
         for (Editor editor : getEditors()) {
@@ -275,12 +279,41 @@ public class EditorManagerImpl implements EditorManager {
         }
     }
 
+    @Override
+    public void openEditable(EditableElement editableElement) {
+        // Open editable should be called on Swing thread
+        if(SwingUtilities.isEventDispatchThread()) {
+            doOpenEditable(editableElement);
+        } else {
+            try {
+                SwingUtilities.invokeAndWait(new OpenEditable(editableElement, this));
+            } catch (InterruptedException | InvocationTargetException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+            }
+        }
+    }
+
     /**
      * Release all factories resources
      */
     public void dispose() {
         for (EditorFactory factory : factories) {
             factory.dispose();
+        }
+    }
+
+    private static final class OpenEditable implements Runnable {
+        EditableElement editableElement;
+        EditorManagerImpl editorManager;
+
+        public OpenEditable(EditableElement editableElement, EditorManagerImpl editorManager) {
+            this.editableElement = editableElement;
+            this.editorManager = editorManager;
+        }
+
+        @Override
+        public void run() {
+            editorManager.doOpenEditable(editableElement);
         }
     }
 }

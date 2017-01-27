@@ -43,7 +43,7 @@ import org.orbisgis.sif.edition.Editor;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.sif.edition.EditorFactory;
-import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -56,7 +56,7 @@ import org.xnap.commons.i18n.I18nFactory;
 import java.util.concurrent.ExecutorService;
 
 /**
- *  This factory receive the {@link TableEditableElementImpl} and open a new editor.
+ *  This factory receive the {@link TableEditableElement} and open a new editor.
  */
 @Component(immediate = true)
 public class TableEditorFactory implements EditorFactory {

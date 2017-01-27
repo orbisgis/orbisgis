@@ -37,7 +37,7 @@
 package org.orbisgis.tablegui.impl;
 
 
-import org.orbisgis.tablegui.api.TableEditableElement;
+import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.sif.components.actions.ActionTools;
@@ -51,6 +51,7 @@ import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import org.orbisgis.tableeditorapi.TableEditableElementImpl;
 
 /**
  * Lock/Unlock table edition action.

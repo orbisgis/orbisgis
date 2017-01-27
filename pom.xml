@@ -59,6 +59,7 @@
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
                 <module>bundles/wps</module>
+                <module>bundles/table-editor-api</module>
         </modules>
         <profiles>
                 <profile>

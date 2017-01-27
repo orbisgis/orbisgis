@@ -50,7 +50,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.swing.JOptionPane;
 import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEdit;
 
 import org.apache.commons.io.FilenameUtils;
 import org.orbisgis.corejdbc.DataManager;
