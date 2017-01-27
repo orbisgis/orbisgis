@@ -189,11 +189,11 @@ public class LiteralDataUI implements DataUI {
             comboBox.addItem(literalData.getLiteralDataDomain().get(0).getDataType().getValue());
 
             //JPanel containing the component to set the input value
-            JComponent jdbcTableField = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-
+            JComponent dataFieldComp = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+            URI uri = URI.create(input.getIdentifier().getValue());
             comboBox.putClientProperty(LITERAL_DATA_PROPERTY, literalData);
-            comboBox.putClientProperty(DATA_FIELD_PROPERTY, jdbcTableField);
-            comboBox.putClientProperty(URI_PROPERTY, URI.create(input.getIdentifier().getValue()));
+            comboBox.putClientProperty(DATA_FIELD_PROPERTY, dataFieldComp);
+            comboBox.putClientProperty(URI_PROPERTY, uri);
             comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
             comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, input.getMinOccurs().equals(new BigInteger("0")));
             comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, input.getAbstract().get(0).getValue());
@@ -202,12 +202,23 @@ public class LiteralDataUI implements DataUI {
             comboBox.setBackground(Color.WHITE);
             comboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
 
+            Object defaultValueObject = null;
+            for(LiteralDataType.LiteralDataDomain domain : literalData.getLiteralDataDomain()){
+                if(domain.isDefault() && domain.getDefaultValue() != null){
+                    defaultValueObject = domain.getDefaultValue().getValue();
+                }
+            }
+
+            dataMap.put(uri, defaultValueObject);
             onBoxChange(comboBox);
+            if(input.getMinOccurs().equals(new BigInteger("0"))) {
+                dataMap.remove(uri);
+            }
 
             if(comboBox.getItemCount() > 1){
                 panel.add(comboBox, "growx, wrap");
             }
-            panel.add(jdbcTableField, "growx, wrap");
+            panel.add(dataFieldComp, "growx, wrap");
             return panel;
         }
         return null;

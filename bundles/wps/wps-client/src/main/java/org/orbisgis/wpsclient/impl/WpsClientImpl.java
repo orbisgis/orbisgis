@@ -636,8 +636,13 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         //Link the JDBCTable with the JDBCTableField and the JDBCTableField with the JDBCTableFieldValue
         link(process);
         //Open the ProcessEditor
-        ProcessEditableElement processEditableElement = new ProcessEditableElement(listProcess.get(0));
-        ProcessEditor pe = new ProcessEditor(this, processEditableElement, defaultValuesMap, type);
+        Map<URI, Object> joinedDefaultValuesMap = new HashMap<>();
+        joinedDefaultValuesMap.putAll(dataUIManager.getInputDefaultValues(listProcess.get(0).getProcess()));
+        if(defaultValuesMap != null) {
+            joinedDefaultValuesMap.putAll(defaultValuesMap);
+        }
+        ProcessEditableElement processEditableElement = new ProcessEditableElement(listProcess.get(0), joinedDefaultValuesMap);
+        ProcessEditor pe = new ProcessEditor(this, processEditableElement, type);
         //Find if there is already a ProcessEditor open with the same process.
         //If not, add the new one.
         boolean alreadyOpen = false;

@@ -44,7 +44,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
 
     //Build the start of the query
-    String query = "CREATE TABLE "+outputTableName+" AS SELECT ST_Buffer("+geometricField+","+bufferSize
+    String query = "CREATE TABLE "+outputTableName+" AS SELECT ST_Buffer("+geometricField[0]+","+bufferSize
     //Build the third optional parameter
     String optionalParameter = "";
     //If quadSegs is defined

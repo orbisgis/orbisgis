@@ -67,6 +67,9 @@ public class RawDataParser implements Parser {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class), format);
+        if(defaultValue != null && defaultValue instanceof String[]) {
+            rawData.setDefaultValues((String[])defaultValue);
+        }
 
         InputDescriptionType input = new InputDescriptionType();
         JAXBElement<RawData> jaxbElement = new ObjectFactory().createRawData(rawData);

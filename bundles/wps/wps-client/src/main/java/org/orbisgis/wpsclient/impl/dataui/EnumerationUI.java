@@ -134,26 +134,24 @@ public class EnumerationUI implements DataUI {
         }
         //Select the default values
         List<Integer> selectedIndex = new ArrayList<>();
-        if(!isOptional) {
-            if(enumeration.getDefaultValues() != null) {
-                for (String defaultValue : enumeration.getDefaultValues()) {
-                    for (int i = 0; i < model.getSize(); i++) {
-                        if (model.get(i).getKey().equals(defaultValue)) {
-                            selectedIndex.add(i);
-                        }
+        if(enumeration.getDefaultValues() != null) {
+            for (String defaultValue : enumeration.getDefaultValues()) {
+                for (int i = 0; i < model.getSize(); i++) {
+                    if (model.get(i).getKey().equals(defaultValue)) {
+                        selectedIndex.add(i);
                     }
                 }
             }
-            else{
-                selectedIndex.add(0);
-            }
-            int[] array = new int[selectedIndex.size()];
-            for (int i = 0; i < selectedIndex.size(); i++) {
-                array[i] = selectedIndex.get(i);
-            }
-            list.setSelectedIndices(array);
         }
         else{
+            selectedIndex.add(0);
+        }
+        int[] array = new int[selectedIndex.size()];
+        for (int i = 0; i < selectedIndex.size(); i++) {
+            array[i] = selectedIndex.get(i);
+        }
+        list.setSelectedIndices(array);
+        if(!isOptional) {
             dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
         }
         //Configure the JList
@@ -224,18 +222,16 @@ public class EnumerationUI implements DataUI {
         else if(inputOrOutput instanceof OutputDescriptionType){
             enumeration = (Enumeration)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
         }
-        if(!isOptional) {
-            if(enumeration.getDefaultValues() != null && enumeration.getDefaultValues().length != 0) {
-                if (enumeration.isMultiSelection()) {
-                    map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getDefaultValues());
-                } else {
-                    map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getDefaultValues()[0]);
-                }
+        if(enumeration.getDefaultValues() != null && enumeration.getDefaultValues().length != 0) {
+            if (enumeration.isMultiSelection()) {
+                map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getDefaultValues());
+            } else {
+                map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getDefaultValues()[0]);
             }
-            else{
-                if(enumeration.getValues().length != 0) {
-                    map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getValues()[0]);
-                }
+        }
+        else{
+            if(enumeration.getValues().length != 0) {
+                map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getValues()[0]);
             }
         }
         return map;

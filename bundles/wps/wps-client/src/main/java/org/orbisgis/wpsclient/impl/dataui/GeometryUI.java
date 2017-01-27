@@ -40,6 +40,7 @@ package org.orbisgis.wpsclient.impl.dataui;
 import net.miginfocom.swing.MigLayout;
 import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.InputDescriptionType;
+import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.wpsclient.impl.WpsClientImpl;
 import org.orbisgis.wpsclient.api.dataui.DataUI;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
@@ -145,7 +146,20 @@ public class GeometryUI implements DataUI {
 
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
-        return new HashMap<>();
+        Map<URI, Object> map = new HashMap<>();
+        GeometryData geometryData = null;
+        boolean isOptional = false;
+        if(inputOrOutput instanceof InputDescriptionType){
+            geometryData = (GeometryData)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
+        }
+        else if(inputOrOutput instanceof OutputDescriptionType){
+            geometryData = (GeometryData)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
+        }
+        if(geometryData.getDefaultValue() != null) {
+            map.put(URI.create(inputOrOutput.getIdentifier().getValue()), geometryData.getDefaultValue());
+        }
+        return map;
     }
 
     @Override

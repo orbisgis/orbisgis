@@ -65,6 +65,7 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.IOException;
 import java.io.File;
+import java.math.BigInteger;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -151,8 +152,22 @@ public class RawDataUI implements DataUI {
         openPanel.loadState();
 
 
-        if(dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue())) != null)
-            jtf.setText(dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue())).toString());
+        Object defaultValuesObject = dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue()));
+        if(defaultValuesObject != null && defaultValuesObject instanceof String[]) {
+            String txt = "";
+            if(rawData.multiSelection()) {
+                for(String str : (String[])defaultValuesObject){
+                    if(!txt.isEmpty()){
+                        txt+=" ";
+                    }
+                    txt+="\""+str+"\"";
+                }
+            }
+            else{
+                txt = ((String[])defaultValuesObject)[0];
+            }
+            jtf.setText(txt);
+        }
         else {
             jtf.setText(openPanel.getCurrentDirectory().getAbsolutePath());
         }
@@ -195,7 +210,20 @@ public class RawDataUI implements DataUI {
 
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
-        return new HashMap<>();
+        Map<URI, Object> map = new HashMap<>();
+        RawData rawData = null;
+        boolean isOptional = false;
+        if(inputOrOutput instanceof InputDescriptionType){
+            rawData = (RawData)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
+        }
+        else if(inputOrOutput instanceof OutputDescriptionType){
+            rawData = (RawData)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
+        }
+        if(rawData.getDefaultValues() != null) {
+            map.put(URI.create(inputOrOutput.getIdentifier().getValue()), rawData.getDefaultValues());
+        }
+        return map;
     }
 
     @Override
