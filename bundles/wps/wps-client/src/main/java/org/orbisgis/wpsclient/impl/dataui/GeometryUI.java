@@ -218,7 +218,12 @@ public class GeometryUI implements DataUI {
             else {
                 Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
                 URI uri = (URI) document.getProperty(URI_PROPERTY);
-                dataMap.put(uri, name);
+                if(isOptional && name.isEmpty()){
+                    dataMap.put(uri, null);
+                }
+                else {
+                    dataMap.put(uri, name);
+                }
             }
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(GeometryUI.class).error(e.getMessage());

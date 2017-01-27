@@ -182,6 +182,7 @@ public class EnumerationUI implements DataUI {
         list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
         list.putClientProperty(IS_MULTISELECTION_PROPERTY, enumeration.isMultiSelection());
+        list.putClientProperty(ENUMERATION_PROPERTY, enumeration);
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
         list.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
 
@@ -253,6 +254,7 @@ public class EnumerationUI implements DataUI {
         HashMap<URI, Object> dataMap = (HashMap) list.getClientProperty(DATA_MAP_PROPERTY);
         boolean isMultiSelection = (boolean)list.getClientProperty(IS_MULTISELECTION_PROPERTY);
         boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
+        Enumeration enumeration = (Enumeration) list.getClientProperty(ENUMERATION_PROPERTY);
         //If there is a textfield and if it contain a text, add the coma separated values
         if (list.getClientProperty(TEXT_FIELD_PROPERTY) != null) {
             JTextField textField = (JTextField) list.getClientProperty(TEXT_FIELD_PROPERTY);
@@ -275,7 +277,15 @@ public class EnumerationUI implements DataUI {
                 dataMap.put(uri, null);
             }
             else{
-                list.setSelectedIndices(new int[]{0});
+                int[] indices = new int[enumeration.getDefaultValues().length];
+                for(int i=0; i<enumeration.getDefaultValues().length; i++){
+                    for(int j=0; j<list.getModel().getSize(); j++){
+                        if(list.getModel().getElementAt(j).getLabel().equals(enumeration.getDefaultValues()[i])){
+                            indices[i] = j;
+                        }
+                    }
+                }
+                list.setSelectedIndices(indices);
             }
         }
         else {

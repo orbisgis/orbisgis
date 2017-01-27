@@ -99,6 +99,7 @@ public class LiteralDataUI implements DataUI {
     private static final String VERTICAL_BAR_PROPERTY = "VERTICAL_BAR_PROPERTY";
     private static final String LITERAL_DATA_PROPERTY = "LITERAL_DATA_PROPERTY";
     private static final String ORIENTATION_PROPERTY = "ORIENTATION_PROPERTY";
+    private static final String DEFAULT_VALUE_PROPERTY = "DEFAULT_VALUE_PROPERTY";
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(LiteralDataUI.class);
 
@@ -555,6 +556,14 @@ public class LiteralDataUI implements DataUI {
                 Document doc = textArea.getDocument();
                 doc.putProperty(DATA_MAP_PROPERTY, comboBox.getClientProperty(DATA_MAP_PROPERTY));
                 doc.putProperty(URI_PROPERTY, comboBox.getClientProperty(URI_PROPERTY));
+                doc.putProperty(IS_OPTIONAL_PROPERTY, isOptional);
+                String defaultValue = "";
+                for(LiteralDataType.LiteralDataDomain domain : literalData.getLiteralDataDomain()){
+                    if(domain.isDefault() && domain.getDefaultValue() != null && domain.getDefaultValue().getValue() != null){
+                        defaultValue = domain.getDefaultValue().getValue();
+                    }
+                }
+                doc.putProperty(DEFAULT_VALUE_PROPERTY, defaultValue);
                 //Set the default value and adds the listener for saving the value set by the user
                 if (dataMap.get(uri) != null) {
                     textArea.setText((String) dataMap.get(uri));
@@ -705,9 +714,14 @@ public class LiteralDataUI implements DataUI {
 
         Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
         URI uri = (URI) document.getProperty(URI_PROPERTY);
+        boolean isOptional = (boolean) document.getProperty(IS_OPTIONAL_PROPERTY);
+        String defaultValue = (String) document.getProperty(DEFAULT_VALUE_PROPERTY);
         try {
             String text = document.getText(0, document.getLength());
-            if(text.isEmpty()){
+            if(text .isEmpty() && isOptional && !defaultValue.isEmpty()){
+                text = defaultValue;
+            }
+            else if(text.isEmpty()){
                 text = null;
             }
             dataMap.put(uri, text);

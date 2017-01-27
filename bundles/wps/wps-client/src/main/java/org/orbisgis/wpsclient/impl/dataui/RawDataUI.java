@@ -341,10 +341,15 @@ public class RawDataUI implements DataUI {
             else {
                 Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
                 URI uri = (URI) document.getProperty(URI_PROPERTY);
-                if(name.contains("\"")){
-                    name = name.replaceAll("\" \"", "\t").replaceAll("\"", "");
+                if(name.isEmpty() && isOptional){
+                    dataMap.put(uri, null);
                 }
-                dataMap.put(uri, name);
+                else {
+                    if (name.contains("\"")) {
+                        name = name.replaceAll("\" \"", "\t").replaceAll("\"", "");
+                    }
+                    dataMap.put(uri, name);
+                }
             }
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(RawDataUI.class).error(e.getMessage());
