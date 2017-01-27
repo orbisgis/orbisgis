@@ -88,6 +88,8 @@ public class RawDataUI implements DataUI {
     private static final String OPEN_PANEL_PROPERTY = "OPEN_PANEL_PROPERTY";
     private static final String MULTI_SELECTION_PROPERTY = "MULTI_SELECTION_PROPERTY";
     private static final String EXCLUDED_TYPE_LIST_PROPERTY = "EXCLUDED_TYPE_LIST_PROPERTY";
+    private static final String DEFAULT_VALUE_PROPERTY = "DEFAULT_VALUE_PROPERTY";
+    private static final String IS_OPTIONAL_PROPERTY = "IS_OPTIONAL_PROPERTY";
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(RawDataUI.class);
 
@@ -101,30 +103,42 @@ public class RawDataUI implements DataUI {
 
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
+
+        RawData rawData = null;
+        String action = null;
+        boolean isOptional = false;
+        if(inputOrOutput instanceof InputDescriptionType){
+            rawData = (RawData) ((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            action = OpenPanel.ACTION_OPEN;
+            isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
+        }
+        else if(inputOrOutput instanceof OutputDescriptionType){
+            return null;
+        }
+
         //Create the main panel
         JComponent component = new JPanel(new MigLayout("fill"));
+        if(rawData == null){
+            return component;
+        }
         //Display the SourceCA into a JTextField
         JTextField jtf = new JTextField();
         jtf.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
         //"Save" the CA inside the JTextField
         jtf.getDocument().putProperty(DATA_MAP_PROPERTY, dataMap);
         jtf.getDocument().putProperty(URI_PROPERTY, URI.create(inputOrOutput.getIdentifier().getValue()));
+        if(rawData.getDefaultValues() != null) {
+            jtf.getDocument().putProperty(DEFAULT_VALUE_PROPERTY, rawData.getDefaultValues());
+        }
+        else{
+            jtf.getDocument().putProperty(DEFAULT_VALUE_PROPERTY, new String[]{});
+        }
+        jtf.getDocument().putProperty(IS_OPTIONAL_PROPERTY, isOptional);
+        jtf.getDocument().putProperty(TEXT_FIELD_PROPERTY, jtf);
         //add the listener for the text changes in the JTextField
         jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this,
                 "saveDocumentText", "document"));
 
-        RawData rawData = null;
-        String action = null;
-        if(inputOrOutput instanceof InputDescriptionType){
-            rawData = (RawData) ((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
-            action = OpenPanel.ACTION_OPEN;
-        }
-        else if(inputOrOutput instanceof OutputDescriptionType){
-            return null;
-        }
-        if(rawData == null){
-            return component;
-        }
 
         String dataAccepted;
         if(rawData.isDirectory() && !rawData.isFile()) {
@@ -305,7 +319,26 @@ public class RawDataUI implements DataUI {
     public void saveDocumentText(Document document){
         try {
             String name = document.getText(0, document.getLength());
-            if(new File(name).exists()) {
+            boolean isOptional = (boolean) document.getProperty(IS_OPTIONAL_PROPERTY);
+            String[] defaultValue = (String[]) document.getProperty(DEFAULT_VALUE_PROPERTY);
+            if(name.isEmpty() && !isOptional && defaultValue.length != 0){
+                final JTextField jtf = (JTextField) document.getProperty(TEXT_FIELD_PROPERTY);
+                String text = "";
+                for(String str : defaultValue){
+                    if (!text.isEmpty()) {
+                        text += " ";
+                    }
+                    text += "\"" + str + "\"";
+                }
+                final String finalText = text;
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        jtf.setText(finalText);
+                    }
+                });
+            }
+            else {
                 Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
                 URI uri = (URI) document.getProperty(URI_PROPERTY);
                 if(name.contains("\"")){

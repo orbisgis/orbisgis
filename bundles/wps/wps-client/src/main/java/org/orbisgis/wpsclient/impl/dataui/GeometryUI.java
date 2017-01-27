@@ -79,6 +79,8 @@ public class GeometryUI implements DataUI {
     private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
     private static final String URI_PROPERTY = "URI_PROPERTY";
     private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
+    private static final String DEFAULT_VALUE_PROPERTY = "DEFAULT_VALUE_PROPERTY";
+    private static final String IS_OPTIONAL_PROPERTY = "IS_OPTIONAL_PROPERTY";
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -97,21 +99,6 @@ public class GeometryUI implements DataUI {
         if(inputOrOutput instanceof InputDescriptionType){
             isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
         }
-        //Display the SourceCA into a JTextField
-        JTextField jtf = new JTextField();
-        jtf.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
-        //"Save" the CA inside the JTextField
-        jtf.getDocument().putProperty(DATA_MAP_PROPERTY, dataMap);
-        URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
-        jtf.getDocument().putProperty(URI_PROPERTY, uri);
-        //add the listener for the text changes in the JTextField
-        jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this,
-                "saveDocumentText", "document"));
-        if(isOptional) {
-            if (dataMap.containsKey(uri)) {
-                jtf.setText(dataMap.get(uri).toString());
-            }
-        }
 
         GeometryData geometryData = null;
         if(inputOrOutput instanceof InputDescriptionType){
@@ -120,6 +107,30 @@ public class GeometryUI implements DataUI {
         //If the DescriptionType is an output, there is nothing to show, so exit
         if(geometryData == null){
             return null;
+        }
+
+        //Display the SourceCA into a JTextField
+        JTextField jtf = new JTextField();
+        jtf.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
+        //"Save" the CA inside the JTextField
+        jtf.getDocument().putProperty(DATA_MAP_PROPERTY, dataMap);
+        URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
+        jtf.getDocument().putProperty(URI_PROPERTY, uri);
+        if(geometryData.getDefaultValue() != null) {
+            jtf.getDocument().putProperty(DEFAULT_VALUE_PROPERTY, geometryData.getDefaultValue());
+        }
+        else{
+            jtf.getDocument().putProperty(DEFAULT_VALUE_PROPERTY, "");
+        }
+        jtf.getDocument().putProperty(IS_OPTIONAL_PROPERTY, isOptional);
+        jtf.getDocument().putProperty(TEXT_FIELD_PROPERTY, jtf);
+        //add the listener for the text changes in the JTextField
+        jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this,
+                "saveDocumentText", "document"));
+        if(isOptional) {
+            if (dataMap.containsKey(uri)) {
+                jtf.setText(dataMap.get(uri).toString());
+            }
         }
 
         component.add(jtf, "growx");
@@ -193,9 +204,22 @@ public class GeometryUI implements DataUI {
     public void saveDocumentText(Document document){
         try {
             String name = document.getText(0, document.getLength());
-            Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
-            URI uri = (URI) document.getProperty(URI_PROPERTY);
-            dataMap.put(uri, name);
+            boolean isOptional = (boolean) document.getProperty(IS_OPTIONAL_PROPERTY);
+            final String defaultValue = (String) document.getProperty(DEFAULT_VALUE_PROPERTY);
+            if(name.isEmpty() && !isOptional && !defaultValue.isEmpty()){
+                final JTextField textField = (JTextField) document.getProperty(TEXT_FIELD_PROPERTY);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        textField.setText(defaultValue);
+                    }
+                });
+            }
+            else {
+                Map<URI, Object> dataMap = (Map<URI, Object>) document.getProperty(DATA_MAP_PROPERTY);
+                URI uri = (URI) document.getProperty(URI_PROPERTY);
+                dataMap.put(uri, name);
+            }
         } catch (BadLocationException e) {
             LoggerFactory.getLogger(GeometryUI.class).error(e.getMessage());
         }
