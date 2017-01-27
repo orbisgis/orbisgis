@@ -315,7 +315,10 @@ public class JDBCTableFieldValueUI implements DataUI {
                     else if(split.length == 2){
                         tableName = split[1];
                     }
-                    fieldName = dataMap.get(jdbcTableFieldValue.getJDBCTableFieldIdentifier()).toString();
+                    Object fieldNameObject = dataMap.get(jdbcTableFieldValue.getJDBCTableFieldIdentifier());
+                    if(fieldNameObject != null) {
+                        fieldName = fieldNameObject.toString();
+                    }
                 }
                 if(tableName != null && fieldName != null) {
                     layerUI.start();
@@ -370,9 +373,11 @@ public class JDBCTableFieldValueUI implements DataUI {
                 }
             }
 
-            //If the jList doesn't contains any values, it mean that the JDBCTableField hasn't been well selected.
+            //If the jList doesn't contains any values or contains only the default item,
+            // it mean that the JDBCTableField hasn't been well selected.
             //So show a tooltip text to warn the user.
-            if(list.getModel().getSize() == 0) {
+            if( list.getModel().getSize() == 0 ||
+                    (list.getModel().getSize() == 1 && (list.getModel().getElementAt(0).equals(defaultElement))) ) {
                 list.putClientProperty(INITIAL_DELAY_PROPERTY, ToolTipManager.sharedInstance().getInitialDelay());
                 list.putClientProperty(TOOLTIP_TEXT_PROPERTY, list.getToolTipText());
                 ToolTipManager.sharedInstance().setInitialDelay(0);
@@ -392,7 +397,9 @@ public class JDBCTableFieldValueUI implements DataUI {
                     list.setToolTipText(I18N.tr("First configure the JDBCTableField {0}",
                             fieldValueStr.substring(fieldValueStr.lastIndexOf(":") + 1)));
                 }
-                model.addElement(defaultElement);
+                if(model.getSize() == 0) {
+                    model.addElement(defaultElement);
+                }
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(list,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
             }

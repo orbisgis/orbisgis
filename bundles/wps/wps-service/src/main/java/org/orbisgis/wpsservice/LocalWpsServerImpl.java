@@ -114,10 +114,10 @@ public class LocalWpsServerImpl
     public void init(){
         //Call the initialisation of the WpsServer
         super.init();
-        //Restore the last saved state of the wps server
-        loadPreviousState();
         //Start the listening of the database
         initDataBaseLink();
+        //Restore the last saved state of the wps server
+        loadPreviousState();
     }
 
     /**
