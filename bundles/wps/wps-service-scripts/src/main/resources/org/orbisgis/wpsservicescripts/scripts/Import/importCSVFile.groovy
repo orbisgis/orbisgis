@@ -20,7 +20,7 @@ def processing() {
     File csvFile = new File(csvDataInput[0])
     name = csvFile.getName()
     tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase()
-    query = "CALL SHPREAD('"+ shpFile.absolutePath+"','"
+    query = "CALL SHPREAD('"+ csvFile.absolutePath+"','"
     if(jdbcTableOutputName != null){
 	tableName = jdbcTableOutputName
     }

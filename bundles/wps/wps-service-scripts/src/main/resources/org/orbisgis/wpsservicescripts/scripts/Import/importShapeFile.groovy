@@ -40,7 +40,7 @@ def processing() {
         sql.execute "create spatial index on "+ tableName + " (the_geom)"
     }
 
-    literalDataOutput = "The shape file has been imported."
+    literalDataOutput = "The SHP file has been imported."
 }
 
 
