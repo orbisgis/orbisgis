@@ -17,27 +17,42 @@ import org.orbisgis.wpsgroovyapi.process.Process
  *  - If the field name is on the first line (LiteralData)
  *  - The X field (JDBCTableField)
  *  - The Y field (JDBCTableField)
- *  - The Output data source (JDBCTable) *
+ *  - The output data source (JDBCTable) *
  *
  * @return The point layer data source created from a CSV file.
  *
  * @see http://www.h2gis.org/docs/dev/ST_SeST_MakePointSRID/
  * @author Sylvain PALOMINOS
+ * @author Erwan BOCHER
  */
-@Process(title = ["Point layer from CSV","en","Couche ponctuelle depuis un CSV","fr"],
-        description = ["Creates a point layer from a CSV file containing the id of the point, its X and Y coordinate.","en",
+@Process(title = ["Point table from CSV","en","Table ponctuelle depuis un CSV","fr"],
+    description = ["Creates a point layer from a CSV file containing the id of the point, its X and Y coordinate.","en",
                 "Création d'une table de geometries ponctuelles à partir d'un fichier CSV contenant l'identifiant du point ainsi que ses coordonnées X et Y.","fr"],
-        keywords = ["OrbisGIS,Importer, Fichier","fr",
+    keywords = ["OrbisGIS,Importer, Fichier","fr",
                 "OrbisGIS,Import, File","en"],
-        properties = ["DBMS_TYPE","H2GIS"])
+    properties = ["DBMS_TYPE","H2GIS"])
 def processing() {
-    outputTableName = jdbcTableOutputName
     //Open the CSV file
     File csvFile = new File(csvDataInput[0])
+    name = csvFile.getName()
+    tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase()
+    
+    if(jdbcTableOutputName != null){
+	tableName = jdbcTableOutputName
+    }
+    
+    if(dropTable){
+	sql.execute "drop table if exists " + tableName
+    }
+    
     String csvRead = "CSVRead('"+csvFile.absolutePath+"', NULL, 'fieldSeparator="+separator+"')";
-    String create = "CREATE TABLE "+ outputTableName+"(ID INT PRIMARY KEY, THE_GEOM GEOMETRY)";    
+    String create = "CREATE TABLE "+ tableName+"(ID INT PRIMARY KEY, THE_GEOM GEOMETRY)";    
     sql.execute(create + " AS SELECT "+idField+", ST_MakePoint("+xField+", "+yField+") THE_GEOM FROM "+csvRead+";");    
-
+    
+    if(createIndex){
+        sql.execute "create spatial index on "+ tableName + " (the_geom)"
+    }
+    
     literalDataOutput = "Process done"
 }
 
@@ -52,10 +67,10 @@ def processing() {
  * ........
  * */
 @RawDataInput(
-        title = ["Input csv","en","Fichier CSV","fr"],
-        description = ["The input CSV file containing the point data.","en",
+    title = ["Input csv","en","Fichier CSV","fr"],
+    description = ["The input CSV file containing the point data.","en",
                 "Le fichier CSV d'entrée contenant les données ponctuelles.","fr"],
-        fileTypes = ["csv"])
+    fileTypes = ["csv"])
 String[] csvDataInput
 
 
@@ -63,47 +78,66 @@ String[] csvDataInput
 /** INPUT Parameters **/
 /**********************/
 @EnumerationInput(
-        title = ["CSV separator","en","Séparateur CSV","fr"],
-        description = ["The CSV separator.","en",
+    title = ["CSV separator","en","Séparateur CSV","fr"],
+    description = ["The CSV separator.","en",
                 "Le séparateur CSV.","fr"],
-        values=[",", "\t", " ", ";"],
-        names=["coma, tabulation, space, semicolon","en"],
-        isEditable = true)
+    values=[",", "\t", " ", ";"],
+    names=["coma, tabulation, space, semicolon","en"],
+    isEditable = true)
 String[] separator = [";"]
 
 @LiteralDataInput(
-        title = ["Id field","en","Champ identifiant","fr"],
-        description = ["The point id field.","en",
+    title = ["Id field","en","Champ identifiant","fr"],
+    description = ["The point id field.","en",
                 "Le champ contenant l'identifiant du point.","fr"])
 String idField
 
 @LiteralDataInput(
-        title = ["X field","en","Champ X","fr"],
-        description = ["The X coordinate field.","en",
+    title = ["X field","en","Champ X","fr"],
+    description = ["The X coordinate field.","en",
                 "Le champ de la coordonnée X.","fr"])
 String xField
 
 @LiteralDataInput(
-        title = ["Y field","en","Champ Y","fr"],
-        description = ["The Y coordinate field.","en",
+    title = ["Y field","en","Champ Y","fr"],
+    description = ["The Y coordinate field.","en",
                 "Le champ de la coordonnée Y.","fr"])
 String yField
 
 
+@LiteralDataInput(
+    title = [
+				"Add a spatial index","en",
+				"Créer un index spatial","fr"],
+    description = [
+				"Add a spatial index on the geometry column.","en",
+				"Ajout d'un index spatial sur la géometrie de la table.","fr"])
+Boolean createIndex
+
+
+@LiteralDataInput(
+    title = [
+				"Drop the existing table","en",
+				"Supprimer la table existante","fr"],
+    description = [
+				"Drop the existing table.","en",
+				"Supprimer la table existante.","fr"])
+Boolean dropTable 
 
 /** Output JDBCTable name. */
 @LiteralDataInput(
-        title = ["Output points table","en","Table de points","fr"],
-        description = ["Name of the output table.","en",
-                "Nom de la table de sortie.","fr"])
+    title = ["Output points table","en","Table de points","fr"],
+    description = ["Name of the output table.","en",
+                "Nom de la table de sortie.","fr"],
+    minOccurs = 0)
 String jdbcTableOutputName
 
 /************/
 /** OUTPUT **/
 /************/
 @LiteralDataOutput(
-        title = ["Output message","en",
+    title = ["Output message","en",
                 "Message de sortie","fr"],
-        description = ["Output message.","en",
+    description = ["Output message.","en",
                 "Message de sortie.","fr"])
 String literalDataOutput
