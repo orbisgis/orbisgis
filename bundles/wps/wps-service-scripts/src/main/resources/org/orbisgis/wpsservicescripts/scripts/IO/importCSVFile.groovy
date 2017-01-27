@@ -49,7 +49,7 @@ String[] csvDataInput
     description = ["The CSV separator.","en",
                 "Le séparateur CSV.","fr"],
     values=[",", "\t", " ", ";"],
-    names=["coma, tabulation, space, semicolon","en"],
+    names=["Coma, Tabulation, Space, Semicolon","en","Virgule, Tabulation, Espace, Point virgule","fr"],
     isEditable = true)
 String[] separator = [";"]
 
