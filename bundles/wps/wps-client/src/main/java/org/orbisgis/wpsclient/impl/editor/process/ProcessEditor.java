@@ -367,7 +367,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
                         showButton.addMouseListener(EventHandler.create(MouseListener.class,
                                 this, "onClickButton", "source", "mouseClicked"));
                         hideShowPanel.add(showButton);
-                        hideShowPanel.add(new JLabel(i.getTitle().get(0).getValue()), "growx, span");
+                        hideShowPanel.add(new JLabel(i.getTitle().get(0).getValue() + " (optional)"), "growx, span");
                         hideShowPanel.setToolTipText("Hide/Show option");
                         hideShowPanel.putClientProperty("body", uiComponent);
                         hideShowPanel.putClientProperty("parent", contentPanel);
@@ -460,8 +460,8 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         JScrollPane scrollPane = new JScrollPane(panel);
 
         //Creates the panel that will contains all the inputs.
-        JPanel boderParameterPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-        boderParameterPanel.setBorder(BorderFactory.createTitledBorder(I18N.tr("Parameter(s)")));
+        JPanel borderParameterPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+        borderParameterPanel.setBorder(BorderFactory.createTitledBorder(I18N.tr("Parameter(s)")));
         JPanel parameterPanel = new JPanel(new MigLayout("fill, ins 5"));
 
         //Gets the list of input/output title if they have a displayed component
@@ -540,9 +540,9 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         panel.add(errorMessage, "growx, wrap");
         scrollPane.getVerticalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(SCROLLBAR_UNIT_INCREMENT);
-        boderParameterPanel.add(scrollPane, "span, growx");
+        borderParameterPanel.add(scrollPane, "span, growx");
 
-        returnPanel.add(boderParameterPanel, "wrap, growx, height ::70%");
+        returnPanel.add(borderParameterPanel, "wrap, growx, height ::70%");
         return returnPanel;
     }
 
