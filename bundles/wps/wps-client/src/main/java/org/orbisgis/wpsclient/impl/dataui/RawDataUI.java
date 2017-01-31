@@ -113,7 +113,8 @@ public class RawDataUI implements DataUI {
             isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
         }
         else if(inputOrOutput instanceof OutputDescriptionType){
-            return null;
+            rawData = (RawData) ((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            action = OpenPanel.ACTION_SAVE;
         }
 
         //Create the main panel
