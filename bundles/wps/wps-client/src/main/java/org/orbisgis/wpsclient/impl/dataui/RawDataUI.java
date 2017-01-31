@@ -152,6 +152,7 @@ public class RawDataUI implements DataUI {
         }
 
         OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", I18N.tr("Make your selection."), action, dataAccepted);
+        openPanel.loadState();
         if(rawData.getFileTypes().length == 0) {
             openPanel.setAcceptAllFileFilterUsed(true);
         }
@@ -160,10 +161,10 @@ public class RawDataUI implements DataUI {
                 openPanel.addFilter(type, type);
             }
             openPanel.setAcceptAllFileFilterUsed(true);
+            openPanel.setCurrentFilter(0);
         }
 
         openPanel.setSingleSelection(!rawData.multiSelection());
-        openPanel.loadState();
 
 
         Object defaultValuesObject = dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue()));

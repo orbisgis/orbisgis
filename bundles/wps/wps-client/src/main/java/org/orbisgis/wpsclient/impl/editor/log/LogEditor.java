@@ -134,7 +134,7 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         componentMap.put(job.getId(), panel);
         lee.addJob(job);
         contentPanel.add(panel, "growx, span");
-        processRunning.setText(I18N.tr("Process running : {0}.", componentMap.size()));
+        processRunning.setText(I18N.tr("Process running : {0}", componentMap.size()));
     }
 
     /**
@@ -188,7 +188,7 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
             contentPanel.remove(componentMap.get(id));
         }
         componentMap.remove(id);
-        processRunning.setText(I18N.tr("Process running : {0}.", componentMap.size()));
+        processRunning.setText(I18N.tr("Process running : {0}", componentMap.size()));
         this.repaint();
     }
 
