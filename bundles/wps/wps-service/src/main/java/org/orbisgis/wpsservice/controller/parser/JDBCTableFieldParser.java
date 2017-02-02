@@ -77,6 +77,9 @@ public class JDBCTableFieldParser implements Parser {
             jdbcTableUri = URI.create(JDBCTableFieldAttribute.jdbcTableReference());
         }
         JDBCTableField jdbcTableField = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldAttribute, format, jdbcTableUri);
+        if(defaultValue != null && defaultValue instanceof String[]) {
+            jdbcTableField.setDefaultValues((String[])defaultValue);
+        }
 
         //Instantiate the returned input
         InputDescriptionType input = new InputDescriptionType();

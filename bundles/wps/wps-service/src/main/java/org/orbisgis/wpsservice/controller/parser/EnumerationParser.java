@@ -67,6 +67,9 @@ public class EnumerationParser implements Parser{
         EnumerationAttribute enumerationAttribute = f.getAnnotation(EnumerationAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         Enumeration enumeration = ObjectAnnotationConverter.annotationToObject(enumerationAttribute, format);
+        if(defaultValue != null && defaultValue instanceof String[]) {
+            enumeration.setDefaultValues((String[])defaultValue);
+        }
 
         InputDescriptionType input = new InputDescriptionType();
         JAXBElement<Enumeration> jaxbElement = new ObjectFactory().createEnumeration(enumeration);

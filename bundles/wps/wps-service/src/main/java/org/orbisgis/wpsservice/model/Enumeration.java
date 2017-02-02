@@ -98,6 +98,14 @@ public class Enumeration extends ComplexDataType implements TranslatableComplexD
     }
 
     /**
+     * Sets the default values of the geometry.
+     * @param defaultValues Default values of the geometry.
+     */
+    public void setDefaultValues(String defaultValues[]){
+        this.defaultValues = defaultValues;
+    }
+
+    /**
      * Returns the default values.
      * @return The default values.
      */

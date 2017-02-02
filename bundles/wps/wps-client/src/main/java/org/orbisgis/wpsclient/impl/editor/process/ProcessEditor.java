@@ -113,27 +113,21 @@ public class ProcessEditor extends JPanel implements EditorDockable {
      * input/outputs URI and the values.
      */
     private Map<URI, Object> dataMap;
-    /** Map containing the default values of the process. */
-    private Map<URI, Object> defaultDataMap;
 
     /**
      * Main constructor of the ProcessEditor.
      * @param wpsClient OrbisGIS Wps client.
      * @param processEditableElement Editable element of this editor.
-     * @param defaultDataMap Map containing the default values for the process. The default values will automatically
-     *                       fill the UI fields.
      * @param type Type of the execution to display the UI in the desired mode.
      */
     public ProcessEditor(WpsClientImpl wpsClient,
                          ProcessEditableElement processEditableElement,
-                         Map<URI, Object> defaultDataMap,
                          ProcessExecutionType type){
         this.setLayout(new BorderLayout());
         //Sets the attributes
         this.wpsClient = wpsClient;
         this.processEditableElement = processEditableElement;
         this.dataMap = new HashMap<>();
-        this.defaultDataMap = defaultDataMap;
         this.dataUIManager = wpsClient.getDataUIManager();
 
         //Sets the docking panel parameters
@@ -312,9 +306,6 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         //Build the DataMap that will contains the process data
         dataMap = new HashMap<>();
         dataMap.putAll(processEditableElement.getDataMap());
-        if(defaultDataMap != null) {
-            dataMap.putAll(defaultDataMap);
-        }
 
         JPanel returnPanel = new JPanel(new MigLayout("fill"));
 
@@ -520,12 +511,12 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         parameterPanel.add(new JSeparator(), "growx, span");
 
         //Adds a first component row if the default data map is empty
-        if(defaultDataMap == null || defaultDataMap.size() == 0) {
+        if(processEditableElement.getDataMap() == null || processEditableElement.getDataMap().size() == 0) {
             onAddBashRow(wpsClient.getProcessCopy(uri), parameterPanel, new HashMap<URI, Object>());
         }
         //If the default data map contains maps of data, adds a row for each map
         else{
-            for(Map.Entry<URI, Object> entry : defaultDataMap.entrySet()){
+            for(Map.Entry<URI, Object> entry : processEditableElement.getDataMap().entrySet()){
                 if(entry.getValue() instanceof Map) {
                     onAddBashRow(wpsClient.getProcessCopy(uri), parameterPanel, (Map<URI, Object>)entry.getValue());
                 }

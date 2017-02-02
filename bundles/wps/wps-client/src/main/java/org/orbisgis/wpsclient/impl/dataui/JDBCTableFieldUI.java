@@ -218,7 +218,20 @@ public class JDBCTableFieldUI implements DataUI {
 
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
-        return new HashMap<>();
+        Map<URI, Object> map = new HashMap<>();
+        JDBCTableField jdbcTableField = null;
+        boolean isOptional = false;
+        if(inputOrOutput instanceof InputDescriptionType){
+            jdbcTableField = (JDBCTableField)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
+        }
+        else if(inputOrOutput instanceof OutputDescriptionType){
+            jdbcTableField = (JDBCTableField)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
+        }
+        if(jdbcTableField.getDefaultValues() != null) {
+            map.put(URI.create(inputOrOutput.getIdentifier().getValue()), jdbcTableField.getDefaultValues());
+        }
+        return map;
     }
 
     @Override

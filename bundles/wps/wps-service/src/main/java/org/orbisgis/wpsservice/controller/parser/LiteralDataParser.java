@@ -67,7 +67,7 @@ public class LiteralDataParser implements Parser {
                     "The field type is not recognized.");
         }
         LiteralDataType data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class),
-                dataType);
+                dataType, defaultValue);
         JAXBElement<LiteralDataType> jaxbElement = new net.opengis.wps._2_0.ObjectFactory().createLiteralData(data);
         input.setDataDescription(jaxbElement);
         //Instantiate the returned input
@@ -92,7 +92,7 @@ public class LiteralDataParser implements Parser {
                     "The field type is not recognized.");
         }
         LiteralDataType data = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(LiteralDataAttribute.class),
-                dataType);
+                dataType, null);
         JAXBElement<LiteralDataType> jaxbElement = new net.opengis.wps._2_0.ObjectFactory().createLiteralData(data);
         output.setDataDescription(jaxbElement);
         //Instantiate the returned input

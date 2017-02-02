@@ -80,7 +80,7 @@ public class LiteralDataTypeConvertTest {
                 if (annotation instanceof LiteralDataAttribute) {
                     annotationFound = true;
                     LiteralDataAttribute literalDataAnnotation = (LiteralDataAttribute) annotation;
-                    literalDataType = ObjectAnnotationConverter.annotationToObject(literalDataAnnotation, DataType.INTEGER);
+                    literalDataType = ObjectAnnotationConverter.annotationToObject(literalDataAnnotation, DataType.INTEGER, null);
                 }
             }
 
@@ -157,13 +157,13 @@ public class LiteralDataTypeConvertTest {
                 if (annotation instanceof LiteralDataAttribute) {
                     annotationFound = true;
                     LiteralDataAttribute literalDataAnnotation = (LiteralDataAttribute) annotation;
-                    literalDataType = ObjectAnnotationConverter.annotationToObject(literalDataAnnotation, DataType.INTEGER);
+                    literalDataType = ObjectAnnotationConverter.annotationToObject(literalDataAnnotation, DataType.INTEGER, null);
                 }
             }
 
             //If the annotation hasn't been found, the test has failed.
             if (!annotationFound || literalDataType == null) {
-                Assert.fail("Unable to get the annotation '@LiteraldataDomainAttribute' from the field '" +
+                Assert.fail("Unable to get the annotation '@LiteralDataDomainAttribute' from the field '" +
                         MINIMAL_LITERAL_DATA_ATTRIBUTE_FIELD_NAME + "'.");
             }
 

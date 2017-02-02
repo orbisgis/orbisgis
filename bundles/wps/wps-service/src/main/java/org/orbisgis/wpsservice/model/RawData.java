@@ -51,7 +51,8 @@ import java.util.List;
  */
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "RawData", propOrder = {"isFile", "isDirectory", "multiSelection", "fileTypes", "excludedTypes"})
+@XmlType(name = "RawData", propOrder = {"isFile", "isDirectory", "multiSelection", "fileTypes", "excludedTypes",
+        "defaultValues"})
 public class RawData extends ComplexDataType {
 
     /** True if the RawData can be a file, false otherwise. */
@@ -69,6 +70,9 @@ public class RawData extends ComplexDataType {
     /** Array of the file type not allowed for the raw data. */
     @XmlElement(name = "excludedTypes")
     private String[] excludedTypes;
+    /** Default values of the RawData. */
+    @XmlAttribute(name = "defaultValues")
+    private String[] defaultValues;
 
     /**
      * Constructor giving a list of format.
@@ -165,5 +169,21 @@ public class RawData extends ComplexDataType {
      */
     public void setExcludedTypes(String[] excludedTypes) {
         this.excludedTypes = excludedTypes;
+    }
+
+    /**
+     * Sets the default values of the geometry.
+     * @param defaultValues Default values of the geometry.
+     */
+    public void setDefaultValues(String[] defaultValues){
+        this.defaultValues = defaultValues;
+    }
+
+    /**
+     * Returns the default values of the geometry.
+     * @return The default values of the geometry.
+     */
+    public String[] getDefaultValues(){
+        return defaultValues;
     }
 }

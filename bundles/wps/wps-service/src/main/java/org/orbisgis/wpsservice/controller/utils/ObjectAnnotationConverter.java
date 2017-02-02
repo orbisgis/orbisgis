@@ -497,7 +497,7 @@ public class ObjectAnnotationConverter {
      *          annotation.
      * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
      */
-    public static LiteralDataType annotationToObject(LiteralDataAttribute literalDataAttribute, DataType dataType)
+    public static LiteralDataType annotationToObject(LiteralDataAttribute literalDataAttribute, DataType dataType, Object defaultValueStr)
             throws MalformedScriptException {
         LiteralDataType literalDataType = new LiteralDataType();
 
@@ -519,6 +519,11 @@ public class ObjectAnnotationConverter {
                     "domains should be a coma separated list of ranges with this pattern : min;;max / " +
                     "min;spacing;max or a simple value");
         }
+        if(defaultValueStr!= null) {
+            ValueType defaultValueType = new ValueType();
+            defaultValueType.setValue(defaultValueStr.toString());
+            dataDomain.setDefaultValue(defaultValueType);
+        }
         lddList.add(dataDomain);
 
         //Sets the others domains if defined
@@ -529,6 +534,11 @@ public class ObjectAnnotationConverter {
                     throw new MalformedScriptException(LiteralDataAttribute.class, "validDomains", "The valid " +
                             "domains should be a coma separated list of ranges with this pattern : min;;max / " +
                             "min;spacing;max or a simple value");
+                }
+                if(defaultValueStr!= null) {
+                    ValueType defaultValueType = new ValueType();
+                    defaultValueType.setValue(defaultValueStr.toString());
+                    dataDomain.setDefaultValue(defaultValueType);
                 }
                 lddList.add(dataDomain);
             }

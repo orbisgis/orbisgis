@@ -67,6 +67,9 @@ public class GeometryParser implements Parser {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);
+        if(defaultValue != null) {
+            geometryData.setDefaultValue(defaultValue.toString());
+        }
 
         InputDescriptionType input = new InputDescriptionType();
         JAXBElement<GeometryData> jaxbElement = new ObjectFactory().createGeometryData(geometryData);
