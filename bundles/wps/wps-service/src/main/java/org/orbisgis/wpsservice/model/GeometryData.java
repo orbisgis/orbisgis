@@ -52,7 +52,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Geometry", propOrder = {"geometryTypeList", "excludedTypeList", "dimension"})
+@XmlType(name = "Geometry", propOrder = {"geometryTypeList", "excludedTypeList", "dimension", "defaultValue"})
 public class GeometryData extends ComplexDataType {
 
     /** List of type accepted for the geometry.*/
@@ -64,6 +64,9 @@ public class GeometryData extends ComplexDataType {
     /** Dimension of the geometry. Can be 2(D) or 3(D). */
     @XmlAttribute(name = "dimension")
     private int dimension;
+    /** Default value of the GeometryData. */
+    @XmlAttribute(name = "defaultValue")
+    private String defaultValue;
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(GeometryData.class);
 
@@ -131,5 +134,21 @@ public class GeometryData extends ComplexDataType {
      */
     public int getDimension(){
         return dimension;
+    }
+
+    /**
+     * Sets the default value of the geometry.
+     * @param defaultValue Default value of the geometry.
+     */
+    public void setDefaultValue(String defaultValue){
+        this.defaultValue = defaultValue;
+    }
+
+    /**
+     * Returns the default value of the geometry.
+     * @return The default value of the geometry.
+     */
+    public String getDefaultValue(){
+        return defaultValue;
     }
 }

@@ -134,26 +134,24 @@ public class EnumerationUI implements DataUI {
         }
         //Select the default values
         List<Integer> selectedIndex = new ArrayList<>();
-        if(!isOptional) {
-            if(enumeration.getDefaultValues() != null) {
-                for (String defaultValue : enumeration.getDefaultValues()) {
-                    for (int i = 0; i < model.getSize(); i++) {
-                        if (model.get(i).getKey().equals(defaultValue)) {
-                            selectedIndex.add(i);
-                        }
+        if(enumeration.getDefaultValues() != null) {
+            for (String defaultValue : enumeration.getDefaultValues()) {
+                for (int i = 0; i < model.getSize(); i++) {
+                    if (model.get(i).getKey().equals(defaultValue)) {
+                        selectedIndex.add(i);
                     }
                 }
             }
-            else{
-                selectedIndex.add(0);
-            }
-            int[] array = new int[selectedIndex.size()];
-            for (int i = 0; i < selectedIndex.size(); i++) {
-                array[i] = selectedIndex.get(i);
-            }
-            list.setSelectedIndices(array);
         }
         else{
+            selectedIndex.add(0);
+        }
+        int[] array = new int[selectedIndex.size()];
+        for (int i = 0; i < selectedIndex.size(); i++) {
+            array[i] = selectedIndex.get(i);
+        }
+        list.setSelectedIndices(array);
+        if(!isOptional) {
             dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
         }
         //Configure the JList
@@ -184,6 +182,7 @@ public class EnumerationUI implements DataUI {
         list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
         list.putClientProperty(IS_MULTISELECTION_PROPERTY, enumeration.isMultiSelection());
+        list.putClientProperty(ENUMERATION_PROPERTY, enumeration);
         list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onListSelection", "source"));
         list.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
 
@@ -224,18 +223,16 @@ public class EnumerationUI implements DataUI {
         else if(inputOrOutput instanceof OutputDescriptionType){
             enumeration = (Enumeration)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
         }
-        if(!isOptional) {
-            if(enumeration.getDefaultValues() != null && enumeration.getDefaultValues().length != 0) {
-                if (enumeration.isMultiSelection()) {
-                    map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getDefaultValues());
-                } else {
-                    map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getDefaultValues()[0]);
-                }
+        if(enumeration.getDefaultValues() != null && enumeration.getDefaultValues().length != 0) {
+            if (enumeration.isMultiSelection()) {
+                map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getDefaultValues());
+            } else {
+                map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getDefaultValues()[0]);
             }
-            else{
-                if(enumeration.getValues().length != 0) {
-                    map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getValues()[0]);
-                }
+        }
+        else{
+            if(enumeration.getValues().length != 0) {
+                map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getValues()[0]);
             }
         }
         return map;
@@ -257,6 +254,7 @@ public class EnumerationUI implements DataUI {
         HashMap<URI, Object> dataMap = (HashMap) list.getClientProperty(DATA_MAP_PROPERTY);
         boolean isMultiSelection = (boolean)list.getClientProperty(IS_MULTISELECTION_PROPERTY);
         boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
+        Enumeration enumeration = (Enumeration) list.getClientProperty(ENUMERATION_PROPERTY);
         //If there is a textfield and if it contain a text, add the coma separated values
         if (list.getClientProperty(TEXT_FIELD_PROPERTY) != null) {
             JTextField textField = (JTextField) list.getClientProperty(TEXT_FIELD_PROPERTY);
@@ -279,7 +277,15 @@ public class EnumerationUI implements DataUI {
                 dataMap.put(uri, null);
             }
             else{
-                list.setSelectedIndices(new int[]{0});
+                int[] indices = new int[enumeration.getDefaultValues().length];
+                for(int i=0; i<enumeration.getDefaultValues().length; i++){
+                    for(int j=0; j<list.getModel().getSize(); j++){
+                        if(list.getModel().getElementAt(j).getLabel().equals(enumeration.getDefaultValues()[i])){
+                            indices[i] = j;
+                        }
+                    }
+                }
+                list.setSelectedIndices(indices);
             }
         }
         else {

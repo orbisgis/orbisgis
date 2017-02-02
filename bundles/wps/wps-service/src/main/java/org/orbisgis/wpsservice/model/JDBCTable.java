@@ -53,7 +53,7 @@ import java.util.List;
  * @author Sylvain PALOMINOS
  **/
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "JDBCTable", propOrder = {"dataTypeList", "excludedTypeList", "listJDBCTableField"})
+@XmlType(name = "JDBCTable", propOrder = {"dataTypeList", "excludedTypeList", "listJDBCTableField", "defaultValue"})
 public class JDBCTable extends ComplexDataType {
     /** List of field type that should be contained by the JDBCTable.*/
     @XmlElement(name = "JDBCTableType", namespace = "http://orbisgis.org")
@@ -64,6 +64,9 @@ public class JDBCTable extends ComplexDataType {
     /** List of JDBCTableField liked to the JDBCTable */
     @XmlElement(name = "JDBCTableField", namespace = "http://orbisgis.org")
     private List<JDBCTableField> listJDBCTableField;
+    /** Default values of the JDBCTable. */
+    @XmlAttribute(name = "defaultValue")
+    private String defaultValue;
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(JDBCTable.class);
 
@@ -149,5 +152,21 @@ public class JDBCTable extends ComplexDataType {
      */
     public List<DataType> getExcludedTypeList() {
         return excludedTypeList;
+    }
+
+    /**
+     * Sets the default value of the geometry.
+     * @param defaultValue Default value of the geometry.
+     */
+    public void setDefaultValue(String defaultValue){
+        this.defaultValue = defaultValue;
+    }
+
+    /**
+     * Returns the default value of the geometry.
+     * @return The default value of the geometry.
+     */
+    public String getDefaultValue(){
+        return defaultValue;
     }
 }

@@ -76,11 +76,14 @@ public class JDBCTableFieldValueParser implements Parser {
         else {
             jdbcTableFieldUri = URI.create(JDBCTableFieldValueAttribute.jdbcTableFieldReference());
         }
-        JDBCTableFieldValue JDBCTableFieldValue = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldValueAttribute, format, jdbcTableFieldUri);
+        JDBCTableFieldValue jdbcTableFieldValue = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldValueAttribute, format, jdbcTableFieldUri);
+        if(defaultValue != null && defaultValue instanceof String[]) {
+            jdbcTableFieldValue.setDefaultValues((String[])defaultValue);
+        }
 
         //Instantiate the returned input
         InputDescriptionType input = new InputDescriptionType();
-        JAXBElement<JDBCTableFieldValue> jaxbElement = new ObjectFactory().createJDBCTableFieldValue(JDBCTableFieldValue);
+        JAXBElement<JDBCTableFieldValue> jaxbElement = new ObjectFactory().createJDBCTableFieldValue(jdbcTableFieldValue);
         input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);

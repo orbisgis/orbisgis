@@ -74,6 +74,9 @@ public class JDBCTableParser implements Parser{
 
         //Instantiate the JDBCTable
         JDBCTable jdbcTable = ObjectAnnotationConverter.annotationToObject(jdbcTableAttribute, formatList);
+        if(defaultValue != null) {
+            jdbcTable.setDefaultValue(defaultValue.toString());
+        }
 
         InputDescriptionType input = new InputDescriptionType();
         JAXBElement<JDBCTable> jaxbElement = new ObjectFactory().createJDBCTable(jdbcTable);

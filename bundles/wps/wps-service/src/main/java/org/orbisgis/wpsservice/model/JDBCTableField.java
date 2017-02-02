@@ -53,8 +53,8 @@ import java.util.List;
  **/
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "JDBCTableField", propOrder = {"jdbcTableIdentifier", "dataTypeList",
-        "excludedTypeList", "jdbcTableFieldValueList", "multiSelection"})
+@XmlType(name = "JDBCTableField", propOrder = {"jdbcTableIdentifier", "dataTypeList", "excludedTypeList",
+        "jdbcTableFieldValueList", "multiSelection", "defaultValues"})
 public class JDBCTableField extends ComplexDataType {
 
     /** Identifier of the parent JDBCTable */
@@ -75,6 +75,9 @@ public class JDBCTableField extends ComplexDataType {
     /** Indicates if the use can choose more than one field*/
     @XmlAttribute(name = "multiSelection")
     private boolean multiSelection = false;
+    /** Default values of the JDBCTableField. */
+    @XmlAttribute(name = "defaultValues")
+    private String[] defaultValues;
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(LocalWpsServerImpl.class);
 
@@ -194,5 +197,21 @@ public class JDBCTableField extends ComplexDataType {
      */
     public void setMultiSelection(boolean multiSelection) {
         this.multiSelection = multiSelection;
+    }
+
+    /**
+     * Sets the default values of the geometry.
+     * @param defaultValues Default values of the geometry.
+     */
+    public void setDefaultValues(String[] defaultValues){
+        this.defaultValues = defaultValues;
+    }
+
+    /**
+     * Returns the default values of the geometry.
+     * @return The default values of the geometry.
+     */
+    public String[] getDefaultValues(){
+        return defaultValues;
     }
 }

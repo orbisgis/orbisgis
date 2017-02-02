@@ -79,11 +79,13 @@ public class ProcessEditableElement implements EditableElement {
      * Constructor of the EditableElement using the ProcessOfferings.
      *
      * @param processOffering Process offering coming from the Wps server.
+     * @param defaultDataMap Map containing the default values for the process. The default values will automatically
+     *                       fill the UI fields.
      */
-    public ProcessEditableElement(ProcessOffering processOffering){
+    public ProcessEditableElement(ProcessOffering processOffering, Map<URI, Object> defaultDataMap){
         this.processOffering = processOffering;
         this.propertyChangeListenerList = new ArrayList<>();
-        this.dataMap = new HashMap<>();
+        this.dataMap = defaultDataMap;
     }
 
     @Override
