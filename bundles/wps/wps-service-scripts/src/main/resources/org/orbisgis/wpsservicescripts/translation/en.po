@@ -41,7 +41,7 @@ msgstr "IO"
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:139
 msgid "Network"
-msgstr "Network"
+msgstr "Graph analysis"
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:140
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:141
