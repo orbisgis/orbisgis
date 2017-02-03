@@ -808,7 +808,7 @@ public class ToolBoxPanel extends JPanel {
                 node = new TreeNodeWps();
                 node.setValidNode(true);
                 node.setUserObject(str);
-                node.setIdentifier(URI.create(str));
+                node.setIdentifier(URI.create(str.replaceAll(" ", "_")));
                 node.setNodeType(TreeNodeWps.NodeType.FOLDER);
                 if(iconName != null) {
                     if (iconName.length > index) {
