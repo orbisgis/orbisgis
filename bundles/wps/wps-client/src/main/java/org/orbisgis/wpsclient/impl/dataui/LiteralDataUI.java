@@ -269,15 +269,10 @@ public class LiteralDataUI implements DataUI {
                 dataComponent.putClientProperty(DATA_MAP_PROPERTY, dataMap);
                 dataComponent.putClientProperty(URI_PROPERTY, uri);
                 //Set the default value and adds the listener for saving the value set by the user
+                falseButton.setSelected(true);
                 if (dataMap.get(uri) != null) {
                     if (Boolean.parseBoolean(dataMap.get(uri).toString())) {
                         trueButton.setSelected(true);
-                    } else {
-                        falseButton.setSelected(true);
-                    }
-                } else {
-                    if (isOptional) {
-                        group.clearSelection();
                     }
                 }
                 falseButton.addActionListener(EventHandler.create(

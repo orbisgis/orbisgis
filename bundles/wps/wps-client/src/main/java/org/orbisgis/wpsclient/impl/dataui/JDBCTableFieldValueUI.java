@@ -254,10 +254,13 @@ public class JDBCTableFieldValueUI implements DataUI {
         JList list = (JList)source;
         URI uri = (URI)list.getClientProperty(URI_PROPERTY);
         HashMap<URI, Object> dataMap = (HashMap<URI, Object>)list.getClientProperty(DATA_MAP_PROPERTY);
+        Boolean isOptional = (Boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
         List<String> listValues = new ArrayList<>();
 
         if(list.getSelectedIndices().length == 0){
-            dataMap.put(uri, null);
+            if(isOptional) {
+                dataMap.put(uri, null);
+            }
             return;
         }
         else {

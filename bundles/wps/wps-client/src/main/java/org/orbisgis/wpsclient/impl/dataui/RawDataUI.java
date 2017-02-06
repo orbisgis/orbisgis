@@ -113,7 +113,8 @@ public class RawDataUI implements DataUI {
             isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
         }
         else if(inputOrOutput instanceof OutputDescriptionType){
-            return null;
+            rawData = (RawData) ((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            action = OpenPanel.ACTION_SAVE;
         }
 
         //Create the main panel
@@ -152,6 +153,7 @@ public class RawDataUI implements DataUI {
         }
 
         OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", I18N.tr("Make your selection."), action, dataAccepted);
+        openPanel.loadState();
         if(rawData.getFileTypes().length == 0) {
             openPanel.setAcceptAllFileFilterUsed(true);
         }
@@ -160,10 +162,10 @@ public class RawDataUI implements DataUI {
                 openPanel.addFilter(type, type);
             }
             openPanel.setAcceptAllFileFilterUsed(true);
+            openPanel.setCurrentFilter(0);
         }
 
         openPanel.setSingleSelection(!rawData.multiSelection());
-        openPanel.loadState();
 
 
         Object defaultValuesObject = dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue()));
@@ -211,6 +213,7 @@ public class RawDataUI implements DataUI {
             pasteButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
             pasteButton.setBorderPainted(false);
             pasteButton.setContentAreaFilled(false);
+            pasteButton.setToolTipText(I18N.tr("Paste the clipboard"));
             pasteButton.setMargin(new Insets(0, 0, 0, 0));
             //Add the listener for the click on the button
             pasteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
