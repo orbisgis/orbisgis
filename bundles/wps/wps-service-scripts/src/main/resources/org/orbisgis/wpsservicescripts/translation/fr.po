@@ -42,7 +42,7 @@ msgstr "ES"
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:139
 msgid "Network"
-msgstr "Réseau"
+msgstr "Analyse de graphes"
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:140
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:141
@@ -77,7 +77,7 @@ msgstr "Création"
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:149
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:150
 msgid "Operators"
-msgstr "Opérations"
+msgstr "Opérateurs"
 
 #: org/orbisgis/wpsservicescripts/OrbisGISWpsScriptPlugin.java:151
 msgid "Properties"
