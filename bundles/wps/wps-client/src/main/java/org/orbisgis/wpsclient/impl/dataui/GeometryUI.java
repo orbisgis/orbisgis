@@ -46,6 +46,8 @@ import org.orbisgis.wpsclient.api.dataui.DataUI;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
 import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
@@ -84,6 +86,7 @@ public class GeometryUI implements DataUI {
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
+    private static final I18n I18N = I18nFactory.getI18n(GeometryUI.class);
 
     @Override
     public void setWpsClient(WpsClientImpl wpsClient){
@@ -144,6 +147,7 @@ public class GeometryUI implements DataUI {
             pasteButton.putClientProperty(TEXT_FIELD_PROPERTY, jtf);
             pasteButton.setBorderPainted(false);
             pasteButton.setContentAreaFilled(false);
+            pasteButton.setToolTipText(I18N.tr("Paste the clipboard"));
             pasteButton.setMargin(new Insets(0, 0, 0, 0));
             //Add the listener for the click on the button
             pasteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
