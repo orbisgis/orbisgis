@@ -60,10 +60,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.beans.EventHandler;
 import java.math.BigInteger;
 import java.net.URI;
@@ -131,7 +128,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
 
         //Sets the docking panel parameters
         dockingPanelParameters = new DockingPanelParameters();
-        dockingPanelParameters.setName(NAME+"_"+processEditableElement.getProcess().getTitle().get(0).getValue());
+        dockingPanelParameters.setName(NAME+"_"+UUID.randomUUID().toString());
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS));
         dockingPanelParameters.setDefaultDockingLocation(
                 new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClientImpl.TOOLBOX_REFERENCE));
@@ -249,9 +246,6 @@ public class ProcessEditor extends JPanel implements EditorDockable {
                     job.setStartTime(System.currentTimeMillis());
                     job.setStatus(statusInfo);
                     job.setProcessState(ProcessExecutionListener.ProcessState.IDLE);
-                    //Dirty way to close the ProcessEditor
-                    this.processComponentKeyEvent(new KeyEvent(this, 1, 20, 1, 10,
-                            KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_DOWN_MASK).getKeyChar()));
                 } else {
                     errorMessage.setText("Please, configure all the inputs/outputs before executing.");
                 }
@@ -287,16 +281,23 @@ public class ProcessEditor extends JPanel implements EditorDockable {
                             job.setStartTime(System.currentTimeMillis());
                             job.setStatus(statusInfo);
                             job.setProcessState(ProcessExecutionListener.ProcessState.IDLE);
-                            //Dirty way to close the ProcessEditor
-                            this.processComponentKeyEvent(new KeyEvent(this, 1, 20, 1, 10,
-                                    KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_DOWN_MASK).getKeyChar()));
-
                         } else {
                             errorMessage.setText("Please, configure all the inputs/outputs before executing.");
                         }
                     }
                 }
                 break;
+        }
+        //Dirty way to close the ProcessEditor
+        try {
+            Robot robot = new Robot();
+            robot.keyPress(KeyEvent.VK_CONTROL);
+            robot.keyPress(KeyEvent.VK_F4);
+            robot.delay(100);
+            robot.keyRelease(KeyEvent.VK_CONTROL);
+            robot.keyRelease(KeyEvent.VK_F4);
+        } catch (AWTException e) {
+            e.printStackTrace();
         }
     }
 
