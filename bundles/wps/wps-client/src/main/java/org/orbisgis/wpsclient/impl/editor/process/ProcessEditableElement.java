@@ -88,6 +88,7 @@ public class ProcessEditableElement implements EditableElement {
         this.processOffering = processOffering;
         this.propertyChangeListenerList = new ArrayList<>();
         this.dataMap = defaultDataMap;
+        type = ProcessExecutionType.STANDARD;
     }
 
     @Override

@@ -128,7 +128,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
 
         //Sets the docking panel parameters
         dockingPanelParameters = new DockingPanelParameters();
-        dockingPanelParameters.setName(NAME+"_"+UUID.randomUUID().toString());
+        dockingPanelParameters.setName(NAME+"_"+processEditableElement.getProcess().getTitle().get(0).getValue());
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS));
         dockingPanelParameters.setDefaultDockingLocation(
                 new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClientImpl.TOOLBOX_REFERENCE));
@@ -516,17 +516,23 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         }
         parameterPanel.add(new JSeparator(), "growx, span");
 
+        boolean isRowAdd = false;
         //Adds a first component row if the default data map is empty
         if(processEditableElement.getDataMap() == null || processEditableElement.getDataMap().size() == 0) {
             onAddBashRow(wpsClient.getProcessCopy(uri), parameterPanel, new HashMap<URI, Object>());
+            isRowAdd = true;
         }
         //If the default data map contains maps of data, adds a row for each map
         else{
             for(Map.Entry<URI, Object> entry : processEditableElement.getDataMap().entrySet()){
                 if(entry.getValue() instanceof Map) {
                     onAddBashRow(wpsClient.getProcessCopy(uri), parameterPanel, (Map<URI, Object>)entry.getValue());
+                    isRowAdd = true;
                 }
             }
+        }
+        if(!isRowAdd){
+            onAddBashRow(wpsClient.getProcessCopy(uri), parameterPanel, processEditableElement.getDataMap());
         }
 
         //Adds the add new row button at the very en of the UI
