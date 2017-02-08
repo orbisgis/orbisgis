@@ -41,6 +41,7 @@ import net.opengis.wps._2_0.*;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
+import org.orbisgis.wpsclient.api.utils.ProcessExecutionType;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -72,8 +73,9 @@ public class ProcessEditableElement implements EditableElement {
     private boolean isOpen;
     /** List of listeners for the processState*/
     private List<PropertyChangeListener> propertyChangeListenerList;
-    /** Map of the pre defined data of a process used to display default datas */
+    /** Map of the pre defined data of a process used to display default data */
     private Map<URI, Object> dataMap;
+    private ProcessExecutionType type;
 
     /**
      * Constructor of the EditableElement using the ProcessOfferings.
@@ -192,5 +194,13 @@ public class ProcessEditableElement implements EditableElement {
      */
     public void setDefaultValues(Map<URI,Object> defaultValues) {
         dataMap.putAll(defaultValues);
+    }
+
+    public void setProcessExecutionType(ProcessExecutionType processExecutionType){
+        this.type = processExecutionType;
+    }
+
+    public ProcessExecutionType getProcessExecutionType(){
+        return type;
     }
 }

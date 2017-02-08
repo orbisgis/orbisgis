@@ -61,6 +61,8 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.math.BigInteger;
@@ -118,11 +120,8 @@ public class ProcessEditor extends JPanel implements EditorDockable {
      * Main constructor of the ProcessEditor.
      * @param wpsClient OrbisGIS Wps client.
      * @param processEditableElement Editable element of this editor.
-     * @param type Type of the execution to display the UI in the desired mode.
      */
-    public ProcessEditor(WpsClientImpl wpsClient,
-                         ProcessEditableElement processEditableElement,
-                         ProcessExecutionType type){
+    public ProcessEditor(WpsClientImpl wpsClient, ProcessEditableElement processEditableElement){
         this.setLayout(new BorderLayout());
         //Sets the attributes
         this.wpsClient = wpsClient;
@@ -132,7 +131,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
 
         //Sets the docking panel parameters
         dockingPanelParameters = new DockingPanelParameters();
-        dockingPanelParameters.setName(NAME+"_"+processEditableElement.getProcess().getTitle());
+        dockingPanelParameters.setName(NAME+"_"+processEditableElement.getProcess().getTitle().get(0).getValue());
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS));
         dockingPanelParameters.setDefaultDockingLocation(
                 new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClientImpl.TOOLBOX_REFERENCE));
@@ -158,14 +157,14 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         dockingActions.addAction(toggleModeAction);
 
         //Sets the execution type of the process and build the UI
-        switch(type){
+        switch(processEditableElement.getProcessExecutionType()){
             case STANDARD:
                 this.add(buildSimpleUI(), BorderLayout.CENTER);
                 break;
             case BASH:
                 this.add(buildBashUI(), BorderLayout.CENTER);
         }
-        mode = type;
+        mode = processEditableElement.getProcessExecutionType();
         this.revalidate();
     }
 
@@ -250,6 +249,9 @@ public class ProcessEditor extends JPanel implements EditorDockable {
                     job.setStartTime(System.currentTimeMillis());
                     job.setStatus(statusInfo);
                     job.setProcessState(ProcessExecutionListener.ProcessState.IDLE);
+                    //Dirty way to close the ProcessEditor
+                    this.processComponentKeyEvent(new KeyEvent(this, 1, 20, 1, 10,
+                            KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_DOWN_MASK).getKeyChar()));
                 } else {
                     errorMessage.setText("Please, configure all the inputs/outputs before executing.");
                 }
@@ -285,6 +287,9 @@ public class ProcessEditor extends JPanel implements EditorDockable {
                             job.setStartTime(System.currentTimeMillis());
                             job.setStatus(statusInfo);
                             job.setProcessState(ProcessExecutionListener.ProcessState.IDLE);
+                            //Dirty way to close the ProcessEditor
+                            this.processComponentKeyEvent(new KeyEvent(this, 1, 20, 1, 10,
+                                    KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_DOWN_MASK).getKeyChar()));
 
                         } else {
                             errorMessage.setText("Please, configure all the inputs/outputs before executing.");

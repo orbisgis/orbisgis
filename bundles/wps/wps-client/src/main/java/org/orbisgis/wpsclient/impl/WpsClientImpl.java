@@ -53,6 +53,7 @@ import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.orbisgis.wpsclient.api.WpsClient;
 import org.orbisgis.wpsclient.api.utils.ProcessExecutionType;
@@ -141,7 +142,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
 
 
     /***************************/
-    /** WpsClientImpl mathods **/
+    /** WpsClientImpl methods **/
     /***************************/
 
     /** OSGI active/deactivate, set/unset methods **/
@@ -500,13 +501,11 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         job.addPropertyChangeListener(this);
         job.addPropertyChangeListener(lee);
         //First test if the ProcessEditor has not been already deleted.
-        if(dockingManager.getPanels().contains(pe)) {
-            dockingManager.removeDockingPanel(pe.getDockingParameters().getName());
-        }
         //Test if the ProcessEditor is in the editor list before removing it.
         if(openEditorList.contains(pe)) {
             openEditorList.remove(pe);
         }
+        dockingManager.removeDockingPanel(pe.getDockingParameters().getName());
     }
 
     /**
@@ -642,7 +641,8 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
             joinedDefaultValuesMap.putAll(defaultValuesMap);
         }
         ProcessEditableElement processEditableElement = new ProcessEditableElement(listProcess.get(0), joinedDefaultValuesMap);
-        ProcessEditor pe = new ProcessEditor(this, processEditableElement, type);
+        processEditableElement.setProcessExecutionType(type);
+        ProcessEditor pe = new ProcessEditor(this, processEditableElement);
         //Find if there is already a ProcessEditor open with the same process.
         //If not, add the new one.
         boolean alreadyOpen = false;
