@@ -53,10 +53,12 @@ import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.orbisgis.wpsclient.api.WpsClient;
 import org.orbisgis.wpsclient.api.utils.ProcessExecutionType;
 import org.orbisgis.wpsclient.impl.dataui.DataUIManager;
+import org.orbisgis.wpsclient.impl.editor.process.ProcessEditorFactory;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.api.utils.WpsJobStateListener;
 import org.orbisgis.wpsclient.impl.editor.log.LogEditableElement;
@@ -137,11 +139,12 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
     private List<WpsJobStateListener> jobStateListenerList;
     /** Map of the running job. */
     private Map<UUID, Job> jobMap;
+    private EditorManager editorManager;
 
 
 
     /***************************/
-    /** WpsClientImpl mathods **/
+    /** WpsClientImpl methods **/
     /***************************/
 
     /** OSGI active/deactivate, set/unset methods **/
@@ -178,6 +181,8 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         jobStateListenerList = new ArrayList<>();
         jobMap = new HashMap<>();
         refreshAvailableScripts();
+
+        editorManager.addEditorFactory(new ProcessEditorFactory(editorManager, this));
     }
 
     @Deactivate
@@ -226,6 +231,14 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
     }
     public void unsetDockingManager(DockingManager dockingManager) {
         this.dockingManager = null;
+    }
+
+    @Reference
+    public void setEditorManager(EditorManager editorManager) {
+        this.editorManager = editorManager;
+    }
+    public void unsetEditorManager(EditorManager editorManager) {
+        this.editorManager = null;
     }
 
     /** Other methods **/
@@ -499,14 +512,6 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         le.addNewLog(processEditableElement.getProcess(), job);
         job.addPropertyChangeListener(this);
         job.addPropertyChangeListener(lee);
-        //First test if the ProcessEditor has not been already deleted.
-        if(dockingManager.getPanels().contains(pe)) {
-            dockingManager.removeDockingPanel(pe.getDockingParameters().getName());
-        }
-        //Test if the ProcessEditor is in the editor list before removing it.
-        if(openEditorList.contains(pe)) {
-            openEditorList.remove(pe);
-        }
     }
 
     /**
@@ -642,23 +647,8 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
             joinedDefaultValuesMap.putAll(defaultValuesMap);
         }
         ProcessEditableElement processEditableElement = new ProcessEditableElement(listProcess.get(0), joinedDefaultValuesMap);
-        ProcessEditor pe = new ProcessEditor(this, processEditableElement, type);
-        //Find if there is already a ProcessEditor open with the same process.
-        //If not, add the new one.
-        boolean alreadyOpen = false;
-        for(EditorDockable ed : openEditorList){
-            if(ed.getDockingParameters().getName().equals(pe.getDockingParameters().getName())){
-                alreadyOpen = true;
-            }
-        }
-        if(!alreadyOpen) {
-            dockingManager.addDockingPanel(pe);
-            openEditorList.add(pe);
-        }
-        else{
-            LoggerFactory.getLogger(WpsClient.class).warn(I18N.tr("The process {0} is already open.",
-                    processEditableElement.getProcess().getTitle().get(0).getValue()));
-        }
+        processEditableElement.setProcessExecutionType(type);
+        editorManager.openEditable(processEditableElement);
     }
 
     /** Other methods **/
