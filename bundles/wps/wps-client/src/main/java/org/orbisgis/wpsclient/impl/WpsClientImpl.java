@@ -297,7 +297,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
      *
      * @return The list of ProcessSummaryType.
      */
-    private List<ProcessSummaryType> getCapabilities(){
+    public List<ProcessSummaryType> getCapabilities(){
         //Sets the getCapabilities request
         GetCapabilitiesType getCapabilities = new GetCapabilitiesType();
         //Sets the language
@@ -330,7 +330,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
      * @param processIdentifier Identifier of the processes asked.
      * @return The list of the ProcessOffering
      */
-    private List<ProcessOffering> getProcessOffering(URI processIdentifier){
+    public List<ProcessOffering> getProcessOffering(URI processIdentifier){
         //Sets the describeProcess request
         DescribeProcess describeProcess = new DescribeProcess();
         //Sets the language
@@ -646,7 +646,9 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         if(defaultValuesMap != null) {
             joinedDefaultValuesMap.putAll(defaultValuesMap);
         }
-        ProcessEditableElement processEditableElement = new ProcessEditableElement(listProcess.get(0), joinedDefaultValuesMap);
+        ProcessOffering processOffering = listProcess.get(0);
+        URI processUri = URI.create(processOffering.getProcess().getIdentifier().getValue());
+        ProcessEditableElement processEditableElement = new ProcessEditableElement(processOffering , processUri, joinedDefaultValuesMap);
         processEditableElement.setProcessExecutionType(type);
         editorManager.openEditable(processEditableElement);
     }
@@ -775,7 +777,12 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
                 if(URI.create(input.getIdentifier().getValue()).equals(entry.getKey())){
                     //Build the data object containing the data on the input
                     Data data = new Data();
-                    data.getContent().add(entry.getValue().toString());
+                    if(entry.getValue() == null) {
+                        data.getContent().add(null);
+                    }
+                    else {
+                        data.getContent().add(entry.getValue().toString());
+                    }
                     //Build the DataInput object containing the input identifier and the data to process
                     DataInputType dataInput = new DataInputType();
                     dataInput.setId(entry.getKey().toString());

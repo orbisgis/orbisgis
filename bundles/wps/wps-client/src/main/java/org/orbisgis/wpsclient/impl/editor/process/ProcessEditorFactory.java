@@ -1,6 +1,5 @@
 package org.orbisgis.wpsclient.impl.editor.process;
 
-import net.opengis.wps._2_0.ProcessOffering;
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.edition.*;
 import org.orbisgis.wpsclient.impl.WpsClientImpl;
@@ -38,7 +37,7 @@ public class ProcessEditorFactory implements EditorFactory {
                         editableTable.getProcess().getTitle().get(0).getValue()));
                 return null;
             }
-            return new ProcessPanelLayout(editableTable);
+            return new ProcessPanelLayout(editableTable, wpsClient);
         } else {
             return null;
         }
@@ -55,7 +54,7 @@ public class ProcessEditorFactory implements EditorFactory {
 
     @Override
     public DockingPanelLayout makeEmptyLayout() {
-        return new ProcessPanelLayout(new ProcessEditableElement(new ProcessOffering(), new HashMap<URI, Object>()));
+        return new ProcessPanelLayout(new ProcessEditableElement(null, null, new HashMap<URI, Object>()), wpsClient);
     }
 
     @Override
