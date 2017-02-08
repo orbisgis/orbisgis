@@ -775,7 +775,12 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
                 if(URI.create(input.getIdentifier().getValue()).equals(entry.getKey())){
                     //Build the data object containing the data on the input
                     Data data = new Data();
-                    data.getContent().add(entry.getValue().toString());
+                    if(entry.getValue() == null) {
+                        data.getContent().add(null);
+                    }
+                    else {
+                        data.getContent().add(entry.getValue().toString());
+                    }
                     //Build the DataInput object containing the input identifier and the data to process
                     DataInputType dataInput = new DataInputType();
                     dataInput.setId(entry.getKey().toString());
