@@ -120,7 +120,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
      */
     public ProcessEditor(WpsClientImpl wpsClient, ProcessEditableElement processEditableElement){
         if(processEditableElement.getProcessOffering(wpsClient) == null){
-            LOGGER.error(I18N.tr("Unable to load the ProcessEditor (0).", processEditableElement.getProcessURI()));
+            LOGGER.error(I18N.tr("Unable to load the ProcessEditor {0}.", processEditableElement.getProcessURI()));
             return;
         }
         this.setLayout(new BorderLayout());
