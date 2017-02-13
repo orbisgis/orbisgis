@@ -100,6 +100,8 @@ public class ProcessWorker extends SwingWorkerPM {
 
     @Override
     public Object doInBackground() {
+        String title = job.getProcess().getTitle().get(0).getValue();
+        this.setTaskName(I18N.tr("{0} : Preprocessing", title));
         if(job != null) {
             job.setStartTime(System.currentTimeMillis());
             job.setProcessState(ProcessExecutionListener.ProcessState.RUNNING);
@@ -125,8 +127,10 @@ public class ProcessWorker extends SwingWorkerPM {
             if(job != null) {
                 job.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Execute the script."));
             }
+            this.setTaskName(I18N.tr("{0} : Execution", title));
             processManager.executeProcess(job.getId(), processIdentifier, dataMap, propertiesMap, this.getProgressMonitor());
 
+            this.setTaskName(I18N.tr("{0} : Postprocessing", title));
             //Post-process the data
             if(job != null) {
                 job.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Post-processing."));
