@@ -175,8 +175,8 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         lee = new LogEditableElement();
         openEditorList = new ArrayList<>();
         le = new LogEditor(lee);
-        dockingManager.addDockingPanel(le);
-        openEditorList.add(le);
+        //dockingManager.addDockingPanel(le);
+        //openEditorList.add(le);
 
         jobStateListenerList = new ArrayList<>();
         jobMap = new HashMap<>();
