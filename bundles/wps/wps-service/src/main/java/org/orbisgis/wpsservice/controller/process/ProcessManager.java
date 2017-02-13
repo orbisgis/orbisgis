@@ -41,6 +41,7 @@ import groovy.lang.GroovyObject;
 import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.MetadataType;
 import net.opengis.wps._2_0.*;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsservice.WpsServer;
@@ -196,13 +197,15 @@ public class ProcessManager {
      * @param processIdentifier ProcessIdentifier of the process to execute.
      * @param dataMap Map containing the data for the process.
      * @param propertiesMap Map containing the properties for the GroovyObject.
+     * @param progressMonitor ProgressMonitor associated to the process execution.
      * @return The groovy object on which the 'processing' method will be called.
      */
     public GroovyObject executeProcess(
             UUID jobId,
             ProcessIdentifier processIdentifier,
             Map<URI, Object> dataMap,
-            Map<String, Object> propertiesMap){
+            Map<String, Object> propertiesMap,
+            ProgressMonitor progressMonitor){
 
         ProcessDescriptionType process = processIdentifier.getProcessDescriptionType();
         Class clazz = parserController.getProcessClass(processIdentifier.getSourceFileURI());
@@ -217,6 +220,7 @@ public class ProcessManager {
                 groovyObject.setProperty("isH2", wpsService.getDatabase().equals(WpsServer.Database.H2GIS));
             }
             groovyObject.setProperty("logger", LoggerFactory.getLogger(ProcessManager.class));
+            groovyObject.setProperty("progressMonitor", progressMonitor);
             for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
                 groovyObject.setProperty(entry.getKey(), entry.getValue());
             }
