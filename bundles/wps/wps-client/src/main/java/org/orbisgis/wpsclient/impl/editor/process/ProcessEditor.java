@@ -81,7 +81,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
     /** Uni increment for the scrollbar (speed of the toolbar). */
     private static final int SCROLLBAR_UNIT_INCREMENT = 16;
     /** Properties used to pass information thanks to the swing components. */
-    public static final String PROCESS_PROPERTY = "PROCESS_PROPERTY";
+    public static final String PROCESS_PROPERTY = "PROGRESS_PROPERTY";
     public static final String PANEL_PROPERTY = "PANEL_PROPERTY";
     public static final String SCROLLPANE_PROPERTY = "SCROLLPANE_PROPERTY";
     public static final String ACTION_TOGGLE_MODE = "ACTION_TOGGLE_MODE";

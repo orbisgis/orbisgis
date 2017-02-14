@@ -82,6 +82,7 @@ public class ProcessWorker extends SwingWorkerPM {
                          Map<URI, Object> dataMap,
                          Map<String, Object> propertiesMap){
         this.job = job;
+        this.addPropertyChangeListener(Job.PROGRESS_PROPERTY, this.job);
         this.processIdentifier = processIdentifier;
         this.dataProcessingManager = dataProcessingManager;
         this.processManager = processManager;
@@ -101,6 +102,7 @@ public class ProcessWorker extends SwingWorkerPM {
     @Override
     public Object doInBackground() {
         String title = job.getProcess().getTitle().get(0).getValue();
+        this.setProgress(1);
         this.setTaskName(I18N.tr("{0} : Preprocessing", title));
         if(job != null) {
             job.setStartTime(System.currentTimeMillis());

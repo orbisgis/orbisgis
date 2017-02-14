@@ -577,11 +577,11 @@ public class WpsServerImplTest {
         Assert.assertNull("Error on unmarshalling the WpsService answer, the status info expiration date should be " +
                         "null",
                 statusInfo.getExpirationDate());
-        Assert.assertNull("Error on unmarshalling the WpsService answer, the status info estimated completion " +
-                        " should be null",
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the status info estimated completion " +
+                        "should not be null",
                 statusInfo.getEstimatedCompletion());
-        Assert.assertNull("Error on unmarshalling the WpsService answer, the status info percent complete" +
-                        " should be null",
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the status info percent complete" +
+                        "should not be null",
                 statusInfo.getPercentCompleted());
 
         //Wait to be sure that the process has ended. If it is not possible, raise a flag
@@ -625,11 +625,11 @@ public class WpsServerImplTest {
         Assert.assertNull("Error on unmarshalling the WpsService answer, the status info expiration date should be " +
                         "null",
                 statusInfo.getExpirationDate());
-        Assert.assertNull("Error on unmarshalling the WpsService answer, the status info estimated completion " +
-                        " should be null",
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the status info estimated completion " +
+                        "should not be null",
                 statusInfo.getEstimatedCompletion());
-        Assert.assertNull("Error on unmarshalling the WpsService answer, the status info percent complete" +
-                        " should be null",
+        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the status info percent complete" +
+                        "should not be null",
                 statusInfo.getPercentCompleted());
 
         //Now test the getResult request
