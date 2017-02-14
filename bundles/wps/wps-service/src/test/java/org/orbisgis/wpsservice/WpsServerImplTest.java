@@ -577,8 +577,8 @@ public class WpsServerImplTest {
         Assert.assertNull("Error on unmarshalling the WpsService answer, the status info expiration date should be " +
                         "null",
                 statusInfo.getExpirationDate());
-        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the status info estimated completion " +
-                        "should not be null",
+        Assert.assertNull("Error on unmarshalling the WpsService answer, the status info estimated completion " +
+                        "should be null",
                 statusInfo.getEstimatedCompletion());
         Assert.assertNotNull("Error on unmarshalling the WpsService answer, the status info percent complete" +
                         "should not be null",
@@ -625,8 +625,8 @@ public class WpsServerImplTest {
         Assert.assertNull("Error on unmarshalling the WpsService answer, the status info expiration date should be " +
                         "null",
                 statusInfo.getExpirationDate());
-        Assert.assertNotNull("Error on unmarshalling the WpsService answer, the status info estimated completion " +
-                        "should not be null",
+        Assert.assertNull("Error on unmarshalling the WpsService answer, the status info estimated completion " +
+                        "should be null",
                 statusInfo.getEstimatedCompletion());
         Assert.assertNotNull("Error on unmarshalling the WpsService answer, the status info percent complete" +
                         "should not be null",

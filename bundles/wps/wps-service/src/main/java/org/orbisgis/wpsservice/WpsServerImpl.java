@@ -439,9 +439,11 @@ public class WpsServerImpl implements WpsServer {
         statusInfo.setStatus(job.getState().name());
         int progress = job.getProgress();
         statusInfo.setPercentCompleted(progress);
-        long millisSpent = System.currentTimeMillis()-job.getStartTime();
-        long millisLeft = (millisSpent/progress)*(100-progress);
-        statusInfo.setEstimatedCompletion(getXMLGregorianCalendar(millisLeft));
+        if(progress != 0) {
+            long millisSpent = System.currentTimeMillis() - job.getStartTime();
+            long millisLeft = (millisSpent / progress) * (100 - progress);
+            statusInfo.setEstimatedCompletion(getXMLGregorianCalendar(millisLeft));
+        }
         if(!job.getState().equals(ProcessExecutionListener.ProcessState.FAILED) &&
                 !job.getState().equals(ProcessExecutionListener.ProcessState.SUCCEEDED)) {
             XMLGregorianCalendar date = getXMLGregorianCalendar(job.getProcessPollingTime());
