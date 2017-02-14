@@ -102,7 +102,6 @@ public class ProcessWorker extends SwingWorkerPM {
     @Override
     public Object doInBackground() {
         String title = job.getProcess().getTitle().get(0).getValue();
-        this.setProgress(1);
         this.setTaskName(I18N.tr("{0} : Preprocessing", title));
         if(job != null) {
             job.setStartTime(System.currentTimeMillis());
