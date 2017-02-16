@@ -38,6 +38,7 @@ package org.orbisgis.wpsservice.controller.execution;
 
 import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.wpsservice.controller.utils.Job;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
@@ -51,11 +52,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class implementing the Runnable interface is dedicated to the WPS process execution.
+ * Class extending the SwingWorkerPM class dedicated to the WPS process execution.
  *
  * @author Sylvain PALOMINOS
  */
-public class ProcessWorker implements Runnable {
+public class ProcessWorker extends SwingWorkerPM {
 
     /** Process execution listener which will be watching the execution */
     private Job job;
@@ -81,11 +82,13 @@ public class ProcessWorker implements Runnable {
                          Map<URI, Object> dataMap,
                          Map<String, Object> propertiesMap){
         this.job = job;
+        this.addPropertyChangeListener(Job.PROGRESS_PROPERTY, this.job);
         this.processIdentifier = processIdentifier;
         this.dataProcessingManager = dataProcessingManager;
         this.processManager = processManager;
         this.dataMap = dataMap;
         this.propertiesMap = propertiesMap;
+        this.setTaskName(job.getProcess().getTitle().get(0).getValue());
     }
 
     /**
@@ -97,7 +100,9 @@ public class ProcessWorker implements Runnable {
     }
 
     @Override
-    public void run() {
+    public Object doInBackground() {
+        String title = job.getProcess().getTitle().get(0).getValue();
+        this.setTaskName(I18N.tr("{0} : Preprocessing", title));
         if(job != null) {
             job.setStartTime(System.currentTimeMillis());
             job.setProcessState(ProcessExecutionListener.ProcessState.RUNNING);
@@ -123,8 +128,10 @@ public class ProcessWorker implements Runnable {
             if(job != null) {
                 job.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Execute the script."));
             }
-            processManager.executeProcess(job.getId(), processIdentifier, dataMap, propertiesMap);
+            this.setTaskName(I18N.tr("{0} : Execution", title));
+            processManager.executeProcess(job.getId(), processIdentifier, dataMap, propertiesMap, this.getProgressMonitor());
 
+            this.setTaskName(I18N.tr("{0} : Postprocessing", title));
             //Post-process the data
             if(job != null) {
                 job.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Post-processing."));
@@ -157,5 +164,12 @@ public class ProcessWorker implements Runnable {
                 dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, job);
             }
         }
+        return null;
+    }
+
+    @Override
+    public void cancel() {
+        processManager.cancelProcess(job.getId());
+        super.cancel();
     }
 }

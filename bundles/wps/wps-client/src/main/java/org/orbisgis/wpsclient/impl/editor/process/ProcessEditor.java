@@ -60,8 +60,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.beans.EventHandler;
 import java.math.BigInteger;
 import java.net.URI;
@@ -82,7 +81,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
     /** Uni increment for the scrollbar (speed of the toolbar). */
     private static final int SCROLLBAR_UNIT_INCREMENT = 16;
     /** Properties used to pass information thanks to the swing components. */
-    public static final String PROCESS_PROPERTY = "PROCESS_PROPERTY";
+    public static final String PROCESS_PROPERTY = "PROGRESS_PROPERTY";
     public static final String PANEL_PROPERTY = "PANEL_PROPERTY";
     public static final String SCROLLPANE_PROPERTY = "SCROLLPANE_PROPERTY";
     public static final String ACTION_TOGGLE_MODE = "ACTION_TOGGLE_MODE";
@@ -98,7 +97,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
     /** OrbisGIS Wps client. */
     private WpsClientImpl wpsClient;
     /** Docking parameters. */
-    private DockingPanelParameters dockingPanelParameters;
+    private DockingPanelParameters dockingPanelParameters = new DockingPanelParameters();;
     /** DataUIManager used to create the UI corresponding the the data */
     private DataUIManager dataUIManager;
     /** Error label displayed when the process inputs and output are all defined. */
@@ -118,11 +117,12 @@ public class ProcessEditor extends JPanel implements EditorDockable {
      * Main constructor of the ProcessEditor.
      * @param wpsClient OrbisGIS Wps client.
      * @param processEditableElement Editable element of this editor.
-     * @param type Type of the execution to display the UI in the desired mode.
      */
-    public ProcessEditor(WpsClientImpl wpsClient,
-                         ProcessEditableElement processEditableElement,
-                         ProcessExecutionType type){
+    public ProcessEditor(WpsClientImpl wpsClient, ProcessEditableElement processEditableElement){
+        if(processEditableElement.getProcessOffering(wpsClient) == null){
+            LOGGER.error(I18N.tr("Unable to load the ProcessEditor {0}.", processEditableElement.getProcessURI()));
+            return;
+        }
         this.setLayout(new BorderLayout());
         //Sets the attributes
         this.wpsClient = wpsClient;
@@ -131,8 +131,7 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         this.dataUIManager = wpsClient.getDataUIManager();
 
         //Sets the docking panel parameters
-        dockingPanelParameters = new DockingPanelParameters();
-        dockingPanelParameters.setName(NAME+"_"+processEditableElement.getProcess().getTitle());
+        dockingPanelParameters.setName(NAME+"_"+processEditableElement.getProcess().getTitle().get(0).getValue());
         dockingPanelParameters.setTitleIcon(ToolBoxIcon.getIcon(ToolBoxIcon.PROCESS));
         dockingPanelParameters.setDefaultDockingLocation(
                 new DockingLocation(DockingLocation.Location.STACKED_ON, WpsClientImpl.TOOLBOX_REFERENCE));
@@ -158,14 +157,14 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         dockingActions.addAction(toggleModeAction);
 
         //Sets the execution type of the process and build the UI
-        switch(type){
+        switch(processEditableElement.getProcessExecutionType()){
             case STANDARD:
                 this.add(buildSimpleUI(), BorderLayout.CENTER);
                 break;
             case BASH:
                 this.add(buildBashUI(), BorderLayout.CENTER);
         }
-        mode = type;
+        mode = processEditableElement.getProcessExecutionType();
         this.revalidate();
     }
 
@@ -285,13 +284,23 @@ public class ProcessEditor extends JPanel implements EditorDockable {
                             job.setStartTime(System.currentTimeMillis());
                             job.setStatus(statusInfo);
                             job.setProcessState(ProcessExecutionListener.ProcessState.IDLE);
-
                         } else {
                             errorMessage.setText("Please, configure all the inputs/outputs before executing.");
                         }
                     }
                 }
                 break;
+        }
+        //Dirty way to close the ProcessEditor
+        try {
+            Robot robot = new Robot();
+            robot.keyPress(KeyEvent.VK_CONTROL);
+            robot.keyPress(KeyEvent.VK_F4);
+            robot.delay(100);
+            robot.keyRelease(KeyEvent.VK_CONTROL);
+            robot.keyRelease(KeyEvent.VK_F4);
+        } catch (AWTException e) {
+            e.printStackTrace();
         }
     }
 
@@ -318,11 +327,11 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         processPanel.add(label, "growx, span");
         //The process version
         String versionStr = I18N.tr("Version : ");
-        if(processEditableElement.getProcessOffering().getProcessVersion().isEmpty()){
+        if(processEditableElement.getProcessOffering(wpsClient).getProcessVersion().isEmpty()){
             versionStr += I18N.tr("unknown");
         }
         else{
-            versionStr += processEditableElement.getProcessOffering().getProcessVersion();
+            versionStr += processEditableElement.getProcessOffering(wpsClient).getProcessVersion();
         }
         JLabel version = new JLabel(versionStr);
         version.setFont(version.getFont().deriveFont(Font.ITALIC));
@@ -440,11 +449,11 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         processPanel.add(label, "growx, span");
         //The process version
         String versionStr = I18N.tr("Version : ");
-        if(processEditableElement.getProcessOffering().getProcessVersion().isEmpty()){
+        if(processEditableElement.getProcessOffering(wpsClient).getProcessVersion().isEmpty()){
             versionStr += I18N.tr("unknown");
         }
         else{
-            versionStr += processEditableElement.getProcessOffering().getProcessVersion();
+            versionStr += processEditableElement.getProcessOffering(wpsClient).getProcessVersion();
         }
         JLabel version = new JLabel(versionStr);
         version.setFont(version.getFont().deriveFont(Font.ITALIC));
@@ -510,17 +519,23 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         }
         parameterPanel.add(new JSeparator(), "growx, span");
 
+        boolean isRowAdd = false;
         //Adds a first component row if the default data map is empty
         if(processEditableElement.getDataMap() == null || processEditableElement.getDataMap().size() == 0) {
             onAddBashRow(wpsClient.getProcessCopy(uri), parameterPanel, new HashMap<URI, Object>());
+            isRowAdd = true;
         }
         //If the default data map contains maps of data, adds a row for each map
         else{
             for(Map.Entry<URI, Object> entry : processEditableElement.getDataMap().entrySet()){
                 if(entry.getValue() instanceof Map) {
                     onAddBashRow(wpsClient.getProcessCopy(uri), parameterPanel, (Map<URI, Object>)entry.getValue());
+                    isRowAdd = true;
                 }
             }
+        }
+        if(!isRowAdd){
+            onAddBashRow(wpsClient.getProcessCopy(uri), parameterPanel, processEditableElement.getDataMap());
         }
 
         //Adds the add new row button at the very en of the UI

@@ -107,14 +107,12 @@ public class RawDataUI implements DataUI {
         RawData rawData = null;
         String action = null;
         boolean isOptional = false;
+        String panelName = "";
         if(inputOrOutput instanceof InputDescriptionType){
             rawData = (RawData) ((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
-            action = OpenPanel.ACTION_OPEN;
-            isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
-        }
-        else if(inputOrOutput instanceof OutputDescriptionType){
-            rawData = (RawData) ((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
             action = OpenPanel.ACTION_SAVE;
+            isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
+            panelName = I18N.tr("Specify a file or a folder");
         }
 
         //Create the main panel
@@ -152,9 +150,9 @@ public class RawDataUI implements DataUI {
             dataAccepted = OpenPanel.ACCEPT_BOTH;
         }
 
-        OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", I18N.tr("Make your selection."), action, dataAccepted);
+        OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", panelName, action, dataAccepted);
         openPanel.loadState();
-        if(rawData.getFileTypes().length == 0) {
+        if(rawData.getFileTypes() == null || rawData.getFileTypes().length == 0) {
             openPanel.setAcceptAllFileFilterUsed(true);
         }
         else{
