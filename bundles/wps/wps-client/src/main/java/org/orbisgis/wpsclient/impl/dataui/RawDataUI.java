@@ -110,14 +110,9 @@ public class RawDataUI implements DataUI {
         String panelName = "";
         if(inputOrOutput instanceof InputDescriptionType){
             rawData = (RawData) ((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
-            action = OpenPanel.ACTION_OPEN;
+            action = OpenPanel.ACTION_SAVE;
             isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
             panelName = I18N.tr("Make your selection.");
-        }
-        else if(inputOrOutput instanceof OutputDescriptionType){
-            rawData = (RawData) ((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
-            action = OpenPanel.ACTION_SAVE;
-            panelName = I18N.tr("Save to.");
         }
 
         //Create the main panel
