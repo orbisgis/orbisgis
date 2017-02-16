@@ -1,10 +1,15 @@
 package org.orbisgis.wpsservicescripts.scripts.IO
 
 import org.orbisgis.wpsgroovyapi.input.EnumerationInput
+import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
-import org.orbisgis.wpsgroovyapi.output.RawDataOutput
+import org.orbisgis.wpsgroovyapi.input.RawDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
+import org.h2gis.functions.io.csv.CSVDriverFunction
+import org.orbisgis.corejdbc.H2GISProgressMonitor
+import org.h2gis.api.DriverFunction
+import org.h2gis.api.EmptyProgressVisitor
 
 
 /**
@@ -17,31 +22,22 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "OrbisGIS,Export, File, CSV","en"],
     properties = ["DBMS_TYPE","H2GIS"])
 def processing() {
-    File csvFile = new File(csvDataInput[0])
-    name = csvFile.getName()
-    tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase()
-    query = "CALL SHPWrite('"+ csvFile.absolutePath+"','"
-    if(jdbcTableOutputName != null){
-	tableName = jdbcTableOutputName
-    }
-    if(dropTable){
-	sql.execute "drop table if exists " + tableName
-    }
-
-    String csvRead = "CSVRead('"+csvFile.absolutePath+"', NULL, 'fieldSeparator="+separator+"')";
-    String create = "CREATE TABLE "+ tableName ;    
-    sql.execute(create + " AS SELECT * FROM "+csvRead+";");   
-
-    literalDataOutput = "The CSV file has been imported."
+    File csvFile = new File(csvDataInput[0])    
+    DriverFunction exp = new CSVDriverFunction();
+    exp.exportTable(sql.getDataSource().getConnection(), inputJDBCTable, csvFile,new H2GISProgressMonitor(progressMonitor)); 
+    literalDataOutput = "The CSV file has been exported."
 }
 
 
-@RawDataOutput(
-    title = ["Output CSV","en","Fichier CSV","fr"],
-    description = ["The output CSV file to be exported.","en",
-                "Nom du fichier CSV à exporter.","fr"],
-    fileTypes = ["csv"], multiSelection=false)
-String[] csvDataInput
+
+@JDBCTableInput(
+        title = [
+                "Table to export","en",
+                "Table à exporter","fr"],
+        description = [
+                "The table that will be exported in a CSV file","en",
+                "La table à exporter dans un fichier CSV.","fr"])
+String inputJDBCTable
 
 
 @EnumerationInput(
@@ -50,13 +46,22 @@ String[] csvDataInput
                 "Le séparateur CSV.","fr"],
     values=[",", "\t", " ", ";"],
     names=["Coma, Tabulation, Space, Semicolon","en","Virgule, Tabulation, Espace, Point virgule","fr"],
-    isEditable = true)
+    isEditable = false)
 String[] separator = [";"]
 
 
 /************/
 /** OUTPUT **/
 /************/
+
+@RawDataInput(
+    title = ["Output CSV","en","Fichier CSV","fr"],
+    description = ["The output CSV file to be exported.","en",
+                "Nom du fichier CSV à exporter.","fr"],
+    fileTypes = ["csv"], multiSelection=false)
+String[] csvDataInput
+
+
 @LiteralDataOutput(
     title = ["Output message","en",
                 "Message de sortie","fr"],
