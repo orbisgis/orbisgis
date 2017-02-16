@@ -65,15 +65,23 @@ public class LogPanel extends JPanel {
     /** Icon of the state of the process. */
     private JLabel icon;
     /** Running time of the process. */
-    private JLabel time;
+    private JLabel runningTime;
+    /** Completion time of the process. */
+    private JLabel completionTime;
+    /** Percent completed of the process. */
+    private JLabel percentCompleted;
     /** Time in milliseconds when the process has started. */
     private long startTime;
-    /** Timer of 1 second used to refresh the process running time. */
+    /** Timer of 1 second used to refresh the process running runningTime. */
     private Timer timer;
     /** TextArea where the process log is displayed. */
     private JTextArea logArea;
     /** Tells if the log is running or not. */
     private boolean running;
+    /** Process percent completed. */
+    int percent = 0;
+    /** Estimated time to completion. */
+    long timeToCompletion = -1;
 
     /**
      * Main Constructor.
@@ -89,18 +97,22 @@ public class LogPanel extends JPanel {
         icon = new JLabel();
         rightPanel.add(icon);
         JLabel processLabel = new JLabel(processName);
-        rightPanel.add(processLabel);
+        rightPanel.add(processLabel, "wrap");
+        runningTime = new JLabel();
+        rightPanel.add(runningTime, "span");
         this.add(rightPanel, "alignx left");
-        //Sets the left panel with the running time and the stop button.
+        //Sets the left panel with the running runningTime and the stop button.
         JPanel leftPanel = new JPanel(new MigLayout("fill"));
-        time = new JLabel();
-        leftPanel.add(time);
+        percentCompleted = new JLabel();
+        leftPanel.add(percentCompleted);
         JButton stopButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.STOP));
         stopButton.setBorderPainted(false);
         stopButton.setContentAreaFilled(false);
         stopButton.putClientProperty("logPanel", this);
         stopButton.addActionListener(EventHandler.create(ActionListener.class, logEditor, "cancelProcess", "source"));
-        leftPanel.add(stopButton);
+        leftPanel.add(stopButton, "wrap");
+        completionTime = new JLabel();
+        leftPanel.add(completionTime, "span");
         this.add(leftPanel, "wrap, alignx right");
         setTime();
         //Sets the main textArea which contains the log
@@ -125,12 +137,24 @@ public class LogPanel extends JPanel {
     }
 
     /**
-     * Refresh the running time displayed.
+     * Refresh the running runningTime displayed.
      */
     public void setTime(){
         if(running) {
             Date date = new Date(System.currentTimeMillis() - startTime - 3600 * 1000);
-            time.setText(I18N.tr("Time elapsed : {0}.", new SimpleDateFormat("HH:mm:ss").format(date)));
+            runningTime.setText(I18N.tr("Time elapsed : {0}", new SimpleDateFormat("HH:mm:ss").format(date)));
+
+            if(timeToCompletion != -1) {
+                Date dateToCompletion = new Date(timeToCompletion);
+                completionTime.setText(I18N.tr("Time to completion : {0}",
+                        new SimpleDateFormat("HH:mm:ss").format(dateToCompletion)));
+            }
+            else{
+                completionTime.setText(I18N.tr("Time to completion : --:--:--"));
+            }
+
+            percentCompleted.setText(I18N.tr("{0}% done", percent));
+
             this.revalidate();
         }
     }
@@ -163,5 +187,21 @@ public class LogPanel extends JPanel {
             logArea.setText(logArea.getText()+"\n");
         }
         logArea.setText(logArea.getText()+newLine);
+    }
+
+    /**
+     * Sets the percent completion.
+     * @param percentCompleted Percent completion of the process.
+     */
+    public void setPercentCompleted(int percentCompleted){
+        percent = percentCompleted;
+    }
+
+    /**
+     * Sets the estimated time in millisecond to completion.
+     * @param estimatedCompletion Time in millis
+     */
+    public void setEstimatedCompletion(long estimatedCompletion){
+        timeToCompletion = estimatedCompletion;
     }
 }

@@ -60,8 +60,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 
-import static org.orbisgis.wpsclient.impl.utils.Job.LOG_PROPERTY;
-import static org.orbisgis.wpsclient.impl.utils.Job.STATE_PROPERTY;
+import static org.orbisgis.wpsclient.impl.utils.Job.*;
 
 /**
  * UI dosplaying the log of the running processes.
@@ -248,6 +247,16 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
                     removeLog(job, false);
                     break;
             }
+        }
+        if(event.getPropertyName().equals(PERCENT_COMPLETED_PROPERTY)){
+            Job job = (Job) event.getSource();
+            Integer percent = (Integer)event.getNewValue();
+            componentMap.get(job.getId()).setPercentCompleted(percent);
+        }
+        if(event.getPropertyName().equals(ESTIMATED_COMPLETION_PROPERTY)){
+            Job job = (Job) event.getSource();
+            long estimatedCompletion = (long)event.getNewValue();
+            componentMap.get(job.getId()).setEstimatedCompletion(estimatedCompletion);
         }
     }
 

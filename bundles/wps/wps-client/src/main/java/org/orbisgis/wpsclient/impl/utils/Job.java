@@ -80,6 +80,8 @@ public class Job implements ProcessExecutionListener{
     public static final String CANCEL = "CANCEL";
     public static final String REFRESH_STATUS = "REFRESH_STATUS";
     public static final String GET_RESULTS = "GET_RESULTS";
+    public static final String PERCENT_COMPLETED_PROPERTY = "PERCENT_COMPLETED_PROPERTY";
+    public static final String ESTIMATED_COMPLETION_PROPERTY = "ESTIMATED_COMPLETION_PROPERTY";
 
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(ProcessExecutionListener.class);
@@ -144,6 +146,15 @@ public class Job implements ProcessExecutionListener{
         else {
             firePropertyChangeEvent(new PropertyChangeEvent(this, STATE_PROPERTY, null, processState));
         }
+    }
+
+    public void setPercentCompleted(Integer percentCompleted) {
+        firePropertyChangeEvent(new PropertyChangeEvent(this, PERCENT_COMPLETED_PROPERTY, null, percentCompleted));
+    }
+
+    public void setEstimatedCompletion(XMLGregorianCalendar completionDate) {
+        long completionMillis = completionDate.toGregorianCalendar().getTime().getTime() - new Date().getTime();
+        firePropertyChangeEvent(new PropertyChangeEvent(this, ESTIMATED_COMPLETION_PROPERTY, null, completionMillis));
     }
 
     /**
@@ -223,6 +234,10 @@ public class Job implements ProcessExecutionListener{
     public void setStatus(StatusInfo statusInfo){
         setProcessState(ProcessExecutionListener.ProcessState.valueOf(statusInfo.getStatus().toUpperCase()));
         startRefreshTimer(statusInfo.getNextPoll());
+        setPercentCompleted(statusInfo.getPercentCompleted());
+        if(statusInfo.getEstimatedCompletion() != null) {
+            setEstimatedCompletion(statusInfo.getEstimatedCompletion());
+        }
     }
 
 

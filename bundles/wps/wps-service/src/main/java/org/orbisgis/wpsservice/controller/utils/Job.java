@@ -39,6 +39,8 @@ package org.orbisgis.wpsservice.controller.utils;
 import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,8 +51,9 @@ import java.util.UUID;
  *
  * @author Sylvain PALOMINOS
  */
-public class Job implements ProcessExecutionListener {
+public class Job implements ProcessExecutionListener, PropertyChangeListener {
 
+    public static final String PROGRESS_PROPERTY = "progress";
     /** Process polling time in milliseconds. */
     private static final long MAX_PROCESS_POLLING_MILLIS = 10000;
     private static final long BASE_PROCESS_POLLING_MILLIS = 1000;
@@ -67,6 +70,7 @@ public class Job implements ProcessExecutionListener {
     /** Map of the input/output data of the process execution */
     private Map<URI, Object> dataMap;
     private long processPollingTime;
+    private int progress = 0;
 
     public Job(ProcessDescriptionType process, UUID id, Map<URI, Object> dataMap){
         this.process = process;
@@ -80,6 +84,10 @@ public class Job implements ProcessExecutionListener {
     @Override
     public void setStartTime(long time) {
         startTime = time;
+    }
+
+    public long getStartTime(){
+        return startTime;
     }
 
     @Override
@@ -134,5 +142,20 @@ public class Job implements ProcessExecutionListener {
             processPollingTime += BASE_PROCESS_POLLING_MILLIS;
         }
         return time;
+    }
+
+    public void setProgress(int i){
+        progress = i;
+    }
+
+    public int getProgress(){
+        return progress;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        if(propertyChangeEvent.getPropertyName().equals(PROGRESS_PROPERTY)){
+            setProgress((int)propertyChangeEvent.getNewValue());
+        }
     }
 }
