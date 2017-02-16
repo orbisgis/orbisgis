@@ -112,7 +112,7 @@ public class RawDataUI implements DataUI {
             rawData = (RawData) ((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
             action = OpenPanel.ACTION_SAVE;
             isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
-            panelName = I18N.tr("Make your selection.");
+            panelName = I18N.tr("Specify a file or a folder");
         }
 
         //Create the main panel
