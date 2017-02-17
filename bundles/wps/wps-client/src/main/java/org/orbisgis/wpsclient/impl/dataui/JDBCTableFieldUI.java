@@ -493,9 +493,15 @@ public class JDBCTableFieldUI implements DataUI {
         //If there is tables, retrieve their information to format the display in the comboBox
         if(fieldNameList != null && !fieldNameList.isEmpty()){
             for (String fieldName : fieldNameList) {
-                if(jdbcTableField.getExcludedNameList() == null ||
-                        (!jdbcTableField.getExcludedNameList().contains(fieldName.toLowerCase())
-                                && !jdbcTableField.getExcludedNameList().contains(fieldName.toUpperCase()))){
+                boolean isNameExcluded = false;
+                if(jdbcTableField.getExcludedNameList() != null){
+                    for(String excludedName : jdbcTableField.getExcludedNameList()){
+                        if(excludedName.toLowerCase().equals(fieldName.toLowerCase())){
+                            isNameExcluded = true;
+                        }
+                    }
+                }
+                if(!isNameExcluded){
                     //Retrieve the table information
                     Map<String, Object> informationMap =
                             wpsClient.getFieldInformation(tableName, fieldName);
