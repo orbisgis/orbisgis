@@ -197,6 +197,10 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
             customLoadScript("scripts/Import/importTSVFile.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Import"));
             customLoadScript("scripts/Import/csvToPointsTable.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Import"));
             
+            //Data exporter
+            customLoadScript("scripts/Export/exportCSVFile.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Export"));
+            
+            
             
             //Check the WpsClient
             if(wpsClient != null){
