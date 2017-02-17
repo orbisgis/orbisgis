@@ -66,6 +66,9 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
  *  - excludedTypes : String[]
  *      Array of the type forbidden. If no types are specified, accept all.
  *
+ *  - excludedNames : String[]
+ *      Array of the forbidden names. If no names are specified, accept all.
+ *
  *  - multiSelection : boolean
  *      Enable or not the user to select more than one field. Disabled by default.
  *
