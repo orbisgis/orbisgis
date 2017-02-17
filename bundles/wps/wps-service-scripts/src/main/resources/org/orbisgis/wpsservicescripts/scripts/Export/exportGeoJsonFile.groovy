@@ -9,7 +9,6 @@ import org.orbisgis.wpsgroovyapi.process.Process
 import org.h2gis.functions.io.geojson.GeoJsonDriverFunction
 import org.orbisgis.corejdbc.H2GISProgressMonitor
 import org.h2gis.api.DriverFunction
-import org.h2gis.api.EmptyProgressVisitor
 
 
 /**
