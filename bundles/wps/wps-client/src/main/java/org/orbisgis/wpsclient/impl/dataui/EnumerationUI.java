@@ -55,10 +55,14 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import java.awt.*;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
+import java.util.List;
 
 /**
  * DataUI implementation for Enumeration.
@@ -80,6 +84,9 @@ public class EnumerationUI implements DataUI {
     private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
     private static final String IS_MULTISELECTION_PROPERTY = "IS_MULTISELECTION_PROPERTY";
     private static final String LIST_PROPERTY = "LIST_PROPERTY";
+    private static final String MOUSE_LISTENER_PROPERTY = "MOUSE_LISTENER_PROPERTY";
+
+    private static final String DEFAULT_TEXT = "User custom values";
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(EnumerationUI.class);
 
@@ -195,7 +202,13 @@ public class EnumerationUI implements DataUI {
             textField.getDocument().putProperty(ENUMERATION_PROPERTY, enumeration);
             textField.getDocument().putProperty(LIST_PROPERTY, list);
             textField.getDocument().putProperty(IS_MULTISELECTION_PROPERTY, enumeration.isMultiSelection());
-            textField.getDocument().putProperty(IS_MULTISELECTION_PROPERTY, isOptional);
+            textField.getDocument().putProperty(IS_OPTIONAL_PROPERTY, isOptional);
+            textField.setText(I18N.tr(DEFAULT_TEXT));
+            textField.setForeground(Color.gray);
+            MouseListener mouseListener = EventHandler.create(MouseListener.class, this,
+                    "onMouseClicked", "source", "mouseClicked");
+            textField.putClientProperty(MOUSE_LISTENER_PROPERTY, mouseListener);
+            textField.addMouseListener(mouseListener);
             textField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,
                     this,
                     "saveDocumentTextFile",
@@ -243,6 +256,16 @@ public class EnumerationUI implements DataUI {
         return ToolBoxIcon.getIcon(ToolBoxIcon.ENUMERATION);
     }
 
+    public void onMouseClicked(Object source){
+        if(source instanceof JTextField){
+            JTextField textField = ((JTextField) source);
+            textField.setForeground(Color.black);
+            textField.setText("");
+            MouseListener mouseListener = (MouseListener)textField.getClientProperty(MOUSE_LISTENER_PROPERTY);
+            textField.removeMouseListener(mouseListener);
+        }
+    }
+
     /**
      * When an item from the JList is selected, register it in the data map.
      * @param source Source JList.
@@ -259,7 +282,7 @@ public class EnumerationUI implements DataUI {
         if (list.getClientProperty(TEXT_FIELD_PROPERTY) != null) {
             JTextField textField = (JTextField) list.getClientProperty(TEXT_FIELD_PROPERTY);
             if (!textField.getText().isEmpty()) {
-                if(!isMultiSelection && list.getSelectedIndices().length != 0){
+                if(!isMultiSelection && list.getSelectedIndices().length != 0 && !textField.getText().equals(DEFAULT_TEXT)){
                     textField.setText("");
                 }
                 else {
@@ -345,8 +368,9 @@ public class EnumerationUI implements DataUI {
             String str = "";
             for(String value : listValues){
                 if(!str.isEmpty()){
-                    str += value;
+                    str += "\t";
                 }
+                str += value;
             }
             dataMap.put(uri, str);
         } catch (BadLocationException e) {

@@ -54,7 +54,7 @@ import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "JDBCTableField", propOrder = {"jdbcTableIdentifier", "dataTypeList", "excludedTypeList",
-        "jdbcTableFieldValueList", "multiSelection", "defaultValues"})
+        "excludedNameList", "jdbcTableFieldValueList", "multiSelection", "defaultValues"})
 public class JDBCTableField extends ComplexDataType {
 
     /** Identifier of the parent JDBCTable */
@@ -69,6 +69,9 @@ public class JDBCTableField extends ComplexDataType {
     /** List of type excluded for the field.*/
     @XmlElement(name = "ExcludedType", namespace = "http://orbisgis.org")
     private List<DataType> excludedTypeList;
+    /** List of name excluded for the field.*/
+    @XmlElement(name = "ExcludedName", namespace = "http://orbisgis.org")
+    private List<String> excludedNameList;
     /** List of JDBCTableFieldValue liked to the JDBCTableField */
     @XmlElement(name = "JDBCTableFieldValue", namespace = "http://orbisgis.org")
     private List<JDBCTableFieldValue> jdbcTableFieldValueList;
@@ -181,6 +184,22 @@ public class JDBCTableField extends ComplexDataType {
      */
     public List<DataType> getExcludedTypeList() {
         return excludedTypeList;
+    }
+
+    /**
+     * Sets the list of excluded name for the field.
+     * @param excludedNameList List of excluded name.
+     */
+    public void setExcludedNameList(List<String> excludedNameList) throws MalformedScriptException {
+        this.excludedNameList = excludedNameList;
+    }
+
+    /**
+     * Returns the list of excluded name for the field.
+     * @return List of excluded name.
+     */
+    public List<String> getExcludedNameList() {
+        return excludedNameList;
     }
 
     /**
