@@ -463,10 +463,15 @@ public class ObjectAnnotationConverter {
         for(String type : Arrays.asList(jdbcTableFieldAttribute.excludedTypes())){
             excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
         }
+        List<String> excludedNameList = new ArrayList<>();
+        for(String name : Arrays.asList(jdbcTableFieldAttribute.excludedNames())){
+            excludedNameList.add(name);
+        }
         List<Format> formatList = new ArrayList<>();
         formatList.add(format);
         JDBCTableField jdbcTableField = new JDBCTableField(formatList, dataTypeList, jdbcTableUri);
         jdbcTableField.setExcludedTypeList(excludedTypeList);
+        jdbcTableField.setExcludedNameList(excludedNameList);
         jdbcTableField.setMultiSelection(jdbcTableFieldAttribute.multiSelection());
         return jdbcTableField;
     }

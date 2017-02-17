@@ -493,30 +493,34 @@ public class JDBCTableFieldUI implements DataUI {
         //If there is tables, retrieve their information to format the display in the comboBox
         if(fieldNameList != null && !fieldNameList.isEmpty()){
             for (String fieldName : fieldNameList) {
-                //Retrieve the table information
-                Map<String, Object> informationMap =
-                        wpsClient.getFieldInformation(tableName, fieldName);
-                //If there is information, use it to improve the table display in the comboBox
-                JPanel fieldPanel = new JPanel(new MigLayout("ins 0, gap 0"));
-                if (!informationMap.isEmpty()) {
-                    //Sets the spatial icon
-                    String geometryType = (String)informationMap.get(LocalWpsServer.GEOMETRY_TYPE);
-                    fieldPanel.add(new JLabel(ToolBoxIcon.getIcon(geometryType.toLowerCase())));
-                    fieldPanel.add(new JLabel(fieldName));
-                    //Sets the SRID label
-                    int srid = (int) informationMap.get(LocalWpsServer.TABLE_SRID);
-                    if (srid != 0) {
-                        fieldPanel.add(new JLabel(I18N.tr(" [EPSG:" + srid + "]")));
+                if(jdbcTableField.getExcludedNameList() == null ||
+                        (!jdbcTableField.getExcludedNameList().contains(fieldName.toLowerCase())
+                                && !jdbcTableField.getExcludedNameList().contains(fieldName.toUpperCase()))){
+                    //Retrieve the table information
+                    Map<String, Object> informationMap =
+                            wpsClient.getFieldInformation(tableName, fieldName);
+                    //If there is information, use it to improve the table display in the comboBox
+                    JPanel fieldPanel = new JPanel(new MigLayout("ins 0, gap 0"));
+                    if (!informationMap.isEmpty()) {
+                        //Sets the spatial icon
+                        String geometryType = (String)informationMap.get(LocalWpsServer.GEOMETRY_TYPE);
+                        fieldPanel.add(new JLabel(ToolBoxIcon.getIcon(geometryType.toLowerCase())));
+                        fieldPanel.add(new JLabel(fieldName));
+                        //Sets the SRID label
+                        int srid = (int) informationMap.get(LocalWpsServer.TABLE_SRID);
+                        if (srid != 0) {
+                            fieldPanel.add(new JLabel(I18N.tr(" [EPSG:" + srid + "]")));
+                        }
+                        //Sets the dimension label
+                        int dimension = (int) informationMap.get(LocalWpsServer.TABLE_DIMENSION);
+                        if (dimension != 2 && dimension != 0) {
+                            fieldPanel.add(new JLabel(I18N.tr(" "+dimension + "D")));
+                        }
+                    } else {
+                        fieldPanel.add(new JLabel(fieldName));
                     }
-                    //Sets the dimension label
-                    int dimension = (int) informationMap.get(LocalWpsServer.TABLE_DIMENSION);
-                    if (dimension != 2 && dimension != 0) {
-                        fieldPanel.add(new JLabel(I18N.tr(" "+dimension + "D")));
-                    }
-                } else {
-                    fieldPanel.add(new JLabel(fieldName));
+                    listContainer.add(new ContainerItem<Object>(fieldPanel, fieldName));
                 }
-                listContainer.add(new ContainerItem<Object>(fieldPanel, fieldName));
             }
         }
         return listContainer;
