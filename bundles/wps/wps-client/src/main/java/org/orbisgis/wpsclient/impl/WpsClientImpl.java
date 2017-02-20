@@ -398,8 +398,10 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         openFilePanel.loadState();
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFilePanel)){
-            addLocalSource(openFilePanel.getSelectedFile().toURI());
-            openFilePanel.saveState();
+            for(File file : openFilePanel.getSelectedFiles()) {
+                addLocalSource(file.toURI());
+                openFilePanel.saveState();
+            }
         }
     }
 

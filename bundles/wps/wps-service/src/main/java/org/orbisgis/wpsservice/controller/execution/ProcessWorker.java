@@ -58,6 +58,9 @@ import java.util.Map;
  */
 public class ProcessWorker extends SwingWorkerPM {
 
+    /** One hundred */
+    private static final long ONE_HUNDRED = 100;
+
     /** Process execution listener which will be watching the execution */
     private Job job;
     /** Process to execute */
@@ -81,6 +84,7 @@ public class ProcessWorker extends SwingWorkerPM {
                          ProcessManager processManager,
                          Map<URI, Object> dataMap,
                          Map<String, Object> propertiesMap){
+        super(job.getProcess().getTitle().get(0).getValue(), ONE_HUNDRED);
         this.job = job;
         this.addPropertyChangeListener(Job.PROGRESS_PROPERTY, this.job);
         this.processIdentifier = processIdentifier;
@@ -88,7 +92,6 @@ public class ProcessWorker extends SwingWorkerPM {
         this.processManager = processManager;
         this.dataMap = dataMap;
         this.propertiesMap = propertiesMap;
-        this.setTaskName(job.getProcess().getTitle().get(0).getValue());
     }
 
     /**

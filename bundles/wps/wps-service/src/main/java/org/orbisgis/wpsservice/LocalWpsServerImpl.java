@@ -257,10 +257,7 @@ public class LocalWpsServerImpl
         List<ProcessIdentifier> piList = new ArrayList<>();
         if(f.getName().endsWith(GROOVY_EXTENSION)) {
             ProcessIdentifier pi = this.getProcessManager().addScript(f.toURI(), iconName, isRemovable, nodePath);
-            if(pi == null) {
-                LOGGER.error(I18N.tr("The process {0} can not be loaded.", f.getName()));
-            }
-            else if(pi.getProcessDescriptionType() != null){
+            if(pi != null && pi.getProcessOffering() != null && pi.getProcessDescriptionType() != null){
                 piList.add(pi);
             }
         }

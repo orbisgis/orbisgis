@@ -157,15 +157,13 @@ public class WpsScriptsPackage {
                 icons,
                 false,
                 path);
-        if(piList == null || piList.isEmpty()){
-            LOGGER.error(I18N.tr("Error get on adding the process {0} to the WpsService, no process returned.", processpath));
-            return;
-        }
-        for(ProcessIdentifier pi : piList){
-            if(pi == null || pi.getProcessDescriptionType() == null || pi.getProcessDescriptionType().getInput() == null){
-                LOGGER.error(I18N.tr("Error, the ProcessIdentifier get is malformed."));
+        if(piList != null) {
+            for (ProcessIdentifier pi : piList) {
+                if (pi == null || pi.getProcessDescriptionType() == null || pi.getProcessDescriptionType().getInput() == null) {
+                    LOGGER.error(I18N.tr("Error, the ProcessIdentifier get is malformed."));
+                }
+                listIdProcess.add(pi.getProcessDescriptionType().getIdentifier());
             }
-            listIdProcess.add(pi.getProcessDescriptionType().getIdentifier());
         }
     }
 
