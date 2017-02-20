@@ -39,8 +39,7 @@ def processing() {
     
     if(jdbcTableOutputName != null){
 	tableName = jdbcTableOutputName
-    }
-    
+    }    
     if(dropTable){
 	sql.execute "drop table if exists " + tableName    }
     

@@ -177,15 +177,15 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
             customLoadScript("scripts/Table/insertValues.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
             customLoadScript("scripts/Table/joinTables.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
             customLoadScript("scripts/Table/deleteColumns.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Table"));
-            customLoadScript("scripts/Vector/Convert/extractCenter.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Convert"));
-            customLoadScript("scripts/Vector/Create/createGridOfPoints.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Create"));
-            customLoadScript("scripts/Vector/Create/createGridOfPolygons.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Create"));
-            customLoadScript("scripts/Vector/Create/fixedExtrudePolygons.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Create"));
-            customLoadScript("scripts/Vector/Create/variableExtrudePolygons.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Create"));
-            customLoadScript("scripts/Vector/Operators/fixedDistanceBuffer.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Operators"));
-            customLoadScript("scripts/Vector/Operators/variableDistanceBuffer.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Operators"));
-            customLoadScript("scripts/Vector/Properties/geometryProperties.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Properties"));
-            customLoadScript("scripts/Vector/Transform/reprojectGeometries.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Vector")+"/"+I18N.tr("Transform"));
+            customLoadScript("scripts/Geometry2D/Convert/extractCenter.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Geometry2D")+"/"+I18N.tr("Convert"));
+            customLoadScript("scripts/Geometry2D/Create/createGridOfPoints.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Geometry2D")+"/"+I18N.tr("Create"));
+            customLoadScript("scripts/Geometry2D/Create/createGridOfPolygons.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Geometry2D")+"/"+I18N.tr("Create"));
+            customLoadScript("scripts/Geometry2D/Create/fixedExtrudePolygons.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Geometry2D")+"/"+I18N.tr("Create"));
+            customLoadScript("scripts/Geometry2D/Create/variableExtrudePolygons.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Geometry2D")+"/"+I18N.tr("Create"));
+            customLoadScript("scripts/Geometry2D/Buffer/fixedDistanceBuffer.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Geometry2D")+"/"+I18N.tr("Buffer"));
+            customLoadScript("scripts/Geometry2D/Buffer/variableDistanceBuffer.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Geometry2D")+"/"+I18N.tr("Buffer"));
+            customLoadScript("scripts/Geometry2D/Properties/geometryProperties.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Geometry2D")+"/"+I18N.tr("Properties"));
+            customLoadScript("scripts/Geometry2D/Transform/reprojectGeometries.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Geometry2D")+"/"+I18N.tr("Transform"));
             
             //Data importer
             customLoadScript("scripts/Import/importCSVFile.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Import"));
