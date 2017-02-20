@@ -108,6 +108,12 @@ public class ProcessManager {
             try {
                 processOffering = parserController.parseProcess(f.getAbsolutePath());
                 if(processOffering == null){
+                    LOGGER.error(I18N.tr("Unable to parse the process {0}.", scriptUri));
+                    return null;
+                }
+                if(getProcess(processOffering.getProcess().getIdentifier()) != null){
+                    LOGGER.warn(I18N.tr("A process with the identifier {0} already exists.",
+                            processOffering.getProcess().getIdentifier().getValue()));
                     return null;
                 }
                 //Check if the process is compatible with the DBMS connected to OrbisGIS.
@@ -170,6 +176,7 @@ public class ProcessManager {
                 return pi;
             }
         }
+        LOGGER.error(I18N.tr("The script is not valid."));
         return null;
     }
 
