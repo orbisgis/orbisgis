@@ -77,6 +77,10 @@ def processing() {
 
 	query+=" FROM "+inputJDBCTable+";"
 
+    if(dropTable){
+	sql.execute "drop table if exists " + outputTableName
+    }
+    
     //Execute the query
     sql.execute(query)
     literalOutput = "Process done"
@@ -90,11 +94,11 @@ def processing() {
 /** This JDBCTable is the input data source for the buffer. */
 @JDBCTableInput(
         title = [
-                "Input spatial data","en",
-                "Données spatiales d'entrée","fr"],
+                "Input table","en",
+                "Table en entrée","fr"],
         description = [
-                "The spatial data source for the buffer.","en",
-                "La source de données spatiales pour le tampon.","fr"],
+                "The spatial table  for the buffer.","en",
+                "La table contenant une colonne geometrie pour construire une zone tampon.","fr"],
         dataTypes = "GEOMETRY")
 String inputJDBCTable
 
@@ -108,8 +112,8 @@ String inputJDBCTable
                 "Geometric field","en",
                 "Champ géométrique","fr"],
         description = [
-                "The geometric field of the data source.","en",
-                "Le champ géométrique de la source de données.","fr"],
+                "The geometric field of the input table.","en",
+                "Le champ géométrique de la table d'entrée.","fr"],
         jdbcTableReference = "inputJDBCTable",
         dataTypes = ["GEOMETRY"])
 String[] geometricField
@@ -117,11 +121,11 @@ String[] geometricField
 /** Size of the buffer. */
 @LiteralDataInput(
         title = [
-                "Buffer Size","en",
-                "Taille du tampon","fr"],
+                "Buffer size","en",
+                "Largeur de la zone tampon","fr"],
         description = [
                 "The buffer size.","en",
-                "La taille du tampon.","fr"])
+                "La largeur de la zone tampon.","fr"])
 Double bufferSize 
 
 /** Mitre ratio limit (only affects mitered join style). */
@@ -183,6 +187,15 @@ String[] joinStyle = ["round"]
         minOccurs = 0,
         jdbcTableReference = "inputJDBCTable")
 String[] fieldList
+
+@LiteralDataInput(
+    title = [
+				"Drop the output table if exists","en",
+				"Supprimer la table de sortie si elle existe","fr"],
+    description = [
+				"Drop the output table if exists.","en",
+				"Supprimer la table de sortie si elle existe.","fr"])
+Boolean dropTable 
 
 
 @LiteralDataInput(
