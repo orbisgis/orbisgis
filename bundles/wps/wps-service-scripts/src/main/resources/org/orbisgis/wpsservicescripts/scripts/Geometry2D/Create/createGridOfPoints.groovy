@@ -30,6 +30,10 @@ def processing() {
     //Build the start of the query
     String query = "CREATE TABLE "+outputTableName+" AS SELECT * from ST_MakeGridPoints('"+inputJDBCTable+"',"+x_distance+","+y_distance+")"
     
+    if(dropTable){
+	sql.execute "drop table if exists " + outputTableName
+    }
+    
     //Execute the query
     sql.execute(query)
     literalOutput = "Process done"
@@ -68,6 +72,15 @@ Double x_distance =1
                 "La taille Y des cellules.","fr"])
 Double y_distance =1
 
+
+@LiteralDataInput(
+    title = [
+				"Drop the output table if exists","en",
+				"Supprimer la table de sortie si elle existe","fr"],
+    description = [
+				"Drop the output table if exists.","en",
+				"Supprimer la table de sortie si elle existe.","fr"])
+Boolean dropTable 
 
 @LiteralDataInput(
         title = ["Output table name","en",

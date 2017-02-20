@@ -43,6 +43,10 @@ def processing() {
     //Build the end of the query
     query += ") AS the_geom ,"+ idField[0]+ " FROM "+inputJDBCTable+";"
 
+    if(dropTable){
+	sql.execute "drop table if exists " + outputTableName
+    }
+    
     //Execute the query
     sql.execute(query)
 	literalOutput = "Process done"
@@ -100,6 +104,14 @@ String[] idField
         names=["Centroid", "Interior"])
 String[] operation = ["centroid"]
 
+@LiteralDataInput(
+    title = [
+				"Drop the output table if exists","en",
+				"Supprimer la table de sortie si elle existe","fr"],
+    description = [
+				"Drop the output table if exists.","en",
+				"Supprimer la table de sortie si elle existe.","fr"])
+Boolean dropTable 
 
 @LiteralDataInput(
 		title = ["Output table name","en",
