@@ -24,6 +24,9 @@ def processing() {
     File outputFile = new File(fileDataInput[0])    
     DriverFunction exp = new DBFDriverFunction();
     exp.exportTable(sql.getDataSource().getConnection(), inputJDBCTable, outputFile,new H2GISProgressMonitor(progressMonitor)); 
+    if(dropTable){
+	sql.execute "drop table if exists " + inputJDBCTable
+    }
     literalDataOutput = "The DBF file has been created."
 }
 
@@ -39,6 +42,15 @@ def processing() {
 String inputJDBCTable
 
 
+@LiteralDataInput(
+    title = [
+				"Drop the table","en",
+				"Supprimer la table","fr"],
+    description = [
+				"Drop the table when the export is finished.","en",
+				"Supprimer la table à l'issue l'export.","fr"])
+Boolean dropTable 
+
 
 /************/
 /** OUTPUT **/
@@ -50,6 +62,8 @@ String inputJDBCTable
                 "Nom du fichier DBF à exporter.","fr"],
     fileTypes = ["dbf"], multiSelection=false)
 String[] fileDataInput
+
+
 
 
 @LiteralDataOutput(

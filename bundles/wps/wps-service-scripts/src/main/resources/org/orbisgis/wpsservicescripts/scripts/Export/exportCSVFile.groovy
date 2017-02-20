@@ -24,6 +24,11 @@ def processing() {
     File outputFile = new File(fileDataInput[0])    
     DriverFunction exp = new CSVDriverFunction();
     exp.exportTable(sql.getDataSource().getConnection(), inputJDBCTable, outputFile,new H2GISProgressMonitor(progressMonitor)); 
+    
+    if(dropTable){
+	sql.execute "drop table if exists " + inputJDBCTable
+    }
+    
     literalDataOutput = "The CSV file has been created."
 }
 
@@ -37,6 +42,16 @@ def processing() {
                 "The table that will be exported in a CSV file","en",
                 "La table à exporter dans un fichier CSV.","fr"])
 String inputJDBCTable
+
+
+@LiteralDataInput(
+    title = [
+				"Drop the table","en",
+				"Supprimer la table","fr"],
+    description = [
+				"Drop the table when the export is finished.","en",
+				"Supprimer la table à l'issue l'export.","fr"])
+Boolean dropTable 
 
 
 

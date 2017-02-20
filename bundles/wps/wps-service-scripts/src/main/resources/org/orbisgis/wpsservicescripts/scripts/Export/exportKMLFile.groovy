@@ -24,6 +24,9 @@ def processing() {
     File outputFile = new File(fileDataInput[0])    
     DriverFunction exp = new KMLDriverFunction();
     exp.exportTable(sql.getDataSource().getConnection(), inputJDBCTable, outputFile,new H2GISProgressMonitor(progressMonitor)); 
+    if(dropTable){
+	sql.execute "drop table if exists " + inputJDBCTable
+    }
     literalDataOutput = "The KML file has been created."
 }
 
@@ -39,6 +42,14 @@ def processing() {
     dataTypes = ["GEOMETRY"])
 String inputJDBCTable
 
+@LiteralDataInput(
+    title = [
+				"Drop the table","en",
+				"Supprimer la table","fr"],
+    description = [
+				"Drop the table when the export is finished.","en",
+				"Supprimer la table à l'issue l'export.","fr"])
+Boolean dropTable 
 
 
 /************/
