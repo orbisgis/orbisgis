@@ -77,6 +77,10 @@ def processing() {
 
 	query+=" FROM "+inputJDBCTable+";"
 
+    if(dropTable){
+	sql.execute "drop table if exists " + outputTableName
+    }
+    
     //Execute the query
     sql.execute(query)
     literalOutput = "Process done"
@@ -90,11 +94,11 @@ def processing() {
 /** This JDBCTable is the input data source for the buffer. */
 @JDBCTableInput(
         title = [
-                "Input spatial data","en",
-                "Données spatiales d'entrée","fr"],
+                "Input table","en",
+                "Table en entrée","fr"],
         description = [
-                "The spatial data source for the buffer.","en",
-                "La source de données spatiales pour le tampon.","fr"],
+                "The input geometry table to compute the buffer.","en",
+                "La table contenant une colone géometrie pour construire la zone tampon.","fr"],
         dataTypes = ["GEOMETRY"])
 String inputJDBCTable
 
@@ -107,8 +111,8 @@ String inputJDBCTable
                 "Geometric field","en",
                 "Champ géométrique","fr"],
         description = [
-                "The geometric field of the data source.","en",
-                "Le champ géométrique de la source de données.","fr"],
+                "The geometric field of the input table.","en",
+                "Le champ géométrique de la table d'entrée.","fr"],
         jdbcTableReference = "inputJDBCTable",
         dataTypes = ["GEOMETRY"])
 String[] geometricField
@@ -116,8 +120,8 @@ String[] geometricField
 
 @JDBCTableFieldInput(
         title = [
-                "Size field","en",
-                "Champ taille","fr"],
+                "Buffer size","en",
+                "Largeur de la zone tampon","fr"],
         description = [
                 "A numeric field to specify the size of the buffer.","en",
                 "Champ numérique contenant les tailles de tampon.","fr"],
@@ -185,6 +189,15 @@ String[] joinStyle = ["round"]
         jdbcTableReference = "inputJDBCTable")
 String[] fieldList
 
+
+@LiteralDataInput(
+    title = [
+				"Drop the output table if exists","en",
+				"Supprimer la table de sortie si elle existe","fr"],
+    description = [
+				"Drop the output table if exists.","en",
+				"Supprimer la table de sortie si elle existe.","fr"])
+Boolean dropTable 
 
 @LiteralDataInput(
         title = [
