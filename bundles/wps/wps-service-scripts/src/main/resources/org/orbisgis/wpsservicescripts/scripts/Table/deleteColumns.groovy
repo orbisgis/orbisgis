@@ -58,7 +58,6 @@ String tableName
         title = ["Columns","en","Colonnes","fr"],
         description = ["The columns to remove names.","en",
                 "Le nom des colonnes à supprimer.","fr"],
-	excludedNames = {"pk"}
         jdbcTableReference = "orbisgis:wps:official:deleteColumns:tableName",
         identifier = "orbisgis:wps:official:deleteColumns:columnNames"
 )
