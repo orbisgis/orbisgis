@@ -6,7 +6,7 @@ import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.input.RawDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-import org.h2gis.functions.io.shp.SHPDriverFunction
+import org.h2gis.functions.io.kml.KMLDriverFunction
 import org.orbisgis.corejdbc.H2GISProgressMonitor
 import org.h2gis.api.DriverFunction
 
@@ -14,17 +14,17 @@ import org.h2gis.api.DriverFunction
 /**
  * @author Erwan Bocher
  */
-@Process(title = ["Export into a SHP file","en","Exporter dans un fichier SHP","fr"],
-    description = ["Export a table to a SHP file.","en",
-                "Exporter une table dans un fichier SHP.","fr"],
-    keywords = ["OrbisGIS,Exporter, Fichier, SHP","fr",
-                "OrbisGIS,Export, File, SHP","en"],
+@Process(title = ["Export into a KML file","en","Exporter dans un fichier KML","fr"],
+    description = ["Export a table to a KML file.","en",
+                "Exporter une table dans un fichier KML.","fr"],
+    keywords = ["OrbisGIS,Exporter, Fichier, KML","fr",
+                "OrbisGIS,Export, File, KML","en"],
     properties = ["DBMS_TYPE", "H2GIS","DBMS_TYPE", "POSTGIS"])
 def processing() {
     File outputFile = new File(fileDataInput[0])    
-    DriverFunction exp = new SHPDriverFunction();
+    DriverFunction exp = new KMLDriverFunction();
     exp.exportTable(sql.getDataSource().getConnection(), inputJDBCTable, outputFile,new H2GISProgressMonitor(progressMonitor)); 
-    literalDataOutput = "The ShapeFile has been created."
+    literalDataOutput = "The KML file has been created."
 }
 
 
@@ -34,8 +34,8 @@ def processing() {
                 "Table to export","en",
                 "Table à exporter","fr"],
     description = [
-                "The table that will be exported in a shapeFile file","en",
-                "La table à exporter dans un fichier shapeFile.","fr"],
+                "The table that will be exported in a KML file","en",
+                "La table à exporter dans un fichier KML.","fr"],
     dataTypes = ["GEOMETRY"])
 String inputJDBCTable
 
@@ -46,10 +46,10 @@ String inputJDBCTable
 /************/
 
 @RawDataInput(
-    title = ["Output shapeFile","en","Fichier shapeFile","fr"],
-    description = ["The output shapeFile file to be exported.","en",
-                "Nom du fichier shapeFile à exporter.","fr"],
-    fileTypes = ["shp"], multiSelection=false)
+    title = ["Output KML","en","Fichier KML","fr"],
+    description = ["The output KML file to be exported.","en",
+                "Nom du fichier KML à exporter.","fr"],
+    fileTypes = ["kml", "kmz"], multiSelection=false)
 String[] fileDataInput
 
 

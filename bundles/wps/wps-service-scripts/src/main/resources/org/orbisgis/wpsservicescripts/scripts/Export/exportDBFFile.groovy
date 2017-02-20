@@ -6,7 +6,7 @@ import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.input.RawDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-import org.h2gis.functions.io.shp.SHPDriverFunction
+import org.h2gis.functions.io.dbf.DBFDriverFunction
 import org.orbisgis.corejdbc.H2GISProgressMonitor
 import org.h2gis.api.DriverFunction
 
@@ -14,17 +14,17 @@ import org.h2gis.api.DriverFunction
 /**
  * @author Erwan Bocher
  */
-@Process(title = ["Export into a SHP file","en","Exporter dans un fichier SHP","fr"],
-    description = ["Export a table to a SHP file.","en",
-                "Exporter une table dans un fichier SHP.","fr"],
-    keywords = ["OrbisGIS,Exporter, Fichier, SHP","fr",
-                "OrbisGIS,Export, File, SHP","en"],
+@Process(title = ["Export DBF file","en","Exporter dans un fichier DBF","fr"],
+    description = ["Export a table to a DBF file.","en",
+                "Exporter une table dans un fichier DBF.","fr"],
+    keywords = ["OrbisGIS,Exporter, Fichier, DBF","fr",
+                "OrbisGIS,Export, File, DBF","en"],
     properties = ["DBMS_TYPE", "H2GIS","DBMS_TYPE", "POSTGIS"])
 def processing() {
     File outputFile = new File(fileDataInput[0])    
-    DriverFunction exp = new SHPDriverFunction();
+    DriverFunction exp = new DBFDriverFunction();
     exp.exportTable(sql.getDataSource().getConnection(), inputJDBCTable, outputFile,new H2GISProgressMonitor(progressMonitor)); 
-    literalDataOutput = "The ShapeFile has been created."
+    literalDataOutput = "The DBF file has been created."
 }
 
 
@@ -34,9 +34,8 @@ def processing() {
                 "Table to export","en",
                 "Table à exporter","fr"],
     description = [
-                "The table that will be exported in a shapeFile file","en",
-                "La table à exporter dans un fichier shapeFile.","fr"],
-    dataTypes = ["GEOMETRY"])
+                "The table that will be exported in a DBF file","en",
+                "La table à exporter dans un fichier DBF.","fr"])
 String inputJDBCTable
 
 
@@ -46,10 +45,10 @@ String inputJDBCTable
 /************/
 
 @RawDataInput(
-    title = ["Output shapeFile","en","Fichier shapeFile","fr"],
-    description = ["The output shapeFile file to be exported.","en",
-                "Nom du fichier shapeFile à exporter.","fr"],
-    fileTypes = ["shp"], multiSelection=false)
+    title = ["Output DBF","en","Fichier DBF","fr"],
+    description = ["The output DBF file to be exported.","en",
+                "Nom du fichier DBF à exporter.","fr"],
+    fileTypes = ["dbf"], multiSelection=false)
 String[] fileDataInput
 
 
