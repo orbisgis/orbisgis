@@ -75,4 +75,3 @@ public interface ViewWorkspace {
      * @param listener The listener instance
      */
     void removePropertyChangeListener(String prop, PropertyChangeListener listener);
-}

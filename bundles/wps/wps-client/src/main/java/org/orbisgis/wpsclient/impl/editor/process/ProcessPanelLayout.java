@@ -73,4 +73,3 @@ public class ProcessPanelLayout implements DockingPanelLayout {
         processEditableElement = new ProcessEditableElement(processOffering, identifier, new HashMap<URI, Object>());
         processEditableElement.setProcessExecutionType(processExecutionType);
     }
-}

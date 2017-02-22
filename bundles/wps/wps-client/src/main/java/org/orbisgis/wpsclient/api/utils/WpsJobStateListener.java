@@ -36,4 +36,3 @@ public interface WpsJobStateListener {
      * Method called when the job has end with failure.
      */
     void onJobFailed();
-}
