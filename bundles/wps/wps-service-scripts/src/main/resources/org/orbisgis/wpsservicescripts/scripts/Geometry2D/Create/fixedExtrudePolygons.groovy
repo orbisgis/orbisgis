@@ -5,7 +5,6 @@ import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-
 /********************/
 /** Process method **/
 /********************/
@@ -13,14 +12,13 @@ import org.orbisgis.wpsgroovyapi.process.Process
 /**
  * This process is used to extrude 3D polygons.
  *
- * @return A database table.
+ * @return A datadase table.
  * @author Erwan BOCHER
- * @author Sylvain PALOMINOS
  */
 @Process(
 		title = [
-				"Variable extrude polygons","en",
-				"Extrusion de polygones variable","fr"],
+				"Fixed extrude polygons","en",
+				"Extrusion de polygones fixe","fr"],
 		description = [
 				"Extrude a polygon and extends it to a 3D representation, returning a geometry collection containing floor, ceiling and wall geometries.","en",
 				"Extrusion de polygones en l'étendant à une représentation en 3D, retournant une collection de géométries contenant les géométries du sol, du plafond et des murs.","fr"],
@@ -30,7 +28,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
 
     //Build the start of the query
-    String query = "CREATE TABLE "+outputTableName+" AS SELECT ST_EXTRUDE("+geometricField[0]+","+height[0]+") AS the_geom "
+    String query = "CREATE TABLE "+outputTableName+" AS SELECT ST_EXTRUDE("+geometricField[0]+","+height+") AS the_geom "
 
 	for(String field : fieldList) {
 		if (field != null) {
@@ -40,6 +38,10 @@ def processing() {
 
 	query+=" FROM "+inputJDBCTable+";"
 
+    if(dropTable){
+	sql.execute "drop table if exists " + outputTableName
+    }
+    
     //Execute the query
     sql.execute(query)
 	literalOutput = "Process done"
@@ -67,27 +69,23 @@ String inputJDBCTable
 @JDBCTableFieldInput(
 		title = [
 				"Geometric field","en",
-				"Champ géométrique","fr"
-		],
+				"Champ géométrique","fr"],
 		description = [
 				"The geometric field of the data source.","en",
-				"Le champ géométrique de la source de données.","fr"
-		],
+				"Le champ géométrique de la source de données.","fr"],
 		jdbcTableReference = "inputJDBCTable",
         dataTypes = ["GEOMETRY"])
 String[] geometricField
 
 
-@JDBCTableFieldInput(
+@LiteralDataInput(
 		title = [
 				"Height of the polygons","en",
 				"Hauteur des polygones","fr"],
 		description = [
-				"A numeric field to specify the height of the polygon.","en",
-				"Le champ de valeurs numériques définissant la hauteur du polygone.","fr"],
-        jdbcTableReference = "inputJDBCTable",
-        dataTypes = ["DOUBLE", "INTEGER", "LONG"])
-String[] height
+				"A numeric value to specify the height of all polygon.","en",
+				"Une valeur numérique définissant la hauteur des polygones.","fr"])
+Double height = 1
 
 /** Fields to keep. */
 @JDBCTableFieldInput(
@@ -103,6 +101,14 @@ String[] height
         jdbcTableReference = "inputJDBCTable")
 String[] fieldList
 
+@LiteralDataInput(
+    title = [
+				"Drop the output table if exists","en",
+				"Supprimer la table de sortie si elle existe","fr"],
+    description = [
+				"Drop the output table if exists.","en",
+				"Supprimer la table de sortie si elle existe.","fr"])
+Boolean dropTable 
 
 @LiteralDataInput(
 		title = [
