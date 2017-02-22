@@ -39,15 +39,12 @@ def processing() {
     
     if(jdbcTableOutputName != null){
 	tableName = jdbcTableOutputName
-    }
-    
+    }    
     if(dropTable){
-	sql.execute "drop table if exists " + tableName
-    }
+	sql.execute "drop table if exists " + tableName    }
     
-    String csvRead = "CSVRead('"+csvFile.absolutePath+"', NULL, 'fieldSeparator="+separator+"')";
-    String create = "CREATE TABLE "+ tableName+"(ID INT PRIMARY KEY, THE_GEOM GEOMETRY)";    
-    sql.execute(create + " AS SELECT "+idField+", ST_MakePoint("+xField+", "+yField+") THE_GEOM FROM "+csvRead+";");    
+    String csvRead = "CSVRead('"+csvFile.absolutePath+"', NULL, 'fieldSeparator="+separator+"')";   
+    sql.execute("CREATE TABLE "+ tableName + " AS SELECT "+idField+", ST_MakePoint("+xField+", "+yField+") THE_GEOM FROM "+csvRead+";");    
     
     if(createIndex){
         sql.execute "create spatial index on "+ tableName + " (the_geom)"

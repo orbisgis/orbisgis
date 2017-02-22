@@ -20,22 +20,20 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Table,Description", "fr"],
         properties = ["DBMS_TYPE", "H2GIS",
                 "DBMS_TYPE", "POSTGIS"])
-def processing() {
-    
-    literalOutput = "No descriptions have been extracted."
-    
-    
+def processing() {    
+    String query;
     if(isH2){
-        String query =  "CREATE TABLE " + outputTableName +" as SELECT COLUMN_NAME as col_name, TYPE_NAME as col_type,  REMARKS as col_comment from INFORMATION_SCHEMA.COLUMNS where table_name = '"+ tableName+"';"
-        sql.execute(query);
-        literalOutput = "The descriptions have been extracted."
+        query =  "CREATE TABLE " + outputTableName +" as SELECT COLUMN_NAME as col_name, TYPE_NAME as col_type,  REMARKS as col_comment from INFORMATION_SCHEMA.COLUMNS where table_name = '"+ tableName+"';"
     }
     else{
-        String query =   "CREATE TABLE " + outputTableName +" as SELECT cols.column_name as col_name,cols.udt_name as col_type, pg_catalog.col_description(c.oid, cols.ordinal_position::int) as col_comment FROM pg_catalog.pg_class c, information_schema.columns cols WHERE cols.table_name = '"+tableName +"'AND cols.table_name = c.relname "
-        sql.execute(query);
-        literalOutput = "The descriptions have been extracted."
+        query =   "CREATE TABLE " + outputTableName +" as SELECT cols.column_name as col_name,cols.udt_name as col_type, pg_catalog.col_description(c.oid, cols.ordinal_position::int) as col_comment FROM pg_catalog.pg_class c, information_schema.columns cols WHERE cols.table_name = '"+tableName +"'AND cols.table_name = c.relname "
     } 
     
+    if(dropTable){
+	sql.execute "drop table if exists " + outputTableName
+    }
+    sql.execute(query);
+    literalOutput = "The descriptions have been extracted."
 }
 
 /****************/
@@ -49,6 +47,15 @@ def processing() {
         description = ["Extract name, type and comments from the selected table.","en",
                 "Extrait les noms, les types et les commentaires de la table.","fr"])
 String tableName
+
+@LiteralDataInput(
+    title = [
+				"Drop the output table if exists","en",
+				"Supprimer la table de sortie si elle existe","fr"],
+    description = [
+				"Drop the output table if exists.","en",
+				"Supprimer la table de sortie si elle existe.","fr"])
+Boolean dropTable 
 
 @LiteralDataInput(
         title = ["Output table name","en",

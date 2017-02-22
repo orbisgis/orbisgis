@@ -83,6 +83,10 @@ def processing() {
     //Add the field id
     query += idField[0] + " FROM "+inputJDBCTable+";"
 
+    if(dropTable){
+	sql.execute "drop table if exists " + outputTableName
+    }
+    
     //Execute the query
     sql.execute(query)
     literalOutput = "Process done"
@@ -149,6 +153,14 @@ String[] idField
         identifier = "orbisgis:wps:official:geometryProperties:operations")
 String[] operations = ["geomtype"]
 
+@LiteralDataInput(
+    title = [
+				"Drop the output table if exists","en",
+				"Supprimer la table de sortie si elle existe","fr"],
+    description = [
+				"Drop the output table if exists.","en",
+				"Supprimer la table de sortie si elle existe.","fr"])
+Boolean dropTable 
 
 @LiteralDataInput(
         title = [

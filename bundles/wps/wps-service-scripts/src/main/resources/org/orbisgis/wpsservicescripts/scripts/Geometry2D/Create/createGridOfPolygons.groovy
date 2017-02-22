@@ -4,31 +4,34 @@ import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
 import org.orbisgis.wpsgroovyapi.input.LiteralDataInput
 import org.orbisgis.wpsgroovyapi.output.LiteralDataOutput
 import org.orbisgis.wpsgroovyapi.process.Process
-
 /********************/
 /** Process method **/
 /********************/
 
 /**
- * This process is used to create a grid of points.
+ * This process is used to create a grid of polygons.
  *
  * @return A datadase table.
  * @author Erwan BOCHER
  * @author Sylvain PALOMINOS
  */
 @Process(
-        title = ["Create a grid of points","en",
-                "Création d'une grille de points","fr"],
+        title = ["Create a grid of polygons","en",
+                "Création d'une grille de polygones","fr"],
         description = [
-                "Create a grid of points.","en",
-                "Création d'une grille de points.","fr"],
-        keywords = ["Vector,Geometry,Creation", "en",
+                "Create a grid of polygons.","en",
+                "Création d'une grille de polygones.","fr"],
+        keywords = ["Vector,Geometry,Create", "en",
                 "Vecteur,Géométrie,Création", "fr"],
         properties = ["DBMS_TYPE", "H2GIS"])
 def processing() {
 
     //Build the start of the query
-    String query = "CREATE TABLE "+outputTableName+" AS SELECT * from ST_MakeGridPoints('"+inputJDBCTable+"',"+x_distance+","+y_distance+")"
+    String query = "CREATE TABLE "+outputTableName+" AS SELECT * from ST_MakeGrid('"+inputJDBCTable+"',"+x_distance+","+y_distance+")"
+    
+    if(dropTable){
+	sql.execute "drop table if exists " + outputTableName
+    }
     
     //Execute the query
     sql.execute(query)
@@ -54,15 +57,19 @@ String inputJDBCTable
 /**********************/
 
 @LiteralDataInput(
-        title = ["X cell size","en",
+        title = [
+                "X cell size","en",
                 "Taille X des cellules","fr"],
-        description = ["The X cell size.","en",
+        description = [
+                "The X cell size.","en",
                 "La taille X des cellules.","fr"])
 Double x_distance =1
 
 @LiteralDataInput(
-        title = ["Y cell size","en",
-                "Taille Y des cellules","fr"],
+        title = [
+                "Y cell size","en",
+                "Taille Y des cellules","fr"
+        ],
         description = [
                 "The Y cell size.","en",
                 "La taille Y des cellules.","fr"])
@@ -70,7 +77,18 @@ Double y_distance =1
 
 
 @LiteralDataInput(
-        title = ["Output table name","en",
+    title = [
+				"Drop the output table if exists","en",
+				"Supprimer la table de sortie si elle existe","fr"],
+    description = [
+				"Drop the output table if exists.","en",
+				"Supprimer la table de sortie si elle existe.","fr"])
+Boolean dropTable 
+
+
+@LiteralDataInput(
+        title = [
+                "Output table name","en",
                 "Nom de la table de sortie","fr"],
         description = [
                 "Name of the table containing the result of the process.","en",
@@ -83,7 +101,8 @@ String outputTableName
 
 /** String output of the process. */
 @LiteralDataOutput(
-        title = ["Output message","en",
+        title = [
+                "Output message","en",
                 "Message de sortie","fr"],
         description = [
                 "The output message.","en",

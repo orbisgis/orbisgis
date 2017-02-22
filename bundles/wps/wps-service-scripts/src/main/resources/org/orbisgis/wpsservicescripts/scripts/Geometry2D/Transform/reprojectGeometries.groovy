@@ -51,11 +51,14 @@ def processing() {
 		}
 	}
 
- 	query +=  " FROM "+inputJDBCTable+";"
-	logger.warn(query)
+    query +=  " FROM "+inputJDBCTable+";"
+    logger.warn(query)
+    if(dropTable){
+	sql.execute "drop table if exists " + outputTableName
+    }
     //Execute the query
     sql.execute(query)
-	literalOutput = "Process done"
+    literalOutput = "Process done"
 }
 
 /****************/
@@ -126,6 +129,14 @@ String[] srid
 )
 String[] fieldList
 
+@LiteralDataInput(
+    title = [
+				"Drop the output table if exists","en",
+				"Supprimer la table de sortie si elle existe","fr"],
+    description = [
+				"Drop the output table if exists.","en",
+				"Supprimer la table de sortie si elle existe.","fr"])
+Boolean dropTable 
 
 @LiteralDataInput(
 		title = [
