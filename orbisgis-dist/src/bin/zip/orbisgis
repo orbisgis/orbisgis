@@ -1,0 +1,10 @@
+#!/bin/bash
+if [ $# -eq 0 ]
+then
+	bash /usr/lib/OrbisGIS/orbisgis.sh
+else
+	if [ $1 == "-clean" ]
+	then
+		bash /usr/lib/OrbisGIS/orbisgis_safemode.sh
+	fi
+fi
