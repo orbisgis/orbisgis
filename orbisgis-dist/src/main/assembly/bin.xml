@@ -51,6 +51,8 @@
                 <include>*.sh</include>
                 <include>*.bat</include>
                 <include>orbisgis</include>
+                <include>orbisgis.desktop</include>
+                <include>orbisgis.svg</include>
             </includes>
         </fileSet>
     </fileSets>
