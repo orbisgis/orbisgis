@@ -43,6 +43,7 @@ import org.orbisgis.wpsclient.impl.WpsClientImpl;
 import org.orbisgis.wpsclient.api.dataui.DataUI;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.*;
+import org.orbisgis.wpsservice.model.BoundingBoxData;
 
 import javax.swing.*;
 import java.net.URI;
@@ -73,6 +74,7 @@ public class DataUIManager {
         linkClassUI(Enumeration.class, new EnumerationUI(), wpsClient);
         linkClassUI(GeometryData.class, new GeometryUI(), wpsClient);
         linkClassUI(Password.class, new PasswordUI(), wpsClient);
+        linkClassUI(BoundingBoxData.class, new BoundingBoxDataUI(), wpsClient);
     }
 
     /**
