@@ -688,6 +688,11 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
     }
 
     @Override
+    public List<String> getSRIDList() {
+        return wpsService.getSRIDList();
+    }
+
+    @Override
     public void addJobListener(WpsJobStateListener listener) {
         if(!jobStateListenerList.contains(listener)) {
             jobStateListenerList.add(listener);

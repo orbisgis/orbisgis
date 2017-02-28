@@ -152,6 +152,13 @@ public interface InternalWpsClient extends WpsClient {
     List<String> getFieldValueList(String tableName, String fieldName);
 
     /**
+     * Returns the list of the available SRID.
+     *
+     * @return The list of the available SRID.
+     */
+    List<String> getSRIDList();
+
+    /**
      * Adds a WpsJobListener. The listeners will be called when the clients detects an update of the state of the job
      * listened by the WpsJobStateListener
      *

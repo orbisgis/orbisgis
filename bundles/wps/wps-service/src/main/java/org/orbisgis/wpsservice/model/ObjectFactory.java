@@ -62,6 +62,7 @@ public class ObjectFactory {
     private final static QName _GeometryData_QNAME = new QName("http://orbisgis.org", "Geometry");
     private final static QName _RawData_QNAME = new QName("http://orbisgis.org", "RawData");
     private final static QName _Password_QNAME = new QName("http://orbisgis.org", "Password");
+    private final static QName _BoundingBoxData_QNAME = new QName("http://orbisgis.org", "BoundingBoxData");
     private final static QName _TranslatableString_QNAME = new QName("http://orbisgis.org", "TranslatableString");
 
     /**
@@ -196,6 +197,24 @@ public class ObjectFactory {
             substitutionHeadName="DataDescription")
     public JAXBElement<Password> createPassword(Password password) {
         return new JAXBElement<>(_Password_QNAME, Password.class, password);
+    }
+
+    /**
+     * Create an instance of {@link BoundingBoxData }
+     *
+     */
+    public BoundingBoxData createBoundingBoxData() { return new BoundingBoxData(); }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BoundingBoxData }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace="http://orbisgis.org",
+            name="BoundingBoxData",
+            substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
+            substitutionHeadName="DataDescription")
+    public JAXBElement<BoundingBoxData> createBoundingBoxData(BoundingBoxData boundingBoxData) {
+        return new JAXBElement<>(_BoundingBoxData_QNAME, BoundingBoxData.class, boundingBoxData);
     }
 
     /**

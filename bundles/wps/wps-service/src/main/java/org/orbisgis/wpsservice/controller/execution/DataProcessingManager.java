@@ -60,6 +60,7 @@ public class DataProcessingManager {
     public DataProcessingManager(){
         listDataProcessing = new ArrayList<>();
         listDataProcessing.add(new GeometryProcessing());
+        listDataProcessing.add(new BoundingBoxProcessing());
     }
 
     public Map<URI, Object> preProcessData(DescriptionType input, Map<URI, Object> dataMap,

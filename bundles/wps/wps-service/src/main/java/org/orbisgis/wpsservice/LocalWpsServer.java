@@ -115,6 +115,13 @@ public interface LocalWpsServer extends WpsServer {
     List<String> getFieldValueList(String tableName, String fieldName);
 
     /**
+     * Returns the list of the available SRID.
+     *
+     * @return The list of the available SRID.
+     */
+    List<String> getSRIDList();
+
+    /**
      * Adds to the server execution properties which will be set to the GroovyObject for the execution.
      * Those properties will be accessible inside the groovy script as variables which name is the map entry key.
      * For example :

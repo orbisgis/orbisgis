@@ -42,12 +42,17 @@ import net.opengis.wps._2_0.*;
 import org.orbisgis.wpsgroovyapi.attributes.BoundingBoxAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
+import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
 import org.orbisgis.wpsservice.model.MalformedScriptException;
+import org.orbisgis.wpsservice.model.BoundingBoxData;
+import org.orbisgis.wpsservice.model.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Parser for the BoundingBox input/output annotations.
@@ -60,7 +65,10 @@ public class BoundingBoxParser implements Parser {
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
         BoundingBoxAttribute boundingBoxAttribute = f.getAnnotation(BoundingBoxAttribute.class);
-        BoundingBoxData boundingBoxData = ObjectAnnotationConverter.annotationToObject(boundingBoxAttribute);
+        Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(format);
+        BoundingBoxData boundingBoxData = ObjectAnnotationConverter.annotationToObject(boundingBoxAttribute, formatList);
 
         InputDescriptionType input = new InputDescriptionType();
         JAXBElement<BoundingBoxData> jaxbElement = new ObjectFactory().createBoundingBoxData(boundingBoxData);
@@ -81,7 +89,10 @@ public class BoundingBoxParser implements Parser {
     @Override
     public OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException {
         BoundingBoxAttribute boundingBoxAttribute = f.getAnnotation(BoundingBoxAttribute.class);
-        BoundingBoxData boundingBoxData = ObjectAnnotationConverter.annotationToObject(boundingBoxAttribute);
+        Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
+        List<Format> formatList = new ArrayList<>();
+        formatList.add(format);
+        BoundingBoxData boundingBoxData = ObjectAnnotationConverter.annotationToObject(boundingBoxAttribute, formatList);
 
         OutputDescriptionType output = new OutputDescriptionType();
         JAXBElement<BoundingBoxData> jaxbElement = new ObjectFactory().createBoundingBoxData(boundingBoxData);

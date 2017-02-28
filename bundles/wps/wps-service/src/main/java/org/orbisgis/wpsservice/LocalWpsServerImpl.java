@@ -465,6 +465,21 @@ public class LocalWpsServerImpl
         return fieldValues;
     }
 
+    @Override
+    public List<String> getSRIDList(){
+        List<String> sridList = new ArrayList<>();
+        try(Connection connection = dataManager.getDataSource().getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT srid, AUTH_NAME FROM SPATIAL_REF_SYS");
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                sridList.add(resultSet.getString("AUTH_NAME") + ":" +resultSet.getInt("srid"));
+            }
+        } catch (SQLException e) {
+            LOGGER.error(I18N.tr("Error on getting the SRID list.\nCause : {0}.", e.getMessage()));
+        }
+        return sridList;
+    }
+
     /**
      * Test the database an returns if it allows the wps service to run more than one process at the same time.
      * @return True if more than one process can be run at the same time, false otherwise.

@@ -44,9 +44,9 @@ import net.opengis.wps._2_0.Format;
 import net.opengis.wps._2_0.LiteralDataType.LiteralDataDomain;
 import org.orbisgis.wpsgroovyapi.attributes.*;
 import org.orbisgis.wpsservice.model.*;
+import org.orbisgis.wpsservice.model.BoundingBoxData;
 import org.orbisgis.wpsservice.model.Enumeration;
 import org.orbisgis.wpsservice.model.TranslatableString;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.net.URI;
@@ -66,24 +66,11 @@ public class ObjectAnnotationConverter {
      * @return A {@link BoundingBoxData} object with the data from the {@link BoundingBoxAttribute} annotation.
      * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
      */
-    public static BoundingBoxData annotationToObject(BoundingBoxAttribute boundingBoxAttribute)
+    public static BoundingBoxData annotationToObject(BoundingBoxAttribute boundingBoxAttribute, List<Format> formatList)
             throws MalformedScriptException {
-        BoundingBoxData boundingBoxData = new BoundingBoxData();
-        List<SupportedCRS> supportedCRSList = boundingBoxData.getSupportedCRS();
-        SupportedCRS defaultCRS = getCRS(boundingBoxAttribute.defaultCRS(), true);
-        if(defaultCRS == null){
-            throw new MalformedScriptException(BoundingBoxAttribute.class, "CRS", "The default CRS should be defined.");
-        }
-        supportedCRSList.add(defaultCRS);
-        if(boundingBoxAttribute.supportedCRS().length != 0){
-            for(String crsStr : boundingBoxAttribute.supportedCRS()) {
-                SupportedCRS crs = getCRS(crsStr, false);
-                if(crs != null){
-                    supportedCRSList.add(crs);
-                }
-            }
-        }
-        return boundingBoxData;
+        String defaultCRS = boundingBoxAttribute.defaultCRS();
+        String[] supportedCrs = boundingBoxAttribute.supportedCRS();
+        return new BoundingBoxData(formatList, defaultCRS, supportedCrs, boundingBoxAttribute.dimension());
     }
 
     /**
