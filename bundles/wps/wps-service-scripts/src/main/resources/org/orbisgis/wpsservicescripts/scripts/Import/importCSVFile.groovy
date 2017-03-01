@@ -15,7 +15,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Import d'un fichier CSV dans la base de données.","fr"],
     keywords = ["OrbisGIS,Importer, Fichier, CSV","fr",
                 "OrbisGIS,Import, File, CSV","en"],
-    properties = ["DBMS_TYPE","H2GIS"])
+    properties = ["DBMS_TYPE","H2GIS"],
+    version = "1.0")
 def processing() {
     File csvFile = new File(csvDataInput[0])
     name = csvFile.getName()

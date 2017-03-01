@@ -28,7 +28,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
 				"Vecteur,Géométrie,Extraction,Centre", "fr"],
 
 		properties = ["DBMS_TYPE", "H2GIS",
-				"DBMS_TYPE", "POSTGIS"])
+				"DBMS_TYPE", "POSTGIS"],
+                version = "1.0")
 def processing() {
 	//Build the start of the query
 	String query = "CREATE TEMPORARY TABLE "+outputTableName+" AS SELECT "
@@ -42,14 +43,17 @@ def processing() {
 	}
     //Build the end of the query
     query += ") AS the_geom ,"+ idField[0]+ " FROM "+inputJDBCTable+";"
-
+    
     if(dropTable){
 	sql.execute "drop table if exists " + outputTableName
     }
     
     //Execute the query
     sql.execute(query)
-	literalOutput = "Process done"
+    if(dropInputTable){
+        sql.execute "drop table if exists " + inputJDBCTable
+    }
+    literalOutput = "Process done"
 }
 
 
@@ -120,6 +124,17 @@ Boolean dropTable
 				"Name of the table containing the result of the process.","en",
 				"Nom de la table contenant les résultats du traitement.","fr"])
 String outputTableName
+
+
+@LiteralDataInput(
+    title = [
+				"Drop the input table","en",
+				"Supprimer la table d'entrée","fr"],
+    description = [
+				"Drop the input table when the script is finished.","en",
+				"Supprimer la table d'entrée lorsque le script est terminé.","fr"])
+Boolean dropInputTable 
+
 
 /*****************/
 /** OUTPUT Data **/

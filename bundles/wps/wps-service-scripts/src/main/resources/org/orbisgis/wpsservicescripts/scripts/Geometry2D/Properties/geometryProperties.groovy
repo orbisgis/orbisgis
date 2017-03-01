@@ -34,6 +34,7 @@ import org.orbisgis.wpsgroovyapi.process.*
                 "Vecteur,Géométrie,Propriétés", "fr"],
         properties = ["DBMS_TYPE", "H2GIS",
                 "DBMS_TYPE", "POSTGIS"],
+        version = "1.0",
         identifier = "orbisgis:wps:official:geometryProperties"
 )
 def processing() {
@@ -89,6 +90,9 @@ def processing() {
     
     //Execute the query
     sql.execute(query)
+    if(dropInputTable){
+        sql.execute "drop table if exists " + inputJDBCTable
+    }
     literalOutput = "Process done"
 }
 
@@ -171,6 +175,17 @@ Boolean dropTable
                 "Nom de la table contenant les résultats du traitement.","fr"],
         identifier = "orbisgis:wps:official:geometryProperties:outputTableName")
 String outputTableName
+
+
+@LiteralDataInput(
+    title = [
+				"Drop the input table","en",
+				"Supprimer la table d'entrée","fr"],
+    description = [
+				"Drop the input table when the script is finished.","en",
+				"Supprimer la table d'entrée lorsque le script est terminé.","fr"])
+Boolean dropInputTable 
+
 
 /*****************/
 /** OUTPUT Data **/

@@ -30,7 +30,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Création d'une table de geometries ponctuelles à partir d'un fichier CSV contenant l'identifiant du point ainsi que ses coordonnées X et Y.","fr"],
     keywords = ["OrbisGIS,Importer, Fichier","fr",
                 "OrbisGIS,Import, File","en"],
-    properties = ["DBMS_TYPE","H2GIS"])
+    properties = ["DBMS_TYPE","H2GIS"],
+    version = "1.0")
 def processing() {
     //Open the CSV file
     File csvFile = new File(csvDataInput[0])

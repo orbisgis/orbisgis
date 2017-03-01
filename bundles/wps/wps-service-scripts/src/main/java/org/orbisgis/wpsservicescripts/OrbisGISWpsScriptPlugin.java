@@ -202,7 +202,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
             customLoadScript("scripts/Export/exportTSVFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
             customLoadScript("scripts/Export/exportDBFFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
             customLoadScript("scripts/Export/exportGeoJsonFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
-            customLoadScript("scripts/Export/exportShapeFileFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
+            customLoadScript("scripts/Export/exportShapeFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
             customLoadScript("scripts/Export/exportKMLFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
 
 

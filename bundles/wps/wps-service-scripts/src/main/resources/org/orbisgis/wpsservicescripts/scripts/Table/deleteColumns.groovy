@@ -23,7 +23,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
         keywords = ["Table,Delete","en",
                 "Table,Suppression","fr"],
         properties = ["DBMS_TYPE", "H2GIS",
-                "DBMS_TYPE", "POSTGIS"],
+                "DBMS_TYPE", "POSTGIS"],                
         identifier = "orbisgis:wps:official:deleteColumns"
 )
 def processing() {

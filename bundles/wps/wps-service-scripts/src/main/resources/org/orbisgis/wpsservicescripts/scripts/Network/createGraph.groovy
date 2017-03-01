@@ -17,10 +17,11 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Créer un graphe","fr"],
         description = [
                 "Create a graph stored in two tables nodes and edges from an input table that contains Multi or LineString.<br>If the input table has name 'input', then the output tables are named 'input_nodes' and 'input_edges'.","en",
-                "Créer un graphe stocké dans deux tables 'node' (noeud) et 'edge' (arc) depuis une table contenant des objets du type MultiLineString et LineString.<br>Si la table en entrée a pour nom 'input', alors celles en sortie seront nommées 'input_nodes' et 'input_edges'.","fr"],
+                "Créer un graphe stocké dans deux tables 'nodes' (noeuds) et 'edges' (arcs) depuis une table contenant des objets du type MultiLineString et LineString.<br>Si la table en entrée a pour nom 'input', alors celles en sortie seront nommées 'input_nodes' et 'input_edges'.","fr"],
         keywords = ["Network,Geometry","en",
                 "Réseau,Géometrie","fr"],
-        properties = ["DBMS_TYPE", "H2GIS"])
+        properties = ["DBMS_TYPE", "H2GIS"],
+        version = "1.0")
 def processing() {    
     if(slope==null){
         slope=false;
@@ -30,6 +31,10 @@ def processing() {
 
     //Execute the query
     sql.execute(query)
+    
+    if(dropInputTable){
+        sql.execute "drop table if exists " + inputJDBCTable
+    }
 
     literalOutput = "The graph network has been created."
 }
@@ -75,6 +80,15 @@ Double tolerance
                 "Vrai si les sommets doivent etre orientés selon les valeurs Z de leur première et dernière coordonnées.","fr"],
 	    minOccurs = 0)
 Boolean slope
+
+@LiteralDataInput(
+    title = [
+				"Drop the input table","en",
+				"Supprimer la table d'entrée","fr"],
+    description = [
+				"Drop the input table when the script is finished.","en",
+				"Supprimer la table d'entrée lorsque le script est terminé.","fr"])
+Boolean dropInputTable 
 
 
 /** String output of the process. */

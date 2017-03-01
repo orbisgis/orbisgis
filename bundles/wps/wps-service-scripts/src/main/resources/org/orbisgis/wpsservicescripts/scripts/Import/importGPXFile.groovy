@@ -15,7 +15,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Import d'un fichier GPX en plusieurs tables.\n Pour plus d'informations consulter http://www.h2gis.org.","fr"],
     keywords = ["OrbisGIS,Importer, Fichier, GPX","fr",
                 "OrbisGIS,Import, File, GPX","en"],
-    properties = ["DBMS_TYPE","H2GIS"])
+    properties = ["DBMS_TYPE","H2GIS"],
+    version = "1.0")
 def processing() {
     File fileData = new File(fileDataInput[0])
     name = fileData.getName()

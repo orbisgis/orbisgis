@@ -15,7 +15,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Import d'un fichier TSV dans la base de données.","fr"],
     keywords = ["OrbisGIS,Importer, Fichier, TSV","fr",
                 "OrbisGIS,Import, File, TSV","en"],
-    properties = ["DBMS_TYPE","H2GIS"])
+    properties = ["DBMS_TYPE","H2GIS"],
+    version = "1.0")
 def processing() {
     File fileData = new File(fileDataInput[0])
     name = fileData.getName()

@@ -40,11 +40,19 @@ def processing() {
 	if(operation[0].equals("left")){
 		query += leftJDBCTable + "JOIN " + rightJDBCTable + " ON " + leftJDBCTable+ "."+ leftField[0]+ "="+ rightJDBCTable+"."+ rightField[0];
 	}
-	else if (operation[0].equals("left")){
+	else if (operation[0].equals("right")){
+
+	}
+        
+        else if (operation[0].equals("union")){
 
 	}
 	//Execute the query
 	sql.execute(query);
+        
+        if(dropInputTables){
+            sql.execute "drop table if exists " + leftJDBCTable+","+ rightJDBCTable
+        }
 
 	//SELECT *
 	//FROM A
@@ -136,6 +144,14 @@ String[] operation = ["left"]
 		minOccurs = 0)
 Boolean createIndex
 
+@LiteralDataInput(
+    title = [
+				"Drop the input tables","en",
+				"Supprimer les tables d'entrée","fr"],
+    description = [
+				"Drop the input tables when the script is finished.","en",
+				"Supprimer les tables d'entrée lorsque le script est terminé.","fr"])
+Boolean dropInputTables 
 
 @LiteralDataInput(
 		title = ["Output table name","en",

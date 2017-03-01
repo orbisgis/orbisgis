@@ -15,7 +15,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Import d'un fichier DBF dans la base de données.","fr"],
     keywords = ["OrbisGIS,Importer, Fichier, DBF","fr",
                 "OrbisGIS,Import, File, DBF","en"],
-    properties = ["DBMS_TYPE","H2GIS"])
+    properties = ["DBMS_TYPE","H2GIS"],
+    version = "1.0")
 def processing() {
     File dbfFile = new File(dbfDataInput[0])
     name = dbfFile.getName()
