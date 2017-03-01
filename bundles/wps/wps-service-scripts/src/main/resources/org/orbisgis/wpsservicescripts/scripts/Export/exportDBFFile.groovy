@@ -19,12 +19,13 @@ import org.h2gis.api.DriverFunction
                 "Exporter une table dans un fichier DBF.","fr"],
     keywords = ["OrbisGIS,Exporter, Fichier, DBF","fr",
                 "OrbisGIS,Export, File, DBF","en"],
-    properties = ["DBMS_TYPE", "H2GIS","DBMS_TYPE", "POSTGIS"])
+    properties = ["DBMS_TYPE", "H2GIS","DBMS_TYPE", "POSTGIS"],
+    version = "1.0")
 def processing() {
     File outputFile = new File(fileDataInput[0])    
     DriverFunction exp = new DBFDriverFunction();
     exp.exportTable(sql.getDataSource().getConnection(), inputJDBCTable, outputFile,new H2GISProgressMonitor(progressMonitor)); 
-    if(dropTable){
+    if(dropInputTable){
 	sql.execute "drop table if exists " + inputJDBCTable
     }
     literalDataOutput = "The DBF file has been created."
@@ -44,12 +45,12 @@ String inputJDBCTable
 
 @LiteralDataInput(
     title = [
-				"Drop the table","en",
-				"Supprimer la table","fr"],
+				"Drop the input table","en",
+				"Supprimer la table d'entrée","fr"],
     description = [
-				"Drop the table when the export is finished.","en",
-				"Supprimer la table à l'issue l'export.","fr"])
-Boolean dropTable 
+				"Drop the input table when the export is finished.","en",
+				"Supprimer la table d'entrée à l'issue l'export.","fr"])
+Boolean dropInputTable 
 
 
 /************/

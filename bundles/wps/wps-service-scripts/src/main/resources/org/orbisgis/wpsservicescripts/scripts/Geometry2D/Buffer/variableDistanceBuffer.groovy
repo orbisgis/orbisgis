@@ -32,14 +32,15 @@ import org.orbisgis.wpsgroovyapi.process.Process
 @Process(
         title = [
                 "Variable distance buffer","en",
-                "Buffer à distance variable","fr"],
+                "Buffer avec une distance variable","fr"],
         description = [
                 "Execute a buffer on a geometric field using another field to specify the distance.","en",
                 "Génère une zone tampon sur un champ géométrique en utilisant un autre champ pour définir la distance.","fr"],
         keywords = ["Vector,Geometry", "en",
                 "Vecteur,Géométrie", "fr"],
         properties = ["DBMS_TYPE", "H2GIS",
-                "DBMS_TYPE", "POSTGIS"])
+                "DBMS_TYPE", "POSTGIS"],
+        version = "1.0")
 def processing() {
 
     //Build the start of the query
@@ -77,12 +78,17 @@ def processing() {
 
 	query+=" FROM "+inputJDBCTable+";"
 
-    if(dropTable){
+    if(dropOutputTable){
 	sql.execute "drop table if exists " + outputTableName
     }
     
     //Execute the query
     sql.execute(query)
+    
+    if(dropInputTable){
+        sql.execute "drop table if exists " + inputJDBCTable
+    }
+    
     literalOutput = "Process done"
 }
 
@@ -197,7 +203,7 @@ String[] fieldList
     description = [
 				"Drop the output table if exists.","en",
 				"Supprimer la table de sortie si elle existe.","fr"])
-Boolean dropTable 
+Boolean dropOutputTable 
 
 @LiteralDataInput(
         title = [
@@ -207,6 +213,16 @@ Boolean dropTable
                 "Name of the table containing the result of the process.","en",
                 "Nom de la table contenant les résultats du traitement.","fr"])
 String outputTableName
+
+
+@LiteralDataInput(
+    title = [
+				"Drop the input table","en",
+				"Supprimer la table d'entrée","fr"],
+    description = [
+				"Drop the input table when the script is finished.","en",
+				"Supprimer la table d'entrée lorsque le script est terminé.","fr"])
+Boolean dropInputTable 
 
 /*****************/
 /** OUTPUT Data **/

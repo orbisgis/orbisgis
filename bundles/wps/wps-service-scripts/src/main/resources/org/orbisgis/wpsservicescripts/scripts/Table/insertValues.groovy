@@ -21,14 +21,15 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(
-        title = ["Insert values","en",
-                "Insertion de valeurs","fr"],
+        title = ["Insert values in a table","en",
+                "Insertion de valeurs dans une table","fr"],
         description = ["Insert values into a table.","en",
                 "Insert de valeurs dans une table.","fr"],
         keywords = ["Table,Insert,Values", "en",
                 "Table,Insertion,Valeurs", "fr"],
         properties = ["DBMS_TYPE", "H2GIS",
                 "DBMS_TYPE", "POSTGIS"],
+        version = "1.0",
         identifier = "orbisgis:wps:official:insertValues")
 def processing() {
     //Build the query

@@ -24,7 +24,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Création d'une grille de points.","fr"],
         keywords = ["Vector,Geometry,Creation", "en",
                 "Vecteur,Géométrie,Création", "fr"],
-        properties = ["DBMS_TYPE", "H2GIS"])
+        properties = ["DBMS_TYPE", "H2GIS"],
+        version = "1.0")
 def processing() {
 
     //Build the start of the query
@@ -36,6 +37,9 @@ def processing() {
     
     //Execute the query
     sql.execute(query)
+    if(dropInputTable){
+        sql.execute "drop table if exists " + inputJDBCTable
+    }
     literalOutput = "Process done"
 }
 
@@ -89,6 +93,17 @@ Boolean dropTable
                 "Name of the table containing the result of the process.","en",
                 "Nom de la table contenant les résultats du traitement.","fr"])
 String outputTableName
+
+
+@LiteralDataInput(
+    title = [
+				"Drop the input table","en",
+				"Supprimer la table d'entrée","fr"],
+    description = [
+				"Drop the input table when the script is finished.","en",
+				"Supprimer la table d'entrée lorsque le script est terminé.","fr"])
+Boolean dropInputTable 
+
 
 /*****************/
 /** OUTPUT Data **/

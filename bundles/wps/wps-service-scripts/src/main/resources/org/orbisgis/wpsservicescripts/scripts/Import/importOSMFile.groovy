@@ -15,7 +15,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Import d'un fichier OSM en plusieurs tables.\n Pour plus d'informations consulter http://www.h2gis.org.","fr"],
     keywords = ["OrbisGIS,Importer, Fichier, OSM","fr",
                 "OrbisGIS,Import, File, OSM","en"],
-    properties = ["DBMS_TYPE","H2GIS"])
+    properties = ["DBMS_TYPE","H2GIS"],
+    version = "1.0")
 def processing() {
     File fileData = new File(fileDataInput[0])
     name = fileData.getName()

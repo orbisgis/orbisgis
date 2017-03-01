@@ -15,7 +15,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Import d'un fichier SHP dans la base de données.","fr"],
     keywords = ["OrbisGIS,Importer, Fichier, SHP","fr",
                 "OrbisGIS,Import, File, SHP","en"],
-    properties = ["DBMS_TYPE","H2GIS"])
+    properties = ["DBMS_TYPE","H2GIS"],
+    version = "1.0")
 def processing() {
     File shpFile = new File(shpDataInput[0])
     name = shpFile.getName()
@@ -87,8 +88,8 @@ Boolean dropTable
 /** Optional table name. */
 @LiteralDataInput(
     title = ["Output table name","en","Nom de la table importée","fr"],
-    description = ["Table name to store the shapeFile.","en",
-                "Nom de la table importée.","fr"],
+    description = ["Table name to store the shapeFile. If it is not defined the name of the file will be used.","en",
+                "Nom de la table importée. Par défaut le nom de la table correspond au nom du fichier.","fr"],
     minOccurs = 0)
 String jdbcTableOutputName
 
