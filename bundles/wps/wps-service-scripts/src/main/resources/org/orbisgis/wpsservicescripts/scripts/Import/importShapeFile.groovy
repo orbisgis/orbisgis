@@ -88,8 +88,8 @@ Boolean dropTable
 /** Optional table name. */
 @LiteralDataInput(
     title = ["Output table name","en","Nom de la table importée","fr"],
-    description = ["Table name to store the shapeFile.","en",
-                "Nom de la table importée.","fr"],
+    description = ["Table name to store the shapeFile. If it is not defined the name of the file will be used.","en",
+                "Nom de la table importée. Par défaut le nom de la table correspond au nom du fichier.","fr"],
     minOccurs = 0)
 String jdbcTableOutputName
 

@@ -125,8 +125,8 @@ Boolean dropTable
 /** Output JDBCTable name. */
 @LiteralDataInput(
     title = ["Output points table","en","Table de points","fr"],
-    description = ["Name of the output table.","en",
-                "Nom de la table de sortie.","fr"],
+    description = ["Name of the output table. If it is not defined the name of the file will be used.","en",
+                "Nom de la table de sortie. Par défaut le nom de la table correspond au nom du fichier.","fr"],
     minOccurs = 0)
 String jdbcTableOutputName
 
