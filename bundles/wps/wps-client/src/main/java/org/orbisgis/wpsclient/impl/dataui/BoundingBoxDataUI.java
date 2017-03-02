@@ -61,9 +61,14 @@ import javax.swing.plaf.LayerUI;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
@@ -91,6 +96,7 @@ public class BoundingBoxDataUI implements DataUI {
     private static final String DEFAULT_ELEMENT_PROPERTY = "DEFAULT_ELEMENT_PROPERTY";
     private static final String REFRESH_LIST_LISTENER_PROPERTY = "REFRESH_LIST_LISTENER_PROPERTY";
     private static final String COMBOBOX_PROPERTY = "COMBOBOX_PROPERTY";
+    private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(BoundingBoxDataUI.class);
 
@@ -173,14 +179,25 @@ public class BoundingBoxDataUI implements DataUI {
             comboBox.addItem(defaultElement);
         }
 
-        jCompPanel.add(textField, "growx");
-        jCompPanel.add(comboBox, "growx");
+        //Create the button Browse
+        JButton pasteButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
+        //"Save" the sourceCA and the JTextField in the button
+        pasteButton.putClientProperty(TEXT_FIELD_PROPERTY, textField);
+        pasteButton.setBorderPainted(false);
+        pasteButton.setContentAreaFilled(false);
+        pasteButton.setToolTipText(I18N.tr("Paste the clipboard"));
+        pasteButton.setMargin(new Insets(0, 0, 0, 0));
+        //Add the listener for the click on the button
+        pasteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
+
 
         //Adds a WaitLayerUI which will be displayed when the toolbox is loading the data
-        JScrollPane listScroller = new JScrollPane(jCompPanel);
+
         WaitLayerUI layerUI = new WaitLayerUI();
-        JLayer<JComponent> layer = new JLayer<>(listScroller, layerUI);
-        panel.add(layer, "growx, wrap");
+        JLayer<JComponent> layer = new JLayer<>(comboBox, layerUI);
+        panel.add(textField, "growx");
+        panel.add(pasteButton, "dock east, growx");
+        panel.add(layer, "dock east");
         comboBox.putClientProperty(LAYERUI_PROPERTY, layerUI);
 
         return panel;
@@ -210,6 +227,25 @@ public class BoundingBoxDataUI implements DataUI {
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
         return ToolBoxIcon.getIcon(ToolBoxIcon.JDBC_TABLE_FIELD_VALUE);
+    }
+
+    public void onPaste(ActionEvent ae){
+        Object sourceObj = ae.getSource();
+        if(sourceObj instanceof JButton){
+            JButton pasteButton = (JButton) sourceObj;
+            JTextField textField = (JTextField) pasteButton.getClientProperty(TEXT_FIELD_PROPERTY);
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            //odd: the Object param of getContents is not currently used
+            Transferable contents = clipboard.getContents(null);
+            boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+            if (hasTransferableText) {
+                try {
+                    textField.setText((String)contents.getTransferData(DataFlavor.stringFlavor));
+                }
+                catch (UnsupportedFlavorException | IOException ignored){
+                }
+            }
+        }
     }
 
     /**
