@@ -149,6 +149,7 @@ public class BoundingBoxDataUI implements DataUI {
         comboBox.putClientProperty(BOUNDING_BOX_PROPERTY, boundingBoxData);
         comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
+        comboBox.addItem(defaultElement);
         if(boundingBoxData.getSupportedCrs().length == 0) {
             MouseListener refreshListListener = EventHandler.create(MouseListener.class, this, "refreshList", "source", "mouseEntered");
             comboBox.putClientProperty(REFRESH_LIST_LISTENER_PROPERTY, refreshListListener);
@@ -156,28 +157,14 @@ public class BoundingBoxDataUI implements DataUI {
         }
         else{
             for(String crs : boundingBoxData.getSupportedCrs()){
-                comboBox.addItem(new ContainerItem<Object>(crs, crs));
+                if(! crs.equals(boundingBoxData.getDefaultCrs())) {
+                    comboBox.addItem(new ContainerItem<Object>(crs, crs));
+                }
             }
         }
         comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
         comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelection", ""));
         comboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
-
-        if(!isOptional && dataMap.containsKey(uri)) {
-            Object obj = dataMap.get(uri);
-            if(obj instanceof String[]){
-                String[] fields = (String[]) obj;
-                for(String field : fields){
-                    comboBox.addItem(new ContainerItem<Object>(field, field));
-                }
-            }
-            else {
-                comboBox.addItem(defaultElement);
-            }
-        }
-        else{
-            comboBox.addItem(defaultElement);
-        }
 
         //Create the button Browse
         JButton pasteButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));

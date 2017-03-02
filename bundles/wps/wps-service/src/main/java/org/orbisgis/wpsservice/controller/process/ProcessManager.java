@@ -163,7 +163,7 @@ public class ProcessManager {
                     processOffering.getProcess().getMetadata().add(iconArrayMetadata);
                 }
             } catch (MalformedScriptException e) {
-                LOGGER.error(I18N.tr("Unable to parse the process {0}.", scriptUri), e);
+                LOGGER.error(I18N.tr("Unable to parse the process {0}.\nCause : {1}", scriptUri, e.getMessage()), e);
             }
             //If the process is not already registered
             if(processOffering != null) {

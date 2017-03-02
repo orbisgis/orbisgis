@@ -70,6 +70,16 @@ public class ObjectAnnotationConverter {
             throws MalformedScriptException {
         String defaultCRS = boundingBoxAttribute.defaultCRS();
         String[] supportedCrs = boundingBoxAttribute.supportedCRS();
+        boolean isContained = false;
+        for(String crs : supportedCrs){
+            if(crs.equals(defaultCRS)){
+                isContained = true;
+            }
+        }
+        if(!isContained){
+            throw new MalformedScriptException(BoundingBoxData.class, "supportedCrs", "The 'supportedCrs' attribute " +
+                    "should contains the 'defaultCrs'.");
+        }
         return new BoundingBoxData(formatList, defaultCRS, supportedCrs, boundingBoxAttribute.dimension());
     }
 

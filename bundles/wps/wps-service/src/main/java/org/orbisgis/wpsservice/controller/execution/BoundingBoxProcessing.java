@@ -46,6 +46,7 @@ import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.wpsservice.model.BoundingBoxData;
 import org.orbisgis.wpsservice.model.GeometryData;
+import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -81,16 +82,19 @@ public class BoundingBoxProcessing implements DataProcessing {
             if(input.getDataDescription().getValue() instanceof BoundingBoxData) {
                 BoundingBoxData boundingBoxData = (BoundingBoxData) input.getDataDescription().getValue();
                 String str = dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue())).toString();
-                String[] wkt = str.split(";")[1].split(",");
-                String minX, minY, minZ, maxX, maxY, maxZ;
-                minX = wkt[0];
-                minY = wkt[1];
-                maxX = wkt[2];
-                maxY = wkt[3];
-                String srid = str.split(";")[0].split(":")[1];
-                //Read the string to retrieve the Geometry
                 Geometry geometry;
+                String[] wkt = str.split(";")[1].split(",");
                 try {
+                    if(wkt.length != 4){
+                        throw new ParseException("Only 2D bounding boxes are supported yet.");
+                    }
+                    String minX, minY, minZ, maxX, maxY, maxZ;
+                    minX = wkt[0];
+                    minY = wkt[1];
+                    maxX = wkt[2];
+                    maxY = wkt[3];
+                    String srid = str.split(";")[0].split(":")[1];
+                    //Read the string to retrieve the Geometry
                     geometry = new WKTReader().read("POLYGON((" +
                             minX+" "+minY+"," +
                             maxX+" "+minY+"," +
@@ -101,10 +105,10 @@ public class BoundingBoxProcessing implements DataProcessing {
                 } catch (ParseException e) {
                     if(pel != null) {
                         pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Unable to parse the string {0}" +
-                                " into Geometry.", str));
+                                " into Geometry.\nCause : {1}", str, e.getMessage()));
                     }
                     else{
-                        LOGGER.error("Unable to parse the string {0} into Geometry.", str);
+                        LOGGER.error("Unable to parse the string {0} into Geometry.\nCause : {1}", str, e.getMessage());
                     }
                     dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
                     return null;
