@@ -79,7 +79,7 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
  *      i.e. metadata = ["role1,title,href1",
  *                       "role2,title,href2"]
  *                       
- *  - supportedCRSList : String[]
+ *  - supportedCRS : String[]
  *      List of CRS supported by the BoundingBox data without the default one. Should be a string with the pattern :
  *      authority:code, like EPSG:2000.
  *
