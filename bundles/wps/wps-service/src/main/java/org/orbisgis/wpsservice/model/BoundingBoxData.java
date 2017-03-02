@@ -76,15 +76,21 @@ public class BoundingBoxData extends ComplexDataType {
             throws MalformedScriptException {
         format = formatList;
         this.defaultCrs = defaultCrs;
-        for(String crs : supportedCrs){
-            if(crs.equals(defaultCrs)){
-                throw new MalformedScriptException(BoundingBoxData.class, "supportedCrs", "Should not contains the " +
+        if(supportedCrs.length > 0) {
+            boolean isContained = false;
+            for (String crs : supportedCrs) {
+                if (crs.equals(defaultCrs)) {
+                    isContained = true;
+                }
+            }
+            if (!isContained) {
+                throw new MalformedScriptException(BoundingBoxData.class, "supportedCrs", "should contains the " +
                         "default CRS");
             }
         }
         this.supportedCrs = supportedCrs;
         if(dimension != 2 && dimension != 3){
-            throw new MalformedScriptException(BoundingBoxData.class, "dimension", "Dimension should be 2 or 3");
+            throw new MalformedScriptException(BoundingBoxData.class, "dimension", "dimension should be 2 or 3");
         }
         this.dimension = dimension;
     }

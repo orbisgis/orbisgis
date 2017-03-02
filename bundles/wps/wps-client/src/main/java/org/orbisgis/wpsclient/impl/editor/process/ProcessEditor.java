@@ -249,6 +249,18 @@ public class ProcessEditor extends JPanel implements EditorDockable {
                     job.setStartTime(System.currentTimeMillis());
                     job.setStatus(statusInfo);
                     job.setProcessState(ProcessExecutionListener.ProcessState.IDLE);
+
+                    //Dirty way to close the ProcessEditor
+                    try {
+                        Robot robot = new Robot();
+                        robot.keyPress(KeyEvent.VK_CONTROL);
+                        robot.keyPress(KeyEvent.VK_F4);
+                        robot.delay(100);
+                        robot.keyRelease(KeyEvent.VK_CONTROL);
+                        robot.keyRelease(KeyEvent.VK_F4);
+                    } catch (AWTException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     errorMessage.setText("Please, configure all the inputs/outputs before executing.");
                 }
@@ -284,23 +296,24 @@ public class ProcessEditor extends JPanel implements EditorDockable {
                             job.setStartTime(System.currentTimeMillis());
                             job.setStatus(statusInfo);
                             job.setProcessState(ProcessExecutionListener.ProcessState.IDLE);
+
+                            //Dirty way to close the ProcessEditor
+                            try {
+                                Robot robot = new Robot();
+                                robot.keyPress(KeyEvent.VK_CONTROL);
+                                robot.keyPress(KeyEvent.VK_F4);
+                                robot.delay(100);
+                                robot.keyRelease(KeyEvent.VK_CONTROL);
+                                robot.keyRelease(KeyEvent.VK_F4);
+                            } catch (AWTException e) {
+                                e.printStackTrace();
+                            }
                         } else {
                             errorMessage.setText("Please, configure all the inputs/outputs before executing.");
                         }
                     }
                 }
                 break;
-        }
-        //Dirty way to close the ProcessEditor
-        try {
-            Robot robot = new Robot();
-            robot.keyPress(KeyEvent.VK_CONTROL);
-            robot.keyPress(KeyEvent.VK_F4);
-            robot.delay(100);
-            robot.keyRelease(KeyEvent.VK_CONTROL);
-            robot.keyRelease(KeyEvent.VK_F4);
-        } catch (AWTException e) {
-            e.printStackTrace();
         }
     }
 

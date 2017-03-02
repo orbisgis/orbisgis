@@ -61,9 +61,14 @@ import javax.swing.plaf.LayerUI;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
@@ -91,6 +96,7 @@ public class BoundingBoxDataUI implements DataUI {
     private static final String DEFAULT_ELEMENT_PROPERTY = "DEFAULT_ELEMENT_PROPERTY";
     private static final String REFRESH_LIST_LISTENER_PROPERTY = "REFRESH_LIST_LISTENER_PROPERTY";
     private static final String COMBOBOX_PROPERTY = "COMBOBOX_PROPERTY";
+    private static final String TEXT_FIELD_PROPERTY = "TEXT_FIELD_PROPERTY";
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(BoundingBoxDataUI.class);
 
@@ -143,6 +149,7 @@ public class BoundingBoxDataUI implements DataUI {
         comboBox.putClientProperty(BOUNDING_BOX_PROPERTY, boundingBoxData);
         comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
+        comboBox.addItem(defaultElement);
         if(boundingBoxData.getSupportedCrs().length == 0) {
             MouseListener refreshListListener = EventHandler.create(MouseListener.class, this, "refreshList", "source", "mouseEntered");
             comboBox.putClientProperty(REFRESH_LIST_LISTENER_PROPERTY, refreshListListener);
@@ -150,37 +157,34 @@ public class BoundingBoxDataUI implements DataUI {
         }
         else{
             for(String crs : boundingBoxData.getSupportedCrs()){
-                comboBox.addItem(new ContainerItem<Object>(crs, crs));
+                if(! crs.equals(boundingBoxData.getDefaultCrs())) {
+                    comboBox.addItem(new ContainerItem<Object>(crs, crs));
+                }
             }
         }
         comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
         comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelection", ""));
         comboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
 
-        if(!isOptional && dataMap.containsKey(uri)) {
-            Object obj = dataMap.get(uri);
-            if(obj instanceof String[]){
-                String[] fields = (String[]) obj;
-                for(String field : fields){
-                    comboBox.addItem(new ContainerItem<Object>(field, field));
-                }
-            }
-            else {
-                comboBox.addItem(defaultElement);
-            }
-        }
-        else{
-            comboBox.addItem(defaultElement);
-        }
+        //Create the button Browse
+        JButton pasteButton = new JButton(ToolBoxIcon.getIcon(ToolBoxIcon.PASTE));
+        //"Save" the sourceCA and the JTextField in the button
+        pasteButton.putClientProperty(TEXT_FIELD_PROPERTY, textField);
+        pasteButton.setBorderPainted(false);
+        pasteButton.setContentAreaFilled(false);
+        pasteButton.setToolTipText(I18N.tr("Paste the clipboard"));
+        pasteButton.setMargin(new Insets(0, 0, 0, 0));
+        //Add the listener for the click on the button
+        pasteButton.addActionListener(EventHandler.create(ActionListener.class, this, "onPaste", ""));
 
-        jCompPanel.add(textField, "growx");
-        jCompPanel.add(comboBox, "growx");
 
         //Adds a WaitLayerUI which will be displayed when the toolbox is loading the data
-        JScrollPane listScroller = new JScrollPane(jCompPanel);
+
         WaitLayerUI layerUI = new WaitLayerUI();
-        JLayer<JComponent> layer = new JLayer<>(listScroller, layerUI);
-        panel.add(layer, "growx, wrap");
+        JLayer<JComponent> layer = new JLayer<>(comboBox, layerUI);
+        panel.add(textField, "growx");
+        panel.add(pasteButton, "dock east, growx");
+        panel.add(layer, "dock east");
         comboBox.putClientProperty(LAYERUI_PROPERTY, layerUI);
 
         return panel;
@@ -210,6 +214,25 @@ public class BoundingBoxDataUI implements DataUI {
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
         return ToolBoxIcon.getIcon(ToolBoxIcon.JDBC_TABLE_FIELD_VALUE);
+    }
+
+    public void onPaste(ActionEvent ae){
+        Object sourceObj = ae.getSource();
+        if(sourceObj instanceof JButton){
+            JButton pasteButton = (JButton) sourceObj;
+            JTextField textField = (JTextField) pasteButton.getClientProperty(TEXT_FIELD_PROPERTY);
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            //odd: the Object param of getContents is not currently used
+            Transferable contents = clipboard.getContents(null);
+            boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
+            if (hasTransferableText) {
+                try {
+                    textField.setText((String)contents.getTransferData(DataFlavor.stringFlavor));
+                }
+                catch (UnsupportedFlavorException | IOException ignored){
+                }
+            }
+        }
     }
 
     /**

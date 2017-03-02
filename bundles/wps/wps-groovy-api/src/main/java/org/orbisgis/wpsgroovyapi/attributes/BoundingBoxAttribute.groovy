@@ -51,7 +51,7 @@ import java.lang.annotation.RetentionPolicy
  *      Default CRS of the BoundingBox. Should be a string with the pattern : authority:code, like EPSG:2000.
  *
  * The following fields can be defined (optional) :
- *  - supportedCRSList : String[]
+ *  - supportedCRS : String[]
  *      List of CRS supported by the BoundingBox data without the default one. Should be a string with the pattern :
  *      authority:code, like EPSG:2000.
  *
