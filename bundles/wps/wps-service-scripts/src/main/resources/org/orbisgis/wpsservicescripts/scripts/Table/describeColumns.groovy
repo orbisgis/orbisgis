@@ -19,7 +19,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
         keywords = ["Table,Describe", "en",
                 "Table,Description", "fr"],
         properties = ["DBMS_TYPE", "H2GIS",
-                "DBMS_TYPE", "POSTGIS"])
+                "DBMS_TYPE", "POSTGIS"],
+        version = "1.0")
 def processing() {    
     String query;
     if(isH2){

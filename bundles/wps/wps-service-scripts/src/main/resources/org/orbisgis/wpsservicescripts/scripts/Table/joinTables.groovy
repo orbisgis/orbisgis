@@ -20,14 +20,15 @@ import org.orbisgis.wpsgroovyapi.process.Process
  * @author Sylvain PALOMINOS
  */
 @Process(
-		title = ["Table join","en",
-				"Jointure de table","fr"],
-		description = ["Join two tables.","en",
-				"Jointure de deux tables.","fr"],
+		title = ["Tables join","en",
+				"Jointure de tables","fr"],
+		description = ["SQL join between two tables.","en",
+				"Jointure SQL entre deux tables.","fr"],
 		keywords = ["Table,Join", "en",
 				"Table,Jointure", "fr"],
 		properties = ["DBMS_TYPE", "H2GIS",
-				"DBMS_TYPE", "POSTGIS"])
+				"DBMS_TYPE", "POSTGIS"],
+                version = "1.0")
 def processing() {
 
 	if(createIndex!=null && createIndex==true){
@@ -37,27 +38,44 @@ def processing() {
 
 	String query = "CREATE TABLE "+outputTableName+" AS SELECT * FROM "
 
-	if(operation[0].equals("left")){
-		query += leftJDBCTable + "JOIN " + rightJDBCTable + " ON " + leftJDBCTable+ "."+ leftField[0]+ "="+ rightJDBCTable+"."+ rightField[0];
+        if(operation[0].equals("left")){
+        query += leftJDBCTable + "LEFT JOIN " + rightJDBCTable + " ON " + leftJDBCTable+ "."+ leftField[0]+ "="+ rightJDBCTable+"."+ rightField[0];
+        }
+    
+        else if (operation[0].equals("left_without_b")){
+        query += leftJDBCTable + "LEFT JOIN " + rightJDBCTable + " ON " + leftJDBCTable+ "."+ leftField[0]+ "="+ rightJDBCTable+"."+ rightField[0] 
+        + " where " + rightJDBCTable+"."+ rightField[0] + " IS NULL";
+        }
+    
+    
+        else if (operation[0].equals("right")){
+        query += leftJDBCTable + "RIGHT JOIN " + rightJDBCTable + " ON " + leftJDBCTable+ "."+ leftField[0]+ "="+ rightJDBCTable+"."+ rightField[0];
+        
+        }
+        
+        else if (operation[0].equals("right_without_a")){
+        query += leftJDBCTable + "RIGHT JOIN " + rightJDBCTable + " ON " + leftJDBCTable+ "."+ leftField[0]+ "="+ rightJDBCTable+"."+ rightField[0] 
+        + " where " + leftJDBCTable+ "."+ leftField[0] + " IS NULL";
+        }
+        
+        else if (operation[0].equals("inner")){
+            query += leftJDBCTable + "INNER JOIN " + rightJDBCTable + " ON " + leftJDBCTable+ "."+ leftField[0]+ "="+ rightJDBCTable+"."+ rightField[0];
 	}
-	else if (operation[0].equals("left")){
-
+        
+        else if (operation[0].equals("cross")){
+            query += leftJDBCTable + "CROSS JOIN " + rightJDBCTable ;	
 	}
+        
+        else if (operation[0].equals("natural")){
+            query += leftJDBCTable + "NATURAL JOIN " + rightJDBCTable ;	
+	}
+        
 	//Execute the query
 	sql.execute(query);
-
-	//SELECT *
-	//FROM A
-	//LEFT JOIN B ON A.key = B.key
-
-	//SELECT *
-	//FROM A
-	//RIGHT JOIN B ON A.key = B.key
-
-	//INNER JOIN
-	//SELECT *
-	//FROM A
-	//INNER JOIN B ON A.key = B.key
+        
+        if(dropInputTables){
+            sql.execute "drop table if exists " + leftJDBCTable+","+ rightJDBCTable
+        }
 	literalOutput = "Process done"
 }
 
@@ -68,21 +86,21 @@ def processing() {
 
 /** This JDBCTable is the left data source. */
 @JDBCTableInput(
-		title = ["Left data source","en",
-				"Source de données gauche","fr"],
+		title = ["Left table","en",
+				"Table à gauche","fr"],
 		description = [
-				"The left data source used for the join.","en",
-				"La source de données gauche utilisée pour la jointure.","fr"])
+				"The left table used for the join.","en",
+				"La table à gauche utilisée pour la jointure.","fr"])
 String leftJDBCTable
 
 /** This JDBCTable is the right data source. */
 @JDBCTableInput(
 		title = [
-				"Right data source","en",
-				"Source de données droite","fr"],
+				"Right table","en",
+				"Table de droite","fr"],
 		description = [
-				"The right data source used for the join.","en",
-				"La source de données droite utilisée pour la jointure.","fr"])
+				"The right table  used for the join.","en",
+				"La table de droite utilisée pour la jointure.","fr"])
 String rightJDBCTable
 
 /**********************/
@@ -92,11 +110,11 @@ String rightJDBCTable
 /** Name of the identifier field of the left jdbcTable. */
 @JDBCTableFieldInput(
 		title = [
-				"Left field(s)","en",
-				"Champ(s) gauche(s)","fr"],
+				"Left field identifier","en",
+				"Colonne de correspondance à gauche","fr"],
 		description = [
-				"The field identifier of the left data source.","en",
-				"L'identifiant du/des champ(s) de la source de données gauche.","fr"],
+				"The field name identifier of the left table.","en",
+				"Nom de la colonne de correspondance de la table à gauche.","fr"],
         jdbcTableReference = "leftJDBCTable",
         excludedTypes = ["GEOMETRY"])
 String[] leftField
@@ -104,11 +122,11 @@ String[] leftField
 /** Name of the identifier field of the right jdbcTable. */
 @JDBCTableFieldInput(
 		title = [
-				"Right field(s)","en",
-				"Champ(s) droit(s)","fr"],
+				"Right field identifier","en",
+				"Colonne de correspondance à gauche","fr"],
 		description = [
-				"The field identifier of the right data source.","en",
-				"L'identifiant du/des champ(s) de la source de données droite.","fr"],
+				"The field name identifier of the right table.","en",
+				"Nom de la colonne de correspondance de la table à droite.","fr"],
         jdbcTableReference = "rightJDBCTable",
         excludedTypes = ["GEOMETRY"])
 String[] rightField
@@ -120,8 +138,9 @@ String[] rightField
 		description = [
 				"Types of join.","en",
 				"Type de jointure.","fr"],
-        values=["left","right", "union"],
-        names=["Left join","Right join", "Union join" ],
+        values=["left","right","left_without_b", "right_without_a", "inner", "cross","natural"],
+        names=["Left join,Right join, Left join without rigth values, Right join without left values, Inner join, Cross join, Natural join", "en",
+        "Jointure à gauche ,Jointure à droite, Jointure à gauche sans les valeurs de droite, Jointure à droite sans les valeurs de gauche, Intersection des deux tables, Jointure croisée, Jointure naturelle", "fr" ],
 		multiSelection = false)
 String[] operation = ["left"]
 
@@ -136,6 +155,14 @@ String[] operation = ["left"]
 		minOccurs = 0)
 Boolean createIndex
 
+@LiteralDataInput(
+    title = [
+				"Drop the input tables","en",
+				"Supprimer les tables d'entrée","fr"],
+    description = [
+				"Drop the input tables when the script is finished.","en",
+				"Supprimer les tables d'entrée lorsque le script est terminé.","fr"])
+Boolean dropInputTables 
 
 @LiteralDataInput(
 		title = ["Output table name","en",

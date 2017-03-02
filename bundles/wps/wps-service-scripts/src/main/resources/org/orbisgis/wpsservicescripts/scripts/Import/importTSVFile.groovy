@@ -15,7 +15,8 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Import d'un fichier TSV dans la base de données.","fr"],
     keywords = ["OrbisGIS,Importer, Fichier, TSV","fr",
                 "OrbisGIS,Import, File, TSV","en"],
-    properties = ["DBMS_TYPE","H2GIS"])
+    properties = ["DBMS_TYPE","H2GIS"],
+    version = "1.0")
 def processing() {
     File fileData = new File(fileDataInput[0])
     name = fileData.getName()
@@ -60,8 +61,8 @@ Boolean dropTable
 /** Optional table name. */
 @LiteralDataInput(
     title = ["Output table name","en","Nom de la table importée","fr"],
-    description = ["Table name to store the TSV file.","en",
-                "Nom de la table importée.","fr"],
+    description = ["Table name to store the TSV file. If it is not defined the name of the file will be used.","en",
+                "Nom de la table importée. Par défaut le nom de la table correspond au nom du fichier.","fr"],
     minOccurs = 0)
 String jdbcTableOutputName
 

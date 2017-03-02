@@ -27,6 +27,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
                 "Table,Suppression", "fr"],
         properties = ["DBMS_TYPE", "H2GIS",
                 "DBMS_TYPE", "POSTGIS"],
+        version = "1.0",
         identifier = "orbisgis:wps:official:deleteRows"
 )
 def processing() {
