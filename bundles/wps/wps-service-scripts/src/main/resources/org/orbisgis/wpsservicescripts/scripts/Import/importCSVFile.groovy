@@ -40,7 +40,8 @@ def processing() {
     title = ["Input CSV","en","Fichier CSV","fr"],
     description = ["The input CSV file to be imported.","en",
                 "Selectionner un fichier CSV à importer.","fr"],
-    fileTypes = ["csv"], multiSelection=false)
+    fileTypes = ["csv"],
+    isDirectory = false)
 String[] csvDataInput
 
 

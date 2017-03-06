@@ -68,7 +68,8 @@ def processing() {
     title = ["Input csv","en","Fichier CSV","fr"],
     description = ["The input CSV file containing the point data.","en",
                 "Le fichier CSV d'entrée contenant les données ponctuelles.","fr"],
-    fileTypes = ["csv"])
+    fileTypes = ["csv"],
+    isDirectory = false)
 String[] csvDataInput
 
 

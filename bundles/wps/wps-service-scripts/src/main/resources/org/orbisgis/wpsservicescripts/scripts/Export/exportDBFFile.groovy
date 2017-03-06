@@ -61,7 +61,8 @@ Boolean dropInputTable
     title = ["Output DBF","en","Fichier DBF","fr"],
     description = ["The output DBF file to be exported.","en",
                 "Nom du fichier DBF à exporter.","fr"],
-    fileTypes = ["dbf"], multiSelection=false)
+    fileTypes = ["dbf"],
+    isDirectory = false)
 String[] fileDataInput
 
 
