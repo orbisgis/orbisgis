@@ -92,6 +92,9 @@ public class BoundingBoxData extends ComplexDataType {
         if(dimension != 2 && dimension != 3){
             throw new MalformedScriptException(BoundingBoxData.class, "dimension", "dimension should be 2 or 3");
         }
+        if(dimension == 3){
+            throw new MalformedScriptException(BoundingBoxData.class, "dimension", "3D Bounding Box is not supported yet.");
+        }
         this.dimension = dimension;
     }
 
