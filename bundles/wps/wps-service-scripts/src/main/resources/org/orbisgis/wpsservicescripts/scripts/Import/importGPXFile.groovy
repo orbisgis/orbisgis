@@ -40,7 +40,6 @@ def processing() {
     description = ["The input GPX file to be imported.","en",
                 "Selectionner un fichier GPX à importer.","fr"],
     fileTypes = ["gpx"],
-    multiSelection = false,
     isDirectory = false)
 String[] fileDataInput
 

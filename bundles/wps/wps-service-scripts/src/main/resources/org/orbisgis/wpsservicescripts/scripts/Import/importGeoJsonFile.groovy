@@ -46,7 +46,6 @@ def processing() {
     description = ["The input GeoJSON file to be imported.","en",
                 "Selectionner un fichier GeoJSON à importer.","fr"],
     fileTypes = ["geojson"],
-    multiSelection = false,
     isDirectory = false)
 String[] fileDataInput
 

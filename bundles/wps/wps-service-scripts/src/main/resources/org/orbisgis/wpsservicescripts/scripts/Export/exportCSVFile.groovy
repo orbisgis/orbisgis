@@ -65,7 +65,6 @@ Boolean dropInputTable
     description = ["The output CSV file to be exported.","en",
                 "Nom du fichier CSV à exporter.","fr"],
     fileTypes = ["csv"],
-    multiSelection = false,
     isDirectory = false)
 String[] fileDataInput
 

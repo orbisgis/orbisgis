@@ -46,7 +46,6 @@ def processing() {
     description = ["The input DBF file to be imported.","en",
                 "Selectionner un fichier DBF à importer.","fr"],
     fileTypes = ["dbf"],
-    multiSelection = false,
     isDirectory = false)
 String[] dbfDataInput
 

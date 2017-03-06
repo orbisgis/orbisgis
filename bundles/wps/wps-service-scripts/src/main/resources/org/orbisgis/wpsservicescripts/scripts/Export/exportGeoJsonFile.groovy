@@ -65,7 +65,6 @@ Boolean dropInputTable
     description = ["The output GeoJSON file to be exported.","en",
                 "Nom du fichier GeoJSON à exporter.","fr"],
     fileTypes = ["geojson"],
-    multiSelection = false,
     isDirectory = false)
 String[] fileDataInput
 

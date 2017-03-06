@@ -62,7 +62,6 @@ Boolean dropInputTable
     description = ["The output KML file to be exported.","en",
                 "Nom du fichier KML à exporter.","fr"],
     fileTypes = ["kml", "kmz"],
-    multiSelection = false,
     isDirectory = false)
 String[] fileDataInput
 
