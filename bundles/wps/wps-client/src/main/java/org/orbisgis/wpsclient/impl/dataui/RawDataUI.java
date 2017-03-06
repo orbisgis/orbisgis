@@ -90,6 +90,7 @@ public class RawDataUI implements DataUI {
     private static final String EXCLUDED_TYPE_LIST_PROPERTY = "EXCLUDED_TYPE_LIST_PROPERTY";
     private static final String DEFAULT_VALUE_PROPERTY = "DEFAULT_VALUE_PROPERTY";
     private static final String IS_OPTIONAL_PROPERTY = "IS_OPTIONAL_PROPERTY";
+    private static final String RAW_DATA_PROPERTY = "RAW_DATA_PROPERTY";
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(RawDataUI.class);
 
@@ -134,6 +135,7 @@ public class RawDataUI implements DataUI {
         }
         jtf.getDocument().putProperty(IS_OPTIONAL_PROPERTY, isOptional);
         jtf.getDocument().putProperty(TEXT_FIELD_PROPERTY, jtf);
+        jtf.getDocument().putProperty(RAW_DATA_PROPERTY, rawData);
         //add the listener for the text changes in the JTextField
         jtf.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class, this,
                 "saveDocumentText", "document"));
@@ -323,6 +325,7 @@ public class RawDataUI implements DataUI {
             String name = document.getText(0, document.getLength());
             boolean isOptional = (boolean) document.getProperty(IS_OPTIONAL_PROPERTY);
             String[] defaultValue = (String[]) document.getProperty(DEFAULT_VALUE_PROPERTY);
+            RawData rawData = (RawData) document.getProperty(RAW_DATA_PROPERTY);
             if(name.isEmpty() && !isOptional && defaultValue.length != 0){
                 final JTextField jtf = (JTextField) document.getProperty(TEXT_FIELD_PROPERTY);
                 String text = "";
@@ -349,6 +352,21 @@ public class RawDataUI implements DataUI {
                 else {
                     if (name.contains("\"")) {
                         name = name.replaceAll("\" \"", "\t").replaceAll("\"", "");
+                    }
+                    //Check, in the case of a rawData accepting only files, if all the given names are files
+                    if(rawData.isFile() && !rawData.isDirectory()) {
+                        boolean areAllFile = true;
+                        String[] split = name.split("\" \"");
+                        for(String fileName : split){
+                            File file = new File(fileName.replaceAll("\"", ""));
+                            if(!file.exists() || !file.isFile()){
+                                areAllFile = false;
+                            }
+                        }
+                        if(!areAllFile) {
+                            dataMap.remove(uri);
+                            return;
+                        }
                     }
                     dataMap.put(uri, name);
                 }

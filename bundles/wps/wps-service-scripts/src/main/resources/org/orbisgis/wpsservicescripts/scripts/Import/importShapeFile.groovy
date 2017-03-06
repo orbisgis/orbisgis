@@ -49,7 +49,9 @@ def processing() {
     title = ["Input SHP","en","Fichier SHP","fr"],
     description = ["The input shapeFile to be imported.","en",
                 "Selectionner un fichier SHP à importer.","fr"],
-    fileTypes = ["shp"], multiSelection=false)
+    fileTypes = ["shp"],
+    multiSelection=false,
+    isDirectory = false)
 String[] shpDataInput
 
 
