@@ -353,21 +353,6 @@ public class RawDataUI implements DataUI {
                     if (name.contains("\"")) {
                         name = name.replaceAll("\" \"", "\t").replaceAll("\"", "");
                     }
-                    //Check, in the case of a rawData accepting only files, if all the given names are files
-                    if(rawData.isFile() && !rawData.isDirectory()) {
-                        boolean areAllFile = true;
-                        String[] split = name.split("\" \"");
-                        for(String fileName : split){
-                            File file = new File(fileName.replaceAll("\"", ""));
-                            if(!file.exists() || !file.isFile()){
-                                areAllFile = false;
-                            }
-                        }
-                        if(!areAllFile) {
-                            dataMap.remove(uri);
-                            return;
-                        }
-                    }
                     dataMap.put(uri, name);
                 }
             }
