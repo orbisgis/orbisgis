@@ -359,7 +359,7 @@ public class RawDataUI implements DataUI {
                         String[] split = name.split("\" \"");
                         for(String fileName : split){
                             File file = new File(fileName.replaceAll("\"", ""));
-                            if(!file.exists() || !file.isFile()){
+                            if(file.isFile()){
                                 areAllFile = false;
                             }
                         }
