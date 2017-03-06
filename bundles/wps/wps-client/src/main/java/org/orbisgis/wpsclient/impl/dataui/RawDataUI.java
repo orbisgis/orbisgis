@@ -151,6 +151,7 @@ public class RawDataUI implements DataUI {
         }
 
         OpenPanel openPanel = new OpenPanel("RawData.OpenPanel", panelName, action, dataAccepted);
+        openPanel.setConfirmOverwrite(false);
         openPanel.loadState();
         if(rawData.getFileTypes() == null || rawData.getFileTypes().length == 0) {
             openPanel.setAcceptAllFileFilterUsed(true);
