@@ -39,7 +39,9 @@ def processing() {
     title = ["Input OSM","en","Fichier OSM","fr"],
     description = ["The input OSM file to be imported.","en",
                 "Selectionner un fichier OSM à importer.","fr"],
-    fileTypes = ["osm", "osm.gz", "osm.bz2"], multiSelection=false)
+    fileTypes = ["osm", "osm.gz", "osm.bz2"],
+    multiSelection = false,
+    isDirectory = false)
 String[] fileDataInput
 
 

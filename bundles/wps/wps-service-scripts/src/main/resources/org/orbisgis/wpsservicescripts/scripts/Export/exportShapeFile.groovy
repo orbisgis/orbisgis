@@ -61,7 +61,9 @@ Boolean dropInputTable
     title = ["Output shapeFile","en","Fichier shapeFile","fr"],
     description = ["The output shapeFile file to be exported.","en",
                 "Nom du fichier shapeFile à exporter.","fr"],
-    fileTypes = ["shp"], multiSelection=false)
+    fileTypes = ["shp"],
+    multiSelection = false,
+    isDirectory = false)
 String[] fileDataInput
 
 

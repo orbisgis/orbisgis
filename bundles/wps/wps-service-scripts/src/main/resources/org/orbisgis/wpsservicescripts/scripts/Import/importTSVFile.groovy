@@ -41,7 +41,9 @@ def processing() {
     title = ["Input TSV","en","Fichier TSV","fr"],
     description = ["The input TSV file to be imported.","en",
                 "Selectionner un fichier TSV à importer.","fr"],
-    fileTypes = ["tsv"], multiSelection=false)
+    fileTypes = ["tsv"],
+    multiSelection = false,
+    isDirectory = false)
 String[] fileDataInput
 
 

@@ -59,7 +59,9 @@ Boolean dropInputTable
     title = ["Output TSV","en","Fichier TSV","fr"],
     description = ["The output TSV file to be exported.","en",
                 "Nom du fichier TSV à exporter.","fr"],
-    fileTypes = ["tsv"], multiSelection=false)
+    fileTypes = ["tsv"],
+    multiSelection = false,
+    isDirectory = false)
 String[] fileDataInput
 
 
