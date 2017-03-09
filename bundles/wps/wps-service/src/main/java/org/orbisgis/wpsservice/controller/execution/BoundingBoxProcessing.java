@@ -80,7 +80,6 @@ public class BoundingBoxProcessing implements DataProcessing {
             InputDescriptionType input = (InputDescriptionType) inputOrOutput;
             //Check if the input is a GeometryData
             if(input.getDataDescription().getValue() instanceof BoundingBoxData) {
-                BoundingBoxData boundingBoxData = (BoundingBoxData) input.getDataDescription().getValue();
                 String str = dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue())).toString();
                 Geometry geometry;
                 String[] wkt = str.split(";")[1].split(",");
@@ -108,18 +107,13 @@ public class BoundingBoxProcessing implements DataProcessing {
                                 " into Geometry.\nCause : {1}", str, e.getMessage()));
                     }
                     else{
-                        LOGGER.error("Unable to parse the string {0} into Geometry.\nCause : {1}", str, e.getMessage());
+                        LOGGER.error(I18N.tr("Unable to parse the string {0} into Geometry.\nCause : {1}", str, e.getMessage()));
                     }
                     dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
-                    return null;
+                    return map;
                 }
                 dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), geometry);
             }
-            map.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
-            return map;
-        }
-        else if(inputOrOutput instanceof OutputDescriptionType){
-            Map<URI, Object> map = new HashMap<>();
             map.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
             return map;
         }
@@ -127,20 +121,25 @@ public class BoundingBoxProcessing implements DataProcessing {
     }
 
     @Override
-    public void postProcessData(DescriptionType input, Map<URI, Object> dataMap, Map<URI, Object> stash,
+    public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
                                 ProcessExecutionListener pel) {
         //Check if it is an output
-        if(input instanceof OutputDescriptionType) {
-            OutputDescriptionType output = (OutputDescriptionType) input;
+        if(inputOrOutput instanceof OutputDescriptionType) {
+            OutputDescriptionType output = (OutputDescriptionType) inputOrOutput;
             //Check if the input is a GeometryData
-            if(output.getDataDescription().getValue() instanceof GeometryData) {
-                GeometryData geometryData = (GeometryData) output.getDataDescription().getValue();
-                Object obj = dataMap.get(URI.create(input.getIdentifier().getValue()));
+            if(output.getDataDescription().getValue() instanceof BoundingBoxData) {
+                BoundingBoxData boundingBoxData = (BoundingBoxData) output.getDataDescription().getValue();
+                Object obj = dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue()));
                 if(obj instanceof Geometry) {
                     Geometry geometry = (Geometry) obj;
-                    String wkt = new WKTWriter(geometryData.getDimension()).write(geometry);
+                    String wkt = new WKTWriter(boundingBoxData.getDimension()).write(geometry);
+                    //Update the WKT string to have this pattern : ":SRID;minX,minY,maxX,maxY"
+                    wkt = wkt.replace("POLYGON ((", "");
+                    wkt = wkt.replace("))", "");
+                    String[] split = wkt.split(", ");
+                    wkt = split[0].replaceAll(" ", ",") + "," + split[2].replaceAll(" ", ",");
                     String str = ":" + geometry.getSRID() + ";" + wkt;
-                    dataMap.put(URI.create(input.getIdentifier().getValue()), str);
+                    dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), str);
                 }
             }
         }
