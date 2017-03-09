@@ -57,9 +57,10 @@ import java.util.UUID;
 /**
  * Class to test the well working of the plugin life cycle :
  *
- * On activating : add all the script of the resource folder to the WPS server.
+ * On activating : add all the scripts of the resource folder (src/main/resources/org/orbisgis/wpsservicescripts/scripts)
+ * to a fake WPS server {@code CustomWpsService}.
  *
- * On deactivating : remove all the script add on activating.
+ * On deactivating : remove all the scripts add from the WPS server.
  *
  * @author Sylvain PALOMINOS
  */
@@ -70,20 +71,22 @@ public class OrbisGISWpsScriptPluginTest {
      */
     @Test
     public void testPluginLifeCycle(){
-        //Gets the list of the script files add by the plugin
+        //Initialize an instance of OrbisGISWpsScriptPlugin, CustomWpsService and CustomCoreWorkspace
         CustomWpsService localWpsServer = new CustomWpsService();
         CustomCoreWorkspace customCoreWorkspace = new CustomCoreWorkspace();
         Assert.assertNotNull("Unable to create the temporary folder for the custom CoreWorkspace.",
                 customCoreWorkspace.getApplicationFolder());
         OrbisGISWpsScriptPlugin plugin = new OrbisGISWpsScriptPlugin();
+        //Give to the OrbisGISWpsScriptPlugin the LocalWpsServer and the CoreWorkspace
         plugin.setLocalWpsService(localWpsServer);
         plugin.setCoreWorkspace(new CustomCoreWorkspace());
+        //Simulate the activation of the plugin and get back the list of script file add
         plugin.activate();
         List<File> addScriptList = localWpsServer.getAddScriptList();
         //Gets the list of the script files contained in the resource folder of the plugin
         File folder = new File(this.getClass().getResource("scripts").getFile());
         List<File> resourceGroovyScriptList = getAllGroovyScripts(folder);
-        //Test if the resource files are add by the plugin
+        //Test if each file from the resource folder has been loaded in the WPS server
         for(File resourceScript : resourceGroovyScriptList){
             boolean isResourceScriptAdd = false;
             for(File addScript : addScriptList){
@@ -93,23 +96,24 @@ public class OrbisGISWpsScriptPluginTest {
             }
             Assert.assertTrue("The resource file '"+resourceScript.getName()+"' should be add by the plugin.", isResourceScriptAdd);
         }
-        //Deactivate the plugin
+        //Simulate the deactivation of the plugin
         plugin.deactivate();
-        //Test if all the script are removed
+        //Test if all the script have been removed
         Assert.assertTrue("All the scripts should have been removed from the server.",
                 localWpsServer.getAddScriptList().isEmpty());
+        //Unset the CoreWorkspace and the LocalWpsService
         plugin.unsetCoreWorkspace(null);
-        plugin.unsetInternalWpsClient(null);
+        plugin.unsetLocalWpsService(null);
     }
 
     /**
      * Returns the list of the groovy script file of a given directory.
-     * @param folder Directory to explore.
+     * @param directory Directory to explore.
      * @return The list of the groovy script files.
      */
-    private List<File> getAllGroovyScripts(File folder){
+    private List<File> getAllGroovyScripts(File directory){
         List<File> scriptList = new ArrayList<>();
-        for(File f : folder.listFiles()) {
+        for(File f : directory.listFiles()) {
             if (f.isDirectory()) {
                 scriptList.addAll(getAllGroovyScripts(f));
             }
@@ -121,8 +125,9 @@ public class OrbisGISWpsScriptPluginTest {
     }
 
     /**
-     * LocalWpsServer implementation used to check if all the scripts add by the plugin are in the resources and if all
-     * the script in the resources are add.
+     * A fake LocalWpsServer implementation. Only addLocalSource(File,String[],boolean,String) and removeProcess(URI)
+     * methods are implemented. It is used to simulate a WpsServer but it only store in a list the loaded script.
+     * This list is accessible throw the methods getAddScriptList().
      */
     private class CustomWpsService implements LocalWpsServer {
         List<File> addScriptList = new ArrayList<>();
@@ -143,6 +148,10 @@ public class OrbisGISWpsScriptPluginTest {
             return processIdentifierList;
         }
 
+        /**
+         * Returns the list of the script files add to the server.
+         * @return The list of the script files add to the server.
+         */
         public List<File> getAddScriptList(){ return addScriptList;}
 
         @Override public void removeProcess(URI identifier) {
@@ -176,7 +185,7 @@ public class OrbisGISWpsScriptPluginTest {
     }
 
     /**
-     * Simple implementation of the CoreWorkspace interface with a temporary folder as application folder.
+     * Fake implementation of the CoreWorkspace interface with a temporary folder as application folder.
      */
     private class CustomCoreWorkspace implements CoreWorkspace {
 
