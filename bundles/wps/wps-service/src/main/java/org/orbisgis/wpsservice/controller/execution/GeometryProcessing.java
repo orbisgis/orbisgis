@@ -75,7 +75,6 @@ public class GeometryProcessing implements DataProcessing {
                                            ProcessExecutionListener pel) {
         //Check if it is an input
         if(inputOrOutput instanceof InputDescriptionType) {
-            Map<URI, Object> map = new HashMap<>();
             InputDescriptionType input = (InputDescriptionType) inputOrOutput;
             //Check if the input is a GeometryData
             if(input.getDataDescription().getValue() instanceof GeometryData) {
@@ -94,7 +93,7 @@ public class GeometryProcessing implements DataProcessing {
                         LOGGER.error("Unable to parse the string {0} into Geometry.", str);
                     }
                     dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
-                    return null;
+                    return dataMap;
                 }
                 //Check the Geometry has the good type
                 //If the geometry type list is empty, all the type are accepted so sets the flag to true
@@ -106,15 +105,15 @@ public class GeometryProcessing implements DataProcessing {
                 }
                 if(!flag){
                     if(pel != null) {
-                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry {0} type is not" +
-                                " accepted ({1} not allowed).", input.getTitle(), geometry.getGeometryType()));
+                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry type is not " +
+                                "accepted ({0} not allowed).", geometry.getGeometryType()));
                     }
                     else{
-                        LOGGER.error(I18N.tr("The geometry {0} type is not accepted ({1} not allowed).",
-                                input.getTitle(), geometry.getGeometryType()));
+                        LOGGER.error(I18N.tr("The geometry type is not accepted ({0} not allowed).",
+                                geometry.getGeometryType()));
                     }
                     dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
-                    return null;
+                    return dataMap;
                 }
                 //Check the Geometry has not an excluded type
                 flag = true;
@@ -125,95 +124,51 @@ public class GeometryProcessing implements DataProcessing {
                 }
                 if(!flag){
                     if(pel != null) {
-                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry {0} type is not" +
-                                " accepted ({1} not allowed).", input.getTitle(), geometry.getGeometryType()));
+                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry type is not" +
+                                " accepted ({0} is excluded).", geometry.getGeometryType()));
                     }
                     else{
-                        LOGGER.error(I18N.tr("The geometry {0} type is not accepted ({1} not allowed).",
-                                input.getTitle(), geometry.getGeometryType()));
+                        LOGGER.error(I18N.tr("The geometry type is not accepted ({0} is excluded).",
+                                 geometry.getGeometryType()));
                     }
                     dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
-                    return null;
+                    return dataMap;
                 }
                 //Check the geometry dimension
                 if((geometryData.getDimension() == 2 && !Double.isNaN(geometry.getCoordinate().z)) ||
                         (geometryData.getDimension() == 3 && Double.isNaN(geometry.getCoordinate().z))){
                     if(pel != null) {
-                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry {0} has not a " +
-                        "wrong dimension (should be {1}).", input.getTitle(), geometryData.getDimension()));
+                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry has a " +
+                        "wrong dimension (should be {0}).", geometryData.getDimension()));
                     }
                     else{
 
-                        LOGGER.error(I18N.tr("The geometry {0} has not a wrong dimension (should be {1}).",
-                                input.getTitle(), geometryData.getDimension()));
+                        LOGGER.error(I18N.tr("The geometry has a wrong dimension (should be {0}).",
+                                geometryData.getDimension()));
                     }
                     dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
-                    return null;
+                    return dataMap;
                 }
                 dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), geometry);
+                return dataMap;
             }
-            map.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
-            return map;
         }
-        else if(inputOrOutput instanceof OutputDescriptionType){
-            Map<URI, Object> map = new HashMap<>();
-            map.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
-            return map;
-        }
-        return null;
+        dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
+        return dataMap;
     }
 
     @Override
-    public void postProcessData(DescriptionType input, Map<URI, Object> dataMap, Map<URI, Object> stash,
+    public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
                                 ProcessExecutionListener pel) {
         //Check if it is an output
-        if(input instanceof OutputDescriptionType) {
-            OutputDescriptionType output = (OutputDescriptionType) input;
+        if(inputOrOutput instanceof OutputDescriptionType) {
+            OutputDescriptionType output = (OutputDescriptionType) inputOrOutput;
             //Check if the input is a GeometryData
             if(output.getDataDescription().getValue() instanceof GeometryData) {
                 GeometryData geometryData = (GeometryData) output.getDataDescription().getValue();
-                Object obj = dataMap.get(URI.create(input.getIdentifier().getValue()));
+                Object obj = dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue()));
                 if(obj instanceof Geometry) {
                     Geometry geometry = (Geometry) obj;
-                    //Check the Geometry has the good type
-                    //If the geometry type list is empty, all the type are accepted so sets the flag to true
-                    boolean flag = geometryData.getGeometryTypeList().isEmpty();
-                    for (DataType dataType : geometryData.getGeometryTypeList()) {
-                        if (dataType.name().equalsIgnoreCase(geometry.getGeometryType())) {
-                            flag = true;
-                        }
-                    }
-                    if (!flag) {
-                        if(pel != null) {
-                            pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry {0} type is not" +
-                                    " accepted ({1} not allowed).", input.getTitle(), geometry.getGeometryType()));
-                        }
-                        else{
-                            LOGGER.error(I18N.tr("The geometry {0} type is not accepted ({1} not allowed).",
-                                    input.getTitle(), geometry.getGeometryType()));
-                        }
-                        dataMap.put(URI.create(input.getIdentifier().getValue()), null);
-                        return;
-                    }
-                    //Check the Geometry has not an excluded type
-                    flag = true;
-                    for (DataType dataType : geometryData.getExcludedTypeList()) {
-                        if (dataType.name().equalsIgnoreCase(geometry.getGeometryType())) {
-                            flag = false;
-                        }
-                    }
-                    if (!flag) {
-                        if(pel != null) {
-                            pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("The geometry {0} type is not" +
-                                    " accepted ({1} not allowed).", input.getTitle(), geometry.getGeometryType()));
-                        }
-                        else{
-                            LOGGER.error(I18N.tr("The geometry {0} type is not accepted ({1} not allowed).",
-                                    input.getTitle(), geometry.getGeometryType()));
-                        }
-                        dataMap.put(URI.create(input.getIdentifier().getValue()), null);
-                        return;
-                    }
                     //Read the string to retrieve the Geometry
                     String wkt = new WKTWriter(geometryData.getDimension()).write(geometry);
                     if(wkt == null || wkt.isEmpty()){
@@ -224,14 +179,13 @@ public class GeometryProcessing implements DataProcessing {
                         else{
                             LOGGER.error(I18N.tr("Unable to read the geometry {0}.", output.getTitle()));
                         }
-                        dataMap.put(URI.create(input.getIdentifier().getValue()), null);
+                        dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
                         return;
                     }
-                    dataMap.put(URI.create(input.getIdentifier().getValue()), wkt);
+                    dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), wkt);
 
                     if(pel != null) {
-                        pel.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Output geometry {0} is {1}.",
-                                output.getTitle(), wkt));
+                        pel.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Output geometry is {1}.", wkt));
                     }
                 }
             }
