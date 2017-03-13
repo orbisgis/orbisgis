@@ -433,8 +433,12 @@ public class MapControl extends JComponent implements ContainerListener {
                 updateViewTime.start();
                 rendererImage = mapControl.getMapTransform().getImage();
                 renderer.draw(mapControl.getMapTransform(), mapContext.getLayerModel(), this.getProgressMonitor());
-                LOGGER.info(I18N.tr("Rendering done in {0} seconds", (System.currentTimeMillis() - beginDrawing) /
-                        1000.0));
+		long renderingTime =  (System.currentTimeMillis() - beginDrawing) /
+                        1000.0));    
+		if(renderingTime >= 1)  {
+                	LOGGER.debug(I18N.tr("Rendering done in {0} seconds", (System.currentTimeMillis() - beginDrawing) /
+                        	1000.0));
+		}
             } catch (Exception ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
             } finally {
