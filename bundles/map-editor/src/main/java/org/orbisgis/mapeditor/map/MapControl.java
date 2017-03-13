@@ -408,6 +408,7 @@ public class MapControl extends JComponent implements ContainerListener {
         private AtomicBoolean intermediateDrawing;
         private MapControl mapControl;
         private ResultSetProviderFactory resultSetProviderFactory;
+	private static final double DEFAULT_LOG_RENDERING_TIME_MIN = 1.0;	
         private static final int FIRST_DELAY_DRAWING = 2500;
         private static final int DELAY_DRAWING = 250; // drawing delay in ms
         private ImageRenderer renderer;
@@ -434,7 +435,7 @@ public class MapControl extends JComponent implements ContainerListener {
                 rendererImage = mapControl.getMapTransform().getImage();
                 renderer.draw(mapControl.getMapTransform(), mapContext.getLayerModel(), this.getProgressMonitor());
 		double renderingTime =  (System.currentTimeMillis() - beginDrawing) / 1000.0;    
-		if(renderingTime >= 1)  {
+		if(renderingTime >= System.getProperty("map.editor.renderingtimemin", DEFAULT_LOG_RENDERING_TIME_MIN))  {
                 	LOGGER.debug(I18N.tr("Rendering done in {0} seconds", renderingTime));
 		}
             } catch (Exception ex) {
