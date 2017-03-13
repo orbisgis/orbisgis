@@ -102,6 +102,22 @@ public class DataProcessingTest {
         Assert.assertEquals("The bounding box geometry wasn't the one expected.",
                 "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", wktWriter.write(geometry));
 
+        //Test a bounding box with the SRID and the coordinate in the reverse order
+        dataMap.put(uri, "0,0,1,1;EPSG:4326");
+        //Preprocess the bounding box
+        dataProcessingManager.preProcessData(input, dataMap, null);
+        //Check if the resulting Geometry object is the one expected
+        Object result2 = dataMap.get(uri);
+        Assert.assertTrue("The object resulting of the preprocessing of the bounding box should be a geometry.",
+                result2 instanceof Geometry);
+        Geometry geometry2 = (Geometry)result;
+        Assert.assertEquals("The bounding box geometry dimension should be 2.",
+                2, geometry2.getDimension());
+        Assert.assertEquals("The bounding box geometry SRID should be 4326.",
+                4326, geometry2.getSRID());
+        Assert.assertEquals("The bounding box geometry wasn't the one expected.",
+                "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", wktWriter.write(geometry2));
+
 
         //Generate the OutputDescriptionType object to postprocess
         OutputDescriptionType output = new OutputDescriptionType();
@@ -110,10 +126,10 @@ public class DataProcessingTest {
         //Postprocess the output
         dataProcessingManager.postProcessData(output, dataMap, new HashMap<URI, Object>() ,null);
         //Check if the resulting object is a string containing the representation of the bounding box
-        Object result2 = dataMap.get(uri);
+        Object result3 = dataMap.get(uri);
         Assert.assertTrue("The object resulting of the postprocessing of the bounding box should be a String.",
-                result2 instanceof String);
-        String str = result2.toString();
+                result3 instanceof String);
+        String str = result3.toString();
         Assert.assertEquals("The bounding box geometry wasn't the one expected.",
                 ":4326;0,0,1,1", str);
     }
