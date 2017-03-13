@@ -69,7 +69,6 @@ public class DataProcessingTest {
     /**
      * Test the preprocessing of an incoming BoundingBoxData and if the geometry generated is correct.
      * Then check its postprocessing and if its string representation is correct.
-     * @throws MalformedScriptException
      */
     @Test
     public void testBoundingBoxProcessing() {
@@ -121,7 +120,6 @@ public class DataProcessingTest {
 
     /**
      * Test the preprocessing of a 3D bounding box (now not supported). It should return a null value.
-     * @throws MalformedScriptException
      */
     @Test
     public void test3DBoundingBoxProcessing() {
@@ -202,7 +200,6 @@ public class DataProcessingTest {
 
     /**
      * Test the preprocessing in the different cases of wrong GeometryData configuration (bad geometry, bad dimension ...)
-     * @throws MalformedScriptException
      */
     @Test
     public void testBadGeometryProcessing() {

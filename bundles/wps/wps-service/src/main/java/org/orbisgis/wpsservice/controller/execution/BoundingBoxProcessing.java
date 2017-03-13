@@ -82,7 +82,18 @@ public class BoundingBoxProcessing implements DataProcessing {
             if(input.getDataDescription().getValue() instanceof BoundingBoxData) {
                 String str = dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue())).toString();
                 Geometry geometry;
-                String[] wkt = str.split(";")[1].split(",");
+                String[] split = str.split(";");
+                String[] wkt;
+                String srid;
+                if(split[0].contains(":")){
+                    srid = str.split(";")[0].split(":")[1];
+                    wkt = str.split(";")[1].split(",");
+                }
+                else{
+                    srid = str.split(";")[1].split(":")[1];
+                    wkt = str.split(";")[0].split(",");
+                }
+
                 try {
                     if(wkt.length != 4){
                         throw new ParseException("Only 2D bounding boxes are supported yet.");
@@ -92,7 +103,6 @@ public class BoundingBoxProcessing implements DataProcessing {
                     minY = wkt[1];
                     maxX = wkt[2];
                     maxY = wkt[3];
-                    String srid = str.split(";")[0].split(":")[1];
                     //Read the string to retrieve the Geometry
                     geometry = new WKTReader().read("POLYGON((" +
                             minX+" "+minY+"," +
