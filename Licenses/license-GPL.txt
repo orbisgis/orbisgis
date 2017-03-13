@@ -13,7 +13,7 @@ Institut Universitaire de Technologie de Vannes
 OrbisGIS is distributed under GPL 3 license.
 
 Copyright (C) 2007-2014 CNRS (IRSTV FR CNRS 2488)
-Copyright (C) 2015-2016 CNRS (Lab-STICC UMR CNRS 6285)
+Copyright (C) 2015-2017 CNRS (Lab-STICC UMR CNRS 6285)
 
 This file is part of OrbisGIS.
 
