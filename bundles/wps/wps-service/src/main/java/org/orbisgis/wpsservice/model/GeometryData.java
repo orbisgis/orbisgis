@@ -43,6 +43,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 
 import javax.xml.bind.annotation.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,7 +61,7 @@ public class GeometryData extends ComplexDataType {
     private List<DataType> geometryTypeList;
     /** List of type excluded for the geometry.*/
     @XmlElement(name = "ExcludedType", namespace = "http://orbisgis.org")
-    private List<DataType> excludedTypeList;
+    private List<DataType> excludedTypeList = new ArrayList<>();
     /** Dimension of the geometry. Can be 2(D) or 3(D). */
     @XmlAttribute(name = "dimension")
     private int dimension;
@@ -77,7 +78,14 @@ public class GeometryData extends ComplexDataType {
      * @throws MalformedScriptException Exception get on setting a format which is null or is not the default one.
      */
     public GeometryData(List<Format> formatList, List<DataType> geometryTypeList) throws MalformedScriptException {
+        if(formatList.isEmpty() || formatList.contains(null)){
+            throw new MalformedScriptException(GeometryData.class, "formatList",
+                    I18N.tr("should not be empty or contain null value."));
+        }
         format = formatList;
+        if(formatList.contains(null)){
+            throw new MalformedScriptException(GeometryData.class, "formatList", I18N.tr("should contain null value."));
+        }
         this.geometryTypeList = geometryTypeList;
     }
 

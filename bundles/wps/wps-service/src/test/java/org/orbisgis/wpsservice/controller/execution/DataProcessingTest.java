@@ -72,15 +72,18 @@ public class DataProcessingTest {
      * @throws MalformedScriptException
      */
     @Test
-    public void testBoundingBoxProcessing() throws MalformedScriptException {
+    public void testBoundingBoxProcessing() {
         //Store into the dataMap the boundingBox data
         URI uri = URI.create(UUID.randomUUID().toString());
         Map<URI, Object> dataMap = new HashMap<>();
         dataMap.put(uri, "EPSG:4326;0,0,1,1");
         //Generate the InputDescriptionType object containing the boundingBox
         List<Format> formatList = FormatFactory.getFormatsFromExtensions(new String[]{".txt"});
-        BoundingBoxData boundingBoxData = new BoundingBoxData(formatList, "EPSG:4326",
-                new String[]{"EPSG:4326","EPSG:2000", "EPSG:2001"}, 2);
+        BoundingBoxData boundingBoxData = null;
+        try {
+            boundingBoxData = new BoundingBoxData(formatList, "EPSG:4326",
+                    new String[]{"EPSG:4326","EPSG:2000", "EPSG:2001"}, 2);
+        } catch (MalformedScriptException ignored) {}
         CodeType identifier = new CodeType();
         identifier.setValue(uri.toString());
         InputDescriptionType input = new InputDescriptionType();
@@ -121,15 +124,18 @@ public class DataProcessingTest {
      * @throws MalformedScriptException
      */
     @Test
-    public void test3DBoundingBoxProcessing() throws MalformedScriptException {
+    public void test3DBoundingBoxProcessing() {
         //Store into the dataMap the boundingBox data
         URI uri = URI.create(UUID.randomUUID().toString());
         Map<URI, Object> dataMap = new HashMap<>();
         dataMap.put(uri, "EPSG:4326;0,0,0,1,1,1");
         //Generate the InputDescriptionType object containing the boundingBox
         List<Format> formatList = FormatFactory.getFormatsFromExtensions(new String[]{".txt"});
-        BoundingBoxData boundingBoxData = new BoundingBoxData(formatList, "EPSG:4326",
-                new String[]{"EPSG:4326","EPSG:2000", "EPSG:2001"}, 2);
+        BoundingBoxData boundingBoxData = null;
+        try {
+            boundingBoxData = new BoundingBoxData(formatList, "EPSG:4326",
+                    new String[]{"EPSG:4326","EPSG:2000", "EPSG:2001"}, 2);
+        } catch (MalformedScriptException ignored) {}
         CodeType identifier = new CodeType();
         identifier.setValue(uri.toString());
         InputDescriptionType input = new InputDescriptionType();
@@ -146,10 +152,9 @@ public class DataProcessingTest {
     /**
      * Test the preprocessing of an incoming GeometryData and if the geometry generated is correct.
      * Then check its postprocessing and if its string representation is correct.
-     * @throws MalformedScriptException
      */
     @Test
-    public void testGeometryProcessing() throws MalformedScriptException {
+    public void testGeometryProcessing() {
         //Store into the dataMap the geometryData data
         URI uri = URI.create(UUID.randomUUID().toString());
         Map<URI, Object> dataMap = new HashMap<>();
@@ -158,8 +163,10 @@ public class DataProcessingTest {
         List<Format> formatList = FormatFactory.getFormatsFromExtensions(new String[]{".txt"});
         List<DataType> geometryList = new ArrayList<>();
         geometryList.add(DataType.POLYGON);
-        GeometryData geometryData = new GeometryData(formatList, geometryList);
-        geometryData.setExcludedTypeList(new ArrayList<DataType>());
+        GeometryData geometryData = null;
+        try {
+            geometryData = new GeometryData(formatList, geometryList);
+        } catch (MalformedScriptException ignored) {}
         geometryData.setDimension(2);
         CodeType identifier = new CodeType();
         identifier.setValue(uri.toString());
@@ -198,7 +205,7 @@ public class DataProcessingTest {
      * @throws MalformedScriptException
      */
     @Test
-    public void testBadGeometryProcessing() throws MalformedScriptException {
+    public void testBadGeometryProcessing() {
         //Store into the dataMap the geometryData data
         URI uri = URI.create(UUID.randomUUID().toString());
         Map<URI, Object> dataMap = new HashMap<>();
@@ -207,10 +214,13 @@ public class DataProcessingTest {
         List<Format> formatList = FormatFactory.getFormatsFromExtensions(new String[]{".txt"});
         List<DataType> geometryList = new ArrayList<>();
         geometryList.add(DataType.BOOLEAN);
-        GeometryData geometryData = new GeometryData(formatList, geometryList);
+        GeometryData geometryData = null;
         List<DataType> excludedList = new ArrayList<>();
         excludedList.add(DataType.POLYGON);
-        geometryData.setExcludedTypeList(excludedList);
+        try {
+            geometryData = new GeometryData(formatList, geometryList);
+            geometryData.setExcludedTypeList(excludedList);
+        } catch (MalformedScriptException e) {}
         geometryData.setDimension(2);
         CodeType identifier = new CodeType();
         identifier.setValue(uri.toString());

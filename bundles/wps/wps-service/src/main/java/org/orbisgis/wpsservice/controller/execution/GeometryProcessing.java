@@ -117,9 +117,11 @@ public class GeometryProcessing implements DataProcessing {
                 }
                 //Check the Geometry has not an excluded type
                 flag = true;
-                for(DataType dataType : geometryData.getExcludedTypeList()){
-                    if(dataType.name().equalsIgnoreCase(geometry.getGeometryType())){
-                        flag = false;
+                if(geometryData.getExcludedTypeList() != null) {
+                    for (DataType dataType : geometryData.getExcludedTypeList()) {
+                        if (dataType.name().equalsIgnoreCase(geometry.getGeometryType())) {
+                            flag = false;
+                        }
                     }
                 }
                 if(!flag){
