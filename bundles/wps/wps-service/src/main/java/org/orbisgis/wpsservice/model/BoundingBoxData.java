@@ -125,7 +125,7 @@ public class BoundingBoxData extends ComplexDataType {
      * Sets the list of the supported CRS.
      * @param supportedCrs The list of the supported CRS.
      */
-    public void getSupportedCrs(String[] supportedCrs) {
+    public void setSupportedCrs(String[] supportedCrs) {
         this.supportedCrs = supportedCrs;
     }
 
