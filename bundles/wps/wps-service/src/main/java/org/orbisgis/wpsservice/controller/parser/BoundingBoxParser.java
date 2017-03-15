@@ -69,6 +69,9 @@ public class BoundingBoxParser implements Parser {
         List<Format> formatList = new ArrayList<>();
         formatList.add(format);
         BoundingBoxData boundingBoxData = ObjectAnnotationConverter.annotationToObject(boundingBoxAttribute, formatList);
+        if(defaultValue != null && defaultValue instanceof String) {
+            boundingBoxData.setDefaultValue((String)defaultValue);
+        }
 
         InputDescriptionType input = new InputDescriptionType();
         JAXBElement<BoundingBoxData> jaxbElement = new ObjectFactory().createBoundingBoxData(boundingBoxData);
