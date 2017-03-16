@@ -95,7 +95,7 @@ String inputJDBCTable
 		description = [
 				"The geometric field of the data source.","en",
 				"Le champ géométrique de la source de données.","fr"],
-        jdbcTableReference = "orbisgis:wps:official:reprojectGeometries:inputJDBCTable",
+        jdbcTableReference = "inputJDBCTable",
         dataTypes = ["GEOMETRY"],
 		identifier = "geometryField"
 )
@@ -128,7 +128,7 @@ String[] srid
 		excludedTypes=["GEOMETRY"],
 		multiSelection = true,
 		minOccurs = 0,
-        	jdbcTableReference = "orbisgis:wps:official:reprojectGeometries:inputJDBCTable",
+        	jdbcTableReference = "inputJDBCTable",
 		identifier = "fieldList"
 )
 String[] fieldList
