@@ -84,7 +84,7 @@ def processing() {
                 "Table","fr"],
         description = ["The table to edit.","en",
                 "La table à éditer.","fr"],
-        identifier = "orbisgis:wps:official:insertValues:tableName")
+        identifier = "tableName")
 String tableName
 
 /**********************/
@@ -98,10 +98,10 @@ String tableName
         description = [
                 "The field concerned by the value insertion.","en",
                 "Les champs concernés par les insertions de valeurs.","fr"],
-        jdbcTableReference = "orbisgis:wps:official:insertValues:tableName",
+        jdbcTableReference = "tableName",
         multiSelection = true,
         minOccurs = 0,
-        identifier = "orbisgis:wps:official:insertValues:fieldList")
+        identifier = "fieldList")
 String[] fieldList
 
 /** Coma separated values to insert. */
@@ -111,7 +111,7 @@ String[] fieldList
         description = [
                 "The input values. The values should be separated by a ',' and rows by ';'","en",
                 "Les valeurs à insérer. Elles doivent etre séparées par une ',' et les lignes par un ';'","fr"],
-        identifier = "orbisgis:wps:official:insertValues:values")
+        identifier = "values")
 String values
 
 /** String output of the process. */
@@ -121,6 +121,6 @@ String values
         description = [
                 "The output message.","en",
                 "Le message de sortie.","fr"],
-        identifier = "orbisgis:wps:official:insertValues:literalOutput")
+        identifier = "literalOutput")
 String literalOutput
 

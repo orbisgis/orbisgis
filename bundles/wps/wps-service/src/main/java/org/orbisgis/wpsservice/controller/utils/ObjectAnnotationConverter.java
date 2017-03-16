@@ -119,7 +119,8 @@ public class ObjectAnnotationConverter {
      * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
      */
     public static void annotationToObject(DescriptionTypeAttribute descriptionTypeAttribute,
-                                          DescriptionType descriptionType) throws MalformedScriptException {
+                                          DescriptionType descriptionType, String processIdentifier)
+            throws MalformedScriptException {
         //First check if there is at least one title.
         if(descriptionTypeAttribute.title().length == 0){
             throw new MalformedScriptException(DescriptionTypeAttribute.class, "title", "The title should be defined.");
@@ -178,7 +179,12 @@ public class ObjectAnnotationConverter {
         //Identifier
         if(!descriptionTypeAttribute.identifier().isEmpty()){
             CodeType codeType = new CodeType();
-            codeType.setValue(descriptionTypeAttribute.identifier().trim());
+            if(processIdentifier.isEmpty()){
+                codeType.setValue(descriptionTypeAttribute.identifier().trim());
+            }
+            else {
+                codeType.setValue(processIdentifier.trim() + ":" + descriptionTypeAttribute.identifier().trim());
+            }
             descriptionType.setIdentifier(codeType);
         }
 

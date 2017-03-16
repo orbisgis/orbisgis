@@ -92,7 +92,7 @@ public class DescriptionTypeConvertTest {
                 if(annotation instanceof DescriptionTypeAttribute){
                     annotationFound = true;
                     DescriptionTypeAttribute descriptionTypeAnnotation = (DescriptionTypeAttribute) annotation;
-                    ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, descriptionType);
+                    ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, descriptionType, "");
                 }
             }
 
@@ -330,7 +330,7 @@ public class DescriptionTypeConvertTest {
                 if(annotation instanceof DescriptionTypeAttribute){
                     annotationFound = true;
                     DescriptionTypeAttribute descriptionTypeAnnotation = (DescriptionTypeAttribute) annotation;
-                    ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, descriptionType);
+                    ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, descriptionType, "");
                 }
             }
 
@@ -537,7 +537,7 @@ public class DescriptionTypeConvertTest {
                 if(annotation instanceof DescriptionTypeAttribute){
                     annotationFound = true;
                     DescriptionTypeAttribute descriptionTypeAnnotation = (DescriptionTypeAttribute) annotation;
-                    ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, descriptionType);
+                    ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, descriptionType, "");
                 }
             }
 

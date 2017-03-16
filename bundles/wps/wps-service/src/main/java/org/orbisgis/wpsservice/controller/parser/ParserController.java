@@ -110,11 +110,22 @@ public class ParserController {
      */
     public ProcessOffering parseProcess(String processPath) throws MalformedScriptException {
         //Retrieve the class corresponding to the Groovy script.
-        File process = new File(processPath);
-        Class clazz = getProcessClass(process.toURI());
+        File processFile = new File(processPath);
+        Class clazz = getProcessClass(processFile.toURI());
         if(clazz == null){
             return null;
         }
+
+        //Parse the process
+        ProcessOffering processOffering;
+        try {
+            processOffering = processParser.parseProcess(clazz.getDeclaredMethod("processing"), processFile.toURI());
+            link(processOffering.getProcess());
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+        ProcessDescriptionType process = processOffering.getProcess();
+
         //Retrieve the list of input and output of the script.
         List<InputDescriptionType> inputList = new ArrayList<>();
         List<OutputDescriptionType> outputList = new ArrayList<>();
@@ -143,7 +154,8 @@ public class ParserController {
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                            InputDescriptionType input = parser.parseInput(f, defaultValue, process.toURI());
+                            InputDescriptionType input = parser.parseInput(f, defaultValue,
+                                    URI.create(process.getIdentifier().getValue()));
                             if(input.getInput() != null && !input.getInput().isEmpty()){
                                 for(InputDescriptionType in : input.getInput()){
                                     inputList.add(in);
@@ -165,7 +177,8 @@ public class ParserController {
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                            OutputDescriptionType output = parser.parseOutput(f, process.toURI());
+                            OutputDescriptionType output = parser.parseOutput(f,
+                                    URI.create(process.getIdentifier().getValue()));
                             if(output.getOutput() != null && !output.getOutput().isEmpty()){
                                 for(OutputDescriptionType out : output.getOutput()){
                                     outputList.add(out);
@@ -184,17 +197,12 @@ public class ParserController {
                 }
             }
         }
-        //Then parse the process
-        try {
-            ProcessOffering p = processParser.parseProcess(inputList,
-                    outputList,
-                    clazz.getDeclaredMethod("processing"),
-                    process.toURI());
-            link(p.getProcess());
-            return p;
-        } catch (NoSuchMethodException e) {
-            return null;
-        }
+        process.getOutput().clear();
+        process.getOutput().addAll(outputList);
+        process.getInput().clear();
+        process.getInput().addAll(inputList);
+
+        return processOffering;
     }
 
     /**

@@ -78,7 +78,7 @@ def processing() {
 				"The spatial data source to be reprojected.","en",
 				"La source de données spatiales pour la reprojection.","fr"],
 		dataTypes = ["GEOMETRY"],
-		identifier = "orbisgis:wps:official:reprojectGeometries:inputJDBCTable"
+		identifier = "inputJDBCTable"
 )
 String inputJDBCTable
 
@@ -97,7 +97,7 @@ String inputJDBCTable
 				"Le champ géométrique de la source de données.","fr"],
         jdbcTableReference = "orbisgis:wps:official:reprojectGeometries:inputJDBCTable",
         dataTypes = ["GEOMETRY"],
-		identifier = "orbisgis:wps:official:reprojectGeometries:geometryField"
+		identifier = "geometryField"
 )
 String[] geometricField
 
@@ -112,7 +112,7 @@ String[] geometricField
 				"L'identifiant du système de référence spatiale.","fr"],
 		jdbcTableFieldReference = "\$public\$spatial_ref_sys\$srid\$",
 		multiSelection = false,
-		identifier = "orbisgis:wps:official:reprojectGeometries:srid"
+		identifier = "srid"
 )
 String[] srid
 
@@ -129,7 +129,7 @@ String[] srid
 		multiSelection = true,
 		minOccurs = 0,
         	jdbcTableReference = "orbisgis:wps:official:reprojectGeometries:inputJDBCTable",
-		identifier = "orbisgis:wps:official:reprojectGeometries:fieldList"
+		identifier = "fieldList"
 )
 String[] fieldList
 
@@ -149,7 +149,7 @@ Boolean dropTable
 		description = [
 				"Name of the table containing the result of the process.","en",
 				"Nom de la table contenant les résultats du traitement.","fr"],
-		identifier = "orbisgis:wps:official:reprojectGeometries:outputTableName"
+		identifier = "outputTableName"
 )
 String outputTableName
 
@@ -176,7 +176,7 @@ Boolean dropInputTable
 		description = [
 				"The output message.","en",
 				"Le message de sortie.","fr"],
-		identifier = "orbisgis:wps:official:reprojectGeometries:literalOutput"
+		identifier = "literalOutput"
 )
 String literalOutput
 
