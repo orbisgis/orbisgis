@@ -9,6 +9,8 @@ For general information, visit our [website](http://www.orbisgis.org). Feel free
 
 Developers, check out our [GitHub Wiki](https://github.com/orbisgis/orbisgis/wiki).
 
+Users, please consult the on-line documentation on [doc.orbisgis.org](http://doc.orbisgis.org/).
+
 ### Quick build instructions
 
 OrbisGIS uses Maven. To launch a full build (including tests), run the following command:
