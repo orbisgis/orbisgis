@@ -34,6 +34,7 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
     //Build the query
     String queryBase = "INSERT INTO " + tableName;
+    print(fieldList)
     if (fieldList != null) {
         queryBase += " (";
         String fieldsStr = ""
@@ -45,14 +46,14 @@ def processing() {
                 fieldsStr += field;
             }
         }
-        queryBase += ") ";
+        queryBase += fieldsStr+") ";
 }
     queryBase += " VALUES (";
     //execute the query for each row
-    String[] rowArray = values.split(";")
+    String[] rowArray = values.split(":")
     for(String row : rowArray){
         String query = queryBase
-        String[] valueArray = row.split(",", -1)
+        String[] valueArray = row.split(";", -1)
         //Retrieve the values to insert
         String formatedValues = ""
         for(String value : valueArray){

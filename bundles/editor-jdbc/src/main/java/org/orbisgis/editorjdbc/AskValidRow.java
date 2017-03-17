@@ -199,4 +199,12 @@ public class AskValidRow extends MultiInputPanel {
 		return ret;
 	}
 
+    /**
+     * Returns the list of field names.
+     * @return The list of field names.
+     */
+    public List<String> getFieldNames(){
+        return fieldsNameList;
+    }
+
 }
