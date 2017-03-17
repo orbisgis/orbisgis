@@ -37,6 +37,7 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
+import com.vividsolutions.jts.geom.Geometry;
 import net.opengis.wps._2_0.DataDescriptionType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
@@ -76,7 +77,7 @@ public class BoundingBoxParserTest {
         InputDescriptionType inputDescriptionType = null;
         String processId = UUID.randomUUID().toString();
         try {
-            inputDescriptionType = boundingBoxParser.parseInput(field, null, URI.create(processId));
+            inputDescriptionType = boundingBoxParser.parseInput(field, "defaultValue", URI.create(processId));
         } catch (MalformedScriptException ignored) {}
         Assert.assertNotNull("Unable to parse the field 'simplestBoundingBoxInput'.", inputDescriptionType);
 
@@ -94,6 +95,8 @@ public class BoundingBoxParserTest {
         Assert.assertArrayEquals("The BoundingBoxData supportedCrs attribute should be empty.", new String[]{},
                 boundingBoxData.getSupportedCrs());
         Assert.assertEquals("The BoundingBoxData dimension attribute should be 2.", 2, boundingBoxData.getDimension());
+        Assert.assertEquals("The BoundingBoxData defaultValue attribute is not the one expected.", "defaultValue",
+                boundingBoxData.getDefaultValue());
 
         //Tests the InputAttribute part of the InputDescriptionType
         Assert.assertEquals("The InputDescriptionType maxOccurs attribute should be 1", "1",
@@ -120,7 +123,7 @@ public class BoundingBoxParserTest {
      * Tests the parsing of a complex BoundingBox input.
      */
     @Test
-    public void testCompexParseInput(){
+    public void testComplexParseInput(){
         Field field = null;
         try {
             field = FieldProvider.class.getDeclaredField("complexBoundingBoxInput");
@@ -130,7 +133,7 @@ public class BoundingBoxParserTest {
         InputDescriptionType inputDescriptionType = null;
         String processId = UUID.randomUUID().toString();
         try {
-            inputDescriptionType = boundingBoxParser.parseInput(field, null, URI.create(processId));
+            inputDescriptionType = boundingBoxParser.parseInput(field, "defaultValue", URI.create(processId));
         } catch (MalformedScriptException ignored) {}
         Assert.assertNotNull("Unable to parse the field 'complexBoundingBoxInput'.", inputDescriptionType);
 
@@ -148,6 +151,8 @@ public class BoundingBoxParserTest {
         Assert.assertArrayEquals("The BoundingBoxData supportedCrs attribute should be empty.",
                 new String[]{"EPSG:4326", "EPSG:2000", "EPSG:2001"}, boundingBoxData.getSupportedCrs());
         Assert.assertEquals("The BoundingBoxData dimension attribute should be 2.", 2, boundingBoxData.getDimension());
+        Assert.assertEquals("The BoundingBoxData defaultValue attribute is not the one expected.", "defaultValue",
+                boundingBoxData.getDefaultValue());
 
         //Tests the InputAttribute part of the InputDescriptionType
         Assert.assertEquals("The InputDescriptionType maxOccurs attribute should be 1", "2",
@@ -256,7 +261,7 @@ public class BoundingBoxParserTest {
      * Tests the parsing of a complex BoundingBox output.
      */
     @Test
-    public void testCompexParseOutput(){
+    public void testComplexParseOutput(){
         Field field = null;
         try {
             field = FieldProvider.class.getDeclaredField("complexBoundingBoxInput");
@@ -340,7 +345,7 @@ public class BoundingBoxParserTest {
         @BoundingBoxAttribute(defaultCRS = "EPSG:4326")
         @InputAttribute
         @DescriptionTypeAttribute(title = {"title"})
-        private String simplestBoundingBoxInput;
+        private Geometry simplestBoundingBoxInput;
 
         /** A complex BoundingBox input declaration */
         @BoundingBoxAttribute(defaultCRS = "EPSG:4326", supportedCRS = {"EPSG:4326", "EPSG:2000", "EPSG:2001"}, dimension = 2)
@@ -352,13 +357,13 @@ public class BoundingBoxParserTest {
                 identifier = "identifier",
                 metadata = {"role","title"}
         )
-        private String complexBoundingBoxInput;
+        private Geometry complexBoundingBoxInput;
 
         /** The simplest BoundingBox output declaration */
         @BoundingBoxAttribute(defaultCRS = "EPSG:4326")
         @OutputAttribute
         @DescriptionTypeAttribute(title = {"title"})
-        private String simplestBoundingBoxOutput;
+        private Geometry simplestBoundingBoxOutput;
 
         /** A complex BoundingBox output declaration */
         @BoundingBoxAttribute(defaultCRS = "EPSG:4326", supportedCRS = {"EPSG:4326", "EPSG:2000", "EPSG:2001"}, dimension = 2)
@@ -370,6 +375,6 @@ public class BoundingBoxParserTest {
                 identifier = "identifier",
                 metadata = {"role","title"}
         )
-        private String complexBoundingBoxOutput;
+        private Geometry complexBoundingBoxOutput;
     }
 }
