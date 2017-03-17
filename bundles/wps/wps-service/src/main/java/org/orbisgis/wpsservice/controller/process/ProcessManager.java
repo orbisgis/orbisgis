@@ -255,14 +255,44 @@ public class ProcessManager {
         }
         try {
             for(InputDescriptionType i : process.getInput()) {
-                Field f = getField(clazz, i.getIdentifier().getValue());
-                f.setAccessible(true);
-                dataMap.put(URI.create(i.getIdentifier().getValue()), f.get(groovyObject));
+                Field field = null;
+                for(Field f : clazz.getDeclaredFields()){
+                    for(Annotation a : f.getDeclaredAnnotations()){
+                        if(a instanceof DescriptionTypeAttribute){
+                            DescriptionTypeAttribute descriptionTypeAttribute = (DescriptionTypeAttribute) a;
+                            String id = descriptionTypeAttribute.identifier();
+                            String inputId = i.getIdentifier().getValue();
+                            String processId = process.getIdentifier().getValue();
+                            if(inputId.equals(processId+":"+id) || inputId.equals(id)){
+                                field = f;
+                            }
+                        }
+                    }
+                }
+                if(field != null) {
+                    field.setAccessible(true);
+                    dataMap.put(URI.create(i.getIdentifier().getValue()), field.get(groovyObject));
+                }
             }
             for(OutputDescriptionType o : process.getOutput()) {
-                Field f = getField(clazz, o.getIdentifier().getValue());
-                f.setAccessible(true);
-                dataMap.put(URI.create(o.getIdentifier().getValue()), f.get(groovyObject));
+                Field field = null;
+                for(Field f : clazz.getDeclaredFields()){
+                    for(Annotation a : f.getDeclaredAnnotations()){
+                        if(a instanceof DescriptionTypeAttribute){
+                            DescriptionTypeAttribute descriptionTypeAttribute = (DescriptionTypeAttribute) a;
+                            String id = descriptionTypeAttribute.identifier();
+                            String outputId = o.getIdentifier().getValue();
+                            String processId = process.getIdentifier().getValue();
+                            if(outputId.equals(processId+":"+id) || outputId.equals(id)){
+                                field = f;
+                            }
+                        }
+                    }
+                }
+                if(field != null) {
+                    field.setAccessible(true);
+                    dataMap.put(URI.create(o.getIdentifier().getValue()), field.get(groovyObject));
+                }
             }
         } catch (IllegalAccessException e) {
             LoggerFactory.getLogger(ProcessManager.class).error(e.getMessage());
@@ -294,9 +324,22 @@ public class ProcessManager {
         }
         try {
             for(InputDescriptionType i : process.getInput()) {
-                Field f = getField(clazz, i.getIdentifier().getValue());
-                if(f != null) {
-                    f.setAccessible(true);
+                Field field = null;
+                for(Field f : clazz.getDeclaredFields()){
+                    for(Annotation a : f.getDeclaredAnnotations()){
+                        if(a instanceof DescriptionTypeAttribute){
+                            DescriptionTypeAttribute descriptionTypeAttribute = (DescriptionTypeAttribute) a;
+                            String id = descriptionTypeAttribute.identifier();
+                            String inputId = i.getIdentifier().getValue();
+                            String processId = process.getIdentifier().getValue();
+                            if(inputId.equals(processId+":"+id) || inputId.equals(id)){
+                                field = f;
+                            }
+                        }
+                    }
+                }
+                if(field != null) {
+                    field.setAccessible(true);
                     Object data = dataMap.get(URI.create(i.getIdentifier().getValue()));
                     //If the descriptionType contains a JDBCTableFieldValue, a JDBCTableField or an Enumeration, parse the value
                     // which is coma separated.
@@ -310,9 +353,9 @@ public class ProcessManager {
                         }
                     }
                     if(dataDescriptionType instanceof LiteralDataType) {
-                        if (Number.class.isAssignableFrom(f.getType()) && data != null) {
+                        if (Number.class.isAssignableFrom(field.getType()) && data != null) {
                             try {
-                                Method valueOf = f.getType().getMethod("valueOf", String.class);
+                                Method valueOf = field.getType().getMethod("valueOf", String.class);
                                 if (valueOf != null) {
                                     valueOf.setAccessible(true);
                                     data = valueOf.invoke(this, data.toString());
@@ -325,14 +368,27 @@ public class ProcessManager {
                             data = data.equals("true");
                         }
                     }
-                    f.set(groovyObject, data);
+                    field.set(groovyObject, data);
                 }
             }
             for(OutputDescriptionType o : process.getOutput()) {
-                Field f = getField(clazz, o.getIdentifier().getValue());
-                if(f != null) {
-                    f.setAccessible(true);
-                    f.set(groovyObject, dataMap.get(URI.create(o.getIdentifier().getValue())));
+                Field field = null;
+                for(Field f : clazz.getDeclaredFields()){
+                    for(Annotation a : f.getDeclaredAnnotations()){
+                        if(a instanceof DescriptionTypeAttribute){
+                            DescriptionTypeAttribute descriptionTypeAttribute = (DescriptionTypeAttribute) a;
+                            String id = descriptionTypeAttribute.identifier();
+                            String outputId = o.getIdentifier().getValue();
+                            String processId = process.getIdentifier().getValue();
+                            if(outputId.equals(processId+":"+id) || outputId.equals(id)){
+                                field = f;
+                            }
+                        }
+                    }
+                }
+                if(field != null) {
+                    field.setAccessible(true);
+                    field.set(groovyObject, dataMap.get(URI.create(o.getIdentifier().getValue())));
                 }
             }
         } catch (IllegalAccessException e) {

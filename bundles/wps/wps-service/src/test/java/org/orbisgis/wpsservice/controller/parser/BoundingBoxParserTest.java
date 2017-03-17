@@ -113,7 +113,7 @@ public class BoundingBoxParserTest {
                 inputDescriptionType.getAbstract().isEmpty());
         Assert.assertTrue("The InputDescriptionType keywords attribute should be empty",
                 inputDescriptionType.getKeywords().isEmpty());
-        Assert.assertEquals("The InputDescriptionType identifier is incorrect.", processId+":input:"+field.getName(),
+        Assert.assertEquals("The InputDescriptionType identifier is incorrect.", processId+":"+field.getName(),
                 inputDescriptionType.getIdentifier().getValue());
         Assert.assertTrue("The InputDescriptionType metadata attribute should be empty",
                 inputDescriptionType.getMetadata().isEmpty());
@@ -196,7 +196,7 @@ public class BoundingBoxParserTest {
         Assert.assertEquals("The language of the first keyword of the first keywordList is not the one expected",
                 "fr", inputDescriptionType.getKeywords().get(0).getKeyword().get(1).getLang());
 
-        Assert.assertEquals("The InputDesciriptionType identifier is incorrect.", "identifier",
+        Assert.assertEquals("The InputDesciriptionType identifier is incorrect.", processId+":"+"identifier",
                 inputDescriptionType.getIdentifier().getValue());
 
         Assert.assertEquals("The InputDescriptionType metadata attribute size should be 1", 1,
@@ -251,7 +251,7 @@ public class BoundingBoxParserTest {
                 outputDescriptionType.getAbstract().isEmpty());
         Assert.assertTrue("The OutputDescriptionType keywords attribute should be empty",
                 outputDescriptionType.getKeywords().isEmpty());
-        Assert.assertEquals("The OutputDescriptionType identifier is incorrect.", processId+":output:"+field.getName(),
+        Assert.assertEquals("The OutputDescriptionType identifier is incorrect.", processId+":"+field.getName(),
                 outputDescriptionType.getIdentifier().getValue());
         Assert.assertTrue("The OutputDescriptionType metadata attribute should be empty",
                 outputDescriptionType.getMetadata().isEmpty());
@@ -326,7 +326,7 @@ public class BoundingBoxParserTest {
         Assert.assertEquals("The language of the first keyword of the first keywordList is not the one expected",
                 "fr", outputDescriptionType.getKeywords().get(0).getKeyword().get(1).getLang());
 
-        Assert.assertEquals("The InputDesciriptionType identifier is incorrect.", "identifier",
+        Assert.assertEquals("The InputDesciriptionType identifier is incorrect.", processId+":"+"identifier",
                 outputDescriptionType.getIdentifier().getValue());
 
         Assert.assertEquals("The OutputDescriptionType metadata attribute size should be 1", 1,
