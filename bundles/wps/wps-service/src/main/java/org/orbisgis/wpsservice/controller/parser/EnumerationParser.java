@@ -89,7 +89,7 @@ public class EnumerationParser implements Parser{
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException {
+    public OutputDescriptionType parseOutput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
         EnumerationAttribute enumerationAttribute = f.getAnnotation(EnumerationAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         Enumeration enumeration = ObjectAnnotationConverter.annotationToObject(enumerationAttribute, format);

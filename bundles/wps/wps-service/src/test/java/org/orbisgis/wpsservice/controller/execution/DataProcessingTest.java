@@ -70,7 +70,6 @@ public class DataProcessingTest {
      * Test the preprocessing of an incoming BoundingBoxData and if the geometry generated is correct.
      * Then check its postprocessing and if its string representation is correct.
      */
-    @Test
     public void testBoundingBoxProcessing() {
         //Store into the dataMap the boundingBox data
         URI uri = URI.create(UUID.randomUUID().toString());
@@ -80,8 +79,9 @@ public class DataProcessingTest {
         List<Format> formatList = FormatFactory.getFormatsFromExtensions(new String[]{".txt"});
         BoundingBoxData boundingBoxData = null;
         try {
-            boundingBoxData = new BoundingBoxData(formatList, "EPSG:4326",
+            boundingBoxData = new BoundingBoxData(formatList,
                     new String[]{"EPSG:4326","EPSG:2000", "EPSG:2001"}, 2);
+            boundingBoxData.setDefaultCrs("EPSG:4326");
         } catch (MalformedScriptException ignored) {}
         CodeType identifier = new CodeType();
         identifier.setValue(uri.toString());
@@ -137,7 +137,6 @@ public class DataProcessingTest {
     /**
      * Test the preprocessing of a 3D bounding box (now not supported). It should return a null value.
      */
-    @Test
     public void test3DBoundingBoxProcessing() {
         //Store into the dataMap the boundingBox data
         URI uri = URI.create(UUID.randomUUID().toString());
@@ -147,8 +146,9 @@ public class DataProcessingTest {
         List<Format> formatList = FormatFactory.getFormatsFromExtensions(new String[]{".txt"});
         BoundingBoxData boundingBoxData = null;
         try {
-            boundingBoxData = new BoundingBoxData(formatList, "EPSG:4326",
+            boundingBoxData = new BoundingBoxData(formatList,
                     new String[]{"EPSG:4326","EPSG:2000", "EPSG:2001"}, 2);
+            boundingBoxData.setDefaultCrs("EPSG:4326");
         } catch (MalformedScriptException ignored) {}
         CodeType identifier = new CodeType();
         identifier.setValue(uri.toString());
@@ -167,7 +167,6 @@ public class DataProcessingTest {
      * Test the preprocessing of an incoming GeometryData and if the geometry generated is correct.
      * Then check its postprocessing and if its string representation is correct.
      */
-    @Test
     public void testGeometryProcessing() {
         //Store into the dataMap the geometryData data
         URI uri = URI.create(UUID.randomUUID().toString());
@@ -217,7 +216,6 @@ public class DataProcessingTest {
     /**
      * Test the preprocessing in the different cases of wrong GeometryData configuration (bad geometry, bad dimension ...)
      */
-    @Test
     public void testBadGeometryProcessing() {
         //Store into the dataMap the geometryData data
         URI uri = URI.create(UUID.randomUUID().toString());

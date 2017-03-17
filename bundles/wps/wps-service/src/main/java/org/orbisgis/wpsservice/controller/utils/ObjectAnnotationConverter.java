@@ -68,9 +68,8 @@ public class ObjectAnnotationConverter {
      */
     public static BoundingBoxData annotationToObject(BoundingBoxAttribute boundingBoxAttribute, List<Format> formatList)
             throws MalformedScriptException {
-        String defaultCRS = boundingBoxAttribute.defaultCRS();
         String[] supportedCrs = boundingBoxAttribute.supportedCRS();
-        return new BoundingBoxData(formatList, defaultCRS, supportedCrs, boundingBoxAttribute.dimension());
+        return new BoundingBoxData(formatList, supportedCrs, boundingBoxAttribute.dimension());
     }
 
     /**

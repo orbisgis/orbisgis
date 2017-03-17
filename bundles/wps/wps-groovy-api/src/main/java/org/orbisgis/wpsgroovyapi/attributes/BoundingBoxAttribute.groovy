@@ -46,10 +46,6 @@ import java.lang.annotation.RetentionPolicy
  * Some simple applications are the definition of extents for a clipping operation or the definition of an
  * analysis region.
  *
- * The following fields must be defined (mandatory) :
- *  - defaultCRS : String
- *      Default CRS of the BoundingBox. Should be a string with the pattern : authority:code, like EPSG:2000.
- *
  * The following fields can be defined (optional) :
  *  - supportedCRS : String[]
  *      List of CRS supported by the BoundingBox data without the default one. Should be a string with the pattern :
@@ -62,9 +58,6 @@ import java.lang.annotation.RetentionPolicy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @interface BoundingBoxAttribute {
-
-    /** Default CRS of the BoundingBox. Should be a string with the pattern : authority:code, like EPSG:2000. */
-    String defaultCRS()
 
     /** List of CRS supported by the BoundingBox data without the default one. Should be a string with the pattern :
      *  authority:code, like EPSG:2000. */

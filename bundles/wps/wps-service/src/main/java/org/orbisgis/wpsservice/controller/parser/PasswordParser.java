@@ -81,7 +81,7 @@ public class PasswordParser implements Parser {
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException {
+    public OutputDescriptionType parseOutput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
         Password password = new Password();
         OutputDescriptionType output = new OutputDescriptionType();
         JAXBElement<Password> jaxbElement = new ObjectFactory().createPassword(password);

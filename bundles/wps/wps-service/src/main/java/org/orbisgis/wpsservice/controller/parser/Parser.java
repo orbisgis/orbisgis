@@ -68,7 +68,7 @@ public interface Parser {
      * @param processId The process identifier.
      * @return Parsed DataDescription.
      */
-    OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException;
+    OutputDescriptionType parseOutput(Field f, Object defaultValue, URI processId) throws MalformedScriptException;
 
     /**
      * Returns the groovy annotation associated to this parser.
