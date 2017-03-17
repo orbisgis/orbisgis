@@ -103,6 +103,7 @@ public class ActionDeploy  extends ActionBundle {
         }
         // If there is hidden dependency (needed & optional)
         // Ask user for validating additional download
+        boolean deployBundle = true;
         if(dependencyStr.length() != 0) {
             if (dependencyStr.length() > 0) {
                 resourcesNames.insert(0, ") ?\n");
@@ -111,20 +112,22 @@ public class ActionDeploy  extends ActionBundle {
             }
             if (DependencyMessageDialog.showModal(SwingUtilities.getWindowAncestor(frame),
                     I18N.tr("Dependencies downloading"), resourcesNames.toString(), dependencyStr.toString())
-                    .equals(DependencyMessageDialog.CHOICE.OK)) {
-
-                DeployBundleSwingWorker worker = new DeployBundleSwingWorker(resolver);
-                ServiceReference<ExecutorService> executorServiceReference = bundleContext.getServiceReference(ExecutorService.class);
-                ExecutorService executorService = null;
-                if(executorServiceReference != null){
-                    executorService = bundleContext.getService(executorServiceReference);
-                }
-                if(executorService != null){
-                    executorService.execute(worker);
-                }
-                else{
-                    worker.execute();
-                }
+                    .equals(DependencyMessageDialog.CHOICE.CANCEL)) {
+                deployBundle = false;
+            }
+        }
+        if(deployBundle){
+            DeployBundleSwingWorker worker = new DeployBundleSwingWorker(resolver);
+            ServiceReference<ExecutorService> executorServiceReference = bundleContext.getServiceReference(ExecutorService.class);
+            ExecutorService executorService = null;
+            if(executorServiceReference != null){
+                executorService = bundleContext.getService(executorServiceReference);
+            }
+            if(executorService != null){
+                executorService.execute(worker);
+            }
+            else{
+                worker.execute();
             }
         }
     }
