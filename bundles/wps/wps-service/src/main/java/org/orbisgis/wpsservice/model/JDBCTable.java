@@ -87,7 +87,7 @@ public class JDBCTable extends ComplexDataType {
      */
     protected JDBCTable(){
         super();
-        listJDBCTableField = null;
+        listJDBCTableField = new ArrayList<>();
     }
 
     /**

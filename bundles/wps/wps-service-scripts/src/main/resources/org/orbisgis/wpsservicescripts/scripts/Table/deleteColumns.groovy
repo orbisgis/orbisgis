@@ -46,7 +46,7 @@ def processing() {
 @JDBCTableInput(
         title = ["Table","en","Table","fr"],
         description = ["The table to edit.","en","La table à éditer.","fr"],
-        identifier = "orbisgis:wps:official:deleteColumns:tableName"
+        identifier = "tableName"
 )
 String tableName
 
@@ -59,8 +59,8 @@ String tableName
         title = ["Columns","en","Colonnes","fr"],
         description = ["The columns to remove names.","en",
                 "Le nom des colonnes à supprimer.","fr"],
-        jdbcTableReference = "orbisgis:wps:official:deleteColumns:tableName",
-        identifier = "orbisgis:wps:official:deleteColumns:columnNames"
+        jdbcTableReference = "tableName",
+        identifier = "columnNames"
 )
 String[] columnNames
 
@@ -71,6 +71,6 @@ String[] columnNames
                 "Message de sortie","fr"],
         description = ["The output message.","en",
                 "Le message de sortie.","fr"],
-        identifier = "orbisgis:wps:official:deleteColumns:literalOutput")
+        identifier = "literalOutput")
 String literalOutput
 
