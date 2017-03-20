@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.wpsservice.controller.execution;
+package org.orbisgis.wpsservice.controller.dataprocessing;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -44,6 +44,7 @@ import net.opengis.wps._2_0.DataDescriptionType;
 import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
+import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
 import org.orbisgis.wpsservice.model.DataType;
 import org.orbisgis.wpsservice.model.GeometryData;
 import org.slf4j.Logger;
@@ -52,7 +53,6 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
