@@ -45,8 +45,6 @@ import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.wpsservice.model.BoundingBoxData;
-import org.orbisgis.wpsservice.model.GeometryData;
-import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -58,11 +56,12 @@ import java.util.Map;
 
 /**
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
 public class BoundingBoxProcessing implements DataProcessing {
 
     /**Logger */
-    private Logger LOGGER = LoggerFactory.getLogger(BoundingBoxProcessing.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(BoundingBoxProcessing.class);
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(BoundingBoxProcessing.class);
 
@@ -96,9 +95,9 @@ public class BoundingBoxProcessing implements DataProcessing {
 
                 try {
                     if(wkt.length != 4){
-                        throw new ParseException("Only 2D bounding boxes are supported yet.");
+                        throw new ParseException(I18N.tr("Only 2D bounding boxes are supported yet."));
                     }
-                    String minX, minY, minZ, maxX, maxY, maxZ;
+                    String minX, minY, maxX, maxY;
                     minX = wkt[0];
                     minY = wkt[1];
                     maxX = wkt[2];

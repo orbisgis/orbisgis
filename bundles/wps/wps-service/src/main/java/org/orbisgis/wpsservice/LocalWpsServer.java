@@ -37,7 +37,6 @@
 
 package org.orbisgis.wpsservice;
 
-import net.opengis.ows._2.CodeType;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.DataType;
 
@@ -62,6 +61,8 @@ public interface LocalWpsServer extends WpsServer {
      * @param f  File object to add to the service.
      * @param iconName Icon file name associated to the script
      * @param isDefaultScript True if the scripts are default scripts (unremovable). False otherwise
+     * @param nodePath
+     * @return 
      */
     List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isDefaultScript, String nodePath);
 
@@ -101,6 +102,7 @@ public interface LocalWpsServer extends WpsServer {
      * Return the list of the field of a table.
      * @param tableName Name of the table.
      * @param dataTypes Type of the field accepted. If empty, accepts all the field.
+     * @param excludedTypes
      * @return The list of the field name.
      */
     List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes);

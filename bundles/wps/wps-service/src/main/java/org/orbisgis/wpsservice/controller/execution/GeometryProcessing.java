@@ -52,16 +52,16 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author Sylvain PALOMINOS
+ *  @author Erwan Bocher
  */
 public class GeometryProcessing implements DataProcessing {
 
     /**Logger */
-    private Logger LOGGER = LoggerFactory.getLogger(GeometryProcessing.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(GeometryProcessing.class);
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(GeometryProcessing.class);
 
@@ -90,7 +90,7 @@ public class GeometryProcessing implements DataProcessing {
                                 " into Geometry.", str));
                     }
                     else{
-                        LOGGER.error("Unable to parse the string {0} into Geometry.", str);
+                        LOGGER.error(I18N.tr("Unable to parse the string {0} into Geometry.", str));
                     }
                     dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
                     return dataMap;

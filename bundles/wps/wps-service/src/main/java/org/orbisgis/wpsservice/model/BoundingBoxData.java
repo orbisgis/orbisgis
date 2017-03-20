@@ -42,11 +42,14 @@ import net.opengis.wps._2_0.Format;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Object representing a bounding box.
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "BoundingBoxData",
@@ -66,6 +69,8 @@ public class BoundingBoxData extends ComplexDataType {
     /** Default value.*/
     @XmlTransient
     private String defaultValue;
+    
+    private static final I18n I18N = I18nFactory.getI18n(BoundingBoxData.class);
 
     /**
      * Main constructor.
@@ -87,16 +92,15 @@ public class BoundingBoxData extends ComplexDataType {
                 }
             }
             if (!isContained) {
-                throw new MalformedScriptException(BoundingBoxData.class, "supportedCrs", "should contains the " +
-                        "default CRS");
+                throw new MalformedScriptException(BoundingBoxData.class, "supportedCrs", I18N.tr("should contains the default CRS"));
             }
         }
         this.supportedCrs = supportedCrs;
         if(dimension != 2 && dimension != 3){
-            throw new MalformedScriptException(BoundingBoxData.class, "dimension", "dimension should be 2 or 3");
+            throw new MalformedScriptException(BoundingBoxData.class, "dimension",  I18N.tr("dimension should be 2 or 3"));
         }
         if(dimension == 3){
-            throw new MalformedScriptException(BoundingBoxData.class, "dimension", "3D Bounding Box is not supported yet.");
+            throw new MalformedScriptException(BoundingBoxData.class, "dimension",  I18N.tr("3D Bounding Box is not supported yet."));
         }
         this.dimension = dimension;
     }

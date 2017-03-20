@@ -57,8 +57,10 @@ public interface Parser {
     /**
      * Parse the given field as an input and returns the corresponding DataDescription.
      * @param f Field to parse.
+     * @param defaultValue
      * @param processId The process identifier.
      * @return Parsed DataDescription.
+     * @throws org.orbisgis.wpsservice.model.MalformedScriptException
      */
     InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) throws MalformedScriptException;
 
@@ -67,6 +69,7 @@ public interface Parser {
      * @param f Field to parse.
      * @param processId The process identifier.
      * @return Parsed DataDescription.
+     * @throws org.orbisgis.wpsservice.model.MalformedScriptException
      */
     OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException;
 

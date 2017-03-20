@@ -111,6 +111,7 @@ public class LocalWpsServerImpl
      * Initialization of the LocalWpsServiceImplementation required by OSGI.
      */
     @Activate
+    @Override
     public void init(){
         //Call the initialisation of the WpsServer
         super.init();
@@ -213,7 +214,8 @@ public class LocalWpsServerImpl
 
     /******************************************************************/
     /** Set and Unset methods to get services from OrbisGIS via OSGI **/
-    /******************************************************************/
+    /**
+     * @param coreWorkspace****************************************************************/
 
     @Reference
     public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
@@ -240,6 +242,7 @@ public class LocalWpsServerImpl
     }
 
     @Reference
+    @Override
     public void setExecutorService(ExecutorService executorService) {
         super.setExecutorService(executorService);
     }
