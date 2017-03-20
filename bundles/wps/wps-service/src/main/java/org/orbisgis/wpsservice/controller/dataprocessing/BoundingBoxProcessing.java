@@ -58,44 +58,26 @@ import java.util.Map;
 /**
  * @author Sylvain PALOMINOS
  */
-public class BoundingBoxProcessing implements DataProcessing {
+public class BoundingBoxProcessing {
 
-    /**Logger */
-    private Logger LOGGER = LoggerFactory.getLogger(BoundingBoxProcessing.class);
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(BoundingBoxProcessing.class);
 
-    @Override
-    public Class<? extends DataDescriptionType> getDataClass() {
-        return BoundingBoxData.class;
-    }
-
-    @Override
-    public Map<URI, Object> preProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap,
-                                           ProcessExecutionListener pel) {
-        //Check if it is an input
-        if(inputOrOutput instanceof InputDescriptionType) {
-            Map<URI, Object> map = new HashMap<>();
-            InputDescriptionType input = (InputDescriptionType) inputOrOutput;
-            //Check if the input is a GeometryData
-            if(input.getDataDescription().getValue() instanceof BoundingBoxData) {
-                String str = dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue())).toString();
+    public static Geometry stringToGeometry(String string) throws ParseException {
                 Geometry geometry;
-                String[] split = str.split(";");
+                String[] split = string.split(";");
                 String[] wkt;
                 String srid;
                 if(split[0].contains(":")){
-                    srid = str.split(";")[0].split(":")[1];
-                    wkt = str.split(";")[1].split(",");
+                    srid = string.split(";")[0].split(":")[1];
+                    wkt = string.split(";")[1].split(",");
                 }
                 else{
-                    srid = str.split(";")[1].split(":")[1];
-                    wkt = str.split(";")[0].split(",");
+                    srid = string.split(";")[1].split(":")[1];
+                    wkt = string.split(";")[0].split(",");
                 }
-
-                try {
                     if(wkt.length != 4){
-                        throw new ParseException("Only 2D bounding boxes are supported yet.");
+                        throw new ParseException(I18N.tr("Only 2D bounding boxes are supported yet."));
                     }
                     String minX, minY, minZ, maxX, maxY, maxZ;
                     minX = wkt[0];
@@ -110,47 +92,18 @@ public class BoundingBoxProcessing implements DataProcessing {
                             minX+" "+maxY+"," +
                             minX+" "+minY+"))");
                     geometry.setSRID(Integer.parseInt(srid));
-                } catch (ParseException e) {
-                    if(pel != null) {
-                        pel.appendLog(ProcessExecutionListener.LogType.ERROR, I18N.tr("Unable to parse the string {0}" +
-                                " into Geometry.\nCause : {1}", str, e.getMessage()));
-                    }
-                    else{
-                        LOGGER.error(I18N.tr("Unable to parse the string {0} into Geometry.\nCause : {1}", str, e.getMessage()));
-                    }
-                    dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
-                    return map;
-                }
-                dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), geometry);
-            }
-            map.put(URI.create(inputOrOutput.getIdentifier().getValue()), null);
-            return map;
-        }
         return null;
     }
 
-    @Override
-    public void postProcessData(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Map<URI, Object> stash,
-                                ProcessExecutionListener pel) {
-        //Check if it is an output
-        if(inputOrOutput instanceof OutputDescriptionType) {
-            OutputDescriptionType output = (OutputDescriptionType) inputOrOutput;
-            //Check if the input is a GeometryData
-            if(output.getDataDescription().getValue() instanceof BoundingBoxData) {
-                BoundingBoxData boundingBoxData = (BoundingBoxData) output.getDataDescription().getValue();
-                Object obj = dataMap.get(URI.create(inputOrOutput.getIdentifier().getValue()));
-                if(obj instanceof Geometry) {
-                    Geometry geometry = (Geometry) obj;
-                    String wkt = new WKTWriter(boundingBoxData.getDimension()).write(geometry);
-                    //Update the WKT string to have this pattern : ":SRID;minX,minY,maxX,maxY"
-                    wkt = wkt.replace("POLYGON ((", "");
-                    wkt = wkt.replace("))", "");
-                    String[] split = wkt.split(", ");
-                    wkt = split[0].replaceAll(" ", ",") + "," + split[2].replaceAll(" ", ",");
-                    String str = ":" + geometry.getSRID() + ";" + wkt;
-                    dataMap.put(URI.create(inputOrOutput.getIdentifier().getValue()), str);
-                }
-            }
-        }
+    public static String geometryToString(Geometry geometry, String SRID) {
+        String wkt = new WKTWriter().write(geometry);
+        //Update the WKT string to have this pattern : ":SRID;minX,minY,maxX,maxY"
+        wkt = wkt.replace("POLYGON ((", "");
+        wkt = wkt.replace("))", "");
+        String[] split = wkt.split(", ");
+        wkt = split[0].replaceAll(" ", ",") + "," + split[2].replaceAll(" ", ",");
+        String str = SRID + ":" + geometry.getSRID() + ";" + wkt;
+        return str;
     }
+
 }

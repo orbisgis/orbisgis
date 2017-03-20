@@ -39,7 +39,6 @@ package org.orbisgis.wpsservice.controller.execution;
 import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.wpsservice.controller.dataprocessing.DataProcessingManager;
 import org.orbisgis.wpsservice.controller.utils.Job;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
