@@ -43,19 +43,8 @@ import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.wpsclient.api.utils.ProcessExecutionType;
 import org.orbisgis.wpsclient.impl.WpsClientImpl;
-import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.swing.Timer;
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URI;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
