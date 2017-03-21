@@ -63,6 +63,9 @@ public class BoundingBoxData extends ComplexDataType {
     /** Dimension of the bounding box.*/
     @XmlAttribute(name = "dimension", namespace = "http://orbisgis.org")
     private int dimension;
+    /** Default value.*/
+    @XmlTransient
+    private String defaultValue;
 
     /**
      * Main constructor.
@@ -106,6 +109,22 @@ public class BoundingBoxData extends ComplexDataType {
     }
 
     /**
+     * Sets the default value.
+     * @param defaultValue The default value.
+     */
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    /**
+     * Returns the default value.
+     * @return The default value.
+     */
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    /**
      * Sets the default CRS.
      * @param defaultCrs The default CRS.
      */
@@ -125,7 +144,7 @@ public class BoundingBoxData extends ComplexDataType {
      * Sets the list of the supported CRS.
      * @param supportedCrs The list of the supported CRS.
      */
-    public void getSupportedCrs(String[] supportedCrs) {
+    public void setSupportedCrs(String[] supportedCrs) {
         this.supportedCrs = supportedCrs;
     }
 

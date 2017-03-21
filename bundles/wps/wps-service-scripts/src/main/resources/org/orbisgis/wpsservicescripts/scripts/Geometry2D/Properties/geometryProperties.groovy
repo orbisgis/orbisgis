@@ -110,7 +110,7 @@ def processing() {
                 "The spatial data source to compute the geometry properties.","en",
                 "La source de données spatiales pour le calcul des propriétés géométriques.","fr"],
         dataTypes = ["GEOMETRY"],
-        identifier = "orbisgis:wps:official:geometryProperties:inputJDBCTable")
+        identifier = "inputJDBCTable")
 String inputJDBCTable
 
 /**********************/
@@ -125,8 +125,8 @@ String inputJDBCTable
         description = [
                 "The geometric field of the data source.","en",
                 "Le champ géométrique de la source de données.","fr"],
-        jdbcTableReference = "orbisgis:wps:official:geometryProperties:inputJDBCTable",
-        identifier = "orbisgis:wps:official:geometryProperties:geometricField",
+        jdbcTableReference = "inputJDBCTable",
+        identifier = "geometricField",
         dataTypes = ["GEOMETRY"])
 String[] geometricField
 
@@ -139,8 +139,8 @@ String[] geometricField
                 "A field used as an identifier.","en",
                 "Le champ utilisé comme identifiant.","fr"],
 	    excludedTypes=["GEOMETRY"],
-        jdbcTableReference = "orbisgis:wps:official:geometryProperties:inputJDBCTable",
-        identifier = "orbisgis:wps:official:geometryProperties:idField")
+        jdbcTableReference = "inputJDBCTable",
+        identifier = "idField")
 String[] idField
 
 @EnumerationInput(
@@ -154,7 +154,7 @@ String[] idField
         names = ["Geometry type,SRID,Length,Perimeter,Area,Geometry dimension,Coordinate dimension,Number of geometries,Number of points,Is simple,Is valid,Is empty","en",
                 "Type de géométrie,SRID,Longueur,Périmètre,Surface,Dimension de la géométrie,Dimension des coordonnées,Nombre de géométries,Nombre de points,Est simple,Est valide,Est vide","fr"],
         multiSelection = true,
-        identifier = "orbisgis:wps:official:geometryProperties:operations")
+        identifier = "operations")
 String[] operations = ["geomtype"]
 
 @LiteralDataInput(
@@ -173,7 +173,7 @@ Boolean dropTable
         description = [
                 "Name of the table containing the result of the process.","en",
                 "Nom de la table contenant les résultats du traitement.","fr"],
-        identifier = "orbisgis:wps:official:geometryProperties:outputTableName")
+        identifier = "outputTableName")
 String outputTableName
 
 
@@ -199,6 +199,6 @@ Boolean dropInputTable
         description = [
                 "The output message.","en",
                 "Le message de sortie.","fr"],
-        identifier = "orbisgis:wps:official:geometryProperties:literalOutput")
+        identifier = "literalOutput")
 String literalOutput
 

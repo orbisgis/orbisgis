@@ -105,7 +105,7 @@ public class JDBCTableField extends ComplexDataType {
         super();
         dataTypeList = null;
         excludedTypeList = null;
-        jdbcTableFieldValueList = null;
+        jdbcTableFieldValueList = new ArrayList<>();
         jdbcTableIdentifier = null;
     }
 

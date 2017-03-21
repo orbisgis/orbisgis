@@ -57,17 +57,10 @@ import java.util.List;
 
 public class ProcessParser {
 
-    public ProcessOffering parseProcess(List<InputDescriptionType> inputList,
-                                        List<OutputDescriptionType> outputList,
-                                        Method processingMethod,
-                                        URI processURI) throws MalformedScriptException {
+    public ProcessOffering parseProcess(Method processingMethod, URI processURI) throws MalformedScriptException {
         ProcessDescriptionType process = new ProcessDescriptionType();
         ObjectAnnotationConverter.annotationToObject(processingMethod.getAnnotation(DescriptionTypeAttribute.class),
-                process);
-        process.getOutput().clear();
-        process.getOutput().addAll(outputList);
-        process.getInput().clear();
-        process.getInput().addAll(inputList);
+                process, "");
 
         if(process.getIdentifier() == null){
             CodeType codeType = new CodeType();

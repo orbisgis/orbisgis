@@ -409,13 +409,14 @@ public class LocalWpsServerImpl
                 if (!dataTypes.isEmpty()) {
                     for (DataType dataType : dataTypes) {
                         String type = result.getObject(6).toString();
-                        if(type.equals("GEOMETRY")){
-                            if (DataType.testGeometryType(dataType, SFSUtilities.getGeometryType(connection, tablelocation, result.getObject(4).toString()))) {
+                        if(type.equalsIgnoreCase("GEOMETRY")){
+                            if (DataType.testGeometryType(dataType, SFSUtilities.getGeometryType(connection,
+                                    tablelocation, result.getObject(4).toString().toUpperCase()))) {
                                 fieldList.add(result.getObject(4).toString());
                             }
                         }
                         else {
-                            if (DataType.testDBType(dataType, result.getObject(6).toString())) {
+                            if (DataType.testDBType(dataType, result.getObject(6).toString().toUpperCase())) {
                                 fieldList.add(result.getObject(4).toString());
                             }
                         }

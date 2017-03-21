@@ -51,7 +51,7 @@ def processing() {
                 "Table","fr"],
         description = ["The table to edit.","en",
                 "La table à éditer.","fr"],
-        identifier = "orbisgis:wps:official:deleteRows:tableName"
+        identifier = "tableName"
 )
 String tableName
 
@@ -65,8 +65,8 @@ String tableName
                 "Champ clef primaire","fr"],
         description = ["The primary key field.","en",
                 "Le champ de la clef primaire.","fr"],
-        jdbcTableReference = "orbisgis:wps:official:deleteRows:tableName",
-        identifier = "orbisgis:wps:official:deleteRows:pkField"
+        jdbcTableReference = "tableName",
+        identifier = "pkField"
 )
 String[] pkField
 
@@ -76,9 +76,9 @@ String[] pkField
                 "Liste clef primaire","fr"],
         description = ["The array of the primary keys of the rows to remove.","en",
                 "La liste des clefs primaires dont les lignes sont à supprimer.","fr"],
-        jdbcTableFieldReference = "orbisgis:wps:official:deleteRows:pkField",
+        jdbcTableFieldReference = "pkField",
         multiSelection = true,
-        identifier = "orbisgis:wps:official:deleteRows:pkToRemove"
+        identifier = "pkToRemove"
 )
 String[] pkToRemove
 
@@ -88,6 +88,6 @@ String[] pkToRemove
                 "Message de sortie","fr"],
         description = ["The output message.","en",
                 "Le message de sortie.","fr"],
-        identifier = "orbisgis:wps:official:deleteRows:literalOutput")
+        identifier = "literalOutput")
 String literalOutput
 

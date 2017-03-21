@@ -4,5 +4,5 @@
     <wps:Input id="orbisgis:test:enumeration:input">
         <wps:Data mimeType="text/plain" encoding="simple">value1</wps:Data>
     </wps:Input>
-    <wps:Output id="orbisgis:test:enumeration:input" transmission="value" mimeType="text/plain" encoding="simple"/>
+    <wps:Output id="orbisgis:test:enumeration:output" transmission="value" mimeType="text/plain" encoding="simple"/>
 </wps:Execute>
