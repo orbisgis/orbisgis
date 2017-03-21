@@ -38,8 +38,6 @@
 package org.orbisgis.wpsservice.controller.parser;
 
 import net.opengis.ows._2.CodeType;
-import net.opengis.wps._2_0.InputDescriptionType;
-import net.opengis.wps._2_0.OutputDescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
 import net.opengis.wps._2_0.ProcessOffering;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
@@ -49,7 +47,6 @@ import org.orbisgis.wpsservice.model.MalformedScriptException;
 
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.List;
 
 /**
  * @author Sylvain PALOMINOS

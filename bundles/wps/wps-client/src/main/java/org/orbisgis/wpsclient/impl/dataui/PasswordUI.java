@@ -69,6 +69,7 @@ public class PasswordUI implements DataUI {
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
 
+    @Override
     public void setWpsClient(WpsClientImpl wpsClient){
         this.wpsClient = wpsClient;
     }

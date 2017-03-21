@@ -109,6 +109,7 @@ public class JDBCTable extends ComplexDataType {
     /**
      * Sets the list of types that should be contained by the JDBCTable.
      * @param dataTypeList List of DataType.
+     * @throws org.orbisgis.wpsservice.model.MalformedScriptException
      */
     public void setDataTypeList(List<DataType> dataTypeList) throws MalformedScriptException {
         for(DataType dataType : dataTypeList){
@@ -133,6 +134,7 @@ public class JDBCTable extends ComplexDataType {
     /**
      * Sets the list of excluded type for the JDBCTable.
      * @param excludedTypeList List of excluded DataType.
+     * @throws org.orbisgis.wpsservice.model.MalformedScriptException
      */
     public void setExcludedTypeList(List<DataType> excludedTypeList) throws MalformedScriptException {
         for(DataType excludedType : excludedTypeList){
