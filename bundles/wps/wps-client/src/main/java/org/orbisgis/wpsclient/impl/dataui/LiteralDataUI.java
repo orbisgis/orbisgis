@@ -80,7 +80,6 @@ import java.util.Map;
  *
  * @author Sylvain PALOMINOS
  **/
-
 public class LiteralDataUI implements DataUI {
 
     /** Size constants **/
