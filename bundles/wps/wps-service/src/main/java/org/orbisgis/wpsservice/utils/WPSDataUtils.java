@@ -1,6 +1,6 @@
 /**
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
- * OrbisGIS is developed by the GIS group of the DECIDE team of the 
+ * OrbisGIS is developed by the GIS group of the DECIDE team of the
  * Lab-STICC CNRS laboratory, see <http://www.lab-sticc.fr/>.
  *
  * The GIS group of the DECIDE team is located at :
@@ -10,7 +10,7 @@
  * UNIVERSITÉ DE BRETAGNE-SUD
  * Institut Universitaire de Technologie de Vannes
  * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
- * 
+ *
  * OrbisGIS is distributed under GPL 3 license.
  *
  * Copyright (C) 2007-2014 CNRS (IRSTV FR CNRS 2488)
@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.wpsservice.controller.dataprocessing;
+package org.orbisgis.wpsservice.utils;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -44,14 +44,15 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * Utils class containing methods to change a String representation of a BoundingBox into a valid geometry and reverse.
+ * Class containing methods used to manipulate data for the WPS scripts.
  *
  * @author Sylvain PALOMINOS
  */
-public class BoundingBoxProcessing {
+public class WPSDataUtils {
+
 
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(BoundingBoxProcessing.class);
+    private static final I18n I18N = I18nFactory.getI18n(WPSDataUtils.class);
 
     /**
      * Convert a BoundingBox string representation into a JTS geometry
@@ -59,7 +60,7 @@ public class BoundingBoxProcessing {
      * @return A JTS geometry.
      * @throws ParseException
      */
-    public static Geometry stringToGeometry(String string) throws ParseException {
+    public static Geometry parseStringToBoundingBox(String string) throws ParseException {
         Geometry geometry;
         String[] split = string.split(";");
         String[] wkt;
@@ -96,7 +97,7 @@ public class BoundingBoxProcessing {
      * @param geometry BoundingBox JTS Geometry to convert.
      * @return The BoundingBox string representation.
      */
-    public static String geometryToString(Geometry geometry) {
+    public static String parseBoundingBoxToString(Geometry geometry) {
         String wkt = new WKTWriter().write(geometry);
         //Update the WKT string to have this pattern : ":SRID;minX,minY,maxX,maxY"
         wkt = wkt.replace("POLYGON ((", "");
@@ -107,4 +108,25 @@ public class BoundingBoxProcessing {
         return str;
     }
 
+
+    /**
+     * Convert a GeometryData string representation into a JTS geometry
+     * @param string Geometry string representation.
+     * @return A JTS geometry.
+     * @throws ParseException
+     */
+    public static Geometry parseStringToGeometry(String string) throws ParseException {
+        Geometry geometry = new WKTReader().read(string);
+        return geometry;
+    }
+
+    /**
+     * Convert a JTS geometry into its string representation.
+     * @param geometry Jts Geometry to convert.
+     * @return The geometry string representation.
+     */
+    public static String parseGeometryToString(Geometry geometry) {
+        String wkt = new WKTWriter().write(geometry);
+        return wkt;
+    }
 }

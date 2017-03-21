@@ -37,7 +37,7 @@
 package org.orbisgis.wpsservice.controller.utils;
 
 import net.opengis.wps._2_0.ProcessDescriptionType;
-import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.orbisgis.wpsservice.execution.ProcessExecutionListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

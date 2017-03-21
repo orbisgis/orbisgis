@@ -34,9 +34,8 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.wpsservice.controller.execution;
+package org.orbisgis.wpsservice.execution;
 
-import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.wpsservice.controller.utils.Job;

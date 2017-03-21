@@ -34,15 +34,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.wpsservice.controller.execution;
+package org.orbisgis.wpsservice.utils;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTWriter;
 import org.junit.Assert;
 import org.junit.Test;
-import org.orbisgis.wpsservice.controller.dataprocessing.BoundingBoxProcessing;
-import org.orbisgis.wpsservice.controller.dataprocessing.GeometryProcessing;
 
 /**
  *
@@ -60,8 +58,10 @@ public class DataProcessingTest {
     public void testBoundingBoxProcessing() {
         Geometry geometry = null;
         try {
-            geometry = BoundingBoxProcessing.stringToGeometry("EPSG:4326;0,0,1,1");
+            geometry = WPSDataUtils.parseStringToBoundingBox("EPSG:4326;0,0,1,1");
         } catch (ParseException ignored) {}
+        Assert.assertNotNull("The bounding box geometry should not be null.",
+                geometry);
         Assert.assertEquals("The bounding box geometry dimension should be 2.",
                 2, geometry.getDimension());
         Assert.assertEquals("The bounding box geometry SRID should be 4326.",
@@ -69,7 +69,7 @@ public class DataProcessingTest {
         Assert.assertEquals("The bounding box geometry wasn't the one expected.",
                 "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", wktWriter.write(geometry));
 
-        String str = BoundingBoxProcessing.geometryToString(geometry);
+        String str = WPSDataUtils.parseBoundingBoxToString(geometry);
         Assert.assertEquals("The bounding box geometry wasn't the one expected.",
                 ":4326;0,0,1,1", str);
     }
@@ -79,7 +79,7 @@ public class DataProcessingTest {
      */
     @Test(expected = ParseException.class)
     public void test3DBoundingBoxProcessing() throws ParseException {
-        BoundingBoxProcessing.stringToGeometry("EPSG:4326;0,0,0,1,1,1");
+        WPSDataUtils.parseStringToBoundingBox("EPSG:4326;0,0,0,1,1,1");
     }
 
     /**
@@ -90,10 +90,10 @@ public class DataProcessingTest {
     public void testGeometryProcessing() {
         Geometry geometry = null;
         try {
-            geometry = GeometryProcessing.stringToGeometry("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))");
+            geometry = WPSDataUtils.parseStringToGeometry("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))");
         } catch (ParseException ignored) {}
         Assert.assertNotNull("The geometry get from the GeometryProcessing should not be null", geometry);
-        String string = GeometryProcessing.geometryToString(geometry);
+        String string = WPSDataUtils.parseGeometryToString(geometry);
         Assert.assertEquals("The geometry wasn't the one expected.",
                 "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", string);
     }

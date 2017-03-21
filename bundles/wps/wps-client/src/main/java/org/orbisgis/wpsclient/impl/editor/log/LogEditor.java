@@ -46,7 +46,7 @@ import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.wpsclient.impl.WpsClientImpl;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.impl.utils.Job;
-import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.orbisgis.wpsservice.execution.ProcessExecutionListener;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
