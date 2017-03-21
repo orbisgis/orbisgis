@@ -44,8 +44,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.osgi.framework.BundleContext;
@@ -61,6 +65,7 @@ public class ActionBundleFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger("gui." + ActionBundleFactory.class);
     private Map<String,ImageIcon> buttonIcons = new HashMap<String, ImageIcon>();
     private final boolean warnUser;
+    private ExecutorService executorService = null;
     private ImageIcon getIcon(String iconName) {
         ImageIcon icon = buttonIcons.get(iconName);
         if(icon==null) {
@@ -78,10 +83,11 @@ public class ActionBundleFactory {
     private Component frame;
     private BundleContext bundleContext;
 
-    public ActionBundleFactory(BundleContext bundleContext,Component frame, boolean warnUser) {
+    public ActionBundleFactory(BundleContext bundleContext, Component frame, boolean warnUser, ExecutorService executorService) {
         this.bundleContext = bundleContext;
         this.frame = frame;
         this.warnUser =warnUser;
+        this.executorService = executorService;
     }
 
     public List<Action> create(final BundleItem bundleItem) {
@@ -106,11 +112,13 @@ public class ActionBundleFactory {
                     .setActionListener(EventHandler.create(ActionListener.class, bundleItem.getBundle(), "uninstall")));
         }
         if(bundleItem.isDeployReady()) {
-            actions.add(new ActionDeploy(I18N.tr("Download"),I18N.tr("Download the selected plugin"),false,bundleItem.getObrResource(),bundleContext,frame,getIcon("download"), warnUser));
+            actions.add(new ActionDeploy(I18N.tr("Download"),I18N.tr("Download the selected plugin"),false,
+                    bundleItem.getObrResource(),bundleContext,frame,getIcon("download"), warnUser, executorService));
         }
         if(!bundleItem.isFragment()){
         if(bundleItem.isDeployAndStartReady()) {
-            actions.add(new ActionDeploy(I18N.tr("Download & Start"),I18N.tr("Download the selected plugin and start it"),true,bundleItem.getObrResource(),bundleContext,frame,getIcon("download_and_start"), warnUser));
+            actions.add(new ActionDeploy(I18N.tr("Download & Start"),I18N.tr("Download the selected plugin and start it"),
+                    true,bundleItem.getObrResource(),bundleContext,frame,getIcon("download_and_start"), warnUser, executorService));
         }
         }
         return actions;

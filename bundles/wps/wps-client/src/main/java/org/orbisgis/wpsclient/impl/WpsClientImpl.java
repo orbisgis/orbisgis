@@ -53,6 +53,7 @@ import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditorDockable;
+import org.orbisgis.sif.edition.EditorFactory;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.orbisgis.wpsclient.api.WpsClient;
@@ -181,8 +182,6 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
         jobStateListenerList = new ArrayList<>();
         jobMap = new HashMap<>();
         refreshAvailableScripts();
-
-        editorManager.addEditorFactory(new ProcessEditorFactory(editorManager, this));
     }
 
     @Deactivate

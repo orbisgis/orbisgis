@@ -38,7 +38,10 @@ package org.orbisgis.wpsclient.impl.editor.process;
 
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.edition.*;
+import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.orbisgis.wpsclient.impl.WpsClientImpl;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -52,6 +55,7 @@ import java.util.HashMap;
  *
  *  @author Sylvain PALOMINOS
  */
+@Component(service = EditorFactory.class, immediate = true)
 public class ProcessEditorFactory implements EditorFactory {
     public static final String FACTORY_ID = "ProcessEditorFactory";
     private static final Logger LOGGER = LoggerFactory.getLogger("gui." + ProcessEditorFactory.class);
@@ -59,9 +63,22 @@ public class ProcessEditorFactory implements EditorFactory {
     private WpsClientImpl wpsClient = null;
     private EditorManager editorManager = null;
 
-    public ProcessEditorFactory (EditorManager editorManager, WpsClientImpl wpsClient){
+    @Reference()
+    public void setEditorManager(EditorManager editorManager) {
         this.editorManager = editorManager;
-        this.wpsClient = wpsClient;
+    }
+
+    public void unsetEditorManager(EditorManager editorManager) {
+        this.editorManager = null;
+    }
+
+    @Reference()
+    public void setInternalWpsClient(InternalWpsClient internalWpsClient) {
+        this.wpsClient = (WpsClientImpl)internalWpsClient;
+    }
+
+    public void unsetInternalWpsClient(InternalWpsClient internalWpsClient) {
+        this.wpsClient = (WpsClientImpl)internalWpsClient;
     }
 
     @Override
