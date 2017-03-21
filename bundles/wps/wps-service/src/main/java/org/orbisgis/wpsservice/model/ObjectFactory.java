@@ -82,6 +82,8 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link JDBCTable }{@code >}}
      *
+     * @param JDBCTable
+     * @return 
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
             name="JDBCTable",
@@ -94,12 +96,15 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link JDBCTableField }
      *
+     * @return 
      */
     public JDBCTableField createJDBCTableField() { return new JDBCTableField(); }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link JDBCTableField }{@code >}}
      *
+     * @param jdbcTableField
+     * @return 
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
             name="JDBCTableField",
@@ -112,12 +117,15 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link JDBCTableFieldValue }
      *
+     * @return 
      */
     public JDBCTableFieldValue createJDBCTableFieldValue() { return new JDBCTableFieldValue(); }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link JDBCTableFieldValue }{@code >}}
      *
+     * @param jdbcTableFieldValue
+     * @return 
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
             name="JDBCTableFieldValue",
@@ -130,12 +138,15 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link Enumeration }
      *
+     * @return 
      */
     public Enumeration createEnumeration() { return new Enumeration(); }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Enumeration }{@code >}}
      *
+     * @param enumeration
+     * @return 
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
             name="Enumeration",
@@ -148,12 +159,15 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link GeometryData }
      *
+     * @return 
      */
     public GeometryData createGeometryData() { return new GeometryData(); }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GeometryData }{@code >}}
      *
+     * @param geometryData
+     * @return 
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
             name="Geometry",
@@ -166,12 +180,15 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link RawData }
      *
+     * @return 
      */
     public RawData createRawData() { return new RawData(); }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link RawData }{@code >}}
      *
+     * @param rawData
+     * @return 
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
             name="RawData",
@@ -184,12 +201,15 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link Password }
      *
+     * @return 
      */
     public Password createPassword() { return new Password(); }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link Password }{@code >}}
      *
+     * @param password
+     * @return 
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
             name="Password",
@@ -202,12 +222,15 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link BoundingBoxData }
      *
+     * @return 
      */
     public BoundingBoxData createBoundingBoxData() { return new BoundingBoxData(); }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link BoundingBoxData }{@code >}}
      *
+     * @param boundingBoxData
+     * @return 
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
             name="BoundingBoxData",
@@ -220,12 +243,15 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link TranslatableString }
      *
+     * @return 
      */
     public TranslatableString createTranslatableString() { return new TranslatableString(); }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link TranslatableString }{@code >}}
      *
+     * @param translatableString
+     * @return 
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
             name="TranslatableString")

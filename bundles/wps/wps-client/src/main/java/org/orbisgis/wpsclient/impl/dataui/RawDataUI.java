@@ -325,7 +325,6 @@ public class RawDataUI implements DataUI {
             String name = document.getText(0, document.getLength());
             boolean isOptional = (boolean) document.getProperty(IS_OPTIONAL_PROPERTY);
             String[] defaultValue = (String[]) document.getProperty(DEFAULT_VALUE_PROPERTY);
-            RawData rawData = (RawData) document.getProperty(RAW_DATA_PROPERTY);
             if(name.isEmpty() && !isOptional && defaultValue.length != 0){
                 final JTextField jtf = (JTextField) document.getProperty(TEXT_FIELD_PROPERTY);
                 String text = "";
