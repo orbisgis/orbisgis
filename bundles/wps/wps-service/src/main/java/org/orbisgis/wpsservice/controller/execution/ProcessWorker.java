@@ -65,8 +65,6 @@ public class ProcessWorker extends SwingWorkerPM {
     private Job job;
     /** Process to execute */
     private ProcessIdentifier processIdentifier;
-    /** The class managing the DataProcessing classes */
-    private DataProcessingManager dataProcessingManager;
     /** The process manager */
     private ProcessManager processManager;
     /** Map containing the process execution output/input data and URI */
@@ -80,7 +78,6 @@ public class ProcessWorker extends SwingWorkerPM {
 
     public ProcessWorker(Job job,
                          ProcessIdentifier processIdentifier,
-                         DataProcessingManager dataProcessingManager,
                          ProcessManager processManager,
                          Map<URI, Object> dataMap,
                          Map<String, Object> propertiesMap){
@@ -88,7 +85,6 @@ public class ProcessWorker extends SwingWorkerPM {
         this.job = job;
         this.addPropertyChangeListener(Job.PROGRESS_PROPERTY, this.job);
         this.processIdentifier = processIdentifier;
-        this.dataProcessingManager = dataProcessingManager;
         this.processManager = processManager;
         this.dataMap = dataMap;
         this.propertiesMap = propertiesMap;
@@ -123,9 +119,6 @@ public class ProcessWorker extends SwingWorkerPM {
             if(job != null) {
                 job.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Pre-processing."));
             }
-            for(DescriptionType inputOrOutput : process.getInput()){
-                stash.putAll(dataProcessingManager.preProcessData(inputOrOutput, dataMap, job));
-            }
 
             //Execute the process and retrieve the groovy object.
             if(job != null) {
@@ -138,12 +131,6 @@ public class ProcessWorker extends SwingWorkerPM {
             //Post-process the data
             if(job != null) {
                 job.appendLog(ProcessExecutionListener.LogType.INFO, I18N.tr("Post-processing."));
-            }
-            for(DescriptionType inputOrOutput : process.getOutput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, job);
-            }
-            for(DescriptionType inputOrOutput : process.getInput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, job);
             }
 
             //Print in the log the process execution end
@@ -162,9 +149,6 @@ public class ProcessWorker extends SwingWorkerPM {
             else{
                 LOGGER.error(I18N.tr("Error on execution the WPS  process {0}.\nCause : {1}.",
                         process.getTitle(),e.getMessage()));
-            }
-            for(DescriptionType inputOrOutput : process.getInput()){
-                dataProcessingManager.postProcessData(inputOrOutput, dataMap, stash, job);
             }
         }
         return null;

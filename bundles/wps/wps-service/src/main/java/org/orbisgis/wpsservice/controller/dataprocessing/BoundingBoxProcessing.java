@@ -40,20 +40,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
-import net.opengis.wps._2_0.DataDescriptionType;
-import net.opengis.wps._2_0.DescriptionType;
-import net.opengis.wps._2_0.InputDescriptionType;
-import net.opengis.wps._2_0.OutputDescriptionType;
-import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
-import org.orbisgis.wpsservice.model.BoundingBoxData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Sylvain PALOMINOS
@@ -64,45 +52,45 @@ public class BoundingBoxProcessing {
     private static final I18n I18N = I18nFactory.getI18n(BoundingBoxProcessing.class);
 
     public static Geometry stringToGeometry(String string) throws ParseException {
-                Geometry geometry;
-                String[] split = string.split(";");
-                String[] wkt;
-                String srid;
-                if(split[0].contains(":")){
-                    srid = string.split(";")[0].split(":")[1];
-                    wkt = string.split(";")[1].split(",");
-                }
-                else{
-                    srid = string.split(";")[1].split(":")[1];
-                    wkt = string.split(";")[0].split(",");
-                }
-                    if(wkt.length != 4){
-                        throw new ParseException(I18N.tr("Only 2D bounding boxes are supported yet."));
-                    }
-                    String minX, minY, minZ, maxX, maxY, maxZ;
-                    minX = wkt[0];
-                    minY = wkt[1];
-                    maxX = wkt[2];
-                    maxY = wkt[3];
-                    //Read the string to retrieve the Geometry
-                    geometry = new WKTReader().read("POLYGON((" +
-                            minX+" "+minY+"," +
-                            maxX+" "+minY+"," +
-                            maxX+" "+maxY+"," +
-                            minX+" "+maxY+"," +
-                            minX+" "+minY+"))");
-                    geometry.setSRID(Integer.parseInt(srid));
-        return null;
+        Geometry geometry;
+        String[] split = string.split(";");
+        String[] wkt;
+        String srid;
+        if(split[0].contains(":")){
+            srid = string.split(";")[0].split(":")[1];
+            wkt = string.split(";")[1].split(",");
+        }
+        else{
+            srid = string.split(";")[1].split(":")[1];
+            wkt = string.split(";")[0].split(",");
+        }
+        if(wkt.length != 4){
+            throw new ParseException(I18N.tr("Only 2D bounding boxes are supported yet."));
+        }
+        String minX, minY, minZ, maxX, maxY, maxZ;
+        minX = wkt[0];
+        minY = wkt[1];
+        maxX = wkt[2];
+        maxY = wkt[3];
+        //Read the string to retrieve the Geometry
+        geometry = new WKTReader().read("POLYGON((" +
+                minX+" "+minY+"," +
+                maxX+" "+minY+"," +
+                maxX+" "+maxY+"," +
+                minX+" "+maxY+"," +
+                minX+" "+minY+"))");
+        geometry.setSRID(Integer.parseInt(srid));
+        return geometry;
     }
 
-    public static String geometryToString(Geometry geometry, String SRID) {
+    public static String geometryToString(Geometry geometry) {
         String wkt = new WKTWriter().write(geometry);
         //Update the WKT string to have this pattern : ":SRID;minX,minY,maxX,maxY"
         wkt = wkt.replace("POLYGON ((", "");
         wkt = wkt.replace("))", "");
         String[] split = wkt.split(", ");
         wkt = split[0].replaceAll(" ", ",") + "," + split[2].replaceAll(" ", ",");
-        String str = SRID + ":" + geometry.getSRID() + ";" + wkt;
+        String str = ":" + geometry.getSRID() + ";" + wkt;
         return str;
     }
 

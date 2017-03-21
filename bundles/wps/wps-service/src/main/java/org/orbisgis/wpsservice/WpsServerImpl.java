@@ -86,8 +86,6 @@ public class WpsServerImpl implements WpsServer {
     private DataSourceService dataSourceService;
     /** Map containing the WPS Jobs and their UUID */
     private Map<UUID, Job> jobMap;
-    /** Class managing the DataProcessing classes */
-    private DataProcessingManager dataProcessingManager;
     /** ExecutorService of OrbisGIS */
     private ExecutorService executorService;
     /** Database connected to the WPS server */
@@ -116,7 +114,6 @@ public class WpsServerImpl implements WpsServer {
      * Initialization of the WpsServiceImpl.
      */
     public void init(){
-        dataProcessingManager = new DataProcessingManager();
         jobMap = new HashMap<>();
         propertiesMap = new HashMap<>();
         //Initialisation of the wps service itself
@@ -402,7 +399,6 @@ public class WpsServerImpl implements WpsServer {
         //Process execution in new thread
         ProcessWorker worker = new ProcessWorker(job,
                 processIdentifier,
-                dataProcessingManager,
                 processManager,
                 dataMap,
                 propertiesMap);
@@ -613,9 +609,6 @@ public class WpsServerImpl implements WpsServer {
 
     protected void setDataSourceService(DataSourceService dataSourceService){
         this.dataSourceService = dataSourceService;
-    }
-    protected void setDataProcessingManager(DataProcessingManager dataProcessingManager){
-        this.dataProcessingManager = dataProcessingManager;
     }
 
     protected void setExecutorService(ExecutorService executorService){

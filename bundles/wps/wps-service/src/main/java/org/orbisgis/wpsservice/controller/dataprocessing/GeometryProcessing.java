@@ -40,20 +40,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
-import net.opengis.wps._2_0.DataDescriptionType;
-import net.opengis.wps._2_0.DescriptionType;
-import net.opengis.wps._2_0.InputDescriptionType;
-import net.opengis.wps._2_0.OutputDescriptionType;
-import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
-import org.orbisgis.wpsservice.model.DataType;
-import org.orbisgis.wpsservice.model.GeometryData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
-
-import java.net.URI;
-import java.util.Map;
 
 /**
  * @author Sylvain PALOMINOS
