@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -82,15 +83,11 @@ public class ActionBundleFactory {
     private Component frame;
     private BundleContext bundleContext;
 
-    public ActionBundleFactory(BundleContext bundleContext,Component frame, boolean warnUser) {
+    public ActionBundleFactory(BundleContext bundleContext, Component frame, boolean warnUser, ExecutorService executorService) {
         this.bundleContext = bundleContext;
         this.frame = frame;
         this.warnUser =warnUser;
-
-        ServiceReference<ExecutorService> executorServiceReference = bundleContext.getServiceReference(ExecutorService.class);
-        if(executorServiceReference != null){
-            executorService = bundleContext.getService(executorServiceReference);
-        }
+        this.executorService = executorService;
     }
 
     public List<Action> create(final BundleItem bundleItem) {
