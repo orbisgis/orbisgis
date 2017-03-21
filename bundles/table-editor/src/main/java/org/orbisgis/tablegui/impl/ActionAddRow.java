@@ -111,17 +111,19 @@ public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
                 AskValidRow rowInput = new AskValidRow(I18N.tr("New row"), source, editable.getTableReference());
                 if(UIFactory.showDialog(rowInput)) {
                     if(wpsClient != null){
-                        //Get the string containing the values to add separated by a coma.
+                        //Get the string containing the values to add separated by a semicolon.
                         String values = "";
+                        boolean firstValue = true;
                         for(Object o : rowInput.getRow()){
                             //If the value is null, put an empty string,
                             // the process will convert it into a null value.
-                            if(!values.isEmpty()){
-                                values += ",";
+                            if(!firstValue){
+                                values += ";";
                             }
                             if(o != null){
                                 values += o.toString();
                             }
+                            firstValue = false;
                         }
                         //Build the dataMap containing the process input
                         Map<URI, Object> dataMap = new HashMap<>();

@@ -50,7 +50,6 @@ import org.orbisgis.geocatalog.api.PopupTarget;
 import org.orbisgis.geocatalog.api.TitleActionBar;
 import org.orbisgis.geocatalog.icons.GeocatalogIcon;
 import org.orbisgis.geocatalog.impl.actions.ActionOnSelection;
-import org.orbisgis.geocatalog.impl.actions.WpsActionOnSelection;
 import org.orbisgis.geocatalog.impl.filters.IFilter;
 import org.orbisgis.geocatalog.impl.filters.factories.NameContains;
 import org.orbisgis.geocatalog.impl.filters.factories.NameNotContains;
@@ -68,7 +67,6 @@ import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.wpsclient.api.InternalWpsClient;
 import org.orbisgis.wpsclient.api.utils.InternalWpsClientHandler;
 import org.orbisgis.wpsclient.api.utils.ProcessExecutionType;
-import org.orbisgis.wpsclient.impl.editor.process.ProcessEditor;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -490,29 +488,6 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                     I18N.tr("Read the content of the database"),
                     GeocatalogIcon.getIcon("refresh"),EventHandler.create(ActionListener.class,
                     this,"refreshSourceList"),KeyStroke.getKeyStroke("ctrl R")).setLogicalGroup(PopupMenu.GROUP_OPEN));
-
-            //Popup:Tools
-            popupActions.addAction(new WpsActionOnSelection(PopupMenu.M_TOOLS,
-                    I18N.tr("Tools"),
-                    true,
-                    getListSelectionModel(),
-                    internalWpsClientHandler).setMenuGroup(true));
-            //Popup:GeometricProperties
-            popupActions.addAction(new WpsActionOnSelection(PopupMenu.M_TOOLS_GEOMETRY_PROPERTIES,
-                    I18N.tr("Geometry Properties"),
-                    I18N.tr("Compute some basic geometry properties."),
-                    GeocatalogIcon.getIcon("geometry_properties"),
-                    EventHandler.create(ActionListener.class, this, "openTool", ""),
-                    getListSelectionModel(),
-                    internalWpsClientHandler).setParent(PopupMenu.M_TOOLS));
-            //Popup:ReprojectGeometries
-            popupActions.addAction(new WpsActionOnSelection(PopupMenu.M_TOOLS_REPROJECT_GEOMETRIES,
-                    I18N.tr("Reproject geometries"),
-                    I18N.tr("Reproject geometries from one Coordinate Reference System to another."),
-                    GeocatalogIcon.getIcon("reproject_geometries"),
-                    EventHandler.create(ActionListener.class, this, "openTool", ""),
-                    getListSelectionModel(),
-                    internalWpsClientHandler).setParent(PopupMenu.M_TOOLS));
         }
 
         @Override
@@ -550,77 +525,6 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
                 //Attach the content to the DataSource instance
                 sourceListContent.setListeners();
                 return sourceList;
-        }
-
-        /**
-         * Open the selected tool using the toolbox.
-         * @param event
-         */
-        public void openTool(ActionEvent event){
-            switch(((JMenuItem)event.getSource()).getAction().getValue(ActionTools.MENU_ID).toString()){
-                case PopupMenu.M_TOOLS_GEOMETRY_PROPERTIES:
-                    URI geometryPropertyURI = URI.create("orbisgis:wps:official:geometryProperties");
-                    URI inputDataStoreURI = URI.create("orbisgis:wps:official:geometryProperties:inputDataStore");
-                    URI geometricFieldURI = URI.create("orbisgis:wps:official:geometryProperties:geometricField");
-                    Map<URI, Object> dataMap = new HashMap<>();
-                    String[] sources = this.getSelectedSources();
-                    if(sources.length<1){
-                        LOGGER.error("Cannot run the tool, the source list is empty.");
-                        return;
-                    }
-                    ProcessExecutionType executionType = sources.length>1
-                            ? ProcessExecutionType.BASH
-                            : ProcessExecutionType.STANDARD;
-                    if(executionType.equals(ProcessExecutionType.BASH)) {
-                        for (String table : sources) {
-                            Map<URI, Object> map = new HashMap<>();
-                            map.put(inputDataStoreURI, table);
-                            map.put(geometricFieldURI, new String[]{"the_geom", "pk"});
-                            dataMap.put(URI.create(UUID.randomUUID().toString()), map);
-                        }
-                    }
-                    else {
-                        if(sources.length == 0){
-                            dataMap = null;
-                        }
-                        else{
-                            dataMap.put(inputDataStoreURI, sources[0]);
-                            dataMap.put(geometricFieldURI, new String[]{"the_geom", "pk"});
-                        }
-                    }
-                    internalWpsClientHandler.getInternalWpsClient().openProcess(geometryPropertyURI, dataMap, executionType);
-                    break;
-                case PopupMenu.M_TOOLS_REPROJECT_GEOMETRIES:
-                    URI reprojectGeometryURI = URI.create("orbisgis:wps:official:reprojectGeometries");
-                    inputDataStoreURI = URI.create("orbisgis:wps:official:reprojectGeometries:inputDataStore");
-                    URI sridFieldURI = URI.create("orbisgis:wps:official:reprojectGeometries:srid");
-                    dataMap = new HashMap<>();
-                    sources = this.getSelectedSources();
-                    if(sources.length<1){
-                        LOGGER.error("Cannot run the tool, the source list is empty.");
-                        return;
-                    }
-                    executionType = sources.length>1
-                            ? ProcessExecutionType.BASH
-                            : ProcessExecutionType.STANDARD;
-                    if(executionType.equals(ProcessExecutionType.BASH)) {
-                        for (String table : sources) {
-                            Map<URI, Object> map = new HashMap<>();
-                            map.put(inputDataStoreURI, table);
-                            dataMap.put(URI.create(UUID.randomUUID().toString()), map);
-                        }
-                    }
-                    else {
-                        if(sources.length == 0){
-                            dataMap = null;
-                        }
-                        else{
-                            dataMap.put(inputDataStoreURI, sources[0]);
-                        }
-                    }
-                    internalWpsClientHandler.getInternalWpsClient().openProcess(reprojectGeometryURI, dataMap, executionType);
-                    break;
-            }
         }
 
         /**

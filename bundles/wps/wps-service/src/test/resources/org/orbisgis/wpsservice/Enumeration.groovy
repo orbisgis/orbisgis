@@ -39,7 +39,7 @@ def processing() {
         names = ["name,name","en","nom,nom","fr"],
         minOccurs = 0,
         maxOccurs = 2,
-        identifier = "orbisgis:test:enumeration:input",
+        identifier = "input",
         metadata = ["website","metadata"]
         )
 String[] inputEnumeration = ["value2"]
@@ -54,7 +54,7 @@ String[] inputEnumeration = ["value2"]
         description = ["A Enumeration output.","en","Une sortie Enumeration.","fr"],
         keywords = ["output","en","sortie","fr"],
         values = ["value1", "value2"],
-        identifier = "orbisgis:test:enumeration:output",
+        identifier = "output",
         metadata = ["website","metadata"]
 )
 String[] enumerationOutput

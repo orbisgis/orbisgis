@@ -83,11 +83,12 @@ public class JDBCTableParser implements Parser{
         input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
-        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
+        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input,
+                processId.toString());
 
         if(input.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":input:"+f.getName());
+            codeType.setValue(processId+":"+f.getName());
             input.setIdentifier(codeType);
         }
 
@@ -109,11 +110,12 @@ public class JDBCTableParser implements Parser{
         JAXBElement<JDBCTable> jaxbElement = new ObjectFactory().createJDBCTable(jdbcTable);
         output.setDataDescription(jaxbElement);
 
-        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
+        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output,
+                processId.toString());
 
         if(output.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":output:"+f.getName());
+            codeType.setValue(processId+":"+f.getName());
             output.setIdentifier(codeType);
         }
 

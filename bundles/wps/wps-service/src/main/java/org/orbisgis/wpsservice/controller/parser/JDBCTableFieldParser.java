@@ -69,13 +69,7 @@ public class JDBCTableFieldParser implements Parser {
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI jdbcTableUri;
         //If the jdbcTable attribute is not an URI, autoGenerate one.
-        if(!JDBCTableFieldAttribute.jdbcTableReference().contains(":")) {
-            jdbcTableUri = URI.create(processId + ":input:" + JDBCTableFieldAttribute.jdbcTableReference());
-        }
-        //else, use it
-        else {
-            jdbcTableUri = URI.create(JDBCTableFieldAttribute.jdbcTableReference());
-        }
+        jdbcTableUri = URI.create(processId+":"+JDBCTableFieldAttribute.jdbcTableReference());
         JDBCTableField jdbcTableField = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldAttribute, format, jdbcTableUri);
         if(defaultValue != null && defaultValue instanceof String[]) {
             jdbcTableField.setDefaultValues((String[])defaultValue);
@@ -87,11 +81,12 @@ public class JDBCTableFieldParser implements Parser {
         input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
-        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input);
+        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), input,
+                processId.toString());
 
         if(input.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":input:"+f.getName());
+            codeType.setValue(processId+":"+f.getName());
             input.setIdentifier(codeType);
         }
 
@@ -105,25 +100,21 @@ public class JDBCTableFieldParser implements Parser {
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         URI jdbcTableUri;
         //If the jdbcTable attribute is not an URI, autoGenerate one.
-        if(!JDBCTableFieldAttribute.jdbcTableReference().contains(":")) {
-            jdbcTableUri = URI.create(processId + ":output:" + JDBCTableFieldAttribute.jdbcTableReference());
-        }
-        //else, use it
-        else {
-            jdbcTableUri = URI.create(JDBCTableFieldAttribute.jdbcTableReference());
-        }
-        JDBCTableField jdbcTableField = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldAttribute, format, jdbcTableUri);
+        jdbcTableUri = URI.create(processId+":"+JDBCTableFieldAttribute.jdbcTableReference());
+        JDBCTableField jdbcTableField = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldAttribute, format,
+                jdbcTableUri);
 
         //Instantiate the returned output
         OutputDescriptionType output = new OutputDescriptionType();
         JAXBElement<JDBCTableField> jaxbElement = new ObjectFactory().createJDBCTableField(jdbcTableField);
         output.setDataDescription(jaxbElement);
 
-        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output);
+        ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output,
+                processId.toString());
 
         if(output.getIdentifier() == null){
             CodeType codeType = new CodeType();
-            codeType.setValue(processId+":output:"+f.getName());
+            codeType.setValue(processId+":"+f.getName());
             output.setIdentifier(codeType);
         }
 
