@@ -63,13 +63,16 @@ public class ActionDeploy  extends ActionBundle {
     private Resource resource;
     private BundleContext bundleContext;
     private Component frame;
+    private ExecutorService executorService;
 
-    public ActionDeploy(String label, String toolTipText, boolean start, Resource resource,BundleContext bundleContext,Component frame,Icon icon, boolean warnUser) {
+    public ActionDeploy(String label, String toolTipText, boolean start, Resource resource, BundleContext bundleContext,
+                        Component frame, Icon icon, boolean warnUser, ExecutorService executorService) {
         super(label, toolTipText, icon, frame, warnUser);
         this.start = start;
         this.resource = resource;
         this.bundleContext = bundleContext;
         this.frame = frame;
+        this.executorService = executorService;
         setActionListener(EventHandler.create(ActionListener.class, this, "doWork"));
     }
     private void deployBundle(Resolver resolver) {
@@ -118,11 +121,6 @@ public class ActionDeploy  extends ActionBundle {
         }
         if(deployBundle){
             DeployBundleSwingWorker worker = new DeployBundleSwingWorker(resolver);
-            ServiceReference<ExecutorService> executorServiceReference = bundleContext.getServiceReference(ExecutorService.class);
-            ExecutorService executorService = null;
-            if(executorServiceReference != null){
-                executorService = bundleContext.getService(executorServiceReference);
-            }
             if(executorService != null){
                 executorService.execute(worker);
             }
