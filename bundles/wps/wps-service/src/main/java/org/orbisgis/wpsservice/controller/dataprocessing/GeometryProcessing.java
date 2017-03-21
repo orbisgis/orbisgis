@@ -42,15 +42,28 @@ import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 
 /**
+ * Utils class containing methods to change a String representation of a WPS Geometry into a valid geometry and reverse.
+ *
  * @author Sylvain PALOMINOS
  */
 public class GeometryProcessing {
 
+    /**
+     * Convert a GeometryData string representation into a JTS geometry
+     * @param string Geometry string representation.
+     * @return A JTS geometry.
+     * @throws ParseException
+     */
     public static Geometry stringToGeometry(String string) throws ParseException {
         Geometry geometry = new WKTReader().read(string);
         return geometry;
     }
 
+    /**
+     * Convert a JTS geometry into its string representation.
+     * @param geometry Jts Geometry to convert.
+     * @return The geometry string representation.
+     */
     public static String geometryToString(Geometry geometry) {
         String wkt = new WKTWriter().write(geometry);
         return wkt;

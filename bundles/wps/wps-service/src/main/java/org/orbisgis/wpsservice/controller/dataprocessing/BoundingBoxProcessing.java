@@ -44,6 +44,8 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
+ * Utils class containing methods to change a String representation of a BoundingBox into a valid geometry and reverse.
+ *
  * @author Sylvain PALOMINOS
  */
 public class BoundingBoxProcessing {
@@ -51,6 +53,12 @@ public class BoundingBoxProcessing {
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(BoundingBoxProcessing.class);
 
+    /**
+     * Convert a BoundingBox string representation into a JTS geometry
+     * @param string Geometry string representation.
+     * @return A JTS geometry.
+     * @throws ParseException
+     */
     public static Geometry stringToGeometry(String string) throws ParseException {
         Geometry geometry;
         String[] split = string.split(";");
@@ -67,7 +75,7 @@ public class BoundingBoxProcessing {
         if(wkt.length != 4){
             throw new ParseException(I18N.tr("Only 2D bounding boxes are supported yet."));
         }
-        String minX, minY, minZ, maxX, maxY, maxZ;
+        String minX, minY, maxX, maxY;
         minX = wkt[0];
         minY = wkt[1];
         maxX = wkt[2];
@@ -83,6 +91,11 @@ public class BoundingBoxProcessing {
         return geometry;
     }
 
+    /**
+     * Convert a BoundingBox JTS geometry into its string representation.
+     * @param geometry BoundingBox JTS Geometry to convert.
+     * @return The BoundingBox string representation.
+     */
     public static String geometryToString(Geometry geometry) {
         String wkt = new WKTWriter().write(geometry);
         //Update the WKT string to have this pattern : ":SRID;minX,minY,maxX,maxY"
