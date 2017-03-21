@@ -38,8 +38,9 @@ package org.orbisgis.omanager.ui;
 
 import org.orbisgis.omanager.plugin.api.CustomPlugin;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.*;
+
+import java.util.concurrent.ExecutorService;
 
 /**
  * Panel that show all plugins, for advanced users.
@@ -55,5 +56,13 @@ public class MainSystemPanel extends MainPanel {
     @Activate
     public void activate(BundleContext bc) {
         initialize(bc);
+    }
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    public void setExecutorService(ExecutorService executorService) {
+        super.setExecutorService(executorService);
+    }
+
+    public void unsetExecutorService(ExecutorService executorService) {
     }
 }
