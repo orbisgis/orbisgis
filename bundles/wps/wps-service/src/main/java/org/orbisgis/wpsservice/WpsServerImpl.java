@@ -41,9 +41,8 @@ import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
 import org.orbisgis.corejdbc.DataSourceService;
-import org.orbisgis.wpsservice.controller.execution.DataProcessingManager;
-import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
-import org.orbisgis.wpsservice.controller.execution.ProcessWorker;
+import org.orbisgis.wpsservice.execution.ProcessExecutionListener;
+import org.orbisgis.wpsservice.execution.ProcessWorker;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.controller.utils.Job;
@@ -87,8 +86,6 @@ public class WpsServerImpl implements WpsServer {
     private DataSourceService dataSourceService;
     /** Map containing the WPS Jobs and their UUID */
     private Map<UUID, Job> jobMap;
-    /** Class managing the DataProcessing classes */
-    private DataProcessingManager dataProcessingManager;
     /** ExecutorService of OrbisGIS */
     private ExecutorService executorService;
     /** Database connected to the WPS server */
@@ -117,7 +114,6 @@ public class WpsServerImpl implements WpsServer {
      * Initialization of the WpsServiceImpl.
      */
     public void init(){
-        dataProcessingManager = new DataProcessingManager();
         jobMap = new HashMap<>();
         propertiesMap = new HashMap<>();
         //Initialisation of the wps service itself
@@ -403,7 +399,6 @@ public class WpsServerImpl implements WpsServer {
         //Process execution in new thread
         ProcessWorker worker = new ProcessWorker(job,
                 processIdentifier,
-                dataProcessingManager,
                 processManager,
                 dataMap,
                 propertiesMap);
@@ -614,9 +609,6 @@ public class WpsServerImpl implements WpsServer {
 
     protected void setDataSourceService(DataSourceService dataSourceService){
         this.dataSourceService = dataSourceService;
-    }
-    protected void setDataProcessingManager(DataProcessingManager dataProcessingManager){
-        this.dataProcessingManager = dataProcessingManager;
     }
 
     protected void setExecutorService(ExecutorService executorService){

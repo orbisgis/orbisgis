@@ -70,7 +70,30 @@ public class BoundingBoxParser implements Parser {
         formatList.add(format);
         BoundingBoxData boundingBoxData = ObjectAnnotationConverter.annotationToObject(boundingBoxAttribute, formatList);
         if(defaultValue != null && defaultValue instanceof String) {
-            boundingBoxData.setDefaultValue((String)defaultValue);
+            String str = (String)defaultValue;
+            String srid = null;
+            String box = null;
+            if(str.contains(";")){
+                String[] split = str.split(";");
+                if(split[0].contains(":")){
+                    srid = split[0];
+                    box = split[1];
+                }
+                else if(split[1].contains(":")){
+                    srid = split[1];
+                    box = split[0];
+                }
+            }
+            else{
+                if(str.contains(":")){
+                    srid = str;
+                }
+                else{
+                    box = str;
+                }
+            }
+            boundingBoxData.setDefaultValue(box);
+            boundingBoxData.setDefaultCrs(srid);
         }
 
         InputDescriptionType input = new InputDescriptionType();
@@ -91,12 +114,38 @@ public class BoundingBoxParser implements Parser {
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException {
+    public OutputDescriptionType parseOutput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
         BoundingBoxAttribute boundingBoxAttribute = f.getAnnotation(BoundingBoxAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         List<Format> formatList = new ArrayList<>();
         formatList.add(format);
         BoundingBoxData boundingBoxData = ObjectAnnotationConverter.annotationToObject(boundingBoxAttribute, formatList);
+        if(defaultValue != null && defaultValue instanceof String) {
+            String str = (String)defaultValue;
+            String srid = null;
+            String box = null;
+            if(str.contains(";")){
+                String[] split = str.split(";");
+                if(split[0].contains(":")){
+                    srid = split[0];
+                    box = split[1];
+                }
+                else if(split[1].contains(":")){
+                    srid = split[1];
+                    box = split[0];
+                }
+            }
+            else{
+                if(str.contains(":")){
+                    srid = str;
+                }
+                else{
+                    box = str;
+                }
+            }
+            boundingBoxData.setDefaultValue(box);
+            boundingBoxData.setDefaultCrs(srid);
+        }
 
         OutputDescriptionType output = new OutputDescriptionType();
         JAXBElement<BoundingBoxData> jaxbElement = new ObjectFactory().createBoundingBoxData(boundingBoxData);

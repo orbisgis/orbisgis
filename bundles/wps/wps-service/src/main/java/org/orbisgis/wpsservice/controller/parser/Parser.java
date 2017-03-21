@@ -71,7 +71,7 @@ public interface Parser {
      * @return Parsed DataDescription.
      * @throws org.orbisgis.wpsservice.model.MalformedScriptException
      */
-    OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException;
+    OutputDescriptionType parseOutput(Field f, Object defaultValue, URI processId) throws MalformedScriptException;
 
     /**
      * Returns the groovy annotation associated to this parser.

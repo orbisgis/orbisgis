@@ -37,7 +37,6 @@
 
 package org.orbisgis.wpsservice.controller.parser;
 
-import com.vividsolutions.jts.geom.Geometry;
 import net.opengis.wps._2_0.DataDescriptionType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
@@ -77,7 +76,7 @@ public class BoundingBoxParserTest {
         InputDescriptionType inputDescriptionType = null;
         String processId = UUID.randomUUID().toString();
         try {
-            inputDescriptionType = boundingBoxParser.parseInput(field, "defaultValue", URI.create(processId));
+            inputDescriptionType = boundingBoxParser.parseInput(field, "EPSG:4326", URI.create(processId));
         } catch (MalformedScriptException ignored) {}
         Assert.assertNotNull("Unable to parse the field 'simplestBoundingBoxInput'.", inputDescriptionType);
 
@@ -95,7 +94,7 @@ public class BoundingBoxParserTest {
         Assert.assertArrayEquals("The BoundingBoxData supportedCrs attribute should be empty.", new String[]{},
                 boundingBoxData.getSupportedCrs());
         Assert.assertEquals("The BoundingBoxData dimension attribute should be 2.", 2, boundingBoxData.getDimension());
-        Assert.assertEquals("The BoundingBoxData defaultValue attribute is not the one expected.", "defaultValue",
+        Assert.assertEquals("The BoundingBoxData defaultValue attribute is not the one expected.", null,
                 boundingBoxData.getDefaultValue());
 
         //Tests the InputAttribute part of the InputDescriptionType
@@ -133,7 +132,7 @@ public class BoundingBoxParserTest {
         InputDescriptionType inputDescriptionType = null;
         String processId = UUID.randomUUID().toString();
         try {
-            inputDescriptionType = boundingBoxParser.parseInput(field, "defaultValue", URI.create(processId));
+            inputDescriptionType = boundingBoxParser.parseInput(field, "EPSG:4326;0,0,1,1", URI.create(processId));
         } catch (MalformedScriptException ignored) {}
         Assert.assertNotNull("Unable to parse the field 'complexBoundingBoxInput'.", inputDescriptionType);
 
@@ -151,7 +150,7 @@ public class BoundingBoxParserTest {
         Assert.assertArrayEquals("The BoundingBoxData supportedCrs attribute should be empty.",
                 new String[]{"EPSG:4326", "EPSG:2000", "EPSG:2001"}, boundingBoxData.getSupportedCrs());
         Assert.assertEquals("The BoundingBoxData dimension attribute should be 2.", 2, boundingBoxData.getDimension());
-        Assert.assertEquals("The BoundingBoxData defaultValue attribute is not the one expected.", "defaultValue",
+        Assert.assertEquals("The BoundingBoxData defaultValue attribute is not the one expected.", "0,0,1,1",
                 boundingBoxData.getDefaultValue());
 
         //Tests the InputAttribute part of the InputDescriptionType
@@ -223,7 +222,7 @@ public class BoundingBoxParserTest {
         OutputDescriptionType outputDescriptionType = null;
         String processId = UUID.randomUUID().toString();
         try {
-            outputDescriptionType = boundingBoxParser.parseOutput(field, URI.create(processId));
+            outputDescriptionType = boundingBoxParser.parseOutput(field, "EPSG:4326", URI.create(processId));
         } catch (MalformedScriptException ignored) {}
         Assert.assertNotNull("Unable to parse the field 'simplestBoundingBoxOutput'.", outputDescriptionType);
 
@@ -271,7 +270,7 @@ public class BoundingBoxParserTest {
         OutputDescriptionType outputDescriptionType = null;
         String processId = UUID.randomUUID().toString();
         try {
-            outputDescriptionType = boundingBoxParser.parseOutput(field, URI.create(processId));
+            outputDescriptionType = boundingBoxParser.parseOutput(field, "EPSG:4326", URI.create(processId));
         } catch (MalformedScriptException ignored) {}
         Assert.assertNotNull("Unable to parse the field 'complexBoundingBoxInput'.", outputDescriptionType);
 
@@ -342,13 +341,13 @@ public class BoundingBoxParserTest {
      */
     private class FieldProvider{
         /** The simplest BoundingBox input declaration */
-        @BoundingBoxAttribute(defaultCRS = "EPSG:4326")
+        @BoundingBoxAttribute
         @InputAttribute
         @DescriptionTypeAttribute(title = {"title"})
-        private Geometry simplestBoundingBoxInput;
+        private String simplestBoundingBoxInput = "0,0,1,1;EPSG:4326";
 
         /** A complex BoundingBox input declaration */
-        @BoundingBoxAttribute(defaultCRS = "EPSG:4326", supportedCRS = {"EPSG:4326", "EPSG:2000", "EPSG:2001"}, dimension = 2)
+        @BoundingBoxAttribute(supportedCRS = {"EPSG:4326", "EPSG:2000", "EPSG:2001"}, dimension = 2)
         @InputAttribute(maxOccurs = 2, minOccurs = 0)
         @DescriptionTypeAttribute(
                 title = {"title", "en", "titre", "fr"},
@@ -357,16 +356,16 @@ public class BoundingBoxParserTest {
                 identifier = "identifier",
                 metadata = {"role","title"}
         )
-        private Geometry complexBoundingBoxInput;
+        private String complexBoundingBoxInput = "EPSG:4326;0,0,1,1";
 
         /** The simplest BoundingBox output declaration */
-        @BoundingBoxAttribute(defaultCRS = "EPSG:4326")
+        @BoundingBoxAttribute
         @OutputAttribute
         @DescriptionTypeAttribute(title = {"title"})
-        private Geometry simplestBoundingBoxOutput;
+        private String simplestBoundingBoxOutput;
 
         /** A complex BoundingBox output declaration */
-        @BoundingBoxAttribute(defaultCRS = "EPSG:4326", supportedCRS = {"EPSG:4326", "EPSG:2000", "EPSG:2001"}, dimension = 2)
+        @BoundingBoxAttribute(supportedCRS = {"EPSG:4326", "EPSG:2000", "EPSG:2001"}, dimension = 2)
         @OutputAttribute
         @DescriptionTypeAttribute(
                 title = {"title", "en", "titre", "fr"},
@@ -375,6 +374,6 @@ public class BoundingBoxParserTest {
                 identifier = "identifier",
                 metadata = {"role","title"}
         )
-        private Geometry complexBoundingBoxOutput;
+        private String complexBoundingBoxOutput = "EPSG:4326";
     }
 }

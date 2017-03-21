@@ -54,9 +54,6 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
  *       unique title or a translated title, its language, another title, its language ...
  *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en"]
  *
- *  - defaultCRS : String
- *      Default CRS of the BoundingBox. Should be a string with the pattern : authority:code, like EPSG:2000.
- *
  * The following fields can be defined (optional) :
  *  - description : String[]
  *      Brief narrative description of a process, input, and output. Normally available for display to a human.It is

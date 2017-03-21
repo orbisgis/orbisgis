@@ -267,7 +267,8 @@ public class ProcessManager {
                             String id = descriptionTypeAttribute.identifier();
                             String inputId = i.getIdentifier().getValue();
                             String processId = process.getIdentifier().getValue();
-                            if(inputId.equals(processId+":"+id) || inputId.equals(id)){
+                            if(inputId.equals(processId+":"+id) || inputId.equals(id) ||
+                                    inputId.equals(processId+":"+f.getName())){
                                 field = f;
                             }
                         }
@@ -287,7 +288,8 @@ public class ProcessManager {
                             String id = descriptionTypeAttribute.identifier();
                             String outputId = o.getIdentifier().getValue();
                             String processId = process.getIdentifier().getValue();
-                            if(outputId.equals(processId+":"+id) || outputId.equals(id)){
+                            if(outputId.equals(processId+":"+id) || outputId.equals(id) ||
+                                    outputId.equals(processId+":"+f.getName())){
                                 field = f;
                             }
                         }
@@ -336,7 +338,8 @@ public class ProcessManager {
                             String id = descriptionTypeAttribute.identifier();
                             String inputId = i.getIdentifier().getValue();
                             String processId = process.getIdentifier().getValue();
-                            if(inputId.equals(processId+":"+id) || inputId.equals(id)){
+                            if(inputId.equals(processId+":"+id) || inputId.equals(id) ||
+                                    inputId.equals(processId+":"+f.getName())){
                                 field = f;
                             }
                         }
@@ -384,7 +387,8 @@ public class ProcessManager {
                             String id = descriptionTypeAttribute.identifier();
                             String outputId = o.getIdentifier().getValue();
                             String processId = process.getIdentifier().getValue();
-                            if(outputId.equals(processId+":"+id) || outputId.equals(id)){
+                            if(outputId.equals(processId+":"+id) || outputId.equals(id) ||
+                                    outputId.equals(processId+":"+f.getName())){
                                 field = f;
                             }
                         }

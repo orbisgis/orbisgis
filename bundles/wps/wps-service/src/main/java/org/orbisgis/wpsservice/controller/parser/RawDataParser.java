@@ -89,7 +89,7 @@ public class RawDataParser implements Parser {
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException {
+    public OutputDescriptionType parseOutput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         RawData rawData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(RawDataAttribute.class), format);

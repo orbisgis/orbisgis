@@ -173,11 +173,21 @@ public class ParserController {
                     }
                 }
                 if(a instanceof OutputAttribute){
+                    Object defaultValue = null;
+                    if(scriptObject != null) {
+                        try {
+                            f.setAccessible(true);
+                            defaultValue = f.get(scriptObject);
+                        } catch (IllegalAccessException e) {
+                            LOGGER.error(I18N.tr("Unable to retrieve the default value of the field : {0}.\n" +
+                                    "Cause : {1}.", f, e.getMessage()));
+                        }
+                    }
                     //Find the good parser and parse the output.
                     boolean parsed = false;
                     for(Parser parser : parserList){
                         if(f.getAnnotation(parser.getAnnotation())!= null){
-                            OutputDescriptionType output = parser.parseOutput(f,
+                            OutputDescriptionType output = parser.parseOutput(f, defaultValue,
                                     URI.create(process.getIdentifier().getValue()));
                             if(output.getOutput() != null && !output.getOutput().isEmpty()){
                                 for(OutputDescriptionType out : output.getOutput()){

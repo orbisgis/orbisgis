@@ -89,7 +89,7 @@ public class GeometryParser implements Parser {
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException {
+    public OutputDescriptionType parseOutput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
         //Instantiate the RawData
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
         GeometryData geometryData = ObjectAnnotationConverter.annotationToObject(f.getAnnotation(GeometryAttribute.class), format);

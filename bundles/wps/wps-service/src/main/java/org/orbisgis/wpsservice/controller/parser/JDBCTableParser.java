@@ -96,7 +96,7 @@ public class JDBCTableParser implements Parser{
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException {
+    public OutputDescriptionType parseOutput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
         //Instantiate the JDBCTable and its formats
         JDBCTableAttribute JDBCTableAttribute = f.getAnnotation(JDBCTableAttribute.class);
         List<Format> formatList = new ArrayList<>();

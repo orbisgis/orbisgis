@@ -34,7 +34,6 @@ import org.orbisgis.wpsgroovyapi.process.Process
 def processing() {
     //Build the query
     String queryBase = "INSERT INTO " + tableName;
-    print(fieldList)
     if (fieldList != null) {
         queryBase += " (";
         String fieldsStr = ""
