@@ -85,6 +85,8 @@ public class ProcessManager {
 
     /**
      * Main constructor.
+     * @param dataSourceService
+     * @param wpsService
      */
     public ProcessManager(DataSourceService dataSourceService, WpsServer wpsService){
         processIdList = new ArrayList<>();
@@ -183,6 +185,8 @@ public class ProcessManager {
     /**
      * Adds a local source to the toolbox and get all the groovy script.
      * @param uri URI to the local source.
+     * @param category
+     * @return 
      */
     public List<ProcessIdentifier> addLocalSource(URI uri, String[] category){
         List<ProcessIdentifier> piList = new ArrayList<>();

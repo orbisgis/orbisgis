@@ -42,11 +42,14 @@ import net.opengis.wps._2_0.Format;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Object representing a bounding box.
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "BoundingBoxData",
@@ -66,6 +69,8 @@ public class BoundingBoxData extends ComplexDataType {
     /** Default value.*/
     @XmlAttribute(name = "defaultValue", namespace = "http://orbisgis.org")
     private String defaultValue;
+    
+    private static final I18n I18N = I18nFactory.getI18n(BoundingBoxData.class);
 
     /**
      * Main constructor.
@@ -77,12 +82,27 @@ public class BoundingBoxData extends ComplexDataType {
     public BoundingBoxData(List<Format> formatList, String[] supportedCrs, int dimension)
             throws MalformedScriptException {
         format = formatList;
+<<<<<<< HEAD
+=======
+        this.defaultCrs = defaultCrs;
+        if(supportedCrs.length > 0) {
+            boolean isContained = false;
+            for (String crs : supportedCrs) {
+                if (crs.equals(defaultCrs)) {
+                    isContained = true;
+                }
+            }
+            if (!isContained) {
+                throw new MalformedScriptException(BoundingBoxData.class, "supportedCrs", I18N.tr("should contains the default CRS"));
+            }
+        }
+>>>>>>> f683b2bcb2e45ec0518ea2c51563c477b3ec3d56
         this.supportedCrs = supportedCrs;
         if(dimension != 2 && dimension != 3){
-            throw new MalformedScriptException(BoundingBoxData.class, "dimension", "dimension should be 2 or 3");
+            throw new MalformedScriptException(BoundingBoxData.class, "dimension",  I18N.tr("dimension should be 2 or 3"));
         }
         if(dimension == 3){
-            throw new MalformedScriptException(BoundingBoxData.class, "dimension", "3D Bounding Box is not supported yet.");
+            throw new MalformedScriptException(BoundingBoxData.class, "dimension",  I18N.tr("3D Bounding Box is not supported yet."));
         }
         this.dimension = dimension;
     }
