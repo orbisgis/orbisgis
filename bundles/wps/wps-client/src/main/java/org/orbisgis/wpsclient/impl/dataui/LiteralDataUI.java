@@ -80,7 +80,6 @@ import java.util.Map;
  *
  * @author Sylvain PALOMINOS
  **/
-
 public class LiteralDataUI implements DataUI {
 
     /** Size constants **/
@@ -106,6 +105,7 @@ public class LiteralDataUI implements DataUI {
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
 
+    @Override
     public void setWpsClient(WpsClientImpl wpsClient){
         this.wpsClient = wpsClient;
     }

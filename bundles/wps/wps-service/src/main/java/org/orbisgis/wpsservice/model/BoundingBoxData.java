@@ -42,15 +42,18 @@ import net.opengis.wps._2_0.Format;
 
 import javax.xml.bind.annotation.*;
 import java.util.List;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Object representing a bounding box.
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "BoundingBoxData",
-        propOrder = {"defaultCrs", "supportedCrs", "dimension"})
+        propOrder = {"defaultCrs", "supportedCrs", "dimension", "defaultValue"})
 public class BoundingBoxData extends ComplexDataType {
 
     /** Default CRS of the BoundingBox. Should be a string with the pattern : authority:code, like EPSG:2000.*/
@@ -64,39 +67,27 @@ public class BoundingBoxData extends ComplexDataType {
     @XmlAttribute(name = "dimension", namespace = "http://orbisgis.org")
     private int dimension;
     /** Default value.*/
-    @XmlTransient
+    @XmlAttribute(name = "defaultValue", namespace = "http://orbisgis.org")
     private String defaultValue;
+    
+    private static final I18n I18N = I18nFactory.getI18n(BoundingBoxData.class);
 
     /**
      * Main constructor.
      * @param formatList Formats of the data accepted.
-     * @param defaultCrs Default CRS of the BoundingBox.
      * @param supportedCrs List of CRS supported by the BoundingBox data without the default one.
      * @param dimension Dimension of the bounding box.
      * @throws MalformedScriptException
      */
-    public BoundingBoxData(List<Format> formatList, String defaultCrs, String[] supportedCrs, int dimension)
+    public BoundingBoxData(List<Format> formatList, String[] supportedCrs, int dimension)
             throws MalformedScriptException {
         format = formatList;
-        this.defaultCrs = defaultCrs;
-        if(supportedCrs.length > 0) {
-            boolean isContained = false;
-            for (String crs : supportedCrs) {
-                if (crs.equals(defaultCrs)) {
-                    isContained = true;
-                }
-            }
-            if (!isContained) {
-                throw new MalformedScriptException(BoundingBoxData.class, "supportedCrs", "should contains the " +
-                        "default CRS");
-            }
-        }
         this.supportedCrs = supportedCrs;
         if(dimension != 2 && dimension != 3){
-            throw new MalformedScriptException(BoundingBoxData.class, "dimension", "dimension should be 2 or 3");
+            throw new MalformedScriptException(BoundingBoxData.class, "dimension",  I18N.tr("dimension should be 2 or 3"));
         }
         if(dimension == 3){
-            throw new MalformedScriptException(BoundingBoxData.class, "dimension", "3D Bounding Box is not supported yet.");
+            throw new MalformedScriptException(BoundingBoxData.class, "dimension",  I18N.tr("3D Bounding Box is not supported yet."));
         }
         this.dimension = dimension;
     }

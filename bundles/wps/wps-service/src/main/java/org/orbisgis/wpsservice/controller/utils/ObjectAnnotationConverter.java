@@ -63,14 +63,14 @@ public class ObjectAnnotationConverter {
     /**
      * Builds a {@link BoundingBoxData} Object from a BoundingBoxAttribute annotation.
      * @param boundingBoxAttribute Groovy annotation to decode to build the Java object.
+     * @param formatList
      * @return A {@link BoundingBoxData} object with the data from the {@link BoundingBoxAttribute} annotation.
      * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
      */
     public static BoundingBoxData annotationToObject(BoundingBoxAttribute boundingBoxAttribute, List<Format> formatList)
             throws MalformedScriptException {
-        String defaultCRS = boundingBoxAttribute.defaultCRS();
         String[] supportedCrs = boundingBoxAttribute.supportedCRS();
-        return new BoundingBoxData(formatList, defaultCRS, supportedCrs, boundingBoxAttribute.dimension());
+        return new BoundingBoxData(formatList, supportedCrs, boundingBoxAttribute.dimension());
     }
 
     /**
@@ -116,6 +116,7 @@ public class ObjectAnnotationConverter {
      * @param descriptionTypeAttribute Groovy annotation to decode to build the Java object.
      * @param descriptionType A {@link DescriptionType} object with the data from the {@link DescriptionTypeAttribute}
      *                        annotation.
+     * @param processIdentifier
      * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
      */
     public static void annotationToObject(DescriptionTypeAttribute descriptionTypeAttribute,
@@ -491,6 +492,7 @@ public class ObjectAnnotationConverter {
      * Builds a {@link LiteralDataType} Object from an {@link LiteralDataAttribute} annotation.
      * @param literalDataAttribute Groovy annotation to decode to build the Java object.
      * @param dataType The {@link DataType} for the {@link LiteralDataType}.
+     * @param defaultValueStr
      * @return The {@link LiteralDataType} object with the data from the {@link LiteralDataAttribute}
      *          annotation.
      * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.

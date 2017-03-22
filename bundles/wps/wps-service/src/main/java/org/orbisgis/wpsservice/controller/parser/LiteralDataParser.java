@@ -85,7 +85,7 @@ public class LiteralDataParser implements Parser {
     }
 
     @Override
-    public OutputDescriptionType parseOutput(Field f, URI processId) throws MalformedScriptException {
+    public OutputDescriptionType parseOutput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
         OutputDescriptionType output = new OutputDescriptionType();
         DataType dataType = getFieldDataType(f);
         if(dataType == null){

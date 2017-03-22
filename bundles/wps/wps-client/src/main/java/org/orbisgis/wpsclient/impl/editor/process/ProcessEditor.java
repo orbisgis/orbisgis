@@ -52,7 +52,7 @@ import org.orbisgis.wpsclient.api.dataui.DataUI;
 import org.orbisgis.wpsclient.impl.dataui.DataUIManager;
 import org.orbisgis.wpsclient.impl.utils.Job;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
-import org.orbisgis.wpsservice.controller.execution.ProcessExecutionListener;
+import org.orbisgis.wpsservice.execution.ProcessExecutionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;

@@ -85,6 +85,8 @@ public class ProcessManager {
 
     /**
      * Main constructor.
+     * @param dataSourceService
+     * @param wpsService
      */
     public ProcessManager(DataSourceService dataSourceService, WpsServer wpsService){
         processIdList = new ArrayList<>();
@@ -183,6 +185,8 @@ public class ProcessManager {
     /**
      * Adds a local source to the toolbox and get all the groovy script.
      * @param uri URI to the local source.
+     * @param category
+     * @return 
      */
     public List<ProcessIdentifier> addLocalSource(URI uri, String[] category){
         List<ProcessIdentifier> piList = new ArrayList<>();
@@ -263,7 +267,8 @@ public class ProcessManager {
                             String id = descriptionTypeAttribute.identifier();
                             String inputId = i.getIdentifier().getValue();
                             String processId = process.getIdentifier().getValue();
-                            if(inputId.equals(processId+":"+id) || inputId.equals(id)){
+                            if(inputId.equals(processId+":"+id) || inputId.equals(id) ||
+                                    inputId.equals(processId+":"+f.getName())){
                                 field = f;
                             }
                         }
@@ -283,7 +288,8 @@ public class ProcessManager {
                             String id = descriptionTypeAttribute.identifier();
                             String outputId = o.getIdentifier().getValue();
                             String processId = process.getIdentifier().getValue();
-                            if(outputId.equals(processId+":"+id) || outputId.equals(id)){
+                            if(outputId.equals(processId+":"+id) || outputId.equals(id) ||
+                                    outputId.equals(processId+":"+f.getName())){
                                 field = f;
                             }
                         }
@@ -332,7 +338,8 @@ public class ProcessManager {
                             String id = descriptionTypeAttribute.identifier();
                             String inputId = i.getIdentifier().getValue();
                             String processId = process.getIdentifier().getValue();
-                            if(inputId.equals(processId+":"+id) || inputId.equals(id)){
+                            if(inputId.equals(processId+":"+id) || inputId.equals(id) ||
+                                    inputId.equals(processId+":"+f.getName())){
                                 field = f;
                             }
                         }
@@ -380,7 +387,8 @@ public class ProcessManager {
                             String id = descriptionTypeAttribute.identifier();
                             String outputId = o.getIdentifier().getValue();
                             String processId = process.getIdentifier().getValue();
-                            if(outputId.equals(processId+":"+id) || outputId.equals(id)){
+                            if(outputId.equals(processId+":"+id) || outputId.equals(id) ||
+                                    outputId.equals(processId+":"+f.getName())){
                                 field = f;
                             }
                         }

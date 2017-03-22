@@ -165,6 +165,7 @@ public class JDBCTableField extends ComplexDataType {
     /**
      * Sets the list of excluded type for the field.
      * @param excludedTypeList List of excluded DataType.
+     * @throws org.orbisgis.wpsservice.model.MalformedScriptException
      */
     public void setExcludedTypeList(List<DataType> excludedTypeList) throws MalformedScriptException {
         for(DataType excludedType : excludedTypeList){
@@ -189,6 +190,7 @@ public class JDBCTableField extends ComplexDataType {
     /**
      * Sets the list of excluded name for the field.
      * @param excludedNameList List of excluded name.
+     * @throws org.orbisgis.wpsservice.model.MalformedScriptException
      */
     public void setExcludedNameList(List<String> excludedNameList) throws MalformedScriptException {
         this.excludedNameList = excludedNameList;

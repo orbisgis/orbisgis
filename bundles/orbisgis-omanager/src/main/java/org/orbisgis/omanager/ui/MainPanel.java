@@ -51,6 +51,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
@@ -125,6 +126,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
     private ServiceTracker<RepositoryAdmin,RepositoryAdmin> repositoryAdminTracker;
     private AtomicBoolean awaitingFilteringThread = new AtomicBoolean(false);
     private long lastTypedWordInFindTextField = 0;
+    private ExecutorService executorService;
     /**
      * in ms Launch a search if the user don't type any character within this time.
      */
@@ -142,12 +144,20 @@ public class MainPanel extends JPanel implements CustomPlugin {
     }
 
     /**
+     * Sets the ExecutorService
+     * @param executorService ExecutorService
+     */
+    public void setExecutorService(ExecutorService executorService){
+        this.executorService = executorService;
+    }
+
+    /**
      * @param bundleContext Bundle context instance in order to manage them.
      */
     protected void initialize(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
         initRepositoryTracker();
-        actionFactory = new ActionBundleFactory(bundleContext,this, category.equals(Category.SYSTEM));
+        actionFactory = new ActionBundleFactory(bundleContext,this, category.equals(Category.SYSTEM), executorService);
         // Main Panel (South button, center Split Pane)
         // Buttons on south of main panel
         JPanel southButtons = new JPanel();

@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.wpsservice.controller.execution;
+package org.orbisgis.wpsservice.execution;
 
 /**
  * @author Sylvain PALOMINOS

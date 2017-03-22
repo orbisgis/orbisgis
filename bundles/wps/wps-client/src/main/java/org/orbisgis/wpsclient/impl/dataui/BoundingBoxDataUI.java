@@ -47,8 +47,6 @@ import org.orbisgis.wpsclient.api.dataui.DataUI;
 import org.orbisgis.wpsclient.impl.WpsClientImpl;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
 import org.orbisgis.wpsservice.model.BoundingBoxData;
-import org.orbisgis.wpsservice.model.DataType;
-import org.orbisgis.wpsservice.model.JDBCTableFieldValue;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -56,7 +54,6 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.*;
 import javax.swing.Timer;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.LayerUI;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -127,7 +124,6 @@ public class BoundingBoxDataUI implements DataUI {
         if(boundingBoxData == null){
             return panel;
         }
-        JPanel jCompPanel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         JTextField textField = new JTextField();
         JComboBox<ContainerItem<Object>> comboBox= new JComboBox<>();
         //Build an set the text field for the bounding box coordinate
@@ -142,14 +138,16 @@ public class BoundingBoxDataUI implements DataUI {
                 "document"));
         //Build and set the jComboBox containing all the SRID
         comboBox.setToolTipText(I18N.tr("Select the SRID of the bounding box"));
-        ContainerItem<Object> defaultElement = new ContainerItem<Object>(boundingBoxData.getDefaultCrs(), boundingBoxData.getDefaultCrs());
-        comboBox.putClientProperty(DEFAULT_ELEMENT_PROPERTY, defaultElement);
+        if(boundingBoxData.getDefaultCrs() != null) {
+            ContainerItem<Object> defaultElement = new ContainerItem<Object>(boundingBoxData.getDefaultCrs(), boundingBoxData.getDefaultCrs());
+            comboBox.putClientProperty(DEFAULT_ELEMENT_PROPERTY, defaultElement);
+            comboBox.addItem(defaultElement);
+        }
         URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
         comboBox.putClientProperty(URI_PROPERTY, uri);
         comboBox.putClientProperty(BOUNDING_BOX_PROPERTY, boundingBoxData);
         comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
-        comboBox.addItem(defaultElement);
         if(boundingBoxData.getSupportedCrs().length == 0) {
             MouseListener refreshListListener = EventHandler.create(MouseListener.class, this, "refreshList", "source", "mouseEntered");
             comboBox.putClientProperty(REFRESH_LIST_LISTENER_PROPERTY, refreshListListener);
@@ -186,6 +184,10 @@ public class BoundingBoxDataUI implements DataUI {
         panel.add(pasteButton, "dock east, growx");
         panel.add(layer, "dock east");
         comboBox.putClientProperty(LAYERUI_PROPERTY, layerUI);
+
+        if(boundingBoxData.getDefaultValue() != null){
+            textField.setText(boundingBoxData.getDefaultValue());
+        }
 
         return panel;
     }
@@ -291,7 +293,11 @@ public class BoundingBoxDataUI implements DataUI {
         @Override
         protected Object doInBackground() throws Exception {
             WaitLayerUI layerUI = (WaitLayerUI)comboBox.getClientProperty(LAYERUI_PROPERTY);
-            ContainerItem<Object> defaultElement = (ContainerItem<Object>)comboBox.getClientProperty(DEFAULT_ELEMENT_PROPERTY);
+            Object defaultElementObject = comboBox.getClientProperty(DEFAULT_ELEMENT_PROPERTY);
+            ContainerItem<Object> defaultElement = null;
+            if(defaultElementObject != null){
+                defaultElement = (ContainerItem<Object>)defaultElementObject;
+            }
             this.setTaskName(I18N.tr("Updating the SRID values"));
             layerUI.start();
             comboBox.removeAllItems();
@@ -300,7 +306,7 @@ public class BoundingBoxDataUI implements DataUI {
             int index = 0;
             boolean selectedFound = false;
             for (String field : listFields) {
-                if(field.equals(defaultElement.getLabel())){
+                if(defaultElement != null && field.equals(defaultElement.getLabel())){
                     selectedFound = true;
                 }
                 comboBox.addItem(new ContainerItem<Object>(field, field));
