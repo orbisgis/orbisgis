@@ -274,6 +274,10 @@ public class LiteralDataUI implements DataUI {
                     if (Boolean.parseBoolean(dataMap.get(uri).toString())) {
                         trueButton.setSelected(true);
                     }
+                    dataComponent.putClientProperty(BOOLEAN_PROPERTY, dataMap.get(uri));
+                }
+                else{
+                    dataComponent.putClientProperty(BOOLEAN_PROPERTY, false);
                 }
                 falseButton.addActionListener(EventHandler.create(
                         ActionListener.class,

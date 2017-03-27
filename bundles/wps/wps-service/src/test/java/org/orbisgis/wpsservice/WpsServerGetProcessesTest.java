@@ -267,7 +267,7 @@ public class WpsServerGetProcessesTest {
     private void initWpsService() {
         if (wpsServer == null) {
             //Start the WpsService
-            LocalWpsServerImpl localWpsService = new LocalWpsServerImpl();
+            WpsServerImpl localWpsService = new WpsServerImpl();
             localWpsService.init();
             //Try to load the groovy scripts
             try {

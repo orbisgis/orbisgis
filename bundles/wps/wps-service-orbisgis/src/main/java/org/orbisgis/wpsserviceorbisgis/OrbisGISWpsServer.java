@@ -35,19 +35,18 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsservice;
+package org.orbisgis.wpsserviceorbisgis;
 
-import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
+import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.model.DataType;
 
-import java.io.*;
 import java.net.URI;
 import java.util.*;
 
 /**
  * @author Sylvain PALOMINOS
  */
-public interface LocalWpsServer extends WpsServer {
+public interface OrbisGISWpsServer extends WpsServer {
 
     String TABLE_SRID = "TABLE_SRID";
     String TABLE_IS_SPATIAL = "TABLE_IS_SPATIAL";
@@ -55,22 +54,6 @@ public interface LocalWpsServer extends WpsServer {
     String GEOMETRY_TYPE = "GEOMETRY_TYPE";
     String TABLE_LOCATION = "TABLE_LOCATION";
     String TABLE_LABEL = "TABLE_LABEL";
-
-    /**
-     * Add a local groovy file or directory of processes to the wps service.
-     * @param f  File object to add to the service.
-     * @param iconName Icon file name associated to the script
-     * @param isDefaultScript True if the scripts are default scripts (unremovable). False otherwise
-     * @param nodePath
-     * @return 
-     */
-    List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isDefaultScript, String nodePath);
-
-    /**
-     * Remove the process corresponding to the given codeType.
-     * @param identifier URI identifier of the process.
-     */
-    void removeProcess(URI identifier);
 
     /**
      * Verify if the process corresponding to the identifier is a valid and well formed groovy wps script.

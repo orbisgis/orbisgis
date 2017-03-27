@@ -38,7 +38,7 @@ package org.orbisgis.wpsclient.impl.editor.process;
 
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.edition.*;
-import org.orbisgis.wpsclient.api.InternalWpsClient;
+import org.orbisgis.wpsclient.api.OrbisGISWpsClient;
 import org.orbisgis.wpsclient.impl.WpsClientImpl;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -73,12 +73,12 @@ public class ProcessEditorFactory implements EditorFactory {
     }
 
     @Reference()
-    public void setInternalWpsClient(InternalWpsClient internalWpsClient) {
-        this.wpsClient = (WpsClientImpl)internalWpsClient;
+    public void setInternalWpsClient(OrbisGISWpsClient orbisGISWpsClient) {
+        this.wpsClient = (WpsClientImpl) orbisGISWpsClient;
     }
 
-    public void unsetInternalWpsClient(InternalWpsClient internalWpsClient) {
-        this.wpsClient = (WpsClientImpl)internalWpsClient;
+    public void unsetInternalWpsClient(OrbisGISWpsClient orbisGISWpsClient) {
+        this.wpsClient = (WpsClientImpl) orbisGISWpsClient;
     }
 
     @Override

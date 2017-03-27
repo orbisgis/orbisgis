@@ -80,6 +80,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>wps-service-orbisgis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>dbjobs</artifactId>
             <version>${project.version}</version>
         </dependency>

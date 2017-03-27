@@ -58,7 +58,7 @@ public class DataProcessingTest {
     public void testBoundingBoxProcessing() {
         Geometry geometry = null;
         try {
-            geometry = WPSDataUtils.parseStringToBoundingBox("EPSG:4326;0,0,1,1");
+            geometry = WpsDataUtils.parseStringToBoundingBox("EPSG:4326;0,0,1,1");
         } catch (ParseException ignored) {}
         Assert.assertNotNull("The bounding box geometry should not be null.",
                 geometry);
@@ -69,7 +69,7 @@ public class DataProcessingTest {
         Assert.assertEquals("The bounding box geometry wasn't the one expected.",
                 "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", wktWriter.write(geometry));
 
-        String str = WPSDataUtils.parseBoundingBoxToString(geometry);
+        String str = WpsDataUtils.parseBoundingBoxToString(geometry);
         Assert.assertEquals("The bounding box geometry wasn't the one expected.",
                 ":4326;0,0,1,1", str);
     }
@@ -79,7 +79,7 @@ public class DataProcessingTest {
      */
     @Test(expected = ParseException.class)
     public void test3DBoundingBoxProcessing() throws ParseException {
-        WPSDataUtils.parseStringToBoundingBox("EPSG:4326;0,0,0,1,1,1");
+        WpsDataUtils.parseStringToBoundingBox("EPSG:4326;0,0,0,1,1,1");
     }
 
     /**
@@ -90,10 +90,10 @@ public class DataProcessingTest {
     public void testGeometryProcessing() {
         Geometry geometry = null;
         try {
-            geometry = WPSDataUtils.parseStringToGeometry("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))");
+            geometry = WpsDataUtils.parseStringToGeometry("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))");
         } catch (ParseException ignored) {}
         Assert.assertNotNull("The geometry get from the GeometryProcessing should not be null", geometry);
-        String string = WPSDataUtils.parseGeometryToString(geometry);
+        String string = WpsDataUtils.parseGeometryToString(geometry);
         Assert.assertEquals("The geometry wasn't the one expected.",
                 "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))", string);
     }

@@ -53,13 +53,11 @@ import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditorDockable;
-import org.orbisgis.sif.edition.EditorFactory;
 import org.orbisgis.sif.edition.EditorManager;
-import org.orbisgis.wpsclient.api.InternalWpsClient;
+import org.orbisgis.wpsclient.api.OrbisGISWpsClient;
 import org.orbisgis.wpsclient.api.WpsClient;
 import org.orbisgis.wpsclient.api.utils.ProcessExecutionType;
 import org.orbisgis.wpsclient.impl.dataui.DataUIManager;
-import org.orbisgis.wpsclient.impl.editor.process.ProcessEditorFactory;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.api.utils.WpsJobStateListener;
 import org.orbisgis.wpsclient.impl.editor.log.LogEditableElement;
@@ -68,7 +66,7 @@ import org.orbisgis.wpsclient.impl.utils.Job;
 import org.orbisgis.wpsclient.impl.editor.process.ProcessEditableElement;
 import org.orbisgis.wpsclient.impl.editor.process.ProcessEditor;
 import org.orbisgis.wpsservice.model.*;
-import org.orbisgis.wpsservice.LocalWpsServer;
+import org.orbisgis.wpsserviceorbisgis.OrbisGISWpsServer;
 import org.orbisgis.wpsservice.utils.ProcessMetadata;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -102,8 +100,8 @@ import static org.orbisgis.wpsclient.impl.utils.Job.REFRESH_STATUS;
  * @author Sylvain PALOMINOS
  **/
 
-@Component(immediate = true, service = {DockingPanel.class, InternalWpsClient.class})
-public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyChangeListener {
+@Component(immediate = true, service = {DockingPanel.class, OrbisGISWpsClient.class})
+public class WpsClientImpl implements DockingPanel, OrbisGISWpsClient, PropertyChangeListener {
 
     /** String of the action Refresh. */
     private static final String ACTION_REFRESH = "ACTION_REFRESH";
@@ -135,7 +133,7 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
     /** OrbisGIS DataManager. */
     private static DataManager dataManager;
     /** OrbisGIS WpsServer. */
-    private LocalWpsServer wpsService;
+    private OrbisGISWpsServer wpsService;
     /** List of JobStateListener listening for the Job state execution. */
     private List<WpsJobStateListener> jobStateListenerList;
     /** Map of the running job. */
@@ -195,10 +193,10 @@ public class WpsClientImpl implements DockingPanel, InternalWpsClient, PropertyC
     }
 
     @Reference
-    public void setLocalWpsService(LocalWpsServer wpsService) {
+    public void setLocalWpsService(OrbisGISWpsServer wpsService) {
         this.wpsService = wpsService;
     }
-    public void unsetLocalWpsService(LocalWpsServer wpsService) {
+    public void unsetLocalWpsService(OrbisGISWpsServer wpsService) {
         this.wpsService = null;
     }
 

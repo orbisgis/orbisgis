@@ -42,7 +42,6 @@ import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.MetadataType;
 import net.opengis.wps._2_0.*;
 import org.orbisgis.commons.progress.ProgressMonitor;
-import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
 import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.controller.parser.ParserController;
@@ -56,6 +55,7 @@ import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -76,7 +76,7 @@ public class ProcessManager {
     private List<ProcessIdentifier> processIdList;
     /** Controller used to parse process */
     private ParserController parserController;
-    private DataSourceService dataSourceService;
+    private DataSource dataSource;
     private WpsServer wpsService;
     private Map<UUID, CancelClosure> closureMap;
     private static final Logger LOGGER = LoggerFactory.getLogger(ProcessManager.class);
@@ -85,13 +85,13 @@ public class ProcessManager {
 
     /**
      * Main constructor.
-     * @param dataSourceService
+     * @param dataSource
      * @param wpsService
      */
-    public ProcessManager(DataSourceService dataSourceService, WpsServer wpsService){
+    public ProcessManager(DataSource dataSource, WpsServer wpsService){
         processIdList = new ArrayList<>();
         parserController = new ParserController();
-        this.dataSourceService = dataSourceService;
+        this.dataSource = dataSource;
         this.wpsService = wpsService;
         this.closureMap = new HashMap<>();
     }
@@ -224,8 +224,8 @@ public class ProcessManager {
         if(groovyObject != null) {
             CancelClosure closure = new CancelClosure(this);
             closureMap.put(jobId, closure);
-            if (dataSourceService != null) {
-                WpsSql sql = new WpsSql(dataSourceService);
+            if (dataSource != null) {
+                WpsSql sql = new WpsSql(dataSource);
                 sql.withStatement(closure);
                 groovyObject.setProperty("sql", sql);
                 groovyObject.setProperty("isH2", wpsService.getDatabase().equals(WpsServer.Database.H2GIS));

@@ -39,10 +39,10 @@ package org.orbisgis.wpsservicescripts;
 import net.opengis.ows._2.CodeType;
 import org.apache.commons.io.IOUtils;
 import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.orbisgis.wpsservice.LocalWpsServer;
 
+import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
-import org.orbisgis.wpsclient.api.InternalWpsClient;
+import org.orbisgis.wpsclient.api.OrbisGISWpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -102,12 +102,12 @@ public class WpsScriptsPackage {
      * The WPS service of OrbisGIS.
      * The WPS service contains all the declared processes available for the client (in OrbisGIS the toolbox).
      */
-    protected LocalWpsServer localWpsService;
+    protected WpsServer wpsServer;
 
     /**
      * The WPS client of OrbisGIS.
      */
-    protected InternalWpsClient wpsClient;
+    protected OrbisGISWpsClient wpsClient;
 
     /**
      * List of identifier of the processes loaded by this plusgin.
@@ -153,7 +153,7 @@ public class WpsScriptsPackage {
             LOGGER.error(I18N.tr("Unable to copy the content of the script to the temporary file."));
             return;
         }
-        List<ProcessIdentifier> piList = localWpsService.addLocalSource(tempFile,
+        List<ProcessIdentifier> piList = wpsServer.addLocalSource(tempFile,
                 icons,
                 false,
                 path);
@@ -172,7 +172,7 @@ public class WpsScriptsPackage {
      */
     protected void removeAllScripts(){
         for(CodeType idProcess : listIdProcess){
-            localWpsService.removeProcess(URI.create(idProcess.getValue()));
+            wpsServer.removeProcess(URI.create(idProcess.getValue()));
         }
     }
 

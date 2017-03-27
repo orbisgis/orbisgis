@@ -37,8 +37,8 @@
 package org.orbisgis.wpsservicescripts;
 
 import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.orbisgis.wpsservice.LocalWpsServer;
-import org.orbisgis.wpsclient.api.InternalWpsClient;
+import org.orbisgis.wpsclient.api.OrbisGISWpsClient;
+import org.orbisgis.wpsservice.WpsServer;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -94,19 +94,19 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
 
     /**
      * OSGI method used to give to the plugin the WpsService. (Be careful before any modification)
-     * @param localWpsService
+     * @param wpsServer
      */
     @Reference
-    public void setLocalWpsService(LocalWpsServer localWpsService) {
-        this.localWpsService = localWpsService;
+    public void setWpsServer(WpsServer wpsServer) {
+        this.wpsServer = wpsServer;
     }
 
     /**
      * OSGI method used to remove from the plugin the WpsService. (Be careful before any modification)
-     * @param localWpsService
+     * @param wpsServer
      */
-    public void unsetLocalWpsService(LocalWpsServer localWpsService) {
-        this.localWpsService = null;
+    public void unsetWpsServer(WpsServer wpsServer) {
+        this.wpsServer = null;
     }
 
     /**
@@ -114,7 +114,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
      * @param wpsClient
      */
     @Reference
-    public void setInternalWpsClient(InternalWpsClient wpsClient) {
+    public void setInternalWpsClient(OrbisGISWpsClient wpsClient) {
         this.wpsClient = wpsClient;
     }
 
@@ -122,7 +122,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
      * OSGI method used to remove from the plugin the WpsClient. (Be careful before any modification)
      * @param wpsClient
      */
-    public void unsetInternalWpsClient(InternalWpsClient wpsClient) {
+    public void unsetInternalWpsClient(OrbisGISWpsClient wpsClient) {
         this.wpsClient = null;
     }
 
@@ -168,7 +168,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
     public void activate(){
         listIdProcess = new ArrayList<>();
         //Check the WpsService
-        if(localWpsService != null){
+        if(wpsServer != null){
             //Default method to load the scripts
             String[] icons = new String[]{loadIcon("orbisgis.png")};
             customLoadScript("scripts/Network/createGraph.groovy", icons, I18N.tr("OrbisGIS")+"/"+I18N.tr("Network"));
@@ -232,7 +232,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
      */
     @Deactivate
     public void deactivate(){
-        if(localWpsService != null) {
+        if(wpsServer != null) {
             removeAllScripts();
             if(wpsClient != null) {
                 wpsClient.refreshAvailableScripts();
