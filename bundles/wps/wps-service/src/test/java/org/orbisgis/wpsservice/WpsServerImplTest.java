@@ -72,7 +72,7 @@ public class WpsServerImplTest {
      */
     @Before
     public void initialize(){
-        LocalWpsServerImpl localWpsServer = new LocalWpsServerImpl();
+        WpsServerImpl localWpsServer = new WpsServerImpl();
         localWpsServer.init();
 
         try {

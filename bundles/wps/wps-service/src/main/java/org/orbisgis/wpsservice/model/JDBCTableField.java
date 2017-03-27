@@ -39,7 +39,6 @@ package org.orbisgis.wpsservice.model;
 
 import net.opengis.wps._2_0.ComplexDataType;
 import net.opengis.wps._2_0.Format;
-import org.orbisgis.wpsservice.LocalWpsServerImpl;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -82,7 +81,7 @@ public class JDBCTableField extends ComplexDataType {
     @XmlAttribute(name = "defaultValues")
     private String[] defaultValues;
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(LocalWpsServerImpl.class);
+    private static final I18n I18N = I18nFactory.getI18n(JDBCTableField.class);
 
     /**
      * Main constructor.

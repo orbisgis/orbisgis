@@ -35,7 +35,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.wpsservice;
+package org.orbisgis.wpsserviceorbisgis;
 
 import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.*;
@@ -44,6 +44,8 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.*;
 import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.orbisgis.wpsservice.WpsServer;
+import org.orbisgis.wpsservice.WpsServerImpl;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.controller.utils.Job;
@@ -70,16 +72,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * It gives all the methods needed by the a WPS client to be able to get a process, to configure it and to run it.
  * It also implements the DatabaseProgressionListener to be able to know the table list in the database.
  */
-@Component(service = {LocalWpsServer.class})
+@Component(service = {LocalWpsServer.class, WpsServer.class})
 public class LocalWpsServerImpl
         extends WpsServerImpl
         implements LocalWpsServer, DatabaseProgressionListener {
 
-    private static final String WPS_SCRIPT_FOLDER = "Scripts";
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
-    /** String of the Groovy file extension. */
-    public static final String GROOVY_EXTENSION = "groovy";
     /**Array of the table type accepted. */
     private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL"};
     /** Logger */
@@ -254,31 +253,6 @@ public class LocalWpsServerImpl
     /***********************/
     /** Utilities methods **/
     /***********************/
-
-    @Override
-    public List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isRemovable, String nodePath){
-        List<ProcessIdentifier> piList = new ArrayList<>();
-        if(f.getName().endsWith(GROOVY_EXTENSION)) {
-            ProcessIdentifier pi = this.getProcessManager().addScript(f.toURI(), iconName, isRemovable, nodePath);
-            if(pi != null && pi.getProcessOffering() != null && pi.getProcessDescriptionType() != null){
-                piList.add(pi);
-            }
-        }
-        else if(f.isDirectory()){
-            piList.addAll(this.getProcessManager().addLocalSource(f.toURI(), iconName));
-        }
-        return piList;
-    }
-
-    @Override
-    public void removeProcess(URI identifier){
-        CodeType codeType = new CodeType();
-        codeType.setValue(identifier.toString());
-        ProcessDescriptionType process = this.getProcessManager().getProcess(codeType);
-        if(process != null) {
-            this.getProcessManager().removeProcess(process);
-        }
-    }
 
     @Override
     public boolean checkProcess(URI identifier){

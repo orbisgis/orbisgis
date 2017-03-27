@@ -38,9 +38,13 @@
 package org.orbisgis.wpsservice;
 
 import net.opengis.wps._2_0.*;
+import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -159,4 +163,20 @@ public interface WpsServer {
      * @return The database which is connected to the WPS server.
      */
     Database getDatabase();
+
+    /**
+     * Add a local groovy file or directory of processes to the wps service.
+     * @param f  File object to add to the service.
+     * @param iconName Icon file name associated to the script
+     * @param isDefaultScript True if the scripts are default scripts (unremovable). False otherwise
+     * @param nodePath
+     * @return
+     */
+    List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isDefaultScript, String nodePath);
+
+    /**
+     * Remove the process corresponding to the given codeType.
+     * @param identifier URI identifier of the process.
+     */
+    void removeProcess(URI identifier);
 }

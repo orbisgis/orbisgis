@@ -42,7 +42,7 @@ import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import org.junit.Test;
 import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.orbisgis.wpsservice.LocalWpsServer;
+import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.model.DataType;
 
@@ -78,7 +78,7 @@ public class OrbisGISWpsScriptPluginTest {
                 customCoreWorkspace.getApplicationFolder());
         OrbisGISWpsScriptPlugin plugin = new OrbisGISWpsScriptPlugin();
         //Give to the OrbisGISWpsScriptPlugin the LocalWpsServer and the CoreWorkspace
-        plugin.setLocalWpsService(localWpsServer);
+        plugin.setWpsServer(localWpsServer);
         plugin.setCoreWorkspace(new CustomCoreWorkspace());
         //Simulate the activation of the plugin and get back the list of script file add
         plugin.activate();
@@ -103,7 +103,7 @@ public class OrbisGISWpsScriptPluginTest {
                 localWpsServer.getAddScriptList().isEmpty());
         //Unset the CoreWorkspace and the LocalWpsService
         plugin.unsetCoreWorkspace(null);
-        plugin.unsetLocalWpsService(null);
+        plugin.unsetWpsServer(null);
     }
 
     /**
@@ -129,7 +129,7 @@ public class OrbisGISWpsScriptPluginTest {
      * methods are implemented. It is used to simulate a WpsServer but it only store in a list the loaded script.
      * This list is accessible throw the methods getAddScriptList().
      */
-    private class CustomWpsService implements LocalWpsServer {
+    private class CustomWpsService implements WpsServer {
         List<File> addScriptList = new ArrayList<>();
 
         @Override
@@ -165,14 +165,6 @@ public class OrbisGISWpsScriptPluginTest {
         }
 
         //Methods not used in the tests
-        @Override public boolean checkProcess(URI identifier) {return false;}
-        @Override public List<String> getTableList(List<DataType> dataTypes, List<DataType> excludedTypes) {return null;}
-        @Override public Map<String, Object> getFieldInformation(String tableName, String fieldName) {return null;}
-        @Override public List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes) {return null;}
-        @Override public List<String> getFieldValueList(String tableName, String fieldName) {return null;}
-        @Override public List<String> getSRIDList() {return null;}
-        @Override public void addGroovyProperties(Map<String, Object> propertiesMap) {}
-        @Override public void removeGroovyProperties(Map<String, Object> propertiesMap) {}
         @Override public Object getCapabilities(GetCapabilitiesType getCapabilities) {return null;}
         @Override public ProcessOfferings describeProcess(DescribeProcess describeProcess) {return null;}
         @Override public Object execute(ExecuteRequestType execute) {return null;}

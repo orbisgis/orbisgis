@@ -662,4 +662,29 @@ public class WpsServerImpl implements WpsServer {
         }
         return date;
     }
+
+    @Override
+    public List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isRemovable, String nodePath){
+        List<ProcessIdentifier> piList = new ArrayList<>();
+        if(f.getName().endsWith(".groovy")) {
+            ProcessIdentifier pi = this.getProcessManager().addScript(f.toURI(), iconName, isRemovable, nodePath);
+            if(pi != null && pi.getProcessOffering() != null && pi.getProcessDescriptionType() != null){
+                piList.add(pi);
+            }
+        }
+        else if(f.isDirectory()){
+            piList.addAll(this.getProcessManager().addLocalSource(f.toURI(), iconName));
+        }
+        return piList;
+    }
+
+    @Override
+    public void removeProcess(URI identifier){
+        CodeType codeType = new CodeType();
+        codeType.setValue(identifier.toString());
+        ProcessDescriptionType process = this.getProcessManager().getProcess(codeType);
+        if(process != null) {
+            this.getProcessManager().removeProcess(process);
+        }
+    }
 }
