@@ -379,6 +379,7 @@ public class WpsClientImpl implements DockingPanel, OrbisGISWpsClient, PropertyC
         OpenFolderPanel openFolderPanel = new OpenFolderPanel("ToolBox.AddSource", I18N.tr("Add a source"));
         openFolderPanel.getFileChooser();
         openFolderPanel.loadState();
+        openFolderPanel.setAcceptAllFileFilterUsed(false);
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFolderPanel)){
             addLocalSource(openFolderPanel.getSelectedFile().toURI());
@@ -393,6 +394,8 @@ public class WpsClientImpl implements DockingPanel, OrbisGISWpsClient, PropertyC
         OpenFilePanel openFilePanel = new OpenFilePanel("ToolBox.AddSource", I18N.tr("Add a source"));
         openFilePanel.getFileChooser();
         openFilePanel.loadState();
+        openFilePanel.addFilter("groovy", "Groovy script");
+        openFilePanel.setAcceptAllFileFilterUsed(false);
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFilePanel)){
             for(File file : openFilePanel.getSelectedFiles()) {
