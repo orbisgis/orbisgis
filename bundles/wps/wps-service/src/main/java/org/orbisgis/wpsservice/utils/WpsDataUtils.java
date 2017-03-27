@@ -48,11 +48,11 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Sylvain PALOMINOS
  */
-public class WPSDataUtils {
+public class WpsDataUtils {
 
 
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(WPSDataUtils.class);
+    private static final I18n I18N = I18nFactory.getI18n(WpsDataUtils.class);
 
     /**
      * Convert a BoundingBox string representation into a JTS geometry

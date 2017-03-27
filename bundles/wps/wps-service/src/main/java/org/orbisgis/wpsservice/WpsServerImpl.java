@@ -40,7 +40,6 @@ import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import net.opengis.wps._2_0.ObjectFactory;
-import org.orbisgis.corejdbc.DataSourceService;
 import org.orbisgis.wpsservice.execution.ProcessExecutionListener;
 import org.orbisgis.wpsservice.execution.ProcessWorker;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
@@ -54,6 +53,7 @@ import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -82,8 +82,8 @@ public class WpsServerImpl implements WpsServer {
 
     /** Process manager which contains all the loaded scripts. */
     private ProcessManager processManager;
-    /** DataSource Service from OrbisGIS */
-    private DataSourceService dataSourceService;
+    /** DataSource from OrbisGIS */
+    private DataSource dataSource;
     /** Map containing the WPS Jobs and their UUID */
     private Map<UUID, Job> jobMap;
     /** ExecutorService of OrbisGIS */
@@ -119,7 +119,7 @@ public class WpsServerImpl implements WpsServer {
         //Initialisation of the wps service itself
         wpsProp = new WpsServerProperties();
         //Creates the attribute for the processes execution
-        processManager = new ProcessManager(dataSourceService, this);
+        processManager = new ProcessManager(dataSource, this);
         workerFIFO = new LinkedList<>();
 
     }
@@ -607,8 +607,8 @@ public class WpsServerImpl implements WpsServer {
         return database;
     }
 
-    protected void setDataSourceService(DataSourceService dataSourceService){
-        this.dataSourceService = dataSourceService;
+    protected void setDataSource(DataSource dataSource){
+        this.dataSource = dataSource;
     }
 
     protected void setExecutorService(ExecutorService executorService){

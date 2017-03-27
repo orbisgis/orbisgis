@@ -38,7 +38,6 @@
 package org.orbisgis.wpsserviceorbisgis;
 
 import net.opengis.ows._2.*;
-import net.opengis.wps._2_0.*;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -226,10 +225,10 @@ public class LocalWpsServerImpl
 
     @Reference
     public void setDataSource(DataSource ds) {
-        super.setDataSourceService((DataSourceService)ds);
+        super.setDataSource(ds);
     }
     public void unsetDataSource(DataSource ds) {
-        super.setDataSourceService(null);
+        super.setDataSource(null);
     }
 
     @Reference
