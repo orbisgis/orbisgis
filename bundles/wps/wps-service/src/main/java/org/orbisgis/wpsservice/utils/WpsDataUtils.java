@@ -77,10 +77,10 @@ public class WpsDataUtils {
             throw new ParseException(I18N.tr("Only 2D bounding boxes are supported yet."));
         }
         String minX, minY, maxX, maxY;
-        minX = wkt[0];
-        minY = wkt[1];
-        maxX = wkt[2];
-        maxY = wkt[3];
+        minX = wkt[0].trim();
+        minY = wkt[1].trim();
+        maxX = wkt[2].trim();
+        maxY = wkt[3].trim();
         //Read the string to retrieve the Geometry
         geometry = new WKTReader().read("POLYGON((" +
                 minX+" "+minY+"," +
