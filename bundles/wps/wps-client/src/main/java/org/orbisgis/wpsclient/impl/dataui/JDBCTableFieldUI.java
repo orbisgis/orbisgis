@@ -46,7 +46,7 @@ import org.orbisgis.sif.components.renderers.JPanelListRenderer;
 import org.orbisgis.wpsclient.impl.WpsClientImpl;
 import org.orbisgis.wpsclient.api.dataui.DataUI;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
-import org.orbisgis.wpsserviceorbisgis.LocalWpsServer;
+import org.orbisgis.wpsserviceorbisgis.OrbisGISWpsServer;
 import org.orbisgis.wpsservice.model.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -509,16 +509,16 @@ public class JDBCTableFieldUI implements DataUI {
                     JPanel fieldPanel = new JPanel(new MigLayout("ins 0, gap 0"));
                     if (!informationMap.isEmpty()) {
                         //Sets the spatial icon
-                        String geometryType = (String)informationMap.get(LocalWpsServer.GEOMETRY_TYPE);
+                        String geometryType = (String)informationMap.get(OrbisGISWpsServer.GEOMETRY_TYPE);
                         fieldPanel.add(new JLabel(ToolBoxIcon.getIcon(geometryType.toLowerCase())));
                         fieldPanel.add(new JLabel(fieldName));
                         //Sets the SRID label
-                        int srid = (int) informationMap.get(LocalWpsServer.TABLE_SRID);
+                        int srid = (int) informationMap.get(OrbisGISWpsServer.TABLE_SRID);
                         if (srid != 0) {
                             fieldPanel.add(new JLabel(I18N.tr(" [EPSG:" + srid + "]")));
                         }
                         //Sets the dimension label
-                        int dimension = (int) informationMap.get(LocalWpsServer.TABLE_DIMENSION);
+                        int dimension = (int) informationMap.get(OrbisGISWpsServer.TABLE_DIMENSION);
                         if (dimension != 2 && dimension != 0) {
                             fieldPanel.add(new JLabel(I18N.tr(" "+dimension + "D")));
                         }

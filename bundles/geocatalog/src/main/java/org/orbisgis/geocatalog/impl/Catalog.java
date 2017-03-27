@@ -58,15 +58,11 @@ import org.orbisgis.geocatalog.impl.renderer.DataSourceListCellRenderer;
 import org.orbisgis.sif.common.ContainerItemProperties;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
-import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
-import org.orbisgis.wpsclient.api.InternalWpsClient;
-import org.orbisgis.wpsclient.api.utils.InternalWpsClientHandler;
-import org.orbisgis.wpsclient.api.utils.ProcessExecutionType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -116,7 +112,6 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
         private DriverFunctionContainer driverFunctionContainer;
         private DataManager dataManager;
         private ExecutorService executorService = null;
-        private InternalWpsClientHandler internalWpsClientHandler = new InternalWpsClientHandler();
 
         /**
          * For the Unit test purpose
@@ -134,15 +129,6 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
 
     public void unsetExecutorService(ExecutorService executorService) {
         this.executorService = null;
-    }
-
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-    public void setInternalWpsClient(InternalWpsClient wpsClient) {
-        this.internalWpsClientHandler.setInternalWpsClient(wpsClient);
-    }
-
-    public void unsetInternalWpsClient(InternalWpsClient wpsClient) {
-        this.internalWpsClientHandler.setInternalWpsClient(null);
     }
 
     @Reference

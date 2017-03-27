@@ -55,7 +55,7 @@ import java.util.UUID;
  *
  * @author Sylvain PALOMINOS
  */
-public interface InternalWpsClient extends WpsClient {
+public interface OrbisGISWpsClient extends WpsClient {
 
 
     /**************************/

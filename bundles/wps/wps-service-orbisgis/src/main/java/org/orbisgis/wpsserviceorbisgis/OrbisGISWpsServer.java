@@ -46,7 +46,7 @@ import java.util.*;
 /**
  * @author Sylvain PALOMINOS
  */
-public interface LocalWpsServer extends WpsServer {
+public interface OrbisGISWpsServer extends WpsServer {
 
     String TABLE_SRID = "TABLE_SRID";
     String TABLE_IS_SPATIAL = "TABLE_IS_SPATIAL";

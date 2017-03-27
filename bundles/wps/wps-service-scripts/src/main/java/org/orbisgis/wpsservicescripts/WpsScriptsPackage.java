@@ -42,7 +42,7 @@ import org.orbisgis.frameworkapi.CoreWorkspace;
 
 import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
-import org.orbisgis.wpsclient.api.InternalWpsClient;
+import org.orbisgis.wpsclient.api.OrbisGISWpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -107,7 +107,7 @@ public class WpsScriptsPackage {
     /**
      * The WPS client of OrbisGIS.
      */
-    protected InternalWpsClient wpsClient;
+    protected OrbisGISWpsClient wpsClient;
 
     /**
      * List of identifier of the processes loaded by this plusgin.

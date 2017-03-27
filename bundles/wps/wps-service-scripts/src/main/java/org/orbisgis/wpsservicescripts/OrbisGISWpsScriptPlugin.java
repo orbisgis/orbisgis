@@ -37,7 +37,7 @@
 package org.orbisgis.wpsservicescripts;
 
 import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.orbisgis.wpsclient.api.InternalWpsClient;
+import org.orbisgis.wpsclient.api.OrbisGISWpsClient;
 import org.orbisgis.wpsservice.WpsServer;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -114,7 +114,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
      * @param wpsClient
      */
     @Reference
-    public void setInternalWpsClient(InternalWpsClient wpsClient) {
+    public void setInternalWpsClient(OrbisGISWpsClient wpsClient) {
         this.wpsClient = wpsClient;
     }
 
@@ -122,7 +122,7 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
      * OSGI method used to remove from the plugin the WpsClient. (Be careful before any modification)
      * @param wpsClient
      */
-    public void unsetInternalWpsClient(InternalWpsClient wpsClient) {
+    public void unsetInternalWpsClient(OrbisGISWpsClient wpsClient) {
         this.wpsClient = null;
     }
 

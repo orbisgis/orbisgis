@@ -71,19 +71,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * It gives all the methods needed by the a WPS client to be able to get a process, to configure it and to run it.
  * It also implements the DatabaseProgressionListener to be able to know the table list in the database.
  */
-@Component(service = {LocalWpsServer.class, WpsServer.class})
-public class LocalWpsServerImpl
+@Component(service = {OrbisGISWpsServer.class, WpsServer.class})
+public class OrbisGISWpsServerImpl
         extends WpsServerImpl
-        implements LocalWpsServer, DatabaseProgressionListener {
+        implements OrbisGISWpsServer, DatabaseProgressionListener {
 
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
     /**Array of the table type accepted. */
     private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE","LINKED TABLE","VIEW","EXTERNAL"};
     /** Logger */
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalWpsServerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrbisGISWpsServerImpl.class);
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(LocalWpsServerImpl.class);
+    private static final I18n I18N = I18nFactory.getI18n(OrbisGISWpsServerImpl.class);
 
     /** True if the database is H2, false otherwise. */
     private boolean isH2;
@@ -645,9 +645,9 @@ public class LocalWpsServerImpl
      * Refresh the list
      */
     private static class ReadDataManagerOnSwingThread implements Runnable {
-        private LocalWpsServerImpl wpsService;
+        private OrbisGISWpsServerImpl wpsService;
 
-        private ReadDataManagerOnSwingThread(LocalWpsServerImpl wpsService) {
+        private ReadDataManagerOnSwingThread(OrbisGISWpsServerImpl wpsService) {
             this.wpsService = wpsService;
         }
 
