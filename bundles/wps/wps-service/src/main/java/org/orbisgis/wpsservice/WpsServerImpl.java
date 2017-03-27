@@ -664,7 +664,7 @@ public class WpsServerImpl implements WpsServer {
     }
 
     @Override
-    public List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isRemovable, String nodePath){
+    public List<ProcessIdentifier> addProcess(File f, String[] iconName, boolean isRemovable, String nodePath){
         List<ProcessIdentifier> piList = new ArrayList<>();
         if(f.getName().endsWith(".groovy")) {
             ProcessIdentifier pi = this.getProcessManager().addScript(f.toURI(), iconName, isRemovable, nodePath);
@@ -685,6 +685,38 @@ public class WpsServerImpl implements WpsServer {
         ProcessDescriptionType process = this.getProcessManager().getProcess(codeType);
         if(process != null) {
             this.getProcessManager().removeProcess(process);
+        }
+    }
+
+    @Override
+    public void addGroovyProperties(Map<String, Object> propertiesMap){
+        //Before adding an entry, check if it is not already defined.
+        for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
+            if(!this.propertiesMap.containsKey(entry.getKey()) &&
+                    !entry.getKey().equals("logger") &&
+                    !entry.getKey().equals("isH2") &&
+                    !entry.getKey().equals("sql")){
+                this.propertiesMap.put(entry.getKey(), entry.getValue());
+            }
+            else{
+                LOGGER.error(I18N.tr("Unable to set the property {0}, the name is already used.", entry.getKey()));
+            }
+        }
+    }
+
+    @Override
+    public void removeGroovyProperties(Map<String, Object> propertiesMap){
+        for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
+            if(this.propertiesMap.containsKey(entry.getKey()) &&
+                    !entry.getKey().equals("logger") &&
+                    !entry.getKey().equals("isH2") &&
+                    !entry.getKey().equals("sql")){
+                this.propertiesMap.remove(entry.getKey());
+            }
+            else{
+                LOGGER.error(I18N.tr("Unable to remove the property {0}, the name protected or not defined.",
+                        entry.getKey()));
+            }
         }
     }
 }

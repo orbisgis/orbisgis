@@ -153,7 +153,7 @@ public class WpsScriptsPackage {
             LOGGER.error(I18N.tr("Unable to copy the content of the script to the temporary file."));
             return;
         }
-        List<ProcessIdentifier> piList = wpsServer.addLocalSource(tempFile,
+        List<ProcessIdentifier> piList = wpsServer.addProcess(tempFile,
                 icons,
                 false,
                 path);

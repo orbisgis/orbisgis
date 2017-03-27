@@ -142,7 +142,7 @@ public class OrbisGISWpsServerImpl
                 String str = prop.toString();
                 for(String s : str.split(";")){
                     File f = new File(URI.create(s));
-                    addLocalSource(f, null, true, new File(f.getParent()).getName());
+                    addProcess(f, null, true, new File(f.getParent()).getName());
                 }
             }
         }
@@ -490,38 +490,6 @@ public class OrbisGISWpsServerImpl
             LOGGER.error(e.getMessage());
         }
         return false;
-    }
-
-    @Override
-    public void addGroovyProperties(Map<String, Object> propertiesMap){
-        //Before adding an entry, check if it is not already defined.
-        for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
-            if(!this.propertiesMap.containsKey(entry.getKey()) &&
-                    !entry.getKey().equals("logger") &&
-                    !entry.getKey().equals("isH2") &&
-                    !entry.getKey().equals("sql")){
-                this.propertiesMap.put(entry.getKey(), entry.getValue());
-            }
-            else{
-                LOGGER.error(I18N.tr("Unable to set the property {0}, the name is already used.", entry.getKey()));
-            }
-        }
-    }
-
-    @Override
-    public void removeGroovyProperties(Map<String, Object> propertiesMap){
-        for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
-            if(this.propertiesMap.containsKey(entry.getKey()) &&
-                    !entry.getKey().equals("logger") &&
-                    !entry.getKey().equals("isH2") &&
-                    !entry.getKey().equals("sql")){
-                this.propertiesMap.remove(entry.getKey());
-            }
-            else{
-                LOGGER.error(I18N.tr("Unable to remove the property {0}, the name protected or not defined.",
-                        entry.getKey()));
-            }
-        }
     }
 
 

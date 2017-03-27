@@ -421,7 +421,7 @@ public class WpsClientImpl implements DockingPanel, OrbisGISWpsClient, PropertyC
     private void addLocalSource(URI uri, String[] iconName, boolean isDefaultScript, String nodePath){
         File file = new File(uri);
         if(file.isFile()){
-            wpsService.addLocalSource(file, iconName, isDefaultScript, nodePath);
+            wpsService.addProcess(file, iconName, isDefaultScript, nodePath);
         }
         //If the folder doesn't contains only folders, add it
         else if(file.isDirectory()){
@@ -432,7 +432,7 @@ public class WpsClientImpl implements DockingPanel, OrbisGISWpsClient, PropertyC
                         toolBoxPanel.addFolder(file.toURI(), file.getParentFile().toURI());
                         isFolderAdd = true;
                     }
-                    wpsService.addLocalSource(f, iconName, isDefaultScript, nodePath);
+                    wpsService.addProcess(f, iconName, isDefaultScript, nodePath);
                 }
             }
         }

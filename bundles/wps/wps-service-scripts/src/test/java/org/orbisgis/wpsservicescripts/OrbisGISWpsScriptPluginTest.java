@@ -133,7 +133,7 @@ public class OrbisGISWpsScriptPluginTest {
         List<File> addScriptList = new ArrayList<>();
 
         @Override
-        public List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isDefault, String nodePath) {
+        public List<ProcessIdentifier> addProcess(File f, String[] iconName, boolean isDefault, String nodePath) {
             addScriptList.add(f);
             //Building of an empty processOffering
             CodeType codeType = new CodeType();

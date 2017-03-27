@@ -274,32 +274,32 @@ public class WpsServerGetProcessesTest {
                 URL url = this.getClass().getResource("JDBCTable.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, true, "test");
+                    localWpsService.addProcess(f, null, true, "test");
                 }
                 url = this.getClass().getResource("JDBCTableField.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, true, "test");
+                    localWpsService.addProcess(f, null, true, "test");
                 }
                 url = this.getClass().getResource("JDBCTableFieldValue.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, true, "test");
+                    localWpsService.addProcess(f, null, true, "test");
                 }
                 url = this.getClass().getResource("Enumeration.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, true, "test");
+                    localWpsService.addProcess(f, null, true, "test");
                 }
                 url = this.getClass().getResource("GeometryData.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, true, "test");
+                    localWpsService.addProcess(f, null, true, "test");
                 }
                 url = this.getClass().getResource("RawData.groovy");
                 if (url != null) {
                     File f = new File(url.toURI());
-                    localWpsService.addLocalSource(f, null, true, "test");
+                    localWpsService.addProcess(f, null, true, "test");
                 }
             } catch (URISyntaxException e) {
                 e.printStackTrace();
