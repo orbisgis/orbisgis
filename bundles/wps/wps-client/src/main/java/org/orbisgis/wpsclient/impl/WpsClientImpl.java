@@ -143,6 +143,7 @@ public class WpsClientImpl
     /** Map of the running job. */
     private Map<UUID, Job> jobMap;
     private EditorManager editorManager;
+    /** Boolean indicating if a refresh task has been scheduled or not. */
     private boolean isRefreshScheduled = false;
 
 
@@ -736,6 +737,7 @@ public class WpsClientImpl
 
     @Override
     public void onScriptAdd() {
+        //If no refresh task has been scheduled, creates on an schedule it in two seconds from now
         if(!isRefreshScheduled){
             isRefreshScheduled = true;
             Runnable refreshRunnable = new RefreshRunnable(this);
@@ -746,6 +748,7 @@ public class WpsClientImpl
 
     @Override
     public void onScriptRemoved() {
+        //If no refresh task has been scheduled, creates on an schedule it in two seconds from now
         if(!isRefreshScheduled){
             isRefreshScheduled = true;
             Runnable refreshRunnable = new RefreshRunnable(this);
@@ -850,8 +853,13 @@ public class WpsClientImpl
     /** Utility classes **/
     /*********************/
 
+    /**
+     * Class implementing the runnable interface. It is used to create a task which aim is to refresh in the given
+     * WpsClientImpl the list of processes.
+     */
     private class RefreshRunnable implements Runnable{
 
+        /** Client to refresh */
         private WpsClientImpl wpsClient;
 
         public RefreshRunnable(WpsClientImpl wpsClient){
