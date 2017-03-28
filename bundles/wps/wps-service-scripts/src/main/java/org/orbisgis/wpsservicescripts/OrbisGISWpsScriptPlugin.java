@@ -36,8 +36,6 @@
  */
 package org.orbisgis.wpsservicescripts;
 
-import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.orbisgis.wpsclient.api.OrbisGISWpsClient;
 import org.orbisgis.wpsservice.WpsServer;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -110,40 +108,6 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
     }
 
     /**
-     * OSGI method used to give to the plugin the WpsClient. (Be careful before any modification)
-     * @param wpsClient
-     */
-    @Reference
-    public void setInternalWpsClient(OrbisGISWpsClient wpsClient) {
-        this.wpsClient = wpsClient;
-    }
-
-    /**
-     * OSGI method used to remove from the plugin the WpsClient. (Be careful before any modification)
-     * @param wpsClient
-     */
-    public void unsetInternalWpsClient(OrbisGISWpsClient wpsClient) {
-        this.wpsClient = null;
-    }
-
-    /**
-     * OSGI method used to give to the plugin the CoreWorkspace. (Be careful before any modification)
-     * @param coreWorkspace
-     */
-    @Reference
-    public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
-        this.coreWorkspace = coreWorkspace;
-    }
-
-    /**
-     * OSGI method used to remove from the plugin the CoreWorkspace. (Be careful before any modification)
-     * @param coreWorkspace
-     */
-    public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
-        this.coreWorkspace = null;
-    }
-
-    /**
      * This methods is called once the plugin is loaded.
      *
      * It first check if the WpsService is ready.
@@ -204,18 +168,6 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
             customLoadScript("scripts/Export/exportGeoJsonFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
             customLoadScript("scripts/Export/exportShapeFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
             customLoadScript("scripts/Export/exportKMLFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
-
-
-            
-            //Check the WpsClient
-            if(wpsClient != null){
-                //Refresh the client
-                wpsClient.refreshAvailableScripts();
-            }
-            else{
-                LoggerFactory.getLogger(WpsScriptsPackage.class).warn(
-                        I18N.tr("Unable to retrieve the WpsClient from OrbisGIS."));
-            }
         }
         else{
             LoggerFactory.getLogger(WpsScriptsPackage.class).error(
@@ -234,9 +186,6 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
     public void deactivate(){
         if(wpsServer != null) {
             removeAllScripts();
-            if(wpsClient != null) {
-                wpsClient.refreshAvailableScripts();
-            }
         }
         else{
             LoggerFactory.getLogger(WpsScriptsPackage.class).error(

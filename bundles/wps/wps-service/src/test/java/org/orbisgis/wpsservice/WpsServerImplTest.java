@@ -79,37 +79,37 @@ public class WpsServerImplTest {
             URL url = this.getClass().getResource("JDBCTable.groovy");
             Assert.assertNotNull("Unable to load the script 'JDBCTable.groovy'", url);
             File f = new File(url.toURI());
-            localWpsServer.addLocalSource(f, null, true, "test");
+            localWpsServer.addProcess(f, null, true, "test");
 
             url = this.getClass().getResource("JDBCTableField.groovy");
             Assert.assertNotNull("Unable to load the script 'JDBCTableField.groovy'", url);
             f = new File(url.toURI());
-            localWpsServer.addLocalSource(f, null, true, "test");
+            localWpsServer.addProcess(f, null, true, "test");
 
             url = this.getClass().getResource("JDBCTableFieldValue.groovy");
             Assert.assertNotNull("Unable to load the script 'JDBCTableFieldValue.groovy'", url);
             f = new File(url.toURI());
-            localWpsServer.addLocalSource(f, null, true, "test");
+            localWpsServer.addProcess(f, null, true, "test");
 
             url = this.getClass().getResource("Enumeration.groovy");
             Assert.assertNotNull("Unable to load the script 'Enumeration.groovy'", url);
             f = new File(url.toURI());
-            localWpsServer.addLocalSource(f, null, true, "test");
+            localWpsServer.addProcess(f, null, true, "test");
 
             url = this.getClass().getResource("EnumerationLongProcess.groovy");
             Assert.assertNotNull("Unable to load the script 'EnumerationLongProcess.groovy'", url);
             f = new File(url.toURI());
-            localWpsServer.addLocalSource(f, null, true, "test");
+            localWpsServer.addProcess(f, null, true, "test");
 
             url = this.getClass().getResource("GeometryData.groovy");
             Assert.assertNotNull("Unable to load the script 'GeometryData.groovy'", url);
             f = new File(url.toURI());
-            localWpsServer.addLocalSource(f, null, true, "test");
+            localWpsServer.addProcess(f, null, true, "test");
 
             url = this.getClass().getResource("RawData.groovy");
             Assert.assertNotNull("Unable to load the script 'RawData.groovy'", url);
             f = new File(url.toURI());
-            localWpsServer.addLocalSource(f, null, true, "test");
+            localWpsServer.addProcess(f, null, true, "test");
 
         }
         catch (URISyntaxException e) {

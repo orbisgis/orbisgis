@@ -49,6 +49,7 @@ import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.controller.utils.Job;
 import org.orbisgis.wpsservice.model.DataType;
+import org.orbisgis.wpsserviceorbisgis.utils.OrbisGISWpsServerListener;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -99,6 +100,8 @@ public class OrbisGISWpsServerImpl
      * It is used as a buffer to avoid to reload all the table list to save time.
      */
     private List<Map<String, String>> tableList;
+    /** List of OrbisGISWpsServerListener. */
+    private List<OrbisGISWpsServerListener> orbisgisWpsServerListenerList = new ArrayList<>();
 
 
     /**********************************************/
@@ -109,10 +112,9 @@ public class OrbisGISWpsServerImpl
      * Initialization of the LocalWpsServiceImplementation required by OSGI.
      */
     @Activate
-    @Override
-    public void init(){
+    public void initialisation(){
         //Call the initialisation of the WpsServer
-        super.init();
+        super.init(coreWorkspace.getApplicationFolder());
         //Start the listening of the database
         initDataBaseLink();
         //Restore the last saved state of the wps server
@@ -142,7 +144,7 @@ public class OrbisGISWpsServerImpl
                 String str = prop.toString();
                 for(String s : str.split(";")){
                     File f = new File(URI.create(s));
-                    addLocalSource(f, null, true, new File(f.getParent()).getName());
+                    addProcess(f, null, true, new File(f.getParent()).getName());
                 }
             }
         }
@@ -212,8 +214,7 @@ public class OrbisGISWpsServerImpl
 
     /******************************************************************/
     /** Set and Unset methods to get services from OrbisGIS via OSGI **/
-    /**
-     * @param coreWorkspace****************************************************************/
+    /******************************************************************/
 
     @Reference
     public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
@@ -457,6 +458,16 @@ public class OrbisGISWpsServerImpl
         return sridList;
     }
 
+    @Override
+    public void addOrbisGISWpsServerListener(OrbisGISWpsServerListener wpsServerListener) {
+        this.orbisgisWpsServerListenerList.add(wpsServerListener);
+    }
+
+    @Override
+    public void removeOrbisGISWpsServerListener(OrbisGISWpsServerListener wpsServerListener) {
+        this.orbisgisWpsServerListenerList.remove(wpsServerListener);
+    }
+
     /**
      * Test the database an returns if it allows the wps service to run more than one process at the same time.
      * @return True if more than one process can be run at the same time, false otherwise.
@@ -493,34 +504,19 @@ public class OrbisGISWpsServerImpl
     }
 
     @Override
-    public void addGroovyProperties(Map<String, Object> propertiesMap){
-        //Before adding an entry, check if it is not already defined.
-        for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
-            if(!this.propertiesMap.containsKey(entry.getKey()) &&
-                    !entry.getKey().equals("logger") &&
-                    !entry.getKey().equals("isH2") &&
-                    !entry.getKey().equals("sql")){
-                this.propertiesMap.put(entry.getKey(), entry.getValue());
-            }
-            else{
-                LOGGER.error(I18N.tr("Unable to set the property {0}, the name is already used.", entry.getKey()));
-            }
+    public List<ProcessIdentifier> addProcess(File f, String[] iconName, boolean isRemovable, String nodePath){
+        List<ProcessIdentifier> piList = super.addProcess(f, iconName, isRemovable, nodePath);
+        for(OrbisGISWpsServerListener listener : orbisgisWpsServerListenerList){
+            listener.onScriptAdd();
         }
+        return piList;
     }
 
     @Override
-    public void removeGroovyProperties(Map<String, Object> propertiesMap){
-        for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
-            if(this.propertiesMap.containsKey(entry.getKey()) &&
-                    !entry.getKey().equals("logger") &&
-                    !entry.getKey().equals("isH2") &&
-                    !entry.getKey().equals("sql")){
-                this.propertiesMap.remove(entry.getKey());
-            }
-            else{
-                LOGGER.error(I18N.tr("Unable to remove the property {0}, the name protected or not defined.",
-                        entry.getKey()));
-            }
+    public void removeProcess(URI identifier){
+        super.removeProcess(identifier);
+        for(OrbisGISWpsServerListener listener : orbisgisWpsServerListenerList){
+            listener.onScriptRemoved();
         }
     }
 

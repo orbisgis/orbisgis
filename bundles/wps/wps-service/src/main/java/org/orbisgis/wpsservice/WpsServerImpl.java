@@ -99,6 +99,7 @@ public class WpsServerImpl implements WpsServer {
     private LinkedList<ProcessWorker> workerFIFO;
     /** Properties of the wps server */
     protected WpsServerProperties wpsProp;
+    protected String scriptFolder;
 
     private enum SectionName {ServiceIdentification, ServiceProvider, OperationMetadata, Contents, Languages, All}
 
@@ -122,6 +123,14 @@ public class WpsServerImpl implements WpsServer {
         processManager = new ProcessManager(dataSource, this);
         workerFIFO = new LinkedList<>();
 
+    }
+
+    /**
+     * Initialization of the WpsServiceImpl.
+     */
+    public void init(String scriptFolder){
+        this.setScriptFolder(scriptFolder);
+        init();
     }
 
     /*******************************************************************/
@@ -664,7 +673,7 @@ public class WpsServerImpl implements WpsServer {
     }
 
     @Override
-    public List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isRemovable, String nodePath){
+    public List<ProcessIdentifier> addProcess(File f, String[] iconName, boolean isRemovable, String nodePath){
         List<ProcessIdentifier> piList = new ArrayList<>();
         if(f.getName().endsWith(".groovy")) {
             ProcessIdentifier pi = this.getProcessManager().addScript(f.toURI(), iconName, isRemovable, nodePath);
@@ -686,5 +695,47 @@ public class WpsServerImpl implements WpsServer {
         if(process != null) {
             this.getProcessManager().removeProcess(process);
         }
+    }
+
+    @Override
+    public void addGroovyProperties(Map<String, Object> propertiesMap){
+        //Before adding an entry, check if it is not already defined.
+        for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
+            if(!this.propertiesMap.containsKey(entry.getKey()) &&
+                    !entry.getKey().equals("logger") &&
+                    !entry.getKey().equals("isH2") &&
+                    !entry.getKey().equals("sql")){
+                this.propertiesMap.put(entry.getKey(), entry.getValue());
+            }
+            else{
+                LOGGER.error(I18N.tr("Unable to set the property {0}, the name is already used.", entry.getKey()));
+            }
+        }
+    }
+
+    @Override
+    public void removeGroovyProperties(Map<String, Object> propertiesMap){
+        for(Map.Entry<String, Object> entry : propertiesMap.entrySet()){
+            if(this.propertiesMap.containsKey(entry.getKey()) &&
+                    !entry.getKey().equals("logger") &&
+                    !entry.getKey().equals("isH2") &&
+                    !entry.getKey().equals("sql")){
+                this.propertiesMap.remove(entry.getKey());
+            }
+            else{
+                LOGGER.error(I18N.tr("Unable to remove the property {0}, the name protected or not defined.",
+                        entry.getKey()));
+            }
+        }
+    }
+
+    @Override
+    public void setScriptFolder(String scriptFolder){
+        this.scriptFolder = scriptFolder;
+    }
+
+    @Override
+    public String getScriptFolder(){
+        return scriptFolder;
     }
 }

@@ -39,6 +39,7 @@ package org.orbisgis.wpsserviceorbisgis;
 
 import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.model.DataType;
+import org.orbisgis.wpsserviceorbisgis.utils.OrbisGISWpsServerListener;
 
 import java.net.URI;
 import java.util.*;
@@ -107,18 +108,14 @@ public interface OrbisGISWpsServer extends WpsServer {
     List<String> getSRIDList();
 
     /**
-     * Adds to the server execution properties which will be set to the GroovyObject for the execution.
-     * Those properties will be accessible inside the groovy script as variables which name is the map entry key.
-     * For example :
-     * If the propertiesMap contains <"message", "HelloWorld">, inside the groovy script you can print the message this
-     * way : 'print message'
-     * @param propertiesMap Map containing the properties to be passed to the GroovyObject
+     * Registers a WpsServerListener.
+     * @param wpsServerListener WpsServerListener to register.
      */
-    void addGroovyProperties(Map<String, Object> propertiesMap);
+    void addOrbisGISWpsServerListener(OrbisGISWpsServerListener wpsServerListener);
 
     /**
-     * Removes the properties already set for the GroovyObject for the execution.
-     * @param propertiesMap Map containing the properties to be removed
+     * Unregisters a WpsServerListener.
+     * @param wpsServerListener WpsServerListener to unregister.
      */
-    void removeGroovyProperties(Map<String, Object> propertiesMap);
+    void removeOrbisGISWpsServerListener(OrbisGISWpsServerListener wpsServerListener);
 }

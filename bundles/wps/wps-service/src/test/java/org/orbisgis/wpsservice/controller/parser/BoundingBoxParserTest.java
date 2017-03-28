@@ -356,7 +356,7 @@ public class BoundingBoxParserTest {
                 identifier = "identifier",
                 metadata = {"role","title"}
         )
-        private String complexBoundingBoxInput = "EPSG:4326;0,0,1,1";
+        private String complexBoundingBoxInput = "EPSG:4326;0, 0, 1 ,1";
 
         /** The simplest BoundingBox output declaration */
         @BoundingBoxAttribute

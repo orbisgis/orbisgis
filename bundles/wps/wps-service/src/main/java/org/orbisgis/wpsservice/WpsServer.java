@@ -45,6 +45,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -172,11 +173,39 @@ public interface WpsServer {
      * @param nodePath
      * @return
      */
-    List<ProcessIdentifier> addLocalSource(File f, String[] iconName, boolean isDefaultScript, String nodePath);
+    List<ProcessIdentifier> addProcess(File f, String[] iconName, boolean isDefaultScript, String nodePath);
 
     /**
      * Remove the process corresponding to the given codeType.
      * @param identifier URI identifier of the process.
      */
     void removeProcess(URI identifier);
+
+    /**
+     * Adds to the server execution properties which will be set to the GroovyObject for the execution.
+     * Those properties will be accessible inside the groovy script as variables which name is the map entry key.
+     * For example :
+     * If the propertiesMap contains <"message", "HelloWorld">, inside the groovy script you can print the message this
+     * way : 'print message'
+     * @param propertiesMap Map containing the properties to be passed to the GroovyObject
+     */
+    void addGroovyProperties(Map<String, Object> propertiesMap);
+
+    /**
+     * Removes the properties already set for the GroovyObject for the execution.
+     * @param propertiesMap Map containing the properties to be removed
+     */
+    void removeGroovyProperties(Map<String, Object> propertiesMap);
+
+    /**
+     * Returns the path of the folder containing the WPS groovy scripts.
+     * @return The path of the folder containing the WPS groovy scripts.
+     */
+    String getScriptFolder();
+
+    /**
+     * Sets the path of the folder containing the WPS groovy scripts.
+     * @param scriptFolder The path of the folder containing the WPS groovy scripts.
+     */
+    void setScriptFolder(String scriptFolder);
 }
