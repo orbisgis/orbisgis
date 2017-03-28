@@ -196,4 +196,16 @@ public interface WpsServer {
      * @param propertiesMap Map containing the properties to be removed
      */
     void removeGroovyProperties(Map<String, Object> propertiesMap);
+
+    /**
+     * Returns the path of the folder containing the WPS groovy scripts.
+     * @return The path of the folder containing the WPS groovy scripts.
+     */
+    String getScriptFolder();
+
+    /**
+     * Sets the path of the folder containing the WPS groovy scripts.
+     * @param scriptFolder The path of the folder containing the WPS groovy scripts.
+     */
+    void setScriptFolder(String scriptFolder);
 }

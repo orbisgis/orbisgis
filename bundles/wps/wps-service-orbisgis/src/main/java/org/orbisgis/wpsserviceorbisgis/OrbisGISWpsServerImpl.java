@@ -112,10 +112,9 @@ public class OrbisGISWpsServerImpl
      * Initialization of the LocalWpsServiceImplementation required by OSGI.
      */
     @Activate
-    @Override
-    public void init(){
+    public void initialisation(){
         //Call the initialisation of the WpsServer
-        super.init();
+        super.init(coreWorkspace.getTempFolder());
         //Start the listening of the database
         initDataBaseLink();
         //Restore the last saved state of the wps server

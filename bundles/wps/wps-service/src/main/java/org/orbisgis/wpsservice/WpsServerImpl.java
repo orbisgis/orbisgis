@@ -99,6 +99,7 @@ public class WpsServerImpl implements WpsServer {
     private LinkedList<ProcessWorker> workerFIFO;
     /** Properties of the wps server */
     protected WpsServerProperties wpsProp;
+    protected String scriptFolder;
 
     private enum SectionName {ServiceIdentification, ServiceProvider, OperationMetadata, Contents, Languages, All}
 
@@ -122,6 +123,14 @@ public class WpsServerImpl implements WpsServer {
         processManager = new ProcessManager(dataSource, this);
         workerFIFO = new LinkedList<>();
 
+    }
+
+    /**
+     * Initialization of the WpsServiceImpl.
+     */
+    public void init(String scriptFolder){
+        this.setScriptFolder(scriptFolder);
+        init();
     }
 
     /*******************************************************************/
@@ -718,5 +727,15 @@ public class WpsServerImpl implements WpsServer {
                         entry.getKey()));
             }
         }
+    }
+
+    @Override
+    public void setScriptFolder(String scriptFolder){
+        this.scriptFolder = scriptFolder;
+    }
+
+    @Override
+    public String getScriptFolder(){
+        return scriptFolder;
     }
 }

@@ -38,11 +38,9 @@ package org.orbisgis.wpsservicescripts;
 
 import net.opengis.ows._2.CodeType;
 import org.apache.commons.io.IOUtils;
-import org.orbisgis.frameworkapi.CoreWorkspace;
 
 import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
-import org.orbisgis.wpsclient.api.OrbisGISWpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -94,20 +92,10 @@ public class WpsScriptsPackage {
     protected static final Logger LOGGER = LoggerFactory.getLogger(WpsScriptsPackage.class);
 
     /**
-     * OrbisGIS core workspace.
-     */
-    protected CoreWorkspace coreWorkspace;
-
-    /**
      * The WPS service of OrbisGIS.
      * The WPS service contains all the declared processes available for the client (in OrbisGIS the toolbox).
      */
     protected WpsServer wpsServer;
-
-    /**
-     * The WPS client of OrbisGIS.
-     */
-    protected OrbisGISWpsClient wpsClient;
 
     /**
      * List of identifier of the processes loaded by this plusgin.
@@ -122,7 +110,7 @@ public class WpsScriptsPackage {
      * @param path
      */
     protected void customLoadScript(String processpath, String[] icons, String path){
-        String tempFolderPath = coreWorkspace.getApplicationFolder();
+        String tempFolderPath = wpsServer.getScriptFolder();
         File tempFolder = new File(tempFolderPath, "wpsscripts");
         if(!tempFolder.exists()) {
             if(!tempFolder.mkdirs()){
@@ -187,7 +175,7 @@ public class WpsScriptsPackage {
             LOGGER.error(I18N.tr("Unable to get the URL of the icon {0}", iconName));
             return null;
         }
-        String tempFolderPath = coreWorkspace.getApplicationFolder();
+        String tempFolderPath = wpsServer.getScriptFolder();
         File tempFolder = new File(tempFolderPath, "wpsscripts");
         if(!tempFolder.exists()) {
             if(!tempFolder.mkdirs()){

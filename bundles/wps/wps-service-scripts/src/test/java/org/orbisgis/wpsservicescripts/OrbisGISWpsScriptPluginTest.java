@@ -76,10 +76,10 @@ public class OrbisGISWpsScriptPluginTest {
         CustomCoreWorkspace customCoreWorkspace = new CustomCoreWorkspace();
         Assert.assertNotNull("Unable to create the temporary folder for the custom CoreWorkspace.",
                 customCoreWorkspace.getApplicationFolder());
+        localWpsServer.setScriptFolder(customCoreWorkspace.getTempFolder());
         OrbisGISWpsScriptPlugin plugin = new OrbisGISWpsScriptPlugin();
         //Give to the OrbisGISWpsScriptPlugin the LocalWpsServer and the CoreWorkspace
         plugin.setWpsServer(localWpsServer);
-        plugin.setCoreWorkspace(new CustomCoreWorkspace());
         //Simulate the activation of the plugin and get back the list of script file add
         plugin.activate();
         List<File> addScriptList = localWpsServer.getAddScriptList();
@@ -102,7 +102,6 @@ public class OrbisGISWpsScriptPluginTest {
         Assert.assertTrue("All the scripts should have been removed from the server.",
                 localWpsServer.getAddScriptList().isEmpty());
         //Unset the CoreWorkspace and the LocalWpsService
-        plugin.unsetCoreWorkspace(null);
         plugin.unsetWpsServer(null);
     }
 
@@ -130,7 +129,8 @@ public class OrbisGISWpsScriptPluginTest {
      * This list is accessible throw the methods getAddScriptList().
      */
     private class CustomWpsService implements WpsServer {
-        List<File> addScriptList = new ArrayList<>();
+        private List<File> addScriptList = new ArrayList<>();
+        private String scriptFolder;
 
         @Override
         public List<ProcessIdentifier> addProcess(File f, String[] iconName, boolean isDefault, String nodePath) {
@@ -163,6 +163,8 @@ public class OrbisGISWpsScriptPluginTest {
             }
             addScriptList.remove(fileToRemove);
         }
+        @Override public String getScriptFolder() {return scriptFolder;}
+        @Override public void setScriptFolder(String scriptFolder) {this.scriptFolder = scriptFolder;}
 
 
         //Methods not used in the tests
