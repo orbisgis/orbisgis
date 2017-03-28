@@ -114,7 +114,7 @@ public class OrbisGISWpsServerImpl
     @Activate
     public void initialisation(){
         //Call the initialisation of the WpsServer
-        super.init(coreWorkspace.getTempFolder());
+        super.init(coreWorkspace.getApplicationFolder());
         //Start the listening of the database
         initDataBaseLink();
         //Restore the last saved state of the wps server
