@@ -508,9 +508,17 @@ public class OrbisGISWpsServerImpl
     public List<ProcessIdentifier> addProcess(File f, String[] iconName, boolean isRemovable, String nodePath){
         List<ProcessIdentifier> piList = super.addProcess(f, iconName, isRemovable, nodePath);
         for(OrbisGISWpsServerListener listener : orbisgisWpsServerListenerList){
-            listener.onNewScriptAdd();
+            listener.onScriptAdd();
         }
         return piList;
+    }
+
+    @Override
+    public void removeProcess(URI identifier){
+        super.removeProcess(identifier);
+        for(OrbisGISWpsServerListener listener : orbisgisWpsServerListenerList){
+            listener.onScriptRemoved();
+        }
     }
 
 

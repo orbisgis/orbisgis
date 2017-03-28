@@ -204,16 +204,6 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
             customLoadScript("scripts/Export/exportGeoJsonFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
             customLoadScript("scripts/Export/exportShapeFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
             customLoadScript("scripts/Export/exportKMLFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
-
-            //Check the WpsClient
-            if(wpsClient != null){
-                //Refresh the client
-                //wpsClient.refreshAvailableScripts();
-            }
-            else{
-                LoggerFactory.getLogger(WpsScriptsPackage.class).warn(
-                        I18N.tr("Unable to retrieve the WpsClient from OrbisGIS."));
-            }
         }
         else{
             LoggerFactory.getLogger(WpsScriptsPackage.class).error(
@@ -232,9 +222,6 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
     public void deactivate(){
         if(wpsServer != null) {
             removeAllScripts();
-            if(wpsClient != null) {
-                wpsClient.refreshAvailableScripts();
-            }
         }
         else{
             LoggerFactory.getLogger(WpsScriptsPackage.class).error(

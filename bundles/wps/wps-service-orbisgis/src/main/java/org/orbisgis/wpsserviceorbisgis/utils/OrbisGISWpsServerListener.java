@@ -42,7 +42,12 @@ package org.orbisgis.wpsserviceorbisgis.utils;
 public interface OrbisGISWpsServerListener {
 
     /**
-     * Action to do when new script were add in the WpsServer.
+     * Action to do when a script were add in the WpsServer.
      */
-    void onNewScriptAdd();
+    void onScriptAdd();
+
+    /**
+     * Action to do when a script were removed in the WpsServer.
+     */
+    void onScriptRemoved();
 }

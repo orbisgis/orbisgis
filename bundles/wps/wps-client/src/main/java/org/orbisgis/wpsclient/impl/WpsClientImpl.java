@@ -735,7 +735,17 @@ public class WpsClientImpl
     }
 
     @Override
-    public void onNewScriptAdd() {
+    public void onScriptAdd() {
+        if(!isRefreshScheduled){
+            isRefreshScheduled = true;
+            Runnable refreshRunnable = new RefreshRunnable(this);
+            final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+            executor.schedule(refreshRunnable, 2, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    public void onScriptRemoved() {
         if(!isRefreshScheduled){
             isRefreshScheduled = true;
             Runnable refreshRunnable = new RefreshRunnable(this);
