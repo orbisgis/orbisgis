@@ -39,6 +39,7 @@ package org.orbisgis.wpsserviceorbisgis;
 
 import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.model.DataType;
+import org.orbisgis.wpsserviceorbisgis.utils.OrbisGISWpsServerListener;
 
 import java.net.URI;
 import java.util.*;
@@ -105,4 +106,16 @@ public interface OrbisGISWpsServer extends WpsServer {
      * @return The list of the available SRID.
      */
     List<String> getSRIDList();
+
+    /**
+     * Registers a WpsServerListener.
+     * @param wpsServerListener WpsServerListener to register.
+     */
+    void addOrbisGISWpsServerListener(OrbisGISWpsServerListener wpsServerListener);
+
+    /**
+     * Unregisters a WpsServerListener.
+     * @param wpsServerListener WpsServerListener to unregister.
+     */
+    void removeOrbisGISWpsServerListener(OrbisGISWpsServerListener wpsServerListener);
 }

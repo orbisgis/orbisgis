@@ -164,7 +164,10 @@ public class OrbisGISWpsScriptPluginTest {
             addScriptList.remove(fileToRemove);
         }
 
+
         //Methods not used in the tests
+        @Override public void addGroovyProperties(Map<String, Object> propertiesMap) {}
+        @Override public void removeGroovyProperties(Map<String, Object> propertiesMap) {}
         @Override public Object getCapabilities(GetCapabilitiesType getCapabilities) {return null;}
         @Override public ProcessOfferings describeProcess(DescribeProcess describeProcess) {return null;}
         @Override public Object execute(ExecuteRequestType execute) {return null;}

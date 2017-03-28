@@ -49,6 +49,7 @@ import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.wpsservice.controller.process.ProcessManager;
 import org.orbisgis.wpsservice.controller.utils.Job;
 import org.orbisgis.wpsservice.model.DataType;
+import org.orbisgis.wpsserviceorbisgis.utils.OrbisGISWpsServerListener;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -99,6 +100,8 @@ public class OrbisGISWpsServerImpl
      * It is used as a buffer to avoid to reload all the table list to save time.
      */
     private List<Map<String, String>> tableList;
+    /** List of OrbisGISWpsServerListener. */
+    private List<OrbisGISWpsServerListener> orbisgisWpsServerListenerList = new ArrayList<>();
 
 
     /**********************************************/
@@ -212,8 +215,7 @@ public class OrbisGISWpsServerImpl
 
     /******************************************************************/
     /** Set and Unset methods to get services from OrbisGIS via OSGI **/
-    /**
-     * @param coreWorkspace****************************************************************/
+    /******************************************************************/
 
     @Reference
     public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
@@ -457,6 +459,16 @@ public class OrbisGISWpsServerImpl
         return sridList;
     }
 
+    @Override
+    public void addOrbisGISWpsServerListener(OrbisGISWpsServerListener wpsServerListener) {
+        this.orbisgisWpsServerListenerList.add(wpsServerListener);
+    }
+
+    @Override
+    public void removeOrbisGISWpsServerListener(OrbisGISWpsServerListener wpsServerListener) {
+        this.orbisgisWpsServerListenerList.remove(wpsServerListener);
+    }
+
     /**
      * Test the database an returns if it allows the wps service to run more than one process at the same time.
      * @return True if more than one process can be run at the same time, false otherwise.
@@ -490,6 +502,15 @@ public class OrbisGISWpsServerImpl
             LOGGER.error(e.getMessage());
         }
         return false;
+    }
+
+    @Override
+    public List<ProcessIdentifier> addProcess(File f, String[] iconName, boolean isRemovable, String nodePath){
+        List<ProcessIdentifier> piList = super.addProcess(f, iconName, isRemovable, nodePath);
+        for(OrbisGISWpsServerListener listener : orbisgisWpsServerListenerList){
+            listener.onNewScriptAdd();
+        }
+        return piList;
     }
 
 

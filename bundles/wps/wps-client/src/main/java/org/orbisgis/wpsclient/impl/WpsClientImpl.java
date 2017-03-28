@@ -68,6 +68,7 @@ import org.orbisgis.wpsclient.impl.editor.process.ProcessEditor;
 import org.orbisgis.wpsservice.model.*;
 import org.orbisgis.wpsserviceorbisgis.OrbisGISWpsServer;
 import org.orbisgis.wpsservice.utils.ProcessMetadata;
+import org.orbisgis.wpsserviceorbisgis.utils.OrbisGISWpsServerListener;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -89,6 +90,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static org.orbisgis.wpsclient.impl.utils.Job.CANCEL;
 import static org.orbisgis.wpsclient.impl.utils.Job.GET_RESULTS;
@@ -101,7 +104,8 @@ import static org.orbisgis.wpsclient.impl.utils.Job.REFRESH_STATUS;
  **/
 
 @Component(immediate = true, service = {DockingPanel.class, OrbisGISWpsClient.class})
-public class WpsClientImpl implements DockingPanel, OrbisGISWpsClient, PropertyChangeListener {
+public class WpsClientImpl
+        implements DockingPanel, OrbisGISWpsClient, PropertyChangeListener, OrbisGISWpsServerListener {
 
     /** String of the action Refresh. */
     private static final String ACTION_REFRESH = "ACTION_REFRESH";
@@ -139,6 +143,7 @@ public class WpsClientImpl implements DockingPanel, OrbisGISWpsClient, PropertyC
     /** Map of the running job. */
     private Map<UUID, Job> jobMap;
     private EditorManager editorManager;
+    private boolean isRefreshScheduled = false;
 
 
 
@@ -195,8 +200,10 @@ public class WpsClientImpl implements DockingPanel, OrbisGISWpsClient, PropertyC
     @Reference
     public void setLocalWpsService(OrbisGISWpsServer wpsService) {
         this.wpsService = wpsService;
+        this.wpsService.addOrbisGISWpsServerListener(this);
     }
     public void unsetLocalWpsService(OrbisGISWpsServer wpsService) {
+        this.wpsService.removeOrbisGISWpsServerListener(this);
         this.wpsService = null;
     }
 
@@ -659,6 +666,7 @@ public class WpsClientImpl implements DockingPanel, OrbisGISWpsClient, PropertyC
 
     @Override
     public void refreshAvailableScripts(){
+        isRefreshScheduled = false;
         //Removes all the processes from the UI of the toolbox
         toolBoxPanel.cleanAll();
         //Adds all the available processes
@@ -723,6 +731,16 @@ public class WpsClientImpl implements DockingPanel, OrbisGISWpsClient, PropertyC
             Job job = jobMap.get(jobID);
             Result result = this.getJobResult(jobID);
             job.setResult(result);
+        }
+    }
+
+    @Override
+    public void onNewScriptAdd() {
+        if(!isRefreshScheduled){
+            isRefreshScheduled = true;
+            Runnable refreshRunnable = new RefreshRunnable(this);
+            final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+            executor.schedule(refreshRunnable, 1, TimeUnit.SECONDS);
         }
     }
 
@@ -816,5 +834,23 @@ public class WpsClientImpl implements DockingPanel, OrbisGISWpsClient, PropertyC
         JAXBElement<ExecuteRequestType> jaxbElement = new ObjectFactory().createExecute(executeRequest);
         //Return the StatusInfo answer of the server
         return (StatusInfo) askRequest(jaxbElement);
+    }
+
+    /*********************/
+    /** Utility classes **/
+    /*********************/
+
+    private class RefreshRunnable implements Runnable{
+
+        private WpsClientImpl wpsClient;
+
+        public RefreshRunnable(WpsClientImpl wpsClient){
+            this.wpsClient = wpsClient;
+        }
+
+        @Override
+        public void run() {
+            wpsClient.refreshAvailableScripts();
+        }
     }
 }

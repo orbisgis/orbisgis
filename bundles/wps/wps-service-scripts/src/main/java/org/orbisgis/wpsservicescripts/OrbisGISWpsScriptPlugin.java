@@ -205,12 +205,10 @@ public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
             customLoadScript("scripts/Export/exportShapeFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
             customLoadScript("scripts/Export/exportKMLFile.groovy", icons, I18N.tr("OrbisGIS") + "/" + I18N.tr("Export"));
 
-
-            
             //Check the WpsClient
             if(wpsClient != null){
                 //Refresh the client
-                wpsClient.refreshAvailableScripts();
+                //wpsClient.refreshAvailableScripts();
             }
             else{
                 LoggerFactory.getLogger(WpsScriptsPackage.class).warn(
