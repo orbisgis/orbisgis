@@ -63,7 +63,7 @@ public class JDBCTable extends ComplexDataType {
     private List<DataType> excludedTypeList;
     /** List of JDBCTableField liked to the JDBCTable */
     @XmlElement(name = "JDBCTableField", namespace = "http://orbisgis.org")
-    private List<JDBCTableField> listJDBCTableField;
+    private List<JDBCColumn> listJDBCTableField;
     /** Default values of the JDBCTable. */
     @XmlAttribute(name = "defaultValue")
     private String defaultValue;
@@ -94,7 +94,7 @@ public class JDBCTable extends ComplexDataType {
      * Adds a JDBCTableField as a 'child' of the JDBCTable.
      * @param jdbcTableField JDBCTableField to add.
      */
-    public void addJDBCTableField(JDBCTableField jdbcTableField){
+    public void addJDBCTableField(JDBCColumn jdbcTableField){
         this.listJDBCTableField.add(jdbcTableField);
     }
 
@@ -102,7 +102,7 @@ public class JDBCTable extends ComplexDataType {
      * Return the list of 'child' JDBCTableField.
      * @return List of JDBCTableField.
      */
-    public List<JDBCTableField> getListJDBCTableField(){
+    public List<JDBCColumn> getListJDBCTableField(){
         return listJDBCTableField;
     }
 
@@ -115,7 +115,7 @@ public class JDBCTable extends ComplexDataType {
         for(DataType dataType : dataTypeList){
             for(DataType excludedType : excludedTypeList){
                 if(dataType.equals(excludedType)){
-                    throw new MalformedScriptException(JDBCTableField.class, "dataTypeList", I18N.tr("A same DataType is" +
+                    throw new MalformedScriptException(JDBCColumn.class, "dataTypeList", I18N.tr("A same DataType is" +
                             " accepted and excluded."));
                 }
             }
@@ -140,7 +140,7 @@ public class JDBCTable extends ComplexDataType {
         for(DataType excludedType : excludedTypeList){
             for(DataType dataType : dataTypeList){
                 if(excludedType.equals(dataType)){
-                    throw new MalformedScriptException(JDBCTableField.class, "excludedTypeList", I18N.tr("A same DataType is" +
+                    throw new MalformedScriptException(JDBCColumn.class, "excludedTypeList", I18N.tr("A same DataType is" +
                             " accepted and excluded."));
                 }
             }

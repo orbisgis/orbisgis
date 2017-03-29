@@ -51,13 +51,14 @@ import javax.xml.namespace.QName;
  * Factory methods for each of these are provided in this class.
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
 @XmlRegistry
 public class ObjectFactory {
 
     private final static QName _JDBCTable_QNAME = new QName("http://orbisgis.org", "JDBCTable");
-    private final static QName _JDBCTableField_QNAME = new QName("http://orbisgis.org", "JDBCTableField");
-    private final static QName _JDBCTableFieldValue_QNAME = new QName("http://orbisgis.org", "JDBCTableFieldValue");
+    private final static QName _JDBCColumn_QNAME = new QName("http://orbisgis.org", "JDBCColumn");
+    private final static QName _JDBCValue_QNAME = new QName("http://orbisgis.org", "JDBCValue");
     private final static QName _Enumeration_QNAME = new QName("http://orbisgis.org", "Enumeration");
     private final static QName _GeometryData_QNAME = new QName("http://orbisgis.org", "Geometry");
     private final static QName _RawData_QNAME = new QName("http://orbisgis.org", "RawData");
@@ -94,45 +95,45 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JDBCTableField }
+     * Create an instance of {@link JDBCColumn }
      *
      * @return 
      */
-    public JDBCTableField createJDBCTableField() { return new JDBCTableField(); }
+    public JDBCColumn createJDBCColumn() { return new JDBCColumn(); }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link JDBCTableField }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link JDBCColumn }{@code >}}
      *
-     * @param jdbcTableField
+     * @param jdbcColumn
      * @return 
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
-            name="JDBCTableField",
+            name="JDBCColumn",
             substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
             substitutionHeadName="DataDescription")
-    public JAXBElement<JDBCTableField> createJDBCTableField(JDBCTableField jdbcTableField) {
-        return new JAXBElement<>(_JDBCTableField_QNAME, JDBCTableField.class, jdbcTableField);
+    public JAXBElement<JDBCColumn> createJDBCColumn(JDBCColumn jdbcColumn) {
+        return new JAXBElement<>(_JDBCColumn_QNAME, JDBCColumn.class, jdbcColumn);
     }
 
     /**
-     * Create an instance of {@link JDBCTableFieldValue }
+     * Create an instance of {@link JDBCValue }
      *
      * @return 
      */
-    public JDBCTableFieldValue createJDBCTableFieldValue() { return new JDBCTableFieldValue(); }
+    public JDBCValue createJDBCValue() { return new JDBCValue(); }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link JDBCTableFieldValue }{@code >}}
+     * Create an instance of {@link JAXBElement }{@code <}{@link JDBCValue }{@code >}}
      *
-     * @param jdbcTableFieldValue
+     * @param jdbcValue
      * @return 
      */
     @XmlElementDecl(namespace="http://orbisgis.org",
-            name="JDBCTableFieldValue",
+            name="JDBCValue",
             substitutionHeadNamespace="http://www.opengis.net/wps/2.0",
             substitutionHeadName="DataDescription")
-    public JAXBElement<JDBCTableFieldValue> createJDBCTableFieldValue(JDBCTableFieldValue jdbcTableFieldValue) {
-        return new JAXBElement<>(_JDBCTableFieldValue_QNAME, JDBCTableFieldValue.class, jdbcTableFieldValue);
+    public JAXBElement<JDBCValue> createJDBCValue(JDBCValue jdbcValue) {
+        return new JAXBElement<>(_JDBCValue_QNAME, JDBCValue.class, jdbcValue);
     }
 
     /**

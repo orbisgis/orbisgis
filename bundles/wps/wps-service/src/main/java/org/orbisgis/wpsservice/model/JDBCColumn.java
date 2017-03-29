@@ -49,12 +49,13 @@ import java.util.List;
 
 /**
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  **/
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "JDBCTableField", propOrder = {"jdbcTableIdentifier", "dataTypeList", "excludedTypeList",
-        "excludedNameList", "jdbcTableFieldValueList", "multiSelection", "defaultValues"})
-public class JDBCTableField extends ComplexDataType {
+@XmlType(name = "JDBCColumn", propOrder = {"jdbcTableIdentifier", "dataTypeList", "excludedTypeList",
+        "excludedNameList", "jdbcValueList", "multiSelection", "defaultValues"})
+public class JDBCColumn extends ComplexDataType {
 
     /** Identifier of the parent JDBCTable */
     @XmlElement(name = "JDBCTableId", namespace = "http://orbisgis.org")
@@ -72,8 +73,8 @@ public class JDBCTableField extends ComplexDataType {
     @XmlElement(name = "ExcludedName", namespace = "http://orbisgis.org")
     private List<String> excludedNameList;
     /** List of JDBCTableFieldValue liked to the JDBCTableField */
-    @XmlElement(name = "JDBCTableFieldValue", namespace = "http://orbisgis.org")
-    private List<JDBCTableFieldValue> jdbcTableFieldValueList;
+    @XmlElement(name = "JDBCValue", namespace = "http://orbisgis.org")
+    private List<JDBCValue> jdbcValueList;
     /** Indicates if the use can choose more than one field*/
     @XmlAttribute(name = "multiSelection")
     private boolean multiSelection = false;
@@ -81,7 +82,7 @@ public class JDBCTableField extends ComplexDataType {
     @XmlAttribute(name = "defaultValues")
     private String[] defaultValues;
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(JDBCTableField.class);
+    private static final I18n I18N = I18nFactory.getI18n(JDBCColumn.class);
 
     /**
      * Main constructor.
@@ -90,9 +91,9 @@ public class JDBCTableField extends ComplexDataType {
      * @param jdbcTableURI Identifier of the parent jdbcTable.
      * @throws MalformedScriptException
      */
-    public JDBCTableField(List<Format> formatList, List<DataType> dataTypeList, URI jdbcTableURI) throws MalformedScriptException {
+    public JDBCColumn(List<Format> formatList, List<DataType> dataTypeList, URI jdbcTableURI) throws MalformedScriptException {
         format = formatList;
-        jdbcTableFieldValueList = new ArrayList<>();
+        jdbcValueList = new ArrayList<>();
         this.dataTypeList = dataTypeList;
         this.jdbcTableIdentifier = jdbcTableURI;
     }
@@ -100,11 +101,11 @@ public class JDBCTableField extends ComplexDataType {
     /**
      * Protected empty constructor used in the ObjectFactory class for JAXB.
      */
-    protected JDBCTableField(){
+    protected JDBCColumn(){
         super();
         dataTypeList = null;
         excludedTypeList = null;
-        jdbcTableFieldValueList = new ArrayList<>();
+        jdbcValueList = new ArrayList<>();
         jdbcTableIdentifier = null;
     }
 
@@ -130,9 +131,9 @@ public class JDBCTableField extends ComplexDataType {
      */
     public void setSourceModified(boolean isSourceModified) {
         this.isSourceModified = isSourceModified;
-        if(jdbcTableFieldValueList != null) {
-            for (JDBCTableFieldValue jdbcTableFieldValue : jdbcTableFieldValueList) {
-                jdbcTableFieldValue.setJDBCTableModified(isSourceModified);
+        if(jdbcValueList != null) {
+            for (JDBCValue jdbcValue : jdbcValueList) {
+                jdbcValue.setJDBCTableModified(isSourceModified);
             }
         }
     }
@@ -146,19 +147,19 @@ public class JDBCTableField extends ComplexDataType {
     }
 
     /**
-     * Adds a JDBCTableFieldValue as a 'child' of the JDBCTableField.
-     * @param jdbcTableFieldValue JDBCTableFieldValue to add.
+     * Adds a JDBCValue as a 'child' of the JDBCColumn.
+     * @param jdbcValue JDBCValue to add.
      */
-    public void addJDBCTableFieldValue(JDBCTableFieldValue jdbcTableFieldValue){
-        this.jdbcTableFieldValueList.add(jdbcTableFieldValue);
+    public void addJDBCValue(JDBCValue jdbcValue){
+        this.jdbcValueList.add(jdbcValue);
     }
 
     /**
-     * Return the list of 'child' JDBCTableFieldValue.
-     * @return List of JDBCTableFieldValue.
+     * Return the list of 'child' JDBCValue.
+     * @return List of JDBCValue.
      */
-    public List<JDBCTableFieldValue> getJDBCTableFieldValueList(){
-        return jdbcTableFieldValueList;
+    public List<JDBCValue> getJDBCValueList(){
+        return jdbcValueList;
     }
 
     /**
@@ -170,7 +171,7 @@ public class JDBCTableField extends ComplexDataType {
         for(DataType excludedType : excludedTypeList){
             for(DataType dataType : dataTypeList){
                 if(excludedType.equals(dataType)){
-                    throw new MalformedScriptException(JDBCTableField.class, "excludedTypeList", I18N.tr("A same DataType is" +
+                    throw new MalformedScriptException(JDBCColumn.class, "excludedTypeList", I18N.tr("A same DataType is" +
                             " accepted and excluded."));
                 }
             }
@@ -220,16 +221,16 @@ public class JDBCTableField extends ComplexDataType {
     }
 
     /**
-     * Sets the default values of the geometry.
-     * @param defaultValues Default values of the geometry.
+     * Sets the default values of the column.
+     * @param defaultValues Default values of the column.
      */
     public void setDefaultValues(String[] defaultValues){
         this.defaultValues = defaultValues;
     }
 
     /**
-     * Returns the default values of the geometry.
-     * @return The default values of the geometry.
+     * Returns the default values of the column.
+     * @return The default values of the column.
      */
     public String[] getDefaultValues(){
         return defaultValues;

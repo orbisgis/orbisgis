@@ -62,6 +62,7 @@ import java.util.List;
  * This controller manage the different Parser and is able to parse a script into a process.
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  **/
 
 public class ParserController {
@@ -81,8 +82,8 @@ public class ParserController {
         parserList.add(new LiteralDataParser());
         parserList.add(new BoundingBoxParser());
         parserList.add(new JDBCTableParser());
-        parserList.add(new JDBCTableFieldParser());
-        parserList.add(new JDBCTableFieldValueParser());
+        parserList.add(new JDBCColumnParser());
+        parserList.add(new JDBCValueParser());
         parserList.add(new EnumerationParser());
         parserList.add(new RawDataParser());
         parserList.add(new GeometryParser());
@@ -217,14 +218,14 @@ public class ParserController {
 
     /**
      * Links the input and output with the 'parent'.
-     * i.e. : The JDBCTable contains a list of JDBCTableField related.
+     * i.e. : The JDBCTable contains a list of JDBCColumn related.
      * @param p Process to link.
      */
     private void link(ProcessDescriptionType p){
-        //Link the JDBCTableField with its JDBCTable
+        //Link the JDBCColumn with its JDBCTable
         for(InputDescriptionType i : p.getInput()){
-            if(i.getDataDescription().getValue() instanceof JDBCTableField){
-                JDBCTableField jdbcTableField = (JDBCTableField)i.getDataDescription().getValue();
+            if(i.getDataDescription().getValue() instanceof JDBCColumn){
+                JDBCColumn jdbcTableField = (JDBCColumn)i.getDataDescription().getValue();
                 for(InputDescriptionType jdbcTable : p.getInput()){
                     if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getJDBCTableIdentifier().toString())){
                         ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCTableField(jdbcTableField);
@@ -232,23 +233,23 @@ public class ParserController {
                 }
             }
         }
-        //Link the JDBCTableFieldValue with its JDBCTableField and its JDBCTable
+        //Link the JDBCValue with its JDBCColumn and its JDBCTable
         for(InputDescriptionType i : p.getInput()){
-            if(i.getDataDescription().getValue() instanceof JDBCTableFieldValue){
-                JDBCTableFieldValue jdbcTableFieldValue = (JDBCTableFieldValue)i.getDataDescription().getValue();
+            if(i.getDataDescription().getValue() instanceof JDBCValue){
+                JDBCValue jdbcTableFieldValue = (JDBCValue)i.getDataDescription().getValue();
                 for(InputDescriptionType input : p.getInput()){
-                    if(input.getIdentifier().getValue().equals(jdbcTableFieldValue.getJDBCTableFieldIdentifier().toString())){
-                        JDBCTableField jdbcTableField = (JDBCTableField)input.getDataDescription().getValue();
-                        jdbcTableField.addJDBCTableFieldValue(jdbcTableFieldValue);
+                    if(input.getIdentifier().getValue().equals(jdbcTableFieldValue.getJDBCColumnIdentifier().toString())){
+                        JDBCColumn jdbcTableField = (JDBCColumn)input.getDataDescription().getValue();
+                        jdbcTableField.addJDBCValue(jdbcTableFieldValue);
                         jdbcTableFieldValue.setJDBCTableIdentifier(jdbcTableField.getJDBCTableIdentifier());
                     }
                 }
             }
         }
-        //Link the JDBCTableField with its JDBCTable
+        //Link the JDBCColumn with its JDBCTable
         for(OutputDescriptionType o : p.getOutput()){
-            if(o.getDataDescription().getValue() instanceof JDBCTableField){
-                JDBCTableField jdbcTableField = (JDBCTableField)o.getDataDescription().getValue();
+            if(o.getDataDescription().getValue() instanceof JDBCColumn){
+                JDBCColumn jdbcTableField = (JDBCColumn)o.getDataDescription().getValue();
                 for(OutputDescriptionType jdbcTable : p.getOutput()){
                     if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getJDBCTableIdentifier().toString())){
                         ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCTableField(jdbcTableField);
@@ -256,14 +257,14 @@ public class ParserController {
                 }
             }
         }
-        //Link the JDBCTableFieldValue with its JDBCTableField and its JDBCTable
+        //Link the JDBCValue with its JDBCColumn and its JDBCTable
         for(OutputDescriptionType o : p.getOutput()){
-            if(o.getDataDescription().getValue() instanceof JDBCTableFieldValue){
-                JDBCTableFieldValue jdbcTableFieldValue = (JDBCTableFieldValue)o.getDataDescription().getValue();
+            if(o.getDataDescription().getValue() instanceof JDBCValue){
+                JDBCValue jdbcTableFieldValue = (JDBCValue)o.getDataDescription().getValue();
                 for(OutputDescriptionType output : p.getOutput()){
-                    if(output.getIdentifier().getValue().equals(jdbcTableFieldValue.getJDBCTableFieldIdentifier().toString())){
-                        JDBCTableField jdbcTableField = (JDBCTableField)output.getDataDescription().getValue();
-                        jdbcTableField.addJDBCTableFieldValue(jdbcTableFieldValue);
+                    if(output.getIdentifier().getValue().equals(jdbcTableFieldValue.getJDBCColumnIdentifier().toString())){
+                        JDBCColumn jdbcTableField = (JDBCColumn)output.getDataDescription().getValue();
+                        jdbcTableField.addJDBCValue(jdbcTableFieldValue);
                         jdbcTableFieldValue.setJDBCTableIdentifier(jdbcTableField.getJDBCTableIdentifier());
                     }
                 }

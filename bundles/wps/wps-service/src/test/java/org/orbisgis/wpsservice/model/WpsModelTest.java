@@ -71,7 +71,7 @@ public class WpsModelTest {
         try {
             boolean annotationFound = false;
             //Retrieve the JDBCTableField object
-            JDBCTableField jdbcTableField = null;
+            JDBCColumn jdbcTableField = null;
             //Inspect all the annotation of the field to get the DescriptionTypeAttribute one
             Field jdbcTableFieldField = this.getClass().getDeclaredField("jdbcTableFieldInput");
             for(Annotation annotation : jdbcTableFieldField.getDeclaredAnnotations()){
@@ -292,7 +292,7 @@ public class WpsModelTest {
         try {
             boolean annotationFound = false;
             //Retrieve the JDBCTableFieldValue object
-            JDBCTableFieldValue jdbcTableFieldValue = null;
+            JDBCValue jdbcTableFieldValue = null;
             //Inspect all the annotation of the field to get the JDBCTableFieldValueAttribute one
             Field jdbcTableFieldValueField = this.getClass().getDeclaredField("jdbcTableFieldValueInput");
             for(Annotation annotation : jdbcTableFieldValueField.getDeclaredAnnotations()){
