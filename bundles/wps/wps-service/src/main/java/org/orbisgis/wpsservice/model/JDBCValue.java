@@ -116,7 +116,7 @@ public class JDBCValue extends ComplexDataType {
      * Tells if the parent JDBCColumn has been modified since last time it was checked.
      * @return True if the parent JDBCColumn has been modified, false otherwise.
      */
-    public boolean isJDBCColumndModified() {
+    public boolean isJDBCColumnModified() {
         return isJDBCColumnModified;
     }
 

@@ -1,27 +1,30 @@
 package org.orbisgis.wpsservice
 
-import org.orbisgis.wpsgroovyapi.input.JDBCTableFieldInput
+import org.orbisgis.wpsgroovyapi.input.JDBCColumnInput
 import org.orbisgis.wpsgroovyapi.input.JDBCTableInput
-import org.orbisgis.wpsgroovyapi.output.JDBCTableFieldOutput
+import org.orbisgis.wpsgroovyapi.output.JDBCColumnOutput
 import org.orbisgis.wpsgroovyapi.output.JDBCTableOutput
 import org.orbisgis.wpsgroovyapi.process.Process
+import org.orbisgis.wpsservice.model.JDBCColumn
+
 /********************/
 /** Process method **/
 /********************/
 
 /**
- * Test script for the JDBCTableField
+ * Test script for the JDBCColumn
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
-@Process(title = ["JDBCTableField test","en","Test du JDBCTableField","fr"],
-        description = ["Test script using the JDBCTableField ComplexData.","en",
-                "Scripts test pour l'usage du ComplexData JDBCTableField.","fr"],
+@Process(title = ["JDBCColumn test","en","Test du JDBCColumn","fr"],
+        description = ["Test script using the JDBCColumn ComplexData.","en",
+                "Scripts test pour l'usage du ComplexData JDBCColumn.","fr"],
         keywords = ["test,script,wps", "en", "test,scripte,wps", "fr"],
-        identifier = "orbisgis:test:jdbctablefield",
+        identifier = "orbisgis:test:jdbccolumn",
         metadata = ["website","metadata"]
 )
 def processing() {
-    jdbcTableFieldOutput = inputJDBCTableField;
+    jdbcColumnOutput = inputJDBCColumn;
 }
 
 
@@ -33,19 +36,19 @@ def processing() {
         identifier = "orbisgis:test:jdbctable:input")
 String jdbcTableInput
 
-/** This JDBCTableField is the input data source. */
-@JDBCTableFieldInput(
-        title = ["Input JDBCTableField","en","Entrée JDBCTableField","fr"],
-        description = ["A JDBCTableField input.","en","Une entrée JDBCTableField.","fr"],
+/** This JDBCColumn is the input data source. */
+@JDBCColumnInput(
+        title = ["Input JDBCColumn","en","Entrée JDBCColumn","fr"],
+        description = ["A JDBCColumn input.","en","Une entrée JDBCColumn.","fr"],
         keywords = ["input","en","entrée","fr"],
         jdbcTableReference = "orbisgis:test:jdbctable:input",
         excludedTypes = ["BOOLEAN"],
         minOccurs = 0,
         maxOccurs = 2,
-        identifier = "orbisgis:test:jdbctablefield:input",
+        identifier = "orbisgis:test:jdbccolumn:input",
         metadata = ["website","metadata"]
         )
-String inputJDBCTableField
+String inputJDBCColumn
 
 /*****************/
 /** OUTPUT Data **/
@@ -55,16 +58,16 @@ String inputJDBCTableField
         identifier = "orbisgis:test:jdbctable:output")
 String jdbcTableOutput
 
-/** This JDBCTableField is the output data source. */
-@JDBCTableFieldOutput(
-        title = ["Output JDBCTableField","en","Sortie JDBCTableField","fr"],
-        description = ["A JDBCTableField output.","en","Une sortie JDBCTableField.","fr"],
+/** This JDBCColumn is the output data source. */
+@JDBCColumnOutput(
+        title = ["Output JDBCColumn","en","Sortie JDBCColumn","fr"],
+        description = ["A JDBCColumn output.","en","Une sortie JDBCColumn.","fr"],
         keywords = ["output","en","sortie","fr"],
         jdbcTableReference = "orbisgis:test:jdbctable:output",
         dataTypes = ["GEOMETRY", "NUMBER"],
         multiSelection = true,
-        identifier = "orbisgis:test:jdbctablefield:output",
+        identifier = "orbisgis:test:jdbccolumn:output",
         metadata = ["website","metadata"]
 )
-String jdbcTableFieldOutput
+String jdbcColumnOutput
 
