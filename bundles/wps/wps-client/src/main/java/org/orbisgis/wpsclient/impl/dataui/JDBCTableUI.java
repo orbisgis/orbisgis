@@ -41,11 +41,13 @@ import net.miginfocom.swing.MigLayout;
 import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.sif.components.renderers.JPanelListRenderer;
 import org.orbisgis.wpsclient.impl.WpsClientImpl;
 import org.orbisgis.wpsclient.api.dataui.DataUI;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
+import org.orbisgis.wpsclient.impl.utils.WaitLayerUI;
 import org.orbisgis.wpsservice.model.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -58,6 +60,7 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * DataUI implementation for JDBCTable.
@@ -77,6 +80,7 @@ public class JDBCTableUI implements DataUI {
     private static final String INITIAL_DELAY_PROPERTY = "INITIAL_DELAY_PROPERTY";
     private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
     private static final String IS_OUTPUT_PROPERTY = "IS_OUTPUT_PROPERTY";
+    private static final String LAYERUI_PROPERTY = "LAYERUI_PROPERTY";
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(JDBCTableUI.class);
 
@@ -133,10 +137,9 @@ public class JDBCTableUI implements DataUI {
 
         /**Instantiate the geocatalog optionPanel. **/
         //Instantiate the comboBox containing the table list
-        JComboBox<ContainerItem<Object>> geocatalogComboBox = new JComboBox<>();
-        JPanel geocatalogComponent = new JPanel(new MigLayout("fill, ins 0, gap 0"));
+        JComboBox<ContainerItem<Object>> tableComboBox = new JComboBox<>();
         //If the JDBCTable is an input, uses a custom comboBox renderer to show an icon, the table name, the SRID ...
-        geocatalogComboBox.setRenderer(new JPanelListRenderer());
+        tableComboBox.setRenderer(new JPanelListRenderer());
         //Populate the comboBox with the available tables.
         boolean isSpatial = false;
         if(jdbcTable.getDataTypeList() != null){
@@ -146,50 +149,52 @@ public class JDBCTableUI implements DataUI {
                 }
             }
         }
-        populateWithTable(geocatalogComboBox, jdbcTable.getDataTypeList(), jdbcTable.getExcludedTypeList(),
-                false, isSpatial);
         //Adds the listener on combo box item selection
-        geocatalogComboBox.addActionListener(
+        tableComboBox.addActionListener(
                 EventHandler.create(ActionListener.class, this, "onGeocatalogTableSelected", "source"));
         //Adds the listener to refresh the table list.
-        geocatalogComboBox.addMouseListener(
+        tableComboBox.addMouseListener(
                 EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
-        geocatalogComboBox.addMouseListener(
+        tableComboBox.addMouseListener(
                 EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
         URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
-        geocatalogComboBox.putClientProperty(URI_PROPERTY, uri);
-        geocatalogComboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
-        geocatalogComboBox.putClientProperty(DATA_STORE_PROPERTY, jdbcTable);
-        geocatalogComboBox.putClientProperty(IS_OUTPUT_PROPERTY, false);
-        geocatalogComboBox.setBackground(Color.WHITE);
-        geocatalogComboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
-        geocatalogComponent.add(geocatalogComboBox, "span, grow");
+        tableComboBox.putClientProperty(URI_PROPERTY, uri);
+        tableComboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
+        tableComboBox.putClientProperty(DATA_STORE_PROPERTY, jdbcTable);
+        tableComboBox.putClientProperty(IS_OUTPUT_PROPERTY, false);
+        tableComboBox.setBackground(Color.WHITE);
+        tableComboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
+        WaitLayerUI layerUI = new WaitLayerUI();
+        JLayer<JComponent> layer = new JLayer<>(tableComboBox, layerUI);
+        panel.add(layer, "grow");
+        tableComboBox.putClientProperty(LAYERUI_PROPERTY, layerUI);
+        populateWithTable(tableComboBox, jdbcTable.getDataTypeList(), jdbcTable.getExcludedTypeList(),
+                false, isSpatial);
         //Adds the optional value
         if(isOptional){
-            geocatalogComboBox.add(new JPanel());
+            tableComboBox.add(new JPanel());
         }
         //Register the geocatalog combo box as a property in the JDBCTable type box
         if(!isOptional) {
-            if (geocatalogComboBox.getItemCount() > 0) {
+            if (tableComboBox.getItemCount() > 0) {
                 if (dataMap.containsKey(uri)) {
                     boolean isItemSelected = false;
-                    for (int i = 0; i < geocatalogComboBox.getItemCount(); i++) {
-                        if (geocatalogComboBox.getItemAt(i).getLabel().equals(dataMap.get(uri))) {
-                            geocatalogComboBox.setSelectedIndex(i);
+                    for (int i = 0; i < tableComboBox.getItemCount(); i++) {
+                        if (tableComboBox.getItemAt(i).getLabel().equals(dataMap.get(uri))) {
+                            tableComboBox.setSelectedIndex(i);
                             isItemSelected = true;
                         }
                     }
                     if (!isItemSelected) {
-                        geocatalogComboBox.setSelectedIndex(0);
+                        tableComboBox.setSelectedIndex(0);
                     }
                 }
                 else{
-                    geocatalogComboBox.setSelectedIndex(0);
+                    tableComboBox.setSelectedIndex(0);
                 }
-                dataMap.put(uri, geocatalogComboBox.getItemAt(geocatalogComboBox.getSelectedIndex()).getLabel());
+                dataMap.put(uri, tableComboBox.getItemAt(tableComboBox.getSelectedIndex()).getLabel());
             }
         }
-        panel.add(geocatalogComboBox, "grow");
         return panel;
     }
 
@@ -208,51 +213,13 @@ public class JDBCTableUI implements DataUI {
                                    List<DataType> excludedTypes,
                                    boolean isOutput,
                                    boolean isSpatial){
-        //Retrieve the table map
-        List<String> tableList;
-        if((dataTypes == null || dataTypes.isEmpty()) && isSpatial){
-            dataTypes = new ArrayList<>();
-            dataTypes.add(DataType.GEOMETRY);
+        TableWorker worker = new TableWorker(geocatalogComboBox, dataTypes, excludedTypes, isOutput, isSpatial);
+        ExecutorService executorService = wpsClient.getExecutorService();
+        if(executorService != null){
+            executorService.execute(worker);
         }
-        tableList = wpsClient.getTableList(dataTypes, excludedTypes);
-        //If there is tables, build all the ContainerItem containing the JPanel representing a table
-        ContainerItem<Object> selectedItem = (ContainerItem<Object>)geocatalogComboBox.getSelectedItem();
-        geocatalogComboBox.removeAllItems();
-        List<ContainerItem<Object>> containerItemList = new ArrayList<>();
-        if(tableList != null && !tableList.isEmpty()){
-            for (String tableName : tableList) {
-                JPanel tablePanel = new JPanel(new MigLayout("ins 0, gap 0"));
-                //Sets the spatial icon regarding the entry value
-                if (isSpatial) {
-                    tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.GEO_FILE)));
-                } else {
-                    tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.FLAT_FILE)));
-                }
-                //Adds the table label contained in the entry key
-                tablePanel.add(new JLabel(tableName));
-                //Save the ContainerItem in the list
-                containerItemList.add(new ContainerItem<Object>(tablePanel, tableName));
-            }
-            //Sort the ContainerItem by alphabetical order
-            Collections.sort(containerItemList);
-            //Adds all the ContainerItem to the comboBox
-            for(ContainerItem<Object> containerItem : containerItemList){
-                geocatalogComboBox.addItem(containerItem);
-            }
-            //If an item was selected, try to reselect it
-            if(selectedItem != null) {
-                for (int i = 0; i < geocatalogComboBox.getItemCount(); i++) {
-                    if (geocatalogComboBox.getItemAt(i).getLabel().equals(selectedItem.getLabel())) {
-                        geocatalogComboBox.setSelectedIndex(i);
-                        break;
-                    }
-                }
-            }
-        }
-        //If it is an output, adds the newTable item
-        if(isOutput){
-            geocatalogComboBox.insertItemAt(new ContainerItem<Object>(I18N.tr("New_table"), I18N.tr("New_table")), 0);
-            geocatalogComboBox.setSelectedIndex(0);
+        else{
+            worker.execute();
         }
     }
 
@@ -264,32 +231,34 @@ public class JDBCTableUI implements DataUI {
     public void onComboBoxEntered(Object source){
         //Retrieve the client properties
         JComboBox<ContainerItem<Object>> comboBox = (JComboBox)source;
-        //Refreshes the list of tables displayed
-        JDBCTable jdbcTable = (JDBCTable)comboBox.getClientProperty(DATA_STORE_PROPERTY);
-        boolean isOptional = (boolean)comboBox.getClientProperty(IS_OUTPUT_PROPERTY);
-        Object selectedItem = comboBox.getSelectedItem();
-        boolean isSpatial = false;
-        if(jdbcTable.getDataTypeList() != null){
-            for(DataType dataType : jdbcTable.getDataTypeList()) {
-                if(DataType.isSpatialType(dataType)) {
-                    isSpatial = true;
+        if(comboBox.getItemCount() == 0) {
+            //Refreshes the list of tables displayed
+            JDBCTable jdbcTable = (JDBCTable) comboBox.getClientProperty(DATA_STORE_PROPERTY);
+            boolean isOptional = (boolean) comboBox.getClientProperty(IS_OUTPUT_PROPERTY);
+            Object selectedItem = comboBox.getSelectedItem();
+            boolean isSpatial = false;
+            if (jdbcTable.getDataTypeList() != null) {
+                for (DataType dataType : jdbcTable.getDataTypeList()) {
+                    if (DataType.isSpatialType(dataType)) {
+                        isSpatial = true;
+                    }
                 }
             }
-        }
-        populateWithTable(comboBox, jdbcTable.getDataTypeList(), jdbcTable.getExcludedTypeList(), isOptional,
-                isSpatial);
-        if(selectedItem != null){
-            comboBox.setSelectedItem(selectedItem);
-        }
-        //if there is no table listed, shows a massage as a tooltip to the user
-        if(comboBox.getItemCount() == 0) {
-            comboBox.putClientProperty(INITIAL_DELAY_PROPERTY, ToolTipManager.sharedInstance().getInitialDelay());
-            comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, comboBox.getToolTipText());
-            ToolTipManager.sharedInstance().setInitialDelay(0);
-            ToolTipManager.sharedInstance().setDismissDelay(2500);
-            comboBox.setToolTipText(I18N.tr("First add a table to the Geocatalog"));
-            ToolTipManager.sharedInstance().mouseMoved(
-                    new MouseEvent(comboBox,MouseEvent.MOUSE_MOVED,System.currentTimeMillis(),0,0,0,0,false));
+            populateWithTable(comboBox, jdbcTable.getDataTypeList(), jdbcTable.getExcludedTypeList(), isOptional,
+                    isSpatial);
+            if (selectedItem != null) {
+                comboBox.setSelectedItem(selectedItem);
+            }
+            //if there is no table listed, shows a massage as a tooltip to the user
+            if (comboBox.getItemCount() == 0) {
+                comboBox.putClientProperty(INITIAL_DELAY_PROPERTY, ToolTipManager.sharedInstance().getInitialDelay());
+                comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, comboBox.getToolTipText());
+                ToolTipManager.sharedInstance().setInitialDelay(0);
+                ToolTipManager.sharedInstance().setDismissDelay(2500);
+                comboBox.setToolTipText(I18N.tr("First add a table to the Geocatalog"));
+                ToolTipManager.sharedInstance().mouseMoved(
+                        new MouseEvent(comboBox, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
+            }
         }
     }
 
@@ -353,5 +322,84 @@ public class JDBCTableUI implements DataUI {
             }
         }
         dataMap.put(uri, tableName);
+    }
+
+    /**
+     * SwingWorker doing the table list update in a separated Swing Thread
+     */
+    private class TableWorker extends SwingWorkerPM {
+        private JComboBox<ContainerItem<Object>> tableComboBox;
+        private List<DataType> dataTypes;
+        private List<DataType> excludedTypes;
+        private boolean isOutput;
+        private boolean isSpatial;
+
+        public TableWorker(JComboBox<ContainerItem<Object>> tableComboBox,
+                           List<DataType> dataTypes,
+                           List<DataType> excludedTypes,
+                           boolean isOutput,
+                           boolean isSpatial){
+            this.tableComboBox = tableComboBox;
+            this.dataTypes = dataTypes;
+            this.excludedTypes = excludedTypes;
+            this.isOutput = isOutput;
+            this.isSpatial = isSpatial;
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            WaitLayerUI layerUI = (WaitLayerUI) tableComboBox.getClientProperty(LAYERUI_PROPERTY);
+            layerUI.start();
+            //Retrieve the table map
+            List<String> tableList;
+            if((dataTypes == null || dataTypes.isEmpty()) && isSpatial){
+                dataTypes = new ArrayList<>();
+                dataTypes.add(DataType.GEOMETRY);
+            }
+            tableList = wpsClient.getTableList(dataTypes, excludedTypes);
+            //If there is tables, build all the ContainerItem containing the JPanel representing a table
+            ContainerItem<Object> selectedItem = (ContainerItem<Object>) tableComboBox.getSelectedItem();
+            tableComboBox.removeAllItems();
+            List<ContainerItem<Object>> containerItemList = new ArrayList<>();
+            if(tableList != null && !tableList.isEmpty()){
+                for (String tableName : tableList) {
+                    JPanel tablePanel = new JPanel(new MigLayout("ins 0, gap 0"));
+                    //Sets the spatial icon regarding the entry value
+                    if (isSpatial) {
+                        tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.GEO_FILE)));
+                    } else {
+                        tablePanel.add(new JLabel(ToolBoxIcon.getIcon(ToolBoxIcon.FLAT_FILE)));
+                    }
+                    //Adds the table label contained in the entry key
+                    tablePanel.add(new JLabel(tableName));
+                    //Save the ContainerItem in the list
+                    containerItemList.add(new ContainerItem<Object>(tablePanel, tableName));
+                }
+                //Sort the ContainerItem by alphabetical order
+                Collections.sort(containerItemList);
+                //Adds all the ContainerItem to the comboBox
+                for(ContainerItem<Object> containerItem : containerItemList){
+                    tableComboBox.addItem(containerItem);
+                }
+                //If an item was selected, try to reselect it
+                if(selectedItem != null) {
+                    for (int i = 0; i < tableComboBox.getItemCount(); i++) {
+                        if (tableComboBox.getItemAt(i).getLabel().equals(selectedItem.getLabel())) {
+                            tableComboBox.setSelectedIndex(i);
+                            break;
+                        }
+                    }
+                }
+            }
+            //If it is an output, adds the newTable item
+            if(isOutput){
+                tableComboBox.insertItemAt(new ContainerItem<Object>(I18N.tr("New_table"), I18N.tr("New_table")), 0);
+                tableComboBox.setSelectedIndex(0);
+            }
+            tableComboBox.revalidate();
+            tableComboBox.repaint();
+            layerUI.stop();
+            return null;
+        }
     }
 }
