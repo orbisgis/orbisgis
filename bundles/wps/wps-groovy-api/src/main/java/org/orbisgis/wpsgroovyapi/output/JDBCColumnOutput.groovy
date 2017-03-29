@@ -22,12 +22,12 @@ package org.orbisgis.wpsgroovyapi.output
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
 import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
-import org.orbisgis.wpsgroovyapi.attributes.JDBCTableFieldAttribute
+import org.orbisgis.wpsgroovyapi.attributes.JDBCColumnAttribute
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 
 /**
- * JDBCTableField output annotation.
- * The JDBCTableField is a complex data that represents a JDBCTable field (i.e. a column of a table).
+ * JDBCColumn output annotation.
+ * The JDBCColumn is a complex data that represents a JDBCTable field (i.e. a column of a table).
  * As an output, this annotation should be placed just before the variable.
  *
  * The following fields must be defined (mandatory) :
@@ -75,6 +75,7 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
-@AnnotationCollector([Field, JDBCTableFieldAttribute, OutputAttribute, DescriptionTypeAttribute])
-@interface JDBCTableFieldOutput {}
+@AnnotationCollector([Field, JDBCColumnAttribute, OutputAttribute, DescriptionTypeAttribute])
+@interface JDBCColumnOutput {}

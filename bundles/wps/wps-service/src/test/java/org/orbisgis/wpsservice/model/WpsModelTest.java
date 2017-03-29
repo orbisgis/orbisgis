@@ -65,11 +65,11 @@ public class WpsModelTest {
     public Object jdbcColumnInput;
 
     /**
-     * Test if the decoding and convert of the JDBCTableField annotation into its java object is valid.
+     * Test if the decoding and convert of the JDBCColumn annotation into its java object is valid.
      * @throws org.orbisgis.wpsservice.model.MalformedScriptException
      */
     @Test
-    public void testJDBCTableFieldAttributeConvert() throws MalformedScriptException {
+    public void testJDBCColumnAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
             //Retrieve the JDBCTableField object

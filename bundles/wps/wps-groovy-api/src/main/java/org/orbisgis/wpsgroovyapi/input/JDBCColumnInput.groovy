@@ -39,13 +39,13 @@ package org.orbisgis.wpsgroovyapi.input
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
-import org.orbisgis.wpsgroovyapi.attributes.JDBCTableFieldAttribute
+import org.orbisgis.wpsgroovyapi.attributes.JDBCColumnAttribute
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
 
 /**
- * JDBCTableField input annotation.
- * The JDBCTableField is a complex data that represents a JDBCTable field (i.e. a column of a table).
+ * JDBCColumn input annotation.
+ * The JDBCColumn is a complex data that represents a JDBCTable column.
  * As an input, this annotation should be placed just before the variable.
  *
  * The following fields must be defined (mandatory) :
@@ -99,6 +99,7 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
-@AnnotationCollector([Field, JDBCTableFieldAttribute, InputAttribute, DescriptionTypeAttribute])
-@interface JDBCTableFieldInput {}
+@AnnotationCollector([Field, JDBCColumnAttribute, InputAttribute, DescriptionTypeAttribute])
+@interface JDBCColumnInput {}
