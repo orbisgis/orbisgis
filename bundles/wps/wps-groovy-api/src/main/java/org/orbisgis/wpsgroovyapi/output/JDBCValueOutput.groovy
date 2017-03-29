@@ -22,12 +22,12 @@ package org.orbisgis.wpsgroovyapi.output
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
-import org.orbisgis.wpsgroovyapi.attributes.JDBCTableFieldValueAttribute
+import org.orbisgis.wpsgroovyapi.attributes.JDBCValueAttribute
 import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
 
 /**
- * JDBCTableField output annotation.
- * The JDBCTableFieldValue complex data represents a list of values contained by a JDBCTableField.
+ * JDBCValue output annotation.
+ * The JDBCValue complex data represents a list of values contained by a JDBCColumn.
  * As an output, this annotation should be placed just before the variable.
  *
  * The following fields must be defined (mandatory) :
@@ -36,8 +36,8 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
  *       unique title or a translated title, its language, another title, its language ...
  *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en"]
  *
- *  - jdbcTableFieldReference : String
- *      Name of the variable of the JDBCTableField.
+ *  - jdbcColumnReference : String
+ *      Name of the variable of the JDBCColumn.
  *
  * The following fields can be defined (optional) :
  *  - description : String[]
@@ -66,6 +66,7 @@ import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
-@AnnotationCollector([Field, JDBCTableFieldValueAttribute, OutputAttribute, DescriptionTypeAttribute])
-@interface JDBCTableFieldValueOutput {}
+@AnnotationCollector([Field, JDBCValueAttribute, OutputAttribute, DescriptionTypeAttribute])
+@interface JDBCValueOutput {}

@@ -41,24 +41,25 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the JDBCTableFieldValue complex data.
- * The JDBCTableFieldValue complex data represents a list of values contained by a JDBCTableField.
+ * Attributes for the JDBCValue complex data.
+ * The JDBCValue complex data represents a list of values contained by a JDBCColumn.
  *
  * The following fields must be defined (mandatory) :
- *  - jdbcTableFieldReference : String
- *      Name of the variable of the JDBCTableField.
+ *  - jdbcColumnReference : String
+ *      Name of the variable of the JDBCColumn.
  *
  * The following fields can be defined (optional) :
  *  - multiSelection : boolean
  *      Indicates if more than one value can be selected.
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface JDBCTableFieldValueAttribute {
+@interface JDBCValueAttribute {
 
-    /** Name of the variable of the JDBCTableField.*/
-    String jdbcTableFieldReference()
+    /** Name of the variable of the JDBCColumn.*/
+    String jdbcColumnReference()
 
     /** Indicates if more than one value can be selected.*/
     boolean multiSelection() default false
