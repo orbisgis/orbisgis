@@ -38,6 +38,8 @@
 package org.orbisgis.wpsserviceorbisgis;
 
 import net.opengis.ows._2.*;
+import net.opengis.wps._2_0.DescribeProcess;
+import net.opengis.wps._2_0.ProcessOfferings;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -275,6 +277,12 @@ public class OrbisGISWpsServerImpl
             return (processManager.getProcess(pi.getProcessDescriptionType().getIdentifier()) != null);
         }
         return false;
+    }
+
+    @Override
+    public ProcessOfferings describeProcess(DescribeProcess describeProcess){
+        this.onDataManagerChange();
+        return super.describeProcess(describeProcess);
     }
 
     @Override
