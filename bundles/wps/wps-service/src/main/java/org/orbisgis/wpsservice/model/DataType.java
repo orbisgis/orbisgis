@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.Types;
 
 
 /**
@@ -194,6 +195,33 @@ public enum DataType {
             case MULTIPOLYGON:
                 return type == GeometryTypeCodes.MULTIPOLYGON;
             default: return false;
+        }
+    }
+
+    public static DataType getDataType(int sqlTypeId) {
+        switch (sqlTypeId) {
+            case Types.BOOLEAN:
+            case Types.BIT:
+                return BOOLEAN;
+            case Types.DOUBLE:
+                return DOUBLE;
+            case Types.NUMERIC:
+                return NUMBER;
+            case Types.DECIMAL:
+            case Types.REAL:
+            case Types.FLOAT:
+                return FLOAT;
+            case Types.BIGINT:
+            case Types.INTEGER:
+                return INTEGER;
+            case Types.SMALLINT:
+                return SHORT;
+            case Types.VARCHAR:
+            case Types.NCHAR:
+            case Types.CHAR:
+                return STRING;
+            default:
+                return OTHER;
         }
     }
 }
