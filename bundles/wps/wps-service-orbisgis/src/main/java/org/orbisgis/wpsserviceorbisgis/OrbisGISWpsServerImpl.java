@@ -40,6 +40,7 @@ package org.orbisgis.wpsserviceorbisgis;
 import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.DescribeProcess;
 import net.opengis.wps._2_0.ProcessOfferings;
+import org.h2.jdbc.JdbcResultSet;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -312,6 +313,41 @@ public class OrbisGISWpsServerImpl
                                 for (DataType dataType : excludedTypes) {
                                     if (DataType.testGeometryType(dataType, entry.getValue())) {
                                         isValid = false;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (SQLException e) {
+                        LOGGER.error(I18N.tr("Unable to get the connection.\nCause : {0}.",
+                                e.getMessage()));
+                    }
+                }
+                else {
+                    try (Connection connection = dataManager.getDataSource().getConnection()) {
+                        //Get the metadata of the table
+                        ResultSet rs = connection.createStatement().executeQuery(String.format("select * from %s", tablelocation.getTable()));
+                        ResultSetMetaData metaData = rs.getMetaData();
+                        //For each field, get its DataType
+                        for(int fieldId = 1; fieldId <= metaData.getColumnCount(); ++fieldId) {
+                            String fieldTypeName = metaData.getColumnTypeName(fieldId);
+                            if(!fieldTypeName.equalsIgnoreCase("geometry")) {
+                                DataType dataType = DataType.getDataType(metaData.getColumnType(fieldId));
+                                //Tests if the DataType is compatible with the acceptedTypes and excludedTypes.
+                                if(dataTypes != null && !dataTypes.isEmpty()) {
+                                    for (DataType acceptedType : dataTypes) {
+                                        if (dataType.equals(acceptedType)) {
+                                            isValid = true;
+                                        }
+                                    }
+                                }
+                                else{
+                                    isValid = true;
+                                }
+                                if(excludedTypes != null && !excludedTypes.isEmpty()) {
+                                    for (DataType excludedType : excludedTypes) {
+                                        if (excludedType.equals(dataType)) {
+                                            isValid = false;
+                                        }
                                     }
                                 }
                             }
