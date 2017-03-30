@@ -61,7 +61,7 @@ import java.util.List;
 /**
  * @author Sylvain PALOMINOS
  */
-public class JDBCUtilityTest {
+public class OrbisGISWpsServerImplTest {
     private static OrbisGISWpsServerImpl wpsServer;
     private static DataSource dataSource;
     private static Connection connection;
@@ -70,7 +70,7 @@ public class JDBCUtilityTest {
     public void init() throws Exception {
         wpsServer = new OrbisGISWpsServerImpl();
         dataSource = SFSUtilities.wrapSpatialDataSource(
-                H2GISDBFactory.createDataSource(JDBCUtilityTest.class.getSimpleName(), true));
+                H2GISDBFactory.createDataSource(OrbisGISWpsServerImplTest.class.getSimpleName(), true));
         connection = dataSource.getConnection();
         H2GISFunctions.registerFunction(connection.createStatement(), new DriverManager(), "");
         DataManager dataManager = new DataManagerImpl(dataSource);
