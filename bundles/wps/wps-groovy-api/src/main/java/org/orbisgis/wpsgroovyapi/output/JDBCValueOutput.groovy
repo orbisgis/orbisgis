@@ -21,13 +21,13 @@ package org.orbisgis.wpsgroovyapi.output
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
-import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
-import org.orbisgis.wpsgroovyapi.attributes.JDBCTableFieldAttribute
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
+import org.orbisgis.wpsgroovyapi.attributes.JDBCValueAttribute
+import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
 
 /**
- * JDBCTableField output annotation.
- * The JDBCTableField is a complex data that represents a JDBCTable field (i.e. a column of a table).
+ * JDBCValue output annotation.
+ * The JDBCValue complex data represents a list of values contained by a JDBCColumn.
  * As an output, this annotation should be placed just before the variable.
  *
  * The following fields must be defined (mandatory) :
@@ -36,8 +36,8 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
  *       unique title or a translated title, its language, another title, its language ...
  *       i.e. title = "title" or tittle = ["titleFr", "fr", "titleEn", "en"]
  *
- *  - jdbcTableReference : String
- *      Name of the variable of the JDBCTable.
+ *  - jdbcColumnReference : String
+ *      Name of the variable of the JDBCColumn.
  *
  * The following fields can be defined (optional) :
  *  - description : String[]
@@ -60,21 +60,13 @@ import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
  *      i.e. metadata = ["role1,title,href1",
  *                       "role2,title,href2"]
  *
- *  - dataTypes : String[]
- *      Array of the types allowed. If no types are specified, accepts all.
- *
- *  - excludedTypes : String[]
- *      Array of the type forbidden. If no types are specified, accept all.
- *
- *  - excludedNames : String[]
- *      Array of the forbidden names. If no names are specified, accept all.
- *
  *  - multiSelection : boolean
- *      Enable or not the user to select more than one field. Disabled by default.
+ *      Indicates if more than one value can be selected.
  *
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
-@AnnotationCollector([Field, JDBCTableFieldAttribute, OutputAttribute, DescriptionTypeAttribute])
-@interface JDBCTableFieldOutput {}
+@AnnotationCollector([Field, JDBCValueAttribute, OutputAttribute, DescriptionTypeAttribute])
+@interface JDBCValueOutput {}

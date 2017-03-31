@@ -41,8 +41,8 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 
 /**
- * Attributes for the JDBCTableField complex data.
- * The JDBCTableField is a complex data that represents a JDBCTable field (i.e. a column of a table).
+ * Attributes for the JDBCColumn complex data.
+ * The JDBCColumn is a complex data that represents a JDBCTable column.
  * It is linked to a JDBCTable and its allowed types can be specified.
  *
  * The following fields must be defined (mandatory) :
@@ -63,9 +63,10 @@ import java.lang.annotation.RetentionPolicy
  *      Enable or not the user to select more than one field. Disabled by default.
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
 @Retention(RetentionPolicy.RUNTIME)
-@interface JDBCTableFieldAttribute {
+@interface JDBCColumnAttribute {
 
     /** Name of the variable of the JDBCTable or its identifier.*/
     String jdbcTableReference()

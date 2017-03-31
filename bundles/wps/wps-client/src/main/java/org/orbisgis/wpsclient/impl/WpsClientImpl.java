@@ -101,6 +101,7 @@ import static org.orbisgis.wpsclient.impl.utils.Job.REFRESH_STATUS;
  * Implementation of the InternalWpsClient for Orbisgis.
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  **/
 
 @Component(immediate = true, service = {DockingPanel.class, OrbisGISWpsClient.class})
@@ -447,55 +448,55 @@ public class WpsClientImpl
         refreshAvailableScripts();
     }
     /**
-     * Link the different input/output together like the JDBCTable with its JDBCTableFields,
-     * the JDBCTableFields with its JDBCTableFieldValues ...
+     * Link the different input/output together like the JDBCTable with its JDBCColumns,
+     * the JDBCColumns with its JDBCValues ...
      * @param p Process to link.
      */
     private void link(ProcessDescriptionType p){
         //Link the JDBCTableField with its JDBCTable
         for(InputDescriptionType i : p.getInput()){
-            if(i.getDataDescription().getValue() instanceof JDBCTableField){
-                JDBCTableField jdbcTableField = (JDBCTableField)i.getDataDescription().getValue();
+            if(i.getDataDescription().getValue() instanceof JDBCColumn){
+                JDBCColumn jdbcColumn = (JDBCColumn)i.getDataDescription().getValue();
                 for(InputDescriptionType jdbcTable : p.getInput()){
-                    if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getJDBCTableIdentifier().toString())){
-                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCTableField(jdbcTableField);
+                    if(jdbcTable.getIdentifier().getValue().equals(jdbcColumn.getJDBCTableIdentifier().toString())){
+                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCColumn(jdbcColumn);
                     }
                 }
             }
         }
-        //Link the JDBCTableFieldValue with its JDBCTableField and its JDBCTable
+        //Link the JDBCValue with its JDBCColumn and its JDBCTable
         for(InputDescriptionType i : p.getInput()){
-            if(i.getDataDescription().getValue() instanceof JDBCTableFieldValue){
-                JDBCTableFieldValue jdbcTableFieldValue = (JDBCTableFieldValue)i.getDataDescription().getValue();
+            if(i.getDataDescription().getValue() instanceof JDBCValue){
+                JDBCValue jdbcValue = (JDBCValue)i.getDataDescription().getValue();
                 for(InputDescriptionType input : p.getInput()){
-                    if(input.getIdentifier().getValue().equals(jdbcTableFieldValue.getJDBCTableFieldIdentifier().toString())){
-                        JDBCTableField jdbcTableField = (JDBCTableField)input.getDataDescription().getValue();
-                        jdbcTableField.addJDBCTableFieldValue(jdbcTableFieldValue);
-                        jdbcTableFieldValue.setJDBCTableIdentifier(jdbcTableField.getJDBCTableIdentifier());
+                    if(input.getIdentifier().getValue().equals(jdbcValue.getJDBCColumnIdentifier().toString())){
+                        JDBCColumn jdbcColumn = (JDBCColumn)input.getDataDescription().getValue();
+                        jdbcColumn.addJDBCValue(jdbcValue);
+                        jdbcValue.setJDBCTableIdentifier(jdbcColumn.getJDBCTableIdentifier());
                     }
                 }
             }
         }
-        //Link the JDBCTableField with its JDBCTable
+        //Link the JDBCColumn with its JDBCTable
         for(OutputDescriptionType o : p.getOutput()){
-            if(o.getDataDescription().getValue() instanceof JDBCTableField){
-                JDBCTableField jdbcTableField = (JDBCTableField)o.getDataDescription().getValue();
+            if(o.getDataDescription().getValue() instanceof JDBCColumn){
+                JDBCColumn jdbcColumn = (JDBCColumn)o.getDataDescription().getValue();
                 for(OutputDescriptionType jdbcTable : p.getOutput()){
-                    if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getJDBCTableIdentifier().toString())){
-                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCTableField(jdbcTableField);
+                    if(jdbcTable.getIdentifier().getValue().equals(jdbcColumn.getJDBCTableIdentifier().toString())){
+                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCColumn(jdbcColumn);
                     }
                 }
             }
         }
-        //Link the JDBCTableFieldValue with its JDBCTableField and its JDBCTable
+        //Link the JDBCValue with its JDBCColumn and its JDBCTable
         for(OutputDescriptionType o : p.getOutput()){
-            if(o.getDataDescription().getValue() instanceof JDBCTableFieldValue){
-                JDBCTableFieldValue jdbcTableFieldValue = (JDBCTableFieldValue)o.getDataDescription().getValue();
+            if(o.getDataDescription().getValue() instanceof JDBCValue){
+                JDBCValue jdbcTableFieldValue = (JDBCValue)o.getDataDescription().getValue();
                 for(OutputDescriptionType output : p.getOutput()){
-                    if(output.getIdentifier().getValue().equals(jdbcTableFieldValue.getJDBCTableFieldIdentifier().toString())){
-                        JDBCTableField jdbcTableField = (JDBCTableField)output.getDataDescription().getValue();
-                        jdbcTableField.addJDBCTableFieldValue(jdbcTableFieldValue);
-                        jdbcTableFieldValue.setJDBCTableIdentifier(jdbcTableField.getJDBCTableIdentifier());
+                    if(output.getIdentifier().getValue().equals(jdbcTableFieldValue.getJDBCColumnIdentifier().toString())){
+                        JDBCColumn jdbcColumn = (JDBCColumn)output.getDataDescription().getValue();
+                        jdbcColumn.addJDBCValue(jdbcTableFieldValue);
+                        jdbcTableFieldValue.setJDBCTableIdentifier(jdbcColumn.getJDBCTableIdentifier());
                     }
                 }
             }
