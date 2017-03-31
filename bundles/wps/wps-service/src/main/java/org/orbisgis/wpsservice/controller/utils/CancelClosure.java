@@ -38,9 +38,9 @@
 package org.orbisgis.wpsservice.controller.utils;
 
 import groovy.lang.Closure;
-import org.h2gis.utilities.wrapper.StatementWrapper;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +51,7 @@ import java.util.List;
  */
 public class CancelClosure extends Closure {
 
-    private List<StatementWrapper> statementList;
+    private List<Statement> statementList;
 
     public CancelClosure(Object owner) {
         super(owner);
@@ -62,7 +62,7 @@ public class CancelClosure extends Closure {
      * Called method by groovy.
      * @param stmt
      */
-    public void doCall(StatementWrapper stmt){
+    public void doCall(Statement stmt){
         statementList.add(stmt);
     }
 
@@ -70,7 +70,7 @@ public class CancelClosure extends Closure {
      * Cancel all the running sql queries.
      */
     public void cancel(){
-        for(StatementWrapper stmt : statementList){
+        for(Statement stmt : statementList){
             try {
                 stmt.cancel();
             } catch (SQLException ignored) {

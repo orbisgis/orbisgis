@@ -41,12 +41,9 @@ import net.opengis.ows._2.CodeType;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.GetCapabilitiesType;
 import org.junit.Test;
-import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.wpsservice.WpsServer;
 import org.orbisgis.wpsservice.controller.process.ProcessIdentifier;
-import org.orbisgis.wpsservice.model.DataType;
 
-import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
@@ -73,10 +70,7 @@ public class OrbisGISWpsScriptPluginTest {
     public void testPluginLifeCycle(){
         //Initialize an instance of OrbisGISWpsScriptPlugin, CustomWpsService and CustomCoreWorkspace
         CustomWpsService localWpsServer = new CustomWpsService();
-        CustomCoreWorkspace customCoreWorkspace = new CustomCoreWorkspace();
-        Assert.assertNotNull("Unable to create the temporary folder for the custom CoreWorkspace.",
-                customCoreWorkspace.getApplicationFolder());
-        localWpsServer.setScriptFolder(customCoreWorkspace.getTempFolder());
+        localWpsServer.setScriptFolder(System.getProperty("java.io.tmpdir"));
         OrbisGISWpsScriptPlugin plugin = new OrbisGISWpsScriptPlugin();
         //Give to the OrbisGISWpsScriptPlugin the LocalWpsServer and the CoreWorkspace
         plugin.setWpsServer(localWpsServer);
@@ -179,63 +173,5 @@ public class OrbisGISWpsScriptPluginTest {
         @Override public OutputStream callOperation(InputStream xml) {return null;}
         @Override public void cancelProcess(UUID jobId) {}
         @Override public Database getDatabase() {return null;}
-    }
-
-    /**
-     * Fake implementation of the CoreWorkspace interface with a temporary folder as application folder.
-     */
-    private class CustomCoreWorkspace implements CoreWorkspace {
-
-        File applicationFolder = null;
-
-        @Override public String getApplicationFolder() {
-            if(applicationFolder == null) {
-                try {
-                    //Creates a directory in the temporary folder
-                    applicationFolder = File.createTempFile("temp", Long.toString(System.nanoTime()));
-                    if(!(applicationFolder.delete()))
-                    {
-                        return null;
-                    }
-
-                    if(!(applicationFolder.mkdir()))
-                    {
-                        return null;
-                    }
-                } catch (IOException e) {
-                    return null;
-                }
-            }
-            return applicationFolder.getAbsolutePath();
-        }
-
-        //Methods not used in the tests
-        @Override public String getJDBCConnectionReference() {return null;}
-        @Override public String getDataBaseUriFilePath() {return null;}
-        @Override public String getDataBaseUser() {return null;}
-        @Override public String getDataBasePassword() {return null;}
-        @Override public void setDataBaseUser(String user) {}
-        @Override public void setDataBasePassword(String password) {}
-        @Override public boolean isRequirePassword() {return false;}
-        @Override public void setRequirePassword(boolean requirePassword) {}
-        @Override public String getPluginCache() {return null;}
-        @Override public String getLogFile() {return null;}
-        @Override public String getLogPath() {return null;}
-        @Override public List<File> readKnownWorkspacesPath() {return null;}
-        @Override public File readDefaultWorkspacePath() {return null;}
-        @Override public String getTempFolder() {return null;}
-        @Override public String getPluginFolder() {return null;}
-        @Override public String getSourceFolder() {return null;}
-        @Override public String getWorkspaceFolder() {return null;}
-        @Override public void addPropertyChangeListener(PropertyChangeListener listener) {}
-        @Override public void addPropertyChangeListener(String prop, PropertyChangeListener listener) {}
-        @Override public void removePropertyChangeListener(PropertyChangeListener listener) {}
-        @Override public void removePropertyChangeListener(String prop, PropertyChangeListener listener) {}
-        @Override public int getVersionMajor() {return 0;}
-        @Override public int getVersionMinor() {return 0;}
-        @Override public int getVersionRevision() {return 0;}
-        @Override public String getVersionQualifier() {return null;}
-        @Override public String getDatabaseName() {return null;}
-        @Override public void setDatabaseName(String databaseName) {}
     }
 }

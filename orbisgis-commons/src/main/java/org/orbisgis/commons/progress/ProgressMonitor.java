@@ -50,7 +50,7 @@ import java.beans.PropertyChangeListener;
  * 
  * @author Fernando GONZALEZ CORTES
  * @author Thomas LEDUC
- * @author Antoine Gourlay <antoine@gourlay.fr>
+ * @author Antoine Gourlay
  * @author Nicolas Fortin
  */
 public interface ProgressMonitor {

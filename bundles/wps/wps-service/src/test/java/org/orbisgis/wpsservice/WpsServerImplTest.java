@@ -73,7 +73,6 @@ public class WpsServerImplTest {
     @Before
     public void initialize(){
         WpsServerImpl localWpsServer = new WpsServerImpl();
-        localWpsServer.init();
 
         try {
             URL url = this.getClass().getResource("JDBCTable.groovy");
@@ -127,7 +126,6 @@ public class WpsServerImplTest {
     @Test
     public void initialisationTest(){
         WpsServerImpl wpsServer = new WpsServerImpl();
-        wpsServer.init();
 
         //Ask for the GetCapabilities
         GetCapabilitiesType getCapabilitiesType = new GetCapabilitiesType();
