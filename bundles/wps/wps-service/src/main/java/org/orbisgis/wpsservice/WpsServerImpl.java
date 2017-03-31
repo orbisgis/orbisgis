@@ -82,8 +82,6 @@ public class WpsServerImpl implements WpsServer {
 
     /** Process manager which contains all the loaded scripts. */
     private ProcessManager processManager;
-    /** DataSource from OrbisGIS */
-    private DataSource dataSource;
     /** Map containing the WPS Jobs and their UUID */
     private Map<UUID, Job> jobMap;
     /** ExecutorService of OrbisGIS */
@@ -112,25 +110,31 @@ public class WpsServerImpl implements WpsServer {
     /**********************************************/
 
     /**
-     * Initialization of the WpsServiceImpl.
+     * EmptyConstructor which load all its properties from the resource WpsServer properties file.
      */
-    public void init(){
+    public WpsServerImpl(){
         jobMap = new HashMap<>();
         propertiesMap = new HashMap<>();
         //Initialisation of the wps service itself
-        wpsProp = new WpsServerProperties();
+        wpsProp = new WpsServerProperties(null);
         //Creates the attribute for the processes execution
-        processManager = new ProcessManager(dataSource, this);
+        processManager = new ProcessManager(null, this);
         workerFIFO = new LinkedList<>();
-
+        this.setScriptFolder(System.getProperty("java.io.tmpdir"));
     }
 
     /**
-     * Initialization of the WpsServiceImpl.
+     * Initialization of the WpsServer with the given properties.
      */
-    public void init(String scriptFolder){
+    public WpsServerImpl(String scriptFolder, DataSource dataSource){
+        jobMap = new HashMap<>();
+        propertiesMap = new HashMap<>();
+        //Initialisation of the wps service itself
+        wpsProp = new WpsServerProperties(scriptFolder);
+        //Creates the attribute for the processes execution
+        processManager = new ProcessManager(dataSource, this);
+        workerFIFO = new LinkedList<>();
         this.setScriptFolder(scriptFolder);
-        init();
     }
 
     /*******************************************************************/
@@ -616,13 +620,14 @@ public class WpsServerImpl implements WpsServer {
         return database;
     }
 
-    protected void setDataSource(DataSource dataSource){
-        this.dataSource = dataSource;
+    public void setDataSource(DataSource dataSource){
+        this.processManager.setDataSource(dataSource);
     }
 
-    protected void setExecutorService(ExecutorService executorService){
+    public void setExecutorService(ExecutorService executorService){
         this.executorService = executorService;
     }
+
     protected ExecutorService getExecutorService(){
         return executorService;
     }

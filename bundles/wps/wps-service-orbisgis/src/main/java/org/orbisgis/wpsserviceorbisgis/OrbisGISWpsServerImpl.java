@@ -116,8 +116,6 @@ public class OrbisGISWpsServerImpl
      */
     @Activate
     public void initialisation(){
-        //Call the initialisation of the WpsServer
-        super.init(coreWorkspace.getApplicationFolder());
         //Start the listening of the database
         initDataBaseLink();
         //Restore the last saved state of the wps server
@@ -325,7 +323,7 @@ public class OrbisGISWpsServerImpl
                 else {
                     try (Connection connection = dataManager.getDataSource().getConnection()) {
                         //Get the metadata of the table
-                        ResultSet rs = connection.createStatement().executeQuery(String.format("select * from %s", tablelocation.getTable()));
+                        ResultSet rs = connection.createStatement().executeQuery(String.format("select * from %s limit 1", tablelocation.getTable()));
                         ResultSetMetaData metaData = rs.getMetaData();
                         //For each field, get its DataType
                         for(int fieldId = 1; fieldId <= metaData.getColumnCount(); ++fieldId) {

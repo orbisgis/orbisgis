@@ -268,7 +268,6 @@ public class WpsServerGetProcessesTest {
         if (wpsServer == null) {
             //Start the WpsService
             WpsServerImpl localWpsService = new WpsServerImpl();
-            localWpsService.init();
             //Try to load the groovy scripts
             try {
                 URL url = this.getClass().getResource("JDBCTable.groovy");

@@ -143,9 +143,13 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
-            <artifactId>h2gis-functions</artifactId>
-            <version>${h2-gis-version}</version>
-            <scope>test</scope>
+            <artifactId>framework-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>core-jdbc</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
