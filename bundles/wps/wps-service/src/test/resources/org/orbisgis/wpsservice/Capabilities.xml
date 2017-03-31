@@ -90,10 +90,10 @@
             <ows:Metadata xlink:type="simple" xlink:href="http://orbisgis.org/" xlink:role="website" xlink:title="metadata"/>
         </wps:ProcessSummary>
         <wps:ProcessSummary jobControlOptions="async-execute">
-            <ows:Title xml:lang="en">JDBCTableField test</ows:Title>
-            <ows:Title xml:lang="fr">Test du JDBCTableField</ows:Title>
-            <ows:Abstract xml:lang="en">Test script using the JDBCTableField ComplexData.</ows:Abstract>
-            <ows:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData JDBCTableField.</ows:Abstract>
+            <ows:Title xml:lang="en">JDBCColumn test</ows:Title>
+            <ows:Title xml:lang="fr">Test du JDBCColumn</ows:Title>
+            <ows:Abstract xml:lang="en">Test script using the JDBCColumn ComplexData.</ows:Abstract>
+            <ows:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData JDBCColumn</ows:Abstract>
             <ows:Keywords>
                 <ows:Keyword xml:lang="en">test</ows:Keyword>
                 <ows:Keyword xml:lang="fr">test</ows:Keyword>
@@ -106,14 +106,14 @@
                 <ows:Keyword xml:lang="en">wps</ows:Keyword>
                 <ows:Keyword xml:lang="fr">wps</ows:Keyword>
             </ows:Keywords>
-            <ows:Identifier>orbisgis:test:jdbctablefield</ows:Identifier>
+            <ows:Identifier>orbisgis:test:jdbccolumn</ows:Identifier>
             <ows:Metadata xlink:type="simple" xlink:href="http://orbisgis.org/" xlink:role="website" xlink:title="metadata"/>
         </wps:ProcessSummary>
         <wps:ProcessSummary jobControlOptions="async-execute">
-            <ows:Title xml:lang="en">JDBCTableFieldValue test</ows:Title>
-            <ows:Title xml:lang="fr">Test du JDBCTableFieldValue</ows:Title>
-            <ows:Abstract xml:lang="en">Test script using the JDBCTableFieldValue ComplexData.</ows:Abstract>
-            <ows:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData JDBCTableFieldValue.</ows:Abstract>
+            <ows:Title xml:lang="en">JDBCValue test</ows:Title>
+            <ows:Title xml:lang="fr">Test du JDBCValue</ows:Title>
+            <ows:Abstract xml:lang="en">Test script using the JDBCValue ComplexData.</ows:Abstract>
+            <ows:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData JDBCValue</ows:Abstract>
             <ows:Keywords>
                 <ows:Keyword xml:lang="en">test</ows:Keyword>
                 <ows:Keyword xml:lang="fr">test</ows:Keyword>
@@ -126,7 +126,7 @@
                 <ows:Keyword xml:lang="en">wps</ows:Keyword>
                 <ows:Keyword xml:lang="fr">wps</ows:Keyword>
             </ows:Keywords>
-            <ows:Identifier>orbisgis:test:jdbctablefieldvalue</ows:Identifier>
+            <ows:Identifier>orbisgis:test:jdbcvalue</ows:Identifier>
             <ows:Metadata xlink:type="simple" xlink:href="http://orbisgis.org/" xlink:role="website" xlink:title="metadata"/>
         </wps:ProcessSummary>
         <wps:ProcessSummary jobControlOptions="async-execute">

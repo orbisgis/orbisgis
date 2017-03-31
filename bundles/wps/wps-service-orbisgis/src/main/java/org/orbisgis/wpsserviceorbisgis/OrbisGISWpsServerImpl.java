@@ -226,6 +226,7 @@ public class OrbisGISWpsServerImpl
     }
 
     @Reference
+    @Override
     public void setDataSource(DataSource ds) {
         super.setDataSource(ds);
     }

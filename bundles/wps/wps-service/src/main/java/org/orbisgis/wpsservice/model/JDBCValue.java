@@ -45,86 +45,87 @@ import java.net.URI;
 import java.util.List;
 
 /**
- * JDBCTableFieldValue represent one or more values from a JDBCTableField.
+ * JDBCValue represent one or more values from a JDBCColumn.
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "JDBCTableFieldValue", propOrder = {"jdbcTableFieldIdentifier", "jdbcTableIdentifier", "multiSelection",
+@XmlType(name = "JDBCValue", propOrder = {"jdbcColumnIdentifier", "jdbcTableIdentifier", "multiSelection",
         "defaultValues"})
-public class JDBCTableFieldValue extends ComplexDataType {
+public class JDBCValue extends ComplexDataType {
 
-    /** Identifier of the 'parent' JDBCTableField */
-    @XmlElement(name = "JDBCTableFieldId", namespace = "http://orbisgis.org")
-    private URI jdbcTableFieldIdentifier;
-    /** Indicates if the JDBCTableFieldValue should be reloaded because of a modification of the parent JDBCTableField.*/
+    /** Identifier of the 'parent' JDBCColumn */
+    @XmlElement(name = "JDBCColumnId", namespace = "http://orbisgis.org")
+    private URI jdbcColumnIdentifier;
+    /** Indicates if the JDBCValue should be reloaded because of a modification of the parent JDBCColumn.*/
     @XmlTransient
-    private boolean isJDBCTableFieldModified = true;
+    private boolean isJDBCColumnModified = true;
     /** Identifier of the 'parent' JDBCTable */
     @XmlElement(name = "JDBCTableId", namespace = "http://orbisgis.org")
     private URI jdbcTableIdentifier;
-    /** Indicates if the JDBCTableFieldValue should be reloaded because of a modification of the parent JDBCTable.*/
+    /** Indicates if the JDBCValue should be reloaded because of a modification of the parent JDBCTable.*/
     @XmlTransient
     private boolean isJDBCTableModified = true;
     /** Enable the selection of more than one value if true.*/
     @XmlAttribute(name = "multiSelection")
     private boolean multiSelection;
-    /** Default values of the JDBCTableFieldValue. */
+    /** Default values of the JDBCValue. */
     @XmlAttribute(name = "defaultValues")
     private String[] defaultValues;
 
     /**
      * Main constructor
      * @param formatList Formats of the data accepted.
-     * @param jdbcTableFieldIdentifier Identifier of the 'parent' JDBCTableField.
+     * @param jdbcColumnIdentifier Identifier of the 'parent' JDBCColumn.
      * @param multiSelection Enable or not the selection of more than one value.
      * @throws MalformedScriptException
      */
-    public JDBCTableFieldValue(List<Format> formatList, URI jdbcTableFieldIdentifier, boolean multiSelection)
+    public JDBCValue(List<Format> formatList, URI jdbcColumnIdentifier, boolean multiSelection)
             throws MalformedScriptException {
         format = formatList;
         this.multiSelection = multiSelection;
-        this.jdbcTableFieldIdentifier = jdbcTableFieldIdentifier;
+        this.jdbcColumnIdentifier = jdbcColumnIdentifier;
     }
 
     /**
      * Protected empty constructor used in the ObjectFactory class for JAXB.
      */
-    protected JDBCTableFieldValue(){
+    protected JDBCValue(){
         super();
-        jdbcTableFieldIdentifier = null;
+        jdbcColumnIdentifier = null;
         jdbcTableIdentifier = null;
     }
 
     /**
-     * Sets the URI of the parent JDBCTableField.
-     * @param jdbcTableFieldIdentifier URI of the JDBCTableField.
+     * Sets the URI of the parent JDBCColumn.
+     * @param jdbcColumnIdentifier URI of the JDBCColumn.
      */
-    public void setJDBCTableFieldIdentifierIdentifier(URI jdbcTableFieldIdentifier){
-        this.jdbcTableFieldIdentifier = jdbcTableFieldIdentifier;
+    public void setJDBCColumnIdentifierIdentifier(URI jdbcColumnIdentifier){
+        this.jdbcColumnIdentifier = jdbcColumnIdentifier;
     }
 
     /**
-     * Returns the JDBCTableField identifier.
-     * @return The JDBCTableField identifier.
+     * Returns the JDBCColumn identifier.
+     * @return The JDBCColumn identifier.
      */
-    public URI getJDBCTableFieldIdentifier(){
-        return jdbcTableFieldIdentifier;
+    public URI getJDBCColumnIdentifier(){
+        return jdbcColumnIdentifier;
     }
 
     /**
-     * Tells if the parent JDBCTableField has been modified since last time it was checked.
-     * @return True if the parent JDBCTableField has been modified, false otherwise.
+     * Tells if the parent JDBCColumn has been modified since last time it was checked.
+     * @return True if the parent JDBCColumn has been modified, false otherwise.
      */
-    public boolean isJDBCTableFieldModified() {
-        return isJDBCTableFieldModified;
+    public boolean isJDBCColumnModified() {
+        return isJDBCColumnModified;
     }
 
     /**
-     * Sets if the parent JDBCTableField has been modified
-     * @param isJDBCTableFieldModified True if the parent JDBCTableField has been modified, false otherwise.
+     * Sets if the parent JDBCColumn has been modified
+     * @param isJDBCColumnModified True if the parent JDBCColumn has been modified, false otherwise.
      */
-    public void setJDBCTableFieldModified(boolean isJDBCTableFieldModified) {
-        this.isJDBCTableFieldModified = isJDBCTableFieldModified;
+    public void setJDBCColumnModified(boolean isJDBCColumnModified) {
+        this.isJDBCColumnModified = isJDBCColumnModified;
     }
 
 
@@ -146,7 +147,7 @@ public class JDBCTableFieldValue extends ComplexDataType {
 
     /**
      * Tells if the parent JDBCTable has been modified since last time it was checked.
-     * @return True if the parent JDBCTableField has been modified, false otherwise.
+     * @return True if the parent JDBCTable has been modified, false otherwise.
      */
     public boolean isJDBCTableModified() {
         return isJDBCTableModified;
