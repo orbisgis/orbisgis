@@ -346,10 +346,10 @@ public class JDBCTableUI implements DataUI {
         else{
             tableName = comboBox.getSelectedItem().toString();
         }
-        //Tells all the jdbcTableField linked that the data source is loaded
-        if(jdbcTable.getListJDBCTableField() != null) {
-            for (JDBCTableField jdbcTableField : jdbcTable.getListJDBCTableField()) {
-                jdbcTableField.setSourceModified(true);
+        //Tells all the JDBCColumn linked that the data source is loaded
+        if(jdbcTable.getListJDBCColumn() != null) {
+            for (JDBCColumn jdbcColumn : jdbcTable.getListJDBCColumn()) {
+                jdbcColumn.setSourceModified(true);
             }
         }
         dataMap.put(uri, tableName);

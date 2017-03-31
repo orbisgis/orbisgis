@@ -68,14 +68,15 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
- * DataUI implementation for JDBCTableFieldValue.
+ * DataUI implementation for JDBCValue.
  * This class generate an interactive UI dedicated to the configuration of a JDBCTableFieldValue.
  * The interface generated will be used in the ProcessEditor.
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  **/
 
-public class JDBCTableFieldValueUI implements DataUI {
+public class JDBCValueUI implements DataUI {
 
     /** Size constants **/
     private static final int JLIST_VERTICAL_MAX_ROW_COUNT = 10;
@@ -85,7 +86,7 @@ public class JDBCTableFieldValueUI implements DataUI {
     /** Constant used to pass object as client property throw JComponents **/
     private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
     private static final String URI_PROPERTY = "URI_PROPERTY";
-    private static final String FIELD_VALUE_PROPERTY = "FIELD_VALUE_PROPERTY";
+    private static final String VALUE_PROPERTY = "VALUE_PROPERTY";
     private static final String IS_OPTIONAL_PROPERTY = "IS_OPTIONAL_PROPERTY";
     private static final String INITIAL_DELAY_PROPERTY = "INITIAL_DELAY_PROPERTY";
     private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
@@ -94,7 +95,7 @@ public class JDBCTableFieldValueUI implements DataUI {
     private static final String MAX_JLIST_ROW_COUNT = "MAX_JLIST_ROW_COUNT";
     private static final String DEFAULT_ELEMENT_PROPERTY = "DEFAULT_ELEMENT_PROPERTY";
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(JDBCTableFieldValueUI.class);
+    private static final I18n I18N = I18nFactory.getI18n(JDBCValueUI.class);
 
     /** WpsClient using the generated UI. */
     private WpsClientImpl wpsClient;
@@ -107,11 +108,11 @@ public class JDBCTableFieldValueUI implements DataUI {
     @Override
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
-        JDBCTableFieldValue jdbcTableFieldValue = null;
+        JDBCValue jdbcValue = null;
         //Retrieve the JDBCTableFieldValue and if it is optional
         boolean isOptional = false;
         if(inputOrOutput instanceof InputDescriptionType){
-            jdbcTableFieldValue = (JDBCTableFieldValue)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            jdbcValue = (JDBCValue)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
             if(((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"))){
                 isOptional = true;
             }
@@ -120,14 +121,14 @@ public class JDBCTableFieldValueUI implements DataUI {
             return null;
         }
 
-        if(jdbcTableFieldValue == null){
+        if(jdbcValue == null){
             return panel;
         }
         //Build and set the JList containing all the field values
         JList<ContainerItem<Object>> list = new JList<>();
         DefaultListModel<ContainerItem<Object>> model = new DefaultListModel<>();
         list.setModel(model);
-        if(jdbcTableFieldValue.isMultiSelection()) {
+        if(jdbcValue.isMultiSelection()) {
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         }
         else {
@@ -147,7 +148,7 @@ public class JDBCTableFieldValueUI implements DataUI {
         list.putClientProperty(DEFAULT_ELEMENT_PROPERTY, defaultElement);
         URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
         list.putClientProperty(URI_PROPERTY, uri);
-        list.putClientProperty(FIELD_VALUE_PROPERTY, jdbcTableFieldValue);
+        list.putClientProperty(VALUE_PROPERTY, jdbcValue);
         list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
         list.putClientProperty(ORIENTATION_PROPERTY, orientation);
@@ -197,24 +198,24 @@ public class JDBCTableFieldValueUI implements DataUI {
     @Override
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         Map<URI, Object> map = new HashMap<>();
-        JDBCTableFieldValue jdbcTableFieldValue = null;
+        JDBCValue jdbcValue = null;
         boolean isOptional = false;
         if(inputOrOutput instanceof InputDescriptionType){
-            jdbcTableFieldValue = (JDBCTableFieldValue)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            jdbcValue = (JDBCValue)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
             isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
         }
         else if(inputOrOutput instanceof OutputDescriptionType){
-            jdbcTableFieldValue = (JDBCTableFieldValue)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
+            jdbcValue = (JDBCValue)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
         }
-        if(jdbcTableFieldValue.getDefaultValues() != null) {
-            map.put(URI.create(inputOrOutput.getIdentifier().getValue()), jdbcTableFieldValue.getDefaultValues());
+        if(jdbcValue.getDefaultValues() != null) {
+            map.put(URI.create(inputOrOutput.getIdentifier().getValue()), jdbcValue.getDefaultValues());
         }
         return map;
     }
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon(ToolBoxIcon.JDBC_TABLE_FIELD_VALUE);
+        return ToolBoxIcon.getIcon(ToolBoxIcon.JDBC_VALUE);
     }
 
     /**
@@ -235,7 +236,7 @@ public class JDBCTableFieldValueUI implements DataUI {
     }
 
     /**
-     * Update the JList according to if JDBCTableField parent.
+     * Update the JList according to if JDBCColumn parent.
      * @param source the source JList.
      */
     public void refreshList(Object source){
@@ -291,22 +292,23 @@ public class JDBCTableFieldValueUI implements DataUI {
         @Override
         protected Object doInBackground() throws Exception {
             WaitLayerUI layerUI = (WaitLayerUI)list.getClientProperty(LAYERUI_PROPERTY);
-            JDBCTableFieldValue jdbcTableFieldValue = (JDBCTableFieldValue)list.getClientProperty(FIELD_VALUE_PROPERTY);
+            JDBCValue jdbcValue = (JDBCValue)list.getClientProperty(VALUE_PROPERTY);
             ContainerItem<Object> defaultElement = (ContainerItem<Object>)list.getClientProperty(DEFAULT_ELEMENT_PROPERTY);
-            this.setTaskName(I18N.tr("Updating the field values"));
+            this.setTaskName(I18N.tr("Updating the column values"));
             Orientation orientation = (Orientation)list.getClientProperty(ORIENTATION_PROPERTY);
             int maxRow = (int) list.getClientProperty(MAX_JLIST_ROW_COUNT);
             URI uri = (URI) list.getClientProperty(URI_PROPERTY);
             Map<URI, Object> dataMap = (Map) list.getClientProperty(DATA_MAP_PROPERTY);
             boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
             DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
-            //If the JDBCTableField related to the jdbcTableFieldValue has been modified, reload the jdbcTableField values
-            if(jdbcTableFieldValue.isJDBCTableFieldModified()) {
-                jdbcTableFieldValue.setJDBCTableFieldModified(false);
+            //If the JDBCColumn related to the jdbcValue has been modified, reload the JDBCColumn values
+            if(jdbcValue.isJDBCColumnModified()) {
+                jdbcValue.setJDBCColumnModified(false);
                 String tableName = null;
                 String fieldName = null;
-                if(jdbcTableFieldValue.getJDBCTableFieldIdentifier().toString().contains("$")){
-                    String[] split = jdbcTableFieldValue.getJDBCTableFieldIdentifier().toString().split("\\$");
+                String uriValue = jdbcValue.getJDBCColumnIdentifier().toString();
+                if(uriValue.contains("$")){
+                    String[] split = uriValue.split("\\$");
                     if(split.length == 4) {
                         tableName = split[1]+"."+split[2];
                         fieldName = split[3];
@@ -319,19 +321,19 @@ public class JDBCTableFieldValueUI implements DataUI {
                         return null;
                     }
                 }
-                else if (dataMap.get(jdbcTableFieldValue.getJDBCTableIdentifier()) != null){
-                    tableName = dataMap.get(jdbcTableFieldValue.getJDBCTableIdentifier()).toString();
-                    fieldName = dataMap.get(jdbcTableFieldValue.getJDBCTableFieldIdentifier()).toString();
+                else if (dataMap.get(jdbcValue.getJDBCTableIdentifier()) != null){
+                    tableName = dataMap.get(jdbcValue.getJDBCTableIdentifier()).toString();
+                    fieldName = dataMap.get(jdbcValue.getJDBCColumnIdentifier()).toString();
                 }
-                else if(jdbcTableFieldValue.getJDBCTableIdentifier().toString().contains("$")){
-                    String[] split = jdbcTableFieldValue.getJDBCTableIdentifier().toString().split("\\$");
+                else if(jdbcValue.getJDBCTableIdentifier().toString().contains("$")){
+                    String[] split = jdbcValue.getJDBCTableIdentifier().toString().split("\\$");
                     if(split.length == 3){
                         tableName = split[1]+"."+split[2];
                     }
                     else if(split.length == 2){
                         tableName = split[1];
                     }
-                    Object fieldNameObject = dataMap.get(jdbcTableFieldValue.getJDBCTableFieldIdentifier());
+                    Object fieldNameObject = dataMap.get(jdbcValue.getJDBCColumnIdentifier());
                     if(fieldNameObject != null) {
                         fieldName = fieldNameObject.toString();
                     }
@@ -371,9 +373,9 @@ public class JDBCTableFieldValueUI implements DataUI {
                         if(dataMap.containsKey(uri) && dataMap.get(uri) != null){
                             List<Integer> indexList = new ArrayList<>();
                             String[] elements = dataMap.get(uri).toString().split("\\t");
-                            for(int j = 0; j < elements.length; j++) {
+                            for (String element : elements) {
                                 for (int i = 0; i < model.getSize(); i++) {
-                                    if (model.getElementAt(i).getLabel().toUpperCase().equals(elements[j].toUpperCase())) {
+                                    if (model.getElementAt(i).getLabel().toUpperCase().equals(element.toUpperCase())) {
                                         indexList.add(i);
                                     }
                                 }
@@ -390,7 +392,7 @@ public class JDBCTableFieldValueUI implements DataUI {
             }
 
             //If the jList doesn't contains any values or contains only the default item,
-            // it mean that the JDBCTableField hasn't been well selected.
+            // it mean that the JDBCColumn hasn't been well selected.
             //So show a tooltip text to warn the user.
             if( list.getModel().getSize() == 0 ||
                     (list.getModel().getSize() == 1 && (list.getModel().getElementAt(0).equals(defaultElement))) ) {
@@ -398,7 +400,7 @@ public class JDBCTableFieldValueUI implements DataUI {
                 list.putClientProperty(TOOLTIP_TEXT_PROPERTY, list.getToolTipText());
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
-                String fieldValueStr = jdbcTableFieldValue.getJDBCTableFieldIdentifier().toString();
+                String fieldValueStr = jdbcValue.getJDBCColumnIdentifier().toString();
                 if(fieldValueStr.contains("$")){
                     String[] split = fieldValueStr.split("\\$");
                     if(split.length == 3){

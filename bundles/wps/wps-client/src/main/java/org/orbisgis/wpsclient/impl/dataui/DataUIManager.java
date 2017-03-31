@@ -54,6 +54,7 @@ import java.util.Map;
  * Class managing the link between data class (LiteralData, ComplexData ...) and the UI used to configure the inputs and the outputs.
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  **/
 
 public class DataUIManager {
@@ -69,8 +70,8 @@ public class DataUIManager {
         linkClassUI(LiteralDataType.class, new LiteralDataUI(), wpsClient);
         linkClassUI(RawData.class, new RawDataUI(), wpsClient);
         linkClassUI(JDBCTable.class, new JDBCTableUI(), wpsClient);
-        linkClassUI(JDBCTableField.class, new JDBCTableFieldUI(), wpsClient);
-        linkClassUI(JDBCTableFieldValue.class, new JDBCTableFieldValueUI(), wpsClient);
+        linkClassUI(JDBCColumn.class, new JDBCColumnUI(), wpsClient);
+        linkClassUI(JDBCValue.class, new JDBCValueUI(), wpsClient);
         linkClassUI(Enumeration.class, new EnumerationUI(), wpsClient);
         linkClassUI(GeometryData.class, new GeometryUI(), wpsClient);
         linkClassUI(Password.class, new PasswordUI(), wpsClient);
