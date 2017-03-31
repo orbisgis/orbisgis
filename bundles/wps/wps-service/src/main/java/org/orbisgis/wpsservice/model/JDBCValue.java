@@ -100,7 +100,7 @@ public class JDBCValue extends ComplexDataType {
      * Sets the URI of the parent JDBCColumn.
      * @param jdbcColumnIdentifier URI of the JDBCColumn.
      */
-    public void setJDBCTableFieldIdentifierIdentifier(URI jdbcColumnIdentifier){
+    public void setJDBCColumnIdentifierIdentifier(URI jdbcColumnIdentifier){
         this.jdbcColumnIdentifier = jdbcColumnIdentifier;
     }
 
@@ -121,11 +121,11 @@ public class JDBCValue extends ComplexDataType {
     }
 
     /**
-     * Sets if the parent JDBCTableField has been modified
-     * @param isJDBCTableFieldModified True if the parent JDBCTableField has been modified, false otherwise.
+     * Sets if the parent JDBCColumn has been modified
+     * @param isJDBCColumnModified True if the parent JDBCColumn has been modified, false otherwise.
      */
-    public void setJDBCTableFieldModified(boolean isJDBCTableFieldModified) {
-        this.isJDBCColumnModified = isJDBCTableFieldModified;
+    public void setJDBCColumnModified(boolean isJDBCColumnModified) {
+        this.isJDBCColumnModified = isJDBCColumnModified;
     }
 
 
@@ -147,7 +147,7 @@ public class JDBCValue extends ComplexDataType {
 
     /**
      * Tells if the parent JDBCTable has been modified since last time it was checked.
-     * @return True if the parent JDBCTableField has been modified, false otherwise.
+     * @return True if the parent JDBCTable has been modified, false otherwise.
      */
     public boolean isJDBCTableModified() {
         return isJDBCTableModified;

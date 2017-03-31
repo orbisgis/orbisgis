@@ -65,13 +65,13 @@ public class JDBCValueParser implements Parser {
 
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
-        //Instantiate the JDBCTableFieldValue object
+        //Instantiate the JDBCValue object
         JDBCValueAttribute jdbcValueAttribute = f.getAnnotation(JDBCValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
-        URI jdbcTableFieldUri;
+        URI jdbcColumnUri;
         //If the jdbcTable attribute is not an URI, autoGenerate one.
-        jdbcTableFieldUri = URI.create(processId+":"+jdbcValueAttribute.jdbcColumnReference());
-        JDBCValue jdbcValue = ObjectAnnotationConverter.annotationToObject(jdbcValueAttribute, format, jdbcTableFieldUri);
+        jdbcColumnUri = URI.create(processId+":"+jdbcValueAttribute.jdbcColumnReference());
+        JDBCValue jdbcValue = ObjectAnnotationConverter.annotationToObject(jdbcValueAttribute, format, jdbcColumnUri);
         if(defaultValue != null && defaultValue instanceof String[]) {
             jdbcValue.setDefaultValues((String[])defaultValue);
         }
@@ -96,13 +96,13 @@ public class JDBCValueParser implements Parser {
 
     @Override
     public OutputDescriptionType parseOutput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
-        //Instantiate the JDBCTableFieldValue object
+        //Instantiate the JDBCValue object
         JDBCValueAttribute jdbcValueAttribute = f.getAnnotation(JDBCValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
-        URI jdbcTableFieldUri;
+        URI jdbcColumnUri;
         //If the jdbcTable attribute is not an URI, autoGenerate one.
-        jdbcTableFieldUri = URI.create(processId+":"+jdbcValueAttribute.jdbcColumnReference());
-        JDBCValue jdbcValue = ObjectAnnotationConverter.annotationToObject(jdbcValueAttribute, format, jdbcTableFieldUri);
+        jdbcColumnUri = URI.create(processId+":"+jdbcValueAttribute.jdbcColumnReference());
+        JDBCValue jdbcValue = ObjectAnnotationConverter.annotationToObject(jdbcValueAttribute, format, jdbcColumnUri);
 
         //Instantiate the returned output
         OutputDescriptionType output = new OutputDescriptionType();

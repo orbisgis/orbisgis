@@ -60,7 +60,7 @@ public class JDBCColumn extends ComplexDataType {
     /** Identifier of the parent JDBCTable */
     @XmlElement(name = "JDBCTableId", namespace = "http://orbisgis.org")
     private URI jdbcTableIdentifier;
-    /** Indicates if the JDBCTableField should be reloaded because of a modification of the parent JDBCTable.*/
+    /** Indicates if the JDBCColumn should be reloaded because of a modification of the parent JDBCTable.*/
     @XmlTransient
     private boolean isSourceModified = true;
     /** List of type accepted for the field.*/
@@ -72,13 +72,13 @@ public class JDBCColumn extends ComplexDataType {
     /** List of name excluded for the field.*/
     @XmlElement(name = "ExcludedName", namespace = "http://orbisgis.org")
     private List<String> excludedNameList;
-    /** List of JDBCTableFieldValue liked to the JDBCTableField */
+    /** List of JDBCValue liked to the JDBCColumn */
     @XmlElement(name = "JDBCValue", namespace = "http://orbisgis.org")
     private List<JDBCValue> jdbcValueList;
     /** Indicates if the use can choose more than one field*/
     @XmlAttribute(name = "multiSelection")
     private boolean multiSelection = false;
-    /** Default values of the JDBCTableField. */
+    /** Default values of the JDBCColumn. */
     @XmlAttribute(name = "defaultValues")
     private String[] defaultValues;
     /** I18N object */

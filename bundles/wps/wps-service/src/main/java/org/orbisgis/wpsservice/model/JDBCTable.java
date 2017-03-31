@@ -51,9 +51,10 @@ import java.util.List;
  * JDBCTable represent a data source which can be an SQL table, a JSON file, a Shape file ...
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  **/
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "JDBCTable", propOrder = {"dataTypeList", "excludedTypeList", "listJDBCTableField", "defaultValue"})
+@XmlType(name = "JDBCTable", propOrder = {"dataTypeList", "excludedTypeList", "listJDBCColumn", "defaultValue"})
 public class JDBCTable extends ComplexDataType {
     /** List of field type that should be contained by the JDBCTable.*/
     @XmlElement(name = "JDBCTableType", namespace = "http://orbisgis.org")
@@ -61,9 +62,9 @@ public class JDBCTable extends ComplexDataType {
     /** List of field type forbidden for the JDBCTable. If the JDBCTable contains the type, it won't be available.*/
     @XmlElement(name = "ExcludedType", namespace = "http://orbisgis.org")
     private List<DataType> excludedTypeList;
-    /** List of JDBCTableField liked to the JDBCTable */
-    @XmlElement(name = "JDBCTableField", namespace = "http://orbisgis.org")
-    private List<JDBCColumn> listJDBCTableField;
+    /** List of JDBCColumn liked to the JDBCTable */
+    @XmlElement(name = "JDBCColumn", namespace = "http://orbisgis.org")
+    private List<JDBCColumn> listJDBCColumn;
     /** Default values of the JDBCTable. */
     @XmlAttribute(name = "defaultValue")
     private String defaultValue;
@@ -79,7 +80,7 @@ public class JDBCTable extends ComplexDataType {
         format = formatList;
         dataTypeList = new ArrayList<>();
         excludedTypeList = new ArrayList<>();
-        listJDBCTableField = new ArrayList<>();
+        listJDBCColumn = new ArrayList<>();
     }
 
     /**
@@ -87,23 +88,23 @@ public class JDBCTable extends ComplexDataType {
      */
     protected JDBCTable(){
         super();
-        listJDBCTableField = new ArrayList<>();
+        listJDBCColumn = new ArrayList<>();
     }
 
     /**
-     * Adds a JDBCTableField as a 'child' of the JDBCTable.
-     * @param jdbcTableField JDBCTableField to add.
+     * Adds a JDBCColumn as a 'child' of the JDBCTable.
+     * @param jdbcColumn JDBCColumn to add.
      */
-    public void addJDBCTableField(JDBCColumn jdbcTableField){
-        this.listJDBCTableField.add(jdbcTableField);
+    public void addJDBCColumn(JDBCColumn jdbcColumn){
+        this.listJDBCColumn.add(jdbcColumn);
     }
 
     /**
-     * Return the list of 'child' JDBCTableField.
-     * @return List of JDBCTableField.
+     * Return the list of 'child' JDBCColumn.
+     * @return List of JDBCColumn.
      */
-    public List<JDBCColumn> getListJDBCTableField(){
-        return listJDBCTableField;
+    public List<JDBCColumn> getListJDBCColumn(){
+        return listJDBCColumn;
     }
 
     /**

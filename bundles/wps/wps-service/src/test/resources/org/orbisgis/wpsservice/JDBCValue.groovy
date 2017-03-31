@@ -59,7 +59,7 @@ String inputJDBCValue
 /** OUTPUT Data **/
 /*****************/
 
-@JDBCTableOutput(title = "JDBCTable for the JDBCTableFieldValue",
+@JDBCTableOutput(title = "JDBCTable for the JDBCValue",
         identifier = "orbisgis:test:jdbctable:output")
 String jdbcTableOutput
 

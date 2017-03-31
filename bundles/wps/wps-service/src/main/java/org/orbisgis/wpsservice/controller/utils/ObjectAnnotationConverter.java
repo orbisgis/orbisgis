@@ -444,7 +444,7 @@ public class ObjectAnnotationConverter {
      * @param jDBCColumnAttribute Groovy annotation to decode to build the Java object.
      * @param format The {@link Format} for the {@link JDBCTable}.
      * @param jdbcTableUri The URI of the parent {@link JDBCTable} object.
-     * @return The {@link JDBCColumn} object with the data from the {@link JDBCTableFieldAttribute} annotation.
+     * @return The {@link JDBCColumn} object with the data from the {@link JDBCColumnAttribute} annotation.
      * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
      */
     public static JDBCColumn annotationToObject(JDBCColumnAttribute jDBCColumnAttribute, Format format,
@@ -464,11 +464,11 @@ public class ObjectAnnotationConverter {
         }
         List<Format> formatList = new ArrayList<>();
         formatList.add(format);
-        JDBCColumn jdbcTableField = new JDBCColumn(formatList, dataTypeList, jdbcTableUri);
-        jdbcTableField.setExcludedTypeList(excludedTypeList);
-        jdbcTableField.setExcludedNameList(excludedNameList);
-        jdbcTableField.setMultiSelection(jDBCColumnAttribute.multiSelection());
-        return jdbcTableField;
+        JDBCColumn jdbcColumn = new JDBCColumn(formatList, dataTypeList, jdbcTableUri);
+        jdbcColumn.setExcludedTypeList(excludedTypeList);
+        jdbcColumn.setExcludedNameList(excludedNameList);
+        jdbcColumn.setMultiSelection(jDBCColumnAttribute.multiSelection());
+        return jdbcColumn;
     }
 
     /**

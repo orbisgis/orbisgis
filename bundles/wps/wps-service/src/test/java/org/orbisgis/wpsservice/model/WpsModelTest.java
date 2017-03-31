@@ -72,11 +72,11 @@ public class WpsModelTest {
     public void testJDBCColumnAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
-            //Retrieve the JDBCTableField object
+            //Retrieve the JDBCColumn object
             JDBCColumn jdbcColumn = null;
             //Inspect all the annotation of the field to get the DescriptionTypeAttribute one
-            Field jdbcTableFieldField = this.getClass().getDeclaredField("jdbcColumnInput");
-            for(Annotation annotation : jdbcTableFieldField.getDeclaredAnnotations()){
+            Field jdbcColumnField = this.getClass().getDeclaredField("jdbcColumnInput");
+            for(Annotation annotation : jdbcColumnField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
                 if(annotation instanceof JDBCColumnAttribute){
                     annotationFound = true;
@@ -94,7 +94,7 @@ public class WpsModelTest {
             }
 
             /////////////////////////////
-            // Test the JDBCTableField //
+            // Test the JDBCColumn //
             /////////////////////////////
 
             String errorMessage = "Error, the JDBCColumn 'jdbcTableUri' field should be 'jdbctable:uri' instead of "+
@@ -284,7 +284,7 @@ public class WpsModelTest {
             multiSelection = true,
             jdbcColumnReference = "jdbcValueTitle"
     )
-    public Object jdbcTableFieldValueInput;
+    public Object jdbcValueInput;
 
     /**
      * Test if the decoding and convert of the JDBCValueAttribute annotation into its java object is valid.
@@ -297,8 +297,8 @@ public class WpsModelTest {
             //Retrieve the JDBCValue object
             JDBCValue jdbcValue = null;
             //Inspect all the annotation of the field to get the JDBCValueAttribute one
-            Field jdbcTableFieldValueField = this.getClass().getDeclaredField("jdbcValueInput");
-            for(Annotation annotation : jdbcTableFieldValueField.getDeclaredAnnotations()){
+            Field jdbcValueField = this.getClass().getDeclaredField("jdbcValueInput");
+            for(Annotation annotation : jdbcValueField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
                 if(annotation instanceof JDBCValueAttribute){
                     annotationFound = true;

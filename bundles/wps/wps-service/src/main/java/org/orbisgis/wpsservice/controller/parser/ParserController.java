@@ -225,10 +225,10 @@ public class ParserController {
         //Link the JDBCColumn with its JDBCTable
         for(InputDescriptionType i : p.getInput()){
             if(i.getDataDescription().getValue() instanceof JDBCColumn){
-                JDBCColumn jdbcTableField = (JDBCColumn)i.getDataDescription().getValue();
+                JDBCColumn jdbcColumn = (JDBCColumn)i.getDataDescription().getValue();
                 for(InputDescriptionType jdbcTable : p.getInput()){
-                    if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getJDBCTableIdentifier().toString())){
-                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCTableField(jdbcTableField);
+                    if(jdbcTable.getIdentifier().getValue().equals(jdbcColumn.getJDBCTableIdentifier().toString())){
+                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCColumn(jdbcColumn);
                     }
                 }
             }
@@ -236,12 +236,12 @@ public class ParserController {
         //Link the JDBCValue with its JDBCColumn and its JDBCTable
         for(InputDescriptionType i : p.getInput()){
             if(i.getDataDescription().getValue() instanceof JDBCValue){
-                JDBCValue jdbcTableFieldValue = (JDBCValue)i.getDataDescription().getValue();
+                JDBCValue jdbcValue = (JDBCValue)i.getDataDescription().getValue();
                 for(InputDescriptionType input : p.getInput()){
-                    if(input.getIdentifier().getValue().equals(jdbcTableFieldValue.getJDBCColumnIdentifier().toString())){
-                        JDBCColumn jdbcTableField = (JDBCColumn)input.getDataDescription().getValue();
-                        jdbcTableField.addJDBCValue(jdbcTableFieldValue);
-                        jdbcTableFieldValue.setJDBCTableIdentifier(jdbcTableField.getJDBCTableIdentifier());
+                    if(input.getIdentifier().getValue().equals(jdbcValue.getJDBCColumnIdentifier().toString())){
+                        JDBCColumn jdbcColumn = (JDBCColumn)input.getDataDescription().getValue();
+                        jdbcColumn.addJDBCValue(jdbcValue);
+                        jdbcValue.setJDBCTableIdentifier(jdbcColumn.getJDBCTableIdentifier());
                     }
                 }
             }
@@ -249,10 +249,10 @@ public class ParserController {
         //Link the JDBCColumn with its JDBCTable
         for(OutputDescriptionType o : p.getOutput()){
             if(o.getDataDescription().getValue() instanceof JDBCColumn){
-                JDBCColumn jdbcTableField = (JDBCColumn)o.getDataDescription().getValue();
+                JDBCColumn jdbcColumn = (JDBCColumn)o.getDataDescription().getValue();
                 for(OutputDescriptionType jdbcTable : p.getOutput()){
-                    if(jdbcTable.getIdentifier().getValue().equals(jdbcTableField.getJDBCTableIdentifier().toString())){
-                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCTableField(jdbcTableField);
+                    if(jdbcTable.getIdentifier().getValue().equals(jdbcColumn.getJDBCTableIdentifier().toString())){
+                        ((JDBCTable)jdbcTable.getDataDescription().getValue()).addJDBCColumn(jdbcColumn);
                     }
                 }
             }
@@ -260,12 +260,12 @@ public class ParserController {
         //Link the JDBCValue with its JDBCColumn and its JDBCTable
         for(OutputDescriptionType o : p.getOutput()){
             if(o.getDataDescription().getValue() instanceof JDBCValue){
-                JDBCValue jdbcTableFieldValue = (JDBCValue)o.getDataDescription().getValue();
+                JDBCValue jdbcValue = (JDBCValue)o.getDataDescription().getValue();
                 for(OutputDescriptionType output : p.getOutput()){
-                    if(output.getIdentifier().getValue().equals(jdbcTableFieldValue.getJDBCColumnIdentifier().toString())){
-                        JDBCColumn jdbcTableField = (JDBCColumn)output.getDataDescription().getValue();
-                        jdbcTableField.addJDBCValue(jdbcTableFieldValue);
-                        jdbcTableFieldValue.setJDBCTableIdentifier(jdbcTableField.getJDBCTableIdentifier());
+                    if(output.getIdentifier().getValue().equals(jdbcValue.getJDBCColumnIdentifier().toString())){
+                        JDBCColumn jdbcColumn = (JDBCColumn)output.getDataDescription().getValue();
+                        jdbcColumn.addJDBCValue(jdbcValue);
+                        jdbcValue.setJDBCTableIdentifier(jdbcColumn.getJDBCTableIdentifier());
                     }
                 }
             }

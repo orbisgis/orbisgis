@@ -71,14 +71,14 @@ public class JDBCColumnParser implements Parser {
         URI jdbcTableUri;
         //If the jdbcTable attribute is not an URI, autoGenerate one.
         jdbcTableUri = URI.create(processId+":"+jdbcColumnAttribute.jdbcTableReference());
-        JDBCColumn jdbcTableField = ObjectAnnotationConverter.annotationToObject(jdbcColumnAttribute, format, jdbcTableUri);
+        JDBCColumn jdbcColumn = ObjectAnnotationConverter.annotationToObject(jdbcColumnAttribute, format, jdbcTableUri);
         if(defaultValue != null && defaultValue instanceof String[]) {
-            jdbcTableField.setDefaultValues((String[])defaultValue);
+            jdbcColumn.setDefaultValues((String[])defaultValue);
         }
 
         //Instantiate the returned input
         InputDescriptionType input = new InputDescriptionType();
-        JAXBElement<JDBCColumn> jaxbElement = new ObjectFactory().createJDBCColumn(jdbcTableField);
+        JAXBElement<JDBCColumn> jaxbElement = new ObjectFactory().createJDBCColumn(jdbcColumn);
         input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
@@ -102,12 +102,12 @@ public class JDBCColumnParser implements Parser {
         URI jdbcTableUri;
         //If the jdbcTable attribute is not an URI, autoGenerate one.
         jdbcTableUri = URI.create(processId+":"+jdbcColumnAttribute.jdbcTableReference());
-        JDBCColumn jdbcTableField = ObjectAnnotationConverter.annotationToObject(jdbcColumnAttribute, format,
+        JDBCColumn jdbcColumn = ObjectAnnotationConverter.annotationToObject(jdbcColumnAttribute, format,
                 jdbcTableUri);
 
         //Instantiate the returned output
         OutputDescriptionType output = new OutputDescriptionType();
-        JAXBElement<JDBCColumn> jaxbElement = new ObjectFactory().createJDBCColumn(jdbcTableField);
+        JAXBElement<JDBCColumn> jaxbElement = new ObjectFactory().createJDBCColumn(jdbcColumn);
         output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output,

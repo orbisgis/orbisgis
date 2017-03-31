@@ -94,7 +94,7 @@ public class WpsServerGetProcessesTest {
     }
 
     /**
-     * Test the JDBCTableField script DescribeProcess request.
+     * Test the JDBCColumn script DescribeProcess request.
      * @throws javax.xml.bind.JAXBException
      * @throws java.io.IOException
      */
@@ -128,7 +128,7 @@ public class WpsServerGetProcessesTest {
     }
 
     /**
-     * Test the JDBCTableField script DescribeProcess request.
+     * Test the JDBCColumn script DescribeProcess request.
      * @throws javax.xml.bind.JAXBException
      * @throws java.io.IOException
      */
