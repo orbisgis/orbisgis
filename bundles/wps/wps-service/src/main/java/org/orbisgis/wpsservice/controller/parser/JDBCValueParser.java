@@ -38,15 +38,15 @@
 package org.orbisgis.wpsservice.controller.parser;
 
 import net.opengis.ows._2.CodeType;
-import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.Format;
+import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
-import org.orbisgis.wpsgroovyapi.attributes.JDBCTableFieldAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute;
+import org.orbisgis.wpsgroovyapi.attributes.JDBCValueAttribute;
 import org.orbisgis.wpsgroovyapi.attributes.InputAttribute;
 import org.orbisgis.wpsservice.controller.utils.FormatFactory;
 import org.orbisgis.wpsservice.controller.utils.ObjectAnnotationConverter;
-import org.orbisgis.wpsservice.model.JDBCTableField;
+import org.orbisgis.wpsservice.model.JDBCValue;
 import org.orbisgis.wpsservice.model.MalformedScriptException;
 import org.orbisgis.wpsservice.model.ObjectFactory;
 
@@ -55,29 +55,30 @@ import java.lang.reflect.Field;
 import java.net.URI;
 
 /**
- * Parser for the JDBCTableField input/output annotations.
+ * Parser for the JDBCValue input/output annotations.
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  **/
 
-public class JDBCTableFieldParser implements Parser {
+public class JDBCValueParser implements Parser {
 
     @Override
     public InputDescriptionType parseInput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
-        //Instantiate the JDBCTableField object
-        JDBCTableFieldAttribute JDBCTableFieldAttribute = f.getAnnotation(JDBCTableFieldAttribute.class);
+        //Instantiate the JDBCValue object
+        JDBCValueAttribute jdbcValueAttribute = f.getAnnotation(JDBCValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
-        URI jdbcTableUri;
+        URI jdbcColumnUri;
         //If the jdbcTable attribute is not an URI, autoGenerate one.
-        jdbcTableUri = URI.create(processId+":"+JDBCTableFieldAttribute.jdbcTableReference());
-        JDBCTableField jdbcTableField = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldAttribute, format, jdbcTableUri);
+        jdbcColumnUri = URI.create(processId+":"+jdbcValueAttribute.jdbcColumnReference());
+        JDBCValue jdbcValue = ObjectAnnotationConverter.annotationToObject(jdbcValueAttribute, format, jdbcColumnUri);
         if(defaultValue != null && defaultValue instanceof String[]) {
-            jdbcTableField.setDefaultValues((String[])defaultValue);
+            jdbcValue.setDefaultValues((String[])defaultValue);
         }
 
         //Instantiate the returned input
         InputDescriptionType input = new InputDescriptionType();
-        JAXBElement<JDBCTableField> jaxbElement = new ObjectFactory().createJDBCTableField(jdbcTableField);
+        JAXBElement<JDBCValue> jaxbElement = new ObjectFactory().createJDBCValue(jdbcValue);
         input.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(InputAttribute.class), input);
@@ -95,18 +96,17 @@ public class JDBCTableFieldParser implements Parser {
 
     @Override
     public OutputDescriptionType parseOutput(Field f, Object defaultValue, URI processId) throws MalformedScriptException {
-        //Instantiate the JDBCTableField object
-        JDBCTableFieldAttribute JDBCTableFieldAttribute = f.getAnnotation(JDBCTableFieldAttribute.class);
+        //Instantiate the JDBCValue object
+        JDBCValueAttribute jdbcValueAttribute = f.getAnnotation(JDBCValueAttribute.class);
         Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
-        URI jdbcTableUri;
+        URI jdbcColumnUri;
         //If the jdbcTable attribute is not an URI, autoGenerate one.
-        jdbcTableUri = URI.create(processId+":"+JDBCTableFieldAttribute.jdbcTableReference());
-        JDBCTableField jdbcTableField = ObjectAnnotationConverter.annotationToObject(JDBCTableFieldAttribute, format,
-                jdbcTableUri);
+        jdbcColumnUri = URI.create(processId+":"+jdbcValueAttribute.jdbcColumnReference());
+        JDBCValue jdbcValue = ObjectAnnotationConverter.annotationToObject(jdbcValueAttribute, format, jdbcColumnUri);
 
         //Instantiate the returned output
         OutputDescriptionType output = new OutputDescriptionType();
-        JAXBElement<JDBCTableField> jaxbElement = new ObjectFactory().createJDBCTableField(jdbcTableField);
+        JAXBElement<JDBCValue> jaxbElement = new ObjectFactory().createJDBCValue(jdbcValue);
         output.setDataDescription(jaxbElement);
 
         ObjectAnnotationConverter.annotationToObject(f.getAnnotation(DescriptionTypeAttribute.class), output,
@@ -123,6 +123,6 @@ public class JDBCTableFieldParser implements Parser {
 
     @Override
     public Class getAnnotation() {
-        return JDBCTableFieldAttribute.class;
+        return JDBCValueAttribute.class;
     }
 }

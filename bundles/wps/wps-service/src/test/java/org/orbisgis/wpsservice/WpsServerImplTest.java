@@ -80,13 +80,13 @@ public class WpsServerImplTest {
             File f = new File(url.toURI());
             localWpsServer.addProcess(f, null, true, "test");
 
-            url = this.getClass().getResource("JDBCTableField.groovy");
-            Assert.assertNotNull("Unable to load the script 'JDBCTableField.groovy'", url);
+            url = this.getClass().getResource("JDBCColumn.groovy");
+            Assert.assertNotNull("Unable to load the script 'JDBCColumn.groovy'", url);
             f = new File(url.toURI());
             localWpsServer.addProcess(f, null, true, "test");
 
-            url = this.getClass().getResource("JDBCTableFieldValue.groovy");
-            Assert.assertNotNull("Unable to load the script 'JDBCTableFieldValue.groovy'", url);
+            url = this.getClass().getResource("JDBCValue.groovy");
+            Assert.assertNotNull("Unable to load the script 'JDBCValue.groovy'", url);
             f = new File(url.toURI());
             localWpsServer.addProcess(f, null, true, "test");
 

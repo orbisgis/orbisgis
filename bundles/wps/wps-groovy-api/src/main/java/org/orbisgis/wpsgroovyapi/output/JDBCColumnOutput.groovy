@@ -1,52 +1,34 @@
 /**
- * OrbisGIS is a java GIS application dedicated to research in GIScience.
- * OrbisGIS is developed by the GIS group of the DECIDE team of the 
- * Lab-STICC CNRS laboratory, see <http://www.lab-sticc.fr/>.
+ * OrbisToolBox is an OrbisGIS plugin dedicated to create and manage processing.
  *
- * The GIS group of the DECIDE team is located at :
+ * OrbisToolBox is distributed under GPL 3 license. It is produced by CNRS <http://www.cnrs.fr/> as part of the
+ * MApUCE project, funded by the French Agence Nationale de la Recherche (ANR) under contract ANR-13-VBDU-0004.
  *
- * Laboratoire Lab-STICC – CNRS UMR 6285
- * Equipe DECIDE
- * UNIVERSITÉ DE BRETAGNE-SUD
- * Institut Universitaire de Technologie de Vannes
- * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
- * 
- * OrbisGIS is distributed under GPL 3 license.
+ * OrbisToolBox is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
  *
- * Copyright (C) 2007-2014 CNRS (IRSTV FR CNRS 2488)
- * Copyright (C) 2015-2016 CNRS (Lab-STICC UMR CNRS 6285)
+ * OrbisToolBox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * This file is part of OrbisGIS.
+ * You should have received a copy of the GNU General Public License along with OrbisToolBox. If not, see
+ * <http://www.gnu.org/licenses/>.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
- * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * For more information, please consult: <http://www.orbisgis.org/> or contact directly: info_at_orbisgis.org
  */
 
-package org.orbisgis.wpsgroovyapi.input
+package org.orbisgis.wpsgroovyapi.output
 
 import groovy.transform.AnnotationCollector
 import groovy.transform.Field
-import org.orbisgis.wpsgroovyapi.attributes.JDBCTableFieldAttribute
+import org.orbisgis.wpsgroovyapi.attributes.OutputAttribute
+import org.orbisgis.wpsgroovyapi.attributes.JDBCColumnAttribute
 import org.orbisgis.wpsgroovyapi.attributes.DescriptionTypeAttribute
-import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
 
 /**
- * JDBCTableField input annotation.
- * The JDBCTableField is a complex data that represents a JDBCTable field (i.e. a column of a table).
- * As an input, this annotation should be placed just before the variable.
+ * JDBCColumn output annotation.
+ * The JDBCColumn is a complex data that represents a JDBCTable field (i.e. a column of a table).
+ * As an output, this annotation should be placed just before the variable.
  *
  * The following fields must be defined (mandatory) :
  *  - title : String[]
@@ -78,12 +60,6 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  *      i.e. metadata = ["role1,title,href1",
  *                       "role2,title,href2"]
  *
- *  - minOccurs : int
- *      Minimum number of times that values for this parameter are required. 0 means the input is optional.
- *
- *  - maxOccurs : int
- *      Maximum number of times that this parameter may be present.
- *
  *  - dataTypes : String[]
  *      Array of the types allowed. If no types are specified, accepts all.
  *
@@ -99,6 +75,7 @@ import org.orbisgis.wpsgroovyapi.attributes.InputAttribute
  * Usage example can be found at https://github.com/orbisgis/orbisgis/wiki/
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  */
-@AnnotationCollector([Field, JDBCTableFieldAttribute, InputAttribute, DescriptionTypeAttribute])
-@interface JDBCTableFieldInput {}
+@AnnotationCollector([Field, JDBCColumnAttribute, OutputAttribute, DescriptionTypeAttribute])
+@interface JDBCColumnOutput {}

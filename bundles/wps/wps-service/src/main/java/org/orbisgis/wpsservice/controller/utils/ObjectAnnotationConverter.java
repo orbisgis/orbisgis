@@ -56,6 +56,7 @@ import java.util.*;
  * Class able to convert groovy annotation into java object and object into annotation.
  *
  * @author Sylvain PALOMINOS
+ * @author Erwan Bocher
  **/
 
 public class ObjectAnnotationConverter {
@@ -439,53 +440,53 @@ public class ObjectAnnotationConverter {
     }
 
     /**
-     * Builds a {@link JDBCTableField} Object from an {@link JDBCTableFieldAttribute} annotation.
-     * @param jdbcTableFieldAttribute Groovy annotation to decode to build the Java object.
+     * Builds a {@link JDBCColumn} Object from an {@link JDBCColumnAttribute} annotation.
+     * @param jDBCColumnAttribute Groovy annotation to decode to build the Java object.
      * @param format The {@link Format} for the {@link JDBCTable}.
      * @param jdbcTableUri The URI of the parent {@link JDBCTable} object.
-     * @return The {@link JDBCTableField} object with the data from the {@link JDBCTableFieldAttribute} annotation.
+     * @return The {@link JDBCColumn} object with the data from the {@link JDBCColumnAttribute} annotation.
      * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
      */
-    public static JDBCTableField annotationToObject(JDBCTableFieldAttribute jdbcTableFieldAttribute, Format format,
+    public static JDBCColumn annotationToObject(JDBCColumnAttribute jDBCColumnAttribute, Format format,
                                                     URI jdbcTableUri) throws MalformedScriptException {
         format.setDefault(true);
         List<DataType> dataTypeList = new ArrayList<>();
-        for(String type : Arrays.asList(jdbcTableFieldAttribute.dataTypes())){
+        for(String type : Arrays.asList(jDBCColumnAttribute.dataTypes())){
             dataTypeList.add(DataType.getDataTypeFromFieldType(type));
         }
         List<DataType> excludedTypeList = new ArrayList<>();
-        for(String type : Arrays.asList(jdbcTableFieldAttribute.excludedTypes())){
+        for(String type : Arrays.asList(jDBCColumnAttribute.excludedTypes())){
             excludedTypeList.add(DataType.getDataTypeFromFieldType(type));
         }
         List<String> excludedNameList = new ArrayList<>();
-        for(String name : Arrays.asList(jdbcTableFieldAttribute.excludedNames())){
+        for(String name : Arrays.asList(jDBCColumnAttribute.excludedNames())){
             excludedNameList.add(name);
         }
         List<Format> formatList = new ArrayList<>();
         formatList.add(format);
-        JDBCTableField jdbcTableField = new JDBCTableField(formatList, dataTypeList, jdbcTableUri);
-        jdbcTableField.setExcludedTypeList(excludedTypeList);
-        jdbcTableField.setExcludedNameList(excludedNameList);
-        jdbcTableField.setMultiSelection(jdbcTableFieldAttribute.multiSelection());
-        return jdbcTableField;
+        JDBCColumn jdbcColumn = new JDBCColumn(formatList, dataTypeList, jdbcTableUri);
+        jdbcColumn.setExcludedTypeList(excludedTypeList);
+        jdbcColumn.setExcludedNameList(excludedNameList);
+        jdbcColumn.setMultiSelection(jDBCColumnAttribute.multiSelection());
+        return jdbcColumn;
     }
 
     /**
-     * Builds a {@link JDBCTableFieldValue} Object from an {@link JDBCTableFieldValueAttribute} annotation.
-     * @param jdbcTableFieldValueAttribute Groovy annotation to decode to build the Java object.
+     * Builds a {@link JDBCValue} Object from an {@link JDBCValueAttribute} annotation.
+     * @param jdbcValueAttribute Groovy annotation to decode to build the Java object.
      * @param format The {@link Format} for the {@link JDBCTable}.
-     * @param jdbcTableFieldUri The URI of the parent {@link JDBCTableField} object.
-     * @return The {@link JDBCTableFieldValue} object with the data from the {@link JDBCTableFieldValueAttribute}
+     * @param jdbcColumndUri The URI of the parent {@link JDBCColumn} object.
+     * @return The {@link JDBCValue} object with the data from the {@link JDBCValueAttribute}
      *          annotation.
      * @throws MalformedScriptException Exception thrown in case of a malformed Groovy annotation.
      */
-    public static JDBCTableFieldValue annotationToObject(JDBCTableFieldValueAttribute jdbcTableFieldValueAttribute,
-                                                         Format format, URI jdbcTableFieldUri)
+    public static JDBCValue annotationToObject(JDBCValueAttribute jdbcValueAttribute,
+                                                         Format format, URI jdbcColumndUri)
             throws MalformedScriptException {
         format.setDefault(true);
         List<Format> formatList = new ArrayList<>();
         formatList.add(format);
-        return new JDBCTableFieldValue(formatList, jdbcTableFieldUri, jdbcTableFieldValueAttribute.multiSelection());
+        return new JDBCValue(formatList, jdbcColumndUri, jdbcValueAttribute.multiSelection());
     }
 
     /**

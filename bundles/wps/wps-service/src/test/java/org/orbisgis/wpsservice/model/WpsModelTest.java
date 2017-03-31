@@ -52,73 +52,75 @@ import java.util.List;
 /**
  *
  *@author Sylvain PALOMINOS
+ *@author Erwan Bocher
  */
 public class WpsModelTest {
-    /** Field containing the JDBCTableFieldAttribute annotation. */
-    @JDBCTableFieldAttribute(
+    /** Field containing the JDBCColumnAttribute annotation. */
+    @JDBCColumnAttribute(
             jdbcTableReference = "jdbcTable title",
             dataTypes = {"GEOMETRY", "NUMBER"},
             excludedTypes = {"MULTILINESTRING", "LONG"},
             multiSelection = true
     )
-    public Object jdbcTableFieldInput;
+    public Object jdbcColumnInput;
 
     /**
-     * Test if the decoding and convert of the JDBCTableField annotation into its java object is valid.
+     * Test if the decoding and convert of the JDBCColumn annotation into its java object is valid.
+     * @throws org.orbisgis.wpsservice.model.MalformedScriptException
      */
     @Test
-    public void testJDBCTableFieldAttributeConvert() throws MalformedScriptException {
+    public void testJDBCColumnAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
-            //Retrieve the JDBCTableField object
-            JDBCTableField jdbcTableField = null;
+            //Retrieve the JDBCColumn object
+            JDBCColumn jdbcColumn = null;
             //Inspect all the annotation of the field to get the DescriptionTypeAttribute one
-            Field jdbcTableFieldField = this.getClass().getDeclaredField("jdbcTableFieldInput");
-            for(Annotation annotation : jdbcTableFieldField.getDeclaredAnnotations()){
+            Field jdbcColumnField = this.getClass().getDeclaredField("jdbcColumnInput");
+            for(Annotation annotation : jdbcColumnField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
-                if(annotation instanceof JDBCTableFieldAttribute){
+                if(annotation instanceof JDBCColumnAttribute){
                     annotationFound = true;
-                    JDBCTableFieldAttribute descriptionTypeAnnotation = (JDBCTableFieldAttribute) annotation;
+                    JDBCColumnAttribute descriptionTypeAnnotation = (JDBCColumnAttribute) annotation;
                     Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
                     format.setDefault(true);
-                    jdbcTableField = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format,
+                    jdbcColumn = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format,
                             URI.create("jdbctable:uri"));
                 }
             }
 
             //If the annotation hasn't been found, the test has failed.
-            if(!annotationFound || jdbcTableField == null){
-                Assert.fail("Unable to get the annotation '@JDBCTableFieldAttribute' from the field.");
+            if(!annotationFound || jdbcColumn == null){
+                Assert.fail("Unable to get the annotation '@JDBCColumnAttribute' from the field.");
             }
 
             /////////////////////////////
-            // Test the JDBCTableField //
+            // Test the JDBCColumn //
             /////////////////////////////
 
-            String errorMessage = "Error, the JDBCTableField 'jdbcTableUri' field should be 'jdbctable:uri' instead of "+
-                    jdbcTableField.getJDBCTableIdentifier().toString();
-            Assert.assertEquals(errorMessage, URI.create("jdbctable:uri"), jdbcTableField.getJDBCTableIdentifier());
+            String errorMessage = "Error, the JDBCColumn 'jdbcTableUri' field should be 'jdbctable:uri' instead of "+
+                    jdbcColumn.getJDBCTableIdentifier().toString();
+            Assert.assertEquals(errorMessage, URI.create("jdbctable:uri"), jdbcColumn.getJDBCTableIdentifier());
 
-            errorMessage = "Error, the JDBCTableField 'isMultiSelection' field should be 'true' instead of "+
-                    jdbcTableField.isMultiSelection();
-            Assert.assertTrue(errorMessage, jdbcTableField.isMultiSelection());
+            errorMessage = "Error, the JDBCColumn 'isMultiSelection' field should be 'true' instead of "+
+                    jdbcColumn.isMultiSelection();
+            Assert.assertTrue(errorMessage, jdbcColumn.isMultiSelection());
 
-            errorMessage = "Error, the JDBCTableField 'isSourceModified' field should be 'true' instead of "+
-                    jdbcTableField.isSourceModified();
-            Assert.assertTrue(errorMessage, jdbcTableField.isMultiSelection());
+            errorMessage = "Error, the JDBCColumn 'isSourceModified' field should be 'true' instead of "+
+                    jdbcColumn.isSourceModified();
+            Assert.assertTrue(errorMessage, jdbcColumn.isMultiSelection());
 
-            errorMessage = "Error, the JDBCTableField 'getExcludedTypeList' field should contain two value : " +
+            errorMessage = "Error, the JDBCColumn 'getExcludedTypeList' field should contain two value : " +
                     "'MULTILINESTRING' and 'LONG'.";
-            boolean condition = jdbcTableField.getExcludedTypeList().size() == 2 &&
-                    jdbcTableField.getExcludedTypeList().contains(DataType.MULTILINESTRING) &&
-                    jdbcTableField.getExcludedTypeList().contains(DataType.LONG);
+            boolean condition = jdbcColumn.getExcludedTypeList().size() == 2 &&
+                    jdbcColumn.getExcludedTypeList().contains(DataType.MULTILINESTRING) &&
+                    jdbcColumn.getExcludedTypeList().contains(DataType.LONG);
             Assert.assertTrue(errorMessage, condition);
 
-            errorMessage = "Error, the JDBCTableField 'getDataTypeList' field should contain two value : " +
+            errorMessage = "Error, the JDBCColumn 'getDataTypeList' field should contain two value : " +
                     "'GEOMETRY' and 'NUMBER'.";
-            condition = jdbcTableField.getDataTypeList().size() == 2 &&
-                    jdbcTableField.getDataTypeList().contains(DataType.GEOMETRY) &&
-                    jdbcTableField.getDataTypeList().contains(DataType.NUMBER);
+            condition = jdbcColumn.getDataTypeList().size() == 2 &&
+                    jdbcColumn.getDataTypeList().contains(DataType.GEOMETRY) &&
+                    jdbcColumn.getDataTypeList().contains(DataType.NUMBER);
             Assert.assertTrue(errorMessage, condition);
 
 
@@ -277,60 +279,61 @@ public class WpsModelTest {
 
 
 
-    /** Field containing the JDBCTableFieldValueAttribute annotation. */
-    @JDBCTableFieldValueAttribute(
+    /** Field containing the JDBCValueAttribute annotation. */
+    @JDBCValueAttribute(
             multiSelection = true,
-            jdbcTableFieldReference = "jdbcTableFieldTitle"
+            jdbcColumnReference = "jdbcValueTitle"
     )
-    public Object jdbcTableFieldValueInput;
+    public Object jdbcValueInput;
 
     /**
-     * Test if the decoding and convert of the JDBCTableFieldValueAttribute annotation into its java object is valid.
+     * Test if the decoding and convert of the JDBCValueAttribute annotation into its java object is valid.
+     * @throws org.orbisgis.wpsservice.model.MalformedScriptException
      */
     @Test
     public void testFieldValueAttributeConvert() throws MalformedScriptException {
         try {
             boolean annotationFound = false;
-            //Retrieve the JDBCTableFieldValue object
-            JDBCTableFieldValue jdbcTableFieldValue = null;
-            //Inspect all the annotation of the field to get the JDBCTableFieldValueAttribute one
-            Field jdbcTableFieldValueField = this.getClass().getDeclaredField("jdbcTableFieldValueInput");
-            for(Annotation annotation : jdbcTableFieldValueField.getDeclaredAnnotations()){
+            //Retrieve the JDBCValue object
+            JDBCValue jdbcValue = null;
+            //Inspect all the annotation of the field to get the JDBCValueAttribute one
+            Field jdbcValueField = this.getClass().getDeclaredField("jdbcValueInput");
+            for(Annotation annotation : jdbcValueField.getDeclaredAnnotations()){
                 //Once the annotation is get, decode it.
-                if(annotation instanceof JDBCTableFieldValueAttribute){
+                if(annotation instanceof JDBCValueAttribute){
                     annotationFound = true;
-                    JDBCTableFieldValueAttribute descriptionTypeAnnotation = (JDBCTableFieldValueAttribute) annotation;
+                    JDBCValueAttribute descriptionTypeAnnotation = (JDBCValueAttribute) annotation;
                     Format format = FormatFactory.getFormatFromExtension(FormatFactory.TEXT_EXTENSION);
                     format.setDefault(true);
-                    jdbcTableFieldValue = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format,
-                            URI.create("uri:jdbctablefieldvalue"));
+                    jdbcValue = ObjectAnnotationConverter.annotationToObject(descriptionTypeAnnotation, format,
+                            URI.create("uri:jdbcvalue"));
                 }
             }
 
             //If the annotation hasn't been found, the test has failed.
-            if(!annotationFound || jdbcTableFieldValue == null){
-                Assert.fail("Unable to get the annotation '@JDBCTableFieldValueAttribute' from the field.");
+            if(!annotationFound || jdbcValue == null){
+                Assert.fail("Unable to get the annotation '@JDBCValueAttribute' from the field.");
             }
 
             //////////////////////////////////
-            // Test the JDBCTableFieldValue //
+            // Test the JDBCValue //
             //////////////////////////////////
 
-            String errorMessage = "Error, the JDBCTableFieldValue 'isJDBCTableFieldModified' field should be 'true' instead of "+
-                    jdbcTableFieldValue.isJDBCTableFieldModified();
-            Assert.assertTrue(errorMessage, jdbcTableFieldValue.isJDBCTableFieldModified());
+            String errorMessage = "Error, the JDBCValue 'isJDBCColumnModified' field should be 'true' instead of "+
+                    jdbcValue.isJDBCColumnModified();
+            Assert.assertTrue(errorMessage, jdbcValue.isJDBCColumnModified());
 
-            errorMessage = "Error, the JDBCTableFieldValue 'isJDBCTableModified' field should be 'true' instead of "+
-                    jdbcTableFieldValue.isJDBCTableModified();
-            Assert.assertTrue(errorMessage, jdbcTableFieldValue.isJDBCTableModified());
+            errorMessage = "Error, the JDBCValue 'isJDBCTableModified' field should be 'true' instead of "+
+                    jdbcValue.isJDBCTableModified();
+            Assert.assertTrue(errorMessage, jdbcValue.isJDBCTableModified());
 
-            errorMessage = "Error, the JDBCTableFieldValue 'multiSelection' field should be 'true' instead of "+
-                    jdbcTableFieldValue.isMultiSelection();
-            Assert.assertTrue(errorMessage, jdbcTableFieldValue.isJDBCTableModified());
+            errorMessage = "Error, the JDBCValue 'multiSelection' field should be 'true' instead of "+
+                    jdbcValue.isMultiSelection();
+            Assert.assertTrue(errorMessage, jdbcValue.isJDBCTableModified());
 
-            errorMessage = "Error, the JDBCTableFieldValue 'getJDBCTableFieldIdentifier' field should be " +
-                    URI.create("uri:jdbctablefieldvalue");
-            Assert.assertEquals(errorMessage, jdbcTableFieldValue.getJDBCTableFieldIdentifier(), URI.create("uri:jdbctablefieldvalue"));
+            errorMessage = "Error, the JDBCValue 'getJDBCColumnIdentifier' field should be " +
+                    URI.create("uri:jdbcvalue");
+            Assert.assertEquals(errorMessage, jdbcValue.getJDBCColumnIdentifier(), URI.create("uri:jdbcvalue"));
 
 
         } catch (NoSuchFieldException e) {
@@ -352,6 +355,7 @@ public class WpsModelTest {
 
     /**
      * Test if the decoding and convert of the Geometry annotation into its java object is valid.
+     * @throws org.orbisgis.wpsservice.model.MalformedScriptException
      */
     @Test
     public void testGeometryAttributeConvert() throws MalformedScriptException {
@@ -419,6 +423,7 @@ public class WpsModelTest {
 
     /**
      * Test if the decoding and convert of the RawData annotation into its java object is valid.
+     * @throws org.orbisgis.wpsservice.model.MalformedScriptException
      */
     @Test
     public void testRawDataAttributeConvert() throws MalformedScriptException {
