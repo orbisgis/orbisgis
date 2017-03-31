@@ -37,8 +37,6 @@
 package org.orbisgis.wpsservice.utils;
 
 import net.opengis.ows._2.*;
-import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -61,7 +59,6 @@ import java.util.Properties;
 public class WpsServerProperties {
 
     /** CoreWorkspace of OrbisGIS */
-    private CoreWorkspace coreWorkspace;
     private static final Logger LOGGER = LoggerFactory.getLogger(WpsServerProperties.class);
     private static final I18n I18N = I18nFactory.getI18n(WpsServerProperties.class);
     private static final String SERVER_PROPERTIES = "wpsServer.properties";
@@ -72,19 +69,15 @@ public class WpsServerProperties {
     public ServiceProviderProperties SERVICE_PROVIDER_PROPERTIES;
     public OperationsMetadataProperties OPERATIONS_METADATA_PROPERTIES;
 
-    @Reference
-    public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
-        this.coreWorkspace = coreWorkspace;
-    }
-    public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
-        this.coreWorkspace = null;
-    }
-
-    public WpsServerProperties(){
+    /**
+     * Creates a WpsServerProperties object which contains all the properties used in a WpsServer.
+     * @param propertyFileLocation Location of the properties file. If null, it uses the default properties file.
+     */
+    public WpsServerProperties(String propertyFileLocation){
         Properties wpsProperties = null;
-        if(coreWorkspace != null) {
+        if(propertyFileLocation != null) {
             //Load the property file
-            File propertiesFile = new File(coreWorkspace.getWorkspaceFolder() + File.separator + SERVER_PROPERTIES);
+            File propertiesFile = new File(propertyFileLocation + File.separator + SERVER_PROPERTIES);
             if (propertiesFile.exists()) {
                 try {
                     wpsProperties.load(new FileInputStream(propertiesFile));

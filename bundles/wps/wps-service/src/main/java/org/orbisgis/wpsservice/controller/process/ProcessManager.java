@@ -91,9 +91,17 @@ public class ProcessManager {
     public ProcessManager(DataSource dataSource, WpsServer wpsService){
         processIdList = new ArrayList<>();
         parserController = new ParserController();
-        this.dataSource = dataSource;
+        this.setDataSource(dataSource);
         this.wpsService = wpsService;
         this.closureMap = new HashMap<>();
+    }
+
+    /**
+     * Sets the DataSource that should be used by the ProcessManager
+     * @param dataSource The DataSource that should be used by the ProcessManager
+     */
+    public void setDataSource(DataSource dataSource){
+        this.dataSource = dataSource;
     }
 
     public ProcessIdentifier addScript(URI scriptUri, String[] category, boolean isRemovable, String nodePath){
