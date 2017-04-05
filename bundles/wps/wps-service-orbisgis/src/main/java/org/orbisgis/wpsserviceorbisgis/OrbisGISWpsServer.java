@@ -49,11 +49,10 @@ import java.util.*;
  */
 public interface OrbisGISWpsServer extends WpsServer {
 
-    String TABLE_SRID = "TABLE_SRID";
-    String TABLE_IS_SPATIAL = "TABLE_IS_SPATIAL";
-    String TABLE_DIMENSION = "TABLE_DIMENSION";
     String COLUMN_NAME = "COLUMN_NAME";
     String COLUMN_TYPE = "COLUMN_TYPE";
+    String COLUMN_SRID = "COLUMN_SRID";
+    String COLUMN_DIMENSION = "COLUMN_DIMENSION";
     String TABLE_LOCATION = "TABLE_LOCATION";
     String TABLE_LABEL = "TABLE_LABEL";
 

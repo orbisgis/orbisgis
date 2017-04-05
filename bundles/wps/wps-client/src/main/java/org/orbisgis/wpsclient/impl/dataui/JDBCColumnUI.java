@@ -531,12 +531,12 @@ public class JDBCColumnUI implements DataUI {
                         columnPanel.add(new JLabel(ToolBoxIcon.getIcon(columnType.toLowerCase())));
                         columnPanel.add(new JLabel(columnName));
                         //Sets the SRID label
-                        int srid = (int) informationMap.get(OrbisGISWpsServer.TABLE_SRID);
+                        int srid = (int) informationMap.get(OrbisGISWpsServer.COLUMN_SRID);
                         if (srid != 0) {
                             columnPanel.add(new JLabel(I18N.tr(" [EPSG:" + srid + "]")));
                         }
                         //Sets the dimension label
-                        int dimension = (int) informationMap.get(OrbisGISWpsServer.TABLE_DIMENSION);
+                        int dimension = (int) informationMap.get(OrbisGISWpsServer.COLUMN_DIMENSION);
                         if (dimension != 2 && dimension != 0) {
                             columnPanel.add(new JLabel(I18N.tr(" "+dimension + "D")));
                         }

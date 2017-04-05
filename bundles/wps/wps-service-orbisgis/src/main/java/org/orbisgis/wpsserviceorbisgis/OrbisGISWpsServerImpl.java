@@ -384,8 +384,8 @@ public class OrbisGISWpsServerImpl
                     Map<String, Object> map = new HashMap<>();
                     map.put(COLUMN_NAME, metaData.getColumnLabel(i));
                     map.put(COLUMN_TYPE, metaData.getColumnTypeName(i));
-                    map.put(TABLE_SRID, 0);
-                    map.put(TABLE_DIMENSION, 0);
+                    map.put(COLUMN_SRID, 0);
+                    map.put(COLUMN_DIMENSION, 0);
                     mapList.add(map);
                 }
             }
@@ -400,15 +400,15 @@ public class OrbisGISWpsServerImpl
                 if(isH2) {
                     map.put(COLUMN_NAME, rs.getString(4));
                     map.put(COLUMN_TYPE, SFSUtilities.getGeometryTypeNameFromCode(rs.getInt(6)));
-                    map.put(TABLE_SRID, rs.getInt(8));
-                    map.put(TABLE_DIMENSION, rs.getInt(7));
+                    map.put(COLUMN_SRID, rs.getInt(8));
+                    map.put(COLUMN_DIMENSION, rs.getInt(7));
                 }
                 //Other case
                 else{
                     map.put(COLUMN_NAME, rs.getString(4));
                     map.put(COLUMN_TYPE, rs.getString(7));
-                    map.put(TABLE_SRID, rs.getInt(6));
-                    map.put(TABLE_DIMENSION, rs.getInt(5));
+                    map.put(COLUMN_SRID, rs.getInt(6));
+                    map.put(COLUMN_DIMENSION, rs.getInt(5));
                 }
                 mapList.add(map);
             }

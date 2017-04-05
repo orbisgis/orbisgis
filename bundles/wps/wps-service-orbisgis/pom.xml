@@ -151,6 +151,12 @@
             <artifactId>core-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>h2gis-functions</artifactId>
+            <version>${h2-gis-version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

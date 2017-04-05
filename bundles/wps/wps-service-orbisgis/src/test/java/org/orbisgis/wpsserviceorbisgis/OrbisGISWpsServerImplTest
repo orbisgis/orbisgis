@@ -57,6 +57,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static org.orbisgis.wpsserviceorbisgis.OrbisGISWpsServer.*;
+import static org.orbisgis.wpsserviceorbisgis.OrbisGISWpsServer.COLUMN_DIMENSION;
 
 /**
  * @author Sylvain PALOMINOS
@@ -155,6 +159,39 @@ public class OrbisGISWpsServerImplTest {
                 tableList = wpsServer.getTableList(dataTypeList, excludedTypeList);
                 Assert.assertFalse("The table list should not contains the table 'TABLEGEOMETRY'.", tableList.contains("TABLEGEOMETRY"));
                 Assert.assertFalse("The table list should not contains the table 'TABLEINTEGER'.", tableList.contains("TABLEINTEGER"));
+            } finally {
+                st.execute("DROP TABLE TABLE IF EXISTS");
+            }
+        }
+    }
+
+    @Test
+    public void testGetColumnInformation() throws SQLException {
+        try(Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE TABLE IF EXISTS");
+            try {
+                st.execute("CREATE TABLE TABLEINTEGER (\"integers\" integer)");
+                st.execute("CREATE TABLE TABLEGEOMETRY (\"geometries\" geometry)");
+                wpsServer.onDataManagerChange();
+
+                List<Map<String, Object>> informationList = wpsServer.getColumnInformation("TABLE");
+                Assert.assertEquals("The information list .", 2, informationList.size());
+
+                Map<String, Object> map = informationList.get(0);
+                Assert.assertEquals("The column name should be 'TABLEINTEGER'.", "TABLEINTEGER",
+                        map.get(COLUMN_NAME).toString().toUpperCase());
+                Assert.assertEquals("The column type should be 'INTEGER'.", "INTEGER",
+                        map.get(COLUMN_TYPE).toString().toUpperCase());
+                Assert.assertEquals("The column srid should be '0'.", 0, map.get(COLUMN_SRID));
+                Assert.assertEquals("The column dimension should be '0'.", 0, map.get(COLUMN_DIMENSION));
+
+                map = informationList.get(1);
+                Assert.assertEquals("The column name should be 'TABLEGEOMETRY'.", "TABLEGEOMETRY",
+                        map.get(COLUMN_NAME).toString().toUpperCase());
+                Assert.assertEquals("The column type should be 'GEOMETRY'.", "GEOMETRY",
+                        map.get(COLUMN_TYPE).toString().toUpperCase());
+                Assert.assertEquals("The column srid should be '0'.", 0, map.get(COLUMN_SRID));
+                Assert.assertEquals("The column dimension should be '0'.", 0, map.get(COLUMN_DIMENSION));
             } finally {
                 st.execute("DROP TABLE TABLE IF EXISTS");
             }
