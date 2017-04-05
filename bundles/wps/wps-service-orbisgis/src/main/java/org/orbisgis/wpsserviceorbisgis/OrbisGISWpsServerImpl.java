@@ -40,7 +40,6 @@ package org.orbisgis.wpsserviceorbisgis;
 import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.DescribeProcess;
 import net.opengis.wps._2_0.ProcessOfferings;
-import org.h2.jdbc.JdbcResultSet;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
