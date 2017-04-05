@@ -46,6 +46,7 @@ import org.orbisgis.sif.components.renderers.JPanelListRenderer;
 import org.orbisgis.wpsclient.impl.WpsClientImpl;
 import org.orbisgis.wpsclient.api.dataui.DataUI;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
+import org.orbisgis.wpsservice.model.DataType;
 import org.orbisgis.wpsserviceorbisgis.OrbisGISWpsServer;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -84,10 +85,10 @@ public class JDBCColumnUI implements DataUI {
     /** Constant used to pass object as client property throw JComponents **/
     private static final String DATA_MAP_PROPERTY = "DATA_MAP_PROPERTY";
     private static final String URI_PROPERTY = "URI_PROPERTY";
-    private static final String DATA_FIELD_PROPERTY = "DATA_FIELD_PROPERTY";
+    private static final String DATA_COLUMN_PROPERTY = "DATA_COLUMN_PROPERTY";
     private static final String IS_OPTIONAL_PROPERTY = "IS_OPTIONAL_PROPERTY";
     private static final String DEFAULT_ITEM_PROPERTY = "DEFAULT_ITEM_PROPERTY";
-    private static final String FIELD_TITLE_PROPERTY = "FIELD_TITLE_PROPERTY";
+    private static final String COLUMN_TITLE_PROPERTY = "COLUMN_TITLE_PROPERTY";
     private static final String INITIAL_DELAY_PROPERTY = "INITIAL_DELAY_PROPERTY";
     private static final String TOOLTIP_TEXT_PROPERTY = "TOOLTIP_TEXT_PROPERTY";
     private static final String NULL_ITEM = "NULL_ITEM";
@@ -140,10 +141,10 @@ public class JDBCColumnUI implements DataUI {
             list.setVisibleRowCount(MIN_JLIST_ROW_COUNT);
             URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
             list.putClientProperty(URI_PROPERTY, uri);
-            list.putClientProperty(DATA_FIELD_PROPERTY, jdbcColumn);
+            list.putClientProperty(DATA_COLUMN_PROPERTY, jdbcColumn);
             list.putClientProperty(DATA_MAP_PROPERTY, dataMap);
             list.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
-            list.putClientProperty(FIELD_TITLE_PROPERTY, URI.create(inputOrOutput.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_")));
+            list.putClientProperty(COLUMN_TITLE_PROPERTY, URI.create(inputOrOutput.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_")));
             list.addListSelectionListener(EventHandler.create(ListSelectionListener.class, this, "onItemSelected", "source"));
             list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
             list.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
@@ -152,11 +153,11 @@ public class JDBCColumnUI implements DataUI {
             if(!isOptional && dataMap.containsKey(uri)) {
                 Object obj = dataMap.get(uri);
                 if(obj instanceof String[]){
-                    String[] fields = (String[]) obj;
-                    int[] indexes = new int[fields.length];
+                    String[] columns = (String[]) obj;
+                    int[] indexes = new int[columns.length];
                     int i=0;
-                    for(String field : fields){
-                        model.add(0, new ContainerItem<Object>(field, field));
+                    for(String column : columns){
+                        model.add(0, new ContainerItem<Object>(column, column));
                         indexes[i] = i;
                         i++;
                     }
@@ -178,18 +179,18 @@ public class JDBCColumnUI implements DataUI {
             jdbcColumn.setSourceModified(true);
         }
         else {
-            //ComboBox the field list
+            //ComboBox the column list
             JComboBox<ContainerItem<Object>> comboBox = new JComboBox<>();
             comboBox.setRenderer(new JPanelListRenderer());
             comboBox.setBackground(Color.WHITE);
-            ContainerItem<Object> defaultItem = new ContainerItem<Object>(I18N.tr("Select a field"), I18N.tr("Select a field"));
+            ContainerItem<Object> defaultItem = new ContainerItem<Object>(I18N.tr("Select a column"), I18N.tr("Select a column"));
             URI uri = URI.create(inputOrOutput.getIdentifier().getValue());
             comboBox.putClientProperty(URI_PROPERTY, uri);
-            comboBox.putClientProperty(DATA_FIELD_PROPERTY, jdbcColumn);
+            comboBox.putClientProperty(DATA_COLUMN_PROPERTY, jdbcColumn);
             comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
             comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
             comboBox.putClientProperty(DEFAULT_ITEM_PROPERTY, defaultItem);
-            comboBox.putClientProperty(FIELD_TITLE_PROPERTY, URI.create(inputOrOutput.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_")));
+            comboBox.putClientProperty(COLUMN_TITLE_PROPERTY, URI.create(inputOrOutput.getTitle().get(0).getValue().replaceAll("[^a-zA-Z0-9_]", "_")));
             comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelected", "source"));
             comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxEntered", "source", "mouseEntered"));
             comboBox.addPopupMenuListener(EventHandler.create(PopupMenuListener.class, this, "onComboBoxEntered", "source"));
@@ -222,10 +223,8 @@ public class JDBCColumnUI implements DataUI {
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         Map<URI, Object> map = new HashMap<>();
         JDBCColumn jdbcColumn = null;
-        boolean isOptional = false;
         if(inputOrOutput instanceof InputDescriptionType){
             jdbcColumn = (JDBCColumn)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
-            isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
         }
         else if(inputOrOutput instanceof OutputDescriptionType){
             jdbcColumn = (JDBCColumn)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
@@ -238,7 +237,7 @@ public class JDBCColumnUI implements DataUI {
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon(ToolBoxIcon.JDBC_TABLE_FIELD);
+        return ToolBoxIcon.getIcon(ToolBoxIcon.JDBC_TABLE_COLUMN);
     }
 
     /**
@@ -274,25 +273,25 @@ public class JDBCColumnUI implements DataUI {
     public void onComboBoxEntered(Object source){
         if(source instanceof JComboBox) {
             JComboBox<ContainerItem<Object>> comboBox = (JComboBox) source;
-            JDBCColumn jdbcColumn = (JDBCColumn) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
+            JDBCColumn jdbcColumn = (JDBCColumn) comboBox.getClientProperty(DATA_COLUMN_PROPERTY);
             HashMap<URI, Object> dataMap = (HashMap) comboBox.getClientProperty(DATA_MAP_PROPERTY);
             URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
             boolean isOptional = (boolean) comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
             ContainerItem<Object> defaultItem = (ContainerItem<Object>)comboBox.getClientProperty(DEFAULT_ITEM_PROPERTY);
-            //If the JDBCTable related to the JDBCTableField has been modified, reload the jdbcTableField values
+            //If the JDBCTable related to the JDBCColumn has been modified, reload the jdbcColumn values
             if (jdbcColumn.isSourceModified() || (comboBox.getSelectedItem() != null && comboBox.getSelectedItem().equals(defaultItem))) {
                 Object obj = dataMap.get(uri);
                 comboBox.removeItem(defaultItem);
                 jdbcColumn.setSourceModified(false);
                 comboBox.removeAllItems();
-                List<ContainerItem<Object>> listContainer = populateWithFields(jdbcColumn, dataMap);
+                List<ContainerItem<Object>> listContainer = populateWithColumns(jdbcColumn, dataMap);
                 for(ContainerItem<Object> container : listContainer){
                     comboBox.addItem(container);
                 }
                 if(isOptional){
                     comboBox.addItem(new ContainerItem<Object>(NULL_ITEM, NULL_ITEM));
                 }
-                //Try to select the good field
+                //Try to select the good column
                 boolean isSelection = false;
                 if(obj != null && !obj.equals(defaultItem.getLabel())){
                     String str;
@@ -311,7 +310,7 @@ public class JDBCColumnUI implements DataUI {
                     }
                 }
                 if(!isSelection) {
-                    String title = comboBox.getClientProperty(FIELD_TITLE_PROPERTY).toString().toUpperCase();
+                    String title = comboBox.getClientProperty(COLUMN_TITLE_PROPERTY).toString().toUpperCase();
                     for (int i = 0; i < comboBox.getItemCount(); i++) {
                         if (title.contains(comboBox.getItemAt(i).getLabel()) ||
                                 comboBox.getItemAt(i).getLabel().contains(title)) {
@@ -329,9 +328,9 @@ public class JDBCColumnUI implements DataUI {
                 comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, comboBox.getToolTipText());
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
-                String jdbcTableFieldStr = jdbcColumn.getJDBCTableIdentifier().toString();
+                String jdbcTableColumnStr = jdbcColumn.getJDBCTableIdentifier().toString();
                 comboBox.setToolTipText(I18N.tr("First configure the JDBCTable {0}.",
-                        jdbcTableFieldStr.substring(jdbcTableFieldStr.lastIndexOf(":") + 1)));
+                        jdbcTableColumnStr.substring(jdbcTableColumnStr.lastIndexOf(":") + 1)));
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(comboBox, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
             }
@@ -340,17 +339,17 @@ public class JDBCColumnUI implements DataUI {
         }
         else if(source instanceof JList){
             JList<ContainerItem<Object>> list = (JList) source;
-            JDBCColumn jdbcColumn = (JDBCColumn) list.getClientProperty(DATA_FIELD_PROPERTY);
+            JDBCColumn jdbcColumn = (JDBCColumn) list.getClientProperty(DATA_COLUMN_PROPERTY);
             int maxRow = (int) list.getClientProperty(MAX_JLIST_ROW_COUNT);
             URI uri = (URI) list.getClientProperty(URI_PROPERTY);
             Map<URI, Object> dataMap = (Map) list.getClientProperty(DATA_MAP_PROPERTY);
             DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
-            //If the JDBCTable related to the JDBCTableField has been modified, reload the jdbcTableField values
+            //If the JDBCTable related to the JDBCColumn has been modified, reload the jdbcColumn values
             if (jdbcColumn.isSourceModified()) {
                 jdbcColumn.setSourceModified(false);
                 model.removeAllElements();
                 if (dataMap.get(jdbcColumn.getJDBCTableIdentifier()) != null) {
-                    List<ContainerItem<Object>> listContainer = populateWithFields(jdbcColumn, dataMap);
+                    List<ContainerItem<Object>> listContainer = populateWithColumns(jdbcColumn, dataMap);
                     for(ContainerItem<Object> container : listContainer){
                         model.addElement(container);
                     }
@@ -364,20 +363,20 @@ public class JDBCColumnUI implements DataUI {
                 list.putClientProperty(TOOLTIP_TEXT_PROPERTY, list.getToolTipText());
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
-                String jdbcTableFieldStr = jdbcColumn.getJDBCTableIdentifier().toString();
-                if(jdbcTableFieldStr.contains("$")){
-                    String[] split = jdbcTableFieldStr.split("\\$");
+                String jdbcTableColumnStr = jdbcColumn.getJDBCTableIdentifier().toString();
+                if(jdbcTableColumnStr.contains("$")){
+                    String[] split = jdbcTableColumnStr.split("\\$");
                     if(split.length == 2){
-                        jdbcTableFieldStr = split[1];
+                        jdbcTableColumnStr = split[1];
                     }
                     else if(split.length == 3){
-                        jdbcTableFieldStr = split[1]+"."+split[2];
+                        jdbcTableColumnStr = split[1]+"."+split[2];
                     }
-                    list.setToolTipText(I18N.tr("First configure the JDBCTableField {0}", jdbcTableFieldStr));
+                    list.setToolTipText(I18N.tr("First configure the JDBCColumn {0}", jdbcTableColumnStr));
                 }
                 else {
                     list.setToolTipText(I18N.tr("First configure the JDBCTable {0}",
-                            jdbcTableFieldStr.substring(jdbcTableFieldStr.lastIndexOf(":") + 1)));
+                            jdbcTableColumnStr.substring(jdbcTableColumnStr.lastIndexOf(":") + 1)));
                 }
                 ToolTipManager.sharedInstance().mouseMoved(
                         new MouseEvent(list, MouseEvent.MOUSE_MOVED, System.currentTimeMillis(), 0, 0, 0, 0, false));
@@ -419,7 +418,7 @@ public class JDBCColumnUI implements DataUI {
             if(comboBox.getSelectedItem() != null) {
                 ContainerItem<Object> selectedItem = (ContainerItem<Object>)comboBox.getSelectedItem();
                 Object defaultItem = comboBox.getClientProperty(DEFAULT_ITEM_PROPERTY);
-                JDBCColumn jdbcColumn = (JDBCColumn) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
+                JDBCColumn jdbcColumn = (JDBCColumn) comboBox.getClientProperty(DATA_COLUMN_PROPERTY);
                 Map<URI, Object> dataMap = (Map<URI, Object>) comboBox.getClientProperty(DATA_MAP_PROPERTY);
                 URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
                 boolean isOptional = (boolean)comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
@@ -442,24 +441,24 @@ public class JDBCColumnUI implements DataUI {
             JList<ContainerItem<Object>> list = (JList<ContainerItem<Object>>)source;
             ListModel<ContainerItem<Object>> model = list.getModel();
             if(model.getSize()>0){
-                String fieldList = "";
+                String columnList = "";
                 for(int i = 0; i<list.getSelectedIndices().length; i++){
-                    if(fieldList.isEmpty()){
-                        fieldList = model.getElementAt(i).getLabel();
+                    if(columnList.isEmpty()){
+                        columnList = model.getElementAt(i).getLabel();
                     }
                     else{
-                        fieldList += "\t"+model.getElementAt(i).getLabel();
+                        columnList += "\t"+model.getElementAt(i).getLabel();
                     }
                 }
                 Map<URI, Object> dataMap = (Map<URI, Object>) list.getClientProperty(DATA_MAP_PROPERTY);
                 URI uri = (URI) list.getClientProperty(URI_PROPERTY);
                 boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
                 dataMap.remove(uri);
-                if (isOptional && fieldList.isEmpty()) {
+                if (isOptional && columnList.isEmpty()) {
                     dataMap.put(uri, null);
                 }
                 else{
-                    dataMap.put(uri, fieldList);
+                    dataMap.put(uri, columnList);
                 }
             }
         }
@@ -467,9 +466,9 @@ public class JDBCColumnUI implements DataUI {
 
     /**
      * Populate the given comboBox with the table columns name list.
-     * Also display the fields information like if it is spatial or not, the SRID, the dimension ...
+     * Also display the columns information like if it is spatial or not, the SRID, the dimension ...
      */
-    private List<ContainerItem<Object>> populateWithFields(JDBCColumn jdbcColumn, Map<URI, Object> dataMap){
+    private List<ContainerItem<Object>> populateWithColumns(JDBCColumn jdbcColumn, Map<URI, Object> dataMap){
         //Retrieve the table name list
         List<ContainerItem<Object>> listContainer = new ArrayList<>();
         String tableName = null;
@@ -486,47 +485,65 @@ public class JDBCColumnUI implements DataUI {
             tableName = dataMap.get(jdbcColumn.getJDBCTableIdentifier()).toString();
         }
         if(tableName == null){
-            listContainer.add(new ContainerItem<Object>(I18N.tr("Select a field"), I18N.tr("Select a field")));
+            listContainer.add(new ContainerItem<Object>(I18N.tr("Select a column"), I18N.tr("Select a column")));
             return listContainer;
         }
-        List<String> fieldNameList = wpsClient.getTableFieldList(tableName,
-                jdbcColumn.getDataTypeList(), jdbcColumn.getExcludedTypeList());
+        List<Map<String, Object>> informationList = wpsClient.getColumnInformation(tableName);
         //If there is tables, retrieve their information to format the display in the comboBox
-        if(fieldNameList != null && !fieldNameList.isEmpty()){
-            for (String fieldName : fieldNameList) {
-                boolean isNameExcluded = false;
+        if(informationList != null && !informationList.isEmpty()){
+            for (Map<String, Object> informationMap : informationList) {
+                String columnName = (String)informationMap.get(OrbisGISWpsServer.COLUMN_NAME);
+                boolean isColumnExcluded = false;
                 if(jdbcColumn.getExcludedNameList() != null){
                     for(String excludedName : jdbcColumn.getExcludedNameList()){
-                        if(excludedName.toLowerCase().equals(fieldName.toLowerCase())){
-                            isNameExcluded = true;
+                        if(excludedName.toLowerCase().equals(columnName.toLowerCase())){
+                            isColumnExcluded = true;
                         }
                     }
                 }
-                if(!isNameExcluded){
+                if(!isColumnExcluded && jdbcColumn.getDataTypeList() != null){
+                    String columnType = (String)informationMap.get(OrbisGISWpsServer.COLUMN_TYPE);
+                    boolean isValid = false;
+                    for(DataType dataType : jdbcColumn.getDataTypeList()){
+                        if(DataType.testDBType(dataType, columnType)){
+                            isValid = true;
+                        }
+                    }
+                    if(!isValid){
+                        isColumnExcluded = true;
+                    }
+                }
+                if(!isColumnExcluded && jdbcColumn.getExcludedTypeList() != null){
+                    String columnType = (String)informationMap.get(OrbisGISWpsServer.COLUMN_TYPE);
+                    for(DataType excludedType : jdbcColumn.getExcludedTypeList()){
+                        if(DataType.testDBType(excludedType, columnType)){
+                            isColumnExcluded = true;
+                        }
+                    }
+                }
+                if(!isColumnExcluded){
                     //Retrieve the table information
-                    Map<String, Object> informationMap =
-                            wpsClient.getFieldInformation(tableName, fieldName);
                     //If there is information, use it to improve the table display in the comboBox
-                    JPanel fieldPanel = new JPanel(new MigLayout("ins 0, gap 0"));
+                    JPanel columnPanel = new JPanel(new MigLayout("ins 0, gap 0"));
                     if (!informationMap.isEmpty()) {
                         //Sets the spatial icon
-                        String geometryType = (String)informationMap.get(OrbisGISWpsServer.GEOMETRY_TYPE);
-                        fieldPanel.add(new JLabel(ToolBoxIcon.getIcon(geometryType.toLowerCase())));
-                        fieldPanel.add(new JLabel(fieldName));
+                        String columnType = (String)informationMap.get(OrbisGISWpsServer.COLUMN_TYPE);
+                        columnPanel.add(new JLabel(ToolBoxIcon.getIcon(columnType.toLowerCase())));
+                        columnPanel.add(new JLabel(columnName));
                         //Sets the SRID label
                         int srid = (int) informationMap.get(OrbisGISWpsServer.TABLE_SRID);
                         if (srid != 0) {
-                            fieldPanel.add(new JLabel(I18N.tr(" [EPSG:" + srid + "]")));
+                            columnPanel.add(new JLabel(I18N.tr(" [EPSG:" + srid + "]")));
                         }
                         //Sets the dimension label
                         int dimension = (int) informationMap.get(OrbisGISWpsServer.TABLE_DIMENSION);
                         if (dimension != 2 && dimension != 0) {
-                            fieldPanel.add(new JLabel(I18N.tr(" "+dimension + "D")));
+                            columnPanel.add(new JLabel(I18N.tr(" "+dimension + "D")));
                         }
                     } else {
-                        fieldPanel.add(new JLabel(fieldName));
+                        columnPanel.add(new JLabel(columnName));
                     }
-                    listContainer.add(new ContainerItem<Object>(fieldPanel, fieldName));
+                    listContainer.add(new ContainerItem<Object>(columnPanel, columnName));
                 }
             }
         }

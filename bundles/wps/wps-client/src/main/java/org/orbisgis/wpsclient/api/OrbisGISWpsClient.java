@@ -131,14 +131,13 @@ public interface OrbisGISWpsClient extends WpsClient {
     List<String> getTableList(List<DataType> dataTypes, List<DataType> excludedTypes);
 
     /**
-     * Returns a map containing field information like table type, SRID...
+     * Returns a list of maps containing field information like table type, SRID...
      *
      * @param tableName Name of the table.
-     * @param fieldName Name of the field.
      *
-     * @return Map containing the field information.
+     * @return List of map containing the field information.
      */
-    Map<String, Object> getFieldInformation(String tableName, String fieldName);
+    List<Map<String, Object>> getColumnInformation(String tableName);
 
     /**
      * Returns the list of distinct values contained by a field from a table from the database

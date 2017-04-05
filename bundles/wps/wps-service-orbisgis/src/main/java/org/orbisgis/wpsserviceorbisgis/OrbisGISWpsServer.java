@@ -52,7 +52,8 @@ public interface OrbisGISWpsServer extends WpsServer {
     String TABLE_SRID = "TABLE_SRID";
     String TABLE_IS_SPATIAL = "TABLE_IS_SPATIAL";
     String TABLE_DIMENSION = "TABLE_DIMENSION";
-    String GEOMETRY_TYPE = "GEOMETRY_TYPE";
+    String COLUMN_NAME = "COLUMN_NAME";
+    String COLUMN_TYPE = "COLUMN_TYPE";
     String TABLE_LOCATION = "TABLE_LOCATION";
     String TABLE_LABEL = "TABLE_LABEL";
 
@@ -75,12 +76,11 @@ public interface OrbisGISWpsServer extends WpsServer {
     List<String> getTableList(List<DataType> dataTypes, List<DataType> excludedTypes);
 
     /**
-     * Returns a map containing field information (table type, SRID, ...)
+     * Returns a list of map containing column information (table type, SRID, ...)
      * @param tableName Name of the table.
-     * @param fieldName Name of the field.
-     * @return Map containing the field information.
+     * @return List of map containing the column information.
      */
-    Map<String, Object> getFieldInformation(String tableName, String fieldName);
+    List<Map<String, Object>> getColumnInformation(String tableName);
 
     /**
      * Return the list of the field of a table.

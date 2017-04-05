@@ -688,8 +688,8 @@ public class WpsClientImpl
     }
 
     @Override
-    public Map<String, Object> getFieldInformation(String tableName, String fieldName){
-        return wpsService.getFieldInformation(tableName, fieldName);
+    public List<Map<String, Object>> getColumnInformation(String tableName){
+        return wpsService.getColumnInformation(tableName);
     }
 
     @Override

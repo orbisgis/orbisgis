@@ -40,7 +40,6 @@ package org.orbisgis.wpsserviceorbisgis;
 import net.opengis.ows._2.*;
 import net.opengis.wps._2_0.DescribeProcess;
 import net.opengis.wps._2_0.ProcessOfferings;
-import org.h2.jdbc.JdbcResultSet;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -297,7 +296,7 @@ public class OrbisGISWpsServerImpl
                 if((dataTypes == null || dataTypes.isEmpty()) && (excludedTypes == null || excludedTypes.isEmpty())){
                     isValid = true;
                 }
-                else if(map.containsKey(GEOMETRY_TYPE)) {
+                else if(map.containsKey(COLUMN_TYPE)) {
                     try (Connection connection = dataManager.getDataSource().getConnection()) {
                         Map<String, Integer> types = SFSUtilities.getGeometryTypes(connection, tablelocation);
                         for (Map.Entry<String, Integer> entry : types.entrySet()) {
@@ -373,42 +372,38 @@ public class OrbisGISWpsServerImpl
     }
 
     @Override
-    public Map<String, Object> getFieldInformation(String tableName, String fieldName){
-        Map<String, Object> map = new HashMap<>();
+    public List<Map<String, Object>> getColumnInformation(String tableName){
+        List<Map<String, Object>> mapList = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
-            TableLocation tableLocation = TableLocation.parse(tableName);
-            List<String> geometricFields = SFSUtilities.getGeometryFields(connection, tableLocation);
-            boolean isGeometric = false;
-            for(String field : geometricFields){
-                if(field.equals(fieldName)){
-                    isGeometric = true;
+            ResultSet rs1 = connection.createStatement().executeQuery(String.format("select * from %s limit 1", tableName));
+            ResultSetMetaData metaData = rs1.getMetaData();
+            for(int i=1; i<=metaData.getColumnCount(); i++){
+                if(!metaData.getColumnTypeName(i).equalsIgnoreCase("GEOMETRY")){
+                    Map<String, Object> map = new HashMap<>();
+                    map.put(COLUMN_NAME, metaData.getColumnLabel(i));
+                    map.put(COLUMN_TYPE, metaData.getColumnTypeName(i));
+                    map.put(TABLE_SRID, 0);
+                    map.put(TABLE_DIMENSION, 0);
+                    mapList.add(map);
                 }
             }
-            if(isGeometric) {
-                int geometryId = SFSUtilities.getGeometryType(connection, tableLocation, fieldName);
-                String geometryType = SFSUtilities.getGeometryTypeNameFromCode(geometryId);
-                int srid = SFSUtilities.getSRID(connection, tableLocation);
-                //TODO : move this statement to SFSUtilities or JDBCUtilities to request the table dimension.
-                Statement statement = connection.createStatement();
-                String query = "SELECT COORD_DIMENSION FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '" +
-                        TableLocation.parse(tableName).getTable() + "' AND F_GEOMETRY_COLUMN LIKE '" +
-                        TableLocation.quoteIdentifier(fieldName) + "';";
-                ResultSet rs = statement.executeQuery(query);
-                int dimension;
-                if (rs.next()) {
-                    dimension = rs.getInt(1);
-                } else {
-                    dimension = 0;
-                }
-                map.put(GEOMETRY_TYPE, geometryType);
-                map.put(TABLE_SRID, srid);
-                map.put(TABLE_DIMENSION, dimension);
+            Statement statement = connection.createStatement();
+            String query = "SELECT * FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '" +
+                    TableLocation.parse(tableName).getTable() + "';";
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put(COLUMN_NAME, rs.getString(4));
+                map.put(COLUMN_TYPE, SFSUtilities.getGeometryTypeNameFromCode(rs.getInt(6)));
+                map.put(TABLE_SRID, rs.getInt(8));
+                map.put(TABLE_DIMENSION, rs.getInt(7));
+                mapList.add(map);
             }
         } catch (SQLException e) {
-            LOGGER.error(I18N.tr("Unable to get the field {0}.{1} information.\nCause : {2}.",
-                    e.getMessage(), tableName, fieldName));
+            LOGGER.error(I18N.tr("Unable to get the field INFORMATION OF THE TABLE {0} information.\nCause : {1}.",
+                    tableName, e.getMessage()));
         }
-        return map;
+        return mapList;
     }
 
     @Override
@@ -656,7 +651,7 @@ public class OrbisGISWpsServerImpl
                     tableAttr.put(TABLE_LABEL, label.toString());
                     String type = tableGeometry.get(location.toString());
                     if(type != null) {
-                        tableAttr.put(GEOMETRY_TYPE, type);
+                        tableAttr.put(COLUMN_TYPE, type);
                     }
                     newTables.add(tableAttr);
                 }
