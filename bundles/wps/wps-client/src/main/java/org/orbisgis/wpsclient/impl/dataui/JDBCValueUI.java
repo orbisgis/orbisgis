@@ -53,6 +53,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -121,7 +122,7 @@ public class JDBCValueUI implements DataUI {
         }
         //Build and set the JList containing all the values
         JList<ContainerItem<Object>> list = new JList<>();
-        DefaultListModel<ContainerItem<Object>> model = new DefaultListModel<>();
+        CustomListModel<ContainerItem<Object>> model = new CustomListModel<>();
         list.setModel(model);
         if(jdbcValue.isMultiSelection()) {
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -274,13 +275,30 @@ public class JDBCValueUI implements DataUI {
         dataMap.put(uri, str);
     }
 
+    private class CustomListModel<E> extends DefaultListModel<E>{
+        public void addAll(E[] objects){
+            int index = this.size();
+            ListDataListener[] listDataListeners = this.getListDataListeners();
+            for(ListDataListener dataListener : listDataListeners) {
+                this.removeListDataListener(dataListener);
+            }
+            for(E o : objects){
+                addElement(o);
+            }
+            for(ListDataListener dataListener : listDataListeners) {
+                this.addListDataListener(dataListener);
+            }
+            this.fireIntervalAdded(this, index, this.size());
+        }
+    }
+
     /**
      * SwingWorker doing the list update in a separated Swing Thread
      */
     private class ValueWorker extends SwingWorkerPM{
-        private JList<ContainerItem<Object>> list;
+        private JList<Object> list;
 
-        public ValueWorker(JList<ContainerItem<Object>> list){
+        public ValueWorker(JList<Object> list){
             this.list = list;
         }
 
@@ -295,7 +313,7 @@ public class JDBCValueUI implements DataUI {
             URI uri = (URI) list.getClientProperty(URI_PROPERTY);
             Map<URI, Object> dataMap = (Map) list.getClientProperty(DATA_MAP_PROPERTY);
             boolean isOptional = (boolean)list.getClientProperty(IS_OPTIONAL_PROPERTY);
-            DefaultListModel<ContainerItem<Object>> model = (DefaultListModel<ContainerItem<Object>>)list.getModel();
+            CustomListModel<Object> model = (CustomListModel<Object>)list.getModel();
             //If the JDBCColumn related to the jdbcValue has been modified, reload the JDBCColumn values
             if(jdbcValue.isJDBCColumnModified()) {
                 jdbcValue.setJDBCColumnModified(false);
@@ -347,9 +365,7 @@ public class JDBCValueUI implements DataUI {
                     model.removeAllElements();
                     List<String> listValues = wpsClient.getColumnValueList(tableName, ColumnName);
                     Collections.sort(listValues);
-                    for (String value : listValues) {
-                        model.addElement(new ContainerItem<Object>(value, value));
-                    }
+                    model.addAll(listValues.toArray());
                     int maxRowCount;
                     if(orientation.equals(Orientation.VERTICAL)){
                         maxRowCount = JLIST_VERTICAL_MAX_ROW_COUNT;
@@ -370,7 +386,7 @@ public class JDBCValueUI implements DataUI {
                             String[] elements = dataMap.get(uri).toString().split("\\t");
                             for (String element : elements) {
                                 for (int i = 0; i < model.getSize(); i++) {
-                                    if (model.getElementAt(i).getLabel().toUpperCase().equals(element.toUpperCase())) {
+                                    if (model.getElementAt(i).toString().toUpperCase().equals(element.toUpperCase())) {
                                         indexList.add(i);
                                     }
                                 }

@@ -469,16 +469,6 @@ public class OrbisGISWpsServerImpl
         List<String> fieldValues = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             tableName = TableLocation.parse(tableName, isH2).toString();
-            List<String> fieldNames = JDBCUtilities.getFieldNames(connection.getMetaData(), tableName);
-            if(fieldNames.isEmpty()){
-                return fieldValues;
-            }
-            for(String field : fieldNames){
-                if(field.equalsIgnoreCase(fieldName)){
-                    fieldName = field;
-                    break;
-                }
-            }
             fieldValues.addAll(JDBCUtilities.getUniqueFieldValues(connection,
                     tableName,
                     fieldName));
