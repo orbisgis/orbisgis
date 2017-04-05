@@ -393,14 +393,22 @@ public class OrbisGISWpsServerImpl
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()) {
                 Map<String, Object> map = new HashMap<>();
-                map.put(COLUMN_NAME, rs.getString(4));
-                map.put(COLUMN_TYPE, SFSUtilities.getGeometryTypeNameFromCode(rs.getInt(6)));
-                map.put(TABLE_SRID, rs.getInt(8));
-                map.put(TABLE_DIMENSION, rs.getInt(7));
+                if(isH2) {
+                    map.put(COLUMN_NAME, rs.getString(4));
+                    map.put(COLUMN_TYPE, SFSUtilities.getGeometryTypeNameFromCode(rs.getInt(6)));
+                    map.put(TABLE_SRID, rs.getInt(8));
+                    map.put(TABLE_DIMENSION, rs.getInt(7));
+                }
+                else{
+                    map.put(COLUMN_NAME, rs.getString(4));
+                    map.put(COLUMN_TYPE, rs.getString(7));
+                    map.put(TABLE_SRID, rs.getInt(6));
+                    map.put(TABLE_DIMENSION, rs.getInt(5));
+                }
                 mapList.add(map);
             }
         } catch (SQLException e) {
-            LOGGER.error(I18N.tr("Unable to get the field INFORMATION OF THE TABLE {0} information.\nCause : {1}.",
+            LOGGER.error(I18N.tr("Unable to get the field INFORMATION of the table {0} information.\nCause : {1}.",
                     tableName, e.getMessage()));
         }
         return mapList;
