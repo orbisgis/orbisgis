@@ -678,7 +678,7 @@ public class WpsClientImpl
     }
 
     @Override
-    public List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
+    public List<String> getTableColumnList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
         return wpsService.getTableFieldList(tableName, dataTypes, excludedTypes);
     }
 
@@ -693,7 +693,7 @@ public class WpsClientImpl
     }
 
     @Override
-    public List<String> getFieldValueList(String tableName, String fieldName){
+    public List<String> getColumnValueList(String tableName, String fieldName){
         return wpsService.getFieldValueList(tableName, fieldName);
     }
 

@@ -43,34 +43,28 @@ import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.sif.common.ContainerItem;
-import org.orbisgis.wpsclient.impl.WpsClientImpl;
 import org.orbisgis.wpsclient.api.dataui.DataUI;
+import org.orbisgis.wpsclient.impl.WpsClientImpl;
 import org.orbisgis.wpsclient.impl.utils.ToolBoxIcon;
 import org.orbisgis.wpsclient.impl.utils.WaitLayerUI;
-import org.orbisgis.wpsservice.model.*;
+import org.orbisgis.wpsservice.model.DataType;
+import org.orbisgis.wpsservice.model.JDBCValue;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import javax.swing.Timer;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.plaf.LayerUI;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.beans.PropertyChangeEvent;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
  * DataUI implementation for JDBCValue.
- * This class generate an interactive UI dedicated to the configuration of a JDBCTableFieldValue.
+ * This class generate an interactive UI dedicated to the configuration of a JDBCValue.
  * The interface generated will be used in the ProcessEditor.
  *
  * @author Sylvain PALOMINOS
@@ -110,7 +104,7 @@ public class JDBCValueUI implements DataUI {
     public JComponent createUI(DescriptionType inputOrOutput, Map<URI, Object> dataMap, Orientation orientation) {
         JPanel panel = new JPanel(new MigLayout("fill, ins 0, gap 0"));
         JDBCValue jdbcValue = null;
-        //Retrieve the JDBCTableFieldValue and if it is optional
+        //Retrieve the JDBCValue and if it is optional
         boolean isOptional = false;
         if(inputOrOutput instanceof InputDescriptionType){
             jdbcValue = (JDBCValue)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
@@ -125,7 +119,7 @@ public class JDBCValueUI implements DataUI {
         if(jdbcValue == null){
             return panel;
         }
-        //Build and set the JList containing all the field values
+        //Build and set the JList containing all the values
         JList<ContainerItem<Object>> list = new JList<>();
         DefaultListModel<ContainerItem<Object>> model = new DefaultListModel<>();
         list.setModel(model);
@@ -161,11 +155,11 @@ public class JDBCValueUI implements DataUI {
         if(!isOptional && dataMap.containsKey(uri)) {
             Object obj = dataMap.get(uri);
             if(obj instanceof String[]){
-                String[] fields = (String[]) obj;
-                int[] indexes = new int[fields.length];
+                String[] values = (String[]) obj;
+                int[] indexes = new int[values.length];
                 int i=0;
-                for(String field : fields){
-                    model.add(0, new ContainerItem<Object>(field, field));
+                for(String value : values){
+                    model.add(0, new ContainerItem<Object>(value, value));
                     indexes[i] = i;
                     i++;
                 }
@@ -242,7 +236,7 @@ public class JDBCValueUI implements DataUI {
      */
     public void refreshList(Object source){
         //Instantiate a worker which will do the list update in a separeted swing thread
-        FieldValueWorker worker = new FieldValueWorker((JList)source);
+        ValueWorker worker = new ValueWorker((JList)source);
         ExecutorService executorService = wpsClient.getExecutorService();
         if(executorService != null){
             executorService.execute(worker);
@@ -283,10 +277,10 @@ public class JDBCValueUI implements DataUI {
     /**
      * SwingWorker doing the list update in a separated Swing Thread
      */
-    private class FieldValueWorker extends SwingWorkerPM{
+    private class ValueWorker extends SwingWorkerPM{
         private JList<ContainerItem<Object>> list;
 
-        public FieldValueWorker(JList<ContainerItem<Object>> list){
+        public ValueWorker(JList<ContainerItem<Object>> list){
             this.list = list;
         }
 
@@ -306,17 +300,17 @@ public class JDBCValueUI implements DataUI {
             if(jdbcValue.isJDBCColumnModified()) {
                 jdbcValue.setJDBCColumnModified(false);
                 String tableName = null;
-                String fieldName = null;
+                String ColumnName = null;
                 String uriValue = jdbcValue.getJDBCColumnIdentifier().toString();
                 if(uriValue.contains("$")){
                     String[] split = uriValue.split("\\$");
                     if(split.length == 4) {
                         tableName = split[1]+"."+split[2];
-                        fieldName = split[3];
+                        ColumnName = split[3];
                     }
                     else if(split.length == 3){
                         tableName = split[1];
-                        fieldName = split[2];
+                        ColumnName = split[2];
                     }
                     else{
                         return null;
@@ -324,7 +318,7 @@ public class JDBCValueUI implements DataUI {
                 }
                 else if (dataMap.get(jdbcValue.getJDBCTableIdentifier()) != null){
                     tableName = dataMap.get(jdbcValue.getJDBCTableIdentifier()).toString();
-                    fieldName = dataMap.get(jdbcValue.getJDBCColumnIdentifier()).toString();
+                    ColumnName = dataMap.get(jdbcValue.getJDBCColumnIdentifier()).toString();
                 }
                 else if(jdbcValue.getJDBCTableIdentifier().toString().contains("$")){
                     String[] split = jdbcValue.getJDBCTableIdentifier().toString().split("\\$");
@@ -334,27 +328,27 @@ public class JDBCValueUI implements DataUI {
                     else if(split.length == 2){
                         tableName = split[1];
                     }
-                    Object fieldNameObject = dataMap.get(jdbcValue.getJDBCColumnIdentifier());
-                    if(fieldNameObject != null) {
-                        fieldName = fieldNameObject.toString();
+                    Object columnNameObject = dataMap.get(jdbcValue.getJDBCColumnIdentifier());
+                    if(columnNameObject != null) {
+                        ColumnName = columnNameObject.toString();
                     }
                 }
-                if(tableName != null && fieldName != null) {
+                if(tableName != null && ColumnName != null) {
                     layerUI.start();
-                    //First retrieve the good field name with the good case.
-                    List<String> fieldList = wpsClient.getTableFieldList(tableName,
+                    //First retrieve the good column name with the good case.
+                    List<String> columnList = wpsClient.getTableColumnList(tableName,
                             new ArrayList<DataType>(), new ArrayList<DataType>());
-                    for(String field : fieldList){
-                        if(field.equalsIgnoreCase(fieldName)){
-                            fieldName = field;
+                    for(String column : columnList){
+                        if(column.equalsIgnoreCase(ColumnName)){
+                            ColumnName = column;
                         }
                     }
                     //Retrieve the rowSet reading the table from the wpsService.
                     model.removeAllElements();
-                    List<String> listFields = wpsClient.getFieldValueList(tableName, fieldName);
-                    Collections.sort(listFields);
-                    for (String field : listFields) {
-                        model.addElement(new ContainerItem<Object>(field, field));
+                    List<String> listValues = wpsClient.getColumnValueList(tableName, ColumnName);
+                    Collections.sort(listValues);
+                    for (String value : listValues) {
+                        model.addElement(new ContainerItem<Object>(value, value));
                     }
                     int maxRowCount;
                     if(orientation.equals(Orientation.VERTICAL)){
@@ -363,8 +357,8 @@ public class JDBCValueUI implements DataUI {
                     else{
                         maxRowCount = JLIST_HORIZONTAL_MAX_ROW_COUNT;
                     }
-                    if(listFields.size() < maxRowCount){
-                        list.setVisibleRowCount(listFields.size());
+                    if(listValues.size() < maxRowCount){
+                        list.setVisibleRowCount(listValues.size());
                     }
                     else {
                         list.setVisibleRowCount(maxRowCount);
@@ -401,20 +395,20 @@ public class JDBCValueUI implements DataUI {
                 list.putClientProperty(TOOLTIP_TEXT_PROPERTY, list.getToolTipText());
                 ToolTipManager.sharedInstance().setInitialDelay(0);
                 ToolTipManager.sharedInstance().setDismissDelay(2500);
-                String fieldValueStr = jdbcValue.getJDBCColumnIdentifier().toString();
-                if(fieldValueStr.contains("$")){
-                    String[] split = fieldValueStr.split("\\$");
+                String columnStr = jdbcValue.getJDBCColumnIdentifier().toString();
+                if(columnStr.contains("$")){
+                    String[] split = columnStr.split("\\$");
                     if(split.length == 3){
-                        fieldValueStr = split[1]+"."+split[2];
+                        columnStr = split[1]+"."+split[2];
                     }
                     else if(split.length == 4){
-                        fieldValueStr = split[1]+"."+split[2]+"."+split[3];
+                        columnStr = split[1]+"."+split[2]+"."+split[3];
                     }
-                    list.setToolTipText(I18N.tr("First configure the JDBCTableField {0}.", fieldValueStr));
+                    list.setToolTipText(I18N.tr("First configure the JDBCColumn {0}.", columnStr));
                 }
                 else {
-                    list.setToolTipText(I18N.tr("First configure the JDBCTableField {0}",
-                            fieldValueStr.substring(fieldValueStr.lastIndexOf(":") + 1)));
+                    list.setToolTipText(I18N.tr("First configure the JDBCColumn {0}",
+                            columnStr.substring(columnStr.lastIndexOf(":") + 1)));
                 }
                 if(model.getSize() == 0) {
                     model.addElement(defaultElement);
