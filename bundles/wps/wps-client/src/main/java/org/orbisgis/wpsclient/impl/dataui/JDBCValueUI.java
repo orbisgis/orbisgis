@@ -275,7 +275,16 @@ public class JDBCValueUI implements DataUI {
         dataMap.put(uri, str);
     }
 
+    /**
+     * Extension of the DefaultListModel class by adding the method addAll() which add an array of element without
+     * calling the ListDataListeners after each element but only in the end.
+     * @param <E>
+     */
     private class CustomListModel<E> extends DefaultListModel<E>{
+        /**
+         * Adds an array of element without calling the ListDataListeners after each element but only in the end.
+         * @param objects Array of elements to add.
+         */
         public void addAll(E[] objects){
             int index = this.size();
             ListDataListener[] listDataListeners = this.getListDataListeners();

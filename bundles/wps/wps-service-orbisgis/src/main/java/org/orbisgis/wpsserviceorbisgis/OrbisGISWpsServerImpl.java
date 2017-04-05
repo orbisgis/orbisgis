@@ -375,8 +375,10 @@ public class OrbisGISWpsServerImpl
     public List<Map<String, Object>> getColumnInformation(String tableName){
         List<Map<String, Object>> mapList = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
+            //Get the list of the columns of a table
             ResultSet rs1 = connection.createStatement().executeQuery(String.format("select * from %s limit 1", tableName));
             ResultSetMetaData metaData = rs1.getMetaData();
+            //If the column isn't a geometry, add it to the map
             for(int i=1; i<=metaData.getColumnCount(); i++){
                 if(!metaData.getColumnTypeName(i).equalsIgnoreCase("GEOMETRY")){
                     Map<String, Object> map = new HashMap<>();
@@ -387,18 +389,21 @@ public class OrbisGISWpsServerImpl
                     mapList.add(map);
                 }
             }
+            //Once the non geometric columns are get, do the same with the geometric one.
             Statement statement = connection.createStatement();
             String query = "SELECT * FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME LIKE '" +
                     TableLocation.parse(tableName).getTable() + "';";
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()) {
                 Map<String, Object> map = new HashMap<>();
+                //Case of H2 database
                 if(isH2) {
                     map.put(COLUMN_NAME, rs.getString(4));
                     map.put(COLUMN_TYPE, SFSUtilities.getGeometryTypeNameFromCode(rs.getInt(6)));
                     map.put(TABLE_SRID, rs.getInt(8));
                     map.put(TABLE_DIMENSION, rs.getInt(7));
                 }
+                //Other case
                 else{
                     map.put(COLUMN_NAME, rs.getString(4));
                     map.put(COLUMN_TYPE, rs.getString(7));
