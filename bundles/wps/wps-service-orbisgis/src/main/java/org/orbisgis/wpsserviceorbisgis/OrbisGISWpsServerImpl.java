@@ -325,11 +325,11 @@ public class OrbisGISWpsServerImpl
                         //Get the metadata of the table
                         ResultSet rs = connection.createStatement().executeQuery(String.format("select * from %s limit 1", tablelocation.getTable()));
                         ResultSetMetaData metaData = rs.getMetaData();
-                        //For each field, get its DataType
-                        for(int fieldId = 1; fieldId <= metaData.getColumnCount(); ++fieldId) {
-                            String fieldTypeName = metaData.getColumnTypeName(fieldId);
-                            if(!fieldTypeName.equalsIgnoreCase("geometry")) {
-                                DataType dataType = DataType.getDataType(metaData.getColumnType(fieldId));
+                        //For each column, get its DataType
+                        for(int columnId = 1; columnId <= metaData.getColumnCount(); ++columnId) {
+                            String columnTypeName = metaData.getColumnTypeName(columnId);
+                            if(!columnTypeName.equalsIgnoreCase("geometry")) {
+                                DataType dataType = DataType.getDataType(metaData.getColumnType(columnId));
                                 //Tests if the DataType is compatible with the acceptedTypes and excludedTypes.
                                 if(dataTypes != null && !dataTypes.isEmpty()) {
                                     for (DataType acceptedType : dataTypes) {
@@ -413,21 +413,21 @@ public class OrbisGISWpsServerImpl
                 mapList.add(map);
             }
         } catch (SQLException e) {
-            LOGGER.error(I18N.tr("Unable to get the field INFORMATION of the table {0} information.\nCause : {1}.",
+            LOGGER.error(I18N.tr("Unable to get the column INFORMATION of the table {0} information.\nCause : {1}.",
                     tableName, e.getMessage()));
         }
         return mapList;
     }
 
     @Override
-    public List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
+    public List<String> getColumnList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
         if(dataTypes == null){
             dataTypes = new ArrayList<>();
         }
         if(excludedTypes == null){
             excludedTypes = new ArrayList<>();
         }
-        List<String> fieldList = new ArrayList<>();
+        List<String> columnList = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             DatabaseMetaData dmd = connection.getMetaData();
             TableLocation tablelocation = TableLocation.parse(tableName, isH2);
@@ -440,12 +440,12 @@ public class OrbisGISWpsServerImpl
                         if(type.equalsIgnoreCase("GEOMETRY")){
                             if (DataType.testGeometryType(dataType, SFSUtilities.getGeometryType(connection,
                                     tablelocation, result.getObject(4).toString().toUpperCase()))) {
-                                fieldList.add(result.getObject(4).toString());
+                                columnList.add(result.getObject(4).toString());
                             }
                         }
                         else {
                             if (DataType.testDBType(dataType, result.getObject(6).toString().toUpperCase())) {
-                                fieldList.add(result.getObject(4).toString());
+                                columnList.add(result.getObject(4).toString());
                             }
                         }
                     }
@@ -457,31 +457,31 @@ public class OrbisGISWpsServerImpl
                         }
                     }
                     if(accepted) {
-                        fieldList.add(result.getObject(4).toString());
+                        columnList.add(result.getObject(4).toString());
                     }
                 }else{
-                    fieldList.add(result.getObject(4).toString());
+                    columnList.add(result.getObject(4).toString());
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error(I18N.tr("Unable to get the table {0} field list.\nCause : {1}.", tableName, e.getMessage()));
+            LOGGER.error(I18N.tr("Unable to get the table {0} column list.\nCause : {1}.", tableName, e.getMessage()));
         }
-        return fieldList;
+        return columnList;
     }
 
     @Override
-    public List<String> getFieldValueList(String tableName, String fieldName) {
-        List<String> fieldValues = new ArrayList<>();
+    public List<String> getValueList(String tableName, String columnName) {
+        List<String> values = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             tableName = TableLocation.parse(tableName, isH2).toString();
-            fieldValues.addAll(JDBCUtilities.getUniqueFieldValues(connection,
+            values.addAll(JDBCUtilities.getUniqueFieldValues(connection,
                     tableName,
-                    fieldName));
+                    columnName));
         } catch (SQLException e) {
-            LOGGER.error(I18N.tr("Unable to get the field {0}.{1} value list.\nCause : {2}.",
-                    tableName, fieldName, e.getMessage()));
+            LOGGER.error(I18N.tr("Unable to get the column {0}.{1} value list.\nCause : {2}.",
+                    tableName, columnName, e.getMessage()));
         }
-        return fieldValues;
+        return values;
     }
 
     @Override

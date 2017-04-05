@@ -88,21 +88,21 @@ public class OrbisGISWpsServerImplTest {
 
                 List<DataType> dataTypeList = new ArrayList<>();
                 List<DataType> excludedTypeList = new ArrayList<>();
-                List<String> fieldList = wpsServer.getTableFieldList("TABLE", dataTypeList, excludedTypeList);
+                List<String> fieldList = wpsServer.getColumnList("TABLE", dataTypeList, excludedTypeList);
                 Assert.assertTrue("The field list should contains the field 'geometries'.", fieldList.contains("geometries"));
                 Assert.assertTrue("The field list should contains the field 'integers'.", fieldList.contains("integers"));
 
                 dataTypeList = new ArrayList<>();
                 dataTypeList.add(DataType.GEOMETRY);
                 excludedTypeList = new ArrayList<>();
-                fieldList = wpsServer.getTableFieldList("TABLE", dataTypeList, excludedTypeList);
+                fieldList = wpsServer.getColumnList("TABLE", dataTypeList, excludedTypeList);
                 Assert.assertTrue("The field list should contains the field 'geometries'.", fieldList.contains("geometries"));
                 Assert.assertFalse("The field list should not contains the field 'integers'.", fieldList.contains("integers"));
 
                 dataTypeList = new ArrayList<>();
                 excludedTypeList = new ArrayList<>();
                 excludedTypeList.add(DataType.GEOMETRY);
-                fieldList = wpsServer.getTableFieldList("TABLE", dataTypeList, excludedTypeList);
+                fieldList = wpsServer.getColumnList("TABLE", dataTypeList, excludedTypeList);
                 Assert.assertFalse("The field list should not contains the field 'geometries'.", fieldList.contains("geometries"));
                 Assert.assertTrue("The field list should contains the field 'integers'.", fieldList.contains("integers"));
 
@@ -110,7 +110,7 @@ public class OrbisGISWpsServerImplTest {
                 excludedTypeList = new ArrayList<>();
                 excludedTypeList.add(DataType.GEOMETRY);
                 excludedTypeList.add(DataType.INTEGER);
-                fieldList = wpsServer.getTableFieldList("TABLE", dataTypeList, excludedTypeList);
+                fieldList = wpsServer.getColumnList("TABLE", dataTypeList, excludedTypeList);
                 Assert.assertFalse("The field list should not contains the field 'geometries'.", fieldList.contains("geometries"));
                 Assert.assertFalse("The field list should not contains the field 'integers'.", fieldList.contains("integers"));
             } finally {

@@ -89,7 +89,7 @@ public interface OrbisGISWpsServer extends WpsServer {
      * @param excludedTypes
      * @return The list of the field name.
      */
-    List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes);
+    List<String> getColumnList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes);
 
 
     /**
@@ -98,7 +98,7 @@ public interface OrbisGISWpsServer extends WpsServer {
      * @param fieldName Name of the field containing the values.
      * @return The list of distinct values of the field.
      */
-    List<String> getFieldValueList(String tableName, String fieldName);
+    List<String> getValueList(String tableName, String fieldName);
 
     /**
      * Returns the list of the available SRID.

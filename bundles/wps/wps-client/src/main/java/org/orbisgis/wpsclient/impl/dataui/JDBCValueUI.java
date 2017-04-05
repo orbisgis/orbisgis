@@ -363,7 +363,7 @@ public class JDBCValueUI implements DataUI {
                 if(tableName != null && ColumnName != null) {
                     layerUI.start();
                     //First retrieve the good column name with the good case.
-                    List<String> columnList = wpsClient.getTableColumnList(tableName,
+                    List<String> columnList = wpsClient.getColumnList(tableName,
                             new ArrayList<DataType>(), new ArrayList<DataType>());
                     for(String column : columnList){
                         if(column.equalsIgnoreCase(ColumnName)){
@@ -372,7 +372,7 @@ public class JDBCValueUI implements DataUI {
                     }
                     //Retrieve the rowSet reading the table from the wpsService.
                     model.removeAllElements();
-                    List<String> listValues = wpsClient.getColumnValueList(tableName, ColumnName);
+                    List<String> listValues = wpsClient.getValueList(tableName, ColumnName);
                     Collections.sort(listValues);
                     model.addAll(listValues.toArray());
                     int maxRowCount;

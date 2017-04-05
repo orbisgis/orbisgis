@@ -117,7 +117,7 @@ public interface OrbisGISWpsClient extends WpsClient {
      *
      * @return The list of the field name matching the accepted and excluded types.
      */
-    List<String> getTableColumnList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes);
+    List<String> getColumnList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes);
 
     /**
      * Returns the list of the table from a database connected to OrbisGIS which contains the fields with the given
@@ -147,7 +147,7 @@ public interface OrbisGISWpsClient extends WpsClient {
      *
      * @return The list of distinct values of the field.
      */
-    List<String> getColumnValueList(String tableName, String fieldName);
+    List<String> getValueList(String tableName, String fieldName);
 
     /**
      * Returns the list of the available SRID.
