@@ -43,7 +43,6 @@ import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.wpsclient.api.OrbisGISWpsClient;
 import org.orbisgis.wpsclient.api.utils.WpsJobStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

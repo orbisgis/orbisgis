@@ -14,11 +14,11 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modules>
-        <module>wps-groovy-api</module>
-        <module>wps-service</module>
-        <module>wps-service-orbisgis</module>
-        <module>wps-service-scripts</module>
-        <module>wps-client</module>
+        <module>orbiswps-groovy-api</module>
+        <module>orbiswps-service</module>
+        <module>orbiswps-scripts</module>
+        <module>orbiswps-client</module>
+        <module>toolbox-editor</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
