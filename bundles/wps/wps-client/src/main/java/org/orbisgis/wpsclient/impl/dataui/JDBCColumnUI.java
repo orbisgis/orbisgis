@@ -237,7 +237,7 @@ public class JDBCColumnUI implements DataUI {
 
     @Override
     public ImageIcon getIconFromData(DescriptionType inputOrOutput) {
-        return ToolBoxIcon.getIcon(ToolBoxIcon.JDBC_TABLE_COLUMN);
+        return ToolBoxIcon.getIcon(ToolBoxIcon.JDBC_COLUMN);
     }
 
     /**
@@ -488,11 +488,11 @@ public class JDBCColumnUI implements DataUI {
             listContainer.add(new ContainerItem<Object>(I18N.tr("Select a column"), I18N.tr("Select a column")));
             return listContainer;
         }
-        List<Map<String, Object>> informationList = wpsClient.getColumnInformation(tableName);
+        List<Map<OrbisGISWpsServer.JdbcProperties, Object>> informationList = wpsClient.getColumnInformation(tableName);
         //If there is tables, retrieve their information to format the display in the comboBox
         if(informationList != null && !informationList.isEmpty()){
-            for (Map<String, Object> informationMap : informationList) {
-                String columnName = (String)informationMap.get(OrbisGISWpsServer.COLUMN_NAME);
+            for (Map<OrbisGISWpsServer.JdbcProperties, Object> informationMap : informationList) {
+                String columnName = (String)informationMap.get(OrbisGISWpsServer.JdbcProperties.COLUMN_NAME);
                 boolean isColumnExcluded = false;
                 if(jdbcColumn.getExcludedNameList() != null){
                     for(String excludedName : jdbcColumn.getExcludedNameList()){
@@ -502,7 +502,7 @@ public class JDBCColumnUI implements DataUI {
                     }
                 }
                 if(!isColumnExcluded && jdbcColumn.getDataTypeList() != null){
-                    String columnType = (String)informationMap.get(OrbisGISWpsServer.COLUMN_TYPE);
+                    String columnType = (String)informationMap.get(OrbisGISWpsServer.JdbcProperties.COLUMN_TYPE);
                     boolean isValid = false;
                     for(DataType dataType : jdbcColumn.getDataTypeList()){
                         if(DataType.testDBType(dataType, columnType)){
@@ -514,7 +514,7 @@ public class JDBCColumnUI implements DataUI {
                     }
                 }
                 if(!isColumnExcluded && jdbcColumn.getExcludedTypeList() != null){
-                    String columnType = (String)informationMap.get(OrbisGISWpsServer.COLUMN_TYPE);
+                    String columnType = (String)informationMap.get(OrbisGISWpsServer.JdbcProperties.COLUMN_TYPE);
                     for(DataType excludedType : jdbcColumn.getExcludedTypeList()){
                         if(DataType.testDBType(excludedType, columnType)){
                             isColumnExcluded = true;
@@ -527,16 +527,16 @@ public class JDBCColumnUI implements DataUI {
                     JPanel columnPanel = new JPanel(new MigLayout("ins 0, gap 0"));
                     if (!informationMap.isEmpty()) {
                         //Sets the spatial icon
-                        String columnType = (String)informationMap.get(OrbisGISWpsServer.COLUMN_TYPE);
+                        String columnType = (String)informationMap.get(OrbisGISWpsServer.JdbcProperties.COLUMN_TYPE);
                         columnPanel.add(new JLabel(ToolBoxIcon.getIcon(columnType.toLowerCase())));
                         columnPanel.add(new JLabel(columnName));
                         //Sets the SRID label
-                        int srid = (int) informationMap.get(OrbisGISWpsServer.COLUMN_SRID);
+                        int srid = (int) informationMap.get(OrbisGISWpsServer.JdbcProperties.COLUMN_SRID);
                         if (srid != 0) {
                             columnPanel.add(new JLabel(I18N.tr(" [EPSG:" + srid + "]")));
                         }
                         //Sets the dimension label
-                        int dimension = (int) informationMap.get(OrbisGISWpsServer.COLUMN_DIMENSION);
+                        int dimension = (int) informationMap.get(OrbisGISWpsServer.JdbcProperties.COLUMN_DIMENSION);
                         if (dimension != 2 && dimension != 0) {
                             columnPanel.add(new JLabel(I18N.tr(" "+dimension + "D")));
                         }

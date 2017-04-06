@@ -101,7 +101,7 @@ public class OrbisGISWpsServerImpl
     /** List of map containing the table with their basic information.
      * It is used as a buffer to avoid to reload all the table list to save time.
      */
-    private List<Map<String, String>> tableList;
+    private List<Map<JdbcProperties, String>> tableList;
     /** List of OrbisGISWpsServerListener. */
     private List<OrbisGISWpsServerListener> orbisgisWpsServerListenerList = new ArrayList<>();
 
@@ -289,14 +289,14 @@ public class OrbisGISWpsServerImpl
         List<String> list = new ArrayList<>();
         String defaultSchema = (isH2)?"PUBLIC":"public";
         //Read the tableList to get the desired tables
-        for(Map<String, String> map : tableList){
-            if(map.containsKey(TABLE_LOCATION)) {
-                TableLocation tablelocation = TableLocation.parse(map.get(TABLE_LOCATION), isH2);
+        for(Map<JdbcProperties, String> map : tableList){
+            if(map.containsKey(JdbcProperties.TABLE_LOCATION)) {
+                TableLocation tablelocation = TableLocation.parse(map.get(JdbcProperties.TABLE_LOCATION), isH2);
                 boolean isValid = false;
                 if((dataTypes == null || dataTypes.isEmpty()) && (excludedTypes == null || excludedTypes.isEmpty())){
                     isValid = true;
                 }
-                else if(map.containsKey(COLUMN_TYPE)) {
+                else if(map.containsKey(JdbcProperties.COLUMN_TYPE)) {
                     try (Connection connection = dataManager.getDataSource().getConnection()) {
                         Map<String, Integer> types = SFSUtilities.getGeometryTypes(connection, tablelocation);
                         for (Map.Entry<String, Integer> entry : types.entrySet()) {
@@ -372,8 +372,8 @@ public class OrbisGISWpsServerImpl
     }
 
     @Override
-    public List<Map<String, Object>> getColumnInformation(String tableName){
-        List<Map<String, Object>> mapList = new ArrayList<>();
+    public List<Map<JdbcProperties, Object>> getColumnInformation(String tableName){
+        List<Map<JdbcProperties, Object>> mapList = new ArrayList<>();
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             //Get the list of the columns of a table
             ResultSet rs1 = connection.createStatement().executeQuery(String.format("select * from %s limit 1", tableName));
@@ -381,11 +381,11 @@ public class OrbisGISWpsServerImpl
             //If the column isn't a geometry, add it to the map
             for(int i=1; i<=metaData.getColumnCount(); i++){
                 if(!metaData.getColumnTypeName(i).equalsIgnoreCase("GEOMETRY")){
-                    Map<String, Object> map = new HashMap<>();
-                    map.put(COLUMN_NAME, metaData.getColumnLabel(i));
-                    map.put(COLUMN_TYPE, metaData.getColumnTypeName(i));
-                    map.put(COLUMN_SRID, 0);
-                    map.put(COLUMN_DIMENSION, 0);
+                    Map<JdbcProperties, Object> map = new HashMap<>();
+                    map.put(JdbcProperties.COLUMN_NAME, metaData.getColumnLabel(i));
+                    map.put(JdbcProperties.COLUMN_TYPE, metaData.getColumnTypeName(i));
+                    map.put(JdbcProperties.COLUMN_SRID, 0);
+                    map.put(JdbcProperties.COLUMN_DIMENSION, 0);
                     mapList.add(map);
                 }
             }
@@ -395,20 +395,20 @@ public class OrbisGISWpsServerImpl
                     TableLocation.parse(tableName).getTable() + "';";
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()) {
-                Map<String, Object> map = new HashMap<>();
+                Map<JdbcProperties, Object> map = new HashMap<>();
                 //Case of H2 database
                 if(isH2) {
-                    map.put(COLUMN_NAME, rs.getString(4));
-                    map.put(COLUMN_TYPE, SFSUtilities.getGeometryTypeNameFromCode(rs.getInt(6)));
-                    map.put(COLUMN_SRID, rs.getInt(8));
-                    map.put(COLUMN_DIMENSION, rs.getInt(7));
+                    map.put(JdbcProperties.COLUMN_NAME, rs.getString(4));
+                    map.put(JdbcProperties.COLUMN_TYPE, SFSUtilities.getGeometryTypeNameFromCode(rs.getInt(6)));
+                    map.put(JdbcProperties.COLUMN_SRID, rs.getInt(8));
+                    map.put(JdbcProperties.COLUMN_DIMENSION, rs.getInt(7));
                 }
                 //Other case
                 else{
-                    map.put(COLUMN_NAME, rs.getString(4));
-                    map.put(COLUMN_TYPE, rs.getString(7));
-                    map.put(COLUMN_SRID, rs.getInt(6));
-                    map.put(COLUMN_DIMENSION, rs.getInt(5));
+                    map.put(JdbcProperties.COLUMN_NAME, rs.getString(4));
+                    map.put(JdbcProperties.COLUMN_TYPE, rs.getString(7));
+                    map.put(JdbcProperties.COLUMN_SRID, rs.getInt(6));
+                    map.put(JdbcProperties.COLUMN_DIMENSION, rs.getInt(5));
                 }
                 mapList.add(map);
             }
@@ -596,7 +596,7 @@ public class OrbisGISWpsServerImpl
      * Read the table list in the database
      */
     protected void readDatabase() {
-        List<Map<String, String>> newTables = new ArrayList<>();
+        List<Map<JdbcProperties, String>> newTables = new ArrayList<>();
         try (Connection connection = dataManager.getDataSource().getConnection()) {
             final String defaultCatalog = connection.getCatalog();
             String defaultSchema = "PUBLIC";
@@ -621,7 +621,7 @@ public class OrbisGISWpsServerImpl
             // Fetch all tables
             try(ResultSet rs = connection.getMetaData().getTables(null, null, null, SHOWN_TABLE_TYPES)) {
                 while(rs.next()) {
-                    Map<String, String> tableAttr = new HashMap<>();
+                    Map<JdbcProperties, String> tableAttr = new HashMap<>();
                     TableLocation location = new TableLocation(rs);
                     if(location.getCatalog().isEmpty()) {
                         // PostGIS return empty catalog on metadata
@@ -650,11 +650,11 @@ public class OrbisGISWpsServerImpl
                                         location.getSchema().equalsIgnoreCase(defaultSchema) ? "" : location.getSchema(),
                                 location.getTable());
                     }
-                    tableAttr.put(TABLE_LOCATION, shortLocation.toString(isH2));
-                    tableAttr.put(TABLE_LABEL, label.toString());
+                    tableAttr.put(JdbcProperties.TABLE_LOCATION, shortLocation.toString(isH2));
+                    tableAttr.put(JdbcProperties.TABLE_LABEL, label.toString());
                     String type = tableGeometry.get(location.toString());
                     if(type != null) {
-                        tableAttr.put(COLUMN_TYPE, type);
+                        tableAttr.put(JdbcProperties.COLUMN_TYPE, type);
                     }
                     newTables.add(tableAttr);
                 }
