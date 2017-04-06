@@ -57,11 +57,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static org.orbisgis.wpsserviceorbisgis.OrbisGISWpsServer.*;
+import static org.orbisgis.wpsserviceorbisgis.OrbisGISWpsServer.JdbcProperties.COLUMN_DIMENSION;
 
 /**
  * @author Sylvain PALOMINOS
  */
-public class OrbisGISWpsServerImplTest {
+public class TestOrbisGISWpsServerImpl {
     private static OrbisGISWpsServerImpl wpsServer;
     private static DataSource dataSource;
     private static Connection connection;
@@ -70,7 +74,7 @@ public class OrbisGISWpsServerImplTest {
     public void init() throws Exception {
         wpsServer = new OrbisGISWpsServerImpl();
         dataSource = SFSUtilities.wrapSpatialDataSource(
-                H2GISDBFactory.createDataSource(OrbisGISWpsServerImplTest.class.getSimpleName(), true));
+                H2GISDBFactory.createDataSource(TestOrbisGISWpsServerImpl.class.getSimpleName(), true));
         connection = dataSource.getConnection();
         H2GISFunctions.registerFunction(connection.createStatement(), new DriverManager(), "");
         DataManager dataManager = new DataManagerImpl(dataSource);
@@ -88,21 +92,21 @@ public class OrbisGISWpsServerImplTest {
 
                 List<DataType> dataTypeList = new ArrayList<>();
                 List<DataType> excludedTypeList = new ArrayList<>();
-                List<String> fieldList = wpsServer.getTableFieldList("TABLE", dataTypeList, excludedTypeList);
+                List<String> fieldList = wpsServer.getColumnList("TABLE", dataTypeList, excludedTypeList);
                 Assert.assertTrue("The field list should contains the field 'geometries'.", fieldList.contains("geometries"));
                 Assert.assertTrue("The field list should contains the field 'integers'.", fieldList.contains("integers"));
 
                 dataTypeList = new ArrayList<>();
                 dataTypeList.add(DataType.GEOMETRY);
                 excludedTypeList = new ArrayList<>();
-                fieldList = wpsServer.getTableFieldList("TABLE", dataTypeList, excludedTypeList);
+                fieldList = wpsServer.getColumnList("TABLE", dataTypeList, excludedTypeList);
                 Assert.assertTrue("The field list should contains the field 'geometries'.", fieldList.contains("geometries"));
                 Assert.assertFalse("The field list should not contains the field 'integers'.", fieldList.contains("integers"));
 
                 dataTypeList = new ArrayList<>();
                 excludedTypeList = new ArrayList<>();
                 excludedTypeList.add(DataType.GEOMETRY);
-                fieldList = wpsServer.getTableFieldList("TABLE", dataTypeList, excludedTypeList);
+                fieldList = wpsServer.getColumnList("TABLE", dataTypeList, excludedTypeList);
                 Assert.assertFalse("The field list should not contains the field 'geometries'.", fieldList.contains("geometries"));
                 Assert.assertTrue("The field list should contains the field 'integers'.", fieldList.contains("integers"));
 
@@ -110,7 +114,7 @@ public class OrbisGISWpsServerImplTest {
                 excludedTypeList = new ArrayList<>();
                 excludedTypeList.add(DataType.GEOMETRY);
                 excludedTypeList.add(DataType.INTEGER);
-                fieldList = wpsServer.getTableFieldList("TABLE", dataTypeList, excludedTypeList);
+                fieldList = wpsServer.getColumnList("TABLE", dataTypeList, excludedTypeList);
                 Assert.assertFalse("The field list should not contains the field 'geometries'.", fieldList.contains("geometries"));
                 Assert.assertFalse("The field list should not contains the field 'integers'.", fieldList.contains("integers"));
             } finally {
@@ -155,6 +159,38 @@ public class OrbisGISWpsServerImplTest {
                 tableList = wpsServer.getTableList(dataTypeList, excludedTypeList);
                 Assert.assertFalse("The table list should not contains the table 'TABLEGEOMETRY'.", tableList.contains("TABLEGEOMETRY"));
                 Assert.assertFalse("The table list should not contains the table 'TABLEINTEGER'.", tableList.contains("TABLEINTEGER"));
+            } finally {
+                st.execute("DROP TABLE TABLE IF EXISTS");
+            }
+        }
+    }
+
+    @Test
+    public void testGetColumnInformation() throws SQLException {
+        try(Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE TABLE IF EXISTS");
+            try {
+                st.execute("CREATE TABLE TABLE (\"integers\" integer, \"geometries\" geometry)");
+                wpsServer.onDataManagerChange();
+
+                List<Map<JdbcProperties, Object>> informationList = wpsServer.getColumnInformation("TABLE");
+                Assert.assertEquals("The information list .", 2, informationList.size());
+
+                Map<JdbcProperties, Object> map = informationList.get(0);
+                Assert.assertEquals("The column name should be 'INTEGERS'.", "INTEGERS",
+                        map.get(JdbcProperties.COLUMN_NAME).toString().toUpperCase());
+                Assert.assertEquals("The column type should be 'INTEGER'.", "INTEGER",
+                        map.get(JdbcProperties.COLUMN_TYPE).toString().toUpperCase());
+                Assert.assertEquals("The column srid should be '0'.", 0, map.get(JdbcProperties.COLUMN_SRID));
+                Assert.assertEquals("The column dimension should be '0'.", 0, map.get(COLUMN_DIMENSION));
+
+                map = informationList.get(1);
+                Assert.assertEquals("The column name should be 'GEOMETRIES'.", "GEOMETRIES",
+                        map.get(JdbcProperties.COLUMN_NAME).toString().toUpperCase());
+                Assert.assertEquals("The column type should be 'GEOMETRY'.", "GEOMETRY",
+                        map.get(JdbcProperties.COLUMN_TYPE).toString().toUpperCase());
+                Assert.assertEquals("The column srid should be '0'.", 0, map.get(JdbcProperties.COLUMN_SRID));
+                Assert.assertEquals("The column dimension should be '0'.", 2, map.get(COLUMN_DIMENSION));
             } finally {
                 st.execute("DROP TABLE TABLE IF EXISTS");
             }

@@ -41,6 +41,7 @@ import net.opengis.wps._2_0.ProcessDescriptionType;
 import org.orbisgis.wpsclient.api.utils.ProcessExecutionType;
 import org.orbisgis.wpsclient.api.utils.WpsJobStateListener;
 import org.orbisgis.wpsservice.model.DataType;
+import org.orbisgis.wpsserviceorbisgis.OrbisGISWpsServer;
 
 import java.net.URI;
 import java.util.List;
@@ -109,46 +110,45 @@ public interface OrbisGISWpsClient extends WpsClient {
     void refreshAvailableScripts();
 
     /**
-     * Return the list of the field contained by a table from a database connected to OrbisGIS.
+     * Return the list of the column contained by a table from a database connected to OrbisGIS.
      *
      * @param tableName Name of the table.
-     * @param dataTypes Type of field accepted. If empty, accepts all the field.
-     * @param excludedTypes Type of field excluded.
+     * @param dataTypes Type of column accepted. If empty, accepts all the column.
+     * @param excludedTypes Type of column excluded.
      *
-     * @return The list of the field name matching the accepted and excluded types.
+     * @return The list of the column name matching the accepted and excluded types.
      */
-    List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes);
+    List<String> getColumnList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes);
 
     /**
-     * Returns the list of the table from a database connected to OrbisGIS which contains the fields with the given
+     * Returns the list of the table from a database connected to OrbisGIS which contains the columns with the given
      * dataTypes and without the given excludedTypes
      *
-     * @param dataTypes Type of field accepted. If empty, accepts all the field.
-     * @param excludedTypes Type of field excluded.
+     * @param dataTypes Type of table accepted. If empty, accepts all the tables.
+     * @param excludedTypes Type of table excluded.
      *
      * @return The list of valid tables.
      */
     List<String> getTableList(List<DataType> dataTypes, List<DataType> excludedTypes);
 
     /**
-     * Returns a map containing field information like table type, SRID...
+     * Returns a list of maps containing column information like table type, SRID...
      *
      * @param tableName Name of the table.
-     * @param fieldName Name of the field.
      *
-     * @return Map containing the field information.
+     * @return List of map containing the column information.
      */
-    Map<String, Object> getFieldInformation(String tableName, String fieldName);
+    List<Map<OrbisGISWpsServer.JdbcProperties, Object>> getColumnInformation(String tableName);
 
     /**
-     * Returns the list of distinct values contained by a field from a table from the database
+     * Returns the list of distinct values contained by a column from a table from the database
      *
-     * @param tableName Name of the table containing the field.
-     * @param fieldName Name of the field containing the values.
+     * @param tableName Name of the table containing the column.
+     * @param columnName Name of the column containing the values.
      *
-     * @return The list of distinct values of the field.
+     * @return The list of distinct values of the column.
      */
-    List<String> getFieldValueList(String tableName, String fieldName);
+    List<String> getValueList(String tableName, String columnName);
 
     /**
      * Returns the list of the available SRID.

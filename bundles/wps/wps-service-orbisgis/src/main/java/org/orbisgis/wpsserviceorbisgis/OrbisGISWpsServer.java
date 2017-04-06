@@ -49,12 +49,7 @@ import java.util.*;
  */
 public interface OrbisGISWpsServer extends WpsServer {
 
-    String TABLE_SRID = "TABLE_SRID";
-    String TABLE_IS_SPATIAL = "TABLE_IS_SPATIAL";
-    String TABLE_DIMENSION = "TABLE_DIMENSION";
-    String GEOMETRY_TYPE = "GEOMETRY_TYPE";
-    String TABLE_LOCATION = "TABLE_LOCATION";
-    String TABLE_LABEL = "TABLE_LABEL";
+    public enum JdbcProperties { COLUMN_NAME, COLUMN_TYPE, COLUMN_SRID, COLUMN_DIMENSION, TABLE_LOCATION, TABLE_LABEL }
 
     /**
      * Verify if the process corresponding to the identifier is a valid and well formed groovy wps script.
@@ -64,41 +59,40 @@ public interface OrbisGISWpsServer extends WpsServer {
     boolean checkProcess(URI identifier);
 
     /**
-     * Returns the list of the table from a database connected to OrbisGIS which contains the fields with the given
+     * Returns the list of the table from a database connected to OrbisGIS which contains the columns with the given
      * dataTypes and without the given excludedTypes
      *
-     * @param dataTypes Type of field accepted. If empty, accepts all the field.
-     * @param excludedTypes Type of field excluded.
+     * @param dataTypes Type of table accepted. If empty, accepts all the table.
+     * @param excludedTypes Type of table excluded.
      *
      * @return The list of valid tables.
      */
     List<String> getTableList(List<DataType> dataTypes, List<DataType> excludedTypes);
 
     /**
-     * Returns a map containing field information (table type, SRID, ...)
+     * Returns a list of map containing column information (table type, SRID, ...)
      * @param tableName Name of the table.
-     * @param fieldName Name of the field.
-     * @return Map containing the field information.
+     * @return List of map containing the column information.
      */
-    Map<String, Object> getFieldInformation(String tableName, String fieldName);
+    List<Map<JdbcProperties, Object>> getColumnInformation(String tableName);
 
     /**
-     * Return the list of the field of a table.
+     * Return the list of the column of a table.
      * @param tableName Name of the table.
-     * @param dataTypes Type of the field accepted. If empty, accepts all the field.
-     * @param excludedTypes
-     * @return The list of the field name.
+     * @param dataTypes Type of the column accepted. If empty, accepts all the column.
+     * @param excludedTypes Type of the column excluded.
+     * @return The list of the column name.
      */
-    List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes);
+    List<String> getColumnList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes);
 
 
     /**
-     * Returns the list of distinct values contained by a field from a table from the database
-     * @param tableName Name of the table containing the field.
-     * @param fieldName Name of the field containing the values.
-     * @return The list of distinct values of the field.
+     * Returns the list of distinct values contained by a column from a table from the database
+     * @param tableName Name of the table containing the column.
+     * @param columnName Name of the column containing the values.
+     * @return The list of distinct values of the column.
      */
-    List<String> getFieldValueList(String tableName, String fieldName);
+    List<String> getValueList(String tableName, String columnName);
 
     /**
      * Returns the list of the available SRID.

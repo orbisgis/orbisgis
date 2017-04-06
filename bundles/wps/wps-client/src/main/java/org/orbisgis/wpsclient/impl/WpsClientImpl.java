@@ -453,7 +453,7 @@ public class WpsClientImpl
      * @param p Process to link.
      */
     private void link(ProcessDescriptionType p){
-        //Link the JDBCTableField with its JDBCTable
+        //Link the JDBCColumn with its JDBCTable
         for(InputDescriptionType i : p.getInput()){
             if(i.getDataDescription().getValue() instanceof JDBCColumn){
                 JDBCColumn jdbcColumn = (JDBCColumn)i.getDataDescription().getValue();
@@ -491,12 +491,12 @@ public class WpsClientImpl
         //Link the JDBCValue with its JDBCColumn and its JDBCTable
         for(OutputDescriptionType o : p.getOutput()){
             if(o.getDataDescription().getValue() instanceof JDBCValue){
-                JDBCValue jdbcTableFieldValue = (JDBCValue)o.getDataDescription().getValue();
+                JDBCValue jdbcValue = (JDBCValue)o.getDataDescription().getValue();
                 for(OutputDescriptionType output : p.getOutput()){
-                    if(output.getIdentifier().getValue().equals(jdbcTableFieldValue.getJDBCColumnIdentifier().toString())){
+                    if(output.getIdentifier().getValue().equals(jdbcValue.getJDBCColumnIdentifier().toString())){
                         JDBCColumn jdbcColumn = (JDBCColumn)output.getDataDescription().getValue();
-                        jdbcColumn.addJDBCValue(jdbcTableFieldValue);
-                        jdbcTableFieldValue.setJDBCTableIdentifier(jdbcColumn.getJDBCTableIdentifier());
+                        jdbcColumn.addJDBCValue(jdbcValue);
+                        jdbcValue.setJDBCTableIdentifier(jdbcColumn.getJDBCTableIdentifier());
                     }
                 }
             }
@@ -649,7 +649,7 @@ public class WpsClientImpl
                 defaultValuesMap = new HashMap<>();
             }
         }
-        //Link the JDBCTable with the JDBCTableField and the JDBCTableField with the JDBCTableFieldValue
+        //Link the JDBCTable with the JDBCColumn and the JDBCColumn with the JDBCValue
         link(process);
         //Open the ProcessEditor
         Map<URI, Object> joinedDefaultValuesMap = new HashMap<>();
@@ -678,8 +678,8 @@ public class WpsClientImpl
     }
 
     @Override
-    public List<String> getTableFieldList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
-        return wpsService.getTableFieldList(tableName, dataTypes, excludedTypes);
+    public List<String> getColumnList(String tableName, List<DataType> dataTypes, List<DataType> excludedTypes){
+        return wpsService.getColumnList(tableName, dataTypes, excludedTypes);
     }
 
     @Override
@@ -688,13 +688,13 @@ public class WpsClientImpl
     }
 
     @Override
-    public Map<String, Object> getFieldInformation(String tableName, String fieldName){
-        return wpsService.getFieldInformation(tableName, fieldName);
+    public List<Map<OrbisGISWpsServer.JdbcProperties, Object>> getColumnInformation(String tableName){
+        return wpsService.getColumnInformation(tableName);
     }
 
     @Override
-    public List<String> getFieldValueList(String tableName, String fieldName){
-        return wpsService.getFieldValueList(tableName, fieldName);
+    public List<String> getValueList(String tableName, String columnName){
+        return wpsService.getValueList(tableName, columnName);
     }
 
     @Override

@@ -57,9 +57,9 @@ public class ToolBoxIcon {
     public static final String GEO_FILE = "geofile";
     public static final String BROWSE = "browse";
     public static final String OPTIONS = "options";
-    public static final String JDBC_TABLE_FIELD = "jdbc_table_field";
+    public static final String JDBC_COLUMN = "jdbc_column";
     public static final String ENUMERATION = "enumeration";
-    public static final String JDBC_VALUE = "jdbc_table_field_value";
+    public static final String JDBC_VALUE = "jdbc_value";
     public static final String STRING = "string";
     public static final String NUMBER = "number";
     public static final String BOOLEAN = "boolean";
