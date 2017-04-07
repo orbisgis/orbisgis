@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wps:Capabilities xmlns:ows="http://www.opengis.net/ows/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wps="http://www.opengis.net/wps/2.0" xmlns:orbisgis="http://orbisgis.org" service="WPS" version="2.0.0">
+    <ows:ServiceIdentification>
+        <ows:Title xml:lang="en">OrbisGIS Local WPS</ows:Title>
+        <ows:Abstract xml:lang="en">OrbisGIS local instance of the WPS Service</ows:Abstract>
+        <ows:Keywords>
+            <ows:Keyword xml:lang="en">Toolbox</ows:Keyword>
+        </ows:Keywords>
+        <ows:Keywords>
+            <ows:Keyword xml:lang="en">WPS</ows:Keyword>
+        </ows:Keywords>
+        <ows:Keywords>
+            <ows:Keyword xml:lang="en">OrbisGIS</ows:Keyword>
+        </ows:Keywords>
+        <ows:ServiceType>WPS</ows:ServiceType>
+        <ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
+    </ows:ServiceIdentification>
+    <ows:ServiceProvider>
+        <ows:ProviderName>ORBISGIS</ows:ProviderName>
+        <ows:ProviderSite xlink:href="http://orbisgis.org/"/>
+        <ows:ServiceContact>
+            <ows:ContactInfo>
+                <ows:Address>
+                    <ows:ElectronicMailAddress>info@orbisgis.org</ows:ElectronicMailAddress>
+                </ows:Address>
+            </ows:ContactInfo>
+        </ows:ServiceContact>
+    </ows:ServiceProvider>
+    <ows:OperationsMetadata>
+        <ows:Operation name="GetCapabilities">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://orbisgis.org/wps"/>
+                    <ows:Post xlink:href="http://orbisgis.org/wps"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="DescribeProcess">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://orbisgis.org/wps"/>
+                    <ows:Post xlink:href="http://orbisgis.org/wps"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="Execute">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://orbisgis.org/wps"/>
+                    <ows:Post xlink:href="http://orbisgis.org/wps"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="GetStatus">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://orbisgis.org/wps"/>
+                    <ows:Post xlink:href="http://orbisgis.org/wps"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+        <ows:Operation name="GetResult">
+            <ows:DCP>
+                <ows:HTTP>
+                    <ows:Get xlink:href="http://orbisgis.org/wps"/>
+                    <ows:Post xlink:href="http://orbisgis.org/wps"/>
+                </ows:HTTP>
+            </ows:DCP>
+        </ows:Operation>
+    </ows:OperationsMetadata>
+    <wps:Contents>
+        <wps:ProcessSummary jobControlOptions="async-execute">
+            <ows:Title xml:lang="en">JDBCTable test</ows:Title>
+            <ows:Title xml:lang="fr">Test du JDBCTable</ows:Title>
+            <ows:Abstract xml:lang="en">Test script using the JDBCTable ComplexData.</ows:Abstract>
+            <ows:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData JDBCTable.</ows:Abstract>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">test</ows:Keyword>
+                <ows:Keyword xml:lang="fr">test</ows:Keyword>
+            </ows:Keywords>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">script</ows:Keyword>
+                <ows:Keyword xml:lang="fr">scripte</ows:Keyword>
+            </ows:Keywords>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">wps</ows:Keyword>
+                <ows:Keyword xml:lang="fr">wps</ows:Keyword>
+            </ows:Keywords>
+            <ows:Identifier>orbisgis:test:jdbctable</ows:Identifier>
+            <ows:Metadata xlink:type="simple" xlink:href="http://orbisgis.org/" xlink:role="website" xlink:title="metadata"/>
+        </wps:ProcessSummary>
+        <wps:ProcessSummary jobControlOptions="async-execute">
+            <ows:Title xml:lang="en">JDBCColumn test</ows:Title>
+            <ows:Title xml:lang="fr">Test du JDBCColumn</ows:Title>
+            <ows:Abstract xml:lang="en">Test script using the JDBCColumn ComplexData.</ows:Abstract>
+            <ows:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData JDBCColumn</ows:Abstract>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">test</ows:Keyword>
+                <ows:Keyword xml:lang="fr">test</ows:Keyword>
+            </ows:Keywords>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">script</ows:Keyword>
+                <ows:Keyword xml:lang="fr">scripte</ows:Keyword>
+            </ows:Keywords>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">wps</ows:Keyword>
+                <ows:Keyword xml:lang="fr">wps</ows:Keyword>
+            </ows:Keywords>
+            <ows:Identifier>orbisgis:test:jdbccolumn</ows:Identifier>
+            <ows:Metadata xlink:type="simple" xlink:href="http://orbisgis.org/" xlink:role="website" xlink:title="metadata"/>
+        </wps:ProcessSummary>
+        <wps:ProcessSummary jobControlOptions="async-execute">
+            <ows:Title xml:lang="en">JDBCValue test</ows:Title>
+            <ows:Title xml:lang="fr">Test du JDBCValue</ows:Title>
+            <ows:Abstract xml:lang="en">Test script using the JDBCValue ComplexData.</ows:Abstract>
+            <ows:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData JDBCValue</ows:Abstract>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">test</ows:Keyword>
+                <ows:Keyword xml:lang="fr">test</ows:Keyword>
+            </ows:Keywords>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">script</ows:Keyword>
+                <ows:Keyword xml:lang="fr">scripte</ows:Keyword>
+            </ows:Keywords>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">wps</ows:Keyword>
+                <ows:Keyword xml:lang="fr">wps</ows:Keyword>
+            </ows:Keywords>
+            <ows:Identifier>orbisgis:test:jdbcvalue</ows:Identifier>
+            <ows:Metadata xlink:type="simple" xlink:href="http://orbisgis.org/" xlink:role="website" xlink:title="metadata"/>
+        </wps:ProcessSummary>
+        <wps:ProcessSummary jobControlOptions="async-execute">
+            <ows:Title xml:lang="en">Enumeration test</ows:Title>
+            <ows:Title xml:lang="fr">Test du Enumeration</ows:Title>
+            <ows:Abstract xml:lang="en">Test script using the Enumeration ComplexData.</ows:Abstract>
+            <ows:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData Enumeration.</ows:Abstract>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">test</ows:Keyword>
+                <ows:Keyword xml:lang="fr">test</ows:Keyword>
+            </ows:Keywords>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">script</ows:Keyword>
+                <ows:Keyword xml:lang="fr">scripte</ows:Keyword>
+            </ows:Keywords>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">wps</ows:Keyword>
+                <ows:Keyword xml:lang="fr">wps</ows:Keyword>
+            </ows:Keywords>
+            <ows:Identifier>orbisgis:test:enumeration</ows:Identifier>
+            <ows:Metadata xlink:type="simple" xlink:href="http://orbisgis.org/" xlink:role="website" xlink:title="metadata"/>
+        </wps:ProcessSummary>
+        <wps:ProcessSummary jobControlOptions="async-execute">
+            <ows:Title xml:lang="en">Geometry test</ows:Title>
+            <ows:Title xml:lang="fr">Test du Geometry</ows:Title>
+            <ows:Abstract xml:lang="en">Test script using the Geometry ComplexData.</ows:Abstract>
+            <ows:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData Geometry.</ows:Abstract>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">test</ows:Keyword>
+                <ows:Keyword xml:lang="fr">test</ows:Keyword>
+            </ows:Keywords>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">script</ows:Keyword>
+                <ows:Keyword xml:lang="fr">scripte</ows:Keyword>
+            </ows:Keywords>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">wps</ows:Keyword>
+                <ows:Keyword xml:lang="fr">wps</ows:Keyword>
+            </ows:Keywords>
+            <ows:Identifier>orbisgis:test:geometry</ows:Identifier>
+            <ows:Metadata xlink:type="simple" xlink:href="http://orbisgis.org/" xlink:role="website" xlink:title="metadata"/>
+        </wps:ProcessSummary>
+        <wps:ProcessSummary jobControlOptions="async-execute">
+            <ows:Title xml:lang="en">RawData test</ows:Title>
+            <ows:Title xml:lang="fr">Test du RawData</ows:Title>
+            <ows:Abstract xml:lang="en">Test script using the RawData ComplexData.</ows:Abstract>
+            <ows:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData RawData.</ows:Abstract>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">test</ows:Keyword>
+                <ows:Keyword xml:lang="fr">test</ows:Keyword>
+            </ows:Keywords>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">script</ows:Keyword>
+                <ows:Keyword xml:lang="fr">scripte</ows:Keyword>
+            </ows:Keywords>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="en">wps</ows:Keyword>
+                <ows:Keyword xml:lang="fr">wps</ows:Keyword>
+            </ows:Keywords>
+            <ows:Identifier>orbisgis:test:rawdata</ows:Identifier>
+            <ows:Metadata xlink:type="simple" xlink:href="http://orbisgis.org/" xlink:role="website" xlink:title="metadata"/>
+        </wps:ProcessSummary>
+    </wps:Contents>
+</wps:Capabilities>

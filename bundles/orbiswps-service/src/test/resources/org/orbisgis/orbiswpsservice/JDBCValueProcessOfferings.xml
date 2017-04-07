@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<wps:ProcessOfferings xmlns:ows="http://www.opengis.net/ows/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wps="http://www.opengis.net/wps/2.0" xmlns:orbisgis="http://orbisgis.org">
+    <wps:ProcessOffering jobControlOptions="async-execute" outputTransmission="value">
+        <wps:Process xml:lang="fr">
+            <ows:Title xml:lang="fr">Test du JDBCValue</ows:Title>
+            <ows:Abstract xml:lang="fr">Scripts test pour l'usage du ComplexData JDBCValue</ows:Abstract>
+            <ows:Keywords>
+                <ows:Keyword xml:lang="fr">test</ows:Keyword>
+                <ows:Keyword xml:lang="fr">scripte</ows:Keyword>
+                <ows:Keyword xml:lang="fr">wps</ows:Keyword>
+            </ows:Keywords>
+            <ows:Identifier>orbisgis:test:jdbcvalue</ows:Identifier>
+            <ows:Metadata xlink:type="simple" xlink:href="http://orbisgis.org/" xlink:role="website" xlink:title="metadata"/>
+            <wps:Input minOccurs="1" maxOccurs="1">
+                <ows:Title>JDBCTable for the JDBCValue</ows:Title>
+                <ows:Abstract/>
+                <ows:Keywords/>
+                <ows:Identifier>orbisgis:test:jdbctable:input</ows:Identifier>
+                <orbisgis:JDBCTable isSpatial="false" isAutoImport="true">
+                    <wps:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <orbisgis:JDBCColumn multiSelection="false">
+                        <wps:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                        <orbisgis:JDBCTableId>orbisgis:test:jdbctable:input</orbisgis:JDBCTableId>
+                        <orbisgis:JDBCValue multiSelection="false">
+                            <wps:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                            <orbisgis:JDBCColumnId>orbisgis:test:jdbccolumn:input</orbisgis:JDBCColumnId>
+                            <orbisgis:JDBCTableId>orbisgis:test:jdbctable:input</orbisgis:JDBCTableId>
+                        </orbisgis:JDBCValue>
+                    </orbisgis:JDBCColumn>
+                </orbisgis:JDBCTable>
+            </wps:Input>
+            <wps:Input minOccurs="1" maxOccurs="1">
+                <ows:Title>JDBCColumn for the JDBCValue</ows:Title>
+                <ows:Abstract/>
+                <ows:Keywords/>
+                <ows:Identifier>orbisgis:test:jdbccolumn:input</ows:Identifier>
+                <orbisgis:JDBCColumn multiSelection="false">
+                    <wps:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <orbisgis:JDBCTableId>orbisgis:test:jdbctablestore:input</orbisgis:JDBCTableId>
+                    <orbisgis:JDBCValue multiSelection="false">
+                        <wps:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                        <orbisgis:JDBCColumnId>orbisgis:test:jdbccolumn:input</orbisgis:JDBCColumnId>
+                        <orbisgis:JDBCTableId>orbisgis:test:jdbctable:input</orbisgis:JDBCTableId>
+                    </orbisgis:JDBCValue>
+                </orbisgis:JDBCColumn>
+            </wps:Input>
+            <wps:Input minOccurs="0" maxOccurs="2">
+                <ows:Title xml:lang="fr">Entrée JDBCValue</ows:Title>
+                <ows:Abstract xml:lang="fr">Une entrée JDBCValue</ows:Abstract>
+                <ows:Keywords>
+                    <ows:Keyword xml:lang="fr">entrée</ows:Keyword>
+                </ows:Keywords>
+                <ows:Identifier>orbisgis:test:jdbcvalue:input</ows:Identifier>
+                <ows:Metadata xlink:type="simple" xlink:href="http://orbisgis.org/" xlink:role="website" xlink:title="metadata"/>
+                <orbisgis:JDBCValue multiSelection="false">
+                    <wps:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <orbisgis:JDBCColumnId>orbisgis:test:jdbccolumn:input</orbisgis:JDBCColumnId>
+                    <orbisgis:JDBCTableId>orbisgis:test:jdbctable:input</orbisgis:JDBCTableId>
+                </orbisgis:JDBCValue>
+            </wps:Input>
+            <wps:Output>
+                <ows:Title>JDBCTable for the JDBCValue</ows:Title>
+                <ows:Abstract/>
+                <ows:Keywords/>
+                <ows:Identifier>orbisgis:test:jdbctable:output</ows:Identifier>
+                <orbisgis:JDBCTable isSpatial="false" isAutoImport="true">
+                    <wps:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <orbisgis:JDBCColumn multiSelection="false">
+                        <wps:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                        <orbisgis:JDBCTableId>orbisgis:test:jdbctable:output</orbisgis:JDBCTableId>
+                        <orbisgis:JDBCValue multiSelection="true">
+                            <wps:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                            <orbisgis:JDBCColumnId>orbisgis:test:jdbccolumn:output</orbisgis:JDBCColumnId>
+                            <orbisgis:JDBCTableId>orbisgis:test:jdbctable:output</orbisgis:JDBCTableId>
+                        </orbisgis:JDBCValue>
+                    </orbisgis:JDBCColumn>
+                </orbisgis:JDBCTable>
+            </wps:Output>
+            <wps:Output>
+                <ows:Title>JDBCColumn for the JDBCValue</ows:Title>
+                <ows:Abstract/>
+                <ows:Keywords/>
+                <ows:Identifier>orbisgis:test:jdbccolumn:output</ows:Identifier>
+                <orbisgis:JDBCColumn multiSelection="false">
+                    <wps:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <orbisgis:JDBCTableId>orbisgis:test:jdbctable:output</orbisgis:JDBCTableId>
+                    <orbisgis:JDBCValue multiSelection="true">
+                        <wps:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                        <orbisgis:JDBCColumnId>orbisgis:test:jdbccolumn:output</orbisgis:JDBCColumnId>
+                        <orbisgis:JDBCTableId>orbisgis:test:jdbctable:output</orbisgis:JDBCTableId>
+                    </orbisgis:JDBCValue>
+                </orbisgis:JDBCColumn>
+            </wps:Output>
+            <wps:Output>
+                <ows:Title xml:lang="fr">Sortie JDBCValue</ows:Title>
+                <ows:Abstract xml:lang="fr">Une sortie JDBCValue</ows:Abstract>
+                <ows:Keywords>
+                    <ows:Keyword xml:lang="fr">sortie</ows:Keyword>
+                </ows:Keywords>
+                <ows:Identifier>orbisgis:test:jdbcvalue:output</ows:Identifier>
+                <ows:Metadata xlink:type="simple" xlink:href="http://orbisgis.org/" xlink:role="website" xlink:title="metadata"/>
+                <orbisgis:JDBCValue multiSelection="true">
+                    <wps:Format mimeType="text/plain" encoding="simple" schema="" default="true"/>
+                    <orbisgis:JDBCColumnId>orbisgis:test:jdbccolumn:output</orbisgis:JDBCColumnId>
+                    <orbisgis:JDBCTableId>orbisgis:test:jdbctable:output</orbisgis:JDBCTableId>
+                    <orbisgis:JDBCTableId>orbisgis:test:jdbctable:output</orbisgis:JDBCTableId>
+                </orbisgis:JDBCValue>
+            </wps:Output>
+        </wps:Process>
+    </wps:ProcessOffering>
+</wps:ProcessOfferings>
