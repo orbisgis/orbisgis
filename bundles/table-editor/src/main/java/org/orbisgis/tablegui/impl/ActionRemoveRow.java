@@ -43,7 +43,7 @@ import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.toolboxeditor.OrbisGISWpsClient;
+import org.orbisgis.toolboxeditor.ToolboxWpsClient;
 import org.orbisgis.orbiswpsclient.api.utils.WpsJobStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,14 +79,14 @@ public class ActionRemoveRow extends AbstractAction implements WpsJobStateListen
     private static final I18n I18N = I18nFactory.getI18n(ActionRemoveRow.class);
     private TableEditor tableEditor;
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionRemoveRow.class);
-    private OrbisGISWpsClient wpsClient;
+    private ToolboxWpsClient wpsClient;
     private UUID jobId;
 
     /**
      * Constructor
      * @param editable Table editable instance
      */
-    public ActionRemoveRow(TableEditableElement editable, TableEditor tableEditor, OrbisGISWpsClient wpsClient) {
+    public ActionRemoveRow(TableEditableElement editable, TableEditor tableEditor, ToolboxWpsClient wpsClient) {
         super(I18N.tr("Delete selected rows"), TableEditorIcon.getIcon("delete_row"));
         this.tableEditor = tableEditor;
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);

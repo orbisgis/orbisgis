@@ -45,7 +45,7 @@ import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorPopupActions;
 
-import org.orbisgis.toolboxeditor.OrbisGISWpsClient;
+import org.orbisgis.toolboxeditor.ToolboxWpsClient;
 import org.orbisgis.orbiswpsclient.api.utils.WpsJobStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,14 +78,14 @@ public class ActionRemoveColumn extends AbstractAction implements WpsJobStateLis
     private Component parentComponent;
     private static final I18n I18N = I18nFactory.getI18n(ActionRemoveColumn.class);
     private final Logger logger = LoggerFactory.getLogger(ActionRemoveColumn.class);
-    private OrbisGISWpsClient wpsClient;
+    private ToolboxWpsClient wpsClient;
     private UUID jobId;
 
     /**
      * Constructor
      * @param editor Table editor instance
      */
-    public ActionRemoveColumn(TableEditor editor, OrbisGISWpsClient wpsClient) {
+    public ActionRemoveColumn(TableEditor editor, ToolboxWpsClient wpsClient) {
         super(I18N.tr("Remove a column"), TableEditorIcon.getIcon("delete_field"));
         putValue(ActionTools.MENU_ID, TableEditorPopupActions.A_REMOVE_COLUMN);
         this.editor = editor;

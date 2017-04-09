@@ -112,9 +112,9 @@ import static org.orbisgis.toolboxeditor.utils.Job.*;
  * @author Erwan Bocher
  **/
 
-@Component(immediate = true, service = {DockingPanel.class, OrbisGISWpsClient.class})
+@Component(immediate = true, service = {DockingPanel.class, ToolboxWpsClient.class})
 public class WpsClientImpl
-        implements DockingPanel, OrbisGISWpsClient, PropertyChangeListener, WpsServerListener, DatabaseProgressionListener {
+        implements DockingPanel, ToolboxWpsClient, PropertyChangeListener, WpsServerListener, DatabaseProgressionListener {
 
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";

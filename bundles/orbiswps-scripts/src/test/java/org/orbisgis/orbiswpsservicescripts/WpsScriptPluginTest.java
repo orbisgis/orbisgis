@@ -64,7 +64,7 @@ import java.util.concurrent.ExecutorService;
  *
  * @author Sylvain PALOMINOS
  */
-public class OrbisGISWpsScriptPluginTest {
+public class WpsScriptPluginTest {
 
     /**
      * Test the life cycle of the plugin.
@@ -74,7 +74,7 @@ public class OrbisGISWpsScriptPluginTest {
         //Initialize an instance of OrbisGISWpsScriptPlugin, CustomWpsService and CustomCoreWorkspace
         CustomWpsService localWpsServer = new CustomWpsService();
         localWpsServer.setScriptFolder(System.getProperty("java.io.tmpdir"));
-        OrbisGISWpsScriptPlugin plugin = new OrbisGISWpsScriptPlugin();
+        WpsScriptPlugin plugin = new WpsScriptPlugin();
         //Give to the OrbisGISWpsScriptPlugin the LocalWpsServer and the CoreWorkspace
         plugin.setWpsServer(localWpsServer);
         //Simulate the activation of the plugin and get back the list of script file add

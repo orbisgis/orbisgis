@@ -56,7 +56,7 @@ import java.util.UUID;
  *
  * @author Sylvain PALOMINOS
  */
-public interface OrbisGISWpsClient extends WpsClient {
+public interface ToolboxWpsClient extends WpsClient {
 
 
     enum JdbcProperties { COLUMN_NAME, COLUMN_TYPE, COLUMN_SRID, COLUMN_DIMENSION, TABLE_LOCATION, TABLE_LABEL }

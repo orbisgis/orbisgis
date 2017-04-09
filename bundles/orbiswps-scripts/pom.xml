@@ -11,7 +11,7 @@
     <packaging>bundle</packaging>
 
     <parent>
-        <artifactId>wps</artifactId>
+        <artifactId>orbisgis</artifactId>
         <groupId>org.orbisgis</groupId>
         <version>5.1.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>

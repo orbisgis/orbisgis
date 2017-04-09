@@ -65,7 +65,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.orbisgis.toolboxeditor.OrbisGISWpsClient.JdbcProperties.COLUMN_DIMENSION;
+import static org.orbisgis.toolboxeditor.ToolboxWpsClient.JdbcProperties.COLUMN_DIMENSION;
 
 
 /**
@@ -181,23 +181,23 @@ public class TestOrbisGISWpsServerImpl {
                 st.execute("CREATE TABLE TABLE (\"integers\" integer, \"geometries\" geometry)");
                 wpsClient.onDataManagerChange();
 
-                List<Map<OrbisGISWpsClient.JdbcProperties, Object>> informationList = wpsClient.getColumnInformation("TABLE");
+                List<Map<ToolboxWpsClient.JdbcProperties, Object>> informationList = wpsClient.getColumnInformation("TABLE");
                 Assert.assertEquals("The information list .", 2, informationList.size());
 
-                Map<OrbisGISWpsClient.JdbcProperties, Object> map = informationList.get(0);
+                Map<ToolboxWpsClient.JdbcProperties, Object> map = informationList.get(0);
                 Assert.assertEquals("The column name should be 'INTEGERS'.", "INTEGERS",
-                        map.get(OrbisGISWpsClient.JdbcProperties.COLUMN_NAME).toString().toUpperCase());
+                        map.get(ToolboxWpsClient.JdbcProperties.COLUMN_NAME).toString().toUpperCase());
                 Assert.assertEquals("The column type should be 'INTEGER'.", "INTEGER",
-                        map.get(OrbisGISWpsClient.JdbcProperties.COLUMN_TYPE).toString().toUpperCase());
-                Assert.assertEquals("The column srid should be '0'.", 0, map.get(OrbisGISWpsClient.JdbcProperties.COLUMN_SRID));
+                        map.get(ToolboxWpsClient.JdbcProperties.COLUMN_TYPE).toString().toUpperCase());
+                Assert.assertEquals("The column srid should be '0'.", 0, map.get(ToolboxWpsClient.JdbcProperties.COLUMN_SRID));
                 Assert.assertEquals("The column dimension should be '0'.", 0, map.get(COLUMN_DIMENSION));
 
                 map = informationList.get(1);
                 Assert.assertEquals("The column name should be 'GEOMETRIES'.", "GEOMETRIES",
-                        map.get(OrbisGISWpsClient.JdbcProperties.COLUMN_NAME).toString().toUpperCase());
+                        map.get(ToolboxWpsClient.JdbcProperties.COLUMN_NAME).toString().toUpperCase());
                 Assert.assertEquals("The column type should be 'GEOMETRY'.", "GEOMETRY",
-                        map.get(OrbisGISWpsClient.JdbcProperties.COLUMN_TYPE).toString().toUpperCase());
-                Assert.assertEquals("The column srid should be '0'.", 0, map.get(OrbisGISWpsClient.JdbcProperties.COLUMN_SRID));
+                        map.get(ToolboxWpsClient.JdbcProperties.COLUMN_TYPE).toString().toUpperCase());
+                Assert.assertEquals("The column srid should be '0'.", 0, map.get(ToolboxWpsClient.JdbcProperties.COLUMN_SRID));
                 Assert.assertEquals("The column dimension should be '0'.", 2, map.get(COLUMN_DIMENSION));
             } finally {
                 st.execute("DROP TABLE TABLE IF EXISTS");

@@ -38,7 +38,7 @@ package org.orbisgis.toolboxeditor.editor.process;
 
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.edition.*;
-import org.orbisgis.toolboxeditor.OrbisGISWpsClient;
+import org.orbisgis.toolboxeditor.ToolboxWpsClient;
 import org.orbisgis.toolboxeditor.WpsClientImpl;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -73,12 +73,12 @@ public class ProcessEditorFactory implements EditorFactory {
     }
 
     @Reference()
-    public void setInternalWpsClient(OrbisGISWpsClient orbisGISWpsClient) {
-        this.wpsClient = (WpsClientImpl) orbisGISWpsClient;
+    public void setInternalWpsClient(ToolboxWpsClient toolboxWpsClient) {
+        this.wpsClient = (WpsClientImpl) toolboxWpsClient;
     }
 
-    public void unsetInternalWpsClient(OrbisGISWpsClient orbisGISWpsClient) {
-        this.wpsClient = (WpsClientImpl) orbisGISWpsClient;
+    public void unsetInternalWpsClient(ToolboxWpsClient toolboxWpsClient) {
+        this.wpsClient = (WpsClientImpl) toolboxWpsClient;
     }
 
     @Override

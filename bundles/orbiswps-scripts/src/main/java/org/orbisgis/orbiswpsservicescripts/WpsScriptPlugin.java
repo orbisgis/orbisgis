@@ -85,10 +85,10 @@ import java.util.ArrayList;
  *
  */
 @Component(immediate = true)
-public class OrbisGISWpsScriptPlugin extends WpsScriptsPackage {
+public class WpsScriptPlugin extends WpsScriptsPackage {
 
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(OrbisGISWpsScriptPlugin.class);
+    private static final I18n I18N = I18nFactory.getI18n(WpsScriptPlugin.class);
 
     /**
      * OSGI method used to give to the plugin the WpsService. (Be careful before any modification)
