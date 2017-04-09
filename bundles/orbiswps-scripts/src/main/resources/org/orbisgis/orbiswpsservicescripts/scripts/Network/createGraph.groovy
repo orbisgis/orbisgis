@@ -1,9 +1,8 @@
 package org.orbisgis.orbiswpsservicescripts.scripts.Network
 
-import org.orbisgis.orbiswpsgroovyapi.input.JDBCColumnInput
-import org.orbisgis.orbiswpsgroovyapi.input.JDBCTableInput
-import org.orbisgis.orbiswpsgroovyapi.input.LiteralDataInput
-import org.orbisgis.orbiswpsgroovyapi.output.LiteralDataOutput
+import org.orbisgis.orbiswpsgroovyapi.input.*
+import org.orbisgis.orbiswpsgroovyapi.output.*
+import org.orbisgis.orbiswpsgroovyapi.process.*
 
 /**
  * This process creates a graph network.

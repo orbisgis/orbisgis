@@ -49,6 +49,8 @@ import org.orbisgis.orbiswpsservice.model.JaxbContainer;
 import org.orbisgis.orbiswpsservice.utils.ProcessTranslator;
 import org.orbisgis.orbiswpsservice.utils.WpsServerListener;
 import org.orbisgis.orbiswpsservice.utils.WpsServerProperties;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -74,6 +76,7 @@ import java.util.concurrent.ExecutorService;
  *
  * @author Sylvain PALOMINOS
  */
+@Component(immediate = true, service = WpsServer.class)
 public class WpsServerImpl implements WpsServer {
 
     /** Logger */
@@ -126,14 +129,14 @@ public class WpsServerImpl implements WpsServer {
      * Initialization of the WpsServer with the given properties.
      */
     public WpsServerImpl(String scriptFolder, DataSource dataSource){
-        jobMap = new HashMap<>();
-        propertiesMap = new HashMap<>();
-        //Initialisation of the wps service itself
-        wpsProp = new WpsServerProperties(scriptFolder);
-        //Creates the attribute for the processes execution
-        processManager = new ProcessManager(dataSource, this);
-        workerFIFO = new LinkedList<>();
+        super();
         this.setScriptFolder(scriptFolder);
+        this.setDataSource(dataSource);
+    }
+
+    @Activate
+    public void activate(){
+
     }
 
     /*******************************************************************/
@@ -613,12 +616,13 @@ public class WpsServerImpl implements WpsServer {
     @Override
     public void setDatabase(Database database){
         this.database = database;
+        processManager.filterProcessByDatabase(database);
     }
     @Override
     public Database getDatabase() {
         return database;
     }
-
+    @Override
     public void setDataSource(DataSource dataSource){
         this.processManager.setDataSource(dataSource);
     }

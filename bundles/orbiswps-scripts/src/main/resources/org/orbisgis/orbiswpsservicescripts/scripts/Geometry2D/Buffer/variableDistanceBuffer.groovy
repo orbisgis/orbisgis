@@ -1,10 +1,8 @@
 package org.orbisgis.orbiswpsservicescripts.scripts.Geometry2D.Buffer
 
-import org.orbisgis.orbiswpsgroovyapi.input.JDBCColumnInput
-import org.orbisgis.orbiswpsgroovyapi.input.JDBCTableInput
-import org.orbisgis.orbiswpsgroovyapi.input.EnumerationInput
-import org.orbisgis.orbiswpsgroovyapi.input.LiteralDataInput
-import org.orbisgis.orbiswpsgroovyapi.output.LiteralDataOutput
+import org.orbisgis.orbiswpsgroovyapi.input.*
+import org.orbisgis.orbiswpsgroovyapi.output.*
+import org.orbisgis.orbiswpsgroovyapi.process.*
 
 /********************/
 /** Process method **/

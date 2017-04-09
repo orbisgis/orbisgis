@@ -1,6 +1,5 @@
 package org.orbisgis.orbiswpsservicescripts.scripts.Geometry2D.Properties
 
-
 import org.orbisgis.orbiswpsgroovyapi.input.*
 import org.orbisgis.orbiswpsgroovyapi.output.*
 import org.orbisgis.orbiswpsgroovyapi.process.*

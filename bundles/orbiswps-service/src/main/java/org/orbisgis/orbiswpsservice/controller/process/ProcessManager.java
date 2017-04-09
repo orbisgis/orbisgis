@@ -135,8 +135,9 @@ public class ProcessManager {
                 }
                 if(! isAcceptedDBMS){
                     for(MetadataType metadata : processOffering.getProcess().getMetadata()){
-                        if(metadata.getRole().equalsIgnoreCase(ProcessMetadata.DBMS_TYPE_NAME) &&
-                            metadata.getTitle().toLowerCase().equals(wpsService.getDatabase().name().toLowerCase())){
+                        if(wpsService.getDatabase() == null ||
+                                (metadata.getRole().equalsIgnoreCase(ProcessMetadata.DBMS_TYPE_NAME) &&
+                                metadata.getTitle().toLowerCase().equals(wpsService.getDatabase().name().toLowerCase()))){
                             isAcceptedDBMS = true;
                         }
                     }
@@ -526,5 +527,24 @@ public class ProcessManager {
      */
     public void cancelProcess(UUID jobId){
         closureMap.get(jobId).cancel();
+    }
+
+    public void filterProcessByDatabase(WpsServer.Database database) {
+        List<ProcessDescriptionType> toRemove = new ArrayList<>();
+        for(ProcessIdentifier pi : getAllProcessIdentifier()){
+            boolean isAccepted = false;
+            for(MetadataType metadata : pi.getProcessDescriptionType().getMetadata()){
+                if(metadata.getRole().equalsIgnoreCase(ProcessMetadata.DBMS_TYPE_NAME) &&
+                        metadata.getTitle().toLowerCase().equals(wpsService.getDatabase().name().toLowerCase())){
+                    isAccepted = true;
+                }
+            }
+            if(!isAccepted){
+                toRemove.add(pi.getProcessDescriptionType());
+            }
+        }
+        for(ProcessDescriptionType processDescriptionType : toRemove){
+            this.removeProcess(processDescriptionType);
+        }
     }
 }

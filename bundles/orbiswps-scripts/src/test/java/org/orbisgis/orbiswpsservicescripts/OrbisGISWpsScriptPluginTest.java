@@ -45,12 +45,14 @@ import org.orbisgis.orbiswpsservice.WpsServer;
 import org.orbisgis.orbiswpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.orbiswpsservice.utils.WpsServerListener;
 
+import javax.sql.DataSource;
 import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Class to test the well working of the plugin life cycle :
@@ -161,7 +163,10 @@ public class OrbisGISWpsScriptPluginTest {
         @Override public String getScriptFolder() {return scriptFolder;}
         @Override public void setScriptFolder(String scriptFolder) {this.scriptFolder = scriptFolder;}
 
+
         //Methods not used in the tests
+        @Override public void setDataSource(DataSource dataSource) {}
+        @Override public void setExecutorService(ExecutorService executorService) {}
         @Override public void addGroovyProperties(Map<String, Object> propertiesMap) {}
         @Override public void removeGroovyProperties(Map<String, Object> propertiesMap) {}
         @Override public Object getCapabilities(GetCapabilitiesType getCapabilities) {return null;}

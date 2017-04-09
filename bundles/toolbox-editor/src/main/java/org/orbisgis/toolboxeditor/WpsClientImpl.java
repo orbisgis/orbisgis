@@ -150,7 +150,7 @@ public class WpsClientImpl
     /** OrbigGIS ExecutorService. */
     private ExecutorService executorService;
     /** OrbisGIS DataManager. */
-    private static DataManager dataManager;
+    private DataManager dataManager;
     /** OrbisGIS WpsServer. */
     private WpsServer wpsServer;
     /** OrbisGIS CoreWorkspace. */
@@ -167,7 +167,7 @@ public class WpsClientImpl
     /** List of map containing the table with their basic information.
      * It is used as a buffer to avoid to reload all the table list to save time.
      */
-    private List<Map<JdbcProperties, String>> tableList;
+    private List<Map<JdbcProperties, String>> tableList = new ArrayList<>();
     /** True if an updates happen while another on is running. */
     private boolean updateWhileAwaitingRefresh = false;
     /** True if a swing runnable is pending to refresh the content of the table list, false otherwise. */
@@ -184,6 +184,10 @@ public class WpsClientImpl
 
     @Activate
     public void activate(){
+        if(wpsServer != null){
+            wpsServer.setDataSource(dataManager.getDataSource());
+            wpsServer.setExecutorService(executorService);
+        }
         toolBoxPanel = new ToolBoxPanel(this);
         dataUIManager = new DataUIManager(this);
 
@@ -243,7 +247,7 @@ public class WpsClientImpl
             if(prop != null && !prop.toString().isEmpty()){
                 String str = prop.toString();
                 for(String s : str.split(";")){
-                    File f = new File(URI.create(s));
+                    File f = new File(s);
                     addLocalSource(f.toURI(), null, true, new File(f.getParent()).getName());
                 }
             }
@@ -295,10 +299,10 @@ public class WpsClientImpl
 
     @Reference
     public void setDataManager(DataManager dataManager) {
-        WpsClientImpl.dataManager = dataManager;
+        this.dataManager = dataManager;
     }
     public void unsetDataManager(DataManager dataManager) {
-        WpsClientImpl.dataManager = null;
+        this.dataManager = null;
     }
     public DataManager getDataManager(){
         return dataManager;
@@ -495,8 +499,9 @@ public class WpsClientImpl
         OpenFilePanel openFilePanel = new OpenFilePanel("ToolBox.AddSource", I18N.tr("Add a source"));
         openFilePanel.getFileChooser();
         openFilePanel.loadState();
-        openFilePanel.addFilter("groovy", "Groovy script");
         openFilePanel.setAcceptAllFileFilterUsed(false);
+        openFilePanel.addFilter("groovy", "Groovy script");
+        openFilePanel.setCurrentFilter(0);
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFilePanel)){
             for(File file : openFilePanel.getSelectedFiles()) {
@@ -523,7 +528,7 @@ public class WpsClientImpl
         File file = new File(uri);
         if(file.isFile()){
             List<ProcessIdentifier> piList = wpsServer.addProcess(file, iconName, isDefaultScript, nodePath);
-            processUriPath.put(piList.get(0).getProcessDescriptionType().getIdentifier().getValue(), uri.toString());
+            processUriPath.put(piList.get(0).getProcessDescriptionType().getIdentifier().getValue(), new File(uri).getAbsolutePath());
         }
         //If the folder doesn't contains only folders, add it
         else if(file.isDirectory()){
@@ -643,7 +648,10 @@ public class WpsClientImpl
      */
     public boolean checkProcess(URI processIdentifier){
         String processPath = processUriPath.get(processIdentifier.toString());
-        if(!new File(processPath).exists()) {
+        if(processPath == null){
+            return true;
+        }
+        else if(!new File(processPath).exists()) {
             this.removeProcess(processIdentifier);
             processUriPath.remove(processIdentifier.toString());
             return false;
@@ -1019,7 +1027,9 @@ public class WpsClientImpl
             UUID jobID = (UUID)propertyChangeEvent.getNewValue();
             StatusInfo statusInfo = this.getJobStatus(jobID);
             Job job = jobMap.get(jobID);
-            job.setStatus(statusInfo);
+            if(job != null) {
+                job.setStatus(statusInfo);
+            }
         }
         if(propertyChangeEvent.getPropertyName().equals(GET_RESULTS)){
             UUID jobID = (UUID)propertyChangeEvent.getNewValue();
@@ -1297,7 +1307,8 @@ public class WpsClientImpl
                     newTables.add(tableAttr);
                 }
             }
-            tableList = newTables;
+            tableList.clear();
+            tableList.addAll(newTables);
         } catch (SQLException ex) {
             LOGGER.error(I18N.tr("Cannot read the table list", ex));
         }

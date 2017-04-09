@@ -1,8 +1,8 @@
 package org.orbisgis.orbiswpsservicescripts.scripts.Table
 
-import org.orbisgis.orbiswpsgroovyapi.input.JDBCTableInput
-import org.orbisgis.orbiswpsgroovyapi.input.LiteralDataInput
-import org.orbisgis.orbiswpsgroovyapi.output.LiteralDataOutput
+import org.orbisgis.orbiswpsgroovyapi.input.*
+import org.orbisgis.orbiswpsgroovyapi.output.*
+import org.orbisgis.orbiswpsgroovyapi.process.*
 
 /**
  * This process is used to describe the columns of a table

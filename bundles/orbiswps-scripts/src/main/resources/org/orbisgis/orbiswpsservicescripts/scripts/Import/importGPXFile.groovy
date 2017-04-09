@@ -1,8 +1,8 @@
-package org.orbisgis.orbiswpsservicescripts.scripts.IO
+package org.orbisgis.orbiswpsservicescripts.scripts.Import
 
-import org.orbisgis.orbiswpsgroovyapi.input.LiteralDataInput
-import org.orbisgis.orbiswpsgroovyapi.input.RawDataInput
-import org.orbisgis.orbiswpsgroovyapi.output.LiteralDataOutput
+import org.orbisgis.orbiswpsgroovyapi.input.*
+import org.orbisgis.orbiswpsgroovyapi.output.*
+import org.orbisgis.orbiswpsgroovyapi.process.*
 
 /**
  * @author Erwan Bocher

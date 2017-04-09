@@ -1,16 +1,12 @@
-package org.orbisgis.orbiswpsservicescripts.scripts.IO
+package org.orbisgis.orbiswpsservicescripts.scripts.Export
 
-import org.orbisgis.orbiswpsgroovyapi.input.EnumerationInput
-import org.orbisgis.orbiswpsgroovyapi.input.JDBCTableInput
-import org.orbisgis.orbiswpsgroovyapi.input.LiteralDataInput
-import org.orbisgis.orbiswpsgroovyapi.input.RawDataInput
-import org.orbisgis.orbiswpsgroovyapi.output.LiteralDataOutput
-import org.orbisgis.orbiswpsgroovyapi.process.Process
+import org.h2gis.api.DriverFunction
 import org.h2gis.functions.io.dbf.DBFDriverFunction
 import org.orbisgis.corejdbc.H2GISProgressMonitor
-import org.h2gis.api.DriverFunction
 
-
+import org.orbisgis.orbiswpsgroovyapi.input.*
+import org.orbisgis.orbiswpsgroovyapi.output.*
+import org.orbisgis.orbiswpsgroovyapi.process.*
 /**
  * @author Erwan Bocher
  */

@@ -84,9 +84,9 @@ public class TestOrbisGISWpsServerImpl {
         connection = dataSource.getConnection();
         H2GISFunctions.registerFunction(connection.createStatement(), new DriverManager(), "");
         DataManager dataManager = new DataManagerImpl(dataSource);
+        wpsClient.setWpsServer(new WpsServerImpl());
         wpsClient.setDataManager(dataManager);
         wpsClient.setCoreWorkspace(new CustomCoreWorkspace());
-        wpsClient.setWpsServer(new WpsServerImpl());
         wpsClient.setDockingManager(new CustomDockingManager());
         wpsClient.activate();
     }

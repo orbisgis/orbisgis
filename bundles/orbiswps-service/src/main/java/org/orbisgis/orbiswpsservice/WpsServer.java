@@ -41,6 +41,7 @@ import net.opengis.wps._2_0.*;
 import org.orbisgis.orbiswpsservice.controller.process.ProcessIdentifier;
 import org.orbisgis.orbiswpsservice.utils.WpsServerListener;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -48,6 +49,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
 /**
  * This interface describe all the capabilities that should be implemented by a WPS server.
@@ -215,6 +217,18 @@ public interface WpsServer {
      * @param scriptFolder The path of the folder containing the WPS groovy scripts.
      */
     void setScriptFolder(String scriptFolder);
+
+    /**
+     * Sets the data source.
+     * @param dataSource DataSource to use.
+     */
+    void setDataSource(DataSource dataSource);
+
+    /**
+     * Sets the ExecutorService.
+     * @param executorService ExecutorService to use.
+     */
+    void setExecutorService(ExecutorService executorService);
 
     /**
      * Registers a WpsServerListener.
