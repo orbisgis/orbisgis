@@ -128,7 +128,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wps-client</artifactId>
+            <artifactId>toolbox-editor</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

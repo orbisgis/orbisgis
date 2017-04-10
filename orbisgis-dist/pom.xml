@@ -368,25 +368,31 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wps-groovy-api</artifactId>
+            <artifactId>orbiswps-groovy-api</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wps-service</artifactId>
+            <artifactId>orbiswps-service</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wps-service-scripts</artifactId>
+            <artifactId>orbiswps-scripts</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wps-client</artifactId>
+            <artifactId>orbiswps-client</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>toolbox-editor</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

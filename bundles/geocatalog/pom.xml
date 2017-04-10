@@ -118,10 +118,5 @@
             <artifactId>h2gis-utilities</artifactId>
             <version>${h2-gis-version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>wps-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

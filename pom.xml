@@ -58,7 +58,11 @@
                 <module>bundles/toc</module>
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
-                <module>bundles/wps</module>
+                <module>bundles/orbiswps-groovy-api</module>
+                <module>bundles/orbiswps-service</module>
+                <module>bundles/orbiswps-scripts</module>
+                <module>bundles/orbiswps-client</module>
+                <module>bundles/toolbox-editor</module>
                 <module>bundles/table-editor-api</module>
         </modules>
         <profiles>
@@ -112,6 +116,15 @@
                 <miglayout-version>4.2</miglayout-version>
                 <svg-salamander-version>1.0</svg-salamander-version>
                 <itext-version>5.0.2</itext-version>
+                <groovy-all-version>2.3.6</groovy-all-version>
+                <groovy-eclipse-compiler-version>2.9.2-01</groovy-eclipse-compiler-version>
+                <maven-compiler-plugin-version>3.1</maven-compiler-plugin-version>
+                <maven-bundle-plugin-version>2.3.7</maven-bundle-plugin-version>
+                <common-cli-version>1.2</common-cli-version>
+                <junit-version>4.10</junit-version>
+                <org.osgi.enterprise-version>5.0.0</org.osgi.enterprise-version>
+                <org.osgi.core-version>4.3.1</org.osgi.core-version>
+                <org.apache.felix.scr.ds-annotations-version>1.2.4</org.apache.felix.scr.ds-annotations-version>
         </properties>
         <scm>
                 <connection>scm:git:https://github.com/orbisgis/orbisgis.git</connection>

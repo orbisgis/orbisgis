@@ -44,8 +44,8 @@ import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
-import org.orbisgis.wpsclient.api.OrbisGISWpsClient;
-import org.orbisgis.wpsclient.api.utils.WpsJobStateListener;
+import org.orbisgis.toolboxeditor.ToolboxWpsClient;
+import org.orbisgis.orbiswpsclient.api.utils.WpsJobStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -78,14 +78,14 @@ public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
     private static final I18n I18N = I18nFactory.getI18n(ActionAddRow.class);
     private final Logger LOGGER = LoggerFactory.getLogger(ActionAddRow.class);
     private TableEditor tableEditor;
-    private OrbisGISWpsClient wpsClient;
+    private ToolboxWpsClient wpsClient;
     private UUID jobId;
 
     /**
      * Constructor
      * @param editable Table editable instance
      */
-    public ActionAddRow(TableEditableElement editable, TableEditor tableEditor, OrbisGISWpsClient wpsClient) {
+    public ActionAddRow(TableEditableElement editable, TableEditor tableEditor, ToolboxWpsClient wpsClient) {
         super(I18N.tr("Add a row"), TableEditorIcon.getIcon("add_row"));
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
         putValue(ActionTools.MENU_ID, TableEditorActions.A_ADD_ROW);
