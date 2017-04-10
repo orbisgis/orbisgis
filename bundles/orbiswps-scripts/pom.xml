@@ -37,13 +37,6 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>${maven-bundle-plugin-version}</version>
                 <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Private-Package>org.orbisgis.wpsservicescripts*</Private-Package>
-                        <Bundle-Category>OrbisGIS,WPS,script,WpsScriptPlugin</Bundle-Category>
-                        <Bundle-Icon>pluginIcon.png;size=32</Bundle-Icon>
-                    </instructions>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.googlecode.gettext-commons</groupId>

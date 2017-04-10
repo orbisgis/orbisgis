@@ -42,11 +42,6 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>${maven-bundle-plugin-version}</version>
                 <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Category>wps</Bundle-Category>
-                    </instructions>
-                </configuration>
             </plugin>
         </plugins>
     </build>
