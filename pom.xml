@@ -58,10 +58,6 @@
                 <module>bundles/toc</module>
                 <module>bundles/orbisgis-omanager</module>
                 <module>bundles/orbisgis-omanager-plugin</module>
-                <module>bundles/orbiswps-groovy-api</module>
-                <module>bundles/orbiswps-service</module>
-                <module>bundles/orbiswps-scripts</module>
-                <module>bundles/orbiswps-client</module>
                 <module>bundles/toolbox-editor</module>
                 <module>bundles/table-editor-api</module>
         </modules>
@@ -125,6 +121,7 @@
                 <org.osgi.enterprise-version>5.0.0</org.osgi.enterprise-version>
                 <org.osgi.core-version>4.3.1</org.osgi.core-version>
                 <org.apache.felix.scr.ds-annotations-version>1.2.4</org.apache.felix.scr.ds-annotations-version>
+                <orbiswps-version>5.1.0-SNAPSHOT</orbiswps-version>
         </properties>
         <scm>
                 <connection>scm:git:https://github.com/orbisgis/orbisgis.git</connection>

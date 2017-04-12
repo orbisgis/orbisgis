@@ -47,12 +47,12 @@ import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
-import org.orbisgis.orbiswpsclient.api.filter.IFilter;
-import org.orbisgis.orbiswpsclient.api.utils.ProcessExecutionType;
+import org.orbiswps.client.api.filter.IFilter;
+import org.orbiswps.client.api.utils.ProcessExecutionType;
 import org.orbisgis.toolboxeditor.filter.SearchFilter;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
 import org.orbisgis.toolboxeditor.utils.TreeNodeWps;
-import org.orbisgis.orbiswpsservice.utils.ProcessMetadata;
+import org.orbiswps.server.utils.ProcessMetadata;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

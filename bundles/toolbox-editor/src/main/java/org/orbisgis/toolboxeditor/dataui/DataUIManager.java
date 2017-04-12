@@ -41,8 +41,8 @@ import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.DataDescriptionType;
 import org.orbisgis.toolboxeditor.WpsClientImpl;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
-import org.orbisgis.orbiswpsservice.model.*;
-import org.orbisgis.orbiswpsservice.model.BoundingBoxData;
+import org.orbiswps.server.model.*;
+import org.orbiswps.server.model.BoundingBoxData;
 
 import javax.swing.*;
 import java.net.URI;

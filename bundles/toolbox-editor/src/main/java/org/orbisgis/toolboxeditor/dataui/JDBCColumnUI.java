@@ -46,7 +46,7 @@ import org.orbisgis.sif.components.renderers.JPanelListRenderer;
 import org.orbisgis.toolboxeditor.ToolboxWpsClient;
 import org.orbisgis.toolboxeditor.WpsClientImpl;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
-import org.orbisgis.orbiswpsservice.model.DataType;
+import org.orbiswps.server.model.DataType;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -62,8 +62,8 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
 import java.util.List;
-import org.orbisgis.orbiswpsservice.model.JDBCColumn;
-import org.orbisgis.orbiswpsservice.model.JDBCValue;
+import org.orbiswps.server.model.JDBCColumn;
+import org.orbiswps.server.model.JDBCValue;
 
 /**
  * DataUI implementation for JDBCColumn.
