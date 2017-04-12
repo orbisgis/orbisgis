@@ -41,7 +41,7 @@ import net.opengis.wps._2_0.*;
 import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
-import org.orbisgis.orbiswpsclient.api.utils.ProcessExecutionType;
+import org.orbiswps.client.api.utils.ProcessExecutionType;
 import org.orbisgis.toolboxeditor.WpsClientImpl;
 import java.beans.PropertyChangeListener;
 import java.net.URI;

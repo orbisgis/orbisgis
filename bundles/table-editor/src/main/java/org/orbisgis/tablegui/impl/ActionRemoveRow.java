@@ -44,7 +44,7 @@ import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.toolboxeditor.ToolboxWpsClient;
-import org.orbisgis.orbiswpsclient.api.utils.WpsJobStateListener;
+import org.orbiswps.client.api.utils.WpsJobStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;

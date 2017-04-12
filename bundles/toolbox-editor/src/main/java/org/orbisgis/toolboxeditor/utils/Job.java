@@ -37,7 +37,7 @@
 package org.orbisgis.toolboxeditor.utils;
 
 import net.opengis.wps._2_0.*;
-import org.orbisgis.orbiswpsservice.execution.ProcessExecutionListener;
+import org.orbiswps.server.execution.ProcessExecutionListener;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

@@ -46,8 +46,8 @@ import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.toolboxeditor.WpsClientImpl;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
 import org.orbisgis.toolboxeditor.utils.WaitLayerUI;
-import org.orbisgis.orbiswpsservice.model.DataType;
-import org.orbisgis.orbiswpsservice.model.JDBCValue;
+import org.orbiswps.server.model.DataType;
+import org.orbiswps.server.model.JDBCValue;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

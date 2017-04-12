@@ -367,27 +367,27 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>orbiswps-groovy-api</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.orbiswps</groupId>
+            <artifactId>groovy-api</artifactId>
+            <version>${orbiswps-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>orbiswps-service</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.orbiswps</groupId>
+            <artifactId>server</artifactId>
+            <version>${orbiswps-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>orbiswps-scripts</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.orbiswps</groupId>
+            <artifactId>scripts</artifactId>
+            <version>${orbiswps-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>orbiswps-client</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.orbiswps</groupId>
+            <artifactId>client</artifactId>
+            <version>${orbiswps-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

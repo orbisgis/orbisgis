@@ -47,7 +47,7 @@ import org.orbisgis.sif.components.renderers.JPanelListRenderer;
 import org.orbisgis.toolboxeditor.WpsClientImpl;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
 import org.orbisgis.toolboxeditor.utils.WaitLayerUI;
-import org.orbisgis.orbiswpsservice.model.*;
+import org.orbiswps.server.model.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

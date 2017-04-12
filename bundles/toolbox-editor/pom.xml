@@ -74,9 +74,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>orbiswps-service</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.orbiswps</groupId>
+            <artifactId>server</artifactId>
+            <version>${orbiswps-version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -84,9 +84,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>orbiswps-client</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.orbiswps</groupId>
+            <artifactId>client</artifactId>
+            <version>${orbiswps-version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

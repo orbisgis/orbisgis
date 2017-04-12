@@ -40,7 +40,7 @@ package org.orbisgis.toolboxeditor.filter;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactory;
 import org.orbisgis.sif.components.filter.TextFieldDocumentListener;
-import org.orbisgis.orbiswpsclient.api.filter.IFilter;
+import org.orbiswps.client.api.filter.IFilter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

@@ -39,7 +39,7 @@ package org.orbisgis.toolboxeditor.editor.process;
 import net.opengis.wps._2_0.ProcessOffering;
 import org.orbisgis.sif.docking.DockingPanelLayout;
 import org.orbisgis.sif.docking.XElement;
-import org.orbisgis.orbiswpsclient.api.utils.ProcessExecutionType;
+import org.orbiswps.client.api.utils.ProcessExecutionType;
 import org.orbisgis.toolboxeditor.WpsClientImpl;
 
 import java.io.DataInputStream;

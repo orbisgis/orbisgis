@@ -55,7 +55,7 @@ public class JaxbContainer {
                     net.opengis.wms.ObjectFactory.class,
                     net.opengis.ows._2.ObjectFactory.class,
                     net.opengis.se._2_0.core.ObjectFactory.class,
-                    org.orbisgis.orbiswpsservice.model.ObjectFactory.class,
+                    org.orbiswps.server.model.ObjectFactory.class,
                     oasis.names.tc.ciq.xsdschema.xal._2.ObjectFactory.class);
         } catch (JAXBException ex) {
             throw new ExceptionInInitializerError(ex);
