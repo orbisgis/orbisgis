@@ -251,7 +251,9 @@ public class LogEditor extends JPanel implements EditorDockable, PropertyChangeL
         if(event.getPropertyName().equals(PERCENT_COMPLETED_PROPERTY)){
             Job job = (Job) event.getSource();
             Integer percent = (Integer)event.getNewValue();
-            componentMap.get(job.getId()).setPercentCompleted(percent);
+            if(job != null && percent != null) {
+                componentMap.get(job.getId()).setPercentCompleted(percent);
+            }
         }
         if(event.getPropertyName().equals(ESTIMATED_COMPLETION_PROPERTY)){
             Job job = (Job) event.getSource();
