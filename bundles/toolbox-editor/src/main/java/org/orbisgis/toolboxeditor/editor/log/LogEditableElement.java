@@ -49,9 +49,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 
-import static org.orbisgis.toolboxeditor.utils.Job.CANCEL;
-import static org.orbisgis.toolboxeditor.utils.Job.LOG_PROPERTY;
-import static org.orbisgis.toolboxeditor.utils.Job.STATE_PROPERTY;
+import static org.orbisgis.toolboxeditor.utils.Job.*;
 
 /**
  * EditableElement associated to the LogEditor. It is used to communicate to the LogEditor the changes in the job state
@@ -139,6 +137,9 @@ public class LogEditableElement implements EditableElement, PropertyChangeListen
             firePropertyChange(event);
         }
         if(event.getPropertyName().equals(LOG_PROPERTY)){
+            firePropertyChange(event);
+        }
+        if(event.getPropertyName().equals(PERCENT_COMPLETED_PROPERTY)){
             firePropertyChange(event);
         }
     }
