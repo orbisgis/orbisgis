@@ -112,7 +112,7 @@ import static org.orbisgis.toolboxeditor.utils.Job.*;
  * @author Erwan Bocher
  **/
 
-@Component(immediate = true, service = {DockingPanel.class, ToolboxWpsClient.class})
+@Component(immediate = true, service = {DockingPanel.class, ToolboxWpsClient.class, WpsClient.class})
 public class WpsClientImpl
         implements DockingPanel, ToolboxWpsClient, PropertyChangeListener, WpsServerListener, DatabaseProgressionListener {
 
@@ -173,6 +173,7 @@ public class WpsClientImpl
     /** True if a swing runnable is pending to refresh the content of the table list, false otherwise. */
     private AtomicBoolean awaitingRefresh=new AtomicBoolean(false);
     private Map<String, String> processUriPath = new HashMap<>();
+    private Map<URI, Map<ProcessMetadata.INTERNAL_METADATA, Object>> processMetadataMap = new HashMap<>();
 
 
 
@@ -527,7 +528,12 @@ public class WpsClientImpl
     private void addLocalSource(URI uri, String[] iconName, boolean isDefaultScript, String nodePath){
         File file = new File(uri);
         if(file.isFile()){
-            List<ProcessIdentifier> piList = wpsServer.addProcess(file, iconName, isDefaultScript, nodePath);
+            List<ProcessIdentifier> piList = wpsServer.addProcess(file);
+            Map<ProcessMetadata.INTERNAL_METADATA, Object> metadataMap = new HashMap<>();
+            metadataMap.put(ProcessMetadata.INTERNAL_METADATA.IS_REMOVABLE, isDefaultScript);
+            metadataMap.put(ProcessMetadata.INTERNAL_METADATA.NODE_PATH, nodePath);
+            metadataMap.put(ProcessMetadata.INTERNAL_METADATA.ICON_ARRAY, iconName);
+            addProcessMetadata(uri, metadataMap);
             processUriPath.put(piList.get(0).getProcessDescriptionType().getIdentifier().getValue(), new File(uri).getAbsolutePath());
         }
         //If the folder doesn't contains only folders, add it
@@ -539,7 +545,12 @@ public class WpsClientImpl
                         toolBoxPanel.addFolder(file.toURI(), file.getParentFile().toURI());
                         isFolderAdd = true;
                     }
-                    wpsServer.addProcess(f, iconName, isDefaultScript, nodePath);
+                    wpsServer.addProcess(f);
+                    Map<ProcessMetadata.INTERNAL_METADATA, Object> metadataMap = new HashMap<>();
+                    metadataMap.put(ProcessMetadata.INTERNAL_METADATA.IS_REMOVABLE, isDefaultScript);
+                    metadataMap.put(ProcessMetadata.INTERNAL_METADATA.NODE_PATH, nodePath);
+                    metadataMap.put(ProcessMetadata.INTERNAL_METADATA.ICON_ARRAY, iconName);
+                    addProcessMetadata(uri, metadataMap);
                 }
             }
         }
@@ -784,7 +795,8 @@ public class WpsClientImpl
         toolBoxPanel.cleanAll();
         //Adds all the available processes
         for(ProcessSummaryType processSummary : getCapabilities()) {
-            toolBoxPanel.addProcess(processSummary);
+            URI uri = URI.create(processSummary.getIdentifier().getValue());
+            toolBoxPanel.addProcess(processSummary, processMetadataMap.get(uri));
         }
     }
 
@@ -1348,5 +1360,15 @@ public class WpsClientImpl
                 wpsClient.onDataManagerChange();
             }
         }
+    }
+
+    @Override
+    public void addProcessMetadata(URI uri, Map<ProcessMetadata.INTERNAL_METADATA, Object> map) {
+        processMetadataMap.put(uri, map);
+    }
+
+    @Override
+    public void removeProcessMetadata(URI uri) {
+        processMetadataMap.remove(uri);
     }
 }
