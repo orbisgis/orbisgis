@@ -760,23 +760,20 @@ public class ToolBoxPanel extends JPanel {
         selectedModel = model;
     }
 
-    public void addProcess(ProcessSummaryType processSummary) {
+    public void addProcess(ProcessSummaryType processSummary, Map<ProcessMetadata.INTERNAL_METADATA, Object> metadataMap) {
         boolean isRemovable = true;
         String nodePath = "localhost";
         String[] iconArray = null;
         //Retrieve the process metadata
-        for (MetadataType metadata : processSummary.getMetadata()) {
-            if (metadata.getTitle().equalsIgnoreCase(ProcessMetadata.INTERNAL_METADATA.IS_REMOVABLE.name())) {
-                isRemovable = (boolean) metadata.getAbstractMetaData();
+        if(metadataMap != null){
+            if (metadataMap.containsKey(ProcessMetadata.INTERNAL_METADATA.IS_REMOVABLE)) {
+                isRemovable = (boolean) metadataMap.get(ProcessMetadata.INTERNAL_METADATA.IS_REMOVABLE);
             }
-            if (metadata.getTitle().equalsIgnoreCase(ProcessMetadata.INTERNAL_METADATA.NODE_PATH.name())) {
-                nodePath = (String) metadata.getAbstractMetaData();
+            if (metadataMap.containsKey(ProcessMetadata.INTERNAL_METADATA.NODE_PATH)) {
+                nodePath = (String) metadataMap.get(ProcessMetadata.INTERNAL_METADATA.NODE_PATH);
             }
-            if (metadata.getTitle().equalsIgnoreCase(ProcessMetadata.INTERNAL_METADATA.ICON_ARRAY.name())) {
-                String iconStr = metadata.getAbstractMetaData().toString();
-                if(iconStr != null) {
-                    iconArray = iconStr.split(";");
-                }
+            if (metadataMap.containsKey(ProcessMetadata.INTERNAL_METADATA.ICON_ARRAY)) {
+                iconArray = (String[])metadataMap.get(ProcessMetadata.INTERNAL_METADATA.ICON_ARRAY);
             }
         }
         addLocalSourceInFileModel(LOCALHOST_URI, mapHostNode.get(LOCALHOST_URI),
