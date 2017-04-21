@@ -504,7 +504,7 @@ public class JDBCColumnUI implements DataUI {
                     String columnType = (String)informationMap.get(ToolboxWpsClient.JdbcProperties.COLUMN_TYPE);
                     boolean isValid = false;
                     for(DataType dataType : jdbcColumn.getDataTypeList()){
-                        if(DataType.testDBType(dataType, columnType)){
+                        if(dataType.isDataTypeEquivalent(DataType.getDataType(columnType))){
                             isValid = true;
                         }
                     }
@@ -515,7 +515,7 @@ public class JDBCColumnUI implements DataUI {
                 if(!isColumnExcluded && jdbcColumn.getExcludedTypeList() != null){
                     String columnType = (String)informationMap.get(ToolboxWpsClient.JdbcProperties.COLUMN_TYPE);
                     for(DataType excludedType : jdbcColumn.getExcludedTypeList()){
-                        if(DataType.testDBType(excludedType, columnType)){
+                        if(excludedType.isDataTypeEquivalent(DataType.getDataType(columnType))){
                             isColumnExcluded = true;
                         }
                     }
