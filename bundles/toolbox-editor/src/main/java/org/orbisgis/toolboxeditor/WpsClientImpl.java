@@ -818,14 +818,14 @@ public class WpsClientImpl
                         for (Map.Entry<String, Integer> entry : types.entrySet()) {
                             if(dataTypes != null) {
                                 for (DataType dataType : dataTypes) {
-                                    if (DataType.testGeometryType(dataType, entry.getValue())) {
+                                    if (dataType.isDataTypeEquivalent(DataType.getGeometryType(entry.getValue()))) {
                                         isValid = true;
                                     }
                                 }
                             }
                             if(excludedTypes != null) {
                                 for (DataType dataType : excludedTypes) {
-                                    if (DataType.testGeometryType(dataType, entry.getValue())) {
+                                    if (dataType.isDataTypeEquivalent(DataType.getGeometryType(entry.getValue()))) {
                                         isValid = false;
                                     }
                                 }
@@ -954,13 +954,14 @@ public class WpsClientImpl
                     for (DataType dataType : dataTypes) {
                         String type = result.getObject(6).toString();
                         if(type.equalsIgnoreCase("GEOMETRY")){
-                            if (DataType.testGeometryType(dataType, SFSUtilities.getGeometryType(connection,
-                                    tablelocation, result.getObject(4).toString().toUpperCase()))) {
+                            int geomType = SFSUtilities.getGeometryType(connection, tablelocation,
+                                    result.getObject(4).toString().toUpperCase());
+                            if (dataType.isDataTypeEquivalent(DataType.getGeometryType(geomType))) {
                                 columnList.add(result.getObject(4).toString());
                             }
                         }
                         else {
-                            if (DataType.testDBType(dataType, result.getObject(6).toString().toUpperCase())) {
+                            if (dataType.equals(DataType.getDataType(result.getObject(6).toString().toUpperCase()))) {
                                 columnList.add(result.getObject(4).toString());
                             }
                         }
@@ -968,7 +969,7 @@ public class WpsClientImpl
                 } else if(!excludedTypes.isEmpty()){
                     boolean accepted = true;
                     for (DataType dataType : excludedTypes) {
-                        if (DataType.testDBType(dataType, result.getObject(6).toString())) {
+                        if (dataType.equals(DataType.getDataType(result.getObject(6).toString()))) {
                             accepted = false;
                         }
                     }
