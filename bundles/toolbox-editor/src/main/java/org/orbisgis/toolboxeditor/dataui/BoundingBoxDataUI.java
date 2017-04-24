@@ -138,7 +138,8 @@ public class BoundingBoxDataUI implements DataUI {
         //Build and set the jComboBox containing all the SRID
         comboBox.setToolTipText(I18N.tr("Select the SRID of the bounding box"));
         if(boundingBoxData.getDefaultCrs() != null) {
-            ContainerItem<Object> defaultElement = new ContainerItem<Object>(boundingBoxData.getDefaultCrs(), boundingBoxData.getDefaultCrs());
+            ContainerItem<Object> defaultElement = new ContainerItem<Object>(boundingBoxData.getDefaultCrs(),
+                    boundingBoxData.getDefaultCrs());
             comboBox.putClientProperty(DEFAULT_ELEMENT_PROPERTY, defaultElement);
             comboBox.addItem(defaultElement);
         }
@@ -148,7 +149,8 @@ public class BoundingBoxDataUI implements DataUI {
         comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
         comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, isOptional);
         if(boundingBoxData.getSupportedCrs().length == 0) {
-            MouseListener refreshListListener = EventHandler.create(MouseListener.class, this, "refreshList", "source", "mouseEntered");
+            MouseListener refreshListListener = EventHandler.create(MouseListener.class, this, "refreshList", "source",
+                    "mouseEntered");
             comboBox.putClientProperty(REFRESH_LIST_LISTENER_PROPERTY, refreshListListener);
             comboBox.addMouseListener(refreshListListener);
         }
@@ -159,7 +161,8 @@ public class BoundingBoxDataUI implements DataUI {
                 }
             }
         }
-        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source", "mouseExited"));
+        comboBox.addMouseListener(EventHandler.create(MouseListener.class, this, "onComboBoxExited", "source",
+                "mouseExited"));
         comboBox.addItemListener(EventHandler.create(ItemListener.class, this, "onItemSelection", ""));
         comboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
 
@@ -217,6 +220,10 @@ public class BoundingBoxDataUI implements DataUI {
         return ToolBoxIcon.getIcon(ToolBoxIcon.JDBC_VALUE);
     }
 
+    /**
+     * Action do on clicking on the paste button.
+     * @param ae Action event fired.
+     */
     public void onPaste(ActionEvent ae){
         Object sourceObj = ae.getSource();
         if(sourceObj instanceof JButton){
@@ -272,6 +279,10 @@ public class BoundingBoxDataUI implements DataUI {
         comboBox.removeMouseListener(listener);
     }
 
+    /**
+     * Action done on selecting an item.
+     * @param event Item event fired.
+     */
     public void onItemSelection(ItemEvent event){
         JComboBox comboBox = (JComboBox)event.getSource();
         URI uri = (URI)comboBox.getClientProperty(URI_PROPERTY);
@@ -355,12 +366,17 @@ public class BoundingBoxDataUI implements DataUI {
      * Wait layer displayed on doing an update on the list.
      */
     private class WaitLayerUI extends LayerUI<JComponent> implements ActionListener {
+        /** Indicates if the layer is running. */
         private boolean mIsRunning;
+        /** Indicates if the layer is fading. */
         private boolean mIsFadingOut;
+        /** Timer used to refresh the layer. */
         private Timer mTimer;
-
+        /** Angle of the drawn spinner. */
         private int mAngle;
+        /** Fade count used to fade the spinner. */
         private int mFadeCount;
+        /** Maximum value of the fade count. */
         private int mFadeLimit = 15;
 
         @Override
@@ -416,6 +432,10 @@ public class BoundingBoxDataUI implements DataUI {
             g2.dispose();
         }
 
+        /**
+         * Method called each time the refresh timer is woken up.
+         * @param e Unused.
+         */
         public void actionPerformed(ActionEvent e) {
             if (mIsRunning) {
                 firePropertyChange("tick", 0, 1);
@@ -435,6 +455,9 @@ public class BoundingBoxDataUI implements DataUI {
             }
         }
 
+        /**
+         * Starts the layer an launch the drawing.
+         */
         public void start() {
             if (mIsRunning) {
                 return;
@@ -450,6 +473,10 @@ public class BoundingBoxDataUI implements DataUI {
             mTimer.start();
         }
 
+
+        /**
+         * Stops the layer an stops the drawing.
+         */
         public void stop() {
             mIsFadingOut = true;
         }

@@ -226,14 +226,13 @@ public class EnumerationUI implements DataUI {
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         Map<URI, Object> map = new HashMap<>();
         Enumeration enumeration = null;
-        boolean isOptional = false;
         if(inputOrOutput instanceof InputDescriptionType){
             enumeration = (Enumeration)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
-            isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
         }
         else if(inputOrOutput instanceof OutputDescriptionType){
             enumeration = (Enumeration)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
         }
+        //Enumeration can not be null as inputOrOutput can only be an Input or an Output
         if(enumeration.getDefaultValues() != null && enumeration.getDefaultValues().length != 0) {
             if (enumeration.isMultiSelection()) {
                 map.put(URI.create(inputOrOutput.getIdentifier().getValue()), enumeration.getDefaultValues());
@@ -254,6 +253,10 @@ public class EnumerationUI implements DataUI {
         return ToolBoxIcon.getIcon(ToolBoxIcon.ENUMERATION);
     }
 
+    /**
+     * Action done when the mouse click the JTextField.
+     * @param source Source JComponent which is clicked.
+     */
     public void onMouseClicked(Object source){
         if(source instanceof JTextField){
             JTextField textField = ((JTextField) source);

@@ -162,10 +162,8 @@ public class GeometryUI implements DataUI {
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         Map<URI, Object> map = new HashMap<>();
         GeometryData geometryData = null;
-        boolean isOptional = false;
         if(inputOrOutput instanceof InputDescriptionType){
             geometryData = (GeometryData)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
-            isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
         }
         else if(inputOrOutput instanceof OutputDescriptionType){
             geometryData = (GeometryData)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
@@ -181,6 +179,10 @@ public class GeometryUI implements DataUI {
         return ToolBoxIcon.getIcon(ToolBoxIcon.RAW_DATA);
     }
 
+    /**
+     * Action do on clicking on the paste button.
+     * @param ae Action event fired.
+     */
     public void onPaste(ActionEvent ae){
         Object sourceObj = ae.getSource();
         if(sourceObj instanceof JButton){

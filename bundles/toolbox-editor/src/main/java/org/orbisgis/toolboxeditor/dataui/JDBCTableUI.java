@@ -95,10 +95,8 @@ public class JDBCTableUI implements DataUI {
     public Map<URI, Object> getDefaultValue(DescriptionType inputOrOutput) {
         Map<URI, Object> map = new HashMap<>();
         JDBCTable jdbcTable = null;
-        boolean isOptional = false;
         if(inputOrOutput instanceof InputDescriptionType){
             jdbcTable = (JDBCTable)((InputDescriptionType)inputOrOutput).getDataDescription().getValue();
-            isOptional = ((InputDescriptionType)inputOrOutput).getMinOccurs().equals(new BigInteger("0"));
         }
         else if(inputOrOutput instanceof OutputDescriptionType){
             jdbcTable = (JDBCTable)((OutputDescriptionType)inputOrOutput).getDataDescription().getValue();
