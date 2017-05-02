@@ -97,7 +97,7 @@
                 <felix-version>1.4.1</felix-version>
                 <org.apache.felix.scr.annotations-version>1.9.10</org.apache.felix.scr.annotations-version>
                 <maven-scr-plugin-version>1.15.0</maven-scr-plugin-version>
-                <h2-version>1.4.194</h2-version>
+                <h2-version>1.4.195</h2-version>
                 <h2-package>com.h2database</h2-package>
                 <h2-gis-version>1.3.2-SNAPSHOT</h2-gis-version>
                 <sl4j-version>1.6.0</sl4j-version>
