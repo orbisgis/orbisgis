@@ -108,12 +108,6 @@
             <version>4.0</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2gis-ext</artifactId>
-            <version>${h2-gis-version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.enterprise</artifactId>
             <version>5.0.0</version>
@@ -132,7 +126,7 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
-            <artifactId>h2gis-functions</artifactId>
+            <artifactId>h2gis</artifactId>
             <version>${h2-gis-version}</version>
             <scope>test</scope>
         </dependency>

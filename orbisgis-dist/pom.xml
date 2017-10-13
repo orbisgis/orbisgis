@@ -344,12 +344,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>h2gis-ext-osgi</artifactId>
-            <version>${h2-gis-version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>mapeditor</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
@@ -362,7 +356,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>h2gis-functions-osgi</artifactId>
+            <artifactId>h2gis-osgi</artifactId>
             <version>${h2-gis-version}</version>
             <scope>provided</scope>
         </dependency>
