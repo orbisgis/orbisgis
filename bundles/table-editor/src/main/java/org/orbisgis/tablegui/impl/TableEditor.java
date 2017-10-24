@@ -649,7 +649,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 }
                 else{
                 filter = new FieldsContainsFilterFactory.
-                        FilterParameters(colId,  value.toString(), true, true);
+                        FilterParameters(colId,  value.toString().replace("'", "''"), true, true);
                 }
                 
                 //Clear current filter
