@@ -136,10 +136,12 @@ public class DataSourceService implements DataSource {
                     Statement st = connection.createStatement()) {
                     if (JDBCUtilities.isH2DataBase(connection.getMetaData()) &&
                             !JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS")) {
-                        st.execute("CREATE ALIAS IF NOT EXISTS H2GIS_EXTENSION FOR\n" +
-                                "    \"org.h2gis.ext.H2GISExtension.load\";\n" +
-                                "CALL H2GIS_EXTENSION();");
+                        st.execute("CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR\n" +
+                                "    \"org.h2gis.functions.factory.H2GISFunctions.load\";\n" +
+                                "CALL H2GIS_SPATIAL();");
                     }
+                } catch (SQLException e) {
+                    throw e;
                 }
             } else {
                 throw new SQLException(String.format("The database driver %s is not available",driverName));
