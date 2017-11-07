@@ -139,28 +139,14 @@ public class ReadTable {
                         originalOrder.beforeFirst();
                         int i = 0;
                         final int fieldIndex = originalOrder.findColumn(originalColumnName);
-                        long time1=0,time2=0,time3=0,time4=0,time5=0;
-                        time5-=System.currentTimeMillis();
                         while(originalOrder.next()) {
-                            time5+=System.currentTimeMillis();
-                            time1-=System.currentTimeMillis();
                             Object obj = originalOrder.getObject(fieldIndex);
-                            time1+=System.currentTimeMillis();
-                            time2-=System.currentTimeMillis();
                             if(obj != null && !(obj instanceof Comparable)) {
                                 throw new SQLException(I18N.tr("Could only sort comparable database object type"));
                             }
-                            time2+=System.currentTimeMillis();
-                            time3-=System.currentTimeMillis();
                             cache[i++] = (Comparable)obj;
-                            time3+=System.currentTimeMillis();
-                            time4-=System.currentTimeMillis();
                             cacheProgress.endTask();
-                            time4+=System.currentTimeMillis();
-                            time5-=System.currentTimeMillis();
                         }
-                        time5+=System.currentTimeMillis();
-                        System.out.println("time 1:"+time1+";"+"time 2:"+time2+";"+"time 3:"+time3+";"+"time 4:"+time4+";"+"time 5:"+time5+";");
                     } finally {
                         lock.unlock();
                     }

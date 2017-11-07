@@ -102,7 +102,7 @@
                                 org.postgresql, org.dockingframes, xml-apis, com.kitfox.svg, javax.media, org.mozilla, com.lowagie, rhino,
                                 org.easymock, net.sf.kxml, xmlpull</excludeGroupIds>
                             <excludeArtifactIds>org.apache.felix.gogo.shell,org.apache.felix.gogo.command, pax-logging-api, slf4j-api, markdown4j, org.apache.felix.scr.ds-annotations,org.osgi.core,
-                                animal-sniffer-annotations, org.apache.felix.scr.annotations, org.osgi.compendium, cm-API</excludeArtifactIds>
+                                animal-sniffer-annotations, org.apache.felix.scr.annotations, org.osgi.compendium, cm-API, json-simple</excludeArtifactIds>
                         </configuration>
                     </execution>
                 </executions>
