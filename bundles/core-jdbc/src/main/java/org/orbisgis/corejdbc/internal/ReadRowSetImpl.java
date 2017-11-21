@@ -83,17 +83,7 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
@@ -106,8 +96,8 @@ import java.util.regex.Pattern;
  */
 public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSource, SpatialResultSetMetaData, ReadRowSet {
     private static final int WAITING_FOR_RESULTSET = 5;
-    public static final int DEFAULT_FETCH_SIZE = 30;
-    public static final int DEFAULT_CACHE_SIZE = 100;
+    public static final int DEFAULT_FETCH_SIZE = 90;
+    public static final int DEFAULT_CACHE_SIZE = 300;
     // Like binary search, max intermediate batch fetching
     private static final int MAX_INTERMEDIATE_BATCH = 5;
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadRowSetImpl.class);
@@ -143,6 +133,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     // When close is called, in how many ms the result set is really closed
     private int closeDelay = 0;
     protected boolean isH2;
+    protected Boolean excludeGeomFields = false;
     
     //Limit the size of the clob to 1000 characters
     private static final int NUMBER_CHARACTERS= 1000;
@@ -266,6 +257,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 cachedColumnNames.put(meta.getColumnName(idColumn), idColumn);
             }
         }
+        if(excludeGeomFields) {
+            List<String> geomFields = SFSUtilities.getGeometryFields(getConnection(), location);
+            for (String geomField : geomFields) {
+                cachedColumnNames.remove(geomField);
+            }
+        }
     }
 
     /**
@@ -289,7 +286,20 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
             }
         }
         if(cacheData) {
-            command.append(select_fields);
+            String fields = select_fields;
+            if(fields.contains("*")){
+                StringBuilder allFields = new StringBuilder();
+                BidiMap<Integer, String> map = cachedColumnNames.inverseBidiMap();
+                Iterable<Integer> keys = new TreeSet<>(map.keySet());
+                for(Integer i : keys){
+                    if(allFields.length() > 0){
+                        allFields.append(",");
+                    }
+                    allFields.append(TableLocation.quoteIdentifier(map.get(i)));
+                }
+                    fields=fields.replaceAll("\\*", allFields.toString());
+            }
+            command.append(fields);
         }
         command.append(" FROM ");
         command.append(getTable());
@@ -571,6 +581,12 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public void initialize(String tableIdentifier, String pk_name, ProgressMonitor pm) throws SQLException {
+        initialize(TableLocation.parse(tableIdentifier), pk_name, pm);
+    }
+
+    @Override
+    public void initialize(String tableIdentifier, String pk_name, boolean excludeGeomFields, ProgressMonitor pm) throws SQLException {
+        this.excludeGeomFields = excludeGeomFields;
         initialize(TableLocation.parse(tableIdentifier), pk_name, pm);
     }
 
@@ -990,6 +1006,9 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         if(cachedColumnCount == -1) {
             try(Resource res = resultSetHolder.getResource()) {
                 cachedColumnCount = res.getResultSet().getMetaData().getColumnCount();
+                if(excludeGeomFields){
+                    cachedColumnCount -= SFSUtilities.getGeometryFields(res.getResultSet()).size();
+                }
                 return cachedColumnCount;
             }
         }

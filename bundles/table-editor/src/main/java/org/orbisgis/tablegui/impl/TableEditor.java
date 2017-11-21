@@ -1129,6 +1129,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
     private void autoResizeColWidth(int rowsToCheck) {
         TableColumnModel colModel = table.getColumnModel();
+        resetRenderers();
         int maxWidth = 200;
         for (int i = 0; i < colModel.getColumnCount(); i++) {
             TableColumn col = colModel.getColumn(i);
@@ -1136,7 +1137,6 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     new NullProgressMonitor());
             col.setPreferredWidth(colWidth);
         }
-        resetRenderers();
     }
 
     /**
@@ -1144,9 +1144,13 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
      */
     private void updateTableColumnModel() {
         TableColumnModel colModel = new DefaultTableColumnModel();
+        int colOffset = 0;
         for (int i = 0; i < tableModel.getColumnCount(); i++) {
+            while(tableModel.getColumnName(i+colOffset) == null){
+                colOffset ++;
+            }
             TableColumn col = new TableColumn(i);
-            String columnName = tableModel.getColumnName(i);
+            String columnName = tableModel.getColumnName(i+colOffset);
             col.setHeaderValue(columnName);
             TableCellRenderer headerRenderer = col.getHeaderRenderer();
             if (!(headerRenderer instanceof TableEditorHeaderRenderer)) {

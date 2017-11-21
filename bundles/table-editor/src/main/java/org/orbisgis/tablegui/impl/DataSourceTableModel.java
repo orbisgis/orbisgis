@@ -36,10 +36,7 @@
  */
 package org.orbisgis.tablegui.impl;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
+import java.sql.*;
 import javax.sql.RowSet;
 import javax.swing.table.AbstractTableModel;
 import org.orbisgis.corejdbc.ReversibleRowSet;
@@ -83,7 +80,12 @@ public class DataSourceTableModel extends AbstractTableModel {
         @Override
         public String getColumnName(int col) {
                 try {
+                    if(getRowSet() instanceof ResultSetMetaData){
+                        return ((ResultSetMetaData)getRowSet()).getColumnName(col + 1);
+                    }
+                    else {
                         return getRowSet().getMetaData().getColumnName(col + 1);
+                    }
                 } catch (SQLException e) {
                         LOGGER.error(e.getLocalizedMessage(), e);
                         return null;
@@ -128,13 +130,23 @@ public class DataSourceTableModel extends AbstractTableModel {
          * @throws SQLException The model cannot read the source metadata
          */
         public int getColumnType(int col) throws SQLException {
-            return getRowSet().getMetaData().getColumnType(col + 1);
+            if(getRowSet() instanceof ResultSetMetaData){
+                return ((ResultSetMetaData)getRowSet()).getColumnType(col + 1);
+            }
+            else {
+                return getRowSet().getMetaData().getColumnType(col + 1);
+            }
         }
         
         @Override
         public int getColumnCount() {
                 try {
+                    if(getRowSet() instanceof ResultSetMetaData){
+                        return ((ResultSetMetaData)getRowSet()).getColumnCount();
+                    }
+                    else {
                         return getRowSet().getMetaData().getColumnCount();
+                    }
                 } catch (SQLException e) {
                         return 0;
                 }
