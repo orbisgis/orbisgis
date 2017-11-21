@@ -674,7 +674,8 @@ public class RowSetTest {
             st.execute("CREATE TABLE PTS(id integer primary key auto_increment, the_geom POINT)");
             st.execute("INSERT INTO PTS(the_geom) VALUES ('POINT(10 10)'),('POINT(15 15)'),('POINT(20 20)'),('POINT(25 25)')");
             ReadRowSet rs = dataManager.createReadRowSet();
-            rs.initialize("PTS", "ID", true, new NullProgressMonitor());
+            rs.setExcludeGeomFields(true);
+            rs.initialize("PTS", "ID", new NullProgressMonitor());
             assertEquals(1, rs.getMetaData().getColumnCount());
             assertTrue(rs.next());
             assertEquals(1, rs.getInt(1));

@@ -65,6 +65,7 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
     private String tableReference;
     private ReversibleRowSet rowSet; // Instantiated when editable source is open
     private boolean editing = false;
+    private boolean excludeGeom = false;
     private final Logger logger = LoggerFactory.getLogger(EditableSourceImpl.class);
     private final I18n i18n = I18nFactory.getI18n(EditableSourceImpl.class);
     private DataManager dataManager;
@@ -136,7 +137,8 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
                 boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
                 String pkName = MetaData.getPkName(connection, tableReference, true);
                 rowSet = dataManager.createReversibleRowSet();
-                rowSet.initialize(TableLocation.parse(tableReference, isH2).toString(isH2), pkName, true, progressMonitor);
+                rowSet.setExcludeGeomFields(excludeGeom);
+                rowSet.initialize(TableLocation.parse(tableReference, isH2).toString(isH2), pkName, progressMonitor);
             } catch (SQLException | IllegalArgumentException ex) {
                 throw new EditableElementException(ex);
             }
@@ -217,6 +219,17 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
         boolean oldValue = this.editing;
         this.editing = editing;
         propertyChangeSupport.firePropertyChange(PROP_EDITING, oldValue, this.editing);
+    }
+
+    @Override
+    public void setExcludeGeometry(boolean excludeGeometry){
+        this.excludeGeom = excludeGeometry;
+        rowSet.setExcludeGeomFields(excludeGeom);
+    }
+
+    @Override
+    public boolean getExcludeGeometry(){
+        return excludeGeom;
     }
 
     @Override

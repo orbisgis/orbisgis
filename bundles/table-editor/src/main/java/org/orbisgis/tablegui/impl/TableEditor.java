@@ -107,10 +107,7 @@ import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.tablegui.impl.filters.FieldsContainsFilterFactory;
 import org.orbisgis.tablegui.impl.filters.TableSelectionFilter;
 import org.orbisgis.tablegui.impl.filters.WhereSQLFilterFactory;
-import org.orbisgis.tablegui.impl.jobs.ComputeFieldStatistics;
-import org.orbisgis.tablegui.impl.jobs.OptimalWidthJob;
-import org.orbisgis.tablegui.impl.jobs.RefreshTableJob;
-import org.orbisgis.tablegui.impl.jobs.SearchJob;
+import org.orbisgis.tablegui.impl.jobs.*;
 import org.orbisgis.toolboxeditor.ToolboxWpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -200,6 +197,10 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         tableChange(new TableEditEvent(tableEditableElement.getTableReference(), TableModelEvent.ALL_COLUMNS, null, null, TableModelEvent.UPDATE));
     }
 
+    public void onMenuToggleGeometry() {
+        executorService.execute(new ToggleGeomTableJob(this));
+    }
+
     @Override
     public void tableChange(TableEditEvent event) {
         if (event.getUndoableEdit() == null && !table.isEditing()) {
@@ -223,6 +224,10 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
      */
     private List<Action> getDockActions() {
         List<Action> actions = new LinkedList<>();
+        actions.add(new DefaultAction(TableEditorActions.A_TOGGLE_GEOM, I18N.tr("Toggle geometry display"),
+                TableEditorIcon.getIcon("table_geometry"),
+                EventHandler.create(ActionListener.class, this, "onMenuToggleGeometry"))
+                .setLogicalGroup(TableEditorActions.LGROUP_READ));
         actions.add(new DefaultAction(TableEditorActions.A_REFRESH, I18N.tr("Refresh table content"),
                 TableEditorIcon.getIcon("table_refresh"),
                 EventHandler.create(ActionListener.class, this, "onMenuRefresh"))

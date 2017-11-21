@@ -585,9 +585,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     }
 
     @Override
-    public void initialize(String tableIdentifier, String pk_name, boolean excludeGeomFields, ProgressMonitor pm) throws SQLException {
+    public void setExcludeGeomFields(boolean excludeGeomFields) {
         this.excludeGeomFields = excludeGeomFields;
-        initialize(TableLocation.parse(tableIdentifier), pk_name, pm);
     }
 
     /**
