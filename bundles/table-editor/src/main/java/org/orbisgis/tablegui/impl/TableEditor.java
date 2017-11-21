@@ -198,7 +198,22 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
     }
 
     public void onMenuToggleGeometry() {
-        executorService.execute(new ToggleGeomTableJob(this));
+        tableEditableElement.setExcludeGeometry(!tableEditableElement.getExcludeGeometry());
+        try {
+            tableEditableElement.close(new NullProgressMonitor());
+            tableEditableElement.open(new NullProgressMonitor());
+        } catch (EditableElementException e) {
+            e.printStackTrace();
+        }
+        tableChange(new TableEditEvent(
+                tableEditableElement.getTableReference(),
+                TableModelEvent.ALL_COLUMNS,
+                null,
+                null,
+                TableModelEvent.DELETE));
+        this.onMenuNoSort();
+        this.updateTableColumnModel();
+        this.quickAutoResize();
     }
 
     @Override
@@ -1298,6 +1313,4 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             }
         }
     }
-
-
 }
