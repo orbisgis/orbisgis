@@ -671,8 +671,9 @@ public class RowSetTest {
         try(Connection connection = dataSource.getConnection();
             Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS PTS");
-            st.execute("CREATE TABLE PTS(id integer primary key auto_increment, the_geom POINT)");
-            st.execute("INSERT INTO PTS(the_geom) VALUES ('POINT(10 10)'),('POINT(15 15)'),('POINT(20 20)'),('POINT(25 25)')");
+            st.execute("CREATE TABLE PTS(id integer primary key auto_increment, the_geom POINT, the_other_geom POINT)");
+            st.execute("INSERT INTO PTS(the_geom, the_other_geom) VALUES ('POINT(10 10)', 'POINT(10 10)')," +
+                    "('POINT(15 15)', 'POINT(15 15)'),('POINT(20 20)', 'POINT(20 20)'),('POINT(25 25)', 'POINT(25 25)')");
             ReadRowSet rs = dataManager.createReadRowSet();
             rs.setExcludeGeomFields(true);
             rs.initialize("PTS", "ID", new NullProgressMonitor());
