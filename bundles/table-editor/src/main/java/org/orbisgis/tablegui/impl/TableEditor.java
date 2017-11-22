@@ -36,53 +36,13 @@
  */
 package org.orbisgis.tablegui.impl;
 
-import java.awt.BorderLayout;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.sql.DataSource;
-import javax.swing.*;
-import javax.swing.RowSorter.SortKey;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.PopupMenuListener;
-import javax.swing.event.RowSorterListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.undo.UndoManager;
-
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.orbisgis.commons.progress.SwingWorkerPM;
-import org.orbisgis.corejdbc.DataManager;
-import org.orbisgis.corejdbc.MetaData;
-import org.orbisgis.corejdbc.ReadTable;
-import org.orbisgis.corejdbc.TableEditEvent;
-import org.orbisgis.corejdbc.TableEditListener;
-import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.commons.progress.NullProgressMonitor;
-import org.orbisgis.corejdbc.common.LongUnion;
+import org.orbisgis.commons.progress.SwingWorkerPM;
+import org.orbisgis.corejdbc.*;
+import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.coremap.process.ZoomToSelectedFeatures;
@@ -107,12 +67,34 @@ import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.orbisgis.tablegui.impl.filters.FieldsContainsFilterFactory;
 import org.orbisgis.tablegui.impl.filters.TableSelectionFilter;
 import org.orbisgis.tablegui.impl.filters.WhereSQLFilterFactory;
-import org.orbisgis.tablegui.impl.jobs.*;
+import org.orbisgis.tablegui.impl.jobs.ComputeFieldStatistics;
+import org.orbisgis.tablegui.impl.jobs.OptimalWidthJob;
+import org.orbisgis.tablegui.impl.jobs.RefreshTableJob;
+import org.orbisgis.tablegui.impl.jobs.SearchJob;
 import org.orbisgis.toolboxeditor.ToolboxWpsClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.sql.DataSource;
+import javax.swing.*;
+import javax.swing.RowSorter.SortKey;
+import javax.swing.event.*;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.undo.UndoManager;
+import java.awt.*;
+import java.awt.event.*;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
+import java.sql.*;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Edit a data source through a grid GUI.
@@ -175,6 +157,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         //Add a listener to the source manager to close the table when
         //the source is removed
         this.tableEditableElement = element;
+        tableEditableElement.setExcludeGeometry(true);
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setTitleIcon(TableEditorIcon.getIcon("table"));
         dockingPanelParameters.setDefaultDockingLocation(new DockingLocation(DockingLocation.Location
@@ -239,10 +222,20 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
      */
     private List<Action> getDockActions() {
         List<Action> actions = new LinkedList<>();
-        actions.add(new DefaultAction(TableEditorActions.A_TOGGLE_GEOM, I18N.tr("Toggle geometry display"),
-                TableEditorIcon.getIcon("table_geometry"),
-                EventHandler.create(ActionListener.class, this, "onMenuToggleGeometry"))
-                .setLogicalGroup(TableEditorActions.LGROUP_READ));
+        try {
+            boolean isTableGeom = SFSUtilities.hasGeometryField(tableEditableElement.getRowSet());
+            boolean isOnlyGeomFields = SFSUtilities.getGeometryFields(tableEditableElement.getRowSet()).size() ==
+                    tableEditableElement.getRowSet().getMetaData().getColumnCount();
+            if(isTableGeom && !isOnlyGeomFields){
+                actions.add(new DefaultAction(TableEditorActions.A_TOGGLE_GEOM, I18N.tr("Toggle geometry display"),
+                        TableEditorIcon.getIcon("table_geometry"),
+                        EventHandler.create(ActionListener.class, this, "onMenuToggleGeometry"))
+                        .setLogicalGroup(TableEditorActions.LGROUP_READ));
+            }
+        } catch (EditableElementException|SQLException ignored) {
+            LOGGER.warn(I18N.tr("Unable to check if the table {0} contains geometries to toggle.",
+                    tableEditableElement.getTableReference()));
+        }
         actions.add(new DefaultAction(TableEditorActions.A_REFRESH, I18N.tr("Refresh table content"),
                 TableEditorIcon.getIcon("table_refresh"),
                 EventHandler.create(ActionListener.class, this, "onMenuRefresh"))

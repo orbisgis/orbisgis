@@ -224,7 +224,9 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
     @Override
     public void setExcludeGeometry(boolean excludeGeometry){
         this.excludeGeom = excludeGeometry;
-        rowSet.setExcludeGeomFields(excludeGeom);
+        if(rowSet != null) {
+            rowSet.setExcludeGeomFields(excludeGeom);
+        }
     }
 
     @Override
