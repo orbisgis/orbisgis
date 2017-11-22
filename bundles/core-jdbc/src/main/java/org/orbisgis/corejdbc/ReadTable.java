@@ -112,13 +112,16 @@ public class ReadTable {
                     lock.tryLock();
                     try{
                         originalOrder.beforeFirst();
-                        while (originalOrder.next()) {
+                        while (originalOrder.next() && !progressMonitor.isCancelled()) {
                             rowId++;
                             pkValueToRowId.put(originalOrder.getPk(), rowId);
                             cacheProgress.endTask();
                         }
                     } finally {
                         lock.unlock();
+                    }
+                    if(progressMonitor.isCancelled()){
+                        return new ArrayList<>(rowCount);
                     }
                     // Read ordered pk values
                     ProgressMonitor sortProgress = jobProgress.startTask(I18N.tr("Read sorted keys"), rowCount);
@@ -139,7 +142,7 @@ public class ReadTable {
                         originalOrder.beforeFirst();
                         int i = 0;
                         final int fieldIndex = originalOrder.findColumn(originalColumnName);
-                        while(originalOrder.next()) {
+                        while(originalOrder.next() && !progressMonitor.isCancelled()) {
                             Object obj = originalOrder.getObject(fieldIndex);
                             if(obj != null && !(obj instanceof Comparable)) {
                                 throw new SQLException(I18N.tr("Could only sort comparable database object type"));
@@ -149,6 +152,9 @@ public class ReadTable {
                         }
                     } finally {
                         lock.unlock();
+                    }
+                    if(progressMonitor.isCancelled()){
+                        return new ArrayList<>(rowCount);
                     }
                     ProgressMonitor sortProgress = jobProgress.startTask(I18N.tr("Sort table values"), rowCount);
                     Comparator<Integer> comparator = new SortValueCachedComparator(cache);
