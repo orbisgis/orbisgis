@@ -40,6 +40,7 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.commons.progress.NullProgressMonitor;
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.*;
 import org.orbisgis.corejdbc.common.IntegerUnion;
@@ -181,22 +182,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
     }
 
     public void onMenuToggleGeometry() {
-        tableEditableElement.setExcludeGeometry(!tableEditableElement.getExcludeGeometry());
-        try {
-            tableEditableElement.close(new NullProgressMonitor());
-            tableEditableElement.open(new NullProgressMonitor());
-        } catch (EditableElementException e) {
-            e.printStackTrace();
-        }
-        tableChange(new TableEditEvent(
-                tableEditableElement.getTableReference(),
-                TableModelEvent.ALL_COLUMNS,
-                null,
-                null,
-                TableModelEvent.DELETE));
-        this.onMenuNoSort();
-        this.updateTableColumnModel();
-        this.quickAutoResize();
+        executorService.execute(new ToggleGeomJob(this, tableEditableElement));
     }
 
     @Override
@@ -1304,6 +1290,42 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 tableEditor.reloadFilters();
                 tableEditor.resetRenderers();
             }
+        }
+    }
+
+    private class ToggleGeomJob extends SwingWorkerPM{
+
+        private TableEditor tableEditor;
+        private TableEditableElement tableEditableElement;
+
+        public ToggleGeomJob(TableEditor tableEditor, TableEditableElement tableEditableElement){
+            this.tableEditor = tableEditor;
+            this.tableEditableElement = tableEditableElement;
+            this.setTaskName(I18N.tr("Toggle the display of geometries."));
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            tableEditableElement.setExcludeGeometry(!tableEditableElement.getExcludeGeometry());
+            try {
+                tableEditableElement.close(this.getProgressMonitor().startTask(I18N.tr("Close the EditableSource"),1));
+                tableEditableElement.open(this.getProgressMonitor().startTask(I18N.tr("Open the EditableSource"),1));
+            } catch (EditableElementException ignored) {
+                LOGGER.error(I18N.tr("Unable to restart the EditableSource associated to {0}",
+                        tableEditableElement.getTableReference()));
+            }
+            ProgressMonitor pm = this.getProgressMonitor().startTask(I18N.tr("Refresh the GUI"),1);
+            tableChange(new TableEditEvent(
+                    tableEditableElement.getTableReference(),
+                    TableModelEvent.ALL_COLUMNS,
+                    null,
+                    null,
+                    TableModelEvent.DELETE));
+            tableEditor.onMenuNoSort();
+            tableEditor.updateTableColumnModel();
+            tableEditor.quickAutoResize();
+            pm.endTask();
+            return null;
         }
     }
 }
