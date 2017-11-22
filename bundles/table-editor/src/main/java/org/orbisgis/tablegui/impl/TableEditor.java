@@ -141,6 +141,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
     private EditorManager editorManager;
     private ExecutorService executorService;
     private ToolboxWpsClient wpsClient;
+    private Map<Integer, Integer> tableColToRowSetCol;
 
     /**
      * Constructor
@@ -905,6 +906,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 EventHandler.create(RowSorterListener.class, this,
                         "onShownRowsChanged"));
         tableSorter.setExecutorService(executorService);
+        tableSorter.setTableColToRowSetCol(tableColToRowSetCol);
         table.setRowSorter(tableSorter);
         //Set the row count at left
         tableRowHeader = new TableRowHeader(table);
@@ -1144,10 +1146,12 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
     private void updateTableColumnModel() {
         TableColumnModel colModel = new DefaultTableColumnModel();
         int colOffset = 0;
+        tableColToRowSetCol = new HashMap<>();
         for (int i = 0; i < tableModel.getColumnCount(); i++) {
             while(tableModel.getColumnName(i+colOffset) == null){
                 colOffset ++;
             }
+            tableColToRowSetCol.put(i, i+colOffset);
             TableColumn col = new TableColumn(i);
             String columnName = tableModel.getColumnName(i+colOffset);
             col.setHeaderValue(columnName);
@@ -1164,6 +1168,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             colModel.addColumn(col);
         }
         table.setColumnModel(colModel);
+        if(tableSorter != null){
+            tableSorter.setTableColToRowSetCol(tableColToRowSetCol);
+        }
     }
 
     private boolean isPrimaryKey(String columnName) throws SQLException {
