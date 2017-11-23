@@ -66,6 +66,11 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
     public void initialize(String tableIdentifier,String pk_name, ProgressMonitor pm) throws SQLException;
 
     /**
+     * @param excludeGeomFields True if the geometric fields should be excluded, false otherwise.
+     */
+    void setExcludeGeomFields(boolean excludeGeomFields);
+
+    /**
      * Call this after {@link #setCommand(String)}. Cache the default primary key values then execute the command.
      * @param pm Progress monitor Progression of primary key caching
      */

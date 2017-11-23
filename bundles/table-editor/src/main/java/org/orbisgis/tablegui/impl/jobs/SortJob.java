@@ -111,10 +111,12 @@ public class SortJob extends SwingWorkerPM<Collection<Integer>, Collection<Integ
 
         @Override
         protected void done() {
+            if(!isCancelled()) {
                 try {
                     eventSortedListeners.callListeners(new SortJobEventSorted(sortRequest, get(MAX_SORT_TIME, TimeUnit.SECONDS), this));
-                } catch (InterruptedException|ExecutionException|TimeoutException|EventException ex) {
+                } catch (InterruptedException | ExecutionException | TimeoutException | EventException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
+            }
         }
 }
