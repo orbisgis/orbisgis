@@ -83,6 +83,18 @@ public interface EditableSource extends EditableElement {
      */
     void setEditing(boolean editing);
 
+
+    /**
+     * @param excludeGeometry True if the geometries should be excluded from the requests, false otherwise.
+     */
+    void setExcludeGeometry(boolean excludeGeometry);
+
+
+    /**
+     * @return True if the geometries should be excluded from the requests, false otherwise.
+     */
+    boolean getExcludeGeometry();
+
     /**
      * @return Data manager where the source come from.
      */

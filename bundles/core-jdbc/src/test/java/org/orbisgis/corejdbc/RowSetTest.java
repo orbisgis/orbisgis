@@ -39,6 +39,7 @@ package org.orbisgis.corejdbc;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import org.apache.commons.collections4.map.LRUMap;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.SFSUtilities;
@@ -661,6 +662,31 @@ public class RowSetTest {
             listenerList.eventList.get(0).getUndoableEdit().redo();
             rs.execute();
             assertEquals(0, rs.getRowCount());
+        }
+    }
+
+    @Test
+    public void testReadTableExceptGeom() throws SQLException {
+        DataManager dataManager = new DataManagerImpl(dataSource);
+        try(Connection connection = dataSource.getConnection();
+            Statement st = connection.createStatement()) {
+            st.execute("DROP TABLE IF EXISTS PTS");
+            st.execute("CREATE TABLE PTS(id integer primary key auto_increment, the_geom POINT, the_other_geom POINT)");
+            st.execute("INSERT INTO PTS(the_geom, the_other_geom) VALUES ('POINT(10 10)', 'POINT(10 10)')," +
+                    "('POINT(15 15)', 'POINT(15 15)'),('POINT(20 20)', 'POINT(20 20)'),('POINT(25 25)', 'POINT(25 25)')");
+            ReadRowSet rs = dataManager.createReadRowSet();
+            rs.setExcludeGeomFields(true);
+            rs.initialize("PTS", "ID", new NullProgressMonitor());
+            assertEquals(1, rs.getMetaData().getColumnCount());
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt(1));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt(1));
+            assertTrue(rs.next());
+            assertEquals(3, rs.getInt(1));
+            assertTrue(rs.next());
+            assertEquals(4, rs.getInt(1));
+            st.execute("DROP TABLE IF EXISTS PTS");
         }
     }
 }
