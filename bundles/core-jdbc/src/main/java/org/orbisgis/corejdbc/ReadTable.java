@@ -94,38 +94,43 @@ public class ReadTable {
             progressMonitor.addPropertyChangeListener(ProgressMonitor.PROP_CANCEL,listener);
             try {
                 int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, tableLocation.toString());
-                if (pkIndex > 0) {
-                    ProgressMonitor jobProgress = progressMonitor.startTask(2);
+                DatabaseMetaData meta = connection.getMetaData();
+                String pkFieldName = TableLocation.quoteIdentifier(JDBCUtilities.getFieldName(meta, table, pkIndex));
+                //If this condition is true, it's mean that the original order is the order of the PK.
+                if (pkIndex > 0 && !pkFieldName.equals(MetaData.POSTGRE_ROW_IDENTIFIER)) {
+                    ProgressMonitor jobProgress = progressMonitor.startTask(4);
                     // Do not cache values
                     // Use SQL sort
-                    DatabaseMetaData meta = connection.getMetaData();
-                    String pkFieldName = TableLocation.quoteIdentifier(JDBCUtilities.getFieldName(meta, table, pkIndex));
                     String desc = "";
                     if(!ascending) {
                         desc = " DESC";
                     }
                     // Create a map of Row Id to Pk Value
-                    ProgressMonitor cacheProgress = jobProgress.startTask(I18N.tr("Cache primary key values"), rowCount);
+                    ProgressMonitor pkProgress = jobProgress.startTask(I18N.tr("Build the primary key request"), 1);
                     Map<Long, Integer> pkValueToRowId = new HashMap<>(rowCount);
                     int rowId=0;
-                    Lock lock = originalOrder.getReadLock();
-                    lock.tryLock();
-                    try{
-                        originalOrder.beforeFirst();
-                        while (originalOrder.next() && !progressMonitor.isCancelled()) {
+                    try(ResultSet rs = st.executeQuery("select "+pkFieldName+" from "+table+" ORDER BY "+pkFieldName)){
+                        if(JDBCUtilities.isH2DataBase(connection.getMetaData())) {
+                            rs.beforeFirst();
+                        }
+                        pkProgress.endTask();
+                        ProgressMonitor cacheProgress = jobProgress.startTask(I18N.tr("Cache primary key values"), rowCount);
+                        while (rs.next() && !progressMonitor.isCancelled()) {
                             rowId++;
-                            pkValueToRowId.put(originalOrder.getPk(), rowId);
+                            pkValueToRowId.put(rs.getLong(1), rowId);
                             cacheProgress.endTask();
                         }
-                    } finally {
-                        lock.unlock();
+                        rs.close();
                     }
                     if(progressMonitor.isCancelled()){
                         return new ArrayList<>(rowCount);
                     }
                     // Read ordered pk values
-                    ProgressMonitor sortProgress = jobProgress.startTask(I18N.tr("Read sorted keys"), rowCount);
+                    ProgressMonitor sortedPkProgress = jobProgress.startTask(I18N.tr("Build the sorted key request"), 1);
+
                     try(ResultSet rs = st.executeQuery("select "+pkFieldName+" from "+table+" ORDER BY "+quoteIdentifier+desc)) {
+                        sortedPkProgress.endTask();
+                        ProgressMonitor sortProgress = jobProgress.startTask(I18N.tr("Read sorted keys"), rowCount);
                         while(rs.next()) {
                             columnValues.add(pkValueToRowId.get(rs.getLong(1)));
                             sortProgress.endTask();
