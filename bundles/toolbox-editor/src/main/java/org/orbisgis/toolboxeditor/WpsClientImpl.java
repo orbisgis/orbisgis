@@ -529,12 +529,17 @@ public class WpsClientImpl
         File file = new File(uri);
         if(file.isFile()){
             List<ProcessIdentifier> piList = wpsServer.addProcess(file);
-            Map<ProcessMetadata.INTERNAL_METADATA, Object> metadataMap = new HashMap<>();
-            metadataMap.put(ProcessMetadata.INTERNAL_METADATA.IS_REMOVABLE, isDefaultScript);
-            metadataMap.put(ProcessMetadata.INTERNAL_METADATA.NODE_PATH, nodePath);
-            metadataMap.put(ProcessMetadata.INTERNAL_METADATA.ICON_ARRAY, iconName);
-            addProcessMetadata(uri, metadataMap);
-            processUriPath.put(piList.get(0).getProcessDescriptionType().getIdentifier().getValue(), new File(uri).getAbsolutePath());
+            if(piList.isEmpty()){
+                LOGGER.warn(I18N.tr("Unable to add the script {0}", uri.toString()));
+            }
+            else {
+                Map<ProcessMetadata.INTERNAL_METADATA, Object> metadataMap = new HashMap<>();
+                metadataMap.put(ProcessMetadata.INTERNAL_METADATA.IS_REMOVABLE, isDefaultScript);
+                metadataMap.put(ProcessMetadata.INTERNAL_METADATA.NODE_PATH, nodePath);
+                metadataMap.put(ProcessMetadata.INTERNAL_METADATA.ICON_ARRAY, iconName);
+                addProcessMetadata(uri, metadataMap);
+                processUriPath.put(piList.get(0).getProcessDescriptionType().getIdentifier().getValue(), new File(uri).getAbsolutePath());
+            }
         }
         //If the folder doesn't contains only folders, add it
         else if(file.isDirectory()){
