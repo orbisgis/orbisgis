@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-04 14:33+0100\n"
+"POT-Creation-Date: 2017-11-29 10:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,46 +17,46 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: org/orbisgis/legend/thematic/recode/RecodedArea.java:64
-msgid "Value Classification - Area"
-msgstr ""
-
-#: org/orbisgis/legend/thematic/recode/RecodedLine.java:57
-msgid "Value Classification - Line"
-msgstr ""
-
-#: org/orbisgis/legend/thematic/recode/RecodedPoint.java:82
-msgid "Value Classification - Point"
-msgstr ""
-
-#: org/orbisgis/legend/thematic/constant/UniqueSymbolArea.java:62
-msgid "Unique Symbol - Area"
-msgstr ""
-
-#: org/orbisgis/legend/thematic/constant/UniqueSymbolPoint.java:64
-msgid "Unique Symbol - Point"
-msgstr ""
-
-#: org/orbisgis/legend/thematic/constant/UniqueSymbolLine.java:59
-msgid "Unique Symbol - Line"
-msgstr ""
-
-#: org/orbisgis/legend/thematic/categorize/CategorizedPoint.java:58
+#: org/orbisgis/legend/thematic/categorize/CategorizedPoint.java:94
 msgid "Interval Classification - Point"
 msgstr ""
 
-#: org/orbisgis/legend/thematic/categorize/CategorizedLine.java:40
-msgid "Interval Classification - Line"
-msgstr ""
-
-#: org/orbisgis/legend/thematic/categorize/CategorizedArea.java:46
+#: org/orbisgis/legend/thematic/categorize/CategorizedArea.java:82
 msgid "Interval Classification - Area"
 msgstr ""
 
-#: org/orbisgis/legend/thematic/proportional/ProportionalLine.java:54
+#: org/orbisgis/legend/thematic/categorize/CategorizedLine.java:76
+msgid "Interval Classification - Line"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/proportional/ProportionalLine.java:62
 msgid "Proportional Line"
 msgstr ""
 
-#: org/orbisgis/legend/thematic/proportional/ProportionalPoint.java:57
+#: org/orbisgis/legend/thematic/proportional/ProportionalPoint.java:65
 msgid "Proportional Point"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/constant/UniqueSymbolArea.java:70
+msgid "Unique Symbol - Area"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/constant/UniqueSymbolLine.java:67
+msgid "Unique Symbol - Line"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/constant/UniqueSymbolPoint.java:72
+msgid "Unique Symbol - Point"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/recode/RecodedArea.java:72
+msgid "Value Classification - Area"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/recode/RecodedPoint.java:89
+msgid "Value Classification - Point"
+msgstr ""
+
+#: org/orbisgis/legend/thematic/recode/RecodedLine.java:65
+msgid "Value Classification - Line"
 msgstr ""

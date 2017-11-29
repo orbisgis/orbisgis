@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-09 22:37+0200\n"
+"POT-Creation-Date: 2017-11-29 10:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: org/orbisgis/toolboxeditor/dataui/GeometryUI.java:149
 #: org/orbisgis/toolboxeditor/dataui/LiteralDataUI.java:597
-#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:172
+#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:175
 #: org/orbisgis/toolboxeditor/dataui/RawDataUI.java:216
 msgid "Paste the clipboard"
 msgstr ""
@@ -40,27 +40,27 @@ msgstr ""
 msgid "Select the SRID of the bounding box"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:300
+#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:311
 msgid "Updating the SRID values"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:328
+#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:339
 msgid "No SRID found."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:397
-#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:400
+#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:413
+#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:416
 #: org/orbisgis/toolboxeditor/utils/WaitLayerUI.java:59
 #: org/orbisgis/toolboxeditor/utils/WaitLayerUI.java:62
 msgid "Loading"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:398
+#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:414
 #: org/orbisgis/toolboxeditor/utils/WaitLayerUI.java:60
 msgid "fields"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:401
+#: org/orbisgis/toolboxeditor/dataui/BoundingBoxDataUI.java:417
 #: org/orbisgis/toolboxeditor/utils/WaitLayerUI.java:63
 msgid "source"
 msgstr ""
@@ -69,26 +69,26 @@ msgstr ""
 msgid "Select a value"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/dataui/JDBCValueUI.java:318
+#: org/orbisgis/toolboxeditor/dataui/JDBCValueUI.java:316
 msgid "Updating the column values"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/dataui/JDBCValueUI.java:431
+#: org/orbisgis/toolboxeditor/dataui/JDBCValueUI.java:429
 #, java-format
 msgid "First configure the JDBCColumn {0}."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/dataui/JDBCValueUI.java:434
+#: org/orbisgis/toolboxeditor/dataui/JDBCValueUI.java:432
 #: org/orbisgis/toolboxeditor/dataui/JDBCColumnUI.java:374
 #, java-format
 msgid "First configure the JDBCColumn {0}"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/dataui/JDBCTableUI.java:257
+#: org/orbisgis/toolboxeditor/dataui/JDBCTableUI.java:255
 msgid "First add a table to the Geocatalog"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/dataui/JDBCTableUI.java:395
+#: org/orbisgis/toolboxeditor/dataui/JDBCTableUI.java:393
 msgid "New_table"
 msgstr ""
 
@@ -295,7 +295,7 @@ msgstr ""
 msgid "{0}% done"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/editor/log/LogEditableElement.java:159
+#: org/orbisgis/toolboxeditor/editor/log/LogEditableElement.java:160
 msgid "Process cancelled by the user"
 msgstr ""
 
@@ -307,121 +307,121 @@ msgstr ""
 msgid "Process result :"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:195
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:196
 msgid "ToolBox"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:206
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:207
 msgid "Refresh the selected node."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:229
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:230
 msgid "Warning, no DataManager found."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:240
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:241
 msgid "Unable to restore previous configuration of the ToolBox."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:284
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:285
 msgid "Save of the OrbisGIS toolBox"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:286
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:287
 msgid "Unable to save ToolBox state."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:362
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:363
 #, java-format
 msgid ""
 "Unable to create the marshall objects.\n"
 "Cause : {0}."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:372
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:373
 #, java-format
 msgid ""
 "Unable to marshall the request object : {0}.\n"
 "Cause : {1}."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:387
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:388
 #, java-format
 msgid ""
 "Unable to marshall the answer xml.\n"
 "Cause : {0}."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:484
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:499
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:485
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:500
 msgid "Add a source"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:749
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:760
 #, java-format
 msgid "Unable to retrieve the process {0}."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:823
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:858
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:835
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:870
 #, java-format
 msgid ""
 "Unable to get the connection.\n"
 "Cause : {0}."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:920
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:932
 #, java-format
 msgid ""
 "Unable to get the column INFORMATION of the table {0} information.\n"
 "Cause : {1}."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:971
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:984
 #, java-format
 msgid ""
 "Unable to get the table {0} column list.\n"
 "Cause : {1}."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:985
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:998
 #, java-format
 msgid ""
 "Unable to get the column {0}.{1} value list.\n"
 "Cause : {2}."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:998
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1011
 msgid "AUTH_NAME"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1001
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1014
 #, java-format
 msgid ""
 "Error on getting the SRID list.\n"
 "Cause : {0}."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1263
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1276
 msgid "F_TABLE_CATALOG"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1264
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1277
 msgid "F_TABLE_SCHEMA"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1264
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1277
 msgid "F_TABLE_NAME"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1264
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1277
 msgid "TYPE"
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1267
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1280
 msgid "Geometry columns information of tables are not available."
 msgstr ""
 
-#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1313
+#: org/orbisgis/toolboxeditor/WpsClientImpl.java:1326
 msgid "Cannot read the table list"
 msgstr ""
