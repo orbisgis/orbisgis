@@ -56,6 +56,7 @@ public interface TableEditorActions extends ActionFactoryService<SourceTable> {
     String A_REMOVE_ROW = "A_REMOVE_ROW";
     //GROUP READ
     String A_REFRESH = "A_REFRESH";
+    String A_TOGGLE_GEOM = "A_TOGGLE_GEOM";
     String A_PREVIOUS_SELECTION = "A_PREVIOUS_SELECTION";
     String A_NEXT_SELECTION = "A_NEXT_SELECTION";
 

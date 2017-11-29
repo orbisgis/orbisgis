@@ -78,6 +78,7 @@ final class Main {
 
     //Minimum supported java version
     public static final char MIN_JAVA_VERSION = '7';
+    public static final char MAX_JAVA_VERSION = '8';
 
     protected static Framework m_fwk = null;
     /**
@@ -115,7 +116,7 @@ final class Main {
         BundleTools bundleTools = new BundleTools(LOGGER);
         parseCommandLine(args);
         //Check if the java version is greater than 1.6+
-        if (!isVersion(MIN_JAVA_VERSION)) {
+        if (!isVersion(MIN_JAVA_VERSION, MAX_JAVA_VERSION)) {
             JOptionPane.showMessageDialog(null, I18N.tr("OrbisGIS needs at least a java 1.7+"));
         } else {
             // Fetch application version
@@ -283,10 +284,16 @@ final class Main {
      * @param minJavaVersion
      * @return
      */
-    private static boolean isVersion(char minJavaVersion) {
+    private static boolean isVersion(char minJavaVersion, char maxJavaVersion) {
         String version = System.getProperty("java.version");
-        char minor = version.charAt(2);
-        if (minor >= minJavaVersion) {
+        char javaVersion=0;
+        if (version.charAt(0) == '1') {
+            javaVersion = version.charAt(2);
+        }
+        else{
+            javaVersion = version.charAt(0);
+        }
+        if (javaVersion >= minJavaVersion && javaVersion <= maxJavaVersion) {
             return true;
         }
         return false;
