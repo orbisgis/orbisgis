@@ -384,7 +384,7 @@ public class JDBCColumnUI implements DataUI {
                 if(dataMap.containsKey(uri) && dataMap.get(uri) != null){
                     List<Integer> indexList = new ArrayList<>();
                     String[] elements = dataMap.get(uri).toString().split("\\t");
-                    for (int i = 0; i < Math.min(model.getSize(), elements.length); i++) {
+                    for (int i = 0; i < model.getSize(); i++) {
                         if (model.getElementAt(i).getLabel().toUpperCase().equals(elements[i].toUpperCase())) {
                             indexList.add(i);
                         }
@@ -441,7 +441,7 @@ public class JDBCColumnUI implements DataUI {
             ListModel<ContainerItem<Object>> model = list.getModel();
             if(model.getSize()>0){
                 String columnList = "";
-                for(int i = 0; i<list.getSelectedIndices().length; i++){
+                for(int i: list.getSelectedIndices()){
                     if(columnList.isEmpty()){
                         columnList = model.getElementAt(i).getLabel();
                     }
