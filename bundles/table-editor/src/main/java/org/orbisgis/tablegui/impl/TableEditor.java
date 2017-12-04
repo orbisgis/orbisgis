@@ -807,10 +807,10 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
      * Show the selected field information
      */
     public void onMenuShowInformation() {
-        int col = popupCellAdress.x + 1;
+        String colName = table.getColumnModel().getColumn(popupCellAdress.x).getHeaderValue().toString();
         try (Connection connection = dataSource.getConnection()) {
             DatabaseMetaData meta = connection.getMetaData();
-            LOGGER.info(MetaData.getColumnInformations(meta, tableEditableElement.getTableReference(), col));
+            LOGGER.info(MetaData.getColumnInformationsByName(meta, tableEditableElement.getTableReference(), colName));
         } catch (SQLException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }

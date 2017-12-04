@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-13 14:55+0100\n"
+"POT-Creation-Date: 2017-11-29 10:56+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,49 +18,33 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: org/orbisgis/dbjobs/service/DriverFunctionContainerImpl.java:139
-msgid "Select the folder to import"
-msgstr ""
-
-#: org/orbisgis/dbjobs/service/DriverFunctionContainerImpl.java:141
-msgid "Select the folder to open"
-msgstr ""
-
-#: org/orbisgis/dbjobs/service/DriverFunctionContainerImpl.java:186
-msgid "Select the file to import"
-msgstr ""
-
-#: org/orbisgis/dbjobs/service/DriverFunctionContainerImpl.java:188
-msgid "Select the file to open"
-msgstr ""
-
-#: org/orbisgis/dbjobs/jobs/DropTable.java:74
+#: org/orbisgis/dbjobs/jobs/DropTable.java:83
 msgid "Drop selected tables"
 msgstr ""
 
-#: org/orbisgis/dbjobs/jobs/DropTable.java:92
+#: org/orbisgis/dbjobs/jobs/DropTable.java:101
 #, java-format
 msgid "Cannot remove the source {0}"
 msgstr ""
 
-#: org/orbisgis/dbjobs/jobs/DropTable.java:101
+#: org/orbisgis/dbjobs/jobs/DropTable.java:110
 msgctxt "Tables are database tables, drop means delete tables"
 msgid "Cannot drop the tables"
 msgstr ""
 
-#: org/orbisgis/dbjobs/jobs/DropTable.java:146
+#: org/orbisgis/dbjobs/jobs/DropTable.java:155
 msgid "Cannot remove permanently a table system."
 msgstr ""
 
-#: org/orbisgis/dbjobs/jobs/DropTable.java:147
+#: org/orbisgis/dbjobs/jobs/DropTable.java:156
 msgid "Remove GeoCatalog tables"
 msgstr ""
 
-#: org/orbisgis/dbjobs/jobs/DropTable.java:150
+#: org/orbisgis/dbjobs/jobs/DropTable.java:159
 msgid "Do you want..."
 msgstr ""
 
-#: org/orbisgis/dbjobs/jobs/DropTable.java:152
+#: org/orbisgis/dbjobs/jobs/DropTable.java:161
 #, java-format
 msgid ""
 "\n"
@@ -71,7 +55,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: org/orbisgis/dbjobs/jobs/DropTable.java:155
+#: org/orbisgis/dbjobs/jobs/DropTable.java:164
 #, java-format
 msgid ""
 "\n"
@@ -82,25 +66,66 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: org/orbisgis/dbjobs/jobs/DropTable.java:160
+#: org/orbisgis/dbjobs/jobs/DropTable.java:169
 msgid "Delete GeoCatalog tables"
 msgstr ""
 
-#: org/orbisgis/dbjobs/jobs/ImportFiles.java:71
+#: org/orbisgis/dbjobs/jobs/ExportInFileOperation.java:84
+msgid "Save the source in a file."
+msgstr ""
+
+#: org/orbisgis/dbjobs/jobs/ExportInFileOperation.java:91
+#, java-format
+msgid "The file {0} has been saved."
+msgstr ""
+
+#: org/orbisgis/dbjobs/jobs/ExportInFileOperation.java:93
+#, java-format
+msgid ""
+"Cannot create the file.\n"
+"Cause : {0}"
+msgstr ""
+
+#: org/orbisgis/dbjobs/jobs/ExportInFileOperation.java:103
+#, java-format
+msgid "Save the source : {0}"
+msgstr ""
+
+#: org/orbisgis/dbjobs/jobs/ImportFiles.java:89
+#: org/orbisgis/dbjobs/jobs/ImportFiles.java:109
 msgid "Import file"
 msgstr ""
 
-#: org/orbisgis/dbjobs/jobs/ImportFiles.java:88
+#: org/orbisgis/dbjobs/jobs/ImportFiles.java:130
 #, java-format
 msgid "No driver found for {0} extension"
 msgstr ""
 
-#: org/orbisgis/dbjobs/jobs/ImportFiles.java:92
-#: org/orbisgis/dbjobs/jobs/ImportFiles.java:98
-msgid "Cannot import the file"
+#: org/orbisgis/dbjobs/jobs/ImportFiles.java:134
+#: org/orbisgis/dbjobs/jobs/ImportFiles.java:140
+#, java-format
+msgid ""
+"Cannot import the file.\n"
+"Cause : {0}"
 msgstr ""
 
-#: org/orbisgis/dbjobs/jobs/ImportFiles.java:100
+#: org/orbisgis/dbjobs/jobs/ImportFiles.java:142
 #, java-format
 msgid "Importation done in {0} sec"
+msgstr ""
+
+#: org/orbisgis/dbjobs/service/DriverFunctionContainerImpl.java:153
+msgid "Select the folder to import"
+msgstr ""
+
+#: org/orbisgis/dbjobs/service/DriverFunctionContainerImpl.java:155
+msgid "Select the folder to open"
+msgstr ""
+
+#: org/orbisgis/dbjobs/service/DriverFunctionContainerImpl.java:201
+msgid "Select the file to import"
+msgstr ""
+
+#: org/orbisgis/dbjobs/service/DriverFunctionContainerImpl.java:203
+msgid "Select the file to open"
 msgstr ""
