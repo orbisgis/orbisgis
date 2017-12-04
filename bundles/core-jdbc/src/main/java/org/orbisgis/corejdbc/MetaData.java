@@ -381,6 +381,28 @@ public class MetaData {
         }
         return infos.toString();
     }
+
+    /**
+     * Show known column meta data using JDBC
+     * @param meta DatabaseMetaData instance
+     * @param tableReference Table identifier
+     * @param colName Column name
+     * @return Localised column information
+     * @throws SQLException
+     */
+    public static String getColumnInformationsByName(DatabaseMetaData meta, String tableReference, String colName) throws SQLException {
+        TableLocation table = TableLocation.parse(tableReference);
+        StringBuilder infos = new StringBuilder();
+        try(ResultSet rs = meta.getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
+            while (rs.next()) {
+                String str = rs.getString("COLUMN_NAME");
+                if(str != null && str.equals(colName)){
+                    infos.append(getColumnInformations(meta, tableReference, rs.getInt("ORDINAL_POSITION")));
+                }
+            }
+        }
+        return infos.toString();
+    }
     
     /**
      * Retrieves the table type available for a given table.
