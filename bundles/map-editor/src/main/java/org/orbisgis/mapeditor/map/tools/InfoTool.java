@@ -38,6 +38,9 @@ package org.orbisgis.mapeditor.map.tools;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.geom.Rectangle2D;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,11 +49,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Observable;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.sif.edition.Editor;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.tableeditorapi.TableEditableElement;
@@ -73,13 +78,19 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class InfoTool extends AbstractRectangleTool {
 
+    public static final String POPULATE_VIEW_JOB="POPULATE_VIEW_JOB";
+    public static final String JOB_END="JOB_END";
+
     private static Logger LOGGER = LoggerFactory.getLogger(InfoTool.class);
     private final EditorManager editorManager;
     private static I18n I18N = I18nFactory.getI18n(InfoTool.class);
+    private ExecutorService executorService;
+    private SwingWorkerPM runningJob;
 
 
-    public InfoTool(EditorManager editorManager){
+    public InfoTool(EditorManager editorManager, ExecutorService executorService){
         this.editorManager=editorManager;
+        this.executorService = executorService;
     }
 
     @Override
@@ -100,9 +111,26 @@ public class InfoTool extends AbstractRectangleTool {
         if (minx < tm.getValues()[0]) {
             intersects = false;
         }
-        new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), layer, intersects, editorManager).execute();
+        SwingWorkerPM sw = new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), layer, intersects, editorManager);
+        sw.addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class, this, "onPropertyChange", ""));
+        if(runningJob != null){
+            runningJob.cancel();
+        }
+        if(executorService == null){
+            sw.execute();
+        }
+        else{
+            executorService.execute(sw);
+        }
+        runningJob = sw;
+    }
 
-
+    public void onPropertyChange(PropertyChangeEvent event){
+        if(event.getPropertyName().equals(POPULATE_VIEW_JOB)){
+            if(event.getNewValue().equals(JOB_END)){
+                runningJob = null;
+            }
+        }
     }
 
     @Override
@@ -123,7 +151,7 @@ public class InfoTool extends AbstractRectangleTool {
     /**
      * This class is used to print the selected features in the console, or in the popup if there is only one feature.
      */
-    private static class PopulateViewJob extends SwingWorker {
+    private static final class PopulateViewJob extends SwingWorkerPM<Object, Object> {
 
         private final Envelope envelope;
         private final ILayer layer;
@@ -137,6 +165,7 @@ public class InfoTool extends AbstractRectangleTool {
             this.layer = layer;
             this.intersects = intersects;
             this.editorManager = editorManager;
+            getProgressMonitor().setTaskName(toString());
         }
 
         @Override
@@ -145,7 +174,7 @@ public class InfoTool extends AbstractRectangleTool {
         }
 
         @Override
-        protected Object doInBackground() throws Exception {
+        protected Object doInBackground() {
             Geometry envGeom = ToolManager.toolsGeometryFactory.toGeometry(envelope);
             TableLocation tableLocation = TableLocation.parse(layer.getTableReference());
             try (Connection connection = layer.getDataManager().getDataSource().getConnection()) {

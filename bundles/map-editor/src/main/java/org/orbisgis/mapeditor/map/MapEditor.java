@@ -494,7 +494,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         actions.addAction(new ActionAutomaton(MapEditorAction.A_PAN,new PanTool(),this).setLogicalGroup("navigation"));
        
         // Selection tools
-        actions.addAction(new ActionAutomaton(MapEditorAction.A_INFO_TOOL,new InfoTool(editorManager),this)
+        actions.addAction(new ActionAutomaton(MapEditorAction.A_INFO_TOOL,new InfoTool(editorManager, executorService),this)
                 .addTrackedMapContextProperty(MapContext.PROP_SELECTEDLAYERS)
                 .addTrackedMapContextProperty(MapContext.PROP_SELECTEDSTYLES).setLogicalGroup("selection"));
         
