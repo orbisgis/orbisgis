@@ -415,16 +415,16 @@ public class Catalog extends JPanel implements DockingPanel, TitleActionBar, Pop
             }
             //Popup:Add
             if(isEmbeddedDataBase) {
-                popupActions.addAction(new DefaultAction(PopupMenu.M_ADD,I18N.tr("Add")).setMenuGroup(true).setLogicalGroup(PopupMenu.GROUP_ADD));
+                popupActions.addAction(new DefaultAction(PopupMenu.M_ADD,I18N.tr("Link to")).setMenuGroup(true).setLogicalGroup(PopupMenu.GROUP_ADD));
                 //Popup:Add:File
                 popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FILE,I18N.tr("File"),
-                        I18N.tr("Add a file from hard drive."),
+                        I18N.tr("Link a file from hard drive."),
                         GeocatalogIcon.getIcon("page_white_add"),EventHandler.create(ActionListener.class,
                         this,"onMenuAddLinkedFile"),KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)
                        ).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)).setParent(PopupMenu.M_ADD));
                 //Popup:Add:Folder
                 popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FOLDER,I18N.tr("Folder"),
-                        I18N.tr("Add a set of file from an hard drive folder."),
+                        I18N.tr("Link a set of file from an hard drive folder."),
                         GeocatalogIcon.getIcon("folder_add"),EventHandler.create(ActionListener.class,
                         this,"onMenuAddFilesFromFolder"),KeyStroke.getKeyStroke("ctrl alt O")).setParent(PopupMenu.M_ADD));
 
