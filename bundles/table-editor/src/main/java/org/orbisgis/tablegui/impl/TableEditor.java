@@ -284,7 +284,15 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         if (tableEditableElement.isFiltered()) {
             onMenuFilterRows();
         } else {
+            //Save the selection
+            IntegerUnion selection = getTableModelSelection(0);
+            //Clear the filter
             onMenuClearFilter();
+            //Load the selection
+            List<Integer> ranges = selection.getValueRanges();
+            for(int i=0; i<ranges.size(); i+=2){
+                table.addRowSelectionInterval(ranges.get(i), ranges.get(i+1));
+            }
         }
     }
 
