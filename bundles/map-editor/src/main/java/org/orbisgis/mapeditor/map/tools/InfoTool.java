@@ -38,6 +38,9 @@ package org.orbisgis.mapeditor.map.tools;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.geom.Rectangle2D;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -75,10 +78,14 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class InfoTool extends AbstractRectangleTool {
 
+    public static final String POPULATE_VIEW_JOB="POPULATE_VIEW_JOB";
+    public static final String JOB_END="JOB_END";
+
     private static Logger LOGGER = LoggerFactory.getLogger(InfoTool.class);
     private final EditorManager editorManager;
     private static I18n I18N = I18nFactory.getI18n(InfoTool.class);
     private ExecutorService executorService;
+    private SwingWorkerPM runningJob;
 
 
     public InfoTool(EditorManager editorManager, ExecutorService executorService){
@@ -105,14 +112,25 @@ public class InfoTool extends AbstractRectangleTool {
             intersects = false;
         }
         SwingWorkerPM sw = new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), layer, intersects, editorManager);
+        sw.addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class, this, "onPropertyChange", ""));
+        if(runningJob != null){
+            runningJob.cancel();
+        }
         if(executorService == null){
             sw.execute();
         }
         else{
             executorService.execute(sw);
         }
+        runningJob = sw;
+    }
 
-
+    public void onPropertyChange(PropertyChangeEvent event){
+        if(event.getPropertyName().equals(POPULATE_VIEW_JOB)){
+            if(event.getNewValue().equals(JOB_END)){
+                runningJob = null;
+            }
+        }
     }
 
     @Override
