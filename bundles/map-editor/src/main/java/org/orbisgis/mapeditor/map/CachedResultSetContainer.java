@@ -105,7 +105,14 @@ public class CachedResultSetContainer implements ResultSetProviderFactory {
                     readRowSet = layer.getDataManager().createReadRowSet();
                     // If the used PK is hidden (because it is system pk)
                     if(integerPK.isEmpty()) {
-                        readRowSet.setCommand("SELECT " + defaultResultSetProvider.getPkName() + ", * FROM "+tableRef);
+                        String defaultPk = defaultResultSetProvider.getPkName();
+                        if(defaultPk.isEmpty()) {
+                            LOGGER.warn(I18N.tr("Unable to find a PrimaryKey for the table {0}.", tableRef));
+                            readRowSet.setCommand("SELECT * FROM " + tableRef);
+                        }
+                        else{
+                            readRowSet.setCommand("SELECT " + defaultPk + ", * FROM " + tableRef);
+                        }
                     }
                     readRowSet.setFetchSize(FETCH_SIZE);
                     readRowSet.setCloseDelay(ROWSET_FREE_DELAY);
