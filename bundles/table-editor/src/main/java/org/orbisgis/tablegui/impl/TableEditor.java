@@ -100,6 +100,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Edit a data source through a grid GUI.
  * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS
  */
 public class TableEditor extends JPanel implements EditorDockable, SourceTable,TableEditListener {
     protected final static I18n I18N = I18nFactory.getI18n(TableEditor.class);
@@ -662,6 +663,17 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         int rowId = table.convertRowIndexToModel(viewRowId);
         //Build the appropriate search filter
         Object value = tableModel.getValueAt(rowId, colId);
+
+        //Get the good column id, taking into account the hidden columns
+        int fixedViewColId = -1;
+        String name = table.getColumnModel().getColumn(popupCellAdress.x).getHeaderValue().toString();
+        for(int i=0; i<tableModel.getColumnCount(); i++){
+            if(tableModel.getColumnName(i) != null && tableModel.getColumnName(i).equalsIgnoreCase(name)){
+                fixedViewColId = i;
+            }
+        }
+        colId = table.convertColumnIndexToModel(fixedViewColId);
+
         DefaultActiveFilter filter = null;
         if (value == null) {
             filter = new FieldsContainsFilterFactory.
@@ -845,8 +857,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         if (selectionModelRowId.isEmpty() && tableSorter.isFiltered()) {
             selectionModelRowId.addAll(tableSorter.getViewToModelIndex());
         }
-        executorService.execute(new ComputeFieldStatistics(selectionModelRowId, dataSource, popupCellAdress
-                .x, tableEditableElement.getTableReference()));
+        String colName = table.getColumnModel().getColumn(popupCellAdress.x).getHeaderValue().toString();
+        executorService.execute(new ComputeFieldStatistics(selectionModelRowId, dataSource, colName,
+                tableEditableElement.getTableReference()));
     }
 
     /**

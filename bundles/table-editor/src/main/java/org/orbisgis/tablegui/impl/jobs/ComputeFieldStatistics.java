@@ -60,7 +60,7 @@ public class ComputeFieldStatistics extends SwingWorkerPM {
     private static final Logger LOGGER = LoggerFactory.getLogger("gui." + ComputeFieldStatistics.class);
     private Set<Integer> statisticsRowFilter;
     private DataSource ds;
-    private int columnId;
+    private String columnName;
     private String table;
 
     /**
@@ -68,14 +68,14 @@ public class ComputeFieldStatistics extends SwingWorkerPM {
      *
      * @param statisticsRowFilter Row id filter (not primary key)
      * @param dataSource          JDBC Datasource
-     * @param columnId            Column Id [0-n]
+     * @param columnName          Column name
      * @param tableName           Table identifier
      */
-    public ComputeFieldStatistics(Set<Integer> statisticsRowFilter, DataSource dataSource, int columnId,
+    public ComputeFieldStatistics(Set<Integer> statisticsRowFilter, DataSource dataSource, String columnName,
                                   String tableName) {
         this.statisticsRowFilter = statisticsRowFilter;
         this.ds = dataSource;
-        this.columnId = columnId;
+        this.columnName = columnName;
         table = tableName;
         setTaskName(I18N.tr("Compute column statistics."));
     }
@@ -83,10 +83,6 @@ public class ComputeFieldStatistics extends SwingWorkerPM {
     @Override
     protected Object doInBackground() throws Exception {
         try {
-            String fieldName;
-            try (Connection connection = ds.getConnection()) {
-                fieldName = JDBCUtilities.getFieldName(connection.getMetaData(), table, columnId + 1);
-            }
             boolean doRowFiltering = !statisticsRowFilter.isEmpty();
             String[] stats;
             if (doRowFiltering) {
@@ -97,16 +93,16 @@ public class ComputeFieldStatistics extends SwingWorkerPM {
                     sortedSet = new IntegerUnion(statisticsRowFilter);
                 }
                 try (Connection connection = ds.getConnection()) {
-                    stats = ReadTable.computeStatsLocal(connection, table, fieldName, sortedSet, this.getProgressMonitor());
+                    stats = ReadTable.computeStatsLocal(connection, table, columnName, sortedSet, this.getProgressMonitor());
                 }
             } else {
                 try (Connection connection = ds.getConnection()) {
-                    stats = ReadTable.computeStatsSQL(connection, table, fieldName, this.getProgressMonitor());
+                    stats = ReadTable.computeStatsSQL(connection, table, columnName, this.getProgressMonitor());
                 }
             }
             // Show table statistics
             StringBuilder message = new StringBuilder();
-            message.append(I18N.tr("\nTable {0}, statistics of the column {1}.\n", table, fieldName));
+            message.append(I18N.tr("\nTable {0}, statistics of the column {1}.\n", table, columnName));
             message.append(I18N.tr("Row count : {0}\n", stats[ReadTable.STATS.COUNT.ordinal()]));
             message.append(I18N.tr("Minimum : {0}\n", stats[ReadTable.STATS.MIN.ordinal()]));
             message.append(I18N.tr("Maximum : {0}\n", stats[ReadTable.STATS.MAX.ordinal()]));
