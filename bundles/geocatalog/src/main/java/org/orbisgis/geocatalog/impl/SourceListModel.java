@@ -76,7 +76,8 @@ public class SourceListModel extends AbstractListModel<ContainerItemProperties> 
     private static final I18n I18N = I18nFactory.getI18n(SourceListModel.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(SourceListModel.class);
     private static final long serialVersionUID = 1L;
-    private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE", "SYSTEM TABLE","LINKED TABLE","VIEW", "EXTERNAL"};
+    private static final String[] SHOWN_TABLE_TYPES = new String[]{"TABLE", "SYSTEM TABLE","LINKED TABLE","VIEW",
+            "EXTERNAL", "TABLE LINK"};
     /** Non filtered tables */
     private List<Map<IFilter.ATTRIBUTES, String>> allTables = new ArrayList<>();
     /** Filtered tables */
