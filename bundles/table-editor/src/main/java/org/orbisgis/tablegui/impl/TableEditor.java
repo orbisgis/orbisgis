@@ -160,7 +160,16 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         //Add a listener to the source manager to close the table when
         //the source is removed
         this.tableEditableElement = element;
-        tableEditableElement.setExcludeGeometry(true);
+        try {
+            boolean isTableGeom = SFSUtilities.hasGeometryField(tableEditableElement.getRowSet());
+            boolean isOnlyGeomFields = SFSUtilities.getGeometryFields(tableEditableElement.getRowSet()).size() ==
+                    tableEditableElement.getRowSet().getMetaData().getColumnCount();
+            boolean isLinkedTable = JDBCUtilities.isLinkedTable(tableEditableElement.getDataManager().getDataSource()
+                    .getConnection(), tableEditableElement.getTableReference());
+            tableEditableElement.setExcludeGeometry(isTableGeom && !isOnlyGeomFields && !isLinkedTable);
+        } catch (EditableElementException|SQLException e) {
+            tableEditableElement.setExcludeGeometry(true);
+        }
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setTitleIcon(TableEditorIcon.getIcon("table"));
         dockingPanelParameters.setDefaultDockingLocation(new DockingLocation(DockingLocation.Location
@@ -214,7 +223,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             boolean isTableGeom = SFSUtilities.hasGeometryField(tableEditableElement.getRowSet());
             boolean isOnlyGeomFields = SFSUtilities.getGeometryFields(tableEditableElement.getRowSet()).size() ==
                     tableEditableElement.getRowSet().getMetaData().getColumnCount();
-            if(isTableGeom && !isOnlyGeomFields){
+            boolean isLinkedTable = JDBCUtilities.isLinkedTable(tableEditableElement.getDataManager().getDataSource()
+                    .getConnection(), tableEditableElement.getTableReference());
+            if(isTableGeom && !isOnlyGeomFields && !isLinkedTable){
                 actions.add(new DefaultAction(TableEditorActions.A_TOGGLE_GEOM, I18N.tr("Toggle geometry display"),
                         TableEditorIcon.getIcon("table_geometry"),
                         EventHandler.create(ActionListener.class, this, "onMenuToggleGeometry"))

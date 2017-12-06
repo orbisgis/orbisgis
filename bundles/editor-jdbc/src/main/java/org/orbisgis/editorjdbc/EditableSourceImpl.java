@@ -123,7 +123,7 @@ public class EditableSourceImpl extends AbstractEditableElement implements Edita
     @Override
     public ReversibleRowSet getRowSet() throws EditableElementException {
         if(rowSet == null) {
-            logger.warn("Get rowset without opening it"); // Developer warning
+            logger.debug("Get rowset without opening it"); // Developer warning
             open(new NullProgressMonitor());
         }
         return rowSet;
