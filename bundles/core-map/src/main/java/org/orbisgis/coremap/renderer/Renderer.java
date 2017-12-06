@@ -195,7 +195,13 @@ public abstract class Renderer {
                     Set<String> fields = fv.getResult();
                     try(ResultSetProviderFactory.ResultSetProvider resultSetProvider = layerDataFactory.getResultSetProvider(layer, rulesProgress)) {
                         try(SpatialResultSet rs = resultSetProvider.execute(rulesProgress, extent, fields)) {
-                            int pkColumn = rs.findColumn(resultSetProvider.getPkName());
+                            //Workaround because H2 linked table doesn't contains PK or _ROWID_
+                            String pkName = resultSetProvider.getPkName();
+                            int pkColumn = -1;
+                            if(pkName != null && !pkName.isEmpty()) {
+                                pkColumn = rs.findColumn(resultSetProvider.getPkName());
+                            }
+                            //End workaround
                             int fieldID = rs.getMetaData().unwrap(SpatialResultSetMetaData.class).getFirstGeometryFieldIndex();
                             ProgressMonitor rowSetProgress;
                             // Read row count for progress monitor
@@ -217,7 +223,12 @@ public abstract class Renderer {
                                 // Do not display the geometry when the envelope
                                 //doesn't intersect the current mapcontext area.
                                 if (theGeom == null || theGeom.getEnvelopeInternal().intersects(extent)) {
-                                    long row = rs.getLong(pkColumn);
+                                    //Workaround because H2 linked table doesn't contains PK or _ROWID_
+                                    long row = -1;
+                                    if(pkColumn != -1){
+                                        rs.getLong(pkColumn);
+                                    }
+                                    //End workaround
                                     boolean selected = selectedRows.contains(row);
 
                                     beginFeature(row, rs);
