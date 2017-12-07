@@ -199,7 +199,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
     @Override
     public void tableChange(TableEditEvent event) {
         if (event.getUndoableEdit() == null && !table.isEditing()) {
-            executorService.execute(new RefreshTableJob(tableModel, tableEditableElement, event, table));
+            executorService.execute(new RefreshTableJob(tableModel, event, this));
         } else {
             if (event.getUndoableEdit() != null) {
                 undoManager.addEdit(new EditorUndoableEdit(event.getUndoableEdit()));
@@ -909,7 +909,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         }
     }
 
-    private void quickAutoResize() {
+    public void quickAutoResize() {
         autoResizeColWidth(Math.min(5, tableModel.getRowCount()));
     }
 

@@ -103,38 +103,18 @@ public class ActionRemoveColumn extends AbstractAction implements WpsJobStateLis
     public void actionPerformed(ActionEvent actionEvent) {
         if(editor.getTableEditableElement().isEditing()) {
             if (wpsClient != null) {
-                TableLocation table = TableLocation.parse(editor.getTableEditableElement().getTableReference());
-                int columnIndex = editor.getPopupCellAdress().x + 1;
-                DataSource dataSource = editor.getTableEditableElement().getDataManager().getDataSource();
-                try (Connection connection = dataSource.getConnection()) {
-                    String columnName = "";
-                    // Read column name
-                    DatabaseMetaData meta = connection.getMetaData();
-                    int response = JOptionPane.showConfirmDialog(editor,
-                            I18N.tr("Are you sure to remove the column {0} ?", JDBCUtilities.getFieldName(meta, table.getTable(), columnIndex)),
-                            I18N.tr("Deletion of a column"),
-                            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-                    if(response == JOptionPane.YES_OPTION) {
-                        try (ResultSet rs = meta.getColumns(table.getCatalog(), table.getSchema(), table.getTable(), null)) {
-                            while (rs.next()) {
-                                if (rs.getInt("ORDINAL_POSITION") == columnIndex) {
-                                    columnName = rs.getString("COLUMN_NAME");
-                                    break;
-                                }
-                            }
-                        }
-                        if (columnName.isEmpty()) {
-                            throw new SQLException(I18N.tr("Column not found"));
-                        }
-
-                        Map<URI, Object> dataMap = new HashMap<>();
-                        dataMap.put(INPUT_TABLE, editor.getTableEditableElement().getTableReference());
-                        dataMap.put(INPUT_COLUMN, columnName);
-                        //Run the service
-                        jobId = wpsClient.executeInternalProcess(PROCESS_URI, dataMap, this);
-                    }
-                } catch (SQLException ex) {
-                    logger.error(ex.getLocalizedMessage(), ex);
+                String columnName = editor.getTable().getColumnModel().getColumn(editor.getPopupCellAdress().x)
+                        .getHeaderValue().toString();
+                int response = JOptionPane.showConfirmDialog(editor,
+                        I18N.tr("Are you sure to remove the column {0} ?", columnName),
+                        I18N.tr("Deletion of a column"),
+                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if(response == JOptionPane.YES_OPTION) {
+                    Map<URI, Object> dataMap = new HashMap<>();
+                    dataMap.put(INPUT_TABLE, editor.getTableEditableElement().getTableReference());
+                    dataMap.put(INPUT_COLUMN, columnName);
+                    //Run the service
+                    jobId = wpsClient.executeInternalProcess(PROCESS_URI, dataMap, this);
                 }
             }
         }
