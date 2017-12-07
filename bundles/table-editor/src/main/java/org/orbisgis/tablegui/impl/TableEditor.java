@@ -163,7 +163,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         try {
             boolean isTableGeom = SFSUtilities.hasGeometryField(tableEditableElement.getRowSet());
             boolean isOnlyGeomFields = SFSUtilities.getGeometryFields(tableEditableElement.getRowSet()).size() ==
-                    tableEditableElement.getRowSet().getMetaData().getColumnCount();
+                    JDBCUtilities.getFieldNames(tableEditableElement.getDataManager().getDataSource().getConnection()
+                            .getMetaData(), tableEditableElement.getTableReference()).size();
             boolean isLinkedTable = JDBCUtilities.isLinkedTable(tableEditableElement.getDataManager().getDataSource()
                     .getConnection(), tableEditableElement.getTableReference());
             tableEditableElement.setExcludeGeometry(isTableGeom && !isOnlyGeomFields && !isLinkedTable);
@@ -222,7 +223,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         try {
             boolean isTableGeom = SFSUtilities.hasGeometryField(tableEditableElement.getRowSet());
             boolean isOnlyGeomFields = SFSUtilities.getGeometryFields(tableEditableElement.getRowSet()).size() ==
-                    tableEditableElement.getRowSet().getMetaData().getColumnCount();
+                    JDBCUtilities.getFieldNames(tableEditableElement.getDataManager().getDataSource().getConnection()
+                            .getMetaData(), tableEditableElement.getTableReference()).size();
             boolean isLinkedTable = JDBCUtilities.isLinkedTable(tableEditableElement.getDataManager().getDataSource()
                     .getConnection(), tableEditableElement.getTableReference());
             if(isTableGeom && !isOnlyGeomFields && !isLinkedTable){

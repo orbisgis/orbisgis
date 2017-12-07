@@ -259,7 +259,6 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         }
         if(excludeGeomFields) {
             List<String> geomFields = SFSUtilities.getGeometryFields(getConnection(), location);
-            if(geomFields.size() < getColumnCount())
             for (String geomField : geomFields) {
                 cachedColumnNames.remove(geomField);
             }
