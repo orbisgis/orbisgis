@@ -100,6 +100,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Edit a data source through a grid GUI.
  * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS
  */
 public class TableEditor extends JPanel implements EditorDockable, SourceTable,TableEditListener {
     protected final static I18n I18N = I18nFactory.getI18n(TableEditor.class);
@@ -159,7 +160,17 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         //Add a listener to the source manager to close the table when
         //the source is removed
         this.tableEditableElement = element;
-        tableEditableElement.setExcludeGeometry(true);
+        try {
+            boolean isTableGeom = SFSUtilities.hasGeometryField(tableEditableElement.getRowSet());
+            boolean isOnlyGeomFields = SFSUtilities.getGeometryFields(tableEditableElement.getRowSet()).size() ==
+                    JDBCUtilities.getFieldNames(tableEditableElement.getDataManager().getDataSource().getConnection()
+                            .getMetaData(), tableEditableElement.getTableReference()).size();
+            boolean isLinkedTable = JDBCUtilities.isLinkedTable(tableEditableElement.getDataManager().getDataSource()
+                    .getConnection(), tableEditableElement.getTableReference());
+            tableEditableElement.setExcludeGeometry(isTableGeom && !isOnlyGeomFields && !isLinkedTable);
+        } catch (EditableElementException|SQLException e) {
+            tableEditableElement.setExcludeGeometry(true);
+        }
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setTitleIcon(TableEditorIcon.getIcon("table"));
         dockingPanelParameters.setDefaultDockingLocation(new DockingLocation(DockingLocation.Location
@@ -189,7 +200,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
     @Override
     public void tableChange(TableEditEvent event) {
         if (event.getUndoableEdit() == null && !table.isEditing()) {
-            executorService.execute(new RefreshTableJob(tableModel, tableEditableElement, event, table));
+            executorService.execute(new RefreshTableJob(tableModel, event, this));
         } else {
             if (event.getUndoableEdit() != null) {
                 undoManager.addEdit(new EditorUndoableEdit(event.getUndoableEdit()));
@@ -212,8 +223,11 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         try {
             boolean isTableGeom = SFSUtilities.hasGeometryField(tableEditableElement.getRowSet());
             boolean isOnlyGeomFields = SFSUtilities.getGeometryFields(tableEditableElement.getRowSet()).size() ==
-                    tableEditableElement.getRowSet().getMetaData().getColumnCount();
-            if(isTableGeom && !isOnlyGeomFields){
+                    JDBCUtilities.getFieldNames(tableEditableElement.getDataManager().getDataSource().getConnection()
+                            .getMetaData(), tableEditableElement.getTableReference()).size();
+            boolean isLinkedTable = JDBCUtilities.isLinkedTable(tableEditableElement.getDataManager().getDataSource()
+                    .getConnection(), tableEditableElement.getTableReference());
+            if(isTableGeom && !isOnlyGeomFields && !isLinkedTable){
                 actions.add(new DefaultAction(TableEditorActions.A_TOGGLE_GEOM, I18N.tr("Toggle geometry display"),
                         TableEditorIcon.getIcon("table_geometry"),
                         EventHandler.create(ActionListener.class, this, "onMenuToggleGeometry"))
@@ -662,13 +676,16 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         int rowId = table.convertRowIndexToModel(viewRowId);
         //Build the appropriate search filter
         Object value = tableModel.getValueAt(rowId, colId);
+
+        String name = table.getColumnModel().getColumn(popupCellAdress.x).getHeaderValue().toString();
+
         DefaultActiveFilter filter = null;
         if (value == null) {
             filter = new FieldsContainsFilterFactory.
-                    FilterParameters(colId, null, true, true);
+                    FilterParameters(name, null, true, true);
         } else {
             filter = new FieldsContainsFilterFactory.
-                    FilterParameters(colId, value.toString(), true, true);
+                    FilterParameters(name, value.toString(), true, true);
         }
 
         //Clear current filter
@@ -845,8 +862,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         if (selectionModelRowId.isEmpty() && tableSorter.isFiltered()) {
             selectionModelRowId.addAll(tableSorter.getViewToModelIndex());
         }
-        executorService.execute(new ComputeFieldStatistics(selectionModelRowId, dataSource, popupCellAdress
-                .x, tableEditableElement.getTableReference()));
+        String colName = table.getColumnModel().getColumn(popupCellAdress.x).getHeaderValue().toString();
+        executorService.execute(new ComputeFieldStatistics(selectionModelRowId, dataSource, colName,
+                tableEditableElement.getTableReference()));
     }
 
     /**
@@ -893,7 +911,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         }
     }
 
-    private void quickAutoResize() {
+    public void quickAutoResize() {
         autoResizeColWidth(Math.min(5, tableModel.getRowCount()));
     }
 

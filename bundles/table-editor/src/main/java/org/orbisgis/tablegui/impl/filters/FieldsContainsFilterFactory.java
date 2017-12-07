@@ -59,6 +59,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.MetaData;
@@ -128,6 +129,9 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 }      
                 if(params.getColumnId()!=-1) {
                         fieldSelection.setSelectedIndex(params.getColumnId()+1);
+                }
+                else{
+                    fieldSelection.setSelectedItem(params.getColumnName());
                 }
                 filterFields.add(fieldSelection);
                 // Match Case
@@ -240,6 +244,9 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                                         // A specific field
                                         String fieldName = rowSet.getMetaData().getColumnName(params.getColumnId() + 1);
                                         addFieldWhere(request, fieldName);
+                                    }
+                                    else if (params.getColumnName() != null){
+                                        addFieldWhere(request, params.getColumnName());
                                     } else {
                                         // All field
                                         int colCount = rowSet.getMetaData().getColumnCount();
@@ -277,6 +284,16 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                                                 progressMonitor.endTask();
                                                 rowId++;
                                             }
+                                        }
+                                        else if (params.getColumnName() != null) {
+                                            int colId = JDBCUtilities.getFieldIndex(rowSet.getMetaData(), params.getColumnName());
+                                            while(rowSet.next()) {
+                                                if(isFieldContains(rowSet.getString(colId))) {
+                                                    filteredRows.add(rowId);
+                                                }
+                                                progressMonitor.endTask();
+                                                rowId++;
+                                            }
                                         } else {
                                             while(rowSet.next()) {
                                                 int columnCount = rowSet.getMetaData().getColumnCount();
@@ -308,6 +325,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
         public static class FilterParameters extends DefaultActiveFilter {
                 private static final long serialVersionUID = 2L;
                 private int columnId;
+                private String columnName;
                 private String searchedChars;
                 private boolean matchCase;
                 private boolean wholeWord;
@@ -321,11 +339,21 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 }
 
                 public FilterParameters(int columnId, String searchedChars, boolean matchCase, boolean wholeWord) {
-                        super(FieldsContainsFilterFactory.FACTORY_ID,searchedChars);
-                        this.columnId = columnId;
-                        this.searchedChars = searchedChars;
-                        this.matchCase = matchCase;
-                        this.wholeWord = wholeWord;
+                    super(FieldsContainsFilterFactory.FACTORY_ID,searchedChars);
+                    this.columnId = columnId;
+                    this.columnName = null;
+                    this.searchedChars = searchedChars;
+                    this.matchCase = matchCase;
+                    this.wholeWord = wholeWord;
+                }
+
+                public FilterParameters(String columnName, String searchedChars, boolean matchCase, boolean wholeWord) {
+                    super(FieldsContainsFilterFactory.FACTORY_ID,searchedChars);
+                    this.columnId = -1;
+                    this.columnName = columnName;
+                    this.searchedChars = searchedChars;
+                    this.matchCase = matchCase;
+                    this.wholeWord = wholeWord;
                 }
 
                 @Override
@@ -350,7 +378,11 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 * @return Data model Column id
                 */
                 public int getColumnId() {
-                        return columnId;
+                    return columnId;
+                }
+
+                public String getColumnName() {
+                    return columnName;
                 }
 
                 public boolean isMatchCase() {

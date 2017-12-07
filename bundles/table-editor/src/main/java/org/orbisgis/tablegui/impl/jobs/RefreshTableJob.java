@@ -1,12 +1,12 @@
 package org.orbisgis.tablegui.impl.jobs;
 
+import org.orbisgis.commons.progress.ProgressMonitor;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.corejdbc.TableEditEvent;
 import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.common.LongUnion;
+import org.orbisgis.editorjdbc.EditableSource;
 import org.orbisgis.sif.edition.EditableElementException;
-import org.orbisgis.tableeditorapi.TableEditableElement;
-import org.orbisgis.tablegui.impl.DataSourceRowSorter;
 import org.orbisgis.tablegui.impl.DataSourceTableModel;
 import org.orbisgis.tablegui.impl.TableEditor;
 import org.slf4j.Logger;
@@ -32,16 +32,18 @@ public class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
     private static final Logger LOGGER = LoggerFactory.getLogger("gui." + RefreshTableJob.class);
     private DataSourceTableModel model;
     private JTable tableComp;
-    private TableEditableElement table;
+    private EditableSource table;
     private List<TableModelEvent> evts = new ArrayList<>();
     private TableEditEvent event;
+    private TableEditor tableEditor;
+    private ProgressMonitor pm;
 
-    public RefreshTableJob(DataSourceTableModel model, TableEditableElement table, TableEditEvent event,
-                           JTable tableComp) {
+    public RefreshTableJob(DataSourceTableModel model, TableEditEvent event, TableEditor tableEditor) {
         this.model = model;
-        this.table = table;
+        this.table = tableEditor.getTableEditableElement();
         this.event = event;
-        this.tableComp = tableComp;
+        this.tableComp = tableEditor.getTable();
+        this.tableEditor = tableEditor;
         setTaskName(I18N.tr("Refresh table content"));
     }
 
@@ -80,33 +82,48 @@ public class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
                 model.fireTableChanged(evt);
             }
         }
+        tableEditor.quickAutoResize();
     }
 
     @Override
     protected Boolean doInBackground() throws Exception {
         if(event.getColumn() == TableModelEvent.ALL_COLUMNS || event.getFirstRowPK() == null || event.getLastRowPK() == null) {
+            this.pm = this.getProgressMonitor().startTask(I18N.tr("Refresh table content"), 6);
             List<String> columnTypes = new ArrayList<>();
             List<String> columnNames = new ArrayList<>();
             try {
+                ProgressMonitor progress;
                 try {
+                    progress = pm.startTask(I18N.tr("Check table open"), 1);
                     if(!table.isOpen()) {
-                        table.open(getProgressMonitor());
+                        table.open(progress);
                     }
+                    progress.endTask();
+                    progress = pm.startTask(I18N.tr("Cache table information"), 1);
                     ResultSetMetaData meta = table.getRowSet().getMetaData();
-                    for (int col = 1; col < meta.getColumnCount(); col++) {
-                        columnNames.add(meta.getColumnName(col));
+                    for (int col = 1; col <= meta.getColumnCount(); col++) {
+                        String colName = "";
+                        if(meta.getColumnName(col) != null) {
+                            colName = meta.getColumnName(col);
+                        }
+                        columnNames.add(colName);
                         columnTypes.add(meta.getColumnTypeName(col));
                     }
+                    progress.endTask();
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
-                // The row count may have changed, reset the rowset
-                table.getRowSet().execute();
+                // The row and column count may have changed, reset the rowset
+                table.close(pm);
+                table.open(pm);
                 try {
+                    progress = pm.startTask(I18N.tr("Update table state"), 1);
                     ResultSetMetaData meta = table.getRowSet().getMetaData();
                     for (int col = 1; col < meta.getColumnCount(); col++) {
                         if (col <= columnNames.size()) {
-                            if (!columnNames.get(col - 1).equals(meta.getColumnName(col)) || !columnTypes.get(col - 1).equals(meta.getColumnTypeName(col))) {
+                            String colName = columnNames.get(col - 1);
+                            String colType = columnTypes.get(col - 1);
+                            if ((!colName.isEmpty() && !colName.equals(meta.getColumnName(col))) || !colType.equals(meta.getColumnTypeName(col))) {
                                 evts.add(new TableModelEvent(model, TableModelEvent.HEADER_ROW, TableModelEvent.HEADER_ROW, col - 1, TableModelEvent.UPDATE));
                             }
                             //columnTypes.add(meta.getColumnTypeName(col + offset));
@@ -121,6 +138,7 @@ public class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
                             evts.add(new TableModelEvent(model, TableModelEvent.HEADER_ROW, TableModelEvent.HEADER_ROW, meta.getColumnCount() - 1, TableModelEvent.DELETE));
                         }
                     }
+                    progress.endTask();
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
@@ -128,6 +146,7 @@ public class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
             }
         } else {
+            this.pm = this.getProgressMonitor().startTask(I18N.tr("Refresh table content"), 1);
             // Simple row event
             IntegerUnion updatedRows = new IntegerUnion(table.getRowSet().getRowNumberFromRowPk(new LongUnion(event.getFirstRowPK(), event.getLastRowPK())));
             Iterator<Integer> intervals = updatedRows.getValueRanges().iterator();
@@ -138,6 +157,7 @@ public class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
             }
             // Refresh rowset cache
             table.getRowSet().refreshRows(new TreeSet<>(updatedRows));
+            this.pm.endTask();
         }
         return true;
     }
