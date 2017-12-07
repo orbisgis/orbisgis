@@ -675,23 +675,15 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         //Build the appropriate search filter
         Object value = tableModel.getValueAt(rowId, colId);
 
-        //Get the good column id, taking into account the hidden columns
-        int fixedViewColId = -1;
         String name = table.getColumnModel().getColumn(popupCellAdress.x).getHeaderValue().toString();
-        for(int i=0; i<tableModel.getColumnCount(); i++){
-            if(tableModel.getColumnName(i) != null && tableModel.getColumnName(i).equalsIgnoreCase(name)){
-                fixedViewColId = i;
-            }
-        }
-        colId = table.convertColumnIndexToModel(fixedViewColId);
 
         DefaultActiveFilter filter = null;
         if (value == null) {
             filter = new FieldsContainsFilterFactory.
-                    FilterParameters(colId, null, true, true);
+                    FilterParameters(name, null, true, true);
         } else {
             filter = new FieldsContainsFilterFactory.
-                    FilterParameters(colId, value.toString(), true, true);
+                    FilterParameters(name, value.toString(), true, true);
         }
 
         //Clear current filter
