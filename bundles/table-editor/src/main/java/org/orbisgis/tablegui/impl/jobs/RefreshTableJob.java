@@ -88,13 +88,13 @@ public class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
     @Override
     protected Boolean doInBackground() throws Exception {
         if(event.getColumn() == TableModelEvent.ALL_COLUMNS || event.getFirstRowPK() == null || event.getLastRowPK() == null) {
-            this.pm = this.getProgressMonitor().startTask(I18N.tr("Refresh table content"), 6);
+            this.pm = this.getProgressMonitor().startTask(I18N.tr("Refresh table content"), 2);
             List<String> columnTypes = new ArrayList<>();
             List<String> columnNames = new ArrayList<>();
             try {
                 ProgressMonitor progress;
+                progress = pm.startTask(I18N.tr("Cache table information"), 1);
                 try {
-                    progress = pm.startTask(I18N.tr("Check table open"), 1);
                     if(!table.isOpen()) {
                         table.open(progress);
                     }
@@ -109,13 +109,16 @@ public class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
                         columnNames.add(colName);
                         columnTypes.add(meta.getColumnTypeName(col));
                     }
-                    progress.endTask();
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
+                finally {
+                    progress.endTask();
                 }
                 // The row and column count may have changed, reset the rowset
                 table.close(pm);
                 table.open(pm);
+                progress = pm.startTask(I18N.tr("Update table state"), 1);
                 try {
                     progress = pm.startTask(I18N.tr("Update table state"), 1);
                     ResultSetMetaData meta = table.getRowSet().getMetaData();
@@ -133,14 +136,18 @@ public class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
                         }
                     }
                     // Deleted columns
-                    if (meta.getColumnCount() < columnNames.size()) {
-                        for (int insertId = meta.getColumnCount(); insertId <= columnNames.size(); insertId++) {
-                            evts.add(new TableModelEvent(model, TableModelEvent.HEADER_ROW, TableModelEvent.HEADER_ROW, meta.getColumnCount() - 1, TableModelEvent.DELETE));
+                    if (meta.getColumnCount() != columnNames.size()) {
+                        int min = Math.min(meta.getColumnCount(), columnNames.size());
+                        int max = Math.max(meta.getColumnCount(), columnNames.size());
+                        for (int insertId = min; insertId <= max; insertId++) {
+                            evts.add(new TableModelEvent(model, TableModelEvent.HEADER_ROW, TableModelEvent.HEADER_ROW, min - 1, TableModelEvent.DELETE));
                         }
                     }
-                    progress.endTask();
                 } catch (SQLException ex) {
                     LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
+                finally {
+                    progress.endTask();
                 }
             } catch (EditableElementException ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);

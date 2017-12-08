@@ -1174,8 +1174,16 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         int colOffset = 0;
         tableColToRowSetCol = new HashMap<>();
         for (int i = 0; i < tableModel.getColumnCount(); i++) {
-            while(tableModel.getColumnName(i+colOffset) == null){
-                colOffset ++;
+            try {
+                int geomCount = SFSUtilities.getGeometryFields(tableEditableElement.getRowSet()).size();
+                int fieldCount = JDBCUtilities.getFieldNames(tableEditableElement.getDataManager().getDataSource()
+                        .getConnection().getMetaData(), tableEditableElement.getTableReference()).size();
+                if (geomCount < fieldCount) {
+                    while (tableModel.getColumnName(i + colOffset) == null) {
+                        colOffset++;
+                    }
+                }
+            } catch (EditableElementException|SQLException ignored) {
             }
             tableColToRowSetCol.put(i, i+colOffset);
             TableColumn col = new TableColumn(i);
