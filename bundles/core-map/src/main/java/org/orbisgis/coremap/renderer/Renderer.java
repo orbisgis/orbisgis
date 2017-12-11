@@ -226,7 +226,7 @@ public abstract class Renderer {
                                     //Workaround because H2 linked table doesn't contains PK or _ROWID_
                                     long row = -1;
                                     if(pkColumn != -1){
-                                        rs.getLong(pkColumn);
+                                        row = rs.getLong(pkColumn);
                                     }
                                     //End workaround
                                     boolean selected = selectedRows.contains(row);
