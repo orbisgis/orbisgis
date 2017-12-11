@@ -78,20 +78,35 @@ public class SortJob extends SwingWorkerPM<Collection<Integer>, Collection<Integ
         private DataSource dataSource;
 
         /**
-         * 
-         * @param sortRequest 
-         * @param tableModel 
+         *
+         * @param sortRequest
+         * @param tableModel
          * @param modelIndex Current state of Index, can be null if the index is the same as the model
          */
         public SortJob(SortKey sortRequest, DataSourceTableModel tableModel, Collection<Integer> modelIndex, DataSource dataSource) {
                 this.sortRequest = sortRequest;
-            Integer columnToSort = sortRequest.getColumn();
+                Integer columnToSort = sortRequest.getColumn();
                 this.modelIndex = modelIndex;
                 this.dataSource = dataSource;
                 model = tableModel;
                 columnSortName = model.getColumnName(columnToSort);
                 setTaskName(I18N.tr("Sorting {0}",columnSortName));
         }
+
+    /**
+     *
+     * @param sortRequest
+     * @param tableModel
+     * @param modelIndex Current state of Index, can be null if the index is the same as the model
+     */
+    public SortJob(SortKey sortRequest, String columnSortName, DataSourceTableModel tableModel, Collection<Integer> modelIndex, DataSource dataSource) {
+        this.sortRequest = sortRequest;
+        this.modelIndex = modelIndex;
+        this.dataSource = dataSource;
+        model = tableModel;
+        this.columnSortName = columnSortName;
+        setTaskName(I18N.tr("Sorting {0}",columnSortName));
+    }
 
         public ListenerContainer<SortJobEventSorted> getEventSortedListeners() {
                 return eventSortedListeners;

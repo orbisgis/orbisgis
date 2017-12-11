@@ -118,6 +118,7 @@ public class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
                 // The row and column count may have changed, reset the rowset
                 table.close(pm);
                 table.open(pm);
+                table.getRowSet().execute(pm);
                 progress = pm.startTask(I18N.tr("Update table state"), 1);
                 try {
                     progress = pm.startTask(I18N.tr("Update table state"), 1);
