@@ -45,6 +45,7 @@ import javax.sql.DataSource;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.impl.jobs.SortJob;
 import org.orbisgis.tablegui.impl.jobs.SortJobEventSorted;
 import org.slf4j.Logger;
@@ -69,17 +70,18 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         // Sort result given through JDBC
         private Collection<Integer> viewToModelJDBC;
         private ExecutorService executorService = null;
-        /** Map used to convert the column number of the TableEditor to the Column number for the RowSet. */
-        private Map<Integer, Integer> tableColToRowSetCol = new HashMap<>();
+        private TableEditor tableEditor;
 
     /**
          * Constructor
          * @param model Datasource table model
          * @param dataSource JDBC Datasource
          */
-        public DataSourceRowSorter(DataSourceTableModel model, DataSource dataSource) {
+        public DataSourceRowSorter(DataSourceTableModel model, DataSource dataSource,
+                                   TableEditor tableEditor) {
                 this.model = model;
                 this.dataSource = dataSource;
+                this.tableEditor = tableEditor;
         }
 
         /**
@@ -125,17 +127,6 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
          * @param sortData Sort result
          */
         public void onRowSortDone(SortJobEventSorted sortData) {
-
-            //Convert the column number from the RowSet to the column number of the table and recreate a SortJobEventSorted
-            int col = sortData.getSortRequest().getColumn();
-            if (tableColToRowSetCol.containsValue(col)) {
-                for (Map.Entry<Integer, Integer> entry : tableColToRowSetCol.entrySet()) {
-                    if(entry.getValue().equals(col)) {
-                        SortKey sk = new SortKey(entry.getKey(), sortData.getSortRequest().getSortOrder());
-                        sortData = new SortJobEventSorted(sk, sortData.getViewToModelIndex(), sortData.getSource());
-                    }
-                }
-            }
             int[] oldViewToModel = getViewToModelArray();
             viewToModelJDBC = sortData.getViewToModelIndex();
             sortedColumns.clear();
@@ -167,11 +158,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
 
         @Override
         public void toggleSortOrder(int column) {
-            int rowSetColumn = column;
-            if(tableColToRowSetCol.containsKey(column)){
-                rowSetColumn = tableColToRowSetCol.get(column);
-            }
-            if(isSortable(rowSetColumn)) {
+            if(isSortable(column)) {
                 SortKey sortRequest=new SortKey(column, SortOrder.ASCENDING);
                 boolean doReverse = true;
                 //Find if the user already set an order
@@ -194,7 +181,9 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 //UIManager.getIcon("Table.descendingSortIcon");
                 //http://www.jroller.com/nweber/entry/multi_column_sorting_w_mustang
                 if(doReverse || viewToModelJDBC == null) {
-                    launchSortProcess(sortRequest);
+                    int index = sortRequest.getColumn();
+                    String col = tableEditor.getTable().getColumnModel().getColumn(index).getHeaderValue().toString();
+                    launchSortProcess(sortRequest, col);
                 } else {
                     // The user reverse the already sorted column
                     int[] oldViewToModel = getViewToModelArray();
@@ -207,23 +196,22 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 }
             }
         }
-        
-        private void launchSortProcess(SortKey sortInformation) {
-                if(model.getRowCount() > 0) {
-                    //Convert the column number from the table to the column number of the RowSet
-                    int col = sortInformation.getColumn();
-                    if(tableColToRowSetCol.containsKey(col)){
-                        sortInformation = new SortKey(tableColToRowSetCol.get(col), sortInformation.getSortOrder());
-                    }
-                    SortJob sortJob = new SortJob(sortInformation, model, viewToModel, dataSource);
-                    sortJob.getEventSortedListeners().addListener(this, EventHandler.create(SortJob.SortJobListener.class, this, "onRowSortDone", ""));
-                    if(executorService != null) {
-                        executorService.execute(sortJob);
-                    } else {
-                        sortJob.execute();
-                    }
-                }
+
+    private void launchSortProcess(SortKey sortInformation, String columnName) {
+        if(model.getRowCount() > 0) {
+            SortJob sortJob = new SortJob(sortInformation, columnName, model, viewToModel, dataSource);
+            sortJob.getEventSortedListeners().addListener(this, EventHandler.create(SortJob.SortJobListener.class, this, "onRowSortDone", ""));
+            if(executorService != null) {
+                executorService.execute(sortJob);
+            } else {
+                sortJob.execute();
+            }
         }
+    }
+
+    private void launchSortProcess(SortKey sortInformation) {
+        launchSortProcess(sortInformation, model.getColumnName(sortInformation.getColumn()));
+    }
 
         @Override
         public int convertRowIndexToModel(int index) {
@@ -261,24 +249,35 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
          * @param sortRequest The key to sort
          */
         public void setSortKey(SortKey sortRequest) {
-                if (sortRequest != null) {     
-                        //Check if the sort request is not on the geometry column
-                        int sortIndex = sortRequest.getColumn();
-                        if(!isSortable(sortIndex)) {
-                            //Ignore sort request
-                            return;
-                        }
-                        launchSortProcess(sortRequest);
-                } else {
-                        sortedColumns.clear();
-                        if(isFiltered()) {
-                                IntegerUnion shownRows = new IntegerUnion(viewToModel);
-                                clearIndex();
-                                setRowsFilter(shownRows);
-                        } else {
-                                clearIndex();
-                        }
+            boolean isSortAlreadyDone = false;
+            for(SortKey sk : this.sortedColumns){
+                if(sortRequest != null &&
+                        sk.getColumn() == sortRequest.getColumn() &&
+                        sk.getSortOrder().equals(sortRequest.getSortOrder())){
+                    isSortAlreadyDone = true;
                 }
+            }
+            if(!isSortAlreadyDone) {
+                if (sortRequest != null) {
+                    //Check if the sort request is not on the geometry column
+                    int sortIndex = sortRequest.getColumn();
+                    if (!isSortable(sortIndex)) {
+                        //Ignore sort request
+                        return;
+                    }
+                    String column = tableEditor.getTable().getColumnModel().getColumn(sortIndex).getHeaderValue().toString();
+                    launchSortProcess(sortRequest, column);
+                } else {
+                    sortedColumns.clear();
+                    if (isFiltered()) {
+                        IntegerUnion shownRows = new IntegerUnion(viewToModel);
+                        clearIndex();
+                        setRowsFilter(shownRows);
+                    } else {
+                        clearIndex();
+                    }
+                }
+            }
         }
 
         private void clearIndex() {
@@ -323,7 +322,8 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         private boolean isSortable(int columnIndex) {
             try {
                 ResultSetMetaData meta = model.getRowSet().getMetaData();
-                return !meta.getColumnTypeName(columnIndex + 1).equalsIgnoreCase("geometry");
+                return !meta.getColumnTypeName(columnIndex + 1).equalsIgnoreCase("geometry") ||
+                        tableEditor.getTableEditableElement().getExcludeGeometry();
             } catch (SQLException ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
                 return false;
@@ -352,9 +352,11 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
          * Launch sort processing and remove the row filter
          */
         private void refreshSorter() {
-                if(sortedColumns!=null && !sortedColumns.isEmpty()) {
-                        launchSortProcess(sortedColumns.get(0));
-                }
+            if(sortedColumns!=null && !sortedColumns.isEmpty()) {
+                int sortIndex = sortedColumns.get(0).getColumn();
+                String col = tableEditor.getTable().getColumnModel().getColumn(sortIndex).getHeaderValue().toString();
+                launchSortProcess(sortedColumns.get(0), col);
+            }
         }
 
         @Override
@@ -395,8 +397,4 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         public List<Integer> getViewToModelIndex() {
                 return Collections.unmodifiableList(viewToModel);
         }
-
-    public void setTableColToRowSetCol(Map<Integer, Integer> tableColToRowSetCol) {
-        this.tableColToRowSetCol = tableColToRowSetCol;
-    }
 }

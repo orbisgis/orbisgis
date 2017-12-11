@@ -110,6 +110,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     protected long cachedRowCount = -1;
     private int cachedColumnCount = -1;
     protected BidiMap<String, Integer> cachedColumnNames;
+    protected BidiMap<String, Integer> cachedGeomColumnNames;
     private boolean wasNull = true;
     /** Used to managed table without primary key (ResultSet are kept {@link ResultSetHolder#RESULT_SET_TIMEOUT} */
     protected final ResultSetHolder resultSetHolder;
@@ -159,8 +160,8 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
     }
 
     protected void checkColumnIndex(int columnIndex) throws SQLException {
-        if(columnIndex < 1 || columnIndex > cachedColumnCount) {
-            throw new SQLException(new IndexOutOfBoundsException("Column index "+columnIndex+" out of bound[1-"+cachedColumnCount+"]"));
+        if(columnIndex < 1 || columnIndex > getColumnCount()) {
+            throw new SQLException(new IndexOutOfBoundsException("Column index "+columnIndex+" out of bound[1-"+getColumnCount()+"]"));
         }
     }
 
@@ -251,16 +252,17 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     protected void cacheColumnNames() throws SQLException {
         cachedColumnNames = new DualHashBidiMap<>();
+        cachedGeomColumnNames = new DualHashBidiMap<>();
         try(Resource res = resultSetHolder.getResource()) {
             ResultSetMetaData meta = res.getResultSet().getMetaData();
             for (int idColumn = 1; idColumn <= meta.getColumnCount(); idColumn++) {
                 cachedColumnNames.put(meta.getColumnName(idColumn), idColumn);
             }
-        }
-        if(excludeGeomFields) {
-            List<String> geomFields = SFSUtilities.getGeometryFields(getConnection(), location);
-            for (String geomField : geomFields) {
-                cachedColumnNames.remove(geomField);
+            if(excludeGeomFields) {
+                List<String> geomFields = SFSUtilities.getGeometryFields(getConnection(), location);
+                for (String geomField : geomFields) {
+                    cachedGeomColumnNames.put(geomField, cachedColumnNames.get(geomField));
+                }
             }
         }
     }
@@ -275,7 +277,7 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     private PreparedStatement createBatchQuery(Connection connection, Long firstPk, boolean cacheData, int queryOffset, int limit, boolean queryPk) throws SQLException {
         StringBuilder command = new StringBuilder();
-        if(cachedColumnNames == null) {
+        if(cachedColumnNames == null || cachedGeomColumnNames==null) {
             cacheColumnNames();
         }
         command.append("SELECT ");
@@ -292,12 +294,14 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
                 BidiMap<Integer, String> map = cachedColumnNames.inverseBidiMap();
                 Iterable<Integer> keys = new TreeSet<>(map.keySet());
                 for(Integer i : keys){
-                    if(allFields.length() > 0){
-                        allFields.append(",");
+                    if(!excludeGeomFields || !cachedGeomColumnNames.containsValue(i)) {
+                        if (allFields.length() > 0) {
+                            allFields.append(",");
+                        }
+                        allFields.append(TableLocation.quoteIdentifier(map.get(i)));
                     }
-                    allFields.append(TableLocation.quoteIdentifier(map.get(i)));
                 }
-                    fields=fields.replaceAll("\\*", allFields.toString());
+                fields=fields.replaceAll("\\*", allFields.toString());
             }
             command.append(fields);
         }
@@ -1002,12 +1006,13 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public int getColumnCount() throws SQLException {
+        if(cachedColumnNames == null || cachedGeomColumnNames==null) {
+            cacheColumnNames();
+        }
         if(cachedColumnCount == -1) {
             try(Resource res = resultSetHolder.getResource()) {
-                cachedColumnCount = res.getResultSet().getMetaData().getColumnCount();
-                if(excludeGeomFields){
-                    cachedColumnCount -= SFSUtilities.getGeometryFields(res.getResultSet()).size();
-                }
+                int hiddenFields = excludeGeomFields?cachedGeomColumnNames.size():0;
+                cachedColumnCount = res.getResultSet().getMetaData().getColumnCount()-hiddenFields;
                 if(cachedColumnCount == 0){
                     cachedColumnCount = res.getResultSet().getMetaData().getColumnCount();
                 }

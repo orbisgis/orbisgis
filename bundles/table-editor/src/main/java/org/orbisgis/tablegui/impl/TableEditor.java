@@ -142,7 +142,6 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
     private EditorManager editorManager;
     private ExecutorService executorService;
     private ToolboxWpsClient wpsClient;
-    private Map<Integer, Integer> tableColToRowSetCol;
 
     /**
      * Constructor
@@ -743,7 +742,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         } catch (SQLException | EditableElementException ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex);
         }
-        if (!isGeometryField) {
+        if (!isGeometryField || tableEditableElement.getExcludeGeometry()) {
             pop.addSeparator();
             //Sort Ascending
             JMenuItem sortAscending =
@@ -927,12 +926,11 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         table.setModel(tableModel);
         updateTableColumnModel();
         quickAutoResize();
-        tableSorter = new DataSourceRowSorter(tableModel, dataSource);
+        tableSorter = new DataSourceRowSorter(tableModel, dataSource, this);
         tableSorter.addRowSorterListener(
                 EventHandler.create(RowSorterListener.class, this,
                         "onShownRowsChanged"));
         tableSorter.setExecutorService(executorService);
-        tableSorter.setTableColToRowSetCol(tableColToRowSetCol);
         table.setRowSorter(tableSorter);
         //Set the row count at left
         tableRowHeader = new TableRowHeader(table);
@@ -1171,40 +1169,31 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
      */
     private void updateTableColumnModel() {
         TableColumnModel colModel = new DefaultTableColumnModel();
-        int colOffset = 0;
-        tableColToRowSetCol = new HashMap<>();
-        for (int i = 0; i < tableModel.getColumnCount(); i++) {
-            try {
-                int geomCount = SFSUtilities.getGeometryFields(tableEditableElement.getRowSet()).size();
-                int fieldCount = JDBCUtilities.getFieldNames(tableEditableElement.getDataManager().getDataSource()
-                        .getConnection().getMetaData(), tableEditableElement.getTableReference()).size();
-                if (geomCount < fieldCount) {
-                    while (tableModel.getColumnName(i + colOffset) == null) {
-                        colOffset++;
+        try {
+            int offset = 0;
+            List<String> geomFields = SFSUtilities.getGeometryFields(tableEditableElement.getRowSet());
+            int geomOffset = tableEditableElement.getExcludeGeometry()?geomFields.size():0;
+            for (int i = 0; i < tableModel.getColumnCount()+geomOffset; i++) {
+                TableColumn col = new TableColumn(i+offset);
+                String columnName = tableModel.getColumnName(i);
+                if(!tableEditableElement.getExcludeGeometry() || !geomFields.contains(columnName)) {
+                    col.setHeaderValue(columnName);
+                    TableCellRenderer headerRenderer = col.getHeaderRenderer();
+                    if (!(headerRenderer instanceof TableEditorHeaderRenderer)) {
+                        TableEditorHeaderRenderer newRenderer = new TableEditorHeaderRenderer(table);
+                        newRenderer.setKey(isPrimaryKey(columnName));
+                        col.setHeaderRenderer(newRenderer);
                     }
+                    colModel.addColumn(col);
                 }
-            } catch (EditableElementException|SQLException ignored) {
-            }
-            tableColToRowSetCol.put(i, i+colOffset);
-            TableColumn col = new TableColumn(i);
-            String columnName = tableModel.getColumnName(i+colOffset);
-            col.setHeaderValue(columnName);
-            TableCellRenderer headerRenderer = col.getHeaderRenderer();
-            if (!(headerRenderer instanceof TableEditorHeaderRenderer)) {
-                TableEditorHeaderRenderer newRenderer = new TableEditorHeaderRenderer(table);
-                try {
-                    newRenderer.setKey(isPrimaryKey(columnName));
-                } catch (SQLException ex) {
-                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                else{
+                    offset -= 1;
                 }
-                col.setHeaderRenderer(newRenderer);
             }
-            colModel.addColumn(col);
+        } catch (SQLException|EditableElementException e) {
+            LOGGER.error(e.getLocalizedMessage(), e);
         }
         table.setColumnModel(colModel);
-        if(tableSorter != null){
-            tableSorter.setTableColToRowSetCol(tableColToRowSetCol);
-        }
     }
 
     private boolean isPrimaryKey(String columnName) throws SQLException {
