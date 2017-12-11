@@ -1336,6 +1336,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
         @Override
         protected Object doInBackground() throws Exception {
+            tableEditor.onMenuNoSort();
             tableEditableElement.setExcludeGeometry(!tableEditableElement.getExcludeGeometry());
             try {
                 tableEditableElement.close(this.getProgressMonitor().startTask(I18N.tr("Close the EditableSource"),1));
@@ -1345,13 +1346,12 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         tableEditableElement.getTableReference()));
             }
             ProgressMonitor pm = this.getProgressMonitor().startTask(I18N.tr("Refresh the GUI"),1);
-            tableChange(new TableEditEvent(
+            /*tableChange(new TableEditEvent(
                     tableEditableElement.getTableReference(),
                     TableModelEvent.ALL_COLUMNS,
                     null,
                     null,
-                    TableModelEvent.DELETE));
-            tableEditor.onMenuNoSort();
+                    TableModelEvent.DELETE));*/
             tableEditor.updateTableColumnModel();
             tableEditor.quickAutoResize();
             pm.endTask();
