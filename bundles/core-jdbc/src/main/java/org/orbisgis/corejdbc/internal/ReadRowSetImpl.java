@@ -1121,8 +1121,17 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
 
     @Override
     public int getColumnType(int i) throws SQLException {
+        //If the geometries are exluded, the index i should shift
+        int offset = 0;
+        if(excludeGeomFields){
+            for(int val : cachedGeomColumnNames.values()){
+                if(val<=i){
+                    offset++;
+                }
+            }
+        }
         try(Resource res = resultSetHolder.getResource()) {
-            return res.getResultSet().getMetaData().getColumnType(i);
+            return res.getResultSet().getMetaData().getColumnType(i+offset);
         }
     }
 
