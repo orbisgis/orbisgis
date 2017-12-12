@@ -74,6 +74,20 @@ public class ColorScheme {
     }
 
     /**
+     * Builds the ColorScheme matching the given name.
+     * @param name The name of the scheme
+     * @param reverseOrder Reverse the order of the color if true.
+     * @return The ColorScheme
+     */
+    public static ColorScheme create(String name, boolean reverseOrder) {
+        List<Color> colorList = new ArrayList<>(nameToColorsMap().get(name));
+        if(reverseOrder){
+            Collections.reverse(colorList);
+        }
+        return new ColorScheme(name, colorList);
+    }
+
+    /**
      * Fills the inner collections using the dedicated resource file.
      */
     private static void load() {
