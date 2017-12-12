@@ -39,24 +39,19 @@ package org.orbisgis.tablegui.impl;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.geocatalog.api.PopupMenu;
 import org.orbisgis.geocatalog.api.PopupTarget;
-import org.orbisgis.geocatalog.impl.actions.ActionOnSelection;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.edition.EditorManager;
+import org.orbisgis.tableeditorapi.TableEditableElementImpl;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.swing.Action;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.orbisgis.tableeditorapi.TableEditableElementImpl;
 
 /**
  * Menu items related to TableEditor in the GeoCatalog.
