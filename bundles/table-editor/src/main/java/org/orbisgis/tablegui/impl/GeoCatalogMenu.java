@@ -39,6 +39,7 @@ package org.orbisgis.tablegui.impl;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.geocatalog.api.PopupMenu;
 import org.orbisgis.geocatalog.api.PopupTarget;
+import org.orbisgis.geocatalog.impl.actions.ActionOnSelection;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
@@ -50,7 +51,10 @@ import org.xnap.commons.i18n.I18nFactory;
 import javax.swing.Action;
 import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.orbisgis.tableeditorapi.TableEditableElementImpl;
 
@@ -66,7 +70,7 @@ public class GeoCatalogMenu implements PopupMenu {
 
     @Override
     public List<Action> createActions(PopupTarget target) {
-        return Arrays.asList((Action) new OpenAttributes(target, dataManager, editorManager));
+        return Collections.singletonList((Action) new OpenAttributes(target, dataManager, editorManager));
     }
 
     @Override
@@ -125,6 +129,11 @@ public class GeoCatalogMenu implements PopupMenu {
             for (String source : res) {
                 editorManager.openEditable(new TableEditableElementImpl(source, dataManager));
             }
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return super.isEnabled() && !geocatalog.getListSelectionModel().isSelectionEmpty();
         }
     }
 }
