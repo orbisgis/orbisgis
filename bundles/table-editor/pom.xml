@@ -128,11 +128,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>toolbox-editor</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>table-editor-api</artifactId>
             <version>${project.version}</version>
         </dependency>

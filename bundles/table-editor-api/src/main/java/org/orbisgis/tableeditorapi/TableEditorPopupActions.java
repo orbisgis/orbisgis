@@ -35,33 +35,16 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.tablegui.impl.ext;
+package org.orbisgis.tableeditorapi;
 
 
 import org.orbisgis.sif.components.actions.ActionFactoryService;
 
 /**
+ * Actions on the Table Editor popup menu
  * @author Nicolas Fortin
  */
-public interface TableEditorActions extends ActionFactoryService<SourceTable> {
-    //LGROUP_EDITION
-    String A_EDITION = "A_EDITION";
-    String A_SAVE = "A_SAVE";
-    String A_UNDO = "A_UNDO";
-    String A_REDO = "A_REDO";
-    String A_CANCEL = "A_CANCEL";
-    //LGROUP_MODIFICATION_GROUP
-    String A_ADD_FIELD = "A_ADD_FIELD";
-    String A_ADD_ROW = "A_ADD_ROW";
-    String A_REMOVE_ROW = "A_REMOVE_ROW";
-    //GROUP READ
-    String A_REFRESH = "A_REFRESH";
-    String A_TOGGLE_GEOM = "A_TOGGLE_GEOM";
-    String A_PREVIOUS_SELECTION = "A_PREVIOUS_SELECTION";
-    String A_NEXT_SELECTION = "A_NEXT_SELECTION";
-
-    String LGROUP_READ = "LGROUP_READ";
-    String LGROUP_EDITION = "LGROUP_EDITION";
-    String LGROUP_MODIFICATION_GROUP = "LGROUP_MODIFICATION_GROUP";
-
+public interface TableEditorPopupActions extends ActionFactoryService<SourceTable> {
+    // Column popup menu
+    public static final String A_REMOVE_COLUMN = "A_REMOVE_COLUMN";
 }

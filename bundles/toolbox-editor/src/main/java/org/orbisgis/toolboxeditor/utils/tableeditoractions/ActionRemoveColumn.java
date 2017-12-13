@@ -35,33 +35,24 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.tablegui.impl;
-
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
+package org.orbisgis.toolboxeditor.utils.tableeditoractions;
 
 import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.sif.components.actions.ActionTools;
-import org.orbisgis.tablegui.icons.TableEditorIcon;
-import org.orbisgis.tablegui.impl.ext.TableEditorPopupActions;
+import org.orbisgis.tableeditorapi.SourceTable;
+import org.orbisgis.tableeditorapi.TableEditorPopupActions;
 
 import org.orbisgis.toolboxeditor.ToolboxWpsClient;
+import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
 import org.orbiswps.client.api.utils.WpsJobStateListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-import javax.sql.DataSource;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.net.URI;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -69,15 +60,14 @@ import java.util.UUID;
 /**
  * Remove a column in the DataSource.
  * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS
  */
 public class ActionRemoveColumn extends AbstractAction implements WpsJobStateListener {
     private static final URI PROCESS_URI = URI.create("orbisgis:wps:official:deleteColumns");
     private static final URI INPUT_TABLE = URI.create("orbisgis:wps:official:deleteColumns:tableName");
     private static final URI INPUT_COLUMN = URI.create("orbisgis:wps:official:deleteColumns:columnNames");
-    private final TableEditor editor;
-    private Component parentComponent;
+    private final SourceTable editor;
     private static final I18n I18N = I18nFactory.getI18n(ActionRemoveColumn.class);
-    private final Logger logger = LoggerFactory.getLogger(ActionRemoveColumn.class);
     private ToolboxWpsClient wpsClient;
     private UUID jobId;
 
@@ -85,11 +75,10 @@ public class ActionRemoveColumn extends AbstractAction implements WpsJobStateLis
      * Constructor
      * @param editor Table editor instance
      */
-    public ActionRemoveColumn(TableEditor editor, ToolboxWpsClient wpsClient) {
-        super(I18N.tr("Remove a column"), TableEditorIcon.getIcon("delete_field"));
+    public ActionRemoveColumn(SourceTable editor, ToolboxWpsClient wpsClient) {
+        super(I18N.tr("Remove a column"), ToolBoxIcon.getIcon("delete_field"));
         putValue(ActionTools.MENU_ID, TableEditorPopupActions.A_REMOVE_COLUMN);
         this.editor = editor;
-        this.parentComponent = editor;
         this.wpsClient = wpsClient;
     }
 
@@ -105,10 +94,13 @@ public class ActionRemoveColumn extends AbstractAction implements WpsJobStateLis
             if (wpsClient != null) {
                 String columnName = editor.getTable().getColumnModel().getColumn(editor.getPopupCellAdress().x)
                         .getHeaderValue().toString();
-                int response = JOptionPane.showConfirmDialog(editor,
-                        I18N.tr("Are you sure to remove the column {0} ?", columnName),
-                        I18N.tr("Deletion of a column"),
-                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                int response = JOptionPane.YES_OPTION;
+                if(wpsClient instanceof JComponent) {
+                    response = JOptionPane.showConfirmDialog((JComponent)wpsClient,
+                            I18N.tr("Are you sure to remove the column {0} ?", columnName),
+                            I18N.tr("Deletion of a column"),
+                            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                }
                 if(response == JOptionPane.YES_OPTION) {
                     Map<URI, Object> dataMap = new HashMap<>();
                     dataMap.put(INPUT_TABLE, editor.getTableEditableElement().getTableReference());
@@ -137,23 +129,25 @@ public class ActionRemoveColumn extends AbstractAction implements WpsJobStateLis
 
     @Override
     public void onJobSuccess() {
-        //Indicates to the tableEditor that a change occurred.
-        editor.tableChange(new TableEditEvent(editor.getTableEditableElement().getTableReference(),
-                TableModelEvent.ALL_COLUMNS,
-                null,
-                null,
-                TableModelEvent.DELETE));
+        if(editor instanceof TableEditListener) {
+            ((TableEditListener)editor).tableChange(new TableEditEvent(editor.getTableEditableElement().getTableReference(),
+                    TableModelEvent.ALL_COLUMNS,
+                    null,
+                    null,
+                    TableModelEvent.DELETE));
+        }
         wpsClient.removeJobListener(this);
     }
 
     @Override
     public void onJobFailed() {
-        //Indicates to the tableEditor that a change occurred.
-        editor.tableChange(new TableEditEvent(editor.getTableEditableElement().getTableReference(),
-                TableModelEvent.ALL_COLUMNS,
-                null,
-                null,
-                TableModelEvent.DELETE));
+        if(editor instanceof TableEditListener) {
+            ((TableEditListener)editor).tableChange(new TableEditEvent(editor.getTableEditableElement().getTableReference(),
+                    TableModelEvent.ALL_COLUMNS,
+                    null,
+                    null,
+                    TableModelEvent.DELETE));
+        }
         wpsClient.removeJobListener(this);
     }
 }

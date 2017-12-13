@@ -198,7 +198,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         }
 
     private void launchSortProcess(SortKey sortInformation, String columnName) {
-        if(model.getRowCount() > 0) {
+        if(model.getRowCount() > 0 && model.findColumn(columnName) != -1) {
             SortJob sortJob = new SortJob(sortInformation, columnName, model, viewToModel, dataSource);
             sortJob.getEventSortedListeners().addListener(this, EventHandler.create(SortJob.SortJobListener.class, this, "onRowSortDone", ""));
             if(executorService != null) {

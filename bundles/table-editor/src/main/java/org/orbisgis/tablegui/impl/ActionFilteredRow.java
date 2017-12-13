@@ -39,14 +39,11 @@ package org.orbisgis.tablegui.impl;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractAction;
 
-import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tableeditorapi.TableEditableElementImpl;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
-import org.orbisgis.tablegui.impl.ext.TableEditorActions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

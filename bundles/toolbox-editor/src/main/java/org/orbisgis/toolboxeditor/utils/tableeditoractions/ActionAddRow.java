@@ -35,16 +35,18 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.tablegui.impl;
+package org.orbisgis.toolboxeditor.utils.tableeditoractions;
 
 import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
 import org.orbisgis.editorjdbc.AskValidRow;
+import org.orbisgis.editorjdbc.EditableSource;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.actions.ActionTools;
-import org.orbisgis.tableeditorapi.TableEditableElement;
-import org.orbisgis.tablegui.icons.TableEditorIcon;
-import org.orbisgis.tablegui.impl.ext.TableEditorActions;
+import org.orbisgis.tableeditorapi.SourceTable;
+import org.orbisgis.tableeditorapi.TableEditorActions;
 import org.orbisgis.toolboxeditor.ToolboxWpsClient;
+import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
 import org.orbiswps.client.api.utils.WpsJobStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +67,7 @@ import java.util.UUID;
 /**
  * Add a row in the DataSource.
  * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS
  */
 public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
     /** Title of the wps process to use. */
@@ -74,35 +77,39 @@ public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
     /** Name of the process input containing the values to add. */
     private static final URI INPUT_VALUES = URI.create("orbisgis:wps:official:insertValues:values");
     private static final URI INPUT_FIELDS = URI.create("orbisgis:wps:official:insertValues:fieldList");
-    private final TableEditableElement editable;
     private static final I18n I18N = I18nFactory.getI18n(ActionAddRow.class);
-    private final Logger LOGGER = LoggerFactory.getLogger(ActionAddRow.class);
-    private TableEditor tableEditor;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActionAddRow.class);
+    private EditableSource editable;
+    private SourceTable editor;
     private ToolboxWpsClient wpsClient;
     private UUID jobId;
 
     /**
      * Constructor
-     * @param editable Table editable instance
      */
-    public ActionAddRow(TableEditableElement editable, TableEditor tableEditor, ToolboxWpsClient wpsClient) {
-        super(I18N.tr("Add a row"), TableEditorIcon.getIcon("add_row"));
+    public ActionAddRow(SourceTable editor, ToolboxWpsClient wpsClient) {
+        super(I18N.tr("Add a row"), ToolBoxIcon.getIcon("add_row"));
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
         putValue(ActionTools.MENU_ID, TableEditorActions.A_ADD_ROW);
-        this.editable = editable;
-        updateEnabledState();
-        editable.addPropertyChangeListener(TableEditableElement.PROP_EDITING,
-                EventHandler.create(PropertyChangeListener.class, this, "updateEnabledState"));
-        this.tableEditor = tableEditor;
+        this.editable = editor.getTableEditableElement();
+        editor.addTablePropertyChangeListener(EventHandler.create(PropertyChangeListener.class, this, "onEditableUpdate"));
+        this.editor = editor;
         this.wpsClient = wpsClient;
+        onEditableUpdate();
     }
 
     /**
      * Enable this action only if edition is enabled
      */
-    public void updateEnabledState() {
-        setEnabled(editable.isEditing() && wpsClient != null);
+    public void onEditableUpdate() {
+        if(editable == null){
+            this.editable = editor.getTableEditableElement();
+        }
+        setEnabled(editable != null &&
+                editable.isEditing() &&
+                wpsClient != null);
     }
+
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if(editable.isEditing()) {
@@ -159,23 +166,25 @@ public class ActionAddRow extends AbstractAction implements WpsJobStateListener{
 
     @Override
     public void onJobSuccess() {
-        //Indicates to the tableEditor that a change occurred.
-        tableEditor.tableChange(new TableEditEvent(editable.getTableReference(),
-                TableModelEvent.ALL_COLUMNS,
-                null,
-                null,
-                TableModelEvent.UPDATE));
+        if(editor instanceof TableEditListener) {
+            ((TableEditListener)editor).tableChange(new TableEditEvent(editable.getTableReference(),
+                    TableModelEvent.ALL_COLUMNS,
+                    null,
+                    null,
+                    TableModelEvent.UPDATE));
+        }
         wpsClient.removeJobListener(this);
     }
 
     @Override
     public void onJobFailed() {
-        //Indicates to the tableEditor that a change occurred.
-        tableEditor.tableChange(new TableEditEvent(editable.getTableReference(),
-                TableModelEvent.ALL_COLUMNS,
-                null,
-                null,
-                TableModelEvent.UPDATE));
+        if(editor instanceof TableEditListener) {
+            ((TableEditListener)editor).tableChange(new TableEditEvent(editable.getTableReference(),
+                    TableModelEvent.ALL_COLUMNS,
+                    null,
+                    null,
+                    TableModelEvent.UPDATE));
+        }
         wpsClient.removeJobListener(this);
     }
 }

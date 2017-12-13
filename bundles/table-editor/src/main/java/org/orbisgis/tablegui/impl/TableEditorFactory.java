@@ -38,27 +38,27 @@ package org.orbisgis.tablegui.impl;
 
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.sif.docking.DockingPanelLayout;
-import org.orbisgis.sif.edition.EditableElement;
-import org.orbisgis.sif.edition.Editor;
-import org.orbisgis.sif.edition.EditorDockable;
-import org.orbisgis.sif.edition.EditorManager;
-import org.orbisgis.sif.edition.EditorFactory;
+import org.orbisgis.sif.edition.*;
 import org.orbisgis.tableeditorapi.TableEditableElement;
-import org.orbisgis.toolboxeditor.ToolboxWpsClient;
+import org.osgi.service.component.ComponentFactory;
+import org.osgi.service.component.ComponentInstance;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.concurrent.ExecutorService;
 
 /**
  *  This factory receive the {@link TableEditableElement} and open a new editor.
+ *
+ *  @author Sylvain PALOMINOS
  */
-@Component(immediate = true)
+@Component(service = EditorFactory.class, immediate = true)
 public class TableEditorFactory implements EditorFactory {
         public static final String FACTORY_ID = "TableEditorFactory";
         private static final Logger LOGGER = LoggerFactory.getLogger("gui." + TableEditorFactory.class);
@@ -66,7 +66,17 @@ public class TableEditorFactory implements EditorFactory {
         private DataManager dataManager;
         private EditorManager editorManager;
         private ExecutorService executorService;
-        private ToolboxWpsClient wpsClient = null;
+    private ComponentFactory componentFactory;
+
+
+    @Reference(target = "(component.factory="+TableEditor.SERVICE_FACTORY_ID+")")
+    public void setComponentFactory(ComponentFactory componentFactory) {
+        this.componentFactory = componentFactory;
+    }
+
+    public void unsetComponentFactory(ComponentFactory componentFactory) {
+        this.componentFactory = null;
+    }
 
         @Override
         public DockingPanelLayout makeEditableLayout(EditableElement editable) {
@@ -104,15 +114,6 @@ public class TableEditorFactory implements EditorFactory {
             this.editorManager = null;
         }
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL)
-    public void setInternalWpsClient(ToolboxWpsClient wpsClient) {
-        this.wpsClient = wpsClient;
-    }
-
-    public void unsetInternalWpsClient(ToolboxWpsClient wpsClient) {
-        this.wpsClient = null;
-    }
-
         /**
          * @param dataManager JDBC DataManager factory
          */
@@ -149,9 +150,14 @@ public class TableEditorFactory implements EditorFactory {
 
         @Override
         public EditorDockable create(DockingPanelLayout layout) {
-                TableEditableElement editableTable = ((TablePanelLayout)layout).getTableEditableElement();
-                //Check the DataSource state
-                return new TableEditor(editableTable, dataManager, editorManager, executorService, wpsClient);
+            TableEditableElement editableTable = ((TablePanelLayout)layout).getTableEditableElement();
+            Dictionary<String,Object> initValues = new Hashtable<>();
+            initValues.put(TableEditor.DATA_MANAGER_ATTR, dataManager);
+            initValues.put(TableEditor.EDITOR_MANAGER_ATTR, editorManager);
+            initValues.put(TableEditor.ELEMENT_ATTR, editableTable);
+            initValues.put(TableEditor.EXECUTOR_SERVICE_ATTR, executorService);
+            ComponentInstance tableEditorFactory = componentFactory.newInstance(initValues);
+            return (TableEditor) tableEditorFactory.getInstance();
         }
 
         @Override

@@ -39,7 +39,7 @@ package org.orbisgis.tablegui.impl;
 import org.orbisgis.sif.components.actions.ActionTools;
 import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
-import org.orbisgis.tablegui.impl.ext.TableEditorActions;
+import org.orbisgis.tableeditorapi.TableEditorActions;
 
 
 import javax.swing.undo.CannotRedoException;
