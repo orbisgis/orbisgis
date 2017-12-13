@@ -83,6 +83,7 @@ public class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
             }
         }
         tableEditor.quickAutoResize();
+        tableEditor.onMenuNoSort();
     }
 
     @Override
