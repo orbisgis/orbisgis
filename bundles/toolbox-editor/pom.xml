@@ -100,6 +100,11 @@
             <version>${h2-gis-version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>table-editor-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

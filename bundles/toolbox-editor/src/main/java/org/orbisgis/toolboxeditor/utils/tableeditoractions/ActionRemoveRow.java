@@ -35,15 +35,18 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.tablegui.impl;
+package org.orbisgis.toolboxeditor.utils.tableeditoractions;
 
 import org.h2gis.utilities.JDBCUtilities;
 import org.orbisgis.corejdbc.TableEditEvent;
+import org.orbisgis.corejdbc.TableEditListener;
+import org.orbisgis.editorjdbc.EditableSource;
 import org.orbisgis.sif.components.actions.ActionTools;
+import org.orbisgis.tableeditorapi.SourceTable;
 import org.orbisgis.tableeditorapi.TableEditableElement;
-import org.orbisgis.tablegui.icons.TableEditorIcon;
-import org.orbisgis.tablegui.impl.ext.TableEditorActions;
+import org.orbisgis.tableeditorapi.TableEditorActions;
 import org.orbisgis.toolboxeditor.ToolboxWpsClient;
+import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
 import org.orbiswps.client.api.utils.WpsJobStateListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +57,6 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URI;
 import java.sql.Connection;
@@ -75,48 +77,48 @@ public class ActionRemoveRow extends AbstractAction implements WpsJobStateListen
     private static final URI INPUT_PK_FIELD = URI.create("orbisgis:wps:official:deleteRows:pkField");
     /** Name of the process input containing the primary key array. */
     private static final URI INPUT_PK_ARRAY = URI.create("orbisgis:wps:official:deleteRows:pkToRemove");
-    private final TableEditableElement editable;
     private static final I18n I18N = I18nFactory.getI18n(ActionRemoveRow.class);
-    private TableEditor tableEditor;
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionRemoveRow.class);
+    private EditableSource editable;
+    private SourceTable editor;
     private ToolboxWpsClient wpsClient;
     private UUID jobId;
 
     /**
      * Constructor
-     * @param editable Table editable instance
      */
-    public ActionRemoveRow(TableEditableElement editable, TableEditor tableEditor, ToolboxWpsClient wpsClient) {
-        super(I18N.tr("Delete selected rows"), TableEditorIcon.getIcon("delete_row"));
-        this.tableEditor = tableEditor;
+    public ActionRemoveRow(SourceTable editor, ToolboxWpsClient wpsClient) {
+        super(I18N.tr("Delete selected rows"), ToolBoxIcon.getIcon("delete_row"));
+        this.editor = editor;
         putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_MODIFICATION_GROUP);
         putValue(ActionTools.MENU_ID,TableEditorActions.A_REMOVE_ROW);
-        this.editable = editable;
-        updateEnabledState();
-        editable.addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class, this, "onEditableUpdate",""));
+        this.editable = editor.getTableEditableElement();
+        editor.addTablePropertyChangeListener(EventHandler.create(PropertyChangeListener.class, this, "onEditableUpdate"));
         this.wpsClient = wpsClient;
+        onEditableUpdate();
     }
 
-    /**
-     * Enable this action only if edition is enabled
-     */
-    public void onEditableUpdate(PropertyChangeEvent evt) {
-        if(TableEditableElement.PROP_SELECTION.equals(evt.getPropertyName())
-            || TableEditableElement.PROP_EDITING.equals(evt.getPropertyName())) {
-            updateEnabledState();
+    public void onEditableUpdate() {
+        if(editable == null){
+            this.editable = editor.getTableEditableElement();
         }
-    }
-    private void updateEnabledState() {
-        setEnabled(editable.isEditing() && !editable.getSelection().isEmpty() && wpsClient != null);
+        setEnabled(editable != null &&
+                editable.isEditing() &&
+                editable instanceof TableEditableElement &&
+                !((TableEditableElement)editable).getSelection().isEmpty() &&
+                wpsClient != null);
     }
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if(editable.isEditing()) {
-            Set<Long> selectedRows = editable.getSelection();
-            int response = JOptionPane.showConfirmDialog(tableEditor,
-                I18N.tr("Are you sure to remove the {0} selected rows ?", selectedRows.size()),
-                I18N.tr("Delete selected rows"),
-                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            Set<Long> selectedRows = ((TableEditableElement)editable).getSelection();
+            int response = JOptionPane.YES_OPTION;
+            if(wpsClient instanceof JComponent) {
+                response = JOptionPane.showConfirmDialog((JComponent) wpsClient,
+                        I18N.tr("Are you sure to remove the {0} selected rows ?", selectedRows.size()),
+                        I18N.tr("Delete selected rows"),
+                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            }
             if(response == JOptionPane.YES_OPTION) {
                 if(wpsClient != null){
                         try(Connection connection = editable.getDataManager().getDataSource().getConnection()) {
@@ -125,7 +127,7 @@ public class ActionRemoveRow extends AbstractAction implements WpsJobStateListen
                             String pkColumnName = JDBCUtilities.getFieldName(connection.getMetaData(), editable.getTableReference(), columnId);
                             //Gets the pk list as a String[]
                             String pkListStr = "";
-                            SortedSet<Long> selection = editable.getSelection();
+                            SortedSet<Long> selection = ((TableEditableElement)editable).getSelection();
                             for (Long l : selection) {
                                 if(!pkListStr.isEmpty()){
                                     pkListStr += "\t";
@@ -167,23 +169,25 @@ public class ActionRemoveRow extends AbstractAction implements WpsJobStateListen
 
     @Override
     public void onJobSuccess() {
-        //Indicates to the tableEditor that a change occurred.
-        tableEditor.tableChange(new TableEditEvent(editable.getTableReference(),
-                TableModelEvent.ALL_COLUMNS,
-                null,
-                null,
-                TableModelEvent.UPDATE));
+        if(editor instanceof TableEditListener) {
+            ((TableEditListener)editor).tableChange(new TableEditEvent(editable.getTableReference(),
+                    TableModelEvent.ALL_COLUMNS,
+                    null,
+                    null,
+                    TableModelEvent.UPDATE));
+        }
         wpsClient.removeJobListener(this);
     }
 
     @Override
     public void onJobFailed() {
-        //Indicates to the tableEditor that a change occurred.
-        tableEditor.tableChange(new TableEditEvent(editable.getTableReference(),
-                TableModelEvent.ALL_COLUMNS,
-                null,
-                null,
-                TableModelEvent.UPDATE));
+        if(editor instanceof TableEditListener) {
+            ((TableEditListener)editor).tableChange(new TableEditEvent(editable.getTableReference(),
+                    TableModelEvent.ALL_COLUMNS,
+                    null,
+                    null,
+                    TableModelEvent.UPDATE));
+        }
         wpsClient.removeJobListener(this);
     }
 }

@@ -35,13 +35,14 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.tablegui.impl.ext;
+package org.orbisgis.tableeditorapi;
 
 
 import org.orbisgis.editorjdbc.EditableSource;
 
 import javax.swing.JTable;
 import java.awt.Point;
+import java.beans.PropertyChangeListener;
 
 /**
  * @author Nicolas Fortin
@@ -65,4 +66,16 @@ public interface SourceTable {
          * @return The last right clicked popup cell address Col(x) and row(y)
          */
         Point getPopupCellAdress();
+
+        /**
+         * Adds a property change listener which listen to the table change.
+         * @param propertyChangeListener
+         */
+        void addTablePropertyChangeListener(PropertyChangeListener propertyChangeListener);
+
+        /**
+         * Removes a property change listener which listen to the table change.
+         * @param propertyChangeListener
+         */
+        void removeTablePropertyChangeListener(PropertyChangeListener propertyChangeListener);
 }

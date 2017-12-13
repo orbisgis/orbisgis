@@ -1,6 +1,6 @@
 /**
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
- * OrbisGIS is developed by the GIS group of the DECIDE team of the 
+ * OrbisGIS is developed by the GIS group of the DECIDE team of the
  * Lab-STICC CNRS laboratory, see <http://www.lab-sticc.fr/>.
  *
  * The GIS group of the DECIDE team is located at :
@@ -10,7 +10,7 @@
  * UNIVERSITÉ DE BRETAGNE-SUD
  * Institut Universitaire de Technologie de Vannes
  * 8, Rue Montaigne - BP 561 56017 Vannes Cedex
- * 
+ *
  * OrbisGIS is distributed under GPL 3 license.
  *
  * Copyright (C) 2007-2014 CNRS (IRSTV FR CNRS 2488)
@@ -52,6 +52,7 @@ import org.orbisgis.editorjdbc.EditorUndoableEdit;
 import org.orbisgis.editorjdbc.jobs.CreateSourceFromSelection;
 import org.orbisgis.mapeditorapi.MapElement;
 import org.orbisgis.sif.components.actions.ActionCommands;
+import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
 import org.orbisgis.sif.components.filter.FilterFactoryManager;
@@ -63,8 +64,9 @@ import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
 import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.icons.TableEditorIcon;
-import org.orbisgis.tablegui.impl.ext.SourceTable;
-import org.orbisgis.tablegui.impl.ext.TableEditorActions;
+import org.orbisgis.tableeditorapi.SourceTable;
+import org.orbisgis.tableeditorapi.TableEditorActions;
+import org.orbisgis.tableeditorapi.TableEditorPopupActions;
 import org.orbisgis.tablegui.impl.filters.FieldsContainsFilterFactory;
 import org.orbisgis.tablegui.impl.filters.TableSelectionFilter;
 import org.orbisgis.tablegui.impl.filters.WhereSQLFilterFactory;
@@ -72,7 +74,8 @@ import org.orbisgis.tablegui.impl.jobs.ComputeFieldStatistics;
 import org.orbisgis.tablegui.impl.jobs.OptimalWidthJob;
 import org.orbisgis.tablegui.impl.jobs.RefreshTableJob;
 import org.orbisgis.tablegui.impl.jobs.SearchJob;
-import org.orbisgis.toolboxeditor.ToolboxWpsClient;
+import org.osgi.service.component.annotations.*;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -102,7 +105,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Nicolas Fortin
  * @author Sylvain PALOMINOS
  */
+@Component(service = TableEditor.class, factory = TableEditor.SERVICE_FACTORY_ID)
 public class TableEditor extends JPanel implements EditorDockable, SourceTable,TableEditListener {
+    public static final String SERVICE_FACTORY_ID = "org.orbisgis.tableeditor.TableEditor";
+    public static final String DATA_MANAGER_ATTR = "DATA_MANAGER_ATTR";
+    public static final String EDITOR_MANAGER_ATTR = "EDITOR_MANAGER_ATTR";
+    public static final String EXECUTOR_SERVICE_ATTR = "EXECUTOR_SERVICE_ATTR";
+    public static final String ELEMENT_ATTR = "ELEMENT_ATTR";
+
     protected final static I18n I18N = I18nFactory.getI18n(TableEditor.class);
     private static final Logger LOGGER = LoggerFactory.getLogger("gui." + TableEditor.class);
     private static final int TABLE_SCROLL_PERC = 5;
@@ -141,24 +151,28 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
     private int currentSelectionNavigation = 0;
     private EditorManager editorManager;
     private ExecutorService executorService;
-    private ToolboxWpsClient wpsClient;
+    private ActionCommands dockingActions = new ActionCommands();
+    private List<PropertyChangeListener> listTablePropertyChangeListener = new ArrayList<>();
 
     /**
-     * Constructor
-     *
-     * @param element Source to read and edit
+     * Activate method
      */
-    public TableEditor(TableEditableElement element, DataManager dataManager, EditorManager editorManager,
-                       ExecutorService executorService, ToolboxWpsClient wpsClient) {
-        super(new BorderLayout());
-        this.editorManager = editorManager;
-        this.executorService = executorService;
-        layerListener = new MCLayerListener(element);
-        this.dataManager = dataManager;
+    @Activate
+    public void init(Map<String, Object> attributes) {
+        this.setLayout(new BorderLayout());
+        this.tableEditableElement = (TableEditableElement)attributes.get(ELEMENT_ATTR);
+        if(!listTablePropertyChangeListener.isEmpty()){
+            for(PropertyChangeListener listener : listTablePropertyChangeListener){
+                tableEditableElement.addPropertyChangeListener(listener);
+            }
+        }
+        this.editorManager = (EditorManager)attributes.get(EDITOR_MANAGER_ATTR);
+        this.executorService = (ExecutorService)attributes.get(EXECUTOR_SERVICE_ATTR);
+        layerListener = new MCLayerListener(tableEditableElement);
+        this.dataManager = (DataManager)attributes.get(DATA_MANAGER_ATTR);
         this.dataSource = dataManager.getDataSource();
         //Add a listener to the source manager to close the table when
         //the source is removed
-        this.tableEditableElement = element;
         try {
             boolean isTableGeom = SFSUtilities.hasGeometryField(tableEditableElement.getRowSet());
             boolean isOnlyGeomFields = SFSUtilities.getGeometryFields(tableEditableElement.getRowSet()).size() ==
@@ -185,7 +199,10 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 registerMapContext(mapContext);
             }
         }
-        this.wpsClient = wpsClient;
+    }
+
+    @Deactivate
+    public void close() {
     }
 
     public void onMenuRefresh() {
@@ -194,6 +211,24 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
 
     public void onMenuToggleGeometry() {
         executorService.execute(new ToggleGeomJob(this, tableEditableElement));
+    }
+
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    public void addTableEditorActions(TableEditorActions tableEditorActions) {
+        dockingActions.addActionFactory(tableEditorActions, this);
+    }
+
+    public void removeTableEditorActions(TableEditorActions tableEditorActions) {
+        dockingActions.removeActionFactory(tableEditorActions);
+    }
+
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
+    public void addTableEditorPopupActions(TableEditorPopupActions tableEditorPopupActions) {
+        popupActions.addActionFactory(tableEditorPopupActions, this);
+    }
+
+    public void removeTableEditorPopupActions(TableEditorPopupActions tableEditorPopupActions) {
+        popupActions.removeActionFactory(tableEditorPopupActions);
     }
 
     @Override
@@ -205,7 +240,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 undoManager.addEdit(new EditorUndoableEdit(event.getUndoableEdit()));
             }
         }
-        for (Action action : getDockActions()) {
+        for (Action action : dockingActions.getActions()) {
             if (action instanceof ActionAbstractEdition) {
                 ((ActionAbstractEdition) action).onSourceUpdate();
             }
@@ -217,7 +252,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
      *
      * @return
      */
-    private List<Action> getDockActions() {
+    private List<Action> initDockActions() {
         List<Action> actions = new LinkedList<>();
         try {
             boolean isTableGeom = SFSUtilities.hasGeometryField(tableEditableElement.getRowSet());
@@ -256,11 +291,6 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 .setLogicalGroup(TableEditorActions.LGROUP_READ));
 
         // Edition is only available if there is a primary key
-        if (wpsClient != null) {
-            //TODO : actions.add(new ActionAddColumn(tableEditableElement));
-            actions.add(new ActionAddRow(tableEditableElement, this, wpsClient));
-            actions.add(new ActionRemoveRow(tableEditableElement, this, wpsClient));
-        }
         actions.add(new ActionUndo(tableEditableElement, undoManager));
         actions.add(new ActionRedo(tableEditableElement, undoManager));
         actions.add(new ActionEdition(tableEditableElement));
@@ -969,15 +999,12 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         // Add a filter listener on the editable element
         tableEditableElement.addPropertyChangeListener(TableEditableElement.PROP_FILTERED,
                 filterListener);
-        dockingPanelParameters.setDockActions(getDockActions());
-        initPopupActions();
-        tableScrollPane.getVerticalScrollBar().setBlockIncrement((int) (table.getHeight() / (TABLE_SCROLL_PERC / 100.)));
-    }
 
-    private void initPopupActions() {
-        if (tableEditableElement.isEditable()) {
-            popupActions.addAction(new ActionRemoveColumn(this, wpsClient));
-        }
+        dockingActions.addActions(initDockActions());
+        dockingPanelParameters.setDockActions(dockingActions.getActions());
+        // Add a listener to put additional actions to this docking
+        dockingActions.addPropertyChangeListener(new ActionDockingListener(dockingPanelParameters));
+        tableScrollPane.getVerticalScrollBar().setBlockIncrement((int) (table.getHeight() / (TABLE_SCROLL_PERC / 100.)));
     }
 
     /**
@@ -1306,6 +1333,24 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         return new Point(popupCellAdress);
     }
 
+    @Override
+    public void addTablePropertyChangeListener(PropertyChangeListener propertyChangeListener) {
+        if(tableEditableElement != null){
+            tableEditableElement.addPropertyChangeListener(propertyChangeListener);
+        }
+        else{
+            listTablePropertyChangeListener.add(propertyChangeListener);
+        }
+    }
+
+    @Override
+    public void removeTablePropertyChangeListener(PropertyChangeListener propertyChangeListener) {
+        if(tableEditableElement != null){
+            tableEditableElement.removePropertyChangeListener(propertyChangeListener);
+        }
+        listTablePropertyChangeListener.remove(propertyChangeListener);
+    }
+
     private static class FieldResetListener implements TableModelListener {
         private final TableEditor tableEditor;
 
@@ -1346,12 +1391,6 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                         tableEditableElement.getTableReference()));
             }
             ProgressMonitor pm = this.getProgressMonitor().startTask(I18N.tr("Refresh the GUI"),1);
-            /*tableChange(new TableEditEvent(
-                    tableEditableElement.getTableReference(),
-                    TableModelEvent.ALL_COLUMNS,
-                    null,
-                    null,
-                    TableModelEvent.DELETE));*/
             tableEditor.updateTableColumnModel();
             tableEditor.quickAutoResize();
             pm.endTask();
