@@ -152,7 +152,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
     private EditorManager editorManager;
     private ExecutorService executorService;
     private ActionCommands dockingActions = new ActionCommands();
-    private List<PropertyChangeListener> listTablePropertyChangeListener = new ArrayList<>();
+    private Collection<PropertyChangeListener> listTablePropertyChangeListener = new ArrayList<>();
 
     /**
      * Activate method
