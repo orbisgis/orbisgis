@@ -45,6 +45,7 @@ import javax.sql.DataSource;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import org.orbisgis.corejdbc.common.IntegerUnion;
+import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.tableeditorapi.TableEditableElement;
 import org.orbisgis.tablegui.impl.jobs.SortJob;
 import org.orbisgis.tablegui.impl.jobs.SortJobEventSorted;
@@ -198,7 +199,13 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         }
 
     private void launchSortProcess(SortKey sortInformation, String columnName) {
-        if(model.getRowCount() > 0 && model.findColumn(columnName) != -1) {
+        boolean columnFound = false;
+        try {
+            columnFound = tableEditor.getTableEditableElement().getRowSet().findColumn(columnName) != -1;
+        } catch (SQLException|EditableElementException e) {
+            LOGGER.debug("Unable to find the column "+columnName+" for the sort.");
+        }
+        if(model.getRowCount() > 0 && columnFound) {
             SortJob sortJob = new SortJob(sortInformation, columnName, model, viewToModel, dataSource);
             sortJob.getEventSortedListeners().addListener(this, EventHandler.create(SortJob.SortJobListener.class, this, "onRowSortDone", ""));
             if(executorService != null) {
@@ -354,7 +361,13 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         private void refreshSorter() {
             if(sortedColumns!=null && !sortedColumns.isEmpty()) {
                 int sortIndex = sortedColumns.get(0).getColumn();
-                String col = tableEditor.getTable().getColumnModel().getColumn(sortIndex).getHeaderValue().toString();
+                String col;
+                if(tableEditor.getTable().getColumnModel().getColumnCount()>sortIndex) {
+                    col = tableEditor.getTable().getColumnModel().getColumn(sortIndex).getHeaderValue().toString();
+                }
+                else {
+                    col = model.getColumnName(sortIndex);
+                }
                 launchSortProcess(sortedColumns.get(0), col);
             }
         }

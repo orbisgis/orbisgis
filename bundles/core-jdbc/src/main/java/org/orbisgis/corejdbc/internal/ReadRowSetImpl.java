@@ -593,6 +593,11 @@ public class ReadRowSetImpl extends AbstractRowSet implements JdbcRowSet, DataSo
         this.excludeGeomFields = excludeGeomFields;
     }
 
+    @Override
+    public boolean getExcludeGeomFields() {
+        return this.excludeGeomFields;
+    }
+
     /**
      * Initialize this row set. This method cache primary key.
      * @param location Table location

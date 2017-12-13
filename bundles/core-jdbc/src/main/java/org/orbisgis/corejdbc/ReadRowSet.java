@@ -71,6 +71,11 @@ public interface ReadRowSet extends JdbcRowSet , SpatialResultSet {
     void setExcludeGeomFields(boolean excludeGeomFields);
 
     /**
+     * @return True if the geometric fields should be excluded, false otherwise.
+     */
+    boolean getExcludeGeomFields();
+
+    /**
      * Call this after {@link #setCommand(String)}. Cache the default primary key values then execute the command.
      * @param pm Progress monitor Progression of primary key caching
      */
