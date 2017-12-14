@@ -7,6 +7,7 @@ import org.orbisgis.corejdbc.common.IntegerUnion;
 import org.orbisgis.corejdbc.common.LongUnion;
 import org.orbisgis.editorjdbc.EditableSource;
 import org.orbisgis.sif.edition.EditableElementException;
+import org.orbisgis.tablegui.impl.DataSourceRowSorter;
 import org.orbisgis.tablegui.impl.DataSourceTableModel;
 import org.orbisgis.tablegui.impl.TableEditor;
 import org.slf4j.Logger;
@@ -37,13 +38,16 @@ public class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
     private TableEditEvent event;
     private TableEditor tableEditor;
     private ProgressMonitor pm;
+    private DataSourceRowSorter rowSorter;
 
-    public RefreshTableJob(DataSourceTableModel model, TableEditEvent event, TableEditor tableEditor) {
+    public RefreshTableJob(DataSourceTableModel model, TableEditEvent event, TableEditor tableEditor,
+                           DataSourceRowSorter rowSorter) {
         this.model = model;
         this.table = tableEditor.getTableEditableElement();
         this.event = event;
         this.tableComp = tableEditor.getTable();
         this.tableEditor = tableEditor;
+        this.rowSorter = rowSorter;
         setTaskName(I18N.tr("Refresh table content"));
     }
 
@@ -89,6 +93,7 @@ public class RefreshTableJob extends SwingWorkerPM<Boolean, Boolean> {
     @Override
     protected Boolean doInBackground() throws Exception {
         if(event.getColumn() == TableModelEvent.ALL_COLUMNS || event.getFirstRowPK() == null || event.getLastRowPK() == null) {
+            rowSorter.clearSortCache();
             this.pm = this.getProgressMonitor().startTask(I18N.tr("Refresh table content"), 2);
             List<String> columnTypes = new ArrayList<>();
             List<String> columnNames = new ArrayList<>();

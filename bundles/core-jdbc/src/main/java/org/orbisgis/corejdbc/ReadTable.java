@@ -146,7 +146,17 @@ public class ReadTable {
                     try{
                         originalOrder.beforeFirst();
                         int i = 0;
-                        final int fieldIndex = originalOrder.findColumn(originalColumnName);
+                        int fieldIndex = originalOrder.findColumn(originalColumnName);
+                        if(originalOrder.getExcludeGeomFields()){
+                            int offset = 0;
+                            List<String> geomFields = SFSUtilities.getGeometryFields(originalOrder);
+                            for(String field : geomFields){
+                                if(originalOrder.findColumn(field)<fieldIndex){
+                                    offset++;
+                                }
+                            }
+                            fieldIndex-=offset;
+                        }
                         while(originalOrder.next() && !progressMonitor.isCancelled()) {
                             Object obj = originalOrder.getObject(fieldIndex);
                             if(obj != null && !(obj instanceof Comparable)) {
