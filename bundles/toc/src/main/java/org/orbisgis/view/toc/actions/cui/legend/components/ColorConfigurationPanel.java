@@ -80,7 +80,7 @@ public class ColorConfigurationPanel extends JPanel {
      *              of the range and then discrete ColorScheme names will be built.
      */
     public ColorConfigurationPanel(List<String> names){
-        super();
+        super(new MigLayout("wrap 1", "[align l]"));
         JPanel intOne = new JPanel(new MigLayout("wrap 2", "[align l][align c]"));
         if(names == null){
             this.names = new ArrayList<String>(ColorScheme.rangeColorSchemeNames());
@@ -96,8 +96,8 @@ public class ColorConfigurationPanel extends JPanel {
         intOne.add(grad);
         intOne.add(bPal);
         intOne.add(pal, "width 115!");
-        intOne.add(revpal, "width 115!");
         this.add(intOne);
+        this.add(revpal);
     }
 
     /**
@@ -202,7 +202,7 @@ public class ColorConfigurationPanel extends JPanel {
             return ret;
         } else {
             String name = (String)schemes.getSelectedItem();
-            return ColorScheme.create(name, !reverseScheme.isSelected());
+            return ColorScheme.create(name, reverseScheme.isSelected());
         }
     }
 
@@ -211,7 +211,12 @@ public class ColorConfigurationPanel extends JPanel {
      * @return The start Color
      */
     public Color getStartColor(){
-        return startCol.getBackground();
+        if(reverseScheme.isSelected()){
+            return endCol.getBackground();
+        }
+        else {
+            return startCol.getBackground();
+        }
     }
 
     /**
@@ -219,7 +224,12 @@ public class ColorConfigurationPanel extends JPanel {
      * @return The end Color
      */
     public Color getEndCol() {
-        return endCol.getBackground();
+        if(reverseScheme.isSelected()){
+            return startCol.getBackground();
+        }
+        else {
+            return endCol.getBackground();
+        }
     }
 
     /**
