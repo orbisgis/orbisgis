@@ -61,8 +61,9 @@ import java.util.List;
  */
 public class ColorConfigurationPanel extends JPanel {
     private static final I18n I18N = I18nFactory.getI18n(ColorConfigurationPanel.class);
-    private JPanel pal;
+    private JComboBox pal;
     private JPanel grad;
+    private JCheckBox revpal;
     private JLabel endCol;
     private JLabel startCol;
     private JRadioButton bGrad;
@@ -89,11 +90,13 @@ public class ColorConfigurationPanel extends JPanel {
         }
         grad = getGradientPanel();
         pal = getPalettesPanel();
+        revpal = getReverseSchemePanel();
         initButtons();
         intOne.add(bGrad);
         intOne.add(grad);
         intOne.add(bPal);
-        intOne.add(pal);
+        intOne.add(pal, "width 115!");
+        intOne.add(revpal, "width 115!");
         this.add(intOne);
     }
 
@@ -138,18 +141,19 @@ public class ColorConfigurationPanel extends JPanel {
      * Gets the panel containing the palette configuration.
      * @return The JPanel that contains the combo where we put the palettes.
      */
-    private JPanel getPalettesPanel(){
-        JPanel panel = new JPanel(new MigLayout("wrap 2", "[align l][align c]"));
+    private JComboBox getPalettesPanel(){
         schemes = new WideComboBox(names.toArray(new String[names.size()]));
         schemes.setRenderer(new ColorSchemeListCellRenderer(new JList()));
-        panel.add(schemes, "width 114!");
-        reverseScheme = new JCheckBox();
-        reverseScheme.setSelected(false);
-        reverseScheme.setSelectedIcon(TocIcon.getIcon("go-up"));
-        reverseScheme.setIcon(TocIcon.getIcon("go-down"));
-        reverseScheme.setDisabledIcon(TocIcon.getIcon("go-down"));
-        panel.add(reverseScheme);
-        return panel;
+        return schemes;
+    }
+
+    /**
+     * Gets the check box containing the reverse color scheme box.
+     * @return The check box containing the reverse color scheme box.
+     */
+    private JCheckBox getReverseSchemePanel(){
+        reverseScheme = new JCheckBox(I18N.tr("Invert colors"));
+        return reverseScheme;
     }
 
     /**
