@@ -135,14 +135,25 @@ public class DefaultResultSetProviderFactory implements ResultSetProviderFactory
          * @return
          * @throws SQLException 
          */
-        private PreparedStatement createStatement(Connection connection,String geometryField,String tableReference, Set<String> fields) throws SQLException {            
-            if(fields.isEmpty()){            
-            return connection.prepareStatement(
-                        String.format("select "+pkName+",%s from %s where %s && ?", geometryField,tableReference, geometryField),
-                        ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        private PreparedStatement createStatement(Connection connection,String geometryField,String tableReference,
+                                                  Set<String> fields) throws SQLException {
+            if(fields.isEmpty()){
+                if(pkName != null && !pkName.isEmpty()) {
+                    return connection.prepareStatement(
+                            String.format("select " + pkName + ",%s from %s where %s && ?", geometryField,
+                            tableReference, geometryField),ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                }
+                else{
+                    return connection.prepareStatement(
+                            String.format("select %s from %s where %s && ?", geometryField, tableReference,
+                            geometryField),ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                }
             }
             else{
-                StringBuilder sb = new StringBuilder("select ").append(pkName).append(",");
+                StringBuilder sb = new StringBuilder("select ");
+                if(pkName != null && !pkName.isEmpty()){
+                    sb.append(pkName).append(",");
+                }
                 
                 for (String field : fields) {
                     sb.append(field).append(",");
