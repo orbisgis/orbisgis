@@ -234,7 +234,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
     @Override
     public void tableChange(TableEditEvent event) {
         if (event.getUndoableEdit() == null && !table.isEditing()) {
-            executorService.execute(new RefreshTableJob(tableModel, event, this));
+            executorService.execute(new RefreshTableJob(tableModel, event, this, tableSorter));
         } else {
             if (event.getUndoableEdit() != null) {
                 undoManager.addEdit(new EditorUndoableEdit(event.getUndoableEdit()));
@@ -840,6 +840,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
      * The user disable table sort
      */
     public void onMenuNoSort() {
+        tableSorter.clearSortCache();
         tableSorter.setSortKeys(null);
     }
 

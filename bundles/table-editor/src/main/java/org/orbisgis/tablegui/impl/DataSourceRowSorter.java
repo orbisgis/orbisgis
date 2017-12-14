@@ -250,6 +250,14 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                         setSortKey(list.get(0));
                 }
         }
+
+    /**
+     * Clear the sort column cache.
+     */
+    public void clearSortCache(){
+            this.sortedColumns.clear();
+        }
+
         /**
          * Sort the column in the provided order
          *
