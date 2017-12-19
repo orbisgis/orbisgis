@@ -21,6 +21,7 @@
                 <configuration>
                     <instructions>
                         <Public-Package>org.orbisgis.sql-parser-api.*</Public-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

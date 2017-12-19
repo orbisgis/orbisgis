@@ -80,6 +80,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
+
+import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.orbisgis.omanager.plugin.api.CustomPlugin;
@@ -106,7 +108,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
     private static final int PROPERTY_TITLE_SIZE_INCREMENT = 4;
     private static final String DEFAULT_CATEGORY = "orbisgis";
     private static final String WPS_CATEGORY = "wps";
-    private ItemFilterStatusFactory.Status radioFilterStatus = ItemFilterStatusFactory.Status.ALL;
+    private ItemFilterStatusFactory.Status radioFilterStatus = ItemFilterStatusFactory.Status.AVAILABLE;
     private Map<String,ImageIcon> buttonIcons = new HashMap<>();
 
     // Bundle Category filter
@@ -127,6 +129,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
     private AtomicBoolean awaitingFilteringThread = new AtomicBoolean(false);
     private long lastTypedWordInFindTextField = 0;
     private ExecutorService executorService;
+    private ItemFilterStatusFactory itemFilterStatusFactory = new ItemFilterStatusFactory();
     /**
      * in ms Launch a search if the user don't type any character within this time.
      */
@@ -149,6 +152,10 @@ public class MainPanel extends JPanel implements CustomPlugin {
      */
     public void setExecutorService(ExecutorService executorService){
         this.executorService = executorService;
+    }
+
+    public void setCoreWorkspace(CoreWorkspace coreWorkspace){
+        itemFilterStatusFactory.setVersion(coreWorkspace.getVersionMajor()+"."+coreWorkspace.getVersionMinor());
     }
 
     /**
@@ -378,7 +385,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
     }
     private void applyFilters() {
         List<ItemFilter<BundleListModel>> filters = new ArrayList<>();
-        ItemFilter<BundleListModel> radioFilter = ItemFilterStatusFactory.getFilter(radioFilterStatus);
+        ItemFilter<BundleListModel> radioFilter = itemFilterStatusFactory.getFilter(radioFilterStatus);
         if(radioFilter!=null) {
             filters.add(radioFilter);
         }
@@ -402,6 +409,13 @@ public class MainPanel extends JPanel implements CustomPlugin {
         } else {
             filterModel.setFilter(null);
         }
+    }
+    /**
+     * User click on "All states" radio button
+     */
+    public void onFilterBundleAvailable() {
+        radioFilterStatus = ItemFilterStatusFactory.Status.AVAILABLE;
+        applyFilters();
     }
     /**
      * User click on "All states" radio button
@@ -576,14 +590,16 @@ public class MainPanel extends JPanel implements CustomPlugin {
         radioBar.setLayout(new BoxLayout(radioBar, BoxLayout.X_AXIS));
         // Create radio buttons
         ButtonGroup filterGroup = new ButtonGroup();
-        createRadioButton(I18N.tr("All"),I18N.tr("Show all bundles."),true,
-                "onRemoveStateFilter",filterGroup,radioBar);
+        createRadioButton(I18N.tr("Available"), I18N.tr("Show only the available bundles."), true,
+                "onFilterBundleAvailable", filterGroup, radioBar);
         createRadioButton(I18N.tr("Installed"),I18N.tr("Show only installed bundles."),false,"onFilterBundleInstall",
                 filterGroup, radioBar);
         createRadioButton(I18N.tr("Updatable"), I18N.tr("Show only bundles that can be updated."), false,
                 "onFilterBundleUpdate", filterGroup, radioBar);
+        createRadioButton(I18N.tr("All"),I18N.tr("Show all bundles."),false,
+                "onRemoveStateFilter",filterGroup,radioBar);
 
-        
+
         // Find text
         bundleSearchField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,this,"onSearchTextChange"));
         bundleSearchField.addActionListener(EventHandler.create(ActionListener.class, this, "onSearchTextValidate"));

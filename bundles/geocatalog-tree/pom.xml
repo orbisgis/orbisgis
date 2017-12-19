@@ -36,6 +36,7 @@
                     <instructions>
                         <Public-Package>org.orbisgis.geocatalogtree.api</Public-Package>
                         <Private-Package>org.orbisgis.geocatalogtree.*</Private-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

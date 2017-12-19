@@ -26,6 +26,7 @@
                                 <instructions>
                                     <Bundle-Vendor>Lab-STICC CNRS UMR 6285</Bundle-Vendor>
                                     <Bundle-Category>gui</Bundle-Category>
+                                    <OrbisGIS-Version>5.1</OrbisGIS-Version>
                                 </instructions>
                             </configuration>
                         </plugin>

@@ -36,6 +36,7 @@
                     <instructions>
                         <Bundle-Vendor>Lab-STICC - CNRS UMR 6285</Bundle-Vendor>
                         <Private-Package>org.orbisgis.h2triggersosgi.*</Private-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

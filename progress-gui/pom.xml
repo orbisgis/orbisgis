@@ -36,6 +36,7 @@
                     <instructions>
                         <Private-Package>org.orbisgis.progressgui.*</Private-Package>
                         <Import-Package>!sun.awt, *</Import-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

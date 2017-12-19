@@ -28,6 +28,7 @@
                         <Bundle-Version>${rsyntax-version}</Bundle-Version>
                         <_exportcontents>org.fife.*</_exportcontents>
                         <Import-Package>org.pushingpixels.substance.api.renderers;resolution:=optional, *</Import-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

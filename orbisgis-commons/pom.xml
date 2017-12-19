@@ -50,6 +50,7 @@
                     <instructions>
                         <Public-Package>org.orbisgis.commons.*</Public-Package>
                         <Private-Package>org.orbisgis.commons</Private-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

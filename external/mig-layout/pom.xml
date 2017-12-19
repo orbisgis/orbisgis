@@ -27,6 +27,7 @@
                         <Embed-Transitive>true</Embed-Transitive>
                         <Bundle-Version>${miglayout-version}</Bundle-Version>
                         <_exportcontents>net.miginfocom.swing.*,net.miginfocom.layout.*</_exportcontents>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

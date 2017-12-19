@@ -58,6 +58,11 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<instructions>
+						<OrbisGIS-Version>5.1</OrbisGIS-Version>
+					</instructions>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
