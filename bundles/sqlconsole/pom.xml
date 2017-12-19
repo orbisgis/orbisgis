@@ -36,6 +36,7 @@
                     <instructions>
                         <Private-Package>org.orbisgis.sqlconsole.*</Private-Package>
                         <Embed-Dependency>markdown4j</Embed-Dependency>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

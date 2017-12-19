@@ -25,6 +25,7 @@
                         <Embed-Transitive>true</Embed-Transitive>
                         <Bundle-Version>${jts-version}</Bundle-Version>
                         <_exportcontents>com.vividsolutions.jts,com.vividsolutions.jts.*</_exportcontents>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

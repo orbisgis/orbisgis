@@ -27,6 +27,7 @@
                         <Bundle-Version>${itext-version}</Bundle-Version>
                         <_exportcontents>com.itextpdf.text.*</_exportcontents>
                         <Import-Package>!org.bouncycastle.*, *</Import-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

@@ -36,6 +36,7 @@
                     <instructions>
                         <Public-Package>org.orbisgis.coremap.*</Public-Package>
                         <Private-Package>org.orbisgis.coremap.translation</Private-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

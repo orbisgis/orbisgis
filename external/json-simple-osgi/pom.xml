@@ -26,6 +26,7 @@
                         <Embed-Transitive>true</Embed-Transitive>
                         <Bundle-Version>${json-simple-version}</Bundle-Version>
                         <_exportcontents>org.json.simple,org.json.simple.*</_exportcontents>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

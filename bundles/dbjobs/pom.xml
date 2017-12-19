@@ -36,6 +36,7 @@
                     <instructions>
                         <Public-Package>org.orbisgis.dbjobs.api</Public-Package>
                         <Private-Package>org.orbisgis.dbjobs.*</Private-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

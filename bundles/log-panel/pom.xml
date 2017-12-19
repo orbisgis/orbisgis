@@ -36,6 +36,7 @@
                 <configuration>
                     <instructions>
                         <Private-Package>org.orbisgis.logpanel.*</Private-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

@@ -37,26 +37,77 @@
 
 package org.orbisgis.omanager.ui;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.Version;
+
 /**
  * Create a filter related to bundle status.
  * @author Nicolas Fortin
  */
 public class ItemFilterStatusFactory {
-    private ItemFilterStatusFactory() {}
-    public static enum Status { ALL, INSTALLED, UPDATE };
-    public static ItemFilter<BundleListModel> getFilter(Status status) {
+
+    private static final String ORBISGIS_VERSION = "OrbisGIS-Version";
+
+    private Installed installed = new Installed();
+    private Available available = new Available();
+
+    public ItemFilterStatusFactory() {}
+
+    public void setVersion(String version){
+        available.setVersion(version);
+    }
+
+    public enum Status { ALL, INSTALLED, UPDATE, AVAILABLE }
+
+    public ItemFilter<BundleListModel> getFilter(Status status) {
         switch (status) {
             case ALL:
                 return null;
+            case AVAILABLE:
+                return available;
             default:
-                return new Installed();
+                return installed;
 
         }
     }
 
-    private static class Installed  implements ItemFilter<BundleListModel> {
+    private class Installed  implements ItemFilter<BundleListModel> {
         public boolean include(BundleListModel model, int elementId) {
             return model.getBundle(elementId).getBundle()!=null;
+        }
+    }
+
+    private class Available implements ItemFilter<BundleListModel> {
+        private String version;
+        public void setVersion(String version){
+            this.version = version;
+        }
+
+        @Override
+        public boolean include(BundleListModel model, int elementId) {
+            Bundle bundle = model.getBundle(elementId).getBundle();
+            if(bundle != null){
+                String bVersion = bundle.getHeaders().get(ORBISGIS_VERSION);
+                if(bVersion != null && version != null) {
+
+                    Version versionOrbisgis = new Version(version);
+                    String[] versionSplit = bVersion.split(",");
+                    for(String str : versionSplit){
+                        if(str.contains("-")){
+                            int diff1 = new Version(str.split("-")[0]).compareTo(versionOrbisgis);
+                            int diff2 = new Version(str.split("-")[1]).compareTo(versionOrbisgis);
+                            if((diff1>=0 && diff2<=0) || (diff1<=0 && diff2>=0)){
+                                return true;
+                            }
+                        }else{
+                            if(new Version(str).equals(versionOrbisgis)){
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
         }
     }
 }

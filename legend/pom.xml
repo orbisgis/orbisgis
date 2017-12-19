@@ -51,6 +51,7 @@
                                 <Public-Package>org.orbisgis.legend.*</Public-Package>
                                 <Private-Package>org.orbisgis.legend.translation</Private-Package>
                                 <Import-Package>javax.swing.event, *</Import-Package>
+                                <OrbisGIS-Version>5.1</OrbisGIS-Version>
                             </instructions>
                         </configuration>
                     </plugin>

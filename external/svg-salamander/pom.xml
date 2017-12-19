@@ -27,6 +27,7 @@
                         <Bundle-Version>1.0</Bundle-Version>
                         <_exportcontents>com.kitfox.svg.*</_exportcontents>
                         <Import-Package>!org.apache.tools.ant.*,!sun.misc.*, *</Import-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

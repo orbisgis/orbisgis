@@ -43,6 +43,7 @@
                         <Embed-Transitive>true</Embed-Transitive>
                         <_exportcontents>bibliothek.gui.*, data.bibliothek.gui.*</_exportcontents>
                         <Import-Package>!com.sun.awt.*, *</Import-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

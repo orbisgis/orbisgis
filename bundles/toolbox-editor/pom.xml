@@ -41,6 +41,7 @@
                     <instructions>
                         <Private-Package>org.orbisgis.toolboxeditor.*</Private-Package>
                         <Bundle-Category>OrbisGIS,WPS</Bundle-Category>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

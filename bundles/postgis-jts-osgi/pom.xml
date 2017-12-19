@@ -33,6 +33,7 @@
                         <Embed-Dependency>postgresql;postgis-jdbc;postgis-jdbc-jtsparser;scope=compile;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <_exportcontents>org.postgresql.*;org.postgis.*</_exportcontents>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

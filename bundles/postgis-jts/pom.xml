@@ -29,6 +29,7 @@
                     <instructions>
                         <Fragment-Host>org.h2</Fragment-Host>
                         <Import-Package>!org.h2.*,*</Import-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

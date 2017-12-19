@@ -35,6 +35,7 @@
                     <instructions>
                         <Private-Package>org.orbisgis.view.toc.translation.*</Private-Package>
                         <Public-Package>org.orbisgis.view.toc.*</Public-Package>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
             </plugin>

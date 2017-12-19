@@ -33,6 +33,7 @@
                                                 <Bundle-Vendor>Lab-STICC - CNRS UMR 6285</Bundle-Vendor>
                                                 <Bundle-Category>gui</Bundle-Category>
                                                 <Import-Service>org.osgi.service.obr.RepositoryAdmin</Import-Service>
+                                                <OrbisGIS-Version>5.1</OrbisGIS-Version>
                                         </instructions>
                                 </configuration>
                         </plugin>
