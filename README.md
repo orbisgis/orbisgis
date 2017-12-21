@@ -13,7 +13,7 @@ Users, please consult the on-line documentation on [doc.orbisgis.org](http://doc
 
 ### Quick build instructions
 
-OrbisGIS uses Maven. To launch a full build (including tests), run the following command:
+OrbisGIS uses Maven. To launch a full build (including the tests), run the following command:
 ```bash
 $ mvn clean install
 ```
