@@ -39,6 +39,7 @@ package org.orbisgis.toolboxeditor.editor.log;
 
 import net.miginfocom.swing.MigLayout;
 import net.opengis.wps._2_0.ProcessDescriptionType;
+import org.orbisgis.orbiswps.serviceapi.process.ProcessExecutionListener;
 import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
@@ -46,7 +47,6 @@ import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.toolboxeditor.WpsClientImpl;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
 import org.orbisgis.toolboxeditor.utils.Job;
-import org.orbiswps.server.execution.ProcessExecutionListener;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

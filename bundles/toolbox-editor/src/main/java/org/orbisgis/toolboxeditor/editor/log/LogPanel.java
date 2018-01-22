@@ -38,8 +38,8 @@
 package org.orbisgis.toolboxeditor.editor.log;
 
 import net.miginfocom.swing.MigLayout;
+import org.orbisgis.orbiswps.serviceapi.process.ProcessExecutionListener;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
-import org.orbiswps.server.execution.ProcessExecutionListener;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

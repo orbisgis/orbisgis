@@ -39,6 +39,7 @@ package org.orbisgis.toolboxeditor.editor.process;
 
 import net.miginfocom.swing.MigLayout;
 import net.opengis.wps._2_0.*;
+import org.orbisgis.orbiswps.serviceapi.process.ProcessExecutionListener;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.ActionDockingListener;
 import org.orbisgis.sif.components.actions.DefaultAction;
@@ -46,13 +47,12 @@ import org.orbisgis.sif.docking.DockingLocation;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditorDockable;
-import org.orbiswps.client.api.utils.ProcessExecutionType;
+import org.orbisgis.orbiswps.client.api.utils.ProcessExecutionType;
 import org.orbisgis.toolboxeditor.WpsClientImpl;
 import org.orbisgis.toolboxeditor.dataui.DataUI;
 import org.orbisgis.toolboxeditor.dataui.DataUIManager;
 import org.orbisgis.toolboxeditor.utils.Job;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
-import org.orbiswps.server.execution.ProcessExecutionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
@@ -67,8 +67,8 @@ import java.net.URI;
 import java.util.*;
 import java.util.List;
 
-import static org.orbiswps.client.api.utils.ProcessExecutionType.BASH;
-import static org.orbiswps.client.api.utils.ProcessExecutionType.STANDARD;
+import static org.orbisgis.orbiswps.client.api.utils.ProcessExecutionType.BASH;
+import static org.orbisgis.orbiswps.client.api.utils.ProcessExecutionType.STANDARD;
 
 /**
  * UI for the configuration and the run of a WPS process.
@@ -246,7 +246,6 @@ public class ProcessEditor extends JPanel implements EditorDockable {
 
                     //Sets the job. It should be don after the client validation to be sure that the job has
                     // the listener add.
-                    job.setStartTime(System.currentTimeMillis());
                     job.setStatus(statusInfo);
                     job.setProcessState(ProcessExecutionListener.ProcessState.IDLE);
 
@@ -293,7 +292,6 @@ public class ProcessEditor extends JPanel implements EditorDockable {
 
                             //Sets the job. It should be don after the client validation to be sure that the job has
                             // the listener add.
-                            job.setStartTime(System.currentTimeMillis());
                             job.setStatus(statusInfo);
                             job.setProcessState(ProcessExecutionListener.ProcessState.IDLE);
 

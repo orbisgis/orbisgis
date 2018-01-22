@@ -361,26 +361,32 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.orbiswps</groupId>
+            <groupId>org.orbisgis.orbiswps</groupId>
             <artifactId>groovy-api</artifactId>
             <version>${orbiswps-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.orbiswps</groupId>
-            <artifactId>server</artifactId>
+            <groupId>org.orbisgis.orbiswps</groupId>
+            <artifactId>service-api</artifactId>
             <version>${orbiswps-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.orbiswps</groupId>
+            <groupId>org.orbisgis.orbiswps</groupId>
+            <artifactId>service</artifactId>
+            <version>${orbiswps-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis.orbiswps</groupId>
             <artifactId>scripts</artifactId>
             <version>${orbiswps-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.orbiswps</groupId>
-            <artifactId>client</artifactId>
+            <groupId>org.orbisgis.orbiswps</groupId>
+            <artifactId>client-api</artifactId>
             <version>${orbiswps-version}</version>
             <scope>provided</scope>
         </dependency>

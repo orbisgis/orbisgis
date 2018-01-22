@@ -38,10 +38,16 @@
 package org.orbisgis.toolboxeditor.utils;
 
 import org.orbisgis.sif.components.fstree.TreeNodeCustomIcon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 
 /**
  * Node of the process tree displayed in the ToolBox.
@@ -60,8 +66,15 @@ import java.net.URI;
 
 public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCustomIcon {
 
+    /** Logger */
+    private static final Logger LOGGER = LoggerFactory.getLogger(TreeNodeWps.class);
+    /** I18N object */
+    private static final I18n I18N = I18nFactory.getI18n(TreeNodeWps.class);
+
     /** Max length in character of the user object. */
     private static final int MAX_USEROBJECT_LENGTH = 30;
+    /** bundle string prefix of osgi url */
+    private static final String BUNDLE_PREFIX = "bundle://";
 
     /** Type of the node. */
     private NodeType nodeType = NodeType.FOLDER;
@@ -85,13 +98,31 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         //If custom icon were specified, use them
         if(isCustomIcon()){
             if(isValid){
-                ImageIcon icon = ToolBoxIcon.getIcon(customLeafIconName);
-                if(icon != null) {
-                    return icon;
+                if(customLeafIconName.startsWith(BUNDLE_PREFIX)){
+                    try {
+                        return new ImageIcon(new URL(customLeafIconName));
+                    } catch (MalformedURLException ignored) {
+                        LOGGER.warn(I18N.tr("Unable to get the icon with the URL : {0}", customLeafIconName));
+                    }
+                }
+                else {
+                    ImageIcon icon = ToolBoxIcon.getIcon(customLeafIconName);
+                    if (icon != null) {
+                        return icon;
+                    }
                 }
             }
             else{
-                return ToolBoxIcon.getIcon(customInvalidIconName);
+                if(customInvalidIconName.startsWith(BUNDLE_PREFIX)){
+                    try {
+                        return new ImageIcon(new URL(customInvalidIconName));
+                    } catch (MalformedURLException ignored) {
+                        LOGGER.warn(I18N.tr("Unable to get the icon with the URL : {0}", customInvalidIconName));
+                    }
+                }
+                else {
+                    return ToolBoxIcon.getIcon(customInvalidIconName);
+                }
             }
         }
         switch (nodeType) {
@@ -126,13 +157,31 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         //If custom icon were specified, use them
         if(isCustomIcon()){
             if(isValid){
-                ImageIcon icon = ToolBoxIcon.getIcon(customLeafIconName);
-                if(icon != null) {
-                    return icon;
+                if(customLeafIconName.startsWith(BUNDLE_PREFIX)){
+                    try {
+                        return new ImageIcon(new URL(customLeafIconName));
+                    } catch (MalformedURLException ignored) {
+                        LOGGER.warn(I18N.tr("Unable to get the icon with the URL : {0}", customLeafIconName));
+                    }
+                }
+                else {
+                    ImageIcon icon = ToolBoxIcon.getIcon(customLeafIconName);
+                    if (icon != null) {
+                        return icon;
+                    }
                 }
             }
             else{
-                return ToolBoxIcon.getIcon(customInvalidIconName);
+                if(customInvalidIconName.startsWith(BUNDLE_PREFIX)){
+                    try {
+                        return new ImageIcon(new URL(customInvalidIconName));
+                    } catch (MalformedURLException ignored) {
+                        LOGGER.warn(I18N.tr("Unable to get the icon with the URL : {0}", customInvalidIconName));
+                    }
+                }
+                else {
+                    return ToolBoxIcon.getIcon(customInvalidIconName);
+                }
             }
         }
         switch (nodeType) {
@@ -171,13 +220,31 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
         //If custom icon were specified, use them
         if(isCustomIcon()){
             if(isValid){
-                ImageIcon icon = ToolBoxIcon.getIcon(customLeafIconName);
-                if(icon != null) {
-                    return icon;
+                if(customLeafIconName.startsWith(BUNDLE_PREFIX)){
+                    try {
+                        return new ImageIcon(new URL(customLeafIconName));
+                    } catch (MalformedURLException ignored) {
+                        LOGGER.warn(I18N.tr("Unable to get the icon with the URL : {0}", customLeafIconName));
+                    }
+                }
+                else {
+                    ImageIcon icon = ToolBoxIcon.getIcon(customLeafIconName);
+                    if (icon != null) {
+                        return icon;
+                    }
                 }
             }
             else{
-                return ToolBoxIcon.getIcon(customInvalidIconName);
+                if(customInvalidIconName.startsWith(BUNDLE_PREFIX)){
+                    try {
+                        return new ImageIcon(new URL(customInvalidIconName));
+                    } catch (MalformedURLException ignored) {
+                        LOGGER.warn(I18N.tr("Unable to get the icon with the URL : {0}", customInvalidIconName));
+                    }
+                }
+                else {
+                    return ToolBoxIcon.getIcon(customInvalidIconName);
+                }
             }
         }
         switch (nodeType) {

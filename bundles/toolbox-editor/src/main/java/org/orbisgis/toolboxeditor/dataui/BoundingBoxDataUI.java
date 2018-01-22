@@ -45,7 +45,7 @@ import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.toolboxeditor.WpsClientImpl;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
-import org.orbiswps.server.model.BoundingBoxData;
+import org.orbisgis.orbiswps.service.model.BoundingBoxData;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
