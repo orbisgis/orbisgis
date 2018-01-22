@@ -50,6 +50,11 @@ import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DatabaseProgressionListener;
 import org.orbisgis.corejdbc.StateEvent;
 import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.orbisgis.orbiswps.serviceapi.WpsServer;
+import org.orbisgis.orbiswps.serviceapi.WpsServerListener;
+import org.orbisgis.orbiswps.serviceapi.process.ProcessIdentifier;
+import org.orbisgis.orbiswps.serviceapi.process.ProcessMetadata;
+import org.orbisgis.orbiswps.serviceapi.process.ProcessMetadata.INTERNAL_METADATA;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.OpenFolderPanel;
@@ -66,16 +71,13 @@ import org.orbisgis.toolboxeditor.editor.log.LogEditableElement;
 import org.orbisgis.toolboxeditor.editor.log.LogEditor;
 import org.orbisgis.toolboxeditor.editor.process.ProcessEditableElement;
 import org.orbisgis.toolboxeditor.editor.process.ProcessEditor;
+import org.orbisgis.toolboxeditor.utils.JaxbContainer;
 import org.orbisgis.toolboxeditor.utils.Job;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
-import org.orbiswps.client.api.WpsClient;
-import org.orbiswps.client.api.utils.ProcessExecutionType;
-import org.orbiswps.client.api.utils.WpsJobStateListener;
-import org.orbiswps.server.WpsServer;
-import org.orbiswps.server.controller.process.ProcessIdentifier;
-import org.orbiswps.server.model.*;
-import org.orbiswps.server.utils.ProcessMetadata;
-import org.orbiswps.server.utils.WpsServerListener;
+import org.orbisgis.orbiswps.client.api.WpsClient;
+import org.orbisgis.orbiswps.client.api.utils.ProcessExecutionType;
+import org.orbisgis.orbiswps.client.api.utils.WpsJobStateListener;
+import org.orbisgis.orbiswps.service.model.*;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -113,8 +115,8 @@ import static org.orbisgis.toolboxeditor.utils.Job.*;
  **/
 
 @Component(immediate = true, service = {DockingPanel.class, ToolboxWpsClient.class, WpsClient.class})
-public class WpsClientImpl
-        implements DockingPanel, ToolboxWpsClient, PropertyChangeListener, WpsServerListener, DatabaseProgressionListener {
+public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyChangeListener, WpsServerListener,
+        DatabaseProgressionListener {
 
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
     private static final String PROPERTY_SOURCES = "PROPERTY_SOURCES";
@@ -173,7 +175,7 @@ public class WpsClientImpl
     /** True if a swing runnable is pending to refresh the content of the table list, false otherwise. */
     private AtomicBoolean awaitingRefresh=new AtomicBoolean(false);
     private Map<String, String> processUriPath = new HashMap<>();
-    private Map<URI, Map<ProcessMetadata.INTERNAL_METADATA, Object>> processMetadataMap = new HashMap<>();
+    private Map<URI, Map<INTERNAL_METADATA, Object>> processMetadataMap = new HashMap<>();
 
 
 
@@ -185,10 +187,6 @@ public class WpsClientImpl
 
     @Activate
     public void activate(){
-        if(wpsServer != null){
-            wpsServer.setDataSource(dataManager.getDataSource());
-            wpsServer.setExecutorService(executorService);
-        }
         toolBoxPanel = new ToolBoxPanel(this);
         dataUIManager = new DataUIManager(this);
 
@@ -533,10 +531,10 @@ public class WpsClientImpl
                 LOGGER.warn(I18N.tr("Unable to add the script {0}", uri.toString()));
             }
             else {
-                Map<ProcessMetadata.INTERNAL_METADATA, Object> metadataMap = new HashMap<>();
-                metadataMap.put(ProcessMetadata.INTERNAL_METADATA.IS_REMOVABLE, isDefaultScript);
-                metadataMap.put(ProcessMetadata.INTERNAL_METADATA.NODE_PATH, nodePath);
-                metadataMap.put(ProcessMetadata.INTERNAL_METADATA.ICON_ARRAY, iconName);
+                Map<INTERNAL_METADATA, Object> metadataMap = new HashMap<>();
+                metadataMap.put(INTERNAL_METADATA.IS_REMOVABLE, isDefaultScript);
+                metadataMap.put(INTERNAL_METADATA.NODE_PATH, nodePath);
+                metadataMap.put(INTERNAL_METADATA.ICON_ARRAY, iconName);
                 addProcessMetadata(uri, metadataMap);
                 processUriPath.put(piList.get(0).getProcessDescriptionType().getIdentifier().getValue(), new File(uri).getAbsolutePath());
             }
@@ -551,10 +549,10 @@ public class WpsClientImpl
                         isFolderAdd = true;
                     }
                     wpsServer.addProcess(f);
-                    Map<ProcessMetadata.INTERNAL_METADATA, Object> metadataMap = new HashMap<>();
-                    metadataMap.put(ProcessMetadata.INTERNAL_METADATA.IS_REMOVABLE, isDefaultScript);
-                    metadataMap.put(ProcessMetadata.INTERNAL_METADATA.NODE_PATH, nodePath);
-                    metadataMap.put(ProcessMetadata.INTERNAL_METADATA.ICON_ARRAY, iconName);
+                    Map<INTERNAL_METADATA, Object> metadataMap = new HashMap<>();
+                    metadataMap.put(INTERNAL_METADATA.IS_REMOVABLE, isDefaultScript);
+                    metadataMap.put(INTERNAL_METADATA.NODE_PATH, nodePath);
+                    metadataMap.put(INTERNAL_METADATA.ICON_ARRAY, iconName);
                     addProcessMetadata(uri, metadataMap);
                 }
             }
@@ -737,7 +735,6 @@ public class WpsClientImpl
         UUID jobID = UUID.fromString(statusInfo.getJobID());
         Job job = new Job(jobID, process);
         job.addPropertyChangeListener(this);
-        job.setStartTime(System.currentTimeMillis());
         job.setStatus(statusInfo);
         this.jobMap.put(jobID, job);
         //Returns the job id
@@ -800,8 +797,14 @@ public class WpsClientImpl
         toolBoxPanel.cleanAll();
         //Adds all the available processes
         for(ProcessSummaryType processSummary : getCapabilities()) {
-            URI uri = URI.create(processSummary.getIdentifier().getValue());
-            toolBoxPanel.addProcess(processSummary, processMetadataMap.get(uri));
+            Map<String, Object> metadataMap = new HashMap<>();
+            List<MetadataType> metadataTypes = processSummary.getMetadata();
+            if(metadataTypes != null){
+                for(MetadataType metadata : metadataTypes){
+                    metadataMap.put(metadata.getRole(),metadata.getTitle());
+                }
+            }
+            toolBoxPanel.addProcess(processSummary, metadataMap);
         }
     }
 
@@ -1202,12 +1205,6 @@ public class WpsClientImpl
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             if(dataManager != null){
                 isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-                if(isH2){
-                    wpsServer.setDatabase(WpsServer.Database.H2GIS);
-                }
-                else{
-                    wpsServer.setDatabase(WpsServer.Database.POSTGIS);
-                }
                 if(isH2) {
                     Statement statement = connection.createStatement();
                     ResultSet result = statement.executeQuery("select VALUE from INFORMATION_SCHEMA.SETTINGS AS s where NAME = 'MVCC';");
@@ -1369,7 +1366,7 @@ public class WpsClientImpl
     }
 
     @Override
-    public void addProcessMetadata(URI uri, Map<ProcessMetadata.INTERNAL_METADATA, Object> map) {
+    public void addProcessMetadata(URI uri, Map<INTERNAL_METADATA, Object> map) {
         processMetadataMap.put(uri, map);
     }
 

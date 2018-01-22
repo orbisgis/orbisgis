@@ -45,7 +45,7 @@ import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.DescriptionType;
 import org.orbisgis.toolboxeditor.WpsClientImpl;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
-import org.orbiswps.server.model.*;
+import org.orbisgis.orbiswps.service.model.*;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

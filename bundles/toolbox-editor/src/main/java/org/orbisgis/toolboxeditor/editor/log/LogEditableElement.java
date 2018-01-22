@@ -38,10 +38,10 @@
 package org.orbisgis.toolboxeditor.editor.log;
 
 import org.orbisgis.commons.progress.ProgressMonitor;
+import org.orbisgis.orbiswps.serviceapi.process.ProcessExecutionListener;
 import org.orbisgis.sif.edition.EditableElement;
 import org.orbisgis.sif.edition.EditableElementException;
 import org.orbisgis.toolboxeditor.utils.Job;
-import org.orbiswps.server.execution.ProcessExecutionListener;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
