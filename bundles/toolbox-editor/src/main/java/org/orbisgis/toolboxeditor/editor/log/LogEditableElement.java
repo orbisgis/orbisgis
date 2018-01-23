@@ -59,7 +59,7 @@ import static org.orbisgis.toolboxeditor.utils.Job.*;
  */
 public class LogEditableElement implements EditableElement, PropertyChangeListener {
     /** Unique id of the LogEditableElement. */
-    public static final String ID = "LOG_EDITABLE_ELEMENT";
+    private static final String ID = "LOG_EDITABLE_ELEMENT";
     /** I18N object */
     private static final I18n I18N = I18nFactory.getI18n(LogEditableElement.class);
     /** List of ProcessEditableElements displayed by the Editor. */
