@@ -44,7 +44,7 @@ import net.opengis.wps._2_0.OutputDescriptionType;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.toolboxeditor.WpsClientImpl;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
-import org.orbiswps.server.model.Enumeration;
+import org.orbisgis.orbiswps.service.model.Enumeration;
 import org.slf4j.LoggerFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -122,7 +122,7 @@ public class EnumerationUI implements DataUI {
                 enumeration.getValuesNames().length == enumeration.getValues().length){
             for(int i=0; i<enumeration.getValues().length; i++){
                 model.addElement(new ContainerItem<>(enumeration.getValues()[i],
-                        enumeration.getValuesNames()[i].getStrings()[0].getValue()));
+                        enumeration.getValuesNames()[i]));
             }
         }
         else{

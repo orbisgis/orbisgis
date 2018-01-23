@@ -38,8 +38,11 @@
 package org.orbisgis.toolboxeditor;
 
 import net.opengis.ows._2.LanguageStringType;
-import net.opengis.ows._2.MetadataType;
 import net.opengis.wps._2_0.ProcessSummaryType;
+import org.orbisgis.orbiswps.client.api.filter.IFilter;
+import org.orbisgis.orbiswps.client.api.utils.ProcessExecutionType;
+import org.orbisgis.orbiswps.serviceapi.process.ProcessMetadata;
+import org.orbisgis.orbiswps.serviceapi.process.ProcessMetadata.INTERNAL_METADATA;
 import org.orbisgis.sif.components.actions.ActionCommands;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.orbisgis.sif.components.filter.DefaultActiveFilter;
@@ -47,12 +50,9 @@ import org.orbisgis.sif.components.filter.FilterFactoryManager;
 import org.orbisgis.sif.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.sif.components.fstree.FileTree;
 import org.orbisgis.sif.components.fstree.FileTreeModel;
-import org.orbiswps.client.api.filter.IFilter;
-import org.orbiswps.client.api.utils.ProcessExecutionType;
 import org.orbisgis.toolboxeditor.filter.SearchFilter;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
 import org.orbisgis.toolboxeditor.utils.TreeNodeWps;
-import org.orbiswps.server.utils.ProcessMetadata;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -65,8 +65,10 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Main panel of the ToolBox.
@@ -760,20 +762,20 @@ public class ToolBoxPanel extends JPanel {
         selectedModel = model;
     }
 
-    public void addProcess(ProcessSummaryType processSummary, Map<ProcessMetadata.INTERNAL_METADATA, Object> metadataMap) {
+    public void addProcess(ProcessSummaryType processSummary, Map<String, Object> metadataMap) {
         boolean isRemovable = true;
         String nodePath = "localhost";
         String[] iconArray = null;
         //Retrieve the process metadata
         if(metadataMap != null){
-            if (metadataMap.containsKey(ProcessMetadata.INTERNAL_METADATA.IS_REMOVABLE)) {
-                isRemovable = (boolean) metadataMap.get(ProcessMetadata.INTERNAL_METADATA.IS_REMOVABLE);
+            if (metadataMap.containsKey(INTERNAL_METADATA.IS_REMOVABLE.name())) {
+                isRemovable = Boolean.parseBoolean((String)metadataMap.get(INTERNAL_METADATA.IS_REMOVABLE.name()));
             }
-            if (metadataMap.containsKey(ProcessMetadata.INTERNAL_METADATA.NODE_PATH)) {
-                nodePath = (String) metadataMap.get(ProcessMetadata.INTERNAL_METADATA.NODE_PATH);
+            if (metadataMap.containsKey(INTERNAL_METADATA.NODE_PATH.name())) {
+                nodePath = (String) metadataMap.get(INTERNAL_METADATA.NODE_PATH.name());
             }
-            if (metadataMap.containsKey(ProcessMetadata.INTERNAL_METADATA.ICON_ARRAY)) {
-                iconArray = (String[])metadataMap.get(ProcessMetadata.INTERNAL_METADATA.ICON_ARRAY);
+            if (metadataMap.containsKey(INTERNAL_METADATA.ICON_ARRAY.name())) {
+                iconArray = ((String)metadataMap.get(INTERNAL_METADATA.ICON_ARRAY.name())).split(",");
             }
         }
         addLocalSourceInFileModel(LOCALHOST_URI, mapHostNode.get(LOCALHOST_URI),

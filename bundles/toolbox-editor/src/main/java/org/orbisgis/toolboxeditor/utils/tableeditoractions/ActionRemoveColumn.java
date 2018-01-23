@@ -45,7 +45,7 @@ import org.orbisgis.tableeditorapi.TableEditorPopupActions;
 
 import org.orbisgis.toolboxeditor.ToolboxWpsClient;
 import org.orbisgis.toolboxeditor.utils.ToolBoxIcon;
-import org.orbiswps.client.api.utils.WpsJobStateListener;
+import org.orbisgis.orbiswps.client.api.utils.WpsJobStateListener;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

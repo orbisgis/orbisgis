@@ -38,10 +38,10 @@
 package org.orbisgis.toolboxeditor;
 
 import net.opengis.wps._2_0.ProcessDescriptionType;
-import org.orbiswps.client.api.WpsClient;
-import org.orbiswps.client.api.utils.ProcessExecutionType;
-import org.orbiswps.client.api.utils.WpsJobStateListener;
-import org.orbiswps.server.model.DataType;
+import org.orbisgis.orbiswps.client.api.WpsClient;
+import org.orbisgis.orbiswps.client.api.utils.ProcessExecutionType;
+import org.orbisgis.orbiswps.client.api.utils.WpsJobStateListener;
+import org.orbisgis.orbiswps.service.model.DataType;
 
 import java.net.URI;
 import java.util.List;

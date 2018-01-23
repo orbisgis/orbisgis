@@ -37,7 +37,7 @@
 package org.orbisgis.toolboxeditor.utils;
 
 import net.opengis.wps._2_0.*;
-import org.orbiswps.server.execution.ProcessExecutionListener;
+import org.orbisgis.orbiswps.serviceapi.process.ProcessExecutionListener;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -72,7 +72,7 @@ import java.util.List;
  *
  * @author Sylvain PALOMINOS
  */
-public class Job implements ProcessExecutionListener{
+public class Job implements ProcessExecutionListener {
 
     /** Static strings used for the PropertyEvents. */
     public static final String STATE_PROPERTY = "STATE_PROPERTY";
@@ -84,13 +84,13 @@ public class Job implements ProcessExecutionListener{
     public static final String ESTIMATED_COMPLETION_PROPERTY = "ESTIMATED_COMPLETION_PROPERTY";
 
     /** I18N object */
-    private static final I18n I18N = I18nFactory.getI18n(ProcessExecutionListener.class);
+    private static final I18n I18N = I18nFactory.getI18n(Job.class);
     /** Id of the server side Job. */
     private UUID id;
     /** Process state at the last refresh date. */
     private ProcessExecutionListener.ProcessState state;
     /** Time when the process has started. */
-    private Long startTime;
+    private Long startTime = -1L;
     /** Map containing the logs of the execution of their display color. */
     private Map<String, Color> logMap;
     /** Process executed by the Job */
@@ -131,6 +131,9 @@ public class Job implements ProcessExecutionListener{
 
     @Override
     public void setProcessState(ProcessState processState) {
+        if(startTime == -1){
+            this.startTime = System.currentTimeMillis() + 60*60*1000;
+        }
         this.state = processState;
         if (processState.equals(ProcessExecutionListener.ProcessState.FAILED)) {
             appendLog(ProcessExecutionListener.LogType.ERROR, processState.toString());
@@ -172,11 +175,6 @@ public class Job implements ProcessExecutionListener{
      */
     public void putLog(String log, Color color) {
         this.logMap.put(log, color);
-    }
-
-    @Override
-    public void setStartTime(long time) {
-        this.startTime = time + 60*60*1000;
     }
 
     @Override
