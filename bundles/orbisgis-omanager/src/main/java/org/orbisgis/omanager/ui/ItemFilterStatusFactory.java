@@ -107,7 +107,7 @@ public class ItemFilterStatusFactory {
                     }
                 }
             }
-            return false;
+            return true;
         }
     }
 }
