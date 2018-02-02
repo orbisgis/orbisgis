@@ -107,7 +107,6 @@ public class MainPanel extends JPanel implements CustomPlugin {
     private static final int PROPERTY_TEXT_SIZE_INCREMENT = 3;
     private static final int PROPERTY_TITLE_SIZE_INCREMENT = 4;
     private static final String DEFAULT_CATEGORY = "orbisgis";
-    private static final String WPS_CATEGORY = "wps";
     private ItemFilterStatusFactory.Status radioFilterStatus = ItemFilterStatusFactory.Status.AVAILABLE;
     private Map<String,ImageIcon> buttonIcons = new HashMap<>();
 
@@ -136,7 +135,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
     private static final long LAUNCH_SEARCH_IDLE_TIME = 300;
     private final Category category;
     /** Enumeration of the categories */
-    enum Category{PLUGIN, SYSTEM, WPS}
+    enum Category{PLUGIN, SYSTEM}
     /**
      * Constructor of the main plugin panel
      * @param category specify plugin category
@@ -390,10 +389,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
             filters.add(radioFilter);
         }
 
-        if(category.equals(Category.WPS)){
-            filters.add(new ItemFilterCategory(WPS_CATEGORY));
-        }
-        else if(category.equals(Category.PLUGIN)){
+        if(category.equals(Category.PLUGIN)){
             filters.add(new ItemFilterCategory(DEFAULT_CATEGORY));
         }
         
@@ -640,8 +636,6 @@ public class MainPanel extends JPanel implements CustomPlugin {
     @Override
     public String getName() {
         switch(category){
-            case WPS:
-                return I18N.tr("Wps plugins");
             case SYSTEM:
                 return I18N.tr("Systems");
             case PLUGIN:
@@ -653,8 +647,6 @@ public class MainPanel extends JPanel implements CustomPlugin {
     @Override
     public Icon getIcon() {
         switch(category){
-            case WPS:
-                return new ImageIcon(MainPanel.class.getResource("plugin_system.png"));
             case SYSTEM:
                 return new ImageIcon(MainPanel.class.getResource("plugin_system.png"));
             case PLUGIN:
