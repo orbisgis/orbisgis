@@ -794,8 +794,11 @@ public class ToolBoxPanel extends JPanel {
         if(parentUri.toString().startsWith("file:/") || parentUri.toString().startsWith("/")){
             split = new String[]{new File(parentUri).getName()};
         }
-        else{
+        else if(parentUri.toString().contains("/")){
             split = nodePath.split("/");
+        }
+        else{
+            split = nodePath.split("[\\\\/]");
         }
         TreeNodeWps parent = hostNode;
         TreeNodeWps node = null;
