@@ -103,7 +103,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>ogc-custom</artifactId>
+            <artifactId>ogc-custom-model</artifactId>
             <version>${ogc-commons-version}</version>
         </dependency>
         <dependency>
