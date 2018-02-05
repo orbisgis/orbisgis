@@ -178,7 +178,8 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             boolean isOnlyGeomFields = SFSUtilities.getGeometryFields(tableEditableElement.getRowSet()).size() ==
                     JDBCUtilities.getFieldNames(tableEditableElement.getDataManager().getDataSource().getConnection()
                             .getMetaData(), tableEditableElement.getTableReference()).size();
-            boolean isLinkedTable = JDBCUtilities.isLinkedTable(tableEditableElement.getDataManager().getDataSource()
+            //TODO remove has it have been implemented in H2GIS 1.4.0
+            boolean isLinkedTable = isLinkedTable(tableEditableElement.getDataManager().getDataSource()
                     .getConnection(), tableEditableElement.getTableReference());
             tableEditableElement.setExcludeGeometry(isTableGeom && !isOnlyGeomFields && !isLinkedTable);
         } catch (EditableElementException|SQLException e) {
@@ -199,6 +200,52 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                 registerMapContext(mapContext);
             }
         }
+    }
+
+    /**
+     * Has been implemented in H2GIS 1.4.0
+     */
+    private boolean isLinkedTable(Connection connection, String tableReference) throws SQLException {
+        TableLocation location = TableLocation.parse(tableReference);
+        ResultSet rs = getTablesView(connection, location.getCatalog(), location.getSchema(), location.getTable());
+        boolean isLinked;
+        try {
+            if(rs.next()) {
+                String tableType = rs.getString("TABLE_TYPE");
+                isLinked = tableType.contains("TABLE LINK");
+            } else {
+                throw new SQLException("The table "+location+" does not exists");
+            }
+        } finally {
+            rs.close();
+        }
+        return isLinked;
+    }
+    private ResultSet getTablesView(Connection connection, String catalog, String schema, String table) throws SQLException {
+        Integer catalogIndex = null;
+        Integer schemaIndex = null;
+        Integer tableIndex = 1;
+        StringBuilder sb = new StringBuilder("SELECT * from INFORMATION_SCHEMA.TABLES where ");
+        if(!catalog.isEmpty()) {
+            sb.append("UPPER(table_catalog) = ? AND ");
+            catalogIndex = 1;
+            tableIndex++;
+        }
+        if(!schema.isEmpty()) {
+            sb.append("UPPER(table_schema) = ? AND ");
+            schemaIndex = tableIndex;
+            tableIndex++;
+        }
+        sb.append("UPPER(table_name) = ? ");
+        PreparedStatement geomStatement = connection.prepareStatement(sb.toString());
+        if(catalogIndex!=null) {
+            geomStatement.setString(catalogIndex,catalog.toUpperCase());
+        }
+        if(schemaIndex!=null) {
+            geomStatement.setString(schemaIndex,schema.toUpperCase());
+        }
+        geomStatement.setString(tableIndex,table.toUpperCase());
+        return geomStatement.executeQuery();
     }
 
     @Deactivate
@@ -259,7 +306,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             boolean isOnlyGeomFields = SFSUtilities.getGeometryFields(tableEditableElement.getRowSet()).size() ==
                     JDBCUtilities.getFieldNames(tableEditableElement.getDataManager().getDataSource().getConnection()
                             .getMetaData(), tableEditableElement.getTableReference()).size();
-            boolean isLinkedTable = JDBCUtilities.isLinkedTable(tableEditableElement.getDataManager().getDataSource()
+            boolean isLinkedTable = isLinkedTable(tableEditableElement.getDataManager().getDataSource()
                     .getConnection(), tableEditableElement.getTableReference());
             if(isTableGeom && !isOnlyGeomFields && !isLinkedTable){
                 actions.add(new DefaultAction(TableEditorActions.A_TOGGLE_GEOM, I18N.tr("Toggle geometry display"),
