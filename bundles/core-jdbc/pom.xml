@@ -127,7 +127,7 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
-            <artifactId>h2gis</artifactId>
+            <artifactId>h2gis-functions</artifactId>
             <version>${h2-gis-version}</version>
             <scope>test</scope>
         </dependency>
