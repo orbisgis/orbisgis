@@ -847,7 +847,8 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
                 else {
                     try (Connection connection = dataManager.getDataSource().getConnection()) {
                         //Get the metadata of the table
-                        ResultSet rs = connection.createStatement().executeQuery(String.format("select * from %s limit 1", tablelocation.getTable()));
+                        ResultSet rs = connection.createStatement().executeQuery(
+                                String.format("select * from %s limit 1", tablelocation.toString(isH2)));
                         ResultSetMetaData metaData = rs.getMetaData();
                         //For each column, get its DataType
                         for(int columnId = 1; columnId <= metaData.getColumnCount(); ++columnId) {
