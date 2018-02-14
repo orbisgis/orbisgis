@@ -174,7 +174,8 @@ public class ToolBoxPanel extends JPanel {
         tree.setScrollsOnExpand(true);
         tree.setToggleClickCount(1);
         tree.setCellRenderer(new CustomTreeCellRenderer(tree));
-        tree.addMouseListener(EventHandler.create(MouseListener.class, this, "onMouseClicked", "", "mouseReleased"));
+        tree.addMouseListener(EventHandler.create(MouseListener.class, this, "onMouseReleased", "", "mouseReleased"));
+        tree.addMouseListener(EventHandler.create(MouseListener.class, this, "onMouseClicked", ""));
 
         JScrollPane treeScrollPane = new JScrollPane(tree);
         this.add(treeScrollPane, BorderLayout.CENTER);
@@ -219,14 +220,14 @@ public class ToolBoxPanel extends JPanel {
 
     /**
      * Action done when the mouse is clicked.
-     * @param event Mouse event.
+     * @param e Mouse event.
      */
-    public void onMouseClicked(MouseEvent event){
+    public void onMouseClicked(MouseEvent e){
         //Test if it is a right click
-        if(event.getButton() == MouseEvent.BUTTON3) {
+        if(e.getButton() == MouseEvent.BUTTON3 || e.isPopupTrigger()) {
             JPopupMenu popupMenu = new JPopupMenu();
             //find what was clicked to give to the popup the good action
-            if(event.getSource().equals(tree)){
+            if(e.getSource().equals(tree)){
                 if(tree.getLastSelectedPathComponent() == null ||
                         tree.getLastSelectedPathComponent().equals(fileModel.getRoot()) ||
                         tree.getLastSelectedPathComponent().equals(tagModel.getRoot())){
@@ -251,50 +252,53 @@ public class ToolBoxPanel extends JPanel {
                 }
             }
             if (popupMenu.getComponentCount()>0) {
-                popupMenu.show(event.getComponent(), event.getX(), event.getY());
+                popupMenu.show(e.getComponent(), e.getX(), e.getY());
             }
         }
         else {
-            TreeNodeWps selectedNode = (TreeNodeWps) ((FileTree)event.getSource()).getLastSelectedPathComponent();
-            if(selectedNode != null) {
-                //if a simple click is done
-                if (event.getClickCount() == 1) {
-                    switch(selectedNode.getNodeType()){
-                        case HOST_DISTANT:
-                            //TODO : check if the host is reachable an if it contains a WPS service.
-                            break;
-                        case HOST_LOCAL:
-                            //TODO : check if the OrbisGIS WPS script folder is available or not
-                            break;
-                        case FOLDER:
-                            if(selectedNode.getChildCount() != 0) {
-                                //Check if the folder exists and it it contains some scripts
-                                if (selectedModel == fileModel) {
-                                    refresh(selectedNode);
-                                }
+        }
+    }
+
+    public void onMouseReleased(MouseEvent e){
+        TreeNodeWps selectedNode = (TreeNodeWps) ((FileTree)e.getSource()).getLastSelectedPathComponent();
+        if(selectedNode != null) {
+            //if a simple click is done
+            if (e.getClickCount() == 1) {
+                switch(selectedNode.getNodeType()){
+                    case HOST_DISTANT:
+                        //TODO : check if the host is reachable an if it contains a WPS service.
+                        break;
+                    case HOST_LOCAL:
+                        //TODO : check if the OrbisGIS WPS script folder is available or not
+                        break;
+                    case FOLDER:
+                        if(selectedNode.getChildCount() != 0) {
+                            //Check if the folder exists and it it contains some scripts
+                            if (selectedModel == fileModel) {
+                                refresh(selectedNode);
                             }
-                            else{
-                                wpsClient.addLocalSource(selectedNode.getIdentifier());
-                            }
-                            break;
-                        case PROCESS:
-                            refresh(selectedNode);
-                            break;
-                    }
-                }
-                //If a double click is done
-                if (event.getClickCount() == 2 && lastSelectedNode.equals(selectedNode)) {
-                    if (selectedNode.isValidNode()) {
-                        //if the selected node is a PROCESS node, open a new instance.
-                        if(selectedNode.getNodeType().equals(TreeNodeWps.NodeType.PROCESS)) {
-                            wpsClient.openProcess(selectedNode.getIdentifier(), null,
-                                    ProcessExecutionType.STANDARD);
                         }
+                        else{
+                            wpsClient.addLocalSource(selectedNode.getIdentifier());
+                        }
+                        break;
+                    case PROCESS:
+                        refresh(selectedNode);
+                        break;
+                }
+            }
+            //If a double click is done
+            if (e.getClickCount() == 2 && lastSelectedNode.equals(selectedNode)) {
+                if (selectedNode.isValidNode()) {
+                    //if the selected node is a PROCESS node, open a new instance.
+                    if(selectedNode.getNodeType().equals(TreeNodeWps.NodeType.PROCESS)) {
+                        wpsClient.openProcess(selectedNode.getIdentifier(), null,
+                                ProcessExecutionType.STANDARD);
                     }
                 }
             }
-            lastSelectedNode = selectedNode;
         }
+        lastSelectedNode = selectedNode;
     }
 
     /**
