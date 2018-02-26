@@ -408,7 +408,7 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
         getCapabilities.setAcceptLanguages(acceptLanguages);
         //Sets the version
         AcceptVersionsType acceptVersions = new AcceptVersionsType();
-        acceptVersions.getVersion().add("2.0.0");
+        acceptVersions.getVersion().add("2.0");
         getCapabilities.setAcceptVersions(acceptVersions);
 
         JAXBElement<GetCapabilitiesType> request = new ObjectFactory().createGetCapabilities(getCapabilities);
