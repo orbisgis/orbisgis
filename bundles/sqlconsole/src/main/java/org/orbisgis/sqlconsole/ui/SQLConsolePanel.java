@@ -510,9 +510,19 @@ public class SQLConsolePanel extends JPanel {
          * Update the row:column label
          */
         public void onScriptPanelCaretUpdate() {
-                line = scriptPanel.getCaretLineNumber() + 1;
-                character = scriptPanel.getCaretOffsetFromLineStart();
-                setStatusMessage(message);
+            final Runnable scriptPanelUpdate = new Runnable() {
+                @Override
+                public void run() {
+                    line = scriptPanel.getCaretLineNumber() + 1;
+                    character = scriptPanel.getCaretOffsetFromLineStart();
+                    setStatusMessage(message);
+                }
+            };
+            if(SwingUtilities.isEventDispatchThread()) {
+                scriptPanelUpdate.run();
+            } else {
+                SwingUtilities.invokeLater(scriptPanelUpdate);
+            }
         }
         /**
      * Open a panel to change the SQL time out
@@ -717,8 +727,11 @@ public class SQLConsolePanel extends JPanel {
          * Change the status of the button when the console is empty or not.
          */
         public void onUserSelectionChange(){
-                String text = scriptPanel.getText().trim();
-                if (text.isEmpty()) {
+            final Runnable userSelectionChange = new Runnable() {
+                @Override
+                public void run() {
+                    String text = scriptPanel.getText().trim();
+                    if (text.isEmpty()) {
                         executeAction.setEnabled(false);
                         executeSelectedAction.setEnabled(false);
                         clearAction.setEnabled(false);
@@ -729,8 +742,8 @@ public class SQLConsolePanel extends JPanel {
                         commentAction.setEnabled(false);
                         blockCommentAction.setEnabled(false);
                         formatSQLAction.setEnabled(false);
-                }
-                else{
+                    }
+                    else{
                         executeAction.setEnabled(true);
                         executeSelectedAction.setEnabled(true);
                         clearAction.setEnabled(true);
@@ -741,7 +754,14 @@ public class SQLConsolePanel extends JPanel {
                         commentAction.setEnabled(true);
                         blockCommentAction.setEnabled(true);
                         formatSQLAction.setEnabled(true);
+                    }
                 }
+            };
+            if(SwingUtilities.isEventDispatchThread()) {
+                userSelectionChange.run();
+            } else {
+                SwingUtilities.invokeLater(userSelectionChange);
+            }
         }
 
     private static class DeactivableSplitPane extends JSplitPane {
