@@ -299,6 +299,7 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
     @Reference
     public void setDataManager(DataManager dataManager) {
         this.dataManager = dataManager;
+        testDBForMultiProcess();
     }
     public void unsetDataManager(DataManager dataManager) {
         this.dataManager = null;
@@ -923,10 +924,10 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
                 Map<JdbcProperties, Object> map = new HashMap<>();
                 //Case of H2 database
                 if(isH2) {
-                    map.put(JdbcProperties.COLUMN_NAME, rs.getString(4));
-                    map.put(JdbcProperties.COLUMN_TYPE, SFSUtilities.getGeometryTypeNameFromCode(rs.getInt(6)));
-                    map.put(JdbcProperties.COLUMN_SRID, rs.getInt(8));
-                    map.put(JdbcProperties.COLUMN_DIMENSION, rs.getInt(7));
+                    map.put(JdbcProperties.COLUMN_NAME, rs.getString("F_GEOMETRY_COLUMN"));
+                    map.put(JdbcProperties.COLUMN_TYPE, SFSUtilities.getGeometryTypeNameFromCode(rs.getInt("GEOMETRY_TYPE")));
+                    map.put(JdbcProperties.COLUMN_SRID, rs.getInt("SRID"));
+                    map.put(JdbcProperties.COLUMN_DIMENSION, rs.getInt("COORD_DIMENSION"));
                 }
                 //Other case
                 else{
@@ -957,7 +958,7 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
             DatabaseMetaData dmd = connection.getMetaData();
             TableLocation tablelocation = TableLocation.parse(tableName, isH2);
             ResultSet result = dmd.getColumns(tablelocation.getCatalog(), tablelocation.getSchema(),
-                    tablelocation.getTable(), "%");
+                    tablelocation.toString(isH2).toUpperCase(), null);
             while(result.next()){
                 if (!dataTypes.isEmpty()) {
                     for (DataType dataType : dataTypes) {
