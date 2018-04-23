@@ -89,6 +89,7 @@ public class ToolBoxIcon {
     public static final String PROCESS_ERROR ="process_error";
     public static final String BTNRIGHT ="btnright";
     public static final String BTNDOWN ="btndown";
+    public static final String HOST_ADD ="HOST_ADD";
 
     private static BaseIcon iconManager = new BaseIcon(LoggerFactory.getLogger(ToolBoxIcon.class));
 

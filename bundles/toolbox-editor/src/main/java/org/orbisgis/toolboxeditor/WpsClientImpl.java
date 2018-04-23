@@ -40,7 +40,9 @@ package org.orbisgis.toolboxeditor;
 import net.opengis.ows._2.AcceptVersionsType;
 import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.GetCapabilitiesType.AcceptLanguages;
+import net.opengis.ows._2.KeywordsType;
 import net.opengis.ows._2.MetadataType;
+import net.opengis.wms.KeywordList;
 import net.opengis.wps._2_0.*;
 import net.opengis.wps._2_0.ObjectFactory;
 import org.h2gis.utilities.JDBCUtilities;
@@ -55,7 +57,10 @@ import org.orbisgis.orbiswps.serviceapi.WpsServerListener;
 import org.orbisgis.orbiswps.serviceapi.process.ProcessIdentifier;
 import org.orbisgis.orbiswps.serviceapi.process.ProcessMetadata;
 import org.orbisgis.orbiswps.serviceapi.process.ProcessMetadata.INTERNAL_METADATA;
+import org.orbisgis.sif.SIFDialog;
+import org.orbisgis.sif.SIFWizard;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.OpenFolderPanel;
 import org.orbisgis.sif.components.actions.ActionCommands;
@@ -66,6 +71,9 @@ import org.orbisgis.sif.docking.DockingPanel;
 import org.orbisgis.sif.docking.DockingPanelParameters;
 import org.orbisgis.sif.edition.EditorDockable;
 import org.orbisgis.sif.edition.EditorManager;
+import org.orbisgis.sif.multiInputPanel.InputType;
+import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
+import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.toolboxeditor.dataui.DataUIManager;
 import org.orbisgis.toolboxeditor.editor.log.LogEditableElement;
 import org.orbisgis.toolboxeditor.editor.log.LogEditor;
@@ -491,6 +499,16 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
             openFolderPanel.saveState();
         }
     }
+
+    public void addDistantHost(){
+        MultiInputPanel uiPanel = new MultiInputPanel(I18N.tr("Distant WPS host"));
+        uiPanel.addInput("URL", "Host URL", new TextBoxType());
+        uiPanel.addInput("NAME", "Host name", new TextBoxType());
+        if(UIFactory.showDialog(uiPanel)){
+            toolBoxPanel.addHost(URI.create(uiPanel.getInput("URL")), uiPanel.getInput("NAME"));
+        }
+    }
+
     /**
      * Open a file browser to find a local script folder and add it.
      * Used in an EvenHandler in view.ui.ToolBoxPanel
@@ -783,8 +801,12 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
             joinedDefaultValuesMap.putAll(defaultValuesMap);
         }
         ProcessOffering processOffering = listProcess.get(0);
+        openProcess(processOffering, joinedDefaultValuesMap, type);
+    }
+
+    public void openProcess(ProcessOffering processOffering, Map<URI, Object> defaultValuesMap, ProcessExecutionType type) {
         URI processUri = URI.create(processOffering.getProcess().getIdentifier().getValue());
-        ProcessEditableElement processEditableElement = new ProcessEditableElement(processOffering , processUri, joinedDefaultValuesMap);
+        ProcessEditableElement processEditableElement = new ProcessEditableElement(processOffering , processUri, defaultValuesMap);
         processEditableElement.setProcessExecutionType(type);
         editorManager.openEditable(processEditableElement);
     }
@@ -805,7 +827,15 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
                     metadataMap.put(metadata.getRole(),metadata.getTitle());
                 }
             }
-            toolBoxPanel.addProcess(processSummary, metadataMap);
+            String title = processSummary.isSetTitle() ? processSummary.getTitle().get(0).getValue() : null;
+            String identifier = processSummary.getIdentifier().getValue();
+            List<String> keyword = new ArrayList<>();
+            for(KeywordsType keywordsType : processSummary.getKeywords()){
+                if(keywordsType.isSetKeyword()) {
+                    keyword.add(keywordsType.getKeyword().get(0).getValue());
+                }
+            }
+            toolBoxPanel.addProcess(title, identifier, keyword, metadataMap);
         }
     }
 
