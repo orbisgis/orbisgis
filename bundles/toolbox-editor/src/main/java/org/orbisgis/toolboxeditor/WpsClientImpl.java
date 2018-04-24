@@ -500,6 +500,9 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
         }
     }
 
+    /**
+     * Open a dialog allowing the user to add a new distant WPS service.
+     */
     public void addDistantHost(){
         MultiInputPanel uiPanel = new MultiInputPanel(I18N.tr("Distant WPS host"));
         uiPanel.addInput("URL", "Host URL", new TextBoxType());
