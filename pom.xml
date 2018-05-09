@@ -90,8 +90,8 @@
                 <default-main-class>org.orbisgis.framework.Main</default-main-class>
                 <!-- Common Dependencies version -->
                 <commons-io-version>2.4</commons-io-version>
-                <jts-core-version>1.15.1-SNAPSHOT</jts-core-version>
-                <jts-io-version>1.15.1-SNAPSHOT</jts-io-version>
+                <jts-core-version>1.15.1</jts-core-version>
+                <jts-io-version>1.15.1</jts-io-version>
                 <json-simple-version>1.1</json-simple-version>
                 <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
                 <felix-version>1.4.1</felix-version>
