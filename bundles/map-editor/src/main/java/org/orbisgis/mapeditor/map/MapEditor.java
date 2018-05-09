@@ -36,7 +36,7 @@
  */
 package org.orbisgis.mapeditor.map;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

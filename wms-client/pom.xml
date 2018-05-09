@@ -27,7 +27,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.vividsolutions</groupId>
+			<groupId>org.orbisgis.jts</groupId>
 			<artifactId>jts-core</artifactId>
 			<version>${jts-core-version}</version>
 		</dependency>

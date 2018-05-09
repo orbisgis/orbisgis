@@ -36,7 +36,7 @@
  */
 package org.orbisgis.coremap.renderer.se;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;

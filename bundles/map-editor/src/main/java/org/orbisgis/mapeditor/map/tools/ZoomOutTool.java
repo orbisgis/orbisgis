@@ -49,7 +49,7 @@ import org.orbisgis.mapeditor.map.tool.TransitionException;
 import org.orbisgis.mapeditor.map.tools.generated.ZoomOut;
 
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 
 /**

@@ -36,8 +36,8 @@
  */
 package org.orbisgis.mapeditor.map.tools;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

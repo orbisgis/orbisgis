@@ -38,14 +38,14 @@ package org.orbisgis.mapeditor.map.tool;
 
 
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.TopologyException;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.TopologyException;
 import org.orbisgis.mapeditor.map.geometryUtils.GeometryEdit;
 
 public class PointHandler extends AbstractHandler implements Handler {
@@ -55,7 +55,7 @@ public class PointHandler extends AbstractHandler implements Handler {
                 super(g, vertexIndex, p, geomPk);
         }
 
-        public com.vividsolutions.jts.geom.Geometry moveJTSTo(final double x,
+        public org.locationtech.jts.geom.Geometry moveJTSTo(final double x,
                 final double y) throws CannotChangeGeometryException {
                 Geometry ret = (Geometry) geometry.clone();
                 ret.apply(new CoordinateSequenceFilter() {
@@ -84,14 +84,14 @@ public class PointHandler extends AbstractHandler implements Handler {
 
         public Geometry moveTo(double x, double y)
                 throws CannotChangeGeometryException {
-                com.vividsolutions.jts.geom.Geometry ret = moveJTSTo(x, y);
+                org.locationtech.jts.geom.Geometry ret = moveJTSTo(x, y);
                 if (!ret.isValid()) {
                         throw new CannotChangeGeometryException(I18N.tr("The geometry is not valid"));
                 }
                 return ret;
         }
 
-        public com.vividsolutions.jts.geom.Geometry removeVertex()
+        public org.locationtech.jts.geom.Geometry removeVertex()
                 throws TopologyException {
                 if (geometry instanceof MultiPoint) {
                         return GeometryEdit.removeVertex((MultiPoint) geometry, vertexIndex);
@@ -108,7 +108,7 @@ public class PointHandler extends AbstractHandler implements Handler {
                         throw new TopologyException(
                                 I18N.tr("Cannot remove a vertex from a point geometry")); //$NON-NLS-1$
                 } else if (geometry instanceof LineString || geometry instanceof MultiPoint) {
-                        com.vividsolutions.jts.geom.Geometry g = removeVertex();
+                        org.locationtech.jts.geom.Geometry g = removeVertex();
                         if (!g.isValid()) {
                                 throw new TopologyException(
                                         I18N.tr("The geometry is not valid"));

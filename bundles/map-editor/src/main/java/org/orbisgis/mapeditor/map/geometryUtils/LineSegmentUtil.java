@@ -36,7 +36,7 @@
  */
 package org.orbisgis.mapeditor.map.geometryUtils;
 
-import com.vividsolutions.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LineSegment;
 
 /**
  * This utility class provides some functions for JTS {@link LineSegment} objects.

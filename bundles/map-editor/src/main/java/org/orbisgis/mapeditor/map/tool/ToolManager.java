@@ -36,15 +36,15 @@
  */
 package org.orbisgis.mapeditor.map.tool;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
@@ -870,7 +870,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private void drawFeature(Graphics2D graphics, Geometry geometry,
                         MapTransform mapTransform)
                         throws IOException, SQLException, ParameterException {
-                if(geometry instanceof com.vividsolutions.jts.geom.Point ||
+                if(geometry instanceof org.locationtech.jts.geom.Point ||
                         geometry instanceof  MultiPoint){
                         pointSymbolizer.draw(graphics, null, -1, false, mapTransform, geometry);
                 } else if(geometry instanceof LineString || geometry instanceof MultiLineString){

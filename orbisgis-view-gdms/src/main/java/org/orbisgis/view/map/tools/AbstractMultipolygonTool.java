@@ -36,7 +36,7 @@
  */
 package org.orbisgis.view.map.tools;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;

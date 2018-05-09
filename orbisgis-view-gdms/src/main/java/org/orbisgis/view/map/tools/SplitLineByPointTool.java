@@ -36,9 +36,9 @@
  */
 package org.orbisgis.view.map.tools;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
 import java.util.Observable;
 
 
@@ -47,7 +47,7 @@ import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 
 
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 import javax.swing.ImageIcon;
 import org.gdms.data.DataSource; 
 import org.gdms.data.types.Type;

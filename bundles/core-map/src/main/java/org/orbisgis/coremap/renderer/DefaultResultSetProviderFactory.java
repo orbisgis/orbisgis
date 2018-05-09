@@ -36,8 +36,8 @@
  */
 package org.orbisgis.coremap.renderer;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;

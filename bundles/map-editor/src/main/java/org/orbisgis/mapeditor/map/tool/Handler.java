@@ -40,11 +40,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
-import com.vividsolutions.jts.geom.TopologyException;
+import org.locationtech.jts.geom.TopologyException;
 import org.orbisgis.coremap.map.MapTransform;
 
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Implementations of this interface represents the handlers of the geometries

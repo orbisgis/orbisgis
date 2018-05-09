@@ -36,7 +36,7 @@
  */
 package org.orbisgis.mapeditor.map.tools;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import java.awt.geom.Rectangle2D;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
@@ -53,8 +53,8 @@ import java.util.concurrent.ExecutorService;
 import javax.swing.ImageIcon;
 import javax.swing.SwingWorker;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.sif.edition.Editor;
 import org.orbisgis.sif.edition.EditorManager;

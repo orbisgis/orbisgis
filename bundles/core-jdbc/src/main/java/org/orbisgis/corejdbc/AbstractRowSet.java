@@ -36,7 +36,7 @@
  */
 package org.orbisgis.corejdbc;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import org.h2gis.utilities.SpatialResultSet;
 
 import javax.sql.rowset.BaseRowSet;

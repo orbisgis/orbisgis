@@ -39,7 +39,7 @@ package org.orbisgis.coremap.stream;
 import java.awt.Image;
 import java.io.IOException;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import org.orbisgis.commons.progress.ProgressMonitor;
 
 /**

@@ -36,10 +36,10 @@
  */
 package org.orbisgis.mapeditor.map.tools;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -88,7 +88,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
         double firstY = points.get(0).y;
         tempPoints.add(newCoordinate(firstX, firstY, vc));
         Coordinate[] polygonCoordinates = tempPoints.toArray(new Coordinate[tempPoints.size()]);
-        com.vividsolutions.jts.geom.Polygon pol = gf.createPolygon(gf.createLinearRing(polygonCoordinates), new LinearRing[0]);
+        org.locationtech.jts.geom.Polygon pol = gf.createPolygon(gf.createLinearRing(polygonCoordinates), new LinearRing[0]);
 
         if (!pol.isValid()) {
             throw new TransitionException(
@@ -111,7 +111,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
     }
 
 
-    protected abstract void polygonDone(com.vividsolutions.jts.geom.Polygon g,
+    protected abstract void polygonDone(org.locationtech.jts.geom.Polygon g,
                                         MapContext vc, ToolManager tm) throws TransitionException;
 
 

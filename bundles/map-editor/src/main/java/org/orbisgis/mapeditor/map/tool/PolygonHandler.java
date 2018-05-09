@@ -36,12 +36,12 @@
  */
 package org.orbisgis.mapeditor.map.tool;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.TopologyException;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.TopologyException;
 import org.orbisgis.mapeditor.map.geometryUtils.GeometryEdit;
 
 public class PolygonHandler extends AbstractHandler implements Handler {
@@ -93,7 +93,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 
     @Override
 	public Geometry remove() throws TopologyException {
-		com.vividsolutions.jts.geom.Geometry ret = removeVertex();
+		org.locationtech.jts.geom.Geometry ret = removeVertex();
 		if (!ret.isValid()) {
 			throw new TopologyException(I18N.tr("The geometry is not valid"));
 		}

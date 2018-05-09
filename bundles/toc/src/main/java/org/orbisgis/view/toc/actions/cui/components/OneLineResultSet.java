@@ -36,7 +36,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.components;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import org.orbisgis.corejdbc.AbstractRowSet;
 
 import java.io.InputStream;

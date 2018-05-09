@@ -36,7 +36,7 @@
  */
 package org.orbisgis.coremap.renderer;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import org.h2gis.utilities.SpatialResultSet;
 import org.orbisgis.coremap.layerModel.ILayer;
 import org.orbisgis.commons.progress.ProgressMonitor;

@@ -43,8 +43,8 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.UIManager;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTWriter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTWriter;
 import org.orbisgis.sif.components.renderers.TableLaFCellRenderer;
 
 /**

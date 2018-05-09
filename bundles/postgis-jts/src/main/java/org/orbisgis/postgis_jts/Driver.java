@@ -36,8 +36,6 @@
  */
 package org.orbisgis.postgis_jts;
 
-import org.postgis.jts.JtsWrapper;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;

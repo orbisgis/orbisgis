@@ -22,10 +22,10 @@
                 <configuration>
                     <unpackBundle>true</unpackBundle>
                     <instructions>
-                        <Embed-Dependency>jts-io;scope=compile;inline=true</Embed-Dependency>
+                        <Embed-Dependency>jts-io-common;scope=compile;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <Bundle-Version>${jts-io-version}</Bundle-Version>
-                        <_exportcontents>com.vividsolutions.jts,com.vividsolutions.jts.*</_exportcontents>
+                        <_exportcontents>org.locationtech.jts,org.locationtech.jts.*</_exportcontents>
                         <OrbisGIS-Version>5.1</OrbisGIS-Version>
                     </instructions>
                 </configuration>
@@ -37,9 +37,15 @@
     </properties>
         <dependencies>
             <dependency>
-            <groupId>com.vividsolutions</groupId>
-            <artifactId>jts-io</artifactId>
+            <groupId>org.orbisgis.jts.io</groupId>
+            <artifactId>jts-io-common</artifactId>
             <version>${jts-io-version}</version>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>osgi-maven-5.1-snapshot</id>
+            <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-snapshot</url>
+        </repository>
+    </repositories>
 </project>

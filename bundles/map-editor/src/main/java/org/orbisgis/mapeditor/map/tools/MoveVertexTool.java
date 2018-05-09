@@ -36,7 +36,7 @@
  */
 package org.orbisgis.mapeditor.map.tools;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.sql.SQLException;

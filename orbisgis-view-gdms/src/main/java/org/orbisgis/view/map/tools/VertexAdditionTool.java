@@ -36,9 +36,9 @@
  */
 package org.orbisgis.view.map.tools;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import java.awt.Graphics;
 import java.util.Observable;
 import org.gdms.data.DataSource;

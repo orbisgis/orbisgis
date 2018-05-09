@@ -36,7 +36,7 @@
  */
 package com.vividsolutions.wms;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;

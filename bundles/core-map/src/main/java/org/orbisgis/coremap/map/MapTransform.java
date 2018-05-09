@@ -36,11 +36,11 @@
  */
 package org.orbisgis.coremap.map;
 
-import com.vividsolutions.jts.awt.PointTransformation;
-import com.vividsolutions.jts.awt.ShapeWriter;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.awt.PointTransformation;
+import org.locationtech.jts.awt.ShapeWriter;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;

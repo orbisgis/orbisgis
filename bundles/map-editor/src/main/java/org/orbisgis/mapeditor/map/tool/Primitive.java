@@ -38,7 +38,7 @@ package org.orbisgis.mapeditor.map.tool;
 
 import java.util.ArrayList;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 /**
  * A wrapper around GDBMS Geometry in order to provide the handler related

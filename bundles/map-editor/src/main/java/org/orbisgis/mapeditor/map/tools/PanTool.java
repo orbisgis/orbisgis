@@ -36,7 +36,7 @@
  */
 package org.orbisgis.mapeditor.map.tools;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;

@@ -51,7 +51,7 @@ import com.itextpdf.text.pdf.PdfStructureElement;
 import com.itextpdf.text.pdf.PdfStructureTreeRoot;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.io.OutputStream;

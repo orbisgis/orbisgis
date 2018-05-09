@@ -57,7 +57,7 @@ import org.orbisgis.tocapi.TocExt;
 import org.orbisgis.tocapi.TocTreeNodeLayer;
 import org.orbisgis.tocapi.TocTreeNodeStyle;
 import org.orbisgis.view.toc.icons.TocIcon;
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.wms.Capabilities;
 import com.vividsolutions.wms.MapImageFormatChooser;
 import com.vividsolutions.wms.MapLayer;

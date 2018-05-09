@@ -36,7 +36,7 @@
  */
 package org.orbisgis.mapeditor.map.tools;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import java.awt.Graphics;
 import org.orbisgis.coremap.layerModel.MapContext;
 import org.orbisgis.mapeditor.map.tool.DrawingException;
@@ -69,7 +69,7 @@ public abstract class AbstractPointTool extends Point implements InsertionTool {
 		return 0;
 	}
 
-	protected abstract void pointDone(com.vividsolutions.jts.geom.Point point,
+	protected abstract void pointDone(org.locationtech.jts.geom.Point point,
 			MapContext vc, ToolManager tm) throws TransitionException;
 
 	@Override

@@ -36,8 +36,8 @@
  */
 package org.orbisgis.mapeditor.map.geometryUtils.filter;
 
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
 
 /**
  * filter on the dimension of the coordinate sequence.

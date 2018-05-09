@@ -36,9 +36,9 @@
  */
 package org.orbisgis.coremap.renderer.se.common;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import java.awt.Shape;
 import java.awt.geom.*;
 import java.util.ArrayList;

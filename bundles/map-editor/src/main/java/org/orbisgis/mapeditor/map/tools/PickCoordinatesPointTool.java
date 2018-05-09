@@ -36,7 +36,7 @@
  */
 package org.orbisgis.mapeditor.map.tools;
 
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.Observable;
