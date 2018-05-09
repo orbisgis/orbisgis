@@ -36,7 +36,7 @@
  */
 package org.orbisgis.view.map.tools.raster;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import ij.gui.Wand;
 import java.awt.geom.Point2D;
 import java.io.IOException;

@@ -37,9 +37,9 @@
 package org.orbisgis.mapeditor.map.geometryUtils;
 
 import org.junit.Test;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.io.WKTReader;
 
 import static org.junit.Assert.*;
 

@@ -36,7 +36,7 @@
  */
 package org.orbisgis.coremap.renderer.se;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import java.awt.Color;
 
 import java.awt.Graphics;

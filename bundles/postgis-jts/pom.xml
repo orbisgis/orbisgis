@@ -46,8 +46,13 @@
         </dependency>
         <dependency>
             <groupId>org.postgis</groupId>
-            <artifactId>postgis-jdbc-jtsparser</artifactId>
+            <artifactId>postgis-jdbc</artifactId>
             <version>2.1.0SVN</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis.jts</groupId>
+            <artifactId>jts-core</artifactId>
+            <version>${jts-core-version}</version>
         </dependency>
     </dependencies>
 </project>

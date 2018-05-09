@@ -36,18 +36,18 @@
  */
 package org.orbisgis.mapeditor.map.tool;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.TopologyException;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.TopologyException;
 
 public class MultiPolygonHandler extends AbstractHandler implements Handler {
 
         private int polygonIndex;
         private int holeIndex;
 
-        public MultiPolygonHandler(com.vividsolutions.jts.geom.Geometry g,
+        public MultiPolygonHandler(org.locationtech.jts.geom.Geometry g,
                 int polygonIndex, int holeIndex, int vertexIndex, Coordinate p,
                 long geomPk) {
                 super(g, vertexIndex, p, geomPk);

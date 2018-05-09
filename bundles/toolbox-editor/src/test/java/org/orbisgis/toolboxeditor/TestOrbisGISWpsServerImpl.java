@@ -72,9 +72,9 @@ import static org.orbisgis.toolboxeditor.ToolboxWpsClient.JdbcProperties.COLUMN_
  * @author Sylvain PALOMINOS
  */
 public class TestOrbisGISWpsServerImpl {
-    private static WpsClientImpl wpsClient;
-    private static DataSource dataSource;
-    private static Connection connection;
+    private WpsClientImpl wpsClient;
+    private DataSource dataSource;
+    private Connection connection;
 
     @Before
     public void init() throws Exception {
@@ -88,33 +88,33 @@ public class TestOrbisGISWpsServerImpl {
         wpsClient.setDataManager(dataManager);
         wpsClient.setCoreWorkspace(new CustomCoreWorkspace());
         wpsClient.setDockingManager(new CustomDockingManager());
-        wpsClient.activate();
+        //wpsClient.activate();
     }
 
     @Test
     public void testGetTableFields() throws SQLException {
         try(Statement st = connection.createStatement()) {
-            st.execute("DROP TABLE TABLE IF EXISTS");
+            st.execute("DROP TABLE TOTO IF EXISTS");
             try {
-                st.execute("CREATE TABLE TABLE (\"integers\" integer, \"geometries\" geometry)");
+                st.execute("CREATE TABLE TOTO (\"integers\" integer, \"geometries\" geometry)");
 
                 List<DataType> dataTypeList = new ArrayList<>();
                 List<DataType> excludedTypeList = new ArrayList<>();
-                List<String> fieldList = wpsClient.getColumnList("TABLE", dataTypeList, excludedTypeList);
+                List<String> fieldList = wpsClient.getColumnList("TOTO", dataTypeList, excludedTypeList);
                 Assert.assertTrue("The field list should contains the field 'geometries'.", fieldList.contains("geometries"));
                 Assert.assertTrue("The field list should contains the field 'integers'.", fieldList.contains("integers"));
 
                 dataTypeList = new ArrayList<>();
                 dataTypeList.add(DataType.GEOMETRY);
                 excludedTypeList = new ArrayList<>();
-                fieldList = wpsClient.getColumnList("TABLE", dataTypeList, excludedTypeList);
+                fieldList = wpsClient.getColumnList("TOTO", dataTypeList, excludedTypeList);
                 Assert.assertTrue("The field list should contains the field 'geometries'.", fieldList.contains("geometries"));
                 Assert.assertFalse("The field list should not contains the field 'integers'.", fieldList.contains("integers"));
 
                 dataTypeList = new ArrayList<>();
                 excludedTypeList = new ArrayList<>();
                 excludedTypeList.add(DataType.GEOMETRY);
-                fieldList = wpsClient.getColumnList("TABLE", dataTypeList, excludedTypeList);
+                fieldList = wpsClient.getColumnList("TOTO", dataTypeList, excludedTypeList);
                 Assert.assertFalse("The field list should not contains the field 'geometries'.", fieldList.contains("geometries"));
                 Assert.assertTrue("The field list should contains the field 'integers'.", fieldList.contains("integers"));
 
@@ -122,11 +122,11 @@ public class TestOrbisGISWpsServerImpl {
                 excludedTypeList = new ArrayList<>();
                 excludedTypeList.add(DataType.GEOMETRY);
                 excludedTypeList.add(DataType.INTEGER);
-                fieldList = wpsClient.getColumnList("TABLE", dataTypeList, excludedTypeList);
+                fieldList = wpsClient.getColumnList("TOTO", dataTypeList, excludedTypeList);
                 Assert.assertFalse("The field list should not contains the field 'geometries'.", fieldList.contains("geometries"));
                 Assert.assertFalse("The field list should not contains the field 'integers'.", fieldList.contains("integers"));
             } finally {
-                st.execute("DROP TABLE TABLE IF EXISTS");
+                st.execute("DROP TABLE TOTO IF EXISTS");
             }
         }
     }
@@ -176,12 +176,12 @@ public class TestOrbisGISWpsServerImpl {
     @Test
     public void testGetColumnInformation() throws SQLException {
         try(Statement st = connection.createStatement()) {
-            st.execute("DROP TABLE TABLE IF EXISTS");
+            st.execute("DROP TABLE TOTO IF EXISTS");
             try {
-                st.execute("CREATE TABLE TABLE (\"integers\" integer, \"geometries\" geometry)");
+                st.execute("CREATE TABLE TOTO (\"integers\" integer, \"geometries\" geometry)");
                 wpsClient.onDataManagerChange();
 
-                List<Map<ToolboxWpsClient.JdbcProperties, Object>> informationList = wpsClient.getColumnInformation("TABLE");
+                List<Map<ToolboxWpsClient.JdbcProperties, Object>> informationList = wpsClient.getColumnInformation("TOTO");
                 Assert.assertEquals("The information list .", 2, informationList.size());
 
                 Map<ToolboxWpsClient.JdbcProperties, Object> map = informationList.get(0);

@@ -52,8 +52,10 @@ public final class JaxbContainer {
     static {
         try {
             JAXBCONTEXT = JAXBContext.newInstance(net.opengis.wps._2_0.ObjectFactory.class,
+                    net.opengis.wps._1_0_0.ObjectFactory.class,
                     net.opengis.wms.ObjectFactory.class,
                     net.opengis.ows._2.ObjectFactory.class,
+                    net.opengis.ows._1.ObjectFactory.class,
                     net.opengis.se._2_0.core.ObjectFactory.class,
                     org.orbisgis.orbiswps.service.model.ObjectFactory.class,
                     oasis.names.tc.ciq.xsdschema.xal._2.ObjectFactory.class);

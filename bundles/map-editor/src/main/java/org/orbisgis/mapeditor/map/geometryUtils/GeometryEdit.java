@@ -36,7 +36,7 @@
  */
 package org.orbisgis.mapeditor.map.geometryUtils;
 
-import com.vividsolutions.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,30 +44,30 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateFilter;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
-import com.vividsolutions.jts.geom.CoordinateSequences;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.TopologyException;
-import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import com.vividsolutions.jts.noding.IntersectionAdder;
-import com.vividsolutions.jts.noding.MCIndexNoder;
-import com.vividsolutions.jts.noding.NodedSegmentString;
-import com.vividsolutions.jts.noding.Noder;
-import com.vividsolutions.jts.operation.distance.DistanceOp;
-import com.vividsolutions.jts.operation.distance.GeometryLocation;
-import com.vividsolutions.jts.operation.polygonize.Polygonizer;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateFilter;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
+import org.locationtech.jts.geom.CoordinateSequences;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.TopologyException;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.noding.IntersectionAdder;
+import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.NodedSegmentString;
+import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.operation.distance.DistanceOp;
+import org.locationtech.jts.operation.distance.GeometryLocation;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -605,7 +605,7 @@ public final class GeometryEdit {
      * @param lineString
      * @param vertexPoint
      * @return
-     * @throws com.vividsolutions.jts.geom.TopologyException
+     * @throws org.locationtech.jts.geom.TopologyException
      */
     public static Geometry insertVertexInLineString(LineString lineString, Point vertexPoint) throws TopologyException {
         return insertVertexInLineString(lineString, vertexPoint, -1);
@@ -618,7 +618,7 @@ public final class GeometryEdit {
      * @param vertexPoint
      * @param tolerance
      * @return
-     * @throws com.vividsolutions.jts.geom.TopologyException
+     * @throws org.locationtech.jts.geom.TopologyException
      */
     public static LineString insertVertexInLineString(LineString lineString, Point vertexPoint,
             double tolerance) throws TopologyException {

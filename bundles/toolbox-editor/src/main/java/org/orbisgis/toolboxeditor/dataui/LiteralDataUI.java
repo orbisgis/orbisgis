@@ -181,9 +181,9 @@ public class LiteralDataUI implements DataUI {
 
         //If the descriptionType is an input, add a comboBox to select the input type and according to the type,
         // add a second JComponent to write the input value
-        if(inputOrOutput instanceof InputDescriptionType){
-            InputDescriptionType input = (InputDescriptionType)inputOrOutput;
-            LiteralDataType literalData = (LiteralDataType)input.getDataDescription().getValue();
+        if(inputOrOutput instanceof InputDescriptionType) {
+            InputDescriptionType input = (InputDescriptionType) inputOrOutput;
+            LiteralDataType literalData = (LiteralDataType) input.getDataDescription().getValue();
             //JComboBox with the input type
             JComboBox<String> comboBox = new JComboBox<>();
             comboBox.addItem(literalData.getLiteralDataDomain().get(0).getDataType().getValue());
@@ -196,20 +196,25 @@ public class LiteralDataUI implements DataUI {
             comboBox.putClientProperty(URI_PROPERTY, uri);
             comboBox.putClientProperty(DATA_MAP_PROPERTY, dataMap);
             comboBox.putClientProperty(IS_OPTIONAL_PROPERTY, input.getMinOccurs().equals(new BigInteger("0")));
-            comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, input.getAbstract().get(0).getValue());
+            if (input.isSetAbstract()){
+                comboBox.putClientProperty(TOOLTIP_TEXT_PROPERTY, input.getAbstract().get(0).getValue());
+            }
             comboBox.putClientProperty(ORIENTATION_PROPERTY, orientation);
             comboBox.addActionListener(EventHandler.create(ActionListener.class, this, "onBoxChange", "source"));
             comboBox.setBackground(Color.WHITE);
-            comboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
+            if (input.isSetAbstract()) {
+                comboBox.setToolTipText(inputOrOutput.getAbstract().get(0).getValue());
+            }
 
             Object defaultValueObject = null;
             for(LiteralDataType.LiteralDataDomain domain : literalData.getLiteralDataDomain()){
-                if(domain.isDefault() && domain.getDefaultValue() != null){
+                if(domain.isSetDefault() && domain.isDefault() && domain.getDefaultValue() != null){
                     defaultValueObject = domain.getDefaultValue().getValue();
                 }
             }
-
-            dataMap.put(uri, defaultValueObject);
+            if(defaultValueObject != null) {
+                dataMap.put(uri, defaultValueObject);
+            }
             onBoxChange(comboBox);
             if(input.getMinOccurs().equals(new BigInteger("0"))) {
                 dataMap.remove(uri);
@@ -236,7 +241,10 @@ public class LiteralDataUI implements DataUI {
         URI uri = (URI) comboBox.getClientProperty(URI_PROPERTY);
         boolean isOptional = (boolean)comboBox.getClientProperty(IS_OPTIONAL_PROPERTY);
         LiteralDataType literalData = (LiteralDataType)comboBox.getClientProperty(LITERAL_DATA_PROPERTY);
-        String tooltip = (String)comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY);
+        String tooltip = "";
+        if(comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY) != null) {
+            tooltip = (String) comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY);
+        }
         Orientation orientation = (Orientation)comboBox.getClientProperty(ORIENTATION_PROPERTY);
         String s = (String) comboBox.getSelectedItem();
         JComponent dataComponent;
@@ -246,9 +254,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent = new JPanel(new MigLayout("ins 0, gap 0"));
                 JRadioButton falseButton = new JRadioButton(I18N.tr("FALSE"));
                 JRadioButton trueButton = new JRadioButton(I18N.tr("TRUE"));
-                falseButton.setToolTipText(comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY).toString());
                 falseButton.setToolTipText(tooltip);
-                trueButton.setToolTipText(comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY).toString());
                 trueButton.setToolTipText(tooltip);
                 ButtonGroup group = new ButtonGroup();
                 group.add(falseButton);
@@ -557,7 +563,7 @@ public class LiteralDataUI implements DataUI {
                 doc.putProperty(IS_OPTIONAL_PROPERTY, isOptional);
                 String defaultValue = "";
                 for(LiteralDataType.LiteralDataDomain domain : literalData.getLiteralDataDomain()){
-                    if(domain.isDefault() && domain.getDefaultValue() != null && domain.getDefaultValue().getValue() != null){
+                    if(domain.isSetDefault() && domain.isDefault() && domain.getDefaultValue() != null && domain.getDefaultValue().getValue() != null){
                         defaultValue = domain.getDefaultValue().getValue();
                     }
                 }
@@ -600,7 +606,7 @@ public class LiteralDataUI implements DataUI {
                 dataComponent = panel;
                 break;
         }
-        dataComponent.setToolTipText(comboBox.getClientProperty(TOOLTIP_TEXT_PROPERTY).toString());
+        dataComponent.setToolTipText(tooltip);
         //Adds to the jdbcTableField the dataComponent
         JPanel panel = (JPanel) comboBox.getClientProperty(DATA_FIELD_PROPERTY);
         panel.removeAll();

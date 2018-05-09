@@ -36,7 +36,7 @@
  */
 package org.orbisgis.coremap.renderer.se;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;

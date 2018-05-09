@@ -42,7 +42,7 @@ import java.net.ConnectException;
 import java.util.List;
 
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import com.vividsolutions.wms.BoundingBox;
 import com.vividsolutions.wms.Capabilities;
 import com.vividsolutions.wms.MapImageFormatChooser;

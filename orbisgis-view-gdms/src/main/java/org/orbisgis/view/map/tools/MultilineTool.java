@@ -36,7 +36,7 @@
  */
 package org.orbisgis.view.map.tools;
 
-import com.vividsolutions.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiLineString;
 import java.util.Observable;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.GeometryDimensionConstraint;

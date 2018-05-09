@@ -36,8 +36,7 @@
  */
 package org.orbisgis.postgis_jts;
 
-import com.vividsolutions.jts.geom.Geometry;
-import org.postgis.jts.JtsGeometry;
+import org.locationtech.jts.geom.Geometry;
 
 import java.io.InputStream;
 import java.io.Reader;

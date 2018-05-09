@@ -80,6 +80,7 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
     private NodeType nodeType = NodeType.FOLDER;
     /** File or folder name associated to the node. */
     private URI identifier;
+    private URI hostUri;
     /** Indicates if the node is a valid folder, script, host ... or not. */
     private boolean isValid = true;
     /** Indicates if the node is a default process from OrbisGIS. */
@@ -436,4 +437,12 @@ public class TreeNodeWps extends DefaultMutableTreeNode implements TreeNodeCusto
      * Enumeration of the available node types.
      */
     public enum NodeType{HOST_LOCAL, HOST_DISTANT, FOLDER, PROCESS}
+
+    public void setHostUri(URI uri){
+        this.hostUri = uri;
+    }
+
+    public URI getHostURI(){
+        return hostUri;
+    }
 }

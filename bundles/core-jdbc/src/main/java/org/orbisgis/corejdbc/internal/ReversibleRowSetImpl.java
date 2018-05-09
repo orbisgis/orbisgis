@@ -36,7 +36,7 @@
  */
 package org.orbisgis.corejdbc.internal;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import org.h2gis.utilities.TableLocation;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.TableEditEvent;

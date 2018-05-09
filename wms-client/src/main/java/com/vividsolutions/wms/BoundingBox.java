@@ -37,7 +37,7 @@
 
 package com.vividsolutions.wms;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 
 /**

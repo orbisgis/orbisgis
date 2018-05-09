@@ -36,7 +36,7 @@
  */
 package org.orbisgis.coremap.map;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * Interface to listen for changes in the MapTransform object

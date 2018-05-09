@@ -338,7 +338,8 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         processPanel.add(label, "growx, span");
         //The process version
         String versionStr = I18N.tr("Version : ");
-        if(processEditableElement.getProcessOffering(wpsClient).getProcessVersion().isEmpty()){
+        if(!processEditableElement.getProcessOffering(wpsClient).isSetProcessVersion() ||
+                processEditableElement.getProcessOffering(wpsClient).getProcessVersion().isEmpty()){
             versionStr += I18N.tr("unknown");
         }
         else{

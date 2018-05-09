@@ -38,8 +38,8 @@ package org.orbisgis.mapeditor.map.geometryUtils.filter;
 
 import java.awt.geom.Rectangle2D;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateFilter;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateFilter;
 
 /**
  * A coordinate filter to get a Rectangle2D from a geometry

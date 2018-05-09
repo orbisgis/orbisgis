@@ -37,9 +37,9 @@
 package org.orbisgis.postgis_jts_osgi;
 
 import org.orbisgis.postgis_jts.ConnectionWrapper;
+import org.orbisgis.postgis_jts.JtsGeometry;
 import org.postgis.PGbox2d;
 import org.postgis.PGbox3d;
-import org.postgis.jts.JtsGeometry;
 import org.postgresql.PGConnection;
 
 import javax.sql.DataSource;

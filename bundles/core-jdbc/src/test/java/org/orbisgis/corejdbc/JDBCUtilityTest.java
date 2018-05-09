@@ -36,8 +36,8 @@
  */
 package org.orbisgis.corejdbc;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
 
 import java.net.URISyntaxException;
 import java.sql.Connection;

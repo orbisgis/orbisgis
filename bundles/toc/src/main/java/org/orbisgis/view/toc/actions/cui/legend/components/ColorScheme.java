@@ -36,7 +36,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legend.components;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 

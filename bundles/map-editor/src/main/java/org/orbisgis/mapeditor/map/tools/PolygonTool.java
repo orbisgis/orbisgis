@@ -46,8 +46,8 @@ import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.coremap.layerModel.MapContext;
 
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import org.orbisgis.mapeditor.map.icons.MapEditorIcons;
 import org.orbisgis.mapeditor.map.tool.ToolManager;
 import org.orbisgis.mapeditor.map.tool.TransitionException;
@@ -65,7 +65,7 @@ public class PolygonTool extends AbstractPolygonTool {
 	}
 
 	@Override
-	protected void polygonDone(com.vividsolutions.jts.geom.Polygon pol,
+	protected void polygonDone(org.locationtech.jts.geom.Polygon pol,
 			MapContext mc, ToolManager tm) throws TransitionException {
         ReversibleRowSet rowSet = tm.getActiveLayerRowSet();
 		Geometry g = pol;

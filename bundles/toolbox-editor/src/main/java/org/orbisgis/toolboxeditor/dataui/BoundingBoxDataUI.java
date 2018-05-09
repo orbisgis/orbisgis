@@ -41,6 +41,7 @@ import net.miginfocom.swing.MigLayout;
 import net.opengis.wps._2_0.DescriptionType;
 import net.opengis.wps._2_0.InputDescriptionType;
 import net.opengis.wps._2_0.OutputDescriptionType;
+import net.opengis.wps._2_0.SupportedCRS;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.sif.common.ContainerItem;
 import org.orbisgis.toolboxeditor.WpsClientImpl;
@@ -139,7 +140,7 @@ public class BoundingBoxDataUI implements DataUI {
         comboBox.setToolTipText(I18N.tr("Select the SRID of the bounding box"));
         if(boundingBoxData.getDefaultCrs() != null) {
             ContainerItem<Object> defaultElement = new ContainerItem<Object>(boundingBoxData.getDefaultCrs(),
-                    boundingBoxData.getDefaultCrs());
+                    boundingBoxData.getDefaultCrs().getValue());
             comboBox.putClientProperty(DEFAULT_ELEMENT_PROPERTY, defaultElement);
             comboBox.addItem(defaultElement);
         }
@@ -155,9 +156,9 @@ public class BoundingBoxDataUI implements DataUI {
             comboBox.addMouseListener(refreshListListener);
         }
         else{
-            for(String crs : boundingBoxData.getSupportedCrs()){
-                if(! crs.equals(boundingBoxData.getDefaultCrs())) {
-                    comboBox.addItem(new ContainerItem<Object>(crs, crs));
+            for(SupportedCRS supportedCRS : boundingBoxData.getSupportedCrs()){
+                if(! supportedCRS.equals(boundingBoxData.getDefaultCrs())) {
+                    comboBox.addItem(new ContainerItem<Object>(supportedCRS.getValue(), supportedCRS.getValue()));
                 }
             }
         }

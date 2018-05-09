@@ -36,7 +36,7 @@
  */
 package org.orbisgis.view.map.tools;
 
-import com.vividsolutions.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.MultiPolygon;
 import java.util.Observable;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;

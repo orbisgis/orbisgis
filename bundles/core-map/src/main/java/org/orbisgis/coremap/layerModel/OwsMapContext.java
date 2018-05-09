@@ -36,7 +36,7 @@
  */
 package org.orbisgis.coremap.layerModel;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 import java.io.File;
 import java.io.IOException;

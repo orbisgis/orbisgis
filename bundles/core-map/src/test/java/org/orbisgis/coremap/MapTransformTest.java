@@ -36,7 +36,7 @@
  */
 package org.orbisgis.coremap;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 import java.awt.image.BufferedImage;
 import org.junit.Before;
 import org.junit.Test;
