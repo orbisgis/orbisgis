@@ -37,18 +37,18 @@
 package org.orbisgis.scp;
 
 import javax.sql.DataSource;
+import javax.swing.*;
+import javax.swing.text.Document;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
-import org.fife.ui.rsyntaxtextarea.parser.AbstractParser;
-import org.fife.ui.rsyntaxtextarea.parser.DefaultParseResult;
-import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
-import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
-import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
+import org.fife.ui.rsyntaxtextarea.parser.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,13 +62,21 @@ public class RSyntaxSQLParser extends AbstractParser {
     private Logger log = LoggerFactory.getLogger(RSyntaxSQLParser.class);
     public static int WORD_POSITION = 0;
     public static int WORD_LENGTH = 1;
+    private DefaultParseResult lastParsedResult = new DefaultParseResult(this);
+    private ExecutorService executor;
+    // Time in ms to wait before returning a result
+    // Too low value will always return the old parse result
+    // Too high value will lag user interface
+    private static final long MINIMAL_WAITING_TIME_PARSE = 50;
+    private AtomicBoolean backgroundParsing = new AtomicBoolean(false);
 
     /**
      * Constructor
      * @param dataSource Active DataSource
      */
-    public RSyntaxSQLParser(DataSource dataSource) {
+    public RSyntaxSQLParser(DataSource dataSource, ExecutorService executor) {
         this.dataSource = dataSource;
+        this.executor = executor;
     }
 
     /**     *
@@ -105,49 +113,89 @@ public class RSyntaxSQLParser extends AbstractParser {
         DefaultParseResult res = new DefaultParseResult(this);
         int docLength = doc.getLength();
         if (docLength==0) {
+            lastParsedResult = res;
             return res;
+        } else {
+            // Do not run multiple time the parsing of the sql
+            if(backgroundParsing.compareAndSet(false, true)) {
+                // Launch evaluation thread but return last evaluation
+                DelayedParsed parse = new DelayedParsed(doc, dataSource, this);
+                if (executor != null) {
+                    executor.execute(parse);
+                    try {
+                        Thread.sleep(MINIMAL_WAITING_TIME_PARSE);
+                    } catch (InterruptedException ex) {
+                        return lastParsedResult;
+                    }
+                } else {
+                    parse.run();
+                }
+            }
+            return lastParsedResult;
         }
-        DocumentSQLReader documentReader = new DocumentSQLReader(doc);
-        long start = System.currentTimeMillis();
-        try {
-            try (Connection connection = dataSource.getConnection()) {
-                while (documentReader.hasNext()) {
-                    String statement = documentReader.next();
-                    if (!documentReader.isInsideRemark()) {
-                        try {
-                            connection.prepareStatement(statement);
-                        } catch (SQLException ex) {
-                            // Find the beginning of the rightmost word in error
-                            int syntaxErrorPosition = ex.getLocalizedMessage().indexOf("[*]");
-                            int syntaxErrorLength;
-                            if (syntaxErrorPosition == -1) {
-                                // Could not find exact position, underline all the statement (remove preceding line break)
-                                syntaxErrorPosition = statement.indexOf(statement.trim());
-                                syntaxErrorLength = statement.length() - syntaxErrorPosition;
-                            } else {
-                                int[] syntaxWord = getLastWordPositionAndLength(ex.getLocalizedMessage(), syntaxErrorPosition);
-                                String word = ex.getLocalizedMessage().substring(syntaxWord[WORD_POSITION], syntaxWord[WORD_POSITION] + syntaxWord[WORD_LENGTH]);
-                                syntaxErrorPosition = statement.toLowerCase().indexOf(word.toLowerCase());
-                                syntaxErrorLength = syntaxWord[WORD_LENGTH];
+    }
+
+    private static final class DelayedParsed implements Runnable {
+        private Document doc;
+        private DataSource dataSource;
+        private RSyntaxSQLParser parser;
+        private Logger log = LoggerFactory.getLogger(DelayedParsed.class);
+
+        public DelayedParsed(Document doc, DataSource dataSource, RSyntaxSQLParser parser) {
+            this.doc = doc;
+            this.dataSource = dataSource;
+            this.parser = parser;
+        }
+
+        @Override
+        public void run() {
+            DefaultParseResult res = new DefaultParseResult(parser);
+            int docLength = doc.getLength();
+            DocumentSQLReader documentReader = new DocumentSQLReader(doc);
+            long start = System.currentTimeMillis();
+            try {
+                try (Connection connection = dataSource.getConnection()) {
+                    while (documentReader.hasNext()) {
+                        String statement = documentReader.next();
+                        if (!documentReader.isInsideRemark()) {
+                            try {
+                                connection.prepareStatement(statement);
+                            } catch (SQLException ex) {
+                                // Find the beginning of the rightmost word in error
+                                int syntaxErrorPosition = ex.getLocalizedMessage().indexOf("[*]");
+                                int syntaxErrorLength = 0;
+                                if (syntaxErrorPosition == -1) {
+                                    // Could not find exact position, underline all the statement (remove preceding line break)
+                                    syntaxErrorPosition = statement.indexOf(statement.trim());
+                                    syntaxErrorLength = statement.length() - syntaxErrorPosition;
+                                } else {
+                                    int[] syntaxWord = getLastWordPositionAndLength(ex.getLocalizedMessage(), syntaxErrorPosition);
+                                    if(syntaxWord != null) {
+                                        String word = ex.getLocalizedMessage().substring(syntaxWord[WORD_POSITION], syntaxWord[WORD_POSITION] + syntaxWord[WORD_LENGTH]);
+                                        syntaxErrorPosition = statement.toLowerCase().indexOf(word.toLowerCase());
+                                        syntaxErrorLength = syntaxWord[WORD_LENGTH];
+                                    }
+                                }
+                                // Compute syntax error position from the beginning of the document, (-1 is length of ; char)
+                                int syntaxErrorPositionOffset = Math.min(docLength,
+                                        documentReader.getPosition() + syntaxErrorPosition);
+                                DefaultParserNotice notice = new DefaultParserNotice(parser, ex.getLocalizedMessage(),
+                                        documentReader.getLineIndex(syntaxErrorPositionOffset), syntaxErrorPositionOffset,
+                                        syntaxErrorLength);
+                                notice.setLevel(ParserNotice.Level.ERROR);
+                                res.addNotice(notice);
                             }
-                            // Compute syntax error position from the beginning of the document, (-1 is length of ; char)
-                            int syntaxErrorPositionOffset = Math.min(docLength,
-                                    documentReader.getPosition() + syntaxErrorPosition);
-                            DefaultParserNotice notice = new DefaultParserNotice(this, ex.getLocalizedMessage(),
-                                    documentReader.getLineIndex(syntaxErrorPositionOffset), syntaxErrorPositionOffset,
-                                    syntaxErrorLength);
-                            notice.setLevel(ParserNotice.Level.ERROR);
-                            res.addNotice(notice);
                         }
                     }
                 }
+            } catch (SQLException ex) {
+                log.trace(ex.getLocalizedMessage(), ex);
+                // ignore
             }
-        } catch (SQLException ex) {
-            log.trace(ex.getLocalizedMessage(), ex);
-            // ignore
+            long time = System.currentTimeMillis() - start;
+            res.setParseTime(time);
+            parser.lastParsedResult = res;
+            parser.backgroundParsing.set(false);
         }
-        long time = System.currentTimeMillis() - start;
-        res.setParseTime(time);
-        return res;
     }
 }

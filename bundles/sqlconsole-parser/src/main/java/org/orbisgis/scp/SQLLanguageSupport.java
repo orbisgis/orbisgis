@@ -44,6 +44,8 @@ import org.fife.ui.rsyntaxtextarea.parser.Parser;
 import org.h2.util.OsgiDataSourceFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +53,7 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Provides the support for SQL syntax in the console.
@@ -74,6 +77,7 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
         private RSyntaxSQLParser parser;
         private SQLCompletionProvider sqlCompletionProvider;
         private DataSource dataSource;
+        private ExecutorService executorService = null;
 
         @Override
         public void install(RSyntaxTextArea textArea) {
@@ -88,9 +92,9 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
                             dataSource = dataSourceFactory.createDataSource(properties);
                         }
                         // SQL parser take too much time to evaluate, currently deactivated
-                        //parser = new RSyntaxSQLParser(dataSource);
-                        //textArea.putClientProperty(PROPERTY_LANGUAGE_PARSER, parser);
-                        //textArea.addParser(parser);
+                        parser = new RSyntaxSQLParser(dataSource, executorService);
+                        textArea.putClientProperty(PROPERTY_LANGUAGE_PARSER, parser);
+                        textArea.addParser(parser);
 
                         // install auto-completion
                         sqlCompletionProvider = new SQLCompletionProvider(dataSource, false);
@@ -102,6 +106,15 @@ public class SQLLanguageSupport extends AbstractLanguageSupport {
                 }
 
         }
+
+        @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+        public void setExecutorService(ExecutorService executorService) {
+            this.executorService = executorService;
+        }
+
+        public void unsetExecutorService(ExecutorService executorService) {
+        this.executorService = null;
+    }
 
         /**
          * @param dataSource DataSource to use in auto completion

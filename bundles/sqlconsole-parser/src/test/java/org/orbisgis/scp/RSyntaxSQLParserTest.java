@@ -71,7 +71,7 @@ public class RSyntaxSQLParserTest {
         RSyntaxTextArea rSyntaxTextArea = new RSyntaxTextArea(document);
         rSyntaxTextArea.setText("ALTER;SELECT * FROM;\n" +
                                 "DELETE;select * from bla;");
-        RSyntaxSQLParser parser = new RSyntaxSQLParser(dataSourceFactory.createDataSource(properties));
+        RSyntaxSQLParser parser = new RSyntaxSQLParser(dataSourceFactory.createDataSource(properties), null);
 
         ParseResult res = parser.parse((RSyntaxDocument)rSyntaxTextArea.getDocument(), "");
         List noticeList = res.getNotices();
@@ -116,7 +116,7 @@ public class RSyntaxSQLParserTest {
         RSyntaxDocument document = new RSyntaxDocument("sql");
         RSyntaxTextArea rSyntaxTextArea = new RSyntaxTextArea(document);
         rSyntaxTextArea.setText("alter");
-        RSyntaxSQLParser parser = new RSyntaxSQLParser(dataSourceFactory.createDataSource(properties));
+        RSyntaxSQLParser parser = new RSyntaxSQLParser(dataSourceFactory.createDataSource(properties), null);
 
         ParseResult res = parser.parse((RSyntaxDocument)rSyntaxTextArea.getDocument(), "");
         List noticeList = res.getNotices();
