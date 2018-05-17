@@ -36,8 +36,8 @@
  */
 package org.orbisgis.omanager.ui;
 
-import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.orbisgis.omanager.plugin.api.CustomPlugin;
+import org.orbisgis.omanager.plugin.api.RepositoryPluginHandler;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.*;
 
@@ -57,6 +57,20 @@ public class MainPluginPanel extends MainPanel {
     @Activate
     public void activate(BundleContext bc) {
         initialize(bc);
+    }
+
+    @Deactivate
+    public void deactivate(BundleContext bc) {
+        dispose();
+    }
+
+    @Reference
+    public void setRepositoryPluginHandler(RepositoryPluginHandler pluginHandler) {
+        this.remotePlugins = pluginHandler;
+    }
+
+    public void unsetRepositoryPluginHandler(RepositoryPluginHandler pluginHandler) {
+        this.remotePlugins = null;
     }
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)

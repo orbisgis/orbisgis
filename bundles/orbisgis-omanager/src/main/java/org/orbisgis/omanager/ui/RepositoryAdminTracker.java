@@ -47,8 +47,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.orbisgis.omanager.plugin.api.Plugin;
+import org.orbisgis.omanager.plugin.api.RepositoryPluginHandler;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 import org.orbisgis.commons.progress.ProgressMonitor;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.obr.Resolver;
+import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.osgi.framework.BundleContext;
@@ -63,7 +69,8 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * @author Nicolas Fortin
  */
-public class RepositoryAdminTracker implements ServiceTrackerCustomizer<RepositoryAdmin,RepositoryAdmin> {
+@Component(service = RepositoryPluginHandler.class)
+public class RepositoryAdminTracker implements ServiceTrackerCustomizer<RepositoryAdmin,RepositoryAdmin>, RepositoryPluginHandler {
     public static final String PROP_REPOSITORIES = "repositories";
     public static final String PROP_RESOURCES = "resources";
     private static final I18n I18N = I18nFactory.getI18n(RepositoryAdminTracker.class);
@@ -71,9 +78,21 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
     private BundleContext bundleContext;
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private RepositoryAdmin repoAdmin;
-    private Set<BundleItem> resourceList;
-    public RepositoryAdminTracker(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
+    private Set<Plugin> resourceList = new HashSet<>();
+    private ServiceTracker<RepositoryAdmin,RepositoryAdmin> repositoryAdminTracker;
+
+    @Activate
+    public void activate(BundleContext bc) {
+        bundleContext = bc;
+        repositoryAdminTracker = new ServiceTracker<>(bundleContext,
+                RepositoryAdmin.class,this);
+        repositoryAdminTracker.open();
+    }
+
+    @Deactivate
+    public void deactivate(BundleContext bc) {
+        repositoryAdminTracker.close();
+        bundleContext = null;
     }
 
     /**
@@ -106,7 +125,7 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
     /**
      * @return Parsed resource information on the repository XML.
      */
-    public Collection<BundleItem> getResources() {
+    public Collection<Plugin> getResources() {
         return resourceList;
     }
 
@@ -140,7 +159,8 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
                 repoURLS.add(repository.getURL());
             }
             ProgressMonitor refresh = pm.startTask(2);
-            ProgressMonitor download = refresh.startTask(repoURLS.size());
+            ProgressMonitor download = refresh.startTask(I18N.tr("Download plugins list from server"),
+                    repoURLS.size());
             for(URL repoURL : repoURLS) {
                 if(repoAdmin!=null) {
                     repoAdmin.removeRepository(repoURL);
@@ -163,7 +183,7 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
                 // Copy resources reference to the resource list
                 pluginCount += newRepo.getResources().length;
             }
-            ProgressMonitor filterTask = refresh.startTask(pluginCount);
+            ProgressMonitor filterTask = refresh.startTask(I18N.tr("Check plugins dependencies") ,pluginCount);
             for(Repository newRepo : getRepositories()) {
                 // Copy resources reference to the resource list
                 for(Resource plugin : newRepo.getResources()) {
@@ -199,6 +219,7 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
             }
         }
     }
+
     public boolean removeRepository(URL repository) {
         if(isRepositoryAdminAvailable()) {
             Collection<Repository> oldValue = getRepositories();

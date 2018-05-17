@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -56,6 +57,7 @@ import javax.swing.ImageIcon;
 import org.orbisgis.mainframe.api.MainFrameAction;
 import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.omanager.plugin.api.CustomPlugin;
+import org.orbisgis.omanager.plugin.api.RepositoryPluginHandler;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
@@ -89,6 +91,8 @@ public class ManagerMenuFactory implements MainFrameAction {
     private List<CustomPlugin> panels = new ArrayList<>();
     private AtomicBoolean addingRepositories = new AtomicBoolean(false);
     private RepositoryAdmin repositoryAdmin;
+    private RepositoryPluginHandler pluginHandler;
+    private ExecutorService executorService;
 
     public List<Action> createActions(MainWindow target) {
         this.target = target;
@@ -126,6 +130,24 @@ public class ManagerMenuFactory implements MainFrameAction {
         this.repositoryAdmin = null;
     }
 
+
+    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
+    public void unsetExecutorService(ExecutorService executorService) {
+    }
+
+    @Reference
+    public void setRepositoryPluginHandler(RepositoryPluginHandler pluginHandler) {
+        this.pluginHandler = pluginHandler;
+    }
+
+    public void unsetRepositoryPluginHandler(RepositoryPluginHandler pluginHandler) {
+        this.pluginHandler = null;
+    }
+
     /**
      * Make and show the plug-ins manager
      */
@@ -135,6 +157,12 @@ public class ManagerMenuFactory implements MainFrameAction {
             mainPanel.setModal(false);
             for(CustomPlugin plugin : panels) {
                 mainPanel.addPanel(plugin);
+            }
+            DownloadOBRProcess downloadOBRProcess = new DownloadOBRProcess(pluginHandler);
+            if(executorService != null) {
+                executorService.execute(downloadOBRProcess);
+            } else {
+                downloadOBRProcess.execute();
             }
         }
         mainPanel.setVisible(true);
