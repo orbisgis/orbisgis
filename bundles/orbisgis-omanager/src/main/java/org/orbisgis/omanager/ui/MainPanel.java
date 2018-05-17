@@ -81,6 +81,7 @@ import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
+import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.frameworkapi.CoreWorkspace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,10 +152,6 @@ public class MainPanel extends JPanel implements CustomPlugin {
      */
     public void setExecutorService(ExecutorService executorService){
         this.executorService = executorService;
-    }
-
-    public void setCoreWorkspace(CoreWorkspace coreWorkspace){
-        itemFilterStatusFactory.setVersion(coreWorkspace.getVersionMajor()+"."+coreWorkspace.getVersionMinor());
     }
 
     /**
@@ -398,7 +395,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
         if(!filterTextValue.isEmpty()) {
             filters.add(new ItemFilterContains(filterTextValue));
         }
-        if(filters.size()>=1) {
+        if(filters.size()>1) {
             filterModel.setFilter(new ItemFilterAndGroup(filters));
         } else if(filters.size()==1) {
             filterModel.setFilter(filters.get(0));
@@ -440,6 +437,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
     public void onFilterByBundleCategory() {
         applyFilters();
     }
+
     /**
      * User click on "Refresh" button.
      */
@@ -447,6 +445,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
         DownloadOBRProcess reloadAction = new DownloadOBRProcess();
         reloadAction.execute();
     }
+
     public void onAddBundleJarUri() {
         String errMessage = "";
         String chosenURL = "";
@@ -586,7 +585,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
         radioBar.setLayout(new BoxLayout(radioBar, BoxLayout.X_AXIS));
         // Create radio buttons
         ButtonGroup filterGroup = new ButtonGroup();
-        createRadioButton(I18N.tr("Available"), I18N.tr("Show only the available bundles."), true,
+        createRadioButton(I18N.tr("Compatible"), I18N.tr("Show only plugins compatible with this version of OrbisGIS."), true,
                 "onFilterBundleAvailable", filterGroup, radioBar);
         createRadioButton(I18N.tr("Installed"),I18N.tr("Show only installed bundles."),false,"onFilterBundleInstall",
                 filterGroup, radioBar);
@@ -690,11 +689,11 @@ public class MainPanel extends JPanel implements CustomPlugin {
             }
         }
     }
-    private class DownloadOBRProcess extends SwingWorker {
+    private class DownloadOBRProcess extends SwingWorkerPM {
 
         @Override
         protected Object doInBackground() throws Exception {
-            repositoryAdminTrackerCustomizer.refresh();
+            repositoryAdminTrackerCustomizer.refresh(getProgressMonitor());
             return null;
         }
 

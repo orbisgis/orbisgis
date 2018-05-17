@@ -67,11 +67,4 @@ public class MainSystemPanel extends MainPanel {
     public void unsetExecutorService(ExecutorService executorService) {
     }
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-    public void setCoreWorkspace(CoreWorkspace coreWorkspace) {
-        super.setCoreWorkspace(coreWorkspace);
-    }
-
-    public void unsetCoreWorkspace(CoreWorkspace coreWorkspace) {
-    }
 }
