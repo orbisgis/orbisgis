@@ -57,6 +57,7 @@ import javax.swing.ImageIcon;
 import org.orbisgis.mainframe.api.MainFrameAction;
 import org.orbisgis.mainframe.api.MainWindow;
 import org.orbisgis.omanager.plugin.api.CustomPlugin;
+import org.orbisgis.omanager.plugin.api.DownloadOBRProcess;
 import org.orbisgis.omanager.plugin.api.RepositoryPluginHandler;
 import org.orbisgis.sif.components.actions.DefaultAction;
 import org.osgi.framework.BundleContext;

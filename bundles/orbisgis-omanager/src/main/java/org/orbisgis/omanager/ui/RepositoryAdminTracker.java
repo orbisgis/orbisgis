@@ -198,6 +198,9 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
                     }
                 }
             }
+            if(propertyChangeSupport.hasListeners(PROP_RESOURCES)) {
+                propertyChangeSupport.firePropertyChange(PROP_RESOURCES, new HashSet<Resource>(), getResources());
+            }
         }
     }
     private boolean isRepositoryAdminAvailable() {

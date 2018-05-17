@@ -83,7 +83,7 @@ import javax.swing.text.StyleConstants;
 
 import org.orbisgis.omanager.plugin.api.RepositoryPluginHandler;
 
-import org.orbisgis.omanager.plugin.impl.DownloadOBRProcess;
+import org.orbisgis.omanager.plugin.api.DownloadOBRProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.orbisgis.omanager.plugin.api.CustomPlugin;

@@ -1,4 +1,4 @@
-package org.orbisgis.omanager.plugin.impl;
+package org.orbisgis.omanager.plugin.api;
 
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.omanager.plugin.api.RepositoryPluginHandler;
