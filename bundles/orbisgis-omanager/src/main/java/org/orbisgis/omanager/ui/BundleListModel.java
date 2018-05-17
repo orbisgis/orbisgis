@@ -79,7 +79,7 @@ public class BundleListModel extends AbstractListModel<BundleItem> {
         this.bundleContext = bundleContext;
         this.remotePlugins = remotePlugins;
         this.remotePlugins.getPropertyChangeSupport().
-                addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class,this,"update"));
+                addPropertyChangeListener(RepositoryAdminTracker.PROP_RESOURCES, EventHandler.create(PropertyChangeListener.class,this,"update"));
     }
 
     /**
@@ -111,10 +111,24 @@ public class BundleListModel extends AbstractListModel<BundleItem> {
         fireIntervalRemoved(this, index,index);
     }
 
+    public void update() {
+        if(SwingUtilities.isEventDispatchThread()) {
+            doupdate();
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    doupdate();
+                }
+            });
+        }
+
+    }
+
     /**
      * Update the content of the bundle context. Called also by the propertyChangeListener.
      */
-    public void update() {
+    private void doupdate() {
         Map<String,BundleItem> curBundles = new HashMap<>(storedBundles.size());
         for(BundleItem bundle : storedBundles) {
             curBundles.put(bundle.getSymbolicName(),bundle);
