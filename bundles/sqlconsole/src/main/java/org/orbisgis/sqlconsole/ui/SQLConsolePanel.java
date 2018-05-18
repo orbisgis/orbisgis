@@ -308,6 +308,7 @@ public class SQLConsolePanel extends JPanel {
                 split.setResizeWeight(1);
                 split.setDeactivateScroll(true);
             } else {
+                sqlFunctionsPanel.init();
                 sqlFunctionsPanel.setVisible(true);
                 split.setDeactivateScroll(false);
                 split.setDividerLocation((int) Math.min(split.getMaximumDividerLocation(),

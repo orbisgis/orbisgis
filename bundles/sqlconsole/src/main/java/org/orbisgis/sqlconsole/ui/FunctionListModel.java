@@ -45,6 +45,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A custom list model to load and manage SQL functions.
@@ -53,12 +54,13 @@ import java.util.*;
  */
 public class FunctionListModel extends AbstractListModel<FunctionElement> {
     private static final long serialVersionUID = 1L;
-    private List<FunctionElement> functionsList;
+    private List<FunctionElement> functionsList = new ArrayList<>();
     private List<Integer> filteredFunctionList;
     private List<FunctionFilter> filters = new ArrayList<>();
     private static final Logger LOGGER = LoggerFactory.getLogger(FunctionListModel.class);
     private static final int AVERAGE_FUNCTION_COUNT = 300; //Hint for size of array
     private DataSource dataSource;
+    private AtomicBoolean initialized = new AtomicBoolean(false);
 
     private HashSet<String> uniqueFunctionNames = new HashSet<>();
 
@@ -68,10 +70,7 @@ public class FunctionListModel extends AbstractListModel<FunctionElement> {
 
     @Override
     public int getSize() {
-        if(functionsList == null) {
-            readSQLFunctions();
-        }
-        if(filteredFunctionList!=null) {
+        if(filteredFunctionList != null) {
             return filteredFunctionList.size();
         } else {
             return functionsList.size();
@@ -132,6 +131,15 @@ public class FunctionListModel extends AbstractListModel<FunctionElement> {
         }
     }
 
+    /**
+     * Read list of functions from
+     */
+    public void init() {
+        if(initialized.compareAndSet(false, true)) {
+            readSQLFunctions();
+        }
+    }
+
     private void readSQLFunctions() {
         functionsList = new ArrayList<FunctionElement>(AVERAGE_FUNCTION_COUNT);
         try {
@@ -154,7 +162,16 @@ public class FunctionListModel extends AbstractListModel<FunctionElement> {
             LOGGER.error("Could not read SQL function list");
         }
         Collections.sort(functionsList, new NameComparator());
-        fireIntervalAdded(this, 0, getSize());
+        if(SwingUtilities.isEventDispatchThread()) {
+            fireIntervalAdded(this, 0, getSize());
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    fireIntervalAdded(this, 0, getSize());
+                }
+            });
+        }
     }
 
     /**
