@@ -118,8 +118,8 @@ import static org.orbisgis.toolboxeditor.utils.Job.*;
 /**
  * Implementation of the InternalWpsClient for Orbisgis.
  *
- * @author Sylvain PALOMINOS
- * @author Erwan Bocher
+ * @author Sylvain PALOMINOS (CRNS 2017, UBS 2018)
+ * @author Erwan Bocher (CNRS)
  **/
 
 @Component(immediate = true, service = {DockingPanel.class, ToolboxWpsClient.class, WpsClient.class})
@@ -277,15 +277,15 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
         //Try to save the local files loaded.
         try {
             Properties tbProperties = new Properties();
-            String path = "";
+            StringBuilder path = new StringBuilder();
             for(Map.Entry<String, String> entry : processUriPath.entrySet()){
-                if(!path.isEmpty()){
-                    path+=";";
+                if(path.length() > 0){
+                    path.append(";");
                 }
-                path+=entry.getValue();
+                path.append(entry.getValue());
             }
             //Save the open process source path
-            tbProperties.setProperty(PROPERTY_SOURCES, path);
+            tbProperties.setProperty(PROPERTY_SOURCES, path.toString());
             tbProperties.store(
                     new FileOutputStream(workspace.getWorkspaceFolder() + File.separator + TOOLBOX_PROPERTIES),
                     I18N.tr("Save of the OrbisGIS toolBox"));
@@ -493,6 +493,7 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
         openFolderPanel.getFileChooser();
         openFolderPanel.loadState();
         openFolderPanel.setAcceptAllFileFilterUsed(false);
+        openFolderPanel.addFilter("groovy", "Groovy scripts");
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFolderPanel)){
             addLocalSource(openFolderPanel.getSelectedFile().toURI());
