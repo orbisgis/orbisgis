@@ -44,6 +44,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import org.orbisgis.omanager.plugin.api.Plugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -56,11 +58,12 @@ import org.xnap.commons.i18n.I18nFactory;
  * A bundle that can be installed from local or/and on remote repository.
  * @author Nicolas Fortin
  */
-public class BundleItem {
+public class BundleItem implements Plugin {
     private static final I18n I18N = I18nFactory.getI18n(BundleItem.class);
     private static final int MAX_SHORT_DESCRIPTION_CHAR_COUNT = 50;
     private String shortDesc;
     private Resource obrResource;      // only if a remote bundle is available
+    private boolean obrResolve;        // If this plugin can be resolved
     private long bundleId = -1;        // Bundle id
     private BundleContext bundleContext;
     private static final Long KILO = 1024L;
@@ -141,8 +144,16 @@ public class BundleItem {
     /**
      * @param obrResource OSGi bundle repository resource reference. (remote bundle)
      */
-    public void setObrResource(Resource obrResource) {
+    public void setObrResource(Resource obrResource, boolean obrResolve) {
         this.obrResource = obrResource;
+        this.obrResolve = obrResolve;
+    }
+
+    /**
+     * @return True if the remote plugin could be downloaded and resolved
+     */
+    public boolean isBundleCompatible() {
+        return obrResolve || obrResource == null;
     }
 
     /**

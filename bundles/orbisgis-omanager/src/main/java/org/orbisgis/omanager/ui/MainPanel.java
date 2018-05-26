@@ -81,15 +81,15 @@ import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
-import org.orbisgis.frameworkapi.CoreWorkspace;
+import org.orbisgis.omanager.plugin.api.RepositoryPluginHandler;
+
+import org.orbisgis.omanager.plugin.api.DownloadOBRProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.orbisgis.omanager.plugin.api.CustomPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
-import org.osgi.service.obr.RepositoryAdmin;
-import org.osgi.util.tracker.ServiceTracker;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -123,8 +123,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
     private ActionBundleFactory actionFactory;
     private BundleDetailsTransformer bundleHeader = new BundleDetailsTransformer();
     private BundleContext bundleContext;
-    private RepositoryAdminTracker repositoryAdminTrackerCustomizer;
-    private ServiceTracker<RepositoryAdmin,RepositoryAdmin> repositoryAdminTracker;
+    RepositoryPluginHandler remotePlugins;
     private AtomicBoolean awaitingFilteringThread = new AtomicBoolean(false);
     private long lastTypedWordInFindTextField = 0;
     private ExecutorService executorService;
@@ -151,10 +150,6 @@ public class MainPanel extends JPanel implements CustomPlugin {
      */
     public void setExecutorService(ExecutorService executorService){
         this.executorService = executorService;
-    }
-
-    public void setCoreWorkspace(CoreWorkspace coreWorkspace){
-        itemFilterStatusFactory.setVersion(coreWorkspace.getVersionMajor()+"."+coreWorkspace.getVersionMinor());
     }
 
     /**
@@ -187,7 +182,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
         setDefaultDetailsMessage();
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftOfSplitGroup,bundleDetailsAndActions);
         add(splitPane);
-        bundleListModel =  new BundleListModel(bundleContext,repositoryAdminTrackerCustomizer);
+        bundleListModel =  new BundleListModel(bundleContext, remotePlugins);
         filterModel = new FilteredModel<>(bundleListModel);
         bundleList.setModel(filterModel);
         bundleListModel.install();
@@ -217,13 +212,9 @@ public class MainPanel extends JPanel implements CustomPlugin {
     }
 
     private void initRepositoryTracker() {
-        repositoryAdminTrackerCustomizer = new RepositoryAdminTracker(bundleContext);
-        repositoryAdminTracker = new ServiceTracker<>(bundleContext,
-                RepositoryAdmin.class,repositoryAdminTrackerCustomizer);
-        repositoryAdminTracker.open();
-        repositoryAdminTrackerCustomizer.getPropertyChangeSupport().addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class,this,"onRepositoryChange"));
-
+        remotePlugins.getPropertyChangeSupport().addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class,this,"onRepositoryChange"));
     }
+
     /**
      * The user select another plugin in the list.
      * @param e Event object
@@ -257,7 +248,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
          if(repositoryRemove!=null) {
              // If there is no repositories, the user can't delete anything
              repositoryRemove.setEnabled(
-                     !repositoryAdminTrackerCustomizer.getRepositories().isEmpty());
+                     !remotePlugins.getRepositories().isEmpty());
          }
     }
     
@@ -398,7 +389,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
         if(!filterTextValue.isEmpty()) {
             filters.add(new ItemFilterContains(filterTextValue));
         }
-        if(filters.size()>=1) {
+        if(filters.size()>1) {
             filterModel.setFilter(new ItemFilterAndGroup(filters));
         } else if(filters.size()==1) {
             filterModel.setFilter(filters.get(0));
@@ -440,13 +431,19 @@ public class MainPanel extends JPanel implements CustomPlugin {
     public void onFilterByBundleCategory() {
         applyFilters();
     }
+
     /**
      * User click on "Refresh" button.
      */
     public void onReloadPlugins() {
-        DownloadOBRProcess reloadAction = new DownloadOBRProcess();
-        reloadAction.execute();
+        DownloadOBRProcess reloadAction = new DownloadOBRProcess(remotePlugins);
+        if(executorService == null) {
+            reloadAction.execute();
+        } else {
+            executorService.execute(reloadAction);
+        }
     }
+
     public void onAddBundleJarUri() {
         String errMessage = "";
         String chosenURL = "";
@@ -509,14 +506,14 @@ public class MainPanel extends JPanel implements CustomPlugin {
             chosenURL = showInputURI(chosenURL,errMessage);
             //If a string was returned, say so.
             if ((chosenURL != null)) {
-                List<URL> urls = repositoryAdminTrackerCustomizer.getRepositoriesURL();
+                List<URL> urls = remotePlugins.getRepositoriesURL();
                 try {
                     URI userURI = new URI(chosenURL.trim().replaceAll(" ", "%20"));
                     // TODO: How can a list of URLs contain a URI?
                     if(urls.contains(userURI.toURL())) {
                         errMessage = I18N.tr("This repository URL already exists");
                     } else {
-                        repositoryAdminTrackerCustomizer.addRepository(userURI.toURL());
+                        remotePlugins.addRepository(userURI.toURL());
                         return;
                     }
                 } catch(Exception ex) {
@@ -545,7 +542,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
      * User want to remove repository url.
      */
     public void onRemoveBundleRepository() {
-        List<URL> urls = repositoryAdminTrackerCustomizer.getRepositoriesURL();
+        List<URL> urls = remotePlugins.getRepositoriesURL();
         if(!urls.isEmpty()) {
             URL chosenURL = (URL) JOptionPane.showInputDialog(
                     this,
@@ -558,7 +555,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
 
             //If a string was returned, say so.
             if ((chosenURL != null) && (urls.contains(chosenURL))) {
-                repositoryAdminTrackerCustomizer.removeRepository(chosenURL);
+                remotePlugins.removeRepository(chosenURL);
             }
         }
     }
@@ -567,9 +564,6 @@ public class MainPanel extends JPanel implements CustomPlugin {
      * Remove trackers and listeners
      */
     public void dispose() {
-        if(repositoryAdminTracker!=null) {
-            repositoryAdminTracker.close();
-        }
         bundleListModel.uninstall();
     }
 
@@ -586,7 +580,7 @@ public class MainPanel extends JPanel implements CustomPlugin {
         radioBar.setLayout(new BoxLayout(radioBar, BoxLayout.X_AXIS));
         // Create radio buttons
         ButtonGroup filterGroup = new ButtonGroup();
-        createRadioButton(I18N.tr("Available"), I18N.tr("Show only the available bundles."), true,
+        createRadioButton(I18N.tr("Compatible"), I18N.tr("Show only plugins compatible with this version of OrbisGIS."), true,
                 "onFilterBundleAvailable", filterGroup, radioBar);
         createRadioButton(I18N.tr("Installed"),I18N.tr("Show only installed bundles."),false,"onFilterBundleInstall",
                 filterGroup, radioBar);
@@ -688,24 +682,6 @@ public class MainPanel extends JPanel implements CustomPlugin {
                 awaitingFilteringThread.set(false);
                 LOGGER.error(ex.getLocalizedMessage(),ex);
             }
-        }
-    }
-    private class DownloadOBRProcess extends SwingWorker {
-
-        @Override
-        protected Object doInBackground() throws Exception {
-            repositoryAdminTrackerCustomizer.refresh();
-            return null;
-        }
-
-        @Override
-        public String toString() {
-            return "MainPanel#DownloadOBRProcess";
-        }
-
-        @Override
-        protected void done() {
-            bundleListModel.update();
         }
     }
 }

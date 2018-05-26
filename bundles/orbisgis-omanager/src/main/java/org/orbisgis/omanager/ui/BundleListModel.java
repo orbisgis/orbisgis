@@ -47,6 +47,9 @@ import java.util.Map;
 import java.util.Set;
 import javax.swing.AbstractListModel;
 import javax.swing.SwingUtilities;
+
+import org.orbisgis.omanager.plugin.api.Plugin;
+import org.orbisgis.omanager.plugin.api.RepositoryPluginHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -62,21 +65,21 @@ public class BundleListModel extends AbstractListModel<BundleItem> {
     private List<BundleItem> storedBundles = new ArrayList<>();
     private BundleContext bundleContext;
     private BundleListener bundleListener = new BundleModelListener();
-    private RepositoryAdminTracker repositoryAdminTrackerCustomizer;
+    private RepositoryPluginHandler remotePlugins;
     // Hidden bundles
     private final static Set<String> HIDDEN_BUNDLES_SET =
-            new HashSet<>(Arrays.asList(new String[]{"org.apache.felix.framework",
-            "org.apache.felix.shell","org.osgi.service.obr","org.apache.felix.shell.gui",
-            "org.apache.felix.bundlerepository","org.orbisgis.omanager-plugin",
-            "org.orbisgis.omanager"}));
+            new HashSet<>(Arrays.asList("org.apache.felix.framework",
+                    "org.apache.felix.shell","org.osgi.service.obr","org.apache.felix.shell.gui",
+                    "org.apache.felix.bundlerepository","org.orbisgis.omanager-plugin",
+                    "org.orbisgis.omanager"));
     /**
      * @param bundleContext Bundle context to track.
      */
-    public BundleListModel(BundleContext bundleContext, RepositoryAdminTracker repositoryAdminTrackerCustomizer) {
+    public BundleListModel(BundleContext bundleContext, RepositoryPluginHandler remotePlugins) {
         this.bundleContext = bundleContext;
-        this.repositoryAdminTrackerCustomizer = repositoryAdminTrackerCustomizer;
-        repositoryAdminTrackerCustomizer.getPropertyChangeSupport().
-                addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class,this,"update"));
+        this.remotePlugins = remotePlugins;
+        this.remotePlugins.getPropertyChangeSupport().
+                addPropertyChangeListener(RepositoryAdminTracker.PROP_RESOURCES, EventHandler.create(PropertyChangeListener.class,this,"update"));
     }
 
     /**
@@ -108,10 +111,24 @@ public class BundleListModel extends AbstractListModel<BundleItem> {
         fireIntervalRemoved(this, index,index);
     }
 
+    public void update() {
+        if(SwingUtilities.isEventDispatchThread()) {
+            doupdate();
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    doupdate();
+                }
+            });
+        }
+
+    }
+
     /**
      * Update the content of the bundle context. Called also by the propertyChangeListener.
      */
-    public void update() {
+    private void doupdate() {
         Map<String,BundleItem> curBundles = new HashMap<>(storedBundles.size());
         for(BundleItem bundle : storedBundles) {
             curBundles.put(bundle.getSymbolicName(),bundle);
@@ -159,10 +176,11 @@ public class BundleListModel extends AbstractListModel<BundleItem> {
         }
         // Remove all stored resources
         for(BundleItem item : storedBundles) {
-            item.setObrResource(null);
+            item.setObrResource(null, false);
         }
         // Fetch cached repositories bundles
-        for(Resource resource : repositoryAdminTrackerCustomizer.getResources()) {
+        for(Plugin plugin : new ArrayList<>(remotePlugins.getResources())) {
+            BundleItem resource = (BundleItem) plugin;
             if(!HIDDEN_BUNDLES_SET.contains(resource.getSymbolicName())) {
                 BundleItem storedBundle = curBundles.get(getIdentifier(resource));
                 if(storedBundle!=null) {
@@ -171,16 +189,14 @@ public class BundleListModel extends AbstractListModel<BundleItem> {
                     if(storedObrResource==null || storedObrResource.getVersion()
                             .compareTo(resource.getVersion())<0) {
                         // Replace stored Obr Resource if the version is inferior or it does not exist
-                        storedBundle.setObrResource(resource);
+                        storedBundle.setObrResource(resource.getObrResource(), resource.isBundleCompatible());
                         int index = storedBundles.indexOf(storedBundle);
                         fireContentsChanged(this,index,index);
                     }
                 } else {
-                    BundleItem newBundle = new BundleItem(bundleContext);
-                    newBundle.setObrResource(resource);
-                    curBundles.put(getIdentifier(resource),newBundle);
+                    curBundles.put(getIdentifier(resource),resource);
                     int index = storedBundles.size();
-                    storedBundles.add(newBundle);
+                    storedBundles.add(resource);
                     fireIntervalAdded(this, index, index);
                 }
             }
