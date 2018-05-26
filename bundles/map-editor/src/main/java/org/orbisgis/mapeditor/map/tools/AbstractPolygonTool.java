@@ -64,7 +64,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
     @Override
     public void transitionTo_Standby(MapContext vc, ToolManager tm)
             throws FinishedAutomatonException, TransitionException {
-        points.clear();
+
     }
 
 
@@ -87,6 +87,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
         double firstX = points.get(0).x;
         double firstY = points.get(0).y;
         tempPoints.add(newCoordinate(firstX, firstY, vc));
+        points.clear();
         Coordinate[] polygonCoordinates = tempPoints.toArray(new Coordinate[tempPoints.size()]);
         org.locationtech.jts.geom.Polygon pol = gf.createPolygon(gf.createLinearRing(polygonCoordinates), new LinearRing[0]);
 
@@ -118,12 +119,16 @@ public abstract class AbstractPolygonTool extends Polygon implements
     @Override
     public void transitionTo_Cancel(MapContext vc, ToolManager tm)
             throws FinishedAutomatonException, TransitionException {
+        points.clear();
     }
 
 
     @Override
     public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm)
             throws DrawingException {
+        if(!points.isEmpty()) {
+            drawIn_Point(g, vc, tm);
+        }
     }
 
 

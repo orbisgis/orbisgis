@@ -39,6 +39,9 @@ package org.orbisgis.tablegui.impl;
 import java.sql.*;
 import javax.sql.RowSet;
 import javax.swing.table.AbstractTableModel;
+
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTWriter;
 import org.orbisgis.corejdbc.ReversibleRowSet;
 import org.orbisgis.editorjdbc.EditableSource;
 import org.orbisgis.sif.edition.EditableElementException;
@@ -58,7 +61,8 @@ public class DataSourceTableModel extends AbstractTableModel {
         private EditableSource element;
         private long lastFetchRowCount = 0;
         private long lastFetchRowCountTime = 0;
-        private static long FETCH_ROW_COUNT_DELAY = 2000;
+        private static final long FETCH_ROW_COUNT_DELAY = 2000;
+        private WKTWriter wktWriter = new WKTWriter(3);
         //private ModificationListener dataSourceListener;
 
         /**
@@ -194,7 +198,11 @@ public class DataSourceTableModel extends AbstractTableModel {
                 try {
                         RowSet rowSet = getRowSet();
                         rowSet.absolute(row + 1);
-                        return rowSet.getObject(col + 1);
+                        Object value = rowSet.getObject(col + 1);
+                        if(value instanceof Geometry) {
+                            return wktWriter.write((Geometry)value);
+                        }
+                        return value;
                 } catch (SQLException e) {
                         // Check if the table has been deleted
                         if(!tableExists()) {
