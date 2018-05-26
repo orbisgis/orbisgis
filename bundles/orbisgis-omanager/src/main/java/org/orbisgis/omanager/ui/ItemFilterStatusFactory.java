@@ -45,17 +45,10 @@ import org.osgi.framework.Version;
  * @author Nicolas Fortin
  */
 public class ItemFilterStatusFactory {
-
-    private static final String ORBISGIS_VERSION = "OrbisGIS-Version";
-
     private Installed installed = new Installed();
     private Available available = new Available();
 
     public ItemFilterStatusFactory() {}
-
-    public void setVersion(String version){
-        available.setVersion(version);
-    }
 
     public enum Status { ALL, INSTALLED, UPDATE, AVAILABLE }
 
@@ -78,36 +71,9 @@ public class ItemFilterStatusFactory {
     }
 
     private class Available implements ItemFilter<BundleListModel> {
-        private String version;
-        public void setVersion(String version){
-            this.version = version;
-        }
-
         @Override
         public boolean include(BundleListModel model, int elementId) {
-            Bundle bundle = model.getBundle(elementId).getBundle();
-            if(bundle != null){
-                String bVersion = bundle.getHeaders().get(ORBISGIS_VERSION);
-                if(bVersion != null && version != null) {
-
-                    Version versionOrbisgis = new Version(version);
-                    String[] versionSplit = bVersion.split(",");
-                    for(String str : versionSplit){
-                        if(str.contains("-")){
-                            int diff1 = new Version(str.split("-")[0]).compareTo(versionOrbisgis);
-                            int diff2 = new Version(str.split("-")[1]).compareTo(versionOrbisgis);
-                            if((diff1>=0 && diff2<=0) || (diff1<=0 && diff2>=0)){
-                                return true;
-                            }
-                        }else{
-                            if(new Version(str).equals(versionOrbisgis)){
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-            return true;
+            return model.getBundle(elementId).isBundleCompatible();
         }
     }
 }
