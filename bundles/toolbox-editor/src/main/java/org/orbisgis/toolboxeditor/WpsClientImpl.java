@@ -52,8 +52,8 @@ import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.DatabaseProgressionListener;
 import org.orbisgis.corejdbc.StateEvent;
 import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.orbisgis.orbiswps.serviceapi.WpsServer;
-import org.orbisgis.orbiswps.serviceapi.WpsServerListener;
+import org.orbisgis.orbiswps.serviceapi.WpsService;
+import org.orbisgis.orbiswps.serviceapi.WpsServiceListener;
 import org.orbisgis.orbiswps.serviceapi.process.ProcessIdentifier;
 import org.orbisgis.orbiswps.serviceapi.process.ProcessMetadata;
 import org.orbisgis.orbiswps.serviceapi.process.ProcessMetadata.INTERNAL_METADATA;
@@ -123,7 +123,7 @@ import static org.orbisgis.toolboxeditor.utils.Job.*;
  **/
 
 @Component(immediate = true, service = {DockingPanel.class, ToolboxWpsClient.class, WpsClient.class})
-public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyChangeListener, WpsServerListener,
+public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyChangeListener, WpsServiceListener,
         DatabaseProgressionListener {
 
     private static final String TOOLBOX_PROPERTIES = "toolbox.properties";
@@ -162,7 +162,7 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
     /** OrbisGIS DataManager. */
     private DataManager dataManager;
     /** OrbisGIS WpsServer. */
-    private WpsServer wpsServer;
+    private WpsService wpsServer;
     /** OrbisGIS CoreWorkspace. */
     private CoreWorkspace workspace;
     /** List of JobStateListener listening for the Job state execution. */
@@ -295,11 +295,11 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
     }
 
     @Reference
-    public void setWpsServer(WpsServer wpsServer) {
+    public void setWpsServer(WpsService wpsServer) {
         this.wpsServer = wpsServer;
         this.wpsServer.addWpsServerListener(this);
     }
-    public void unsetWpsServer(WpsServer wpsServer) {
+    public void unsetWpsServer(WpsService wpsServer) {
         this.wpsServer.removeWpsServerListener(this);
         this.wpsServer = null;
     }

@@ -46,7 +46,7 @@ import org.junit.Test;
 import org.orbisgis.corejdbc.DataManager;
 import org.orbisgis.corejdbc.internal.DataManagerImpl;
 import org.orbisgis.frameworkapi.CoreWorkspace;
-import org.orbisgis.orbiswps.service.WpsServerImpl;
+import org.orbisgis.orbiswps.service.WpsServiceImpl;
 import org.orbisgis.orbiswps.service.model.DataType;
 import org.orbisgis.sif.docking.DockingManager;
 import org.orbisgis.sif.docking.DockingPanel;
@@ -84,7 +84,7 @@ public class TestOrbisGISWpsServerImpl {
         connection = dataSource.getConnection();
         H2GISFunctions.registerFunction(connection.createStatement(), new DriverManager(), "");
         DataManager dataManager = new DataManagerImpl(dataSource);
-        wpsClient.setWpsServer(new WpsServerImpl());
+        wpsClient.setWpsServer(new WpsServiceImpl());
         wpsClient.setDataManager(dataManager);
         wpsClient.setCoreWorkspace(new CustomCoreWorkspace());
         wpsClient.setDockingManager(new CustomDockingManager());
