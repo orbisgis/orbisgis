@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.mainframe.api;
+package org.orbisgis.mainframe.walk;
 
 import org.orbisgis.sif.components.actions.ActionFactoryService;
 
