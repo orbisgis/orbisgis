@@ -28,3 +28,4 @@ To build a release as a standalone zip file:
 cd orbisgis-dist
 mvn package assembly:single
 ```
+test
