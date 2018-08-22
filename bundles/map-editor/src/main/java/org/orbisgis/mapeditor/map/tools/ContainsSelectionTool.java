@@ -87,6 +87,6 @@ public class ContainsSelectionTool extends AbstractSelectionTool{
 
     @Override
     public ImageIcon getImageIcon() {
-        return MapEditorIcons.getIcon("select_contains.png");
+        return MapEditorIcons.getIcon("select_contains");
     }
 }

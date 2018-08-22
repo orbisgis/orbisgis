@@ -87,6 +87,6 @@ public class IntersectsSelectionTool extends AbstractSelectionTool {
 
     @Override
     public ImageIcon getImageIcon() {
-        return MapEditorIcons.getIcon("select_intersects.png");
+        return MapEditorIcons.getIcon("select_intersects");
     }
 }
