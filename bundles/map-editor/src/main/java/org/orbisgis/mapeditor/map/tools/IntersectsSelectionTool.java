@@ -45,46 +45,48 @@ import org.orbisgis.mapeditor.map.tool.ToolManager;
 
 
 /**
- * Tool to select  geometries
+ * Tool to select  geometries that intersect a rectangle set by the user
  * 
  * @author Fernando Gonzalez Cortes
+ * @author Erwan Bocher
  */
-public class SelectionTool extends AbstractSelectionTool {
+public class IntersectsSelectionTool extends AbstractSelectionTool {
 
-	@Override
-	public void update(Observable o, Object arg) {
+    
+    @Override
+    public void update(Observable o, Object arg) {
 
-	}
+    }
 
-	@Override
-	protected ILayer getLayer(MapContext mc) {
+    @Override
+    protected ILayer getLayer(MapContext mc) {
         ILayer selectedLayer = null;
-        if(mc.getSelectedLayers().length == 1) {
+        if (mc.getSelectedLayers().length == 1) {
             selectedLayer = mc.getSelectedLayers()[0];
         }
-        if(mc.getSelectedStyles().length != 0) {
+        if (mc.getSelectedStyles().length != 0) {
             selectedLayer = mc.getSelectedStyles()[0].getLayer();
         }
         return selectedLayer;
-	}
+    }
 
-	@Override
-	public boolean isEnabled(MapContext vc, ToolManager tm) {        
-            return getAvailableLayers(vc, vc.getBoundingBox()).length>0;
-	}
+    @Override
+    public boolean isEnabled(MapContext vc, ToolManager tm) {
+        return getAvailableLayers(vc, vc.getBoundingBox()).length > 0;
+    }
 
-        @Override
-	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return true;
-	}
+    @Override
+    public boolean isVisible(MapContext vc, ToolManager tm) {
+        return true;
+    }
 
-        @Override
-	public String getName() {
-		return i18n.tr("Select a geometry");
-	}
+    @Override
+    public String getName() {
+        return i18n.tr("Select geometries that intersect a user-defined rectangle");
+    }
 
-        @Override
-        public ImageIcon getImageIcon() {
-            return MapEditorIcons.getIcon("select");
-        }
+    @Override
+    public ImageIcon getImageIcon() {
+        return MapEditorIcons.getIcon("select_intersects");
+    }
 }
