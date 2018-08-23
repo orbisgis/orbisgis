@@ -494,6 +494,7 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
         openFolderPanel.loadState();
         openFolderPanel.setAcceptAllFileFilterUsed(false);
         openFolderPanel.addFilter("groovy", "Groovy scripts");
+        openFolderPanel.addFilter("xml", "WPS model");
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFolderPanel)){
             addLocalSource(openFolderPanel.getSelectedFile().toURI());
@@ -523,6 +524,7 @@ public class WpsClientImpl implements DockingPanel, ToolboxWpsClient, PropertyCh
         openFilePanel.loadState();
         openFilePanel.setAcceptAllFileFilterUsed(false);
         openFilePanel.addFilter("groovy", "Groovy script");
+        openFilePanel.addFilter("xml", "WPS model");
         openFilePanel.setCurrentFilter(0);
         //Wait the window answer and if the user validate set and run the export thread.
         if(UIFactory.showDialog(openFilePanel)){
