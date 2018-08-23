@@ -333,9 +333,11 @@ public class ProcessEditor extends JPanel implements EditorDockable {
         AbstractScrollPane processPanel = new AbstractScrollPane();
         processPanel.setLayout(new MigLayout("fill, ins 0, gap 0"));
         //The abstract label
-        JLabel label = new JLabel("<html>"+process.getAbstract().get(0).getValue()+"</html>");
-        label.setFont(label.getFont().deriveFont(Font.ITALIC));
-        processPanel.add(label, "growx, span");
+        if(process.isSetAbstract()) {
+            JLabel label = new JLabel("<html>" + process.getAbstract().get(0).getValue() + "</html>");
+            label.setFont(label.getFont().deriveFont(Font.ITALIC));
+            processPanel.add(label, "growx, span");
+        }
         //The process version
         String versionStr = I18N.tr("Version : ");
         if(!processEditableElement.getProcessOffering(wpsClient).isSetProcessVersion() ||
@@ -400,7 +402,12 @@ public class ProcessEditor extends JPanel implements EditorDockable {
                         parameterPanel.add(contentPanel, "growx, span");
                     }
                     else{
-                        parameterPanel.add(new JLabel(i.getTitle().get(0).getValue()), "growx, span");
+                        if(i.isSetTitle()) {
+                            parameterPanel.add(new JLabel(i.getTitle().get(0).getValue()), "growx, span");
+                        }
+                        else{
+                            parameterPanel.add(new JLabel(i.getIdentifier().getValue()), "growx, span");
+                        }
                         parameterPanel.add(uiComponent, "growx, span");
                     }
                     parameterPanel.add(new JSeparator(), "growx, span");

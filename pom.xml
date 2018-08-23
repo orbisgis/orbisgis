@@ -96,7 +96,7 @@
                 <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
                 <felix-version>1.4.1</felix-version>
                 <org.apache.felix.scr.annotations-version>1.9.10</org.apache.felix.scr.annotations-version>
-                <maven-scr-plugin-version>1.15.0</maven-scr-plugin-version>
+                <maven-scr-plugin-version>1.26.0</maven-scr-plugin-version>
                 <h2-version>1.4.198</h2-version>
                 <h2-package>org.orbisgis</h2-package>
                 <h2-gis-version>1.5.0-SNAPSHOT</h2-gis-version>
