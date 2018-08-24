@@ -72,7 +72,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
  * @author Nicolas Fortin
  */
 public class ReadTable {
-    /** SQL function to evaluate */
+    /** SQL statistical functions to evaluate */
     public enum STATS { COUNT, SUM, AVG, STDDEV_SAMP, MIN, MAX}
     protected final static I18n I18N = I18nFactory.getI18n(ReadTable.class, Locale.getDefault(), I18nFactory.FALLBACK);
     private static Logger LOGGER = LoggerFactory.getLogger(ReadTable.class);
