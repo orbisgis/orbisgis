@@ -601,6 +601,9 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
         }
         if (hasSelectedRows) {
 
+            //If the table is editable the table has a unique identifier
+            //so the system can create a new data source
+            if(tableEditableElement.isEditable()){
             JMenuItem createDataSourceSelection = new JMenuItem(
                     I18N.tr("Create datasource from selection"),
                     TableEditorIcon.getIcon("table_go"));
@@ -610,6 +613,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                     EventHandler.create(ActionListener.class,
                             this, "onCreateDataSourceFromSelection"));
             pop.add(createDataSourceSelection);
+            }
 
             JMenuItem deselectAll = new JMenuItem(
                     I18N.tr("Clear selection"), TableEditorIcon.getIcon("edit-clear"));
@@ -619,7 +623,7 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
                             this, "onMenuClearSelection"));
             pop.add(deselectAll);
 
-            if (isDataOnShownMapContext()) {
+            if (isDataOnShownMapContext()&& tableEditableElement.isEditable()) {
                 JMenuItem zoomToSelection = new JMenuItem(
                         I18N.tr("Zoom to selection"),
                         TableEditorIcon.getIcon("zoom_selected"));
@@ -640,13 +644,18 @@ public class TableEditor extends JPanel implements EditorDockable, SourceTable,T
             pop.add(inverseSelection);
 
         }
-        JMenuItem findSameCells = new JMenuItem(
-                I18N.tr("Select same cell"), TableEditorIcon.getIcon("selectsame_row"));
-        findSameCells.setToolTipText(I18N.tr("Select all rows that match this cell value"));
-        findSameCells.addActionListener(
-                EventHandler.create(ActionListener.class,
-                        this, "onMenuSelectSameCellValue"));
-        pop.add(findSameCells);
+        
+        //If the table is editable the table has a unique identifier
+        //so the system can select the rows
+        if (tableEditableElement.isEditable()) {
+            JMenuItem findSameCells = new JMenuItem(
+                    I18N.tr("Select same cell"), TableEditorIcon.getIcon("selectsame_row"));
+            findSameCells.setToolTipText(I18N.tr("Select all rows that match this cell value"));
+            findSameCells.addActionListener(
+                    EventHandler.create(ActionListener.class,
+                            this, "onMenuSelectSameCellValue"));
+            pop.add(findSameCells);
+        }
         popupActions.copyEnabledActions(pop);
         return pop;
     }
