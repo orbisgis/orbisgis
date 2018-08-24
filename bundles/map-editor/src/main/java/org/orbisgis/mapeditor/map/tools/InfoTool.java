@@ -42,8 +42,6 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
@@ -51,10 +49,8 @@ import java.util.Observable;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import javax.swing.ImageIcon;
-import javax.swing.SwingWorker;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.orbisgis.commons.progress.SwingWorkerPM;
 import org.orbisgis.sif.edition.Editor;
 import org.orbisgis.sif.edition.EditorManager;
@@ -111,7 +107,7 @@ public class InfoTool extends AbstractRectangleTool {
         if (minx < tm.getValues()[0]) {
             intersects = false;
         }
-        SwingWorkerPM sw = new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), layer, intersects, editorManager);
+        SwingWorkerPM sw = new PopulateViewJob(new Envelope(minx, maxx, miny, maxy), layer,intersects, editorManager);
         sw.addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class, this, "onPropertyChange", ""));
         if(runningJob != null){
             runningJob.cancel();
@@ -137,7 +133,8 @@ public class InfoTool extends AbstractRectangleTool {
     public boolean isEnabled(MapContext vc, ToolManager tm) {
         if (vc.getSelectedLayers().length == 1) {
             if (!vc.getSelectedLayers()[0].getTableReference().isEmpty()) {
-                return vc.getSelectedLayers()[0].isVisible();
+                ILayer currentLayer = vc.getSelectedLayers()[0];    
+                return currentLayer.isVisible() && !currentLayer.getUniqueColumnIdentifier().isEmpty();
             }
         }
         return false;
@@ -160,7 +157,7 @@ public class InfoTool extends AbstractRectangleTool {
         private final EditorManager editorManager;
         private Set<Long> newSelection = new HashSet<>();
 
-        private PopulateViewJob(Envelope envelope, ILayer layer, boolean intersects, EditorManager editorManager) {
+        private PopulateViewJob(Envelope envelope, ILayer layer,boolean intersects, EditorManager editorManager) {
             this.envelope = envelope;
             this.layer = layer;
             this.intersects = intersects;
@@ -212,7 +209,7 @@ public class InfoTool extends AbstractRectangleTool {
                                 // we clear the filter for now
                                 // then we will apply the filter later
                                 editableElement.setFiltered(false);
-                                new PopulateViewJob(envelope, layer, intersects, editorManager).execute();
+                                new PopulateViewJob(envelope, layer,intersects, editorManager).execute();
                             }
                             break;
                         }

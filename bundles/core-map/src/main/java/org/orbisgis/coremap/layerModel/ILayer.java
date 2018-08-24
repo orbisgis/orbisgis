@@ -492,5 +492,16 @@ public interface ILayer {
          * @param style
          */
         void removeStyle(Style style);
+        
+        /**
+         * OrbisGIS requires that a table contains a column that can be used 
+         * as a unique key for the layer. 
+         * This usually means that the table needs a primary key, 
+         * or a column with a unique constraint on it. 
+         * Alternatively, a system column can be used as primary key.
+         * @return 
+         */
+        String getUniqueColumnIdentifier();
+        
 
 }

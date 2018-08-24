@@ -449,7 +449,6 @@ public class ReadTable {
         // There is a where condition then system row index can't be used
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             String pkName = MetaData.getPkName(connection, tableLocation.toString(), true);
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             if(!pkName.isEmpty()) {
                 String from = tableLocation.toString();
                 String sqlFunction = contains ? "ST_CONTAINS(?, %s)" : "ST_INTERSECTS(?, %s)";

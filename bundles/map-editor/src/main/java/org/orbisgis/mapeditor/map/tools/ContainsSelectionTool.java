@@ -72,7 +72,16 @@ public class ContainsSelectionTool extends AbstractSelectionTool{
 
     @Override
     public boolean isEnabled(MapContext vc, ToolManager tm) {
-        return getAvailableLayers(vc, vc.getBoundingBox()).length > 0;
+        ILayer[] availableLayers = getAvailableLayers(vc, vc.getBoundingBox());
+        int availableLayer = availableLayers.length;
+        if (availableLayer == 1) {
+            ILayer currentLayer = availableLayers[0];
+            return currentLayer.isVisible() && !currentLayer.getUniqueColumnIdentifier().isEmpty();
+
+        } else if (availableLayer > 1) {
+            return true;
+        }
+        return false;
     }
 
     @Override
