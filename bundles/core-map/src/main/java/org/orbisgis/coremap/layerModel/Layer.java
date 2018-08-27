@@ -50,12 +50,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingWorker;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 import org.orbisgis.corejdbc.DataManager;
+import org.orbisgis.corejdbc.MetaData;
 import org.orbisgis.coremap.renderer.se.Rule;
 import org.orbisgis.coremap.renderer.se.Style;
 import org.orbisgis.coremap.stream.GeoStream;
@@ -87,7 +90,7 @@ public class Layer extends BeanLayer {
         if (JDBC_REFERENCE_SCHEME.equalsIgnoreCase(dataURI.getScheme())) {
             try {
                 Map<String, String> query = URIUtilities.getQueryKeyValuePairs(URI.create(dataURI.getSchemeSpecificPart()));
-                tableReference = new TableLocation(query.get("catalog"), query.get("schema"), query.get("table")).toString();
+                tableReference = new TableLocation(query.get("catalog"), query.get("schema"), query.get("table")).toString();                
             } catch (UnsupportedEncodingException ex) {
                 LOGGER.trace(ex.getLocalizedMessage(), ex);
             }
@@ -315,5 +318,16 @@ public class Layer extends BeanLayer {
         } else {
             executorService.execute(worker);
         }
+    }
+
+    @Override
+    public String getUniqueColumnIdentifier(){
+        String uniqueIdentifier = "";
+        try (Connection connection = dataManager.getDataSource().getConnection()) {
+            uniqueIdentifier = MetaData.getPkName(connection, tableReference, true);
+        } catch (SQLException ex) {
+            //Do nothing
+        }
+        return uniqueIdentifier;
     }
 }

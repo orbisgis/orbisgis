@@ -561,6 +561,11 @@ public class LayerCollection extends BeanLayer {
         public int indexOf(Style s) {
                 throw new UnsupportedOperationException("Not supported yet.");
         }
+
+        @Override
+        public String getUniqueColumnIdentifier() {
+            return "";
+        }
         
         //////////Private classes//////////////////////////
 

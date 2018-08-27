@@ -72,7 +72,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
  * @author Nicolas Fortin
  */
 public class ReadTable {
-    /** SQL function to evaluate */
+    /** SQL statistical functions to evaluate */
     public enum STATS { COUNT, SUM, AVG, STDDEV_SAMP, MIN, MAX}
     protected final static I18n I18N = I18nFactory.getI18n(ReadTable.class, Locale.getDefault(), I18nFactory.FALLBACK);
     private static Logger LOGGER = LoggerFactory.getLogger(ReadTable.class);
@@ -449,7 +449,6 @@ public class ReadTable {
         // There is a where condition then system row index can't be used
         try(Connection connection = dataManager.getDataSource().getConnection()) {
             String pkName = MetaData.getPkName(connection, tableLocation.toString(), true);
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             if(!pkName.isEmpty()) {
                 String from = tableLocation.toString();
                 String sqlFunction = contains ? "ST_CONTAINS(?, %s)" : "ST_INTERSECTS(?, %s)";
