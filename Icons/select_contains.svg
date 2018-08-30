@@ -14,11 +14,11 @@
    height="100"
    id="svg3120"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="select_contains.svg"
-   inkscape:export-filename="/home/ebocher/Autres/codes/orbisgis/bundles/map-editor/src/main/resources/org/orbisgis/mapeditor/map/icons/select_contains.png"
-   inkscape:export-xdpi="21.6"
-   inkscape:export-ydpi="21.6">
+   inkscape:export-filename="/home/gpetit/Téléchargements/select_contains.png"
+   inkscape:export-xdpi="23.040001"
+   inkscape:export-ydpi="23.040001">
   <defs
      id="defs3122">
     <linearGradient
@@ -1001,16 +1001,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8284271"
-     inkscape:cx="13.132368"
-     inkscape:cy="11.550151"
+     inkscape:zoom="4"
+     inkscape:cx="108.91311"
+     inkscape:cy="52.316083"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1600"
-     inkscape:window-height="824"
-     inkscape:window-x="0"
-     inkscape:window-y="24"
+     inkscape:window-width="1920"
+     inkscape:window-height="1160"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true" />
@@ -1022,9 +1022,9 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
         <cc:license
-           rdf:resource="http://creativecommons.org/licenses/by-nc-nd/3.0/" />
+           rdf:resource="http://creativecommons.org/licenses/by-nc-nd/4.0/" />
         <dc:creator>
           <cc:Agent>
             <dc:title>Gwendall Petit - Atelier SIG - IRSTV - FR CNRS 2488</dc:title>
@@ -1033,7 +1033,7 @@
         <dc:date>17/09/2014</dc:date>
       </cc:Work>
       <cc:License
-         rdf:about="http://creativecommons.org/licenses/by-nc-nd/3.0/">
+         rdf:about="http://creativecommons.org/licenses/by-nc-nd/4.0/">
         <cc:permits
            rdf:resource="http://creativecommons.org/ns#Reproduction" />
         <cc:permits
@@ -1053,34 +1053,27 @@
      id="layer1"
      transform="translate(0,-952.36218)">
     <rect
-       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#0000c8;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.69026762;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.94855305;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-       id="rect4297-3"
-       width="29.292774"
-       height="66.49852"
-       x="8.8607492"
-       y="966.83661" />
+       y="1000.5743"
+       x="23.634888"
+       height="47.963902"
+       width="27.183617"
+       id="rect1016"
+       style="fill:#ececec;fill-opacity:1;stroke:#503300;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     <rect
-       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#0000c8;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.69026762;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.94855305;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-       id="rect4297-3-6"
-       width="29.292774"
-       height="66.49852"
-       x="42.103088"
-       y="966.55737" />
-    <rect
-       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ffff00;stroke-width:2.9;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-       id="rect4297"
-       width="72.67878"
-       height="77.628525"
-       x="4.4960351"
-       y="962.1059" />
+       style="fill:#ffb007;fill-opacity:1;stroke:#503300;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect4122"
+       width="24.888554"
+       height="26.648993"
+       x="12.229"
+       y="966.65796" />
     <g
        id="g3932"
-       transform="matrix(0.8221048,-0.50524672,0.4684199,0.88673806,-463.89224,141.39515)">
+       transform="matrix(0.63410518,-0.38970648,0.36130124,0.68395805,-334.00094,322.31168)">
       <path
          sodipodi:nodetypes="cc"
          inkscape:connector-curvature="0"
          id="path3160"
-         d="m 69.566466,1014.0771 0,38.5813"
+         d="m 69.566466,1014.0771 v 38.5813"
          style="fill:none;stroke:#000000;stroke-width:10.48200035;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <path
          sodipodi:nodetypes="ccccc"
@@ -1089,5 +1082,13 @@
          d="m 48.941201,1031.4449 20.625265,-8.7354 20.625269,8.7354 -20.610547,-57.09851 z"
          style="fill:#000000;stroke:#000000;stroke-width:3.8824029px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     </g>
+    <rect
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffdd55;fill-opacity:0.27392739;fill-rule:evenodd;stroke:#00000c;stroke-width:2.4;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       id="rect4297"
+       width="55.824966"
+       height="59.216854"
+       x="4.0784531"
+       y="-1017.4494"
+       transform="scale(1,-1)" />
   </g>
 </svg>
