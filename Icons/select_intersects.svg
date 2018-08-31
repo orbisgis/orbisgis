@@ -16,7 +16,7 @@
    version="1.1"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="select_intersects.svg"
-   inkscape:export-filename="/home/gpetit/Téléchargements/select_intersects.png"
+   inkscape:export-filename="/home/gpetit/Documents/Codes/orbisgis/bundles/map-editor/src/main/resources/org/orbisgis/mapeditor/map/icons/select_intersects.png"
    inkscape:export-xdpi="23.040001"
    inkscape:export-ydpi="23.040001">
   <defs
@@ -1002,7 +1002,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4"
-     inkscape:cx="86.882407"
+     inkscape:cx="31.257407"
      inkscape:cy="51.008828"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -1022,15 +1022,15 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
         <cc:license
            rdf:resource="http://creativecommons.org/licenses/by-nc-nd/4.0/" />
         <dc:creator>
           <cc:Agent>
-            <dc:title>Gwendall Petit - Atelier SIG - IRSTV - FR CNRS 2488</dc:title>
+            <dc:title>Gwendall Petit - Laboratoire Lab-STICC – CNRS UMR 6285</dc:title>
           </cc:Agent>
         </dc:creator>
-        <dc:date>17/09/2014</dc:date>
+        <dc:date></dc:date>
       </cc:Work>
       <cc:License
          rdf:about="http://creativecommons.org/licenses/by-nc-nd/4.0/">
