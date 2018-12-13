@@ -117,7 +117,7 @@ final class Main {
         parseCommandLine(args);
         //Check if the java version is greater than 1.6+
         if (!isVersion(MIN_JAVA_VERSION, MAX_JAVA_VERSION)) {
-            JOptionPane.showMessageDialog(null, I18N.tr("OrbisGIS needs at least a java 1.7+"));
+            JOptionPane.showMessageDialog(null, I18N.tr("OrbisGIS needs java 7 or java 8"));
         } else {
             // Fetch application version
             version = new Version(1, 0, 0);
