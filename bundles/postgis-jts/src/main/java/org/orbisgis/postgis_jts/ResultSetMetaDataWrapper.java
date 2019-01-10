@@ -36,6 +36,8 @@
  */
 package org.orbisgis.postgis_jts;
 
+import org.postgresql.jdbc2.AbstractJdbc2ResultSetMetaData;
+
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
@@ -102,7 +104,13 @@ public class ResultSetMetaDataWrapper implements ResultSetMetaData {
 
     @Override
     public String getSchemaName(int i) throws SQLException {
-        return resultSetMetaData.getSchemaName(i);
+        String name = resultSetMetaData.getSchemaName(i);
+        if(name.isEmpty() && resultSetMetaData instanceof AbstractJdbc2ResultSetMetaData){
+            return ((AbstractJdbc2ResultSetMetaData) resultSetMetaData).getBaseSchemaName(i);
+        }
+        else{
+            return name;
+        }
     }
 
     @Override
@@ -117,7 +125,13 @@ public class ResultSetMetaDataWrapper implements ResultSetMetaData {
 
     @Override
     public String getTableName(int i) throws SQLException {
-        return resultSetMetaData.getTableName(i);
+        String name = resultSetMetaData.getTableName(i);
+        if(name.isEmpty() && resultSetMetaData instanceof AbstractJdbc2ResultSetMetaData){
+            return ((AbstractJdbc2ResultSetMetaData) resultSetMetaData).getBaseTableName(i);
+        }
+        else{
+            return name;
+        }
     }
 
     @Override
