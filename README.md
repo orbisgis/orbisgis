@@ -5,7 +5,7 @@
 In a world ever-increasingly aware of its ecological footprint and the relevance of sustainable development, a systematic approach to evaluating public policies is of paramount importance. Such an approach must take into account relevant environmental, social and economic factors to facilitate efficient decision making and planning. As an integrated modeling platform containing analytical tools for computing various indicators at different spatial and temporal scales, OrbisGIS is already an indispensable instrument for many. Come see what all the buzz is about!
 
 
-For general information, visit our [website](http://www.orbisgis.org). Feel free to [contact us](http://www.orbisgis.org/#contact) or use the [mailing list](http://orbisgis.3871844.n2.nabble.com/).
+For general information, visit our [website](http://www.orbisgis.org). Feel free to [contact us](http://www.orbisgis.org/#contact) or use the GitHub issues.
 
 Developers, check out our [GitHub Wiki](https://github.com/orbisgis/orbisgis/wiki).
 
