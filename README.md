@@ -1,6 +1,6 @@
 ### ALERT
 
-After several years of development, it is time to reorganize the OrbisGIS architecture to offer to the users and the developers a robust libraries and framework, a better documentation and a more user-friendly GUI. Because the OrbisGIS team is at the heart of open source communities, because it supports collective work and the sharing of tools and methods rather than reinventing the wheel, we decided to split OrbisGIS in a two main libraries : 
+After several years of development, it is time to reorganize the OrbisGIS architecture to offer to the users and the developers a robust libraries and framework, a better documentation and a more user-friendly GUI. Because the OrbisGIS team is at the heart of open source communities, because it supports collective work and the sharing of tools and methods rather than reinventing the wheel, we have decided to split OrbisGIS in a two main libraries : 
 
 - OrbisData : https://github.com/orbisgis/orbisdata -> to manage, process data
 - OrbisMap : https://github.com/orbisgis/orbismap -> to renderer geospatial data
