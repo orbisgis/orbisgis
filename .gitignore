@@ -1,15 +1,4 @@
-target
-nbactions.xml
-**/*.iml
-*.iml
+/jts_utils/
 /target/
+**/*.iml
 .idea
-**/.ensime*
-**/nb-configuration.xml
-*mo
-.classpath
-.project
-.settings
-*.ucls
-.directory
-trace.db
