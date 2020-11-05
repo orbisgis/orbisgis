@@ -11,7 +11,7 @@
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-    <artifactId>jts_utils</artifactId>
+    <artifactId>geometry_utils</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <!-- Project Information -->

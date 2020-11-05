@@ -1,7 +1,6 @@
-package org.orbisgis.jts_utils
+package org.orbisgis.geometry_utils
 
 import groovy.transform.Field
-import org.h2.util.geometry.EWKTUtils
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.CoordinateXY
 import org.locationtech.jts.geom.CoordinateXYM

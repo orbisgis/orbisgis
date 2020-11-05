@@ -1,11 +1,11 @@
-package org.orbisgis.jts_utils
+package org.orbisgis.geometry_utils
 
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.Envelope
 import org.locationtech.jts.geom.Polygon
 
 /**
- * Test class dedicated to {@link org.orbisgis.jts_utils.EnvelopeUtils}.
+ * Test class dedicated to {@link org.orbisgis.geometry_utils.EnvelopeUtils}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)

@@ -1,4 +1,4 @@
-package org.orbisgis.jts_utils
+package org.orbisgis.geometry_utils
 
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.GeometryFactory
