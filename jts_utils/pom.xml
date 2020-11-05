@@ -34,10 +34,6 @@
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-json</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-sql</artifactId>
         </dependency>
         <dependency>

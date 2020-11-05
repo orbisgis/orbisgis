@@ -3,8 +3,5 @@ moduleVersion=1.0
 extensionClasses=org.orbisgis.jts_utils.GeometryConversionUtils, \
   org.orbisgis.jts_utils.EnvelopeUtils, \
   org.orbisgis.jts_utils.GeometryOperatorOverloadUtils, \
-  org.orbisgis.jts_utils.GeometryMethodsUtils, \
-  org.orbisgis.jts_utils.StringUtils, \
-  org.orbisgis.jts_utils.ConnectionUtils, \
-  org.orbisgis.jts_utils.FileUtils
-staticExtensionClasses=org.orbisgis.jts_utils.ScriptUtilities
+  org.orbisgis.jts_utils.GeometryMethodsUtils
+staticExtensionClasses=
