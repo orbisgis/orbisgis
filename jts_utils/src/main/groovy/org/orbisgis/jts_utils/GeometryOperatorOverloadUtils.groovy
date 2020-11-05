@@ -1,4 +1,4 @@
-package org.orbisgis.groovy_utils
+package org.orbisgis.jts_utils
 
 import groovy.transform.Field
 import org.locationtech.jts.geom.Coordinate

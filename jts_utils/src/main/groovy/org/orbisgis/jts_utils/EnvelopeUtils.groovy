@@ -1,4 +1,4 @@
-package org.orbisgis.groovy_utils
+package org.orbisgis.jts_utils
 
 import groovy.transform.Field
 import org.locationtech.jts.geom.Envelope
@@ -29,10 +29,8 @@ static Object asType(Envelope env, Class c) {
     switch(c) {
         case Polygon :
             return FACTORY.toGeometry(env)
-            break
         case Envelope :
             return env
-            break
     }
     return null
 }

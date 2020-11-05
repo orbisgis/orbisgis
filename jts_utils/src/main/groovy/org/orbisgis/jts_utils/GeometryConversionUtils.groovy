@@ -1,10 +1,12 @@
-package org.orbisgis.groovy_utils
+package org.orbisgis.jts_utils
 
 import groovy.transform.Field
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.CoordinateXY
 import org.locationtech.jts.geom.CoordinateXYM
 import org.locationtech.jts.geom.CoordinateXYZM
+import org.locationtech.jts.geom.Envelope
+import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.LineString
 import org.locationtech.jts.geom.LinearRing
@@ -13,6 +15,8 @@ import org.locationtech.jts.geom.MultiPoint
 import org.locationtech.jts.geom.MultiPolygon
 import org.locationtech.jts.geom.Point
 import org.locationtech.jts.geom.Polygon
+import org.locationtech.jts.io.WKTReader
+import org.locationtech.jts.io.WKTWriter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -26,9 +30,10 @@ import org.slf4j.LoggerFactory
 
 private static final @Field GeometryFactory FACTORY = new GeometryFactory()
 private static final @Field Logger LOGGER = LoggerFactory.getLogger(this.class)
+private static final @Field WKTWriter WKT_WRITER = new WKTWriter()
 
 /**
- * Main AsType method allowing to convert Collection/Array into a Geometry or Coordinates. If the class is not
+ * AsType method allowing to convert Collection/Array into a Geometry or Coordinates. If the class is not
  * supported, return null.
  *
  * Supported classes :
@@ -69,6 +74,23 @@ static def asType(Collection collection, Class aClass) {
             return asMultiLineString(collection)
         case MultiPolygon:
             return asMultiPolygon(collection)
+    }
+    return null
+}
+
+/**
+ * AsType methods allowing to convert a Geometry into an other class
+ *
+ * @param geom
+ * @param aClass
+ * @return
+ */
+static def asType(Geometry geom, Class aClass) {
+    switch(aClass) {
+        case Envelope:
+            return geom.getEnvelopeInternal()
+        case String:
+            return WKT_WRITER.write(geom)
     }
     return null
 }

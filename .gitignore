@@ -1,4 +1,3 @@
-/jts_utils/
-/target/
+**/target/
 **/*.iml
 .idea

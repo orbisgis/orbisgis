@@ -1,10 +1,10 @@
-package org.orbisgis.groovy_utils
+package org.orbisgis.jts_utils
 
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.*
 
 /**
- * Test class dedicated to {@link org.orbisgis.groovy_utils.GeometryOperatorOverloadUtils}.
+ * Test class dedicated to {@link org.orbisgis.jts_utils.GeometryOperatorOverloadUtils}.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)

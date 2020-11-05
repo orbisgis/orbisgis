@@ -1,4 +1,4 @@
-package org.orbisgis.groovy_utils
+package org.orbisgis.jts_utils
 
 import org.locationtech.jts.geom.Envelope
 import org.locationtech.jts.geom.Geometry

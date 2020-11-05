@@ -36,6 +36,11 @@ assert [[0,0,8], [3,0,8], [3,2,8], [1,3,8]] as MultiPoint
 ///4D (XY) multiPoint
 assert [[0,0,8,0], [3,0,8,0], [3,2,8,0], [1,3,8,0]] as MultiPoint
 
+// Envelope
+assert [[[0,0], [3,0], [3,2], [1,3], [0,0]]] as Polygon as Envelope instanceof Envelope
+def str = [[[0,0], [3,0], [3,2], [1,3], [0,0]]] as Polygon as String
+assert "POLYGON ((0 0, 3 0, 3 2, 1 3, 0 0))" == str
+
 
 /** Geometry operator **/
 // Point

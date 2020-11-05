@@ -1,10 +1,10 @@
 moduleName=OrbisGIS Groovy commons extension
 moduleVersion=1.0
-extensionClasses=org.orbisgis.groovy_utils.GeometryConversionUtils, \
-  org.orbisgis.groovy_utils.GeometryOperatorOverloadUtils, \
-  org.orbisgis.groovy_utils.GeometryMethodsUtils, \
-  org.orbisgis.groovy_utils.StringUtils, \
-  org.orbisgis.groovy_utils.ConnectionUtils, \
-  org.orbisgis.groovy_utils.FileUtils, \
-  org.orbisgis.groovy_utils.GeometryUtils
-staticExtensionClasses=org.orbisgis.groovy_utils.ScriptUtilities
+extensionClasses=org.orbisgis.jts_utils.GeometryConversionUtils, \
+  org.orbisgis.jts_utils.EnvelopeUtils, \
+  org.orbisgis.jts_utils.GeometryOperatorOverloadUtils, \
+  org.orbisgis.jts_utils.GeometryMethodsUtils, \
+  org.orbisgis.jts_utils.StringUtils, \
+  org.orbisgis.jts_utils.ConnectionUtils, \
+  org.orbisgis.jts_utils.FileUtils
+staticExtensionClasses=org.orbisgis.jts_utils.ScriptUtilities

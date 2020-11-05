@@ -1,13 +1,10 @@
-package org.orbisgis.groovy_utils
+package org.orbisgis.jts_utils
 
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.CoordinateXY
 import org.locationtech.jts.geom.CoordinateXYM
 import org.locationtech.jts.geom.CoordinateXYZM
-import org.locationtech.jts.geom.Coordinates
-import org.locationtech.jts.geom.GeometryCollection
-import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.LineString
 import org.locationtech.jts.geom.MultiLineString
 import org.locationtech.jts.geom.MultiPoint
@@ -16,7 +13,7 @@ import org.locationtech.jts.geom.Point
 import org.locationtech.jts.geom.Polygon
 
 /**
- * Test class dedicated to {@link org.orbisgis.groovy_utils.GeometryConversionUtils}.
+ * Test class dedicated to {@link org.orbisgis.jts_utils.GeometryConversionUtils}.
  * 
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
