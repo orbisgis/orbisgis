@@ -5,6 +5,7 @@ import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.CoordinateXY
 import org.locationtech.jts.geom.CoordinateXYM
 import org.locationtech.jts.geom.CoordinateXYZM
+import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.LineString
 import org.locationtech.jts.geom.MultiLineString
 import org.locationtech.jts.geom.MultiPoint
@@ -471,4 +472,215 @@ class GeometryConversionUtilsTest extends GeometryUtilsTest {
         assert !coordsGet
     }
 
+    private static void assertGeomEqualsWithSrid(Geometry expected, Geometry get){
+        assert expected == get
+        assertCoordinatesEquals(expected.coordinates, get.coordinates)
+        assert expected.SRID == get.SRID
+    }
+
+    @Test
+    void asTypeStringToPointTest() {
+        def expected = [1, 2] as Point
+        def get = "POINT(1 2)" as Point
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [1, 2, 3] as Point
+        get = "POINTZ(1 2 3)" as Point
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [1, 2, 3, 4] as Point
+        get = "POINTZM(1 2 3 4)" as Point
+        assertGeomEqualsWithSrid(expected, get)
+
+        expected = [1, 2] as Point
+        expected.setSRID(4326)
+        get = "SRID=4326;POINT(1 2)" as Point
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [1, 2, 3] as Point
+        expected.setSRID(4326)
+        get = "SRID=4326;POINTZ(1 2 3)" as Point
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [1, 2, 3, 4] as Point
+        expected.setSRID(4326)
+        get = "SRID=4326;POINTZM(1 2 3 4)" as Point
+        assertGeomEqualsWithSrid(expected, get)
+    }
+
+    @Test
+    void asTypeStringToLineStringTest() {
+        def expected = [[4.0, 2], [2, 3], [3.0, 5.0]] as LineString
+        def get = "LINESTRING(4.0 2, 2 3, 3.0 5.0)" as LineString
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[4.0, 2, 8], [2, 3, 7], [3.0, 5.0, 6]] as LineString
+        get = "LINESTRINGZ(4.0 2 8, 2 3 7, 3.0 5.0 6)" as LineString
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[4.0, 2, 8, 5], [2, 3, 7, 6], [3.0, 5.0, 6, 7]] as LineString
+        get = "LINESTRINGZM(4.0 2 8 5, 2 3 7 6, 3.0 5.0 6 7)" as LineString
+        assertGeomEqualsWithSrid(expected, get)
+
+        expected = [[4.0, 2], [2, 3], [3.0, 5.0]] as LineString
+        expected.setSRID(4326)
+        get = "SRID=4326;LINESTRING(4.0 2, 2 3, 3.0 5.0)" as LineString
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[4.0, 2, 8], [2, 3, 7], [3.0, 5.0, 6]] as LineString
+        expected.setSRID(4326)
+        get = "SRID=4326;LINESTRINGZ(4.0 2 8, 2 3 7, 3.0 5.0 6)" as LineString
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[4.0, 2, 8, 5], [2, 3, 7, 6], [3.0, 5.0, 6, 7]] as LineString
+        expected.setSRID(4326)
+        get = "SRID=4326;LINESTRINGZM(4.0 2 8 5, 2 3 7 6, 3.0 5.0 6 7)" as LineString
+        assertGeomEqualsWithSrid(expected, get)
+    }
+
+    @Test
+    void asTypeStringToPolygonTest() {
+        //Without hole
+        def expected = [[[0,0], [3,0], [3,2], [1,3], [0,0]]] as Polygon
+        def get = "POLYGON((0 0, 3 0, 3 2, 1 3, 0 0))" as Polygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[0,0,8], [3,0,6], [3,2,4], [1,3,2], [0,0,0]]] as Polygon
+        get = "POLYGONZ((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 0))" as Polygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,0,1]]] as Polygon
+        get = "POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1))" as Polygon
+        assertGeomEqualsWithSrid(expected, get)
+
+        expected = [[[0,0], [3,0], [3,2], [1,3], [0,0]]] as Polygon
+        expected.setSRID(4326)
+        get = "SRID=4326;POLYGON((0 0, 3 0, 3 2, 1 3, 0 0))" as Polygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[0,0,8], [3,0,6], [3,2,4], [1,3,2], [0,0,0]]] as Polygon
+        expected.setSRID(4326)
+        get = "SRID=4326;POLYGONZ((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 0))" as Polygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected =  [[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,0,1]]] as Polygon
+        expected.setSRID(4326)
+        get = "SRID=4326;POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1))" as Polygon
+        assertGeomEqualsWithSrid(expected, get)
+
+        //With hole
+        expected = [[[0,0], [3,0], [3,2], [1,3], [0,0]], [[1,1], [2,1], [2,2], [1,1]]] as Polygon
+        get = "POLYGON((0 0, 3 0, 3 2, 1 3, 0 0), (1 1, 2 1, 2 2, 1 1))" as Polygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[0,0,8], [3,0,6], [3,2,4], [1,3,2], [0,0,0]], [[1,1,1], [2,1,2], [2,2,2], [1,1,1]]] as Polygon
+        get = "POLYGONZ((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 0), (1 1 1, 2 1 2, 2 2 2, 1 1 1))" as Polygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,0,1]], [[1,1,1,5], [2,1,2,4], [2,2,2,3], [1,1,1,2]]] as Polygon
+        get = "POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2))" as Polygon
+        assertGeomEqualsWithSrid(expected, get)
+
+        expected = [[[0,0], [3,0], [3,2], [1,3], [0,0]], [[1,1], [2,1], [2,2], [1,1]]] as Polygon
+        expected.setSRID(4326)
+        get = "SRID=4326;POLYGON((0 0, 3 0, 3 2, 1 3, 0 0), (1 1, 2 1, 2 2, 1 1))" as Polygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[0,0,8], [3,0,6], [3,2,4], [1,3,2], [0,0,0]], [[1,1,1], [2,1,2], [2,2,2], [1,1,1]]] as Polygon
+        expected.setSRID(4326)
+        get = "SRID=4326;POLYGONZ((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 0), (1 1 1, 2 1 2, 2 2 2, 1 1 1))" as Polygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected =  [[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,0,1]], [[1,1,1,5], [2,1,2,4], [2,2,2,3], [1,1,1,2]]] as Polygon
+        expected.setSRID(4326)
+        get = "SRID=4326;POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2))" as Polygon
+        assertGeomEqualsWithSrid(expected, get)
+    }
+
+    @Test
+    void asTypeStringToMultiPointTest() {
+        def expected = [[0,0], [3,0], [3,2], [1,3]] as MultiPoint
+        def get = "MULTIPOINT(0 0, 3 0, 3 2, 1 3)" as MultiPoint
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[0,0,8], [3,0,8], [3,2,8], [1,3,8]] as MultiPoint
+        get = "MULTIPOINTZ(0 0 8, 3 0 8, 3 2 8, 1 3 8)" as MultiPoint
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[0,0,8,0], [3,0,8,0], [3,2,8,0], [1,3,8,0]] as MultiPoint
+        get = "MULTIPOINTZM(0 0 8 0, 3 0 8 0, 3 2 8 0, 1 3 8 0)" as MultiPoint
+        assertGeomEqualsWithSrid(expected, get)
+
+        expected = [[0,0], [3,0], [3,2], [1,3]] as MultiPoint
+        expected.setSRID(4326)
+        get = "SRID=4326;MULTIPOINT(0 0, 3 0, 3 2, 1 3)" as MultiPoint
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[0,0,8], [3,0,8], [3,2,8], [1,3,8]] as MultiPoint
+        expected.setSRID(4326)
+        get = "SRID=4326;MULTIPOINTZ(0 0 8, 3 0 8, 3 2 8, 1 3 8)" as MultiPoint
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[0,0,8,0], [3,0,8,0], [3,2,8,0], [1,3,8,0]] as MultiPoint
+        expected.setSRID(4326)
+        get = "SRID=4326;MULTIPOINTZM(0 0 8 0, 3 0 8 0, 3 2 8 0, 1 3 8 0)" as MultiPoint
+        assertGeomEqualsWithSrid(expected, get)
+    }
+
+    @Test
+    void asTypeStringToMultiLineStringTest() {
+        def expected = [[[0,0], [3,0]], [[3,2], [1,3]]] as MultiLineString
+        def get = "MULTILINESTRING((0 0, 3 0), (3 2, 1 3))" as MultiLineString
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[0,0,8], [3,0,8]], [[3,2,8], [1,3,8]]] as MultiLineString
+        get = "MULTILINESTRINGZ((0 0 8, 3 0 8), (3 2 8, 1 3 8))" as MultiLineString
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[0,0,8,0], [3,0,8,0]], [[3,2,8,0], [1,3,8,0]]] as MultiLineString
+        get = "MULTILINESTRINGZM((0 0 8 0, 3 0 8 0), (3 2 8 0, 1 3 8 0))" as MultiLineString
+        assertGeomEqualsWithSrid(expected, get)
+
+        expected = [[[0,0], [3,0]], [[3,2], [1,3]]] as MultiLineString
+        expected.setSRID(4326)
+        get = "SRID=4326;MULTILINESTRING((0 0, 3 0), (3 2, 1 3))" as MultiLineString
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[0,0,8], [3,0,8]], [[3,2,8], [1,3,8]]] as MultiLineString
+        expected.setSRID(4326)
+        get = "SRID=4326;MULTILINESTRINGZ((0 0 8, 3 0 8), (3 2 8, 1 3 8))" as MultiLineString
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[0,0,8,0], [3,0,8,0]], [[3,2,8,0], [1,3,8,0]]] as MultiLineString
+        expected.setSRID(4326)
+        get = "SRID=4326;MULTILINESTRINGZM((0 0 8 0, 3 0 8 0), (3 2 8 0, 1 3 8 0))" as MultiLineString
+        assertGeomEqualsWithSrid(expected, get)
+    }
+
+    @Test
+    void asTypeStringToMultiPolygonTest() {
+        //Without hole
+        def expected = [[[[0,0], [3,0], [3,2], [1,3], [0,0]]], [[[10, 10], [11, 10], [11, 11], [10, 10]]]] as MultiPolygon
+        def get = "MULTIPOLYGON(((0 0, 3 0, 3 2, 1 3, 0 0)), ((10 10, 11 10, 11 11, 10 10)))" as MultiPolygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[[0,0,8], [3,0,6], [3,2,4], [1,3,2], [0,0,4]]], [[[10, 10, 1], [11, 10, 2], [11, 11, 3], [10, 10, 4]]]] as MultiPolygon
+        get = "MULTIPOLYGONZ(((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 4)), ((10 10 1, 11 10 2, 11 11 3, 10 10 4)))" as MultiPolygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,4,1]]], [[[10, 10, 1, 4], [11, 10, 2, 3], [11, 11, 3, 2], [10, 10, 4, 1]]]] as MultiPolygon
+        get = "MULTIPOLYGONZM(((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 4 1)), ((10 10 1 4, 11 10 2 3, 11 11 3 2, 10 10 4 1)))" as MultiPolygon
+        assertGeomEqualsWithSrid(expected, get)
+
+        expected = [[[[0,0], [3,0], [3,2], [1,3], [0,0]]], [[[10, 10], [11, 10], [11, 11], [10, 10]]]] as MultiPolygon
+        expected.setSRID(4326)
+        get = "SRID=4326;MULTIPOLYGON(((0 0, 3 0, 3 2, 1 3, 0 0)), ((10 10, 11 10, 11 11, 10 10)))" as MultiPolygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[[0,0,8], [3,0,6], [3,2,4], [1,3,2], [0,0,4]]], [[[10, 10, 1], [11, 10, 2], [11, 11, 3], [10, 10, 4]]]] as MultiPolygon
+        expected.setSRID(4326)
+        get = "SRID=4326;MULTIPOLYGONZ(((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 4)), ((10 10 1, 11 10 2, 11 11 3, 10 10 4)))" as MultiPolygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,4,1]]], [[[10, 10, 1, 4], [11, 10, 2, 3], [11, 11, 3, 2], [10, 10, 4, 1]]]] as MultiPolygon
+        expected.setSRID(4326)
+        get = "SRID=4326;MULTIPOLYGONZM(((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 4 1)), ((10 10 1 4, 11 10 2 3, 11 11 3 2, 10 10 4 1)))" as MultiPolygon
+        assertGeomEqualsWithSrid(expected, get)
+
+        //With holes
+        expected = [[[[0,0], [3,0], [3,2], [1,3], [0,0]], [[1,1], [2,1], [2,2], [1,1]]], [[[10, 10], [11, 10], [11, 11], [10, 10]]]] as MultiPolygon
+        get = "MULTIPOLYGON(((0 0, 3 0, 3 2, 1 3, 0 0), (1 1, 2 1, 2 2, 1 1)), ((10 10, 11 10, 11 11, 10 10)))" as MultiPolygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[[0,0,8], [3,0,6], [3,2,4], [1,3,2], [0,0,4]], [[1,1,1], [2,1,2], [2,2,2], [1,1,1]]], [[[10, 10, 1], [11, 10, 2], [11, 11, 3], [10, 10, 4]]]] as MultiPolygon
+        get = "MULTIPOLYGONZ(((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 4), (1 1 1, 2 1 2, 2 2 2, 1 1 1)), ((10 10 1, 11 10 2, 11 11 3, 10 10 4)))" as MultiPolygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,4,1]], [[1,1,1,5], [2,1,2,4], [2,2,2,3], [1,1,1,2]]], [[[10, 10, 1, 4], [11, 10, 2, 3], [11, 11, 3, 2], [10, 10, 4, 1]]]] as MultiPolygon
+        get = "MULTIPOLYGONZM(((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 4 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2)), ((10 10 1 4, 11 10 2 3, 11 11 3 2, 10 10 4 1)))" as MultiPolygon
+        assertGeomEqualsWithSrid(expected, get)
+
+        expected = [[[[0,0], [3,0], [3,2], [1,3], [0,0]], [[1,1], [2,1], [2,2], [1,1]]], [[[10, 10], [11, 10], [11, 11], [10, 10]]]] as MultiPolygon
+        expected.setSRID(4326)
+        get = "SRID=4326;MULTIPOLYGON(((0 0, 3 0, 3 2, 1 3, 0 0), (1 1, 2 1, 2 2, 1 1)), ((10 10, 11 10, 11 11, 10 10)))" as MultiPolygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[[0,0,8], [3,0,6], [3,2,4], [1,3,2], [0,0,4]], [[1,1,1], [2,1,2], [2,2,2], [1,1,1]]], [[[10, 10, 1], [11, 10, 2], [11, 11, 3], [10, 10, 4]]]] as MultiPolygon
+        expected.setSRID(4326)
+        get = "SRID=4326;MULTIPOLYGONZ(((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 4), (1 1 1, 2 1 2, 2 2 2, 1 1 1)), ((10 10 1, 11 10 2, 11 11 3, 10 10 4)))" as MultiPolygon
+        assertGeomEqualsWithSrid(expected, get)
+        expected = [[[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,4,1]], [[1,1,1,5], [2,1,2,4], [2,2,2,3], [1,1,1,2]]], [[[10, 10, 1, 4], [11, 10, 2, 3], [11, 11, 3, 2], [10, 10, 4, 1]]]] as MultiPolygon
+        expected.setSRID(4326)
+        get = "SRID=4326;MULTIPOLYGONZM(((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 4 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2)), ((10 10 1 4, 11 10 2 3, 11 11 3 2, 10 10 4 1)))" as MultiPolygon
+        assertGeomEqualsWithSrid(expected, get)
+    }
 }

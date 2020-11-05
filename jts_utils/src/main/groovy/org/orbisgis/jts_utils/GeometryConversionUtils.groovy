@@ -1,6 +1,7 @@
 package org.orbisgis.jts_utils
 
 import groovy.transform.Field
+import org.h2.util.geometry.EWKTUtils
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.CoordinateXY
 import org.locationtech.jts.geom.CoordinateXYM
@@ -20,6 +21,8 @@ import org.locationtech.jts.io.WKTWriter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+import java.util.regex.Pattern
+
 /**
  * Utility script used as extension module adding the conversion of collection/array of number into JTS Geometry
  * or Coordinates.
@@ -31,6 +34,9 @@ import org.slf4j.LoggerFactory
 private static final @Field GeometryFactory FACTORY = new GeometryFactory()
 private static final @Field Logger LOGGER = LoggerFactory.getLogger(this.class)
 private static final @Field WKTWriter WKT_WRITER = new WKTWriter()
+private static final @Field WKTReader WKT_READER = new WKTReader()
+private static final @Field Pattern EWKT_SRID_PATTERN =
+        Pattern.compile("^\\s*SRID\\s*=\\s*(\\d*)\\s*;(.*)\$", Pattern.CASE_INSENSITIVE)
 
 /**
  * AsType method allowing to convert Collection/Array into a Geometry or Coordinates. If the class is not
@@ -91,6 +97,44 @@ static def asType(Geometry geom, Class aClass) {
             return geom.getEnvelopeInternal()
         case String:
             return WKT_WRITER.write(geom)
+    }
+    return null
+}
+
+/**
+ * AsType methods allowing to convert a String into a Geometry
+ *
+ * @param geom
+ * @param aClass
+ * @return
+ */
+static def asType(String str, Class aClass) {
+    switch(aClass) {
+        case Point:
+        case LineString:
+        case Polygon:
+        case MultiPoint:
+        case MultiLineString:
+        case MultiPolygon:
+        case Geometry:
+            def matcher = EWKT_SRID_PATTERN.matcher(str)
+            def wkt = str
+            def srid = -1
+            if(matcher.find()) {
+                srid = Integer.parseInt(matcher.group(1))
+                wkt = matcher.group(2)
+            }
+            def geom = WKT_READER.read(wkt)
+            if(srid != -1) {
+                geom.SRID = srid
+            }
+            if(aClass.isAssignableFrom(geom.class)) {
+                return geom
+            }
+            else{
+                LOGGER.error("Wrong geometry type, string is ${geom.class.simpleName} whereas the given class is ${aClass.simpleName}")
+                return null
+            }
     }
     return null
 }
