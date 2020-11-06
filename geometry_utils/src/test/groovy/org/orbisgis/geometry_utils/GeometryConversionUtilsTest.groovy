@@ -12,6 +12,8 @@ import org.locationtech.jts.geom.MultiPoint
 import org.locationtech.jts.geom.MultiPolygon
 import org.locationtech.jts.geom.Point
 import org.locationtech.jts.geom.Polygon
+import org.orbisgis.geometry_utils.formats.WKB
+import org.orbisgis.geometry_utils.formats.WKT
 
 /**
  * Test class dedicated to {@link org.orbisgis.geometry_utils.GeometryConversionUtils}.
@@ -483,12 +485,15 @@ class GeometryConversionUtilsTest extends GeometryUtilsTest {
         def expected = [1, 2] as Point
         def get = "POINT(1 2)" as Point
         assertGeomEqualsWithSrid(expected, get)
+        assert "POINT(1 2)" as Geometry instanceof Point
         expected = [1, 2, 3] as Point
         get = "POINTZ(1 2 3)" as Point
         assertGeomEqualsWithSrid(expected, get)
+        assert "POINTZ(1 2 3)" as Geometry instanceof Point
         expected = [1, 2, 3, 4] as Point
         get = "POINTZM(1 2 3 4)" as Point
         assertGeomEqualsWithSrid(expected, get)
+        assert "POINTZM(1 2 3 4)" as Geometry instanceof Point
 
         expected = [1, 2] as Point
         expected.setSRID(4326)
@@ -509,12 +514,15 @@ class GeometryConversionUtilsTest extends GeometryUtilsTest {
         def expected = [[4.0, 2], [2, 3], [3.0, 5.0]] as LineString
         def get = "LINESTRING(4.0 2, 2 3, 3.0 5.0)" as LineString
         assertGeomEqualsWithSrid(expected, get)
+        assert "LINESTRING(4.0 2, 2 3, 3.0 5.0)" as Geometry instanceof LineString
         expected = [[4.0, 2, 8], [2, 3, 7], [3.0, 5.0, 6]] as LineString
         get = "LINESTRINGZ(4.0 2 8, 2 3 7, 3.0 5.0 6)" as LineString
         assertGeomEqualsWithSrid(expected, get)
+        assert "LINESTRINGZ(4.0 2 8, 2 3 7, 3.0 5.0 6)" as Geometry instanceof LineString
         expected = [[4.0, 2, 8, 5], [2, 3, 7, 6], [3.0, 5.0, 6, 7]] as LineString
         get = "LINESTRINGZM(4.0 2 8 5, 2 3 7 6, 3.0 5.0 6 7)" as LineString
         assertGeomEqualsWithSrid(expected, get)
+        assert "LINESTRINGZM(4.0 2 8 5, 2 3 7 6, 3.0 5.0 6 7)" as Geometry instanceof LineString
 
         expected = [[4.0, 2], [2, 3], [3.0, 5.0]] as LineString
         expected.setSRID(4326)
@@ -536,12 +544,15 @@ class GeometryConversionUtilsTest extends GeometryUtilsTest {
         def expected = [[[0,0], [3,0], [3,2], [1,3], [0,0]]] as Polygon
         def get = "POLYGON((0 0, 3 0, 3 2, 1 3, 0 0))" as Polygon
         assertGeomEqualsWithSrid(expected, get)
+        assert "POLYGON((0 0, 3 0, 3 2, 1 3, 0 0))" as Geometry instanceof Polygon
         expected = [[[0,0,8], [3,0,6], [3,2,4], [1,3,2], [0,0,0]]] as Polygon
         get = "POLYGONZ((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 0))" as Polygon
         assertGeomEqualsWithSrid(expected, get)
+        assert "POLYGONZ((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 0))" as Geometry instanceof Polygon
         expected = [[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,0,1]]] as Polygon
         get = "POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1))" as Polygon
         assertGeomEqualsWithSrid(expected, get)
+        assert "POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1))" as Geometry instanceof Polygon
 
         expected = [[[0,0], [3,0], [3,2], [1,3], [0,0]]] as Polygon
         expected.setSRID(4326)
@@ -560,12 +571,15 @@ class GeometryConversionUtilsTest extends GeometryUtilsTest {
         expected = [[[0,0], [3,0], [3,2], [1,3], [0,0]], [[1,1], [2,1], [2,2], [1,1]]] as Polygon
         get = "POLYGON((0 0, 3 0, 3 2, 1 3, 0 0), (1 1, 2 1, 2 2, 1 1))" as Polygon
         assertGeomEqualsWithSrid(expected, get)
+        assert "POLYGON((0 0, 3 0, 3 2, 1 3, 0 0), (1 1, 2 1, 2 2, 1 1))" as Geometry instanceof Polygon
         expected = [[[0,0,8], [3,0,6], [3,2,4], [1,3,2], [0,0,0]], [[1,1,1], [2,1,2], [2,2,2], [1,1,1]]] as Polygon
         get = "POLYGONZ((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 0), (1 1 1, 2 1 2, 2 2 2, 1 1 1))" as Polygon
         assertGeomEqualsWithSrid(expected, get)
+        assert "POLYGONZ((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 0), (1 1 1, 2 1 2, 2 2 2, 1 1 1))" as Geometry instanceof Polygon
         expected = [[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,0,1]], [[1,1,1,5], [2,1,2,4], [2,2,2,3], [1,1,1,2]]] as Polygon
         get = "POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2))" as Polygon
         assertGeomEqualsWithSrid(expected, get)
+        assert "POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2))" as Geometry instanceof Polygon
 
         expected = [[[0,0], [3,0], [3,2], [1,3], [0,0]], [[1,1], [2,1], [2,2], [1,1]]] as Polygon
         expected.setSRID(4326)
@@ -586,12 +600,15 @@ class GeometryConversionUtilsTest extends GeometryUtilsTest {
         def expected = [[0,0], [3,0], [3,2], [1,3]] as MultiPoint
         def get = "MULTIPOINT(0 0, 3 0, 3 2, 1 3)" as MultiPoint
         assertGeomEqualsWithSrid(expected, get)
+        assert "MULTIPOINT(0 0, 3 0, 3 2, 1 3)" as Geometry instanceof MultiPoint
         expected = [[0,0,8], [3,0,8], [3,2,8], [1,3,8]] as MultiPoint
         get = "MULTIPOINTZ(0 0 8, 3 0 8, 3 2 8, 1 3 8)" as MultiPoint
         assertGeomEqualsWithSrid(expected, get)
+        assert "MULTIPOINTZ(0 0 8, 3 0 8, 3 2 8, 1 3 8)" as Geometry instanceof MultiPoint
         expected = [[0,0,8,0], [3,0,8,0], [3,2,8,0], [1,3,8,0]] as MultiPoint
         get = "MULTIPOINTZM(0 0 8 0, 3 0 8 0, 3 2 8 0, 1 3 8 0)" as MultiPoint
         assertGeomEqualsWithSrid(expected, get)
+        assert "MULTIPOINTZM(0 0 8 0, 3 0 8 0, 3 2 8 0, 1 3 8 0)" as Geometry instanceof MultiPoint
 
         expected = [[0,0], [3,0], [3,2], [1,3]] as MultiPoint
         expected.setSRID(4326)
@@ -612,12 +629,15 @@ class GeometryConversionUtilsTest extends GeometryUtilsTest {
         def expected = [[[0,0], [3,0]], [[3,2], [1,3]]] as MultiLineString
         def get = "MULTILINESTRING((0 0, 3 0), (3 2, 1 3))" as MultiLineString
         assertGeomEqualsWithSrid(expected, get)
+        assert "MULTILINESTRING((0 0, 3 0), (3 2, 1 3))" as Geometry instanceof MultiLineString
         expected = [[[0,0,8], [3,0,8]], [[3,2,8], [1,3,8]]] as MultiLineString
         get = "MULTILINESTRINGZ((0 0 8, 3 0 8), (3 2 8, 1 3 8))" as MultiLineString
         assertGeomEqualsWithSrid(expected, get)
+        assert "MULTILINESTRINGZ((0 0 8, 3 0 8), (3 2 8, 1 3 8))" as Geometry instanceof MultiLineString
         expected = [[[0,0,8,0], [3,0,8,0]], [[3,2,8,0], [1,3,8,0]]] as MultiLineString
         get = "MULTILINESTRINGZM((0 0 8 0, 3 0 8 0), (3 2 8 0, 1 3 8 0))" as MultiLineString
         assertGeomEqualsWithSrid(expected, get)
+        assert "MULTILINESTRINGZM((0 0 8 0, 3 0 8 0), (3 2 8 0, 1 3 8 0))" as Geometry instanceof MultiLineString
 
         expected = [[[0,0], [3,0]], [[3,2], [1,3]]] as MultiLineString
         expected.setSRID(4326)
@@ -639,12 +659,15 @@ class GeometryConversionUtilsTest extends GeometryUtilsTest {
         def expected = [[[[0,0], [3,0], [3,2], [1,3], [0,0]]], [[[10, 10], [11, 10], [11, 11], [10, 10]]]] as MultiPolygon
         def get = "MULTIPOLYGON(((0 0, 3 0, 3 2, 1 3, 0 0)), ((10 10, 11 10, 11 11, 10 10)))" as MultiPolygon
         assertGeomEqualsWithSrid(expected, get)
+        assert "MULTIPOLYGON(((0 0, 3 0, 3 2, 1 3, 0 0)), ((10 10, 11 10, 11 11, 10 10)))" as Geometry instanceof MultiPolygon
         expected = [[[[0,0,8], [3,0,6], [3,2,4], [1,3,2], [0,0,4]]], [[[10, 10, 1], [11, 10, 2], [11, 11, 3], [10, 10, 4]]]] as MultiPolygon
         get = "MULTIPOLYGONZ(((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 4)), ((10 10 1, 11 10 2, 11 11 3, 10 10 4)))" as MultiPolygon
         assertGeomEqualsWithSrid(expected, get)
+        assert "MULTIPOLYGONZ(((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 4)), ((10 10 1, 11 10 2, 11 11 3, 10 10 4)))" as Geometry instanceof MultiPolygon
         expected = [[[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,4,1]]], [[[10, 10, 1, 4], [11, 10, 2, 3], [11, 11, 3, 2], [10, 10, 4, 1]]]] as MultiPolygon
         get = "MULTIPOLYGONZM(((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 4 1)), ((10 10 1 4, 11 10 2 3, 11 11 3 2, 10 10 4 1)))" as MultiPolygon
         assertGeomEqualsWithSrid(expected, get)
+        assert "MULTIPOLYGONZM(((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 4 1)), ((10 10 1 4, 11 10 2 3, 11 11 3 2, 10 10 4 1)))" as Geometry instanceof MultiPolygon
 
         expected = [[[[0,0], [3,0], [3,2], [1,3], [0,0]]], [[[10, 10], [11, 10], [11, 11], [10, 10]]]] as MultiPolygon
         expected.setSRID(4326)
@@ -663,12 +686,15 @@ class GeometryConversionUtilsTest extends GeometryUtilsTest {
         expected = [[[[0,0], [3,0], [3,2], [1,3], [0,0]], [[1,1], [2,1], [2,2], [1,1]]], [[[10, 10], [11, 10], [11, 11], [10, 10]]]] as MultiPolygon
         get = "MULTIPOLYGON(((0 0, 3 0, 3 2, 1 3, 0 0), (1 1, 2 1, 2 2, 1 1)), ((10 10, 11 10, 11 11, 10 10)))" as MultiPolygon
         assertGeomEqualsWithSrid(expected, get)
+        assert "MULTIPOLYGON(((0 0, 3 0, 3 2, 1 3, 0 0), (1 1, 2 1, 2 2, 1 1)), ((10 10, 11 10, 11 11, 10 10)))" as Geometry instanceof MultiPolygon
         expected = [[[[0,0,8], [3,0,6], [3,2,4], [1,3,2], [0,0,4]], [[1,1,1], [2,1,2], [2,2,2], [1,1,1]]], [[[10, 10, 1], [11, 10, 2], [11, 11, 3], [10, 10, 4]]]] as MultiPolygon
         get = "MULTIPOLYGONZ(((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 4), (1 1 1, 2 1 2, 2 2 2, 1 1 1)), ((10 10 1, 11 10 2, 11 11 3, 10 10 4)))" as MultiPolygon
         assertGeomEqualsWithSrid(expected, get)
+        assert "MULTIPOLYGONZ(((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 4), (1 1 1, 2 1 2, 2 2 2, 1 1 1)), ((10 10 1, 11 10 2, 11 11 3, 10 10 4)))" as Geometry instanceof MultiPolygon
         expected = [[[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,4,1]], [[1,1,1,5], [2,1,2,4], [2,2,2,3], [1,1,1,2]]], [[[10, 10, 1, 4], [11, 10, 2, 3], [11, 11, 3, 2], [10, 10, 4, 1]]]] as MultiPolygon
         get = "MULTIPOLYGONZM(((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 4 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2)), ((10 10 1 4, 11 10 2 3, 11 11 3 2, 10 10 4 1)))" as MultiPolygon
         assertGeomEqualsWithSrid(expected, get)
+        assert "MULTIPOLYGONZM(((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 4 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2)), ((10 10 1 4, 11 10 2 3, 11 11 3 2, 10 10 4 1)))" as Geometry instanceof MultiPolygon
 
         expected = [[[[0,0], [3,0], [3,2], [1,3], [0,0]], [[1,1], [2,1], [2,2], [1,1]]], [[[10, 10], [11, 10], [11, 11], [10, 10]]]] as MultiPolygon
         expected.setSRID(4326)
@@ -682,5 +708,83 @@ class GeometryConversionUtilsTest extends GeometryUtilsTest {
         expected.setSRID(4326)
         get = "SRID=4326;MULTIPOLYGONZM(((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 4 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2)), ((10 10 1 4, 11 10 2 3, 11 11 3 2, 10 10 4 1)))" as MultiPolygon
         assertGeomEqualsWithSrid(expected, get)
+    }
+
+    private static def toByteArray(String str) {
+        def bytes = []
+        for(int i=0; i<str.length()-1; i+=2) {
+            bytes += (byte)((Character.digit(str.charAt(i), 16) << 4) + Character.digit(str.charAt(i+1), 16))
+        }
+        return bytes
+    }
+
+    @Test
+    void asTypeWK() {
+        def geom = [4, 5.0] as Point
+        def wkt = "POINT (4 5)"
+        def wkb = toByteArray("010100000000000000000010400000000000001440")
+        assert geom as WKT == wkt
+        assert geom as WKB == wkb
+
+        geom = [[4.0, 2], [2, 3], [3.0, 5.0]] as LineString
+        wkt = "LINESTRING (4 2, 2 3, 3 5)"
+        wkb = toByteArray("0102000000030000000000000000001040000000000000004000000000000000" +
+                "40000000000000084000000000000008400000000000001440")
+        assert geom as WKT == wkt
+        assert geom as WKB == wkb
+
+        geom = [[[0,0], [3,0], [3,2], [1,3], [0,0]]] as Polygon
+        wkt = "POLYGON ((0 0, 3 0, 3 2, 1 3, 0 0))"
+        wkb = toByteArray("01030000000100000005000000000000000000000000000000000000000000000000000" +
+                "840000000000000000000000000000008400000000000000040000000000000f03f0000000000000" +
+                "84000000000000000000000000000000000")
+        assert geom as WKT == wkt
+        assert geom as WKB == wkb
+
+        geom = [[[0,0], [3,0], [3,2], [1,3], [0,0]], [[1,1], [2,1], [2,2], [1,1]]] as Polygon
+        wkt = "POLYGON ((0 0, 3 0, 3 2, 1 3, 0 0), (1 1, 2 1, 2 2, 1 1))"
+        wkb = toByteArray("01030000000200000005000000000000000000000000000000000000000000000000000" +
+                "840000000000000000000000000000008400000000000000040000000000000f03f0000000000000" +
+                "8400000000000000000000000000000000004000000000000000000f03f000000000000f03f" +
+                "0000000000000040000000000000f03f00000000000000400000000000000040000000000000f03f000000000000f03f")
+        assert geom as WKT == wkt
+        assert geom as WKB == wkb
+
+        geom = [[0,0], [3,0], [3,2], [1,3]] as MultiPoint
+        wkt = "MULTIPOINT ((0 0), (3 0), (3 2), (1 3))"
+        wkb = toByteArray("01040000000400000001010000000000000000000000000000000000000001010000000000000000000" +
+                "84000000000000000000101000000000000000000084000000000000000400101000000000000000000f03f" +
+                "0000000000000840")
+        assert geom as WKT == wkt
+        assert geom as WKB == wkb
+
+        geom = [[[0,0], [3,0]], [[3,2], [1,3]]] as MultiLineString
+        wkt = "MULTILINESTRING ((0 0, 3 0), (3 2, 1 3))"
+        wkb = toByteArray("010500000002000000010200000002000000000000000000000000000000000000000000000" +
+                "0000008400000000000000000010200000002000000000000000000084000000000000000400000000000" +
+                "00f03f0000000000000840")
+        assert geom as WKT == wkt
+        assert geom as WKB == wkb
+
+        geom = [[[[0,0], [3,0], [3,2], [1,3], [0,0]]], [[[10, 10], [11, 10], [11, 11], [10, 10]]]] as MultiPolygon
+        wkt = "MULTIPOLYGON (((0 0, 3 0, 3 2, 1 3, 0 0)), ((10 10, 11 10, 11 11, 10 10)))"
+        wkb = toByteArray("0106000000020000000103000000010000000500000000000000000000000000000000000000000" +
+                "0000000000840000000000000000000000000000008400000000000000040000000000000f03f000000000000" +
+                "08400000000000000000000000000000000001030000000100000004000000000000000000244000000000000" +
+                "02440000000000000264000000000000024400000000000002640000000000000264000000000000024400000" +
+                "000000002440")
+        assert geom as WKT == wkt
+        assert geom as WKB == wkb
+
+        geom = [[[[0,0], [3,0], [3,2], [1,3], [0,0]], [[1,1], [2,1], [2,2], [1,1]]], [[[10, 10], [11, 10], [11, 11], [10, 10]]]] as MultiPolygon
+        wkt = "MULTIPOLYGON (((0 0, 3 0, 3 2, 1 3, 0 0), (1 1, 2 1, 2 2, 1 1)), ((10 10, 11 10, 11 11, 10 10)))"
+        wkb = toByteArray("010600000002000000010300000002000000050000000000000000000000000000000000000" +
+                "00000000000000840000000000000000000000000000008400000000000000040000000000000f03f00000000" +
+                "000008400000000000000000000000000000000004000000000000000000f03f000000000000f03f000000000" +
+                "0000040000000000000f03f00000000000000400000000000000040000000000000f03f000000000000f03f01" +
+                "03000000010000000400000000000000000024400000000000002440000000000000264000000000000024400" +
+                "000000000002640000000000000264000000000000024400000000000002440")
+        assert geom as WKT == wkt
+        assert geom as WKB == wkb
     }
 }

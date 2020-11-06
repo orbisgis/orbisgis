@@ -34,39 +34,27 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.geometry_utils
+package org.orbisgis.geometry_utils.formats
 
-import groovy.transform.Field
-import org.locationtech.jts.geom.Envelope
-import org.locationtech.jts.geom.GeometryFactory
-import org.locationtech.jts.geom.Polygon
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.codehaus.groovy.runtime.GStringImpl
+import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.io.WKTWriter
 
 /**
- * Utility script used as extension module adding methods to Envelope class.
+ * WKT geometry format used to do Geometry as WKT.
+ * As the asType impose to return an Object of the given class, 'geom as WKT' have to return a WKT Object, so
+ * WKT class extends GStringImpl to be used like a String.
  *
  * @author Erwan Bocher (CNRS)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
+class WKT extends GStringImpl {
 
-private static final @Field GeometryFactory FACTORY = new GeometryFactory()
-private static final @Field Logger LOGGER = LoggerFactory.getLogger(this.class)
+    /** WKT writer used to convert Geometry to WKT String. */
+    private static final WKTWriter WKT_WRITER = new WKTWriter()
 
-/**
- * Main AsType method allowing to convert Envelope into an other class.
- *
- * Supported classes : Polygon, Envelope
- * @param env Envelope to convert.
- * @param aClass Destination conversion class.
- * @return Instance of the given class from the Envelope.
- */
-static Object asType(Envelope env, Class c) {
-    switch(c) {
-        case Polygon :
-            return FACTORY.toGeometry(env)
-        case Envelope :
-            return env
+    /** Main constructor. */
+    WKT(Geometry geom) {
+        super(new Object[]{}, WKT_WRITER.write(geom))
     }
-    return null
 }
