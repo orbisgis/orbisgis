@@ -39,9 +39,17 @@ package org.orbisgis.geometry_utils.formats
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.io.WKBWriter
 
+/**
+ * WKB geometry format used to do Geometry as WKT.
+ * As the asType impose to return an Object of the given class, 'geom as WKB' have to return a WKB Object, so
+ * WKB class extends LinkedList<Byte> to be used like an Array.
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
+ */
 class WKB extends LinkedList<Byte> {
 
-    /** WKT writer used to convert Geometry to WKT String. */
+    /** WKB writer used to convert Geometry to WKB byte array. */
     private static final WKBWriter WKB_WRITER = new WKBWriter(2, 2)
 
     /** Main constructor. */
@@ -53,9 +61,5 @@ class WKB extends LinkedList<Byte> {
             objects[i] = new Byte(array[i])
         }
         addAll(objects)
-    }
-
-    boolean equals(Object obj) {
-        return false
     }
 }

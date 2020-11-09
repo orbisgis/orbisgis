@@ -125,11 +125,11 @@ static def asType(Collection collection, Class aClass) {
 }
 
 /**
- * AsType methods allowing to convert a Geometry into an other class
+ * AsType methods allowing to convert a Geometry into an other class.
  *
- * @param geom
- * @param aClass
- * @return
+ * @param geom Geometry to convert.
+ * @param aClass Destination class.
+ * @return An instance of the given class from the given geometry.
  */
 static def asType(Geometry geom, Class aClass) {
     switch(aClass) {
@@ -140,11 +140,11 @@ static def asType(Geometry geom, Class aClass) {
         case WKT:
             return new WKT(geom)
         case EWKT:
-            throw new UnsupportedOperationException()
+            return new EWKT(geom)
         case WKB:
             return new WKB(geom)
         case EWKB:
-            throw new UnsupportedOperationException()
+            return new EWKB(geom)
     }
     return null
 }

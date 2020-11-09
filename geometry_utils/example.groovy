@@ -54,18 +54,18 @@ assert "POLYGONZ((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 0), (1 1 1, 2 1 2, 2 2 2, 1 1 
 assert "SRID=4326;POLYGONZ((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 0), (1 1 1, 2 1 2, 2 2 2, 1 1 1))" as Polygon
 assert "POLYGONZ((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 0), (1 1 1, 2 1 2, 2 2 2, 1 1 1))" as Geometry instanceof Polygon
 assert [[[0,0,8], [3,0,7], [3,2,6], [1,3,5], [0,0,4]], [[1,1,1], [2,1,2], [2,2,2], [1,1,1]]] as Polygon
-assert "POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1))" as Polygon
-assert "SRID=4326;POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1))" as Polygon
-assert "POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1))" as Geometry instanceof Polygon
+assert "POLYGONZM((0 0 8 0, 3 0 7 1, 3 2 5 1, 1 3 4 0, 0 0 3 1))" as Polygon
+assert "SRID=4326;POLYGONZM((0 0 8 0, 3 0 7 1, 3 2 5 1, 1 3 4 0, 0 0 3 1))" as Polygon
+assert "POLYGONZM((0 0 8 0, 3 0 7 1, 3 2 5 1, 1 3 4 0, 0 0 3 1))" as Geometry instanceof Polygon
 /// 4D (XYZM) polygon
 assert [[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,0,1]]] as Polygon
 assert "POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1))" as Polygon
 assert "SRID=4326;POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1))" as Polygon
 assert "POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1))" as Geometry instanceof Polygon
 assert [[[0,0,8,0], [3,0,7,1], [3,2,6,1], [1,3,5,0], [0,0,4,1]], [[1,1,1,5], [2,1,2,4], [2,2,2,3], [1,1,1,2]]] as Polygon
-assert "POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2))" as Polygon
-assert "SRID=4326;POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2))" as Polygon
-assert "POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2))" as Geometry instanceof Polygon
+assert "POLYGONZM((0 0 8 0, 3 0 7 1, 3 2 6 1, 1 3 5 0, 0 0 4 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2))" as Polygon
+assert "SRID=4326;POLYGONZM((0 0 8 0, 3 0 7 1, 3 2 6 1, 1 3 5 0, 0 0 4 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2))" as Polygon
+assert "POLYGONZM((0 0 8 0, 3 0 7 1, 3 2 6 1, 1 3 5 0, 0 0 4 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2))" as Geometry instanceof Polygon
 
 // MultiPoint
 ///2D (XY) multiPoint
@@ -201,9 +201,12 @@ assert poly + multi instanceof GeometryCollection
 
 /** WKT / WKB **/
 geom = [4, 5.0] as Point
+geom.SRID = 4326
 def wkt = "POINT (4 5)"
+def ewkt = "SRID=4326;$wkt"
 def wkb = [0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x40]
 assert geom as WKT == wkt
+assert geom as EWKT == ewkt
 assert geom as WKB == wkb
 
 /** Geometry methods **/

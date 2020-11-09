@@ -195,9 +195,12 @@ assert poly>>multi == [[[10,10], [11,11], [10,11], [10,10]], [[[0,0], [3,0], [3,
 
 # WKT / WKB
 geom = [4, 5.0] as Point
+geom.SRID = 4326
 def wkt = "POINT (4 5)"
+def ewkt = "SRID=4326;$wkt"
 def wkb = [0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x40]
 assert geom as WKT == wkt
+assert geom as EWKT == ewkt
 assert geom as WKB == wkb
 
 # Geometry methods

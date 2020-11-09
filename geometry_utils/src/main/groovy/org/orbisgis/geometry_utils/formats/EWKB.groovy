@@ -36,16 +36,24 @@
  */
 package org.orbisgis.geometry_utils.formats
 
+import org.h2.util.geometry.JTSUtils
+import org.locationtech.jts.geom.Geometry
+
+/**
+ * EWKB geometry format used to do Geometry as WKT.
+ * As the asType impose to return an Object of the given class, 'geom as EWKB' have to return a EWKB Object, so
+ * EWKB class extends LinkedList<Byte> to be used like an Array.
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
+ */
 class EWKB extends LinkedList<Byte>{
-    EWKB(Collection<Byte> collection) {
-        super(collection)
-    }
-    EWKB(Byte[] array) {
-        super(Arrays.asList(array))
-    }
-    EWKB(byte[] array) {
+
+    /** Main constructor. */
+    EWKB(Geometry geom) {
         super()
-        Byte[] objects = new Byte[array.length]
+        def array = JTSUtils.geometry2ewkb(geom)
+        def objects = new Byte[array.length]
         for(int i=0; i<array.length; i++) {
             objects[i] = new Byte(array[i])
         }

@@ -37,9 +37,26 @@
 package org.orbisgis.geometry_utils.formats
 
 import org.codehaus.groovy.runtime.GStringImpl
+import org.h2.util.geometry.EWKTUtils
+import org.h2.util.geometry.JTSUtils
+import org.locationtech.jts.geom.Coordinate
+import org.locationtech.jts.geom.CoordinateXY
+import org.locationtech.jts.geom.CoordinateXYM
+import org.locationtech.jts.geom.CoordinateXYZM
+import org.locationtech.jts.geom.Geometry
 
+/**
+ * EWKT geometry format used to do Geometry as WKT.
+ * As the asType impose to return an Object of the given class, 'geom as EWKT' have to return a EWKT Object, so
+ * EWKT class extends GStringImpl to be used like a String.
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
+ */
 class EWKT extends GStringImpl{
-    EWKT(String s) {
-        super(new Object[]{}, s)
+
+    /** Main constructor. */
+    EWKT(Geometry geom) {
+        super(new Object[]{}, EWKTUtils.ewkb2ewkt(JTSUtils.geometry2ewkb(geom)))
     }
 }
