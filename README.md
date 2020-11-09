@@ -1,4 +1,3 @@
-# OrbisGIS
 
 <p align="center">
   <img alt="OrbisGIS" width="400px" src="https://raw.githubusercontent.com/orbisgis/orbisgis/dev/orbisgis_header.png" />
