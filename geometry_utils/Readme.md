@@ -1,3 +1,5 @@
+# Geometry Utils
+
 Geometry utils is a collection of [Groovy](https://groovy-lang.org/) methods to manipulate geometries as defined by Simple Feature OGC standard (https://www.ogc.org/standards/sfa).
 
 Geometry utils contains static methods available as Groovy [module extension](https://groovy-lang.org/metaprogramming.html#_extension_modules) to easily create [JTS](https://github.com/locationtech/jts) Geometry from a String representation.
@@ -6,7 +8,7 @@ Note :
 - Thanks to [H2 database](https://www.h2database.com) that offers support to EWKT and EWKB parsing.
 - Thanks to [H2GIS](https://www.h2gis.org) that extends geometry capabilities analysis.
 
-# Geometry create
+## Geometry create
 ## Point
 ### 2D (XY) point
 assert [4, 5.0] as Point
@@ -140,7 +142,7 @@ assert [[[0,0], [3,0], [3,2], [1,3], [0,0]]] as Polygon as Envelope instanceof E
 def str = [[[0,0], [3,0], [3,2], [1,3], [0,0]]] as Polygon as String
 assert "POLYGON ((0 0, 3 0, 3 2, 1 3, 0 0))" == str
 
-# Geometry operator
+## Geometry operator
 ## Point
 def pt1 = [11, 12] as Point
 def pt2 = [21, 22] as Point
@@ -201,7 +203,7 @@ def multi = [[[[0,0], [3,0], [3,2], [1,3], [0,0]]], [[[1,1], [2,1], [2,2], [1,1]
 assert multi<<poly == [[[[0,0], [3,0], [3,2], [1,3], [0,0]]], [[[1,1], [2,1], [2,2], [1,1]]], [[10,10], [11,11], [10,11], [10,10]]] as MultiPolygon
 assert poly>>multi == [[[10,10], [11,11], [10,11], [10,10]], [[[0,0], [3,0], [3,2], [1,3], [0,0]]], [[[1,1], [2,1], [2,2], [1,1]]]] as MultiPolygon
 
-# WKT / WKB
+## WKT / WKB
 geom = [4, 5.0] as Point
 geom.SRID = 4326
 def wkt = "POINT (4 5)"
@@ -211,6 +213,6 @@ assert geom as WKT == wkt
 assert geom as EWKT == ewkt
 assert geom as WKB == wkb
 
-# Geometry methods
+## Miscellaneous methods
 def geom = [[10,10], [11,11], [10,11], [10,10]] as Polygon
 assert geom.expandEnvelopeByMeters(10) instanceof Envelope
