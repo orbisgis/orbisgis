@@ -14,7 +14,7 @@
         <version>0.0.1-SNAPSHOT</version>
         <packaging>pom</packaging>
         <modules>
-                <module>jts_utils</module>
+                <module>geometry_utils</module>
         </modules>
 
         <!-- Properties -->
