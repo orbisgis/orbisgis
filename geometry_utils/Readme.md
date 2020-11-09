@@ -1,3 +1,11 @@
+Geometry utils is a collection of [Groovy](https://groovy-lang.org/) methods to manipulate geometries as defined by Simple Feature OGC standard (https://www.ogc.org/standards/sfa).
+
+Geometry utils contains static methods available as Groovy [module extension](https://groovy-lang.org/metaprogramming.html#_extension_modules) to easily create [JTS](https://github.com/locationtech/jts) Geometry from a String representation.
+
+Note :
+- Thanks to [H2 database](https://www.h2database.com) that offers support to EWKT and EWKB parsing.
+- Thanks to [H2GIS](https://www.h2gis.org) that extends geometry capabilities analysis.
+
 # Geometry create
 ## Point
 ### 2D (XY) point
