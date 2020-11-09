@@ -88,21 +88,21 @@ assert "SRID=4326;POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1), (1 1 
 assert "POLYGONZM((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 0 1), (1 1 1 5, 2 1 2 4, 2 2 2 3, 1 1 1 2))" as Geometry instanceof Polygon
 ```
 ## MultiPoint
-###2D (XY) multiPoint
+### 2D (XY) multiPoint
 ```groovy
 assert [[0,0], [3,0], [3,2], [1,3]] as MultiPoint
 assert "MULTIPOINT(0 0, 3 0, 3 2, 1 3)" as MultiPoint
 assert "SRID=4326;MULTIPOINT(0 0, 3 0, 3 2, 1 3)" as MultiPoint
 assert "MULTIPOINT(0 0, 3 0, 3 2, 1 3)" as Geometry instanceof MultiPoint
 ```
-###3D (XY) multiPoint
+### 3D (XY) multiPoint
 ```groovy
 assert [[0,0,8], [3,0,8], [3,2,8], [1,3,8]] as MultiPoint
 assert "MULTIPOINTZ(0 0 8, 3 0 8, 3 2 8, 1 3 8)" as MultiPoint
 assert "SRID=4326;MULTIPOINTZ(0 0 8, 3 0 8, 3 2 8, 1 3 8)" as MultiPoint
 assert "MULTIPOINTZ(0 0 8, 3 0 8, 3 2 8, 1 3 8)" as Geometry instanceof MultiPoint
 ```
-###4D (XY) multiPoint
+### 4D (XY) multiPoint
 ```groovy
 assert [[0,0,8,0], [3,0,8,0], [3,2,8,0], [1,3,8,0]] as MultiPoint
 assert "MULTIPOINTZM(0 0 8 0, 3 0 8 0, 3 2 8 0, 1 3 8 0)" as MultiPoint
@@ -111,21 +111,21 @@ assert "MULTIPOINTZM(0 0 8 0, 3 0 8 0, 3 2 8 0, 1 3 8 0)" as Geometry instanceof
 ```
 
 ## MultiLineString
-###2D (XY) MultiLineString
+### 2D (XY) MultiLineString
 ```groovy
 assert [[[0,0], [3,0]], [[3,2], [1,3]]] as MultiLineString
 assert "MULTILINESTRING((0 0, 3 0), (3 2, 1 3))" as MultiLineString
 assert "SRID=4326;MULTILINESTRING((0 0, 3 0), (3 2, 1 3))" as MultiLineString
 assert "MULTILINESTRING((0 0, 3 0), (3 2, 1 3))" as Geometry instanceof MultiLineString
 ```
-###3D (XY) MultiLineString
+### 3D (XY) MultiLineString
 ```groovy
 assert [[[0,0,8], [3,0,8]], [[3,2,8], [1,3,8]]] as MultiLineString
 assert "MULTILINESTRINGZ((0 0 8, 3 0 8), (3 2 8, 1 3 8))" as MultiLineString
 assert "SRID=4326;MULTILINESTRINGZ((0 0 8, 3 0 8), (3 2 8, 1 3 8))" as MultiLineString
 assert "MULTILINESTRINGZ((0 0 8, 3 0 8), (3 2 8, 1 3 8))" as Geometry instanceof MultiLineString
 ```
-###4D (XY) MultiLineString
+### 4D (XY) MultiLineString
 ```groovy
 assert [[[0,0,8,0], [3,0,8,0]], [[3,2,8,0], [1,3,8,0]]] as MultiLineString
 assert "MULTILINESTRINGZM((0 0 8 0, 3 0 8 0), (3 2 8 0, 1 3 8 0))" as MultiLineString
@@ -134,7 +134,7 @@ assert "MULTILINESTRINGZM((0 0 8 0, 3 0 8 0), (3 2 8 0, 1 3 8 0))" as Geometry i
 ```
 
 ## MultiPolygon
-###2D (XY) MultiPolygon
+### 2D (XY) MultiPolygon
 ```groovy
 assert [[[[0,0], [3,0], [3,2], [1,3], [0,0]]], [[[10, 10], [11, 10], [11, 11], [10, 10]]]] as MultiPolygon
 assert "MULTIPOLYGON(((0 0, 3 0, 3 2, 1 3, 0 0)), ((10 10, 11 10, 11 11, 10 10)))" as MultiPolygon
@@ -145,7 +145,7 @@ assert "MULTIPOLYGON(((0 0, 3 0, 3 2, 1 3, 0 0), (1 1, 2 1, 2 2, 1 1)), ((10 10,
 assert "SRID=4326;MULTIPOLYGON(((0 0, 3 0, 3 2, 1 3, 0 0), (1 1, 2 1, 2 2, 1 1)), ((10 10, 11 10, 11 11, 10 10)))" as MultiPolygon
 assert "MULTIPOLYGON(((0 0, 3 0, 3 2, 1 3, 0 0), (1 1, 2 1, 2 2, 1 1)), ((10 10, 11 10, 11 11, 10 10)))" as Geometry instanceof MultiPolygon
 ```
-###3D (XY) MultiPolygon
+### 3D (XY) MultiPolygon
 ```groovy
 assert [[[[0,0,8], [3,0,6], [3,2,4], [1,3,2], [0,0,4]]], [[[10, 10, 1], [11, 10, 2], [11, 11, 3], [10, 10, 4]]]] as MultiPolygon
 assert "MULTIPOLYGONZ(((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 4)), ((10 10 1, 11 10 2, 11 11 3, 10 10 4)))" as MultiPolygon
@@ -156,7 +156,7 @@ assert "MULTIPOLYGONZ(((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 4), (1 1 1, 2 1 2, 2 2 2
 assert "SRID=4326;MULTIPOLYGONZ(((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 4), (1 1 1, 2 1 2, 2 2 2, 1 1 1)), ((10 10 1, 11 10 2, 11 11 3, 10 10 4)))" as MultiPolygon
 assert "MULTIPOLYGONZ(((0 0 8, 3 0 6, 3 2 4, 1 3 2, 0 0 4), (1 1 1, 2 1 2, 2 2 2, 1 1 1)), ((10 10 1, 11 10 2, 11 11 3, 10 10 4)))" as Geometry instanceof MultiPolygon
 ```
-###4D (XY) MultiPolygon
+### 4D (XY) MultiPolygon
 ```groovy
 assert [[[[0,0,8,0], [3,0,6,1], [3,2,4,1], [1,3,2,0], [0,0,4,1]]], [[[10, 10, 1, 4], [11, 10, 2, 3], [11, 11, 3, 2], [10, 10, 4, 1]]]] as MultiPolygon
 assert "MULTIPOLYGONZM(((0 0 8 0, 3 0 6 1, 3 2 4 1, 1 3 2 0, 0 0 4 1)), ((10 10 1 4, 11 10 2 3, 11 11 3 2, 10 10 4 1)))" as MultiPolygon
