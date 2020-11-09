@@ -1,12 +1,35 @@
-# Geometry Utils
+# Geometry-utils
 
-Geometry utils is a collection of [Groovy](https://groovy-lang.org/) methods to manipulate geometries as defined by Simple Feature OGC standard (https://www.ogc.org/standards/sfa).
+Geometry-utils is a collection of [Groovy](https://groovy-lang.org/) methods to manipulate geometries as defined by Simple Feature OGC standard (https://www.ogc.org/standards/sfa).
 
-Geometry utils contains static methods available as Groovy [module extension](https://groovy-lang.org/metaprogramming.html#_extension_modules) to easily create [JTS](https://github.com/locationtech/jts) Geometry from a String representation.
+Geometry-utils contains static methods available as Groovy [module extension](https://groovy-lang.org/metaprogramming.html#_extension_modules) to easily create [JTS](https://github.com/locationtech/jts) Geometry from a String representation.
 
 Note :
 - Thanks to [H2 database](https://www.h2database.com) that offers support to EWKT and EWKB parsing.
 - Thanks to [H2GIS](https://www.h2gis.org) that extends geometry capabilities analysis.
+
+## Get Geometry-utils 
+
+### Groovy script
+
+```groovy
+@GrabResolver(name='orbisgis', root='https://nexus.orbisgis.org/repository/orbisgis/')
+@Grab(group='org.orbisgis', module='geometry-utils', version='0.0.1-SNAPSHOT')
+```
+
+### Maven architecture
+
+Geometry-utils is avalaible as a Maven artifact from the repository http://nexus.orbisgis.org
+
+To use the current snapshot add the following lines in the `pom`
+
+```xml
+<dependency>
+  <groupId>org.orbisgis</groupId>
+  <artifactId>geometry-utils</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</dependency>
+```
 
 ## Geometry create
 ## Point
