@@ -1,5 +1,9 @@
 # OrbisGIS
 
+<p align="center">
+  <img alt="OrbisGIS" width="400px" src="https://raw.githubusercontent.com/orbisgis/orbisgis/dev/orbisgis_header.png" />
+</p>
+
 > OrbisGIS platform is a set of open source tools to access, process, display and share geographical informations.
 It is leaded by [CNRS](https://www.cnrs.fr) within the French [Lab-STICC laboratory, DECIDE team of Vannes](https://www.labsticc.fr).
  
