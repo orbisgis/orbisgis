@@ -16,7 +16,6 @@
         <modules>
                 <module>common-utils</module>
                 <module>geometry-utils</module>
-                <module>overpass-utils</module>
         </modules>
 
         <!-- Properties -->
