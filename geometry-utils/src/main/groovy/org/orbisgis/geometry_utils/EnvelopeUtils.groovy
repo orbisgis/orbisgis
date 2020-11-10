@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory
  */
 
 private static final @Field GeometryFactory FACTORY = new GeometryFactory()
-private static final @Field Logger LOGGER = LoggerFactory.getLogger(this.class)
 
 /**
  * Main AsType method allowing to convert Envelope into an other class.
