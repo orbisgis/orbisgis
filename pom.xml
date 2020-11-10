@@ -14,7 +14,9 @@
         <version>0.0.1-SNAPSHOT</version>
         <packaging>pom</packaging>
         <modules>
+                <module>common-utils</module>
                 <module>geometry-utils</module>
+                <module>overpass-utils</module>
         </modules>
 
         <!-- Properties -->

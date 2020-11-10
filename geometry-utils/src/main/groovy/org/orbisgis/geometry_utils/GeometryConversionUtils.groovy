@@ -51,7 +51,6 @@ import org.locationtech.jts.geom.MultiPoint
 import org.locationtech.jts.geom.MultiPolygon
 import org.locationtech.jts.geom.Point
 import org.locationtech.jts.geom.Polygon
-import org.locationtech.jts.io.WKBWriter
 import org.locationtech.jts.io.WKTReader
 import org.locationtech.jts.io.WKTWriter
 import org.orbisgis.geometry_utils.formats.EWKB
@@ -72,7 +71,6 @@ import java.util.regex.Pattern
  */
 
 private static final @Field GeometryFactory FACTORY = new GeometryFactory()
-private static final @Field Logger LOGGER = LoggerFactory.getLogger(this.class)
 private static final @Field WKTWriter WKT_WRITER = new WKTWriter()
 private static final @Field WKTReader WKT_READER = new WKTReader()
 private static final @Field Pattern EWKT_SRID_PATTERN =
@@ -180,7 +178,7 @@ static def asType(String str, Class aClass) {
                 return geom
             }
             else{
-                LOGGER.error("Wrong geometry type, string is ${geom.class.simpleName} whereas the given class is ${aClass.simpleName}")
+                error("Wrong geometry type, string is ${geom.class.simpleName} whereas the given class is ${aClass.simpleName}")
                 return null
             }
     }
@@ -217,7 +215,7 @@ private static Point asPoint(Collection collection) {
         return FACTORY.createPoint(collection as CoordinateXYZM)
     }
     else {
-        LOGGER.error("Unable to create ${Point.getSimpleName()} with object : ${collection.toString()}")
+        error("Unable to create ${Point.getSimpleName()} with object : ${collection.toString()}")
         return null
     }
 }
@@ -245,7 +243,7 @@ private static LineString asLineString(Collection collection) {
         return FACTORY.createLineString(asCoordinates(collection))
     }
     else {
-        LOGGER.error("Unable to create ${LineString.getSimpleName()} with object : ${collection.toString()}")
+        error("Unable to create ${LineString.getSimpleName()} with object : ${collection.toString()}")
         return null
     }
 }
@@ -311,7 +309,7 @@ private static Polygon asPolygon(Collection collection) {
         }
     }
     else {
-        LOGGER.error("Unable to create ${LineString.getSimpleName()} with object : ${collection.toString()}")
+        error("Unable to create ${LineString.getSimpleName()} with object : ${collection.toString()}")
         return null
     }
 }
@@ -340,7 +338,7 @@ private static MultiPoint asMultiPoint(Collection collection) {
         return FACTORY.createMultiPoint(points)
     }
     else {
-        LOGGER.error("Unable to create ${MultiPoint.getSimpleName()} with object : ${collection.toString()}")
+        error("Unable to create ${MultiPoint.getSimpleName()} with object : ${collection.toString()}")
         return null
     }
 }
@@ -355,7 +353,7 @@ private static MultiLineString asMultiLineString(Collection collection) {
         return FACTORY.createMultiLineString(lineStrings)
     }
     else {
-        LOGGER.error("Unable to create ${MultiLineString.getSimpleName()} with object : ${collection.toString()}")
+        error("Unable to create ${MultiLineString.getSimpleName()} with object : ${collection.toString()}")
         return null
     }
 }
@@ -405,7 +403,7 @@ private static def asMultiPolygon(Collection collection) {
         def polygons = collection.stream().map(it -> asPolygon(it) ).toArray() as Polygon[]
         return FACTORY.createMultiPolygon(polygons)
     }
-    LOGGER.error("Unable to create ${MultiLineString.getSimpleName()} with object : ${collection.toString()}")
+    error("Unable to create ${MultiLineString.getSimpleName()} with object : ${collection.toString()}")
 }
 
 private static Coordinate asCoordinate(Collection<Number> collection, Class<? extends Coordinate> aClass = null) {
@@ -461,7 +459,7 @@ private static Coordinate asCoordinate(Collection<Number> collection, Class<? ex
             }
             break
     }
-    LOGGER.error("Unable to create ${aClass.getSimpleName()} with object : ${collection.toString()}")
+    error("Unable to create ${aClass.getSimpleName()} with object : ${collection.toString()}")
     return null
 }
 
@@ -487,7 +485,7 @@ private static Coordinate[] asCoordinates(Collection<Collection<Number>> collect
                     return collection.stream().map(it -> it as CoordinateXY).toArray() as CoordinateXY[]
                 }
                 else {
-                    LOGGER.error("Not consistent coordinate dimension.")
+                    error("Not consistent coordinate dimension.")
                 }
             }
             break
@@ -501,7 +499,7 @@ private static Coordinate[] asCoordinates(Collection<Collection<Number>> collect
                     return collection.stream().map(it -> it as CoordinateXYZM).toArray() as CoordinateXYZM[]
                 }
                 else {
-                    LOGGER.error("Not consistent coordinate dimension.")
+                    error("Not consistent coordinate dimension.")
                 }
             }
             break
@@ -515,7 +513,7 @@ private static Coordinate[] asCoordinates(Collection<Collection<Number>> collect
                     return collection.stream().map(it -> it as CoordinateXYM).toArray() as CoordinateXYM[]
                 }
                 else {
-                    LOGGER.error("Not consistent coordinate dimension.")
+                    error("Not consistent coordinate dimension.")
                 }
             }
             break
@@ -529,11 +527,11 @@ private static Coordinate[] asCoordinates(Collection<Collection<Number>> collect
                     return collection.stream().map(it -> it as Coordinate).toArray() as Coordinate[]
                 }
                 else {
-                    LOGGER.error("Not consistent coordinate dimension.")
+                    error("Not consistent coordinate dimension.")
                 }
             }
             break
     }
-    LOGGER.error("Unable to create ${aClass.getSimpleName()} with object : ${collection.toString()}")
+    error("Unable to create ${aClass.getSimpleName()} with object : ${collection.toString()}")
     return null
 }

@@ -2,20 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>orbisgis</artifactId>
+        <groupId>org.orbisgis</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- The Basics -->
-    <parent>
-        <groupId>org.orbisgis</groupId>
-        <artifactId>orbisgis</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../</relativePath>
-    </parent>
-    <artifactId>geometry-utils</artifactId>
+    <artifactId>common-utils</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <!-- Project Information -->
-    <name>Geometry utilities</name>
+    <name>Common utilities</name>
 
     <!-- Properties -->
     <properties>
@@ -45,22 +43,13 @@
             <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.locationtech.jts</groupId>
-            <artifactId>jts-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>h2gis-utilities</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>common-utils</artifactId>
-            <version>${version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.locationtech.jts</groupId>
+            <artifactId>jts-core</artifactId>
         </dependency>
     </dependencies>
 

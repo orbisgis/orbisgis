@@ -60,7 +60,6 @@ import java.lang.reflect.Array
  */
 
 private static final @Field GeometryFactory FACTORY = new GeometryFactory()
-private static final @Field Logger LOGGER = LoggerFactory.getLogger(this.class)
 
 //Plus overloading
 /**
