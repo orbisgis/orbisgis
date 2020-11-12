@@ -40,6 +40,7 @@ import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.Polygon
 import org.orbisgis.osm_utils.overpass.OSMElement
+import org.orbisgis.osm_utils.utils.OverpassUtils
 
 /**
  * Test class dedicated to OverpassUtils.
