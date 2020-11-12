@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>overpass-utils</artifactId>
+    <artifactId>osm-utils</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <!-- Project Information -->
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>geometry-utils</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${version}</version>
         </dependency>
     </dependencies>
 
