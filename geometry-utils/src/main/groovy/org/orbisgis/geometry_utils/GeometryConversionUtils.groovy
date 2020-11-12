@@ -57,8 +57,6 @@ import org.orbisgis.geometry_utils.formats.EWKB
 import org.orbisgis.geometry_utils.formats.EWKT
 import org.orbisgis.geometry_utils.formats.WKB
 import org.orbisgis.geometry_utils.formats.WKT
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 import java.util.regex.Pattern
 
