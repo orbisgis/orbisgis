@@ -37,6 +37,7 @@
 package org.orbisgis.geometry_utils
 
 import groovy.transform.Field
+import org.cts.util.UTMUtils
 import org.locationtech.jts.geom.Envelope
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.Polygon
@@ -60,12 +61,39 @@ private static final @Field GeometryFactory FACTORY = new GeometryFactory()
  * @param aClass Destination conversion class.
  * @return Instance of the given class from the Envelope.
  */
-static Object asType(Envelope env, Class c) {
-    switch(c) {
+static Object asType(Envelope env, Class aClass) {
+    switch(aClass) {
         case Polygon :
             return FACTORY.toGeometry(env)
         case Envelope :
             return env
     }
     return null
+}
+
+/**
+ * Convert a coordinate array to an Envelope.
+ *
+ * @param collection Collection of values.
+ * @return Envelope build from coordinates.
+ */
+static def toEnvelope(Collection<Number> collection) {
+    if (!collection) {
+        error "The collection values cannot be null or empty"
+        return null
+    }
+    if (!(collection instanceof Collection) && !collection.class.isArray()) {
+        error "The collection values must be set as an array"
+        return null
+    }
+    if(collection.size() != 4) {
+        error("The collection must be defined with 4 values")
+        return null
+    }
+    def minLong = collection[0], minLat = collection[1]
+    def maxLong = collection[2], maxLat = collection[3]
+    if (UTMUtils.isValidLatitude(minLat) && UTMUtils.isValidLatitude(maxLat)
+            && UTMUtils.isValidLongitude(minLong) && UTMUtils.isValidLongitude(maxLong)) {
+        return new Envelope(minLong, maxLong, minLat, maxLat)
+    }
 }

@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.osm_utils
+package org.orbisgis.osm_utils.utils
 
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.GeometryFactory
