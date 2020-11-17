@@ -274,8 +274,3 @@ assert geom as WKT == wkt
 assert geom as EWKT == ewkt
 assert geom as WKB == wkb
 ```
-## Miscellaneous methods
-```groovy
-def geom = [[10,10], [11,11], [10,11], [10,10]] as Polygon
-assert geom.expandEnvelopeByMeters(10) instanceof Envelope
-```
