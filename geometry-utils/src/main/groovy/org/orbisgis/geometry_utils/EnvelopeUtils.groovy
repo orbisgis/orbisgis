@@ -72,12 +72,13 @@ static Object asType(Envelope env, Class aClass) {
 }
 
 /**
- * Convert a coordinate array to an Envelope.
+ * Convert a coordinate array to a Bbox Envelope.
  *
  * @param collection Collection of values.
+ * @param isLatLon   Indicates if the coordinates are latitude/longitude or not. False by default.
  * @return Envelope build from coordinates.
  */
-static def toEnvelope(Collection<Number> collection) {
+static def toBbox(Collection<Number> collection, boolean isLatLon = false) {
     if (!collection) {
         error "The collection values cannot be null or empty"
         return null
@@ -92,8 +93,9 @@ static def toEnvelope(Collection<Number> collection) {
     }
     def minLong = collection[0], minLat = collection[1]
     def maxLong = collection[2], maxLat = collection[3]
-    if (UTMUtils.isValidLatitude(minLat) && UTMUtils.isValidLatitude(maxLat)
-            && UTMUtils.isValidLongitude(minLong) && UTMUtils.isValidLongitude(maxLong)) {
+    if (!isLatLon || (
+            UTMUtils.isValidLatitude(minLat) && UTMUtils.isValidLatitude(maxLat)
+            && UTMUtils.isValidLongitude(minLong) && UTMUtils.isValidLongitude(maxLong))) {
         return new Envelope(minLong, maxLong, minLat, maxLat)
     }
 }

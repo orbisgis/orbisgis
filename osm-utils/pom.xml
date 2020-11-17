@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>geometry-utils</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

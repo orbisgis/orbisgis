@@ -118,7 +118,7 @@ static def asType(Collection collection, Class aClass) {
             return asMultiPolygon(collection)
 
         case Envelope:
-            return EnvelopeUtils.toEnvelope(collection)
+            return EnvelopeUtils.toBbox(collection)
     }
     return null
 }

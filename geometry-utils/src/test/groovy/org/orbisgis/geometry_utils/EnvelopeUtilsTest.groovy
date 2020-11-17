@@ -28,12 +28,13 @@ class EnvelopeUtilsTest extends GeometryUtilsTest {
     @Test
     void toBboxTest() {
         def coords = [10,12,11,13]
-        assert "Env[10.0 : 11.0, 12.0 : 13.0]" == coords.toEnvelope().toString()
+        assert "Env[10.0 : 11.0, 12.0 : 13.0]" == coords.toBbox().toString()
         coords = [13,12,10,11]
-        assert "Env[10.0 : 11.0, 12.0 : 13.0]" == coords.toEnvelope().toString()
+        println coords.toBbox().toString()
+        assert "Env[10.0 : 13.0, 11.0 : 12.0]" == coords.toBbox(true).toString()
         coords = [13,12,10,11, 14]
-        assert !coords.toEnvelope()
+        assert !coords.toBbox()
         coords = []
-        assert !coords.toEnvelope()
+        assert !coords.toBbox()
     }
 }

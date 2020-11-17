@@ -2,6 +2,5 @@ moduleName=OrbisGIS Groovy geometry extension
 moduleVersion=1.0
 extensionClasses=org.orbisgis.geometry_utils.GeometryConversionUtils, \
   org.orbisgis.geometry_utils.EnvelopeUtils, \
-  org.orbisgis.geometry_utils.GeometryOperatorOverloadUtils, \
-  org.orbisgis.geometry_utils.GeometryMethodsUtils
+  org.orbisgis.geometry_utils.GeometryOperatorOverloadUtils
 staticExtensionClasses=
