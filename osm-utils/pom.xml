@@ -31,6 +31,10 @@
             <artifactId>groovy</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-json</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -54,7 +58,7 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>geometry-utils</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

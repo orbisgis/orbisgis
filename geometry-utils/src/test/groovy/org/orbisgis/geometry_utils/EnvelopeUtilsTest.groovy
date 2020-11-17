@@ -13,7 +13,7 @@ import org.locationtech.jts.geom.Polygon
 class EnvelopeUtilsTest extends GeometryUtilsTest {
 
     @Test
-    void asTypeTest() {
+    void envelopeAsTypeTest() {
         def poly = [[10,10], [11,11], [10,11], [10,10]] as Polygon
         def expected = [[10,10], [10,11], [11,11], [11,10], [10,10]] as Polygon
         def env = poly as Envelope
@@ -23,5 +23,18 @@ class EnvelopeUtilsTest extends GeometryUtilsTest {
 
         assert expected == get
         assertCoordinatesEquals(expected.coordinates, get.coordinates)
+    }
+
+    @Test
+    void toBboxTest() {
+        def coords = [10,12,11,13]
+        assert "Env[10.0 : 11.0, 12.0 : 13.0]" == coords.toBbox().toString()
+        coords = [13,12,10,11]
+        println coords.toBbox().toString()
+        assert "Env[10.0 : 13.0, 11.0 : 12.0]" == coords.toBbox(true).toString()
+        coords = [13,12,10,11, 14]
+        assert !coords.toBbox()
+        coords = []
+        assert !coords.toBbox()
     }
 }

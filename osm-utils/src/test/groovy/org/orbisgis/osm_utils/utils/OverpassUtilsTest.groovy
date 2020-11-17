@@ -34,13 +34,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.osm_utils
+package org.orbisgis.osm_utils.utils
 
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.Polygon
 import org.orbisgis.osm_utils.overpass.OSMElement
-import org.orbisgis.osm_utils.utils.OverpassUtils
 
 /**
  * Test class dedicated to OverpassUtils.
@@ -53,6 +53,7 @@ class OverpassUtilsTest {
     private static final def FACTORY = new GeometryFactory()
 
     @Test
+    @Disabled
     void extractTest() {
         def method = OverpassUtils.&executeAsOverPassQuery
         OverpassUtils.metaClass.static.executeAsOverPassQuery = {
@@ -67,6 +68,7 @@ class OverpassUtilsTest {
     }
 
     @Test
+    @Disabled
     void badExtractTest() {
         def method = OverpassUtils.&executeAsOverPassQuery
         assert !OverpassUtils.extract(null)
@@ -79,6 +81,7 @@ class OverpassUtilsTest {
     }
 
     @Test
+    @Disabled
     void toOSMPolyTest() {
         def geom = [[0.0, 0.0], [0.0, 1.0], [1.0, 1.0], [1.0, 0.0], [0.0, 0.0]] as Polygon
         assert "(poly:\"0.0 0.0 1.0 0.0 1.0 1.0 0.0 1.0\")" == (OverpassUtils.toOSMPoly(geom))

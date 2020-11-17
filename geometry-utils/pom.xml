@@ -55,7 +55,7 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>common-utils</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
