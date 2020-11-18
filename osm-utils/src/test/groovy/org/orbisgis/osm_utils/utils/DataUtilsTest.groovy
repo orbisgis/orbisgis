@@ -55,7 +55,7 @@ class DataUtilsTest {
     @Test
     void loadTest() {
         def prefix = "A".postfix().toUpperCase()
-        def filePath = new File("/home/sylvain/Documents/Workspace/orbisgis/osm-utils/src/test/resources/org/orbisgis/osm_utils/utils/sample.osm").absolutePath
+        def filePath = new File(this.class.getResource("sample.osm").toURI()).absolutePath
         assert DataUtils.load(CONNECTION, prefix, filePath)
         def tables = CONNECTION.getTableNames(null, null, null, null)
         def tablePrefix = DB_NAME + ".PUBLIC." + prefix
@@ -94,7 +94,7 @@ class DataUtilsTest {
     @Test
     void badLoadTest() {
         def prefix = "A".postfix()
-        def filePath = new File("/home/sylvain/Documents/Workspace/orbisgis/osm-utils/src/test/resources/org/orbisgis/osm_utils/utils/sample.osm").absolutePath
+        def filePath = new File(this.class.getResource("sample.osm").toURI()).absolutePath
         assert !DataUtils.load(null, prefix, filePath)
         assert !DataUtils.load(CONNECTION, null, filePath)
         assert !DataUtils.load(null, null, filePath)
