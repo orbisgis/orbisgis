@@ -1,5 +1,5 @@
 /*
- * Bundle osm-utils is part of the OrbisGIS platform
+ * Bundle common-utils is part of the OrbisGIS platform
  *
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
  * OrbisGIS is developed by the GIS group of the DECIDE team of the
@@ -34,20 +34,32 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.osm_utils.utils
+package org.orbisgis.common_utils
 
-import org.junit.jupiter.api.Test
-import org.locationtech.jts.geom.Envelope
-import org.locationtech.jts.geom.Polygon
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
+
+import java.sql.Connection
 
 /**
- * Test class dedicated to {@link NominatimUtils}
+ * Utility script used as extension module adding methods to Connection class.
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
-class NominatimUtilsTest {
 
-    @Test
-    void geometryFromNominatimTest(){
-        def coords = [10, 11, 12, 13]
-        assert ((coords as Envelope)as Polygon).toString() == NominatimUtils.geometryFromNominatim(coords).toString()
-    }
+static boolean execute(Connection connection, String sql) {
+    return new Sql(connection).execute(sql)
+}
+
+static boolean execute(Connection connection, GString sql) {
+    return new Sql(connection).execute(sql)
+}
+
+static List<GroovyRowResult> rows(Connection connection, String sql) {
+    return new Sql(connection).rows((String)sql)
+}
+
+static List<GroovyRowResult> rows(Connection connection, GString sql) {
+    return new Sql(connection).rows(sql.toString())
 }
