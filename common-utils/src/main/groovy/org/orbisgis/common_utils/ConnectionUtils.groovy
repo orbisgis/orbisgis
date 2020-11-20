@@ -53,7 +53,7 @@ static boolean execute(Connection connection, String sql) {
 }
 
 static boolean execute(Connection connection, GString sql) {
-    return new Sql(connection).execute(sql)
+    return new Sql(connection).execute(sql.toString())
 }
 
 static List<GroovyRowResult> rows(Connection connection, String sql) {
@@ -62,4 +62,12 @@ static List<GroovyRowResult> rows(Connection connection, String sql) {
 
 static List<GroovyRowResult> rows(Connection connection, GString sql) {
     return new Sql(connection).rows(sql.toString())
+}
+
+static GroovyRowResult firstRow(Connection connection, String sql) {
+    return new Sql(connection).firstRow(sql.toString())
+}
+
+static GroovyRowResult firstRow(Connection connection, GString sql) {
+    return new Sql(connection).firstRow(sql.toString())
 }

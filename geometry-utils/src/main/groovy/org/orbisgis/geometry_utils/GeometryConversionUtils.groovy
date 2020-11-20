@@ -145,7 +145,7 @@ static def asType(Geometry geom, Class aClass) {
         case EWKB:
             return new EWKB(geom)
     }
-    return null
+    return geom
 }
 
 /**

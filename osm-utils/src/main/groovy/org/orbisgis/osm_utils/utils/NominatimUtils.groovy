@@ -38,10 +38,8 @@ package org.orbisgis.osm_utils.utils
 
 import groovy.json.JsonSlurper
 import groovy.transform.Field
-import org.cts.util.UTMUtils
 import org.locationtech.jts.geom.Envelope
 import org.locationtech.jts.geom.Geometry
-import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.MultiPolygon
 import org.locationtech.jts.geom.Polygon
 
@@ -60,7 +58,7 @@ import static java.net.Proxy.Type.HTTP
 @Field static final String GET = "GET"
 /** Nominatim server base URL. */
 @Field static final String NOMINATIM_BASE_URL =
-        System.getProperty("NOMINATIM_ENPOINT")?:"http://nominatim.openstreetmap.org" + "/search?q="
+        System.getProperty("NOMINATIM_ENPOINT")?:"https://nominatim.openstreetmap.org" + "/search?q="
 /** Url of the status of the Overpass server. */
 @Field static final String NOMINATIM_END_URL = "&limit=5&format=geojson&polygon_geojson=1"
 /** Success code. */
