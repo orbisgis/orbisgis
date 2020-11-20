@@ -58,8 +58,8 @@ class OverpassStatus {
     private static final RUNNING_QUERIES = "Currently running queries (pid, space limit, time limit, start time):"
 
     /** {@link java.text.SimpleDateFormat} used to parse dates. */
-    private format = "yyyy-MM-dd'T'HH:mm:ss'Z'" as SimpleDateFormat
-    private local = "yyyy-MM-dd'T'HH:mm:ss'Z'" as SimpleDateFormat
+    private format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    private local = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
     /** Connection id */
     def connectionId
