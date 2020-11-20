@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="Manually">
+    <bounds minlat="56.254365" minlon="32.2562362" maxlat="57.254365" maxlon="33.2562362"/>
+    <node id="256001" lat="57.0465758" lon="32.8545692" user="UserTest" uid="5001" visible="true" version="1" changeset="6001" timestamp="2012-01-10T23:02:55Z"/>
+    <node id="256002" lat="57.0565758" lon="32.8645692" user="UserTest" uid="5001" visible="true" version="1" changeset="6001" timestamp="2012-01-10T23:02:55Z"/>
+    <node id="256003" lat="57.0665758" lon="32.8745692" user="UserTest" uid="5001" visible="true" version="1" changeset="6001" timestamp="2012-01-10T23:02:55Z"/>
+    <node id="256004" lat="57.0765758" lon="32.8845692" user="UserTest" uid="5001" visible="true" version="1" changeset="6001" timestamp="2012-01-10T23:02:55Z">
+        <tag k="name" v="Just a house node"/>
+        <tag k="building" v="house"/>
+    </node>
+    <node id="256005" lat="57.0865758" lon="32.8945692" user="UserTest" uid="5001" visible="true" version="1" changeset="6001" timestamp="2012-01-10T23:02:55Z">
+        <tag k="name" v="Just a tree"/>
+        <tag k="natural" v="tree"/>
+    </node>
+    <way id="258001" user="UserTest" uid="5001" visible="true" version="1" changeset="6001" timestamp="2012-01-10T23:02:55Z">
+        <nd ref="256001"/>
+        <nd ref="256002"/>
+        <nd ref="256003"/>
+        <tag k="highway" v="primary"/>
+    </way>
+    <relation id="259001" user="UserTest" uid="5001" visible="true" version="1" changeset="6001" timestamp="2012-01-10T23:02:55Z">
+        <member type="way" ref="258001" role="outer"/>
+        <member type="node" ref="256004" role="center"/>
+        <member type="node" ref="256005" role="barycenter"/>
+        <tag k="ref" v="123456"/>
+        <tag k="route" v="bus"/>
+    </relation>
+</osm>
