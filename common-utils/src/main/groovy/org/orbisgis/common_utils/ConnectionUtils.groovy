@@ -38,8 +38,10 @@ package org.orbisgis.common_utils
 
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
+import org.h2gis.utilities.TableLocation
 
 import java.sql.Connection
+import java.sql.SQLException
 
 /**
  * Utility script used as extension module adding methods to Connection class.
@@ -70,4 +72,8 @@ static GroovyRowResult firstRow(Connection connection, String sql) {
 
 static GroovyRowResult firstRow(Connection connection, GString sql) {
     return new Sql(connection).firstRow(sql.toString())
+}
+
+static GroovyRowResult firstRow(Connection connection, String sql, Object[] params) throws SQLException {
+    return new Sql(connection).firstRow(sql, params);
 }

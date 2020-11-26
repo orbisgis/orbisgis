@@ -51,6 +51,10 @@
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>h2gis-utilities</artifactId>
+        </dependency>
     </dependencies>
 
     <!-- Build Settings -->

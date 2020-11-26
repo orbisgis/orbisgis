@@ -84,13 +84,6 @@ class ExtractTest {
     @Test
     void fromAreaNoDistTest(){
         def polygon = [[0.000, 0.000], [0.004, 0.008], [0.007, 0.005], [0.000, 0.000]] as Polygon
-        def overpassQuery = "[bbox:0.0,0.0,8.0,7.0];\n" +
-                "(\n" +
-                "\tnode(poly:\"0.0 0.0 0.008 0.0 0.008 0.007 0.0 0.007\");\n" +
-                "\tway(poly:\"0.0 0.0 0.008 0.0 0.008 0.007 0.0 0.007\");\n" +
-                "\trelation(poly:\"0.0 0.0 0.008 0.0 0.008 0.007 0.0 0.007\");\n" +
-                ");\n" +
-                "out;"
         def env = polygon.getEnvelopeInternal()
 
         //With polygon
@@ -261,13 +254,6 @@ class ExtractTest {
         def placeName = "  Saint jean la poterie  "
         def dist = 5
         def formattedPlaceName = "Saint_jean_la_poterie_"
-        def overpassQuery = "[bbox:48.819955084235794,-3.01606821815555,48.821044915764205,-3.0149317818444503];\n" +
-                "(\n" +
-                "\tnode(poly:\"48.819955084235794 -3.01606821815555 48.821044915764205 -3.01606821815555 48.821044915764205 -3.0149317818444503 48.819955084235794 -3.0149317818444503\");\n" +
-                "\tway(poly:\"48.819955084235794 -3.01606821815555 48.821044915764205 -3.01606821815555 48.821044915764205 -3.0149317818444503 48.819955084235794 -3.0149317818444503\");\n" +
-                "\trelation(poly:\"48.819955084235794 -3.01606821815555 48.821044915764205 -3.01606821815555 48.821044915764205 -3.0149317818444503 48.819955084235794 -3.0149317818444503\");\n" +
-                ");\n" +
-                "out;"
         def r =  EXTRACT.fromPlace(connection, placeName, dist)
         assert !r.isEmpty()
         assert r.containsKey("zoneTableName")
@@ -313,16 +299,6 @@ class ExtractTest {
         assert !results
 
         results = EXTRACT.fromPlace(null, placeName)
-        assert !results
-    }
-
-    /**
-     * Test the OSMTools.Loader.extract() process.
-     */
-    @Test
-    void extractTest(){
-        def query = "Overpass test query"
-        def results = OverpassUtils.extract(query)
         assert !results
     }
 
@@ -652,6 +628,510 @@ class ExtractTest {
                     break
                 default:
                     fail()
+            }
+        }
+    }
+
+
+    /**
+     * Test the {@link org.orbisgis.osm_utils.Extract#nodesAsPoints(java.sql.Connection, java.lang.String, java.lang.String, int, java.lang.Object, java.lang.Object)}
+     * method with bad data.
+     */
+    @Test
+    void badExtractNodesAsPointsTest(){
+        def prefix = "prefix".postfix()
+        def epsgCode  = 2456
+        def outTable = "output"
+        def tags = [building:["toto", "house", null], material:["concrete"], road:null]
+        tags.put(null, null)
+        tags.put(null, ["value1", "value2"])
+        tags.put('key', null)
+        tags.put('key1', null)
+        def columnsToKeep = []
+
+        loadDataForNodeExtraction(connection, prefix)
+
+        assert !EXTRACT.nodesAsPoints(null, prefix, outTable, epsgCode, tags, columnsToKeep)
+        assert !EXTRACT.nodesAsPoints(connection, null, outTable, epsgCode, tags, columnsToKeep)
+        assert !EXTRACT.nodesAsPoints(connection, prefix, outTable, -1, tags, columnsToKeep)
+        assert !EXTRACT.nodesAsPoints(connection, prefix, null, epsgCode, tags, columnsToKeep)
+
+        assert !OSMTools.Extract.nodesAsPoints(connection, prefix, outTable, epsgCode, [house:"false", path:'false'], null)
+    }
+
+    private static loadDataForNodeExtraction(def connection, def prefix){
+        connection.execute "CREATE TABLE ${prefix}_node (id_node int, the_geom geometry)"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (1, 'POINT(0 0)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (2, 'POINT(1 1)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (3, 'POINT(2 2)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (4, 'POINT(56.23 78.23)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (5, 'POINT(-5.3 -45.23)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (6, 'POINT(-5.3 -45.23)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (7, 'POINT(-5.3 -45.23)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (8, 'POINT(-5.3 -45.23)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (9, 'POINT(-5.3 -45.23)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (10, 'POINT(-5.3 -45.23)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (11, 'POINT(-5.3 -45.23)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (12, 'POINT(-5.3 -45.23)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (13, 'POINT(-5.3 -45.23)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (14, 'POINT(-5.3 -45.23)')"
+        connection.execute "INSERT INTO ${prefix}_node VALUES (15, 'POINT(-5.3 -45.23)')"
+
+        connection.execute "CREATE TABLE ${prefix}_node_tag (id_node int, tag_key varchar, tag_value varchar)"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (1, 'building', 'house')"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (1, 'house', 'true')"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (1, 'material', 'concrete')"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (2, 'water', 'pound')"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (3, 'material', 'concrete')"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (4, 'build', 'house')"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (5, 'material', 'brick')"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (6, 'material', null)"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (7, null, 'value1')"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (8, 'key', null)"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (8, 'key1', null)"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (9, 'key2', null)"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (10, 'values', 'value1')"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (11, 'key3', null)"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (12, 'key3', 'val1')"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (13, 'road', 'service')"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (14, 'key4', 'service')"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (15, 'road', 'service')"
+        connection.execute "INSERT INTO ${prefix}_node_tag VALUES (16, 'material', 'concrete')"
+    }
+
+    /**
+     * Test the {@link org.orbisgis.osm_utils.Extract#nodesAsPoints(java.sql.Connection, java.lang.String, java.lang.String, int, java.lang.Object, java.lang.Object)}
+     * method.
+     */
+    @Test
+    void extractNodesAsPointsTest(){
+        def prefix = "prefix".postfix()
+        def epsgCode  = 2456
+        def outTable = "output"
+        def tags = [building:["toto", "house", null], material:["concrete"], road:null]
+        tags.put(null, null)
+        tags.put(null, ["value1", "value2"])
+        tags.put('key', null)
+        tags.put('key1', null)
+        tags.put('key3', null)
+        tags.put('key4', ["value1", "value2"])
+        def columnsToKeep = ["key1"]
+
+        loadDataForNodeExtraction(connection, prefix)
+
+        //With tags
+        assert EXTRACT.nodesAsPoints(connection, prefix, outTable, epsgCode, tags, columnsToKeep)
+        def loc = TableLocation.parse("output", connection.isH2DataBase())
+        assert connection.tableExists(loc)
+
+        assert 9 == connection.getColumnNames(loc).size()
+        assert connection.getColumnNames(loc).contains("ID_NODE")
+        assert connection.getColumnNames(loc).contains("THE_GEOM")
+        assert connection.getColumnNames(loc).contains("BUILDING")
+        assert connection.getColumnNames(loc).contains("MATERIAL")
+        assert connection.getColumnNames(loc).contains("ROAD")
+        assert connection.getColumnNames(loc).contains("KEY")
+        assert connection.getColumnNames(loc).contains("KEY1")
+        assert connection.getColumnNames(loc).contains("KEY3")
+        assert connection.getColumnNames(loc).contains("KEY4")
+        assert !connection.getColumnNames(loc).contains("WATER")
+        assert !connection.getColumnNames(loc).contains("KEY2")
+        assert !connection.getColumnNames(loc).contains("HOUSE")
+        assert !connection.getColumnNames(loc).contains("VALUES")
+
+        assert 9 == connection.getRowCount(loc)
+        def rs = connection.rows("SELECT * FROM ${loc.toString(connection.isH2DataBase())}")
+        rs.eachWithIndex {it, i ->
+            switch(i){
+                case 0:
+                    assert 1 == it."id_node"
+                    assert it."the_geom"
+                    assert "house", it."building"
+                    assert "concrete", it."material"
+                    assert !it."road"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key1"
+                    assert !it."key3"
+                    assert !it."key4"
+                    break
+                case 1:
+                    assert 3 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert "concrete" == it."material"
+                    assert !it."road"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key3"
+                    assert !it."key4"
+                    break
+                case 2:
+                    assert 7 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."material"
+                    assert !it."road"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key3"
+                    assert !it."key4"
+                    break
+                case 3:
+                    assert 8 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."material"
+                    assert !it."road"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key3"
+                    assert !it."key4"
+                    break
+                case 4:
+                    assert 10 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."material"
+                    assert! it."road"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key3"
+                    assert !it."key4"
+                    break
+                case 5:
+                    assert 11 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."material"
+                    assert !it."road"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key3"
+                    assert !it."key4"
+                    break
+                case 6:
+                    assert 12 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."material"
+                    assert !it."road"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert "val1" == it."key3"
+                    assert !it."key4"
+                    break
+                case 7:
+                    assert 13 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."material"
+                    assert "service" == it."road"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key3"
+                    assert !it."key4"
+                    break
+                case 8:
+                    assert 15 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."material"
+                    assert "service" == it."road"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key3"
+                    assert !it."key4"
+                    break
+            }
+        }
+
+        //Without tags and with column to keep
+        assert EXTRACT.nodesAsPoints(connection, prefix, outTable, epsgCode, null, ["key1", "build"])
+        loc = TableLocation.parse("output", connection.isH2DataBase())
+        assert connection.tableExists(loc)
+
+        assert 4 == connection.getColumnNames(loc).size()
+        assert connection.getColumnNames(loc).contains("ID_NODE")
+        assert connection.getColumnNames(loc).contains("THE_GEOM")
+        assert connection.getColumnNames(loc).contains("BUILD")
+        assert connection.getColumnNames(loc).contains("KEY1")
+        assert !connection.getColumnNames(loc).contains("WATER")
+        assert !connection.getColumnNames(loc).contains("MATERIAL")
+        assert !connection.getColumnNames(loc).contains("ROAD")
+        assert !connection.getColumnNames(loc).contains("KEY")
+        assert !connection.getColumnNames(loc).contains("KEY2")
+        assert !connection.getColumnNames(loc).contains("KEY3")
+        assert !connection.getColumnNames(loc).contains("KEY4")
+        assert !connection.getColumnNames(loc).contains("HOUSE")
+        assert !connection.getColumnNames(loc).contains("BUILDING")
+        assert !connection.getColumnNames(loc).contains("VALUES")
+
+        //Without tags and columns to keep
+        assert EXTRACT.nodesAsPoints(connection, prefix, outTable, epsgCode, null, [])
+        loc = TableLocation.parse("output", connection.isH2DataBase())
+        assert connection.tableExists(loc)
+
+        assert 14 == connection.getColumnNames(loc).size()
+        assert connection.getColumnNames(loc).contains("ID_NODE")
+        assert connection.getColumnNames(loc).contains("THE_GEOM")
+        assert connection.getColumnNames(loc).contains("BUILD")
+        assert connection.getColumnNames(loc).contains("BUILDING")
+        assert connection.getColumnNames(loc).contains("HOUSE")
+        assert connection.getColumnNames(loc).contains("KEY")
+        assert connection.getColumnNames(loc).contains("KEY1")
+        assert connection.getColumnNames(loc).contains("KEY2")
+        assert connection.getColumnNames(loc).contains("KEY3")
+        assert connection.getColumnNames(loc).contains("KEY4")
+        assert connection.getColumnNames(loc).contains("MATERIAL")
+        assert connection.getColumnNames(loc).contains("ROAD")
+        assert connection.getColumnNames(loc).contains("VALUES")
+        assert connection.getColumnNames(loc).contains("WATER")
+
+        assert 15 == connection.getRowCount(loc)
+        rs = connection.rows("SELECT * FROM ${loc.toString(connection.isH2DataBase())}")
+        rs.eachWithIndex {it, i ->
+            switch(i){
+                case 0:
+                    assert 1 == it."id_node"
+                    assert it."the_geom"
+                    assert "house" == it."building"
+                    assert !it."build"
+                    assert "true" == it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert !it."key4"
+                    assert "concrete" == it."material"
+                    assert !it."road"
+                    assert !it."values"
+                    assert !it."water"
+                    break
+                case 1:
+                    assert 2 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert !it."key4"
+                    assert !it."material"
+                    assert !it."road"
+                    assert !it."values"
+                    assert "pound" == it."water"
+                    break
+                case 2:
+                    assert 3 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert !it."key4"
+                    assert "concrete" == it."material"
+                    assert !it."road"
+                    assert !it."values"
+                    assert !it."water"
+                    break
+                case 3:
+                    assert 4 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert "house" == it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert !it."key4"
+                    assert !it."material"
+                    assert !it."road"
+                    assert !it."values"
+                    assert !it."water"
+                    break
+                case 4:
+                    assert 5 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert !it."key4"
+                    assert "brick" == it."material"
+                    assert !it."road"
+                    assert !it."values"
+                    assert !it."water"
+                    break
+                case 5:
+                    assert 6 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert !it."key4"
+                    assert !it."material"
+                    assert !it."road"
+                    assert !it."values"
+                    assert !it."water"
+                    break
+                case 6:
+                    assert 7 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert !it."key4"
+                    assert !it."material"
+                    assert !it."road"
+                    assert !it."values"
+                    assert !it."water"
+                    break
+                case 7:
+                    assert 8 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert !it."key4"
+                    assert !it."material"
+                    assert !it."road"
+                    assert !it."values"
+                    assert !it."water"
+                    break
+                case 8:
+                    assert 9 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert !it."key4"
+                    assert !it."material"
+                    assert !it."road"
+                    assert !it."values"
+                    assert !it."water"
+                    break
+                case 9:
+                    assert 10 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert !it."key4"
+                    assert !it."material"
+                    assert !it."road"
+                    assert "value1" == it."values"
+                    assert !it."water"
+                    break
+                case 10:
+                    assert 11 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert !it."key4"
+                    assert !it."material"
+                    assert !it."road"
+                    assert !it."values"
+                    assert !it."water"
+                    break
+                case 11:
+                    assert 12 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert "val1" == it."key3"
+                    assert !it."key4"
+                    assert !it."material"
+                    assert !it."road"
+                    assert !it."values"
+                    assert !it."water"
+                    break
+                case 12:
+                    assert 13 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert !it."key4"
+                    assert !it."material"
+                    assert "service" == it."road"
+                    assert !it."values"
+                    assert !it."water"
+                    break
+                case 13:
+                    assert 14 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert "service" == it."key4"
+                    assert !it."material"
+                    assert !it."road"
+                    assert !it."values"
+                    assert !it."water"
+                    break
+                case 14:
+                    assert 15 == it."id_node"
+                    assert it."the_geom"
+                    assert !it."building"
+                    assert !it."build"
+                    assert !it."house"
+                    assert !it."key"
+                    assert !it."key1"
+                    assert !it."key2"
+                    assert !it."key3"
+                    assert !it."key4"
+                    assert !it."material"
+                    assert "service" == it."road"
+                    assert !it."values"
+                    assert !it."water"
+                    break
             }
         }
     }
