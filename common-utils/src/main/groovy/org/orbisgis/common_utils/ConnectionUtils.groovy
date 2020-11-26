@@ -77,38 +77,3 @@ static GroovyRowResult firstRow(Connection connection, GString sql) {
 static GroovyRowResult firstRow(Connection connection, String sql, Object[] params) throws SQLException {
     return new Sql(connection).firstRow(sql, params);
 }
-
-static boolean isIndexed(Connection connection, TableLocation tableName, String columnName) {
-    if (connection == null || columnName == null || tableName == null) {
-        error("Unable to find an index")
-        return false
-    }
-    if (tableName == null) {
-        error("Unable to find an index on a query")
-        return false
-    }
-    try {
-        if (connection.isH2DataBase()) {
-            Map<?, ?> map = connection.firstRow("SELECT INDEX_TYPE_NAME FROM INFORMATION_SCHEMA.INDEXES " +
-                    "WHERE INFORMATION_SCHEMA.INDEXES.TABLE_NAME=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.TABLE_SCHEMA=? " +
-                    "AND INFORMATION_SCHEMA.INDEXES.COLUMN_NAME=?;",
-                    new Object[]{tableName.getTable(), tableName.getSchema("PUBLIC"), columnName});
-            return map != null
-        } else {
-            String query =  "SELECT  cls.relname, am.amname " +
-                    "FROM  pg_class cls " +
-                    "JOIN pg_am am ON am.oid=cls.relam where cls.oid " +
-                    " in(select attrelid as pg_class_oid from pg_catalog.pg_attribute " +
-                    " where attname = ? and attrelid in " +
-                    "(select b.oid from pg_catalog.pg_indexes a, pg_catalog.pg_class b  where a.schemaname =? and a.tablename =? " +
-                    "and a.indexname = b.relname)) and am.amname in('btree', 'hash', 'gin', 'brin', 'gist', 'spgist') ;";
-            Map<?, ?> map =  connection.firstRow(query, new Object[]{columnName, tableName.getSchema("public"), tableName.getTable()});
-            return map != null;
-        }
-    } catch (SQLException e) {
-        error("Unable to check if the column '" + columnName + "' from the table '" + tableName + "' is indexed.\n" +
-                e.getLocalizedMessage())
-    }
-    return false
-}
