@@ -38,6 +38,7 @@ package org.orbisgis.datastore.h2gis
 
 import groovy.transform.BaseScript
 import groovy.transform.Field
+import org.h2gis.geotools.H2GISDataStoreFactory
 import org.orbisgis.datastore.utils.DataStoreParamsCst
 
 /**
@@ -50,18 +51,18 @@ import org.orbisgis.datastore.utils.DataStoreParamsCst
 @BaseScript DataStoreParamsCst baseScript
 
 /** Associations. */
-public static final @Field String ASSOCIATIONS = "Associations"
+public static final @Field String ASSOCIATIONS = H2GISDataStoreFactory.ASSOCIATIONS.key
 
 /** Activate AUTO_SERVER mode to share the database access. */
-public static final @Field String AUTO_SERVER = "autoserver"
+public static final @Field String AUTO_SERVER = H2GISDataStoreFactory.AUTO_SERVER.key
 
 /** Use the spatial index information to quickly get an estimate of the data bounds. */
-public static final @Field String ESTIMATED_EXTENTS = "Estimated extends"
+public static final @Field String ESTIMATED_EXTENTS = H2GISDataStoreFactory.ESTIMATED_EXTENTS.key
 
 /** Use prepared statements. */
-public static final @Field String PREPARED_STATEMENTS = "preparedStatements"
+public static final @Field String PREPARED_STATEMENTS = H2GISDataStoreFactory.PREPARED_STATEMENTS.key
 
 /** Set to true to have a set of filter functions be translated directly in SQL. Due to differences in the type systems
  * the result might not be the same as evaluating them in memory, including the SQL failing with errors while the in
  * memory version works fine. However this allows to push more of the filter into the database, increasing performance. */
-public static final @Field String ENCODE_FUNCTIONS = "encode functions"
+public static final @Field String ENCODE_FUNCTIONS = H2GISDataStoreFactory.ENCODE_FUNCTIONS.key
