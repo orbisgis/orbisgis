@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test
 
 /**
  * Test class dedicated to {@link org.orbisgis.datastore.h2gis.H2GIS}
+ *
+ * @author Erwan Bocher (CNRS 2020)
+ * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 class H2GISTest {
 

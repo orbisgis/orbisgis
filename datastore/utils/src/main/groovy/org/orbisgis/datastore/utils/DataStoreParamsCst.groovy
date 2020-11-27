@@ -43,7 +43,7 @@ import javax.sql.DataSource
 /**
  * Groovy script used to declare DataStore parameters constants
  *
- * @author Erwan Bocher (CNRS)
+ * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 

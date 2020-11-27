@@ -44,7 +44,7 @@ import groovy.transform.Field
 /**
  * Class simplifying the opening of a H2GIS DataSource.
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain Palominos (UBS chaire GEOTERA 2020)
  */
 

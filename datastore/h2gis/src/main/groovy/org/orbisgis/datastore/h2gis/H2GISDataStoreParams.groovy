@@ -38,12 +38,11 @@ package org.orbisgis.datastore.h2gis
 
 import groovy.transform.BaseScript
 import org.orbisgis.datastore.utils.DataStoreParams
-import org.orbisgis.datastore.h2gis.H2GISDataStoreParamsCst
 
 /**
  * Groovy script used as Closure DelegateTo on opening a H2GIS JDBCDataStore.
  *
- * @author Erwan Bocher (CNRS)
+ * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 

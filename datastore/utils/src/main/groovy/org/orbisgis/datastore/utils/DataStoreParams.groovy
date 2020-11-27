@@ -45,7 +45,7 @@ import org.orbisgis.datastore.utils.DataStoreParamsCst
 /**
  * Groovy script used as Closure DelegateTo on opening a JDBCDataStore.
  *
- * @author Erwan Bocher (CNRS)
+ * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
