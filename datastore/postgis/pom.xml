@@ -3,23 +3,18 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>orbisgis</artifactId>
+        <artifactId>datastore</artifactId>
         <groupId>org.orbisgis</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>datastore</artifactId>
+    <groupId>org.orbisgis.datastore</groupId>
+    <artifactId>postgis</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
 
     <!-- Project Information -->
-    <name>DataStore utilities</name>
-    <modules>
-        <module>utils</module>
-        <module>h2gis</module>
-        <module>postgis</module>
-    </modules>
+    <name>Geotools PostGIS data store utilities</name>
 
     <!-- Properties -->
     <properties>
@@ -58,6 +53,16 @@
             <groupId>org.geotools</groupId>
             <artifactId>gt-jdbc</artifactId>
             <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools.jdbc</groupId>
+            <artifactId>gt-jdbc-postgis</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis.datastore</groupId>
+            <artifactId>utils</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -105,6 +110,20 @@
             <url>file:/var/www/html/${project.parent.artifactId}/${project.artifactId}</url>
         </site>
     </distributionManagement>
-
-
+    <repositories>
+        <repository>
+            <id>osgeo</id>
+            <name>OSGeo Release Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+        </repository>
+        <repository>
+            <id>osgeo-snapshot</id>
+            <name>OSGeo Snapshot Repository</name>
+            <url>https://repo.osgeo.org/repository/snapshot/</url>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
+        </repository>
+    </repositories>
 </project>
