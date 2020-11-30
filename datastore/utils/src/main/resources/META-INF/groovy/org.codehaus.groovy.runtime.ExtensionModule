@@ -1,0 +1,4 @@
+moduleName=OrbisGIS Groovy commons extension
+moduleVersion=1.0
+extensionClasses=org.orbisgis.datastore.utils.JDBCDataStoreUtils
+staticExtensionClasses=

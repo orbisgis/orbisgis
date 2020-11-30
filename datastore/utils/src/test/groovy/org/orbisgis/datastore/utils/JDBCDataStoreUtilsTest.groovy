@@ -1,5 +1,5 @@
 /*
- * Bundle common-utils is part of the OrbisGIS platform
+ * Bundle datastore/utils is part of the OrbisGIS platform
  *
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
  * OrbisGIS is developed by the GIS group of the DECIDE team of the
@@ -34,45 +34,25 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.common_utils
+package org.orbisgis.datastore.utils
 
-import groovy.sql.GroovyRowResult
-import groovy.sql.Sql
-
-import java.sql.Connection
-import java.sql.SQLException
+import org.geotools.data.Query
+import org.geotools.data.shapefile.ShapefileDataStore
+import org.junit.jupiter.api.Test
 
 /**
- * Utility script used as extension module adding methods to Connection class.
- *
- * @author Erwan Bocher (CNRS)
- * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
+ * Test class dedicated to {@link org.orbisgis.datastore.utils.JDBCDataStoreUtils}.
  */
+class JDBCDataStoreUtilsTest {
 
-static boolean execute(Connection connection, String sql) {
-    return new Sql(connection).execute(sql)
-}
-
-static boolean execute(Connection connection, GString sql) {
-    return new Sql(connection).execute(sql.toString())
-}
-
-static List<GroovyRowResult> rows(Connection connection, String sql) {
-    return new Sql(connection).rows((String)sql)
-}
-
-static List<GroovyRowResult> rows(Connection connection, GString sql) {
-    return new Sql(connection).rows(sql.toString())
-}
-
-static GroovyRowResult firstRow(Connection connection, String sql) {
-    return new Sql(connection).firstRow(sql.toString())
-}
-
-static GroovyRowResult firstRow(Connection connection, GString sql) {
-    return new Sql(connection).firstRow(sql.toString())
-}
-
-static GroovyRowResult firstRow(Connection connection, String sql, Object[] params) throws SQLException {
-    return new Sql(connection).firstRow(sql, params);
+    @Test
+    void missingPropertyTest() {
+        def name = "landcover2000.shp"
+        assert this.class.getResource(name)
+        def shapefile = new ShapefileDataStore(this.class.getResource(name))
+        assert shapefile
+        def contents = shapefile.landcover2000
+        assert contents
+        assert 1234 == contents.getCount( Query.ALL )
+    }
 }
