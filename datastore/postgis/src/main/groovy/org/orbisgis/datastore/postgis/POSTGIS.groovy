@@ -48,7 +48,7 @@ import groovy.transform.Field
  * @author Sylvain Palominos (UBS chaire GEOTERA 2020)
  */
 
-/** Cached H2GISDataStoreFactory. */
+/** Cached PostgisNGDataStoreFactory. */
 private static final @Field PostgisNGDataStoreFactory POSTGIS_DATA_STORE_FACTORY = new PostgisNGDataStoreFactory()
 
 /**
