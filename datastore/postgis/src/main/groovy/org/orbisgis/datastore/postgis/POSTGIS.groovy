@@ -49,7 +49,7 @@ import groovy.transform.Field
  */
 
 /** Cached H2GISDataStoreFactory. */
-private static final @Field PostgisNGDataStoreFactory H2GIS_DATA_STORE_FACTORY = new PostgisNGDataStoreFactory()
+private static final @Field PostgisNGDataStoreFactory POSTGIS_DATA_STORE_FACTORY = new PostgisNGDataStoreFactory()
 
 /**
  * Open a POSTGIS DataStore with the given params map.
@@ -57,7 +57,7 @@ private static final @Field PostgisNGDataStoreFactory H2GIS_DATA_STORE_FACTORY =
  * @return An POSTGIS DataStore.
  */
 static JDBCDataStore open(def params = [:]) {
-    return H2GIS_DATA_STORE_FACTORY.createDataStore(params)
+    return POSTGIS_DATA_STORE_FACTORY.createDataStore(params)
 }
 
 /**
@@ -70,5 +70,5 @@ static JDBCDataStore open(@DelegatesTo(PostGISDataStoreParams) Closure cl) {
     def code = cl.rehydrate(params, this, this)
     code.resolveStrategy = Closure.DELEGATE_ONLY
     code()
-    H2GIS_DATA_STORE_FACTORY.createDataStore(params.params())
+    POSTGIS_DATA_STORE_FACTORY.createDataStore(params.params())
 }
