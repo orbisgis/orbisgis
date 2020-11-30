@@ -1,5 +1,5 @@
 /*
- * Bundle common-utils is part of the OrbisGIS platform
+ * Bundle datastore/utils is part of the OrbisGIS platform
  *
  * OrbisGIS is a java GIS application dedicated to research in GIScience.
  * OrbisGIS is developed by the GIS group of the DECIDE team of the
@@ -34,45 +34,24 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.common_utils
+package org.orbisgis.datastore.utils
 
-import groovy.sql.GroovyRowResult
-import groovy.sql.Sql
-
-import java.sql.Connection
-import java.sql.SQLException
+import org.geotools.data.DataStore
+import org.geotools.data.simple.SimpleFeatureSource
 
 /**
- * Utility script used as extension module adding methods to Connection class.
+ * Utility script used as extension module adding methods to JDBCDataStore class.
  *
- * @author Erwan Bocher (CNRS)
+ * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
-static boolean execute(Connection connection, String sql) {
-    return new Sql(connection).execute(sql)
-}
-
-static boolean execute(Connection connection, GString sql) {
-    return new Sql(connection).execute(sql.toString())
-}
-
-static List<GroovyRowResult> rows(Connection connection, String sql) {
-    return new Sql(connection).rows((String)sql)
-}
-
-static List<GroovyRowResult> rows(Connection connection, GString sql) {
-    return new Sql(connection).rows(sql.toString())
-}
-
-static GroovyRowResult firstRow(Connection connection, String sql) {
-    return new Sql(connection).firstRow(sql.toString())
-}
-
-static GroovyRowResult firstRow(Connection connection, GString sql) {
-    return new Sql(connection).firstRow(sql.toString())
-}
-
-static GroovyRowResult firstRow(Connection connection, String sql, Object[] params) throws SQLException {
-    return new Sql(connection).firstRow(sql, params);
+/**
+ * Method called when the asked property is missing and returns the SimpleFeatureSource corresponding to the given name.
+ *
+ * @param ds DataStore to use.
+ * @param name Name of the property/SimpleFeatureSource to get.
+ */
+static SimpleFeatureSource propertyMissing(DataStore ds, String name) {
+    return ds.getFeatureSource(name)
 }
