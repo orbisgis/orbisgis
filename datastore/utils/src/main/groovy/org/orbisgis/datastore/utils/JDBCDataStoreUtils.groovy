@@ -36,9 +36,12 @@
  */
 package org.orbisgis.datastore.utils
 
-import org.geotools.data.DataStore
-import org.geotools.data.simple.SimpleFeatureSource
+import groovy.sql.Sql
+import groovy.transform.stc.ClosureParams
+import groovy.transform.stc.SimpleType
+import org.geotools.jdbc.JDBCDataStore
 
+import java.sql.SQLException
 /**
  * Utility script used as extension module adding methods to JDBCDataStore class.
  *
@@ -46,12 +49,128 @@ import org.geotools.data.simple.SimpleFeatureSource
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
+//TODO : not implemented yet, the dataSet() feature needs some testing to check compatibility with geotools API.
+/*
+DataSet dataSet(JDBCDataStore ds, String table) {
+    return new DataSet(new Sql(ds.dataSource.getConnection()), table)
+}
+
+DataSet dataSet(JDBCDataStore ds, Class<?> type) {
+    return new DataSet(new Sql(ds.dataSource.getConnection()), type)
+}*/
+
 /**
- * Method called when the asked property is missing and returns the SimpleFeatureSource corresponding to the given name.
+ * Performs the given SQL query, which should return a single {@link java.sql.ResultSet} object. The given closure is called
+ * with the {@link java.sql.ResultSet} as its argument.
  *
- * @param ds DataStore to use.
- * @param name Name of the property/SimpleFeatureSource to get.
+ * Example usages:
+ *
+ * sql.query("select * from PERSON where firstname like 'S%'") { ResultSet rs ->
+ *     while (rs.next()) println rs.getString('firstname') + ' ' + rs.getString(3)
+ * }
+ *
+ * sql.query("call get_people_places()") { ResultSet rs ->
+ *     while (rs.next()) println rs.toRowResult().firstname
+ * }
+ *
+ *
+ * All resources including the ResultSet are closed automatically after the closure is called.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The sql statement.
+ * @param closure Called for each row with a {@link java.sql.ResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
  */
-static SimpleFeatureSource propertyMissing(DataStore ds, String name) {
-    return ds.getFeatureSource(name)
+static void query(JDBCDataStore ds, String sql,
+           @ClosureParams(value = SimpleType, options = ["java.sql.ResultSet"]) Closure closure)
+        throws SQLException {
+    new Sql(ds.dataSource.getConnection()).query(sql, closure)
+}
+
+/**
+ * Performs the given SQL query, which should return a single {@link java.sql.ResultSet} object. The given closure is
+ * called with the {@link java.sql.ResultSet} as its argument.
+ * The query may contain placeholder question marks which match the given list of parameters.
+ *
+ * Example usage:
+ *
+ * sql.query('select * from PERSON where lastname like ?', ['%a%']) { ResultSet rs ->
+ *     while (rs.next()) println rs.getString('lastname')
+ * }
+ *
+ *
+ * This method supports named and named ordinal parameters.
+ * See the class Javadoc for more details.
+ *
+ * All resources including the ResultSet are closed automatically after the closure is called.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The sql statement.
+ * @param params  A list of parameters.
+ * @param closure Called for each row with a {@link java.sql.ResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void query(JDBCDataStore ds, String sql, List<Object> params,
+                  @ClosureParams(value = SimpleType.class,options = ["java.sql.ResultSet"]) Closure closure)
+        throws SQLException {
+    new Sql(ds.dataSource.getConnection()).query(sql, params, closure)
+}
+
+
+/**
+ * A variant of {@link #query(JDBCDataStore, String, java.util.List, groovy.lang.Closure)}
+ * useful when providing the named parameters as a map.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The sql statement.
+ * @param map     A map containing the named parameters
+ * @param closure Called for each row with a {@link java.sql.ResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void query(JDBCDataStore ds, String sql, Map map,
+           @ClosureParams(value = SimpleType.class,options = ["java.sql.ResultSet"]) Closure closure)
+        throws SQLException {
+    new Sql(ds.dataSource.getConnection()).query(sql, map, closure)
+}
+
+/**
+ * A variant of {@link #query(JDBCDataStore, String, java.util.List, groovy.lang.Closure)}
+ * useful when providing the named parameters as named arguments.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param map     A map containing the named parameters
+ * @param sql     The sql statement.
+ * @param closure Called for each row with a {@link java.sql.ResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void query(JDBCDataStore ds, Map map, String sql,
+           @ClosureParams(value = SimpleType.class,options = ["java.sql.ResultSet"]) Closure closure)
+        throws SQLException {
+    new Sql(ds.dataSource.getConnection()).query(map, sql, closure)
+}
+
+/**
+ * Performs the given SQL query, which should return a single {@link java.sql.ResultSet} object. The given closure is
+ * called with the {@link java.sql.ResultSet} as its argument.
+ * The query may contain GString expressions.
+ *
+ * Example usage:
+ *
+ * def location = 25
+ * sql.query "select * from PERSON where location_id < $location", { ResultSet rs ->
+ *     while (rs.next()) println rs.getString('firstname')
+ * }
+ *
+ *
+ * All resources including the ResultSet are closed automatically after the closure is called.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param gstring A {@link GString} containing the SQL query with embedded params
+ * @param closure called for each row with a {@link java.sql.ResultSet}
+ * @throws SQLException if a database access error occurs
+ */
+static void query(JDBCDataStore ds, GString gstring,
+                  @ClosureParams(value = SimpleType.class,options = ["java.sql.ResultSet"]) Closure closure)
+        throws SQLException {
+    new Sql(ds.dataSource.getConnection()).query(gstring, closure)
 }

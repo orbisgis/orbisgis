@@ -36,8 +36,10 @@
  */
 package org.orbisgis.datastore.utils
 
-import org.geotools.data.Query
-import org.geotools.data.shapefile.ShapefileDataStore
+import org.geotools.data.DataStore
+import org.geotools.data.DataStoreFinder
+import org.geotools.jdbc.JDBCDataStore
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 
 /**
@@ -48,14 +50,61 @@ import org.junit.jupiter.api.Test
  */
 class JDBCDataStoreUtilsTest {
 
+    private static JDBCDataStore ds
+
+    @BeforeAll
+    static void beforeAll() {
+        def dataStore = DataStoreFinder.getDataStore([dbtype: "h2gis", database: "./target/database_${UUID.randomUUID()}"])
+        assert dataStore in JDBCDataStore
+        ds = (JDBCDataStore) dataStore
+        ds.dataSource.getConnection().createStatement().execute("""
+            CREATE TABLE elements (
+                id int,
+                name varchar(255),
+                number int
+            );
+            INSERT INTO elements (id, name, number) VALUES (1, 'Simple Name', 2846);
+            INSERT INTO elements (id, name, number) VALUES (2, 'Maybe a complex Name', 7455);
+            INSERT INTO elements (id, name, number) VALUES (3, 'S N', 9272);
+        """)
+    }
+
     @Test
-    void missingPropertyTest() {
-        def name = "landcover2000.shp"
-        assert this.class.getResource(name)
-        def shapefile = new ShapefileDataStore(this.class.getResource(name))
-        assert shapefile
-        def contents = shapefile.landcover2000
-        assert contents
-        assert 1234 == contents.getCount( Query.ALL )
+    void queryTest() {
+        def str = "";
+        ds.query("SELECT * FROM elements WHERE id > 1")
+                { while(it.next()) {
+                    str+=it.getString('name')+" "+it.getString('number')+" "
+                }}
+        assert "Maybe a complex Name 7455 S N 9272 " == str
+
+        str = "";
+        ds.query("SELECT * FROM elements WHERE id > ?", [1])
+                { while(it.next()) {
+                    str+=it.getString('name')+" "+it.getString('number')+" "
+                }}
+        assert "Maybe a complex Name 7455 S N 9272 " == str
+
+        str = "";
+        ds.query("SELECT * FROM elements WHERE id > :id", [id:1])
+                { while(it.next()) {
+                    str+=it.getString('name')+" "+it.getString('number')+" "
+                }}
+        assert "Maybe a complex Name 7455 S N 9272 " == str
+
+        str = "";
+        ds.query([id:1], "SELECT * FROM elements WHERE id > :id")
+                { while(it.next()) {
+                    str+=it.getString('name')+" "+it.getString('number')+" "
+                }}
+        assert "Maybe a complex Name 7455 S N 9272 " == str
+
+        str = "";
+        def id = 1
+        ds.query("SELECT * FROM elements WHERE id > $id")
+                { while(it.next()) {
+                    str+=it.getString('name')+" "+it.getString('number')+" "
+                }}
+        assert "Maybe a complex Name 7455 S N 9272 " == str
     }
 }
