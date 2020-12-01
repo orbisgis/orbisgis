@@ -1,4 +1,4 @@
-moduleName=OrbisGIS Groovy data store extension
+moduleName=OrbisGIS Groovy datastore extension
 moduleVersion=1.0
 extensionClasses=org.orbisgis.datastore.utils.JDBCDataStoreUtils, \
   org.orbisgis.datastore.utils.DataStoreUtils
