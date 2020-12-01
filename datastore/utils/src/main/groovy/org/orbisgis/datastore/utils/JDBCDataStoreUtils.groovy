@@ -36,12 +36,17 @@
  */
 package org.orbisgis.datastore.utils
 
+import groovy.sql.GroovyResultSet
 import groovy.sql.Sql
+import groovy.transform.Field
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.SimpleType
+import org.geotools.data.DataStore
 import org.geotools.jdbc.JDBCDataStore
 
-import java.sql.SQLException
+import java.sql.Connection
+import java.sql.ResultSet
+import java.sql.SQLException 
 /**
  * Utility script used as extension module adding methods to JDBCDataStore class.
  *
@@ -49,14 +54,33 @@ import java.sql.SQLException
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
+private static final @Field Map<JDBCDataStore, Sql> SQLS = new HashMap<>()
+
+private static Sql getSql(JDBCDataStore ds) {
+    if(!SQLS.containsKey(ds) || SQLS.get(ds).connection.isClosed()) {
+        SQLS.put(ds, new Sql(ds.connection))
+    }
+    return SQLS.get(ds)
+}
+
+/**
+ * Shortcut executing JDBCDataStore.dataSource.getConnection()
+ *
+ * @param ds The {@link JDBCDataStore}.
+ * @return The {@link JDBCDataStore} {@link javax.sql.DataSource} {@link java.sql.Connection}.
+ */
+static Connection getConnection(JDBCDataStore ds) {
+    ds.dataSource.connection
+}
+
 //TODO : not implemented yet, the dataSet() feature needs some testing to check compatibility with geotools API.
 /*
 DataSet dataSet(JDBCDataStore ds, String table) {
-    return new DataSet(new Sql(ds.dataSource.getConnection()), table)
+    return new DataSet(new Sql(ds), table)
 }
 
 DataSet dataSet(JDBCDataStore ds, Class<?> type) {
-    return new DataSet(new Sql(ds.dataSource.getConnection()), type)
+    return new DataSet(new Sql(ds), type)
 }*/
 
 /**
@@ -84,7 +108,7 @@ DataSet dataSet(JDBCDataStore ds, Class<?> type) {
 static void query(JDBCDataStore ds, String sql,
            @ClosureParams(value = SimpleType, options = ["java.sql.ResultSet"]) Closure closure)
         throws SQLException {
-    new Sql(ds.dataSource.getConnection()).query(sql, closure)
+    getSql(ds).query(sql, closure)
 }
 
 /**
@@ -113,7 +137,7 @@ static void query(JDBCDataStore ds, String sql,
 static void query(JDBCDataStore ds, String sql, List<Object> params,
                   @ClosureParams(value = SimpleType.class,options = ["java.sql.ResultSet"]) Closure closure)
         throws SQLException {
-    new Sql(ds.dataSource.getConnection()).query(sql, params, closure)
+    getSql(ds).query(sql, params, closure)
 }
 
 
@@ -130,7 +154,7 @@ static void query(JDBCDataStore ds, String sql, List<Object> params,
 static void query(JDBCDataStore ds, String sql, Map map,
            @ClosureParams(value = SimpleType.class,options = ["java.sql.ResultSet"]) Closure closure)
         throws SQLException {
-    new Sql(ds.dataSource.getConnection()).query(sql, map, closure)
+    getSql(ds).query(sql, map, closure)
 }
 
 /**
@@ -146,7 +170,7 @@ static void query(JDBCDataStore ds, String sql, Map map,
 static void query(JDBCDataStore ds, Map map, String sql,
            @ClosureParams(value = SimpleType.class,options = ["java.sql.ResultSet"]) Closure closure)
         throws SQLException {
-    new Sql(ds.dataSource.getConnection()).query(map, sql, closure)
+    getSql(ds).query(map, sql, closure)
 }
 
 /**
@@ -172,5 +196,543 @@ static void query(JDBCDataStore ds, Map map, String sql,
 static void query(JDBCDataStore ds, GString gstring,
                   @ClosureParams(value = SimpleType.class,options = ["java.sql.ResultSet"]) Closure closure)
         throws SQLException {
-    new Sql(ds.dataSource.getConnection()).query(gstring, closure)
+    getSql(ds).query(gstring, closure)
+}
+
+/**
+ *
+ * Performs the given SQL query calling the given Closure with each row of the result set.
+ * The row will be a {@link GroovyResultSet} which is a {@link ResultSet} that supports accessing the fields using
+ * property style notation and ordinal index values.
+ * <
+ * Example usages:
+ *
+ * sql.eachRow("select * from PERSON where firstname like 'S%'") { row ->
+ *    println "$row.firstname ${row[2]}}"
+ * }
+ *
+ * sql.eachRow "call my_stored_proc_returning_resultset()", {
+ *     println it.firstname
+ * }
+ *
+ *
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The sql statement.
+ * @param closure Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, String sql,
+             @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
+        throws SQLException {
+    getSql(ds).eachRow(sql, closure)
+}
+
+/**
+ * Performs the given SQL query calling the given {@link Closure} with each row of the result set starting at
+ * the provided offset, and including up to maxRows number of rows.
+ * The row will be a {@link GroovyResultSet} which is a {@link ResultSet} that supports accessing the fields using
+ * property style notation and ordinal index values.
+ *
+ * Note that the underlying implementation is based on either invoking {@link ResultSet#absolute(int)}, or if the
+ * ResultSet type is {@link ResultSet#TYPE_FORWARD_ONLY}, the {@link ResultSet#next()} method is invoked equivalently.
+ * The first row of a ResultSet is 1, so passing in an offset of 1 or less has no effect on the initial positioning
+ * within the result set.
+ *
+ * Note that different database and JDBC driver implementations may work differently with respect to this method.
+ * Specifically, one should expect that {@link ResultSet#TYPE_FORWARD_ONLY} may be less efficient than a "scrollable"
+ * type.
+ *
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The sql statement.
+ * @param offset  The 1-based offset for the first row to be processed.
+ * @param maxRows The maximum number of rows to be processed.
+ * @param closure Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, String sql, int offset, int maxRows,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
+        throws SQLException {
+    getSql(ds).eachRow(sql, offset, maxRows, closure)
+}
+
+/**
+ * Performs the given SQL query calling the given rowClosure with each row of the result set.
+ * The row will be a {@link GroovyResultSet} which is a {@link ResultSet} that supports accessing the fields using
+ * property style notation and ordinal index values.
+ * In addition, the metaClosure will be called once passing in the {@link java.sql.ResultSetMetaData} as argument.
+ *
+ * Example usage:
+ *
+ * def printColNames = { meta ->
+ *     (1..meta.columnCount).each {
+ *         print meta.getColumnLabel(it).padRight(20)
+ *     }
+ *     println()
+ * }
+ * def printRow = { row ->
+ *     row.toRowResult().values().each{ print it.toString().padRight(20) }
+ *     println()
+ * }
+ * sql.eachRow("select * from PERSON", printColNames, printRow)
+ *
+ *
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param sql         The sql statement.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @param closure     Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, String sql,
+             @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
+            @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure rowClosure)
+        throws SQLException {
+    getSql(ds).eachRow(sql, metaClosure, 0, 0, rowClosure)
+}
+
+/**
+ * Performs the given SQL query calling the given rowClosure with each row of the result set starting at the provided
+ * offset, and including up to maxRows number of rows.
+ * The row will be a {@link GroovyResultSet} which is a {@link ResultSet} that supports accessing the fields using
+ * property style notation and ordinal index values.
+ *
+ * In addition, the <code>metaClosure</code> will be called once passing in the {@link java.sql.ResultSetMetaData} as
+ * argument.
+ *
+ * Note that the underlying implementation is based on either invoking {@link ResultSet#absolute(int)}, or if the
+ * ResultSet type is {@link ResultSet#TYPE_FORWARD_ONLY}, the {@link ResultSet#next()} method is invoked equivalently.
+ * The first row of a ResultSet is 1, so passing in an offset of 1 or less has no effect on the initial positioning
+ * within the result set.
+ *
+ * Note that different database and JDBC driver implementations may work differently with respect to this method.
+ * Specifically, one should expect that {@link ResultSet#TYPE_FORWARD_ONLY} may be less efficient than a
+ * "scrollable" type.
+ *
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param sql         The sql statement.
+ * @param offset      The 1-based offset for the first row to be processed.
+ * @param maxRows     The maximum number of rows to be processed.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @param closure     Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, String sql,
+                    @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
+                    int offset, int maxRows,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure rowClosure)
+        throws SQLException {
+    getSql(ds).eachRow(sql, metaClosure, offset, maxRows, rowClosure)
+}
+
+/**
+ * Performs the given SQL query calling the given rowClosure with each row of the result set starting at the provided
+ * offset, and including up to maxRows number of rows.
+ * The row will be a {@link GroovyResultSet} which is a {@link ResultSet} that supports accessing the fields using
+ * property style notation and ordinal index values.
+ *
+ * In addition, the metaClosure will be called once passing in the {@link java.sql.ResultSetMetaData} as argument.
+ * The query may contain placeholder question marks which match the given list of parameters.
+ *
+ * Note that the underlying implementation is based on either invoking {@link ResultSet#absolute(int)}, or if the
+ * ResultSet type is {@link ResultSet#TYPE_FORWARD_ONLY}, the {@link ResultSet#next()} method is invoked equivalently.
+ * The first row of a ResultSet is 1, so passing in an offset of 1 or less has no effect on the initial positioning
+ * within the result set.
+ *
+ * Note that different database and JDBC driver implementations may work differently with respect to this method.
+ * Specifically, one should expect that {@link ResultSet#TYPE_FORWARD_ONLY} may be less efficient than a "scrollable"
+ * type.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param sql         The sql statement.
+ * @param params      A list of parameters.
+ * @param offset      The 1-based offset for the first row to be processed.
+ * @param maxRows     The maximum number of rows to be processed.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, String sql, List<Object> params,
+                    @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
+                    int offset, int maxRows,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure rowClosure)
+        throws SQLException {
+    getSql(ds).eachRow(sql, params, metaClosure, offset, maxRows, rowClosure)
+}
+
+/**
+ * A variant of {@link #eachRow(JDBCDataStore, String, java.util.List, groovy.lang.Closure, int, int, groovy.lang.Closure)}
+ * allowing the named parameters to be supplied in a map.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param sql         The sql statement.
+ * @param map         1 map containing the named parameters.
+ * @param offset      The 1-based offset for the first row to be processed?
+ * @param maxRows     The maximum number of rows to be processed.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, String sql, Map map,
+                    @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
+                    int offset, int maxRows,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure rowClosure)
+        throws SQLException {
+    getSql(ds).eachRow(sql, map, metaClosure, offset, maxRows, rowClosure)
+}
+
+/**
+ * A variant of {@link #eachRow(JDBCDataStore, String, java.util.List, groovy.lang.Closure, int, int, groovy.lang.Closure)}
+ * allowing the named parameters to be supplied as named arguments.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param map         A map containing the named parameters.
+ * @param sql         The sql statement.
+ * @param offset      The 1-based offset for the first row to be processed.
+ * @param maxRows     The maximum number of rows to be processed.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, Map map, String sql,
+                    @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
+                    int offset, int maxRows,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure rowClosure)
+        throws SQLException {
+    getSql(ds).eachRow(map, sql, metaClosure, offset, maxRows, rowClosure)
+}
+
+/**
+ * Performs the given SQL query calling the given Closure with each row of the result set.
+ * The row will be a {@link GroovyResultSet} which is a {@link ResultSet}
+ * that supports accessing the fields using property style notation and ordinal index values.
+ * In addition, the metaClosure will be called once passing in the {@link java.sql.ResultSetMetaData} as argument.
+ * The query may contain placeholder question marks which match the given list of parameters.
+ *
+ * Example usage:
+ *
+ * def printColNames = { meta ->
+ *     (1..meta.columnCount).each {
+ *         print meta.getColumnLabel(it).padRight(20)
+ *     }
+ *     println()
+ * }
+ * def printRow = { row ->
+ *     row.toRowResult().values().each{ print it.toString().padRight(20) }
+ *     println()
+ * }
+ * sql.eachRow("select * from PERSON where lastname like ?", ['%a%'], printColNames, printRow)
+ *
+ *
+ * This method supports named and named ordinal parameters.
+ * See the class Javadoc for more details.
+ *
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param sql         The sql statement.
+ * @param params      A list of parameters.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, String sql, List<Object> params,
+                    @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure rowClosure)
+        throws SQLException {
+    getSql(ds).eachRow(sql, params, metaClosure, rowClosure)
+}
+
+/**
+ * A variant of {@link #eachRow(JDBCDataStore, String, java.util.List, groovy.lang.Closure, groovy.lang.Closure)}
+ * useful when providing the named parameters as a map.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param sql         The sql statement.
+ * @param params      A map of named parameters.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, String sql, Map params,
+                    @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure rowClosure)
+        throws SQLException {
+    getSql(ds).eachRow(sql, params, metaClosure, rowClosure)
+}
+
+/**
+ * A variant of {@link #eachRow(JDBCDataStore, String, java.util.List, groovy.lang.Closure, groovy.lang.Closure)}
+ * useful when providing the named parameters as named arguments.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param params      A map of named parameters.
+ * @param sql         The sql statement.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, Map params, String sql,
+                    @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure rowClosure) 
+        throws SQLException {
+    getSql(ds).eachRow(params, sql, metaClosure, rowClosure)
+}
+
+/**
+ * Performs the given SQL query calling the given Closure with each row of the result set.
+ * The row will be a {@link GroovyResultSet} which is a {@link ResultSet} that supports accessing the fields using
+ * property style notation and ordinal index values.
+ * The query may contain placeholder question marks which match the given list of parameters.
+ * 
+ * Example usage:
+ * 
+ * sql.eachRow("select * from PERSON where lastname like ?", ['%a%']) { row ->
+ *     println "${row[1]} $row.lastname"
+ * }
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The sql statement.
+ * @param params  A list of parameters.
+ * @param closure Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, String sql, List<Object> params,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure) 
+        throws SQLException {
+    getSql(ds).eachRow(sql, params, closure)
+}
+
+/**
+ * A variant of {@link #eachRow(JDBCDataStore, String, java.util.List, groovy.lang.Closure)} useful when providing the
+ * named parameters as a map.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The sql statement.
+ * @param params  A map of named parameters.
+ * @param closure Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, String sql, Map params,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
+        throws SQLException {
+    getSql(ds).eachRow(sql, params, closure)
+}
+
+/**
+ * A variant of {@link #eachRow(JDBCDataStore, String, java.util.List, groovy.lang.Closure)} useful when providing the
+ * named parameters as named arguments.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param params  A map of named parameters.
+ * @param sql     The sql statement.
+ * @param closure Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, Map params, String sql,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
+        throws SQLException {
+    getSql(ds).eachRow(params, sql, closure)
+}
+
+/**
+ * Performs the given SQL query calling the given closure with each row of the result set starting at the provided
+ * offset, and including up to maxRows number of rows.
+ * The row will be a {@link GroovyResultSet} which is a {@link ResultSet} that supports accessing the fields using
+ * property style notation and ordinal index values.
+ * The query may contain placeholder question marks which match the given list of parameters.
+ *
+ * Note that the underlying implementation is based on either invoking {@link ResultSet#absolute(int)}, or if the
+ * ResultSet type is {@link ResultSet#TYPE_FORWARD_ONLY}, the {@link ResultSet#next()} method is invoked equivalently.
+ * The first row of a ResultSet is 1, so passing in an offset of 1 or less has no effect on the initial positioning
+ * within the result set.
+ *
+ * Note that different database and JDBC driver implementations may work differently with respect to this method.
+ * Specifically, one should expect that {@link ResultSet#TYPE_FORWARD_ONLY} may be less efficient than a "scrollable"
+ * type.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The sql statement.
+ * @param params  A list of parameters.
+ * @param offset  The 1-based offset for the first row to be processed.
+ * @param maxRows The maximum number of rows to be processed.
+ * @param closure Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, String sql, List<Object> params, int offset, int maxRows,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
+        throws SQLException {
+    getSql(ds).eachRow(sql, params, offset, maxRows, closure)
+}
+
+/**
+ * A variant of {@link #eachRow(JDBCDataStore, String, java.util.List, int, int, groovy.lang.Closure)} useful when
+ * providing the named parameters as a map.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The sql statement.
+ * @param params  A map of named parameters.
+ * @param offset  The 1-based offset for the first row to be processed.
+ * @param maxRows The maximum number of rows to be processed.
+ * @param closure Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, String sql, Map params, int offset, int maxRows,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
+        throws SQLException {
+    getSql(ds).eachRow(sql, params, offset, maxRows, closure)
+}
+
+/**
+ * A variant of {@link #eachRow(JDBCDataStore, String, java.util.List, int, int, groovy.lang.Closure)} useful when
+ * providing the named parameters as named arguments.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param params  A map of named parameters.
+ * @param sql     The sql statement.
+ * @param offset  The 1-based offset for the first row to be processed.
+ * @param maxRows The maximum number of rows to be processed.
+ * @param closure Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, Map params, String sql, int offset, int maxRows,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
+        throws SQLException {
+    getSql(ds).eachRow(sql, params, offset, maxRows, closure)
+}
+
+/**
+ * Performs the given SQL query calling the given Closure with each row of the result set.
+ * The row will be a {@link GroovyResultSet} which is a {@link ResultSet} that supports accessing the fields using
+ * property style notation and ordinal index values.
+ *
+ * In addition, the metaClosure will be called once passing in the {@link java.sql.ResultSetMetaData} as argument.
+ * The query may contain GString expressions.
+ *
+ * Example usage:
+ *
+ * def location = 25
+ * def printColNames = { meta ->
+ *     (1..meta.columnCount).each {
+ *         print meta.getColumnLabel(it).padRight(20)
+ *     }
+ *     println()
+ * }
+ * def printRow = { row ->
+ *     row.toRowResult().values().each{ print it.toString().padRight(20) }
+ *     println()
+ * }
+ * sql.eachRow("select * from PERSON where location_id {@code <} $location", printColNames, printRow)
+ *
+ *
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param gstring     A {@link GString} containing the SQL query with embedded params.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, GString gstring,
+                    @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure rowClosure)
+        throws SQLException {
+    getSql(ds).eachRow(gstring, metaClosure, rowClosure)
+}
+
+/**
+ * Performs the given SQL query calling the given closure with each row of the result set starting at the provided
+ * offset, and including up to maxRows number of rows.
+ * The row will be a {@link GroovyResultSet} which is a {@link ResultSet} that supports accessing the fields using
+ * property style notation and ordinal index values.
+ * In addition, the metaClosure will be called once passing in the {@link java.sql.ResultSetMetaData} as argument.
+ * The query may contain GString expressions.
+ *
+ * Note that the underlying implementation is based on either invoking {@link ResultSet#absolute(int)}, or if the
+ * ResultSet type is {@link ResultSet#TYPE_FORWARD_ONLY}, the {@link ResultSet#next()} method is invoked equivalently.
+ * The first row of a ResultSet is 1, so passing in an offset of 1 or less has no effect on the initial positioning
+ * within the result set.
+ *
+ * Note that different database and JDBC driver implementations may work differently with respect to this method.
+ * Specifically, one should expect that {@link ResultSet#TYPE_FORWARD_ONLY} may be less efficient than a "scrollable"
+ * type.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param gstring     A GString containing the SQL query with embedded params.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @param offset      The 1-based offset for the first row to be processed.
+ * @param maxRows     The maximum number of rows to be processed.
+ * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, GString gstring,
+                    @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
+                    int offset, int maxRows,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure rowClosure)
+        throws SQLException {
+    getSql(ds).eachRow(gstring, metaClosure, offset, maxRows, rowClosure)
+}
+
+/**
+ * Performs the given SQL query calling the given closure with each row of the result set starting at
+ * the provided offset, and including up to maxRows number of rows.
+ * The row will be a {@link GroovyResultSet} which is a {@link ResultSet} that supports accessing the fields using
+ * property style notation and ordinal index values.
+ * The query may contain GString expressions.
+ *
+ * Note that the underlying implementation is based on either invoking {@link ResultSet#absolute(int)}, or if the
+ * ResultSet type is {@link ResultSet#TYPE_FORWARD_ONLY}, the {@link ResultSet#next()} method is invoked equivalently.
+ * The first row of a ResultSet is 1, so passing in an offset of 1 or less has no effect on the initial positioning
+ * within the result set.
+ *
+ * Note that different database and JDBC driver implementations may work differently with respect to this method.
+ * Specifically, one should expect that {@link ResultSet#TYPE_FORWARD_ONLY} may be less efficient than a "scrollable"
+ * type.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param gstring A GString containing the SQL query with embedded params.
+ * @param offset  The 1-based offset for the first row to be processed.
+ * @param maxRows The maximum number of rows to be processed.
+ * @param closure Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, GString gstring, int offset, int maxRows,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
+        throws SQLException {
+    getSql(ds).eachRow(gstring, offset, maxRows, closure)
+}
+
+/**
+ * Performs the given SQL query calling the given Closure with each row of the result set.
+ * The row will be a {@link GroovyResultSet} which is a {@link ResultSet} that supports accessing the fields using
+ * property style notation and ordinal index values.
+ * The query may contain GString expressions.
+ *
+ * Example usage:
+ *
+ * def location = 25
+ * sql.eachRow("select * from PERSON where location_id {@code <} $location") { row ->
+ *     println row.firstname
+ * }
+ *
+ *
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param gstring A GString containing the SQL query with embedded params.
+ * @param closure Called for each row with a {@link GroovyResultSet}.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void eachRow(JDBCDataStore ds, GString gstring,
+                    @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure) throws SQLException {
+    getSql(ds).eachRow(gstring, closure)
 }

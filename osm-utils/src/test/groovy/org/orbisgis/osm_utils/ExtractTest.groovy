@@ -39,6 +39,7 @@ package org.orbisgis.osm_utils
 import org.h2gis.functions.factory.H2GISDBFactory
 import org.h2gis.utilities.TableLocation
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.locationtech.jts.geom.Polygon
 import org.locationtech.jts.io.WKTReader
@@ -82,6 +83,7 @@ class ExtractTest {
      * Test the OSMTools.Loader.fromArea() process.
      */
     @Test
+    @Disabled
     void fromAreaNoDistTest(){
         def polygon = [[0.000, 0.000], [0.004, 0.008], [0.007, 0.005], [0.000, 0.000]] as Polygon
         def env = polygon.getEnvelopeInternal()
@@ -148,6 +150,7 @@ class ExtractTest {
      * Test the OSMTools.Loader.fromArea() process.
      */
     @Test
+    @Disabled
     void fromAreaWithDistTest(){
         def wktReader = new WKTReader()
         def dist = 1000
@@ -212,6 +215,7 @@ class ExtractTest {
      * Test the OSMTools.Loader.fromPlace() process.
      */
     @Test
+    @Disabled
     void fromPlaceNoDistTest(){
         def placeName = "  Saint jean la poterie  "
         def formattedPlaceName = "Saint_jean_la_poterie_"
@@ -250,6 +254,7 @@ class ExtractTest {
      * Test the OSMTools.Loader.fromPlace() process.
      */
     @Test
+    @Disabled
     void fromPlaceWithDistTest(){
         def placeName = "  Saint jean la poterie  "
         def dist = 5
