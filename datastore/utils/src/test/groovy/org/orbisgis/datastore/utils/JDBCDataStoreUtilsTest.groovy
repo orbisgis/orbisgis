@@ -36,12 +36,10 @@
  */
 package org.orbisgis.datastore.utils
 
-import org.geotools.data.DataStore
 import org.geotools.data.DataStoreFinder
 import org.geotools.jdbc.JDBCDataStore
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-
 /**
  * Test class dedicated to {@link org.orbisgis.datastore.utils.JDBCDataStoreUtils}.
  *
@@ -57,7 +55,7 @@ class JDBCDataStoreUtilsTest {
         def dataStore = DataStoreFinder.getDataStore([dbtype: "h2gis", database: "./target/database_${UUID.randomUUID()}"])
         assert dataStore in JDBCDataStore
         ds = (JDBCDataStore) dataStore
-        ds.dataSource.getConnection().createStatement().execute("""
+        ds.connection.execute("""
             CREATE TABLE elements (
                 id int,
                 name varchar(255),
@@ -73,29 +71,29 @@ class JDBCDataStoreUtilsTest {
     void queryTest() {
         def str = "";
         ds.query("SELECT * FROM elements WHERE id > 1")
-                { while(it.next()) {
-                    str+=it.getString('name')+" "+it.getString('number')+" "
+                {while(it.next()) {
+                    str+=it.name+" "+it.number+" "
                 }}
         assert "Maybe a complex Name 7455 S N 9272 " == str
 
         str = "";
         ds.query("SELECT * FROM elements WHERE id > ?", [1])
                 { while(it.next()) {
-                    str+=it.getString('name')+" "+it.getString('number')+" "
+                    str+=it.name+" "+it.number+" "
                 }}
         assert "Maybe a complex Name 7455 S N 9272 " == str
 
         str = "";
         ds.query("SELECT * FROM elements WHERE id > :id", [id:1])
                 { while(it.next()) {
-                    str+=it.getString('name')+" "+it.getString('number')+" "
+                    str+=it.name+" "+it.number+" "
                 }}
         assert "Maybe a complex Name 7455 S N 9272 " == str
 
         str = "";
         ds.query([id:1], "SELECT * FROM elements WHERE id > :id")
                 { while(it.next()) {
-                    str+=it.getString('name')+" "+it.getString('number')+" "
+                    str+=it.name+" "+it.number+" "
                 }}
         assert "Maybe a complex Name 7455 S N 9272 " == str
 
@@ -103,8 +101,122 @@ class JDBCDataStoreUtilsTest {
         def id = 1
         ds.query("SELECT * FROM elements WHERE id > $id")
                 { while(it.next()) {
-                    str+=it.getString('name')+" "+it.getString('number')+" "
+                    str+=it.name+" "+it.number+" "
                 }}
         assert "Maybe a complex Name 7455 S N 9272 " == str
+    }
+
+    @Test
+    void eachRowTest() {
+        def str = "";
+        ds.eachRow("SELECT * FROM elements WHERE id > 1")
+                { str+=it.name+" "+it.number+" " }
+        assert "Maybe a complex Name 7455 S N 9272 " == str
+
+        str = "";
+        ds.eachRow("SELECT * FROM elements", 2, 1)
+                { str+=it.name+" "+it.number+" " }
+        assert "Maybe a complex Name 7455 " == str
+        str = "";
+
+        ds.eachRow("SELECT * FROM elements WHERE id > 1")
+                { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}
+                { str+=it.name+" "+it.number+" " }
+        assert "NAME NUMBER Maybe a complex Name 7455 S N 9272 " == str
+        str = "";
+
+        ds.eachRow("SELECT * FROM elements" ,
+                { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}, 2, 1)
+                { str+=it.name+" "+it.number+" " }
+        assert "NAME NUMBER Maybe a complex Name 7455 " == str
+        str = "";
+
+        ds.eachRow("SELECT * FROM elements WHERE id > ?" , [1],
+                { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}, 1, 1)
+                { str+=it.name+" "+it.number+" " }
+        assert "NAME NUMBER Maybe a complex Name 7455 " == str
+        str = "";
+
+        ds.eachRow("SELECT * FROM elements WHERE id > :id" , [id:1],
+                { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}, 1, 1)
+                { str+=it.name+" "+it.number+" " }
+        assert "NAME NUMBER Maybe a complex Name 7455 " == str
+        str = "";
+
+        ds.eachRow([id:1], "SELECT * FROM elements WHERE id > :id" ,
+                { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}, 1, 1)
+                { str+=it.name+" "+it.number+" " }
+        assert "NAME NUMBER Maybe a complex Name 7455 " == str
+        str = "";
+
+        ds.eachRow("SELECT * FROM elements WHERE id > ?" , [1])
+                { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}
+                { str+=it.name+" "+it.number+" " }
+        assert "NAME NUMBER Maybe a complex Name 7455 S N 9272 " == str
+        str = "";
+
+        ds.eachRow("SELECT * FROM elements WHERE id > :id" , [id:1])
+                { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}
+                { str+=it.name+" "+it.number+" " }
+        assert "NAME NUMBER Maybe a complex Name 7455 S N 9272 " == str
+        str = "";
+
+        ds.eachRow([id:1], "SELECT * FROM elements WHERE id > :id" )
+                { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}
+                { str+=it.name+" "+it.number+" " }
+        assert "NAME NUMBER Maybe a complex Name 7455 S N 9272 " == str
+        str = "";
+
+        ds.eachRow("SELECT * FROM elements WHERE id > ?" , [1])
+                { str+=it.name+" "+it.number+" " }
+        assert "Maybe a complex Name 7455 S N 9272 " == str
+        str = "";
+
+        ds.eachRow("SELECT * FROM elements WHERE id > :id" , [id:1])
+                { str+=it.name+" "+it.number+" " }
+        assert "Maybe a complex Name 7455 S N 9272 " == str
+        str = "";
+
+        ds.eachRow([id:1], "SELECT * FROM elements WHERE id > :id" )
+                { str+=it.name+" "+it.number+" " }
+        assert "Maybe a complex Name 7455 S N 9272 " == str
+        str = "";
+
+        ds.eachRow("SELECT * FROM elements WHERE id > ?" , [1], 1, 1)
+                { str+=it.name+" "+it.number+" " }
+        assert "Maybe a complex Name 7455 " == str
+        str = "";
+
+        ds.eachRow("SELECT * FROM elements WHERE id > :id" , [id:1], 1, 1)
+                { str+=it.name+" "+it.number+" " }
+        assert "Maybe a complex Name 7455 " == str
+        str = "";
+
+        ds.eachRow([id:1], "SELECT * FROM elements WHERE id > :id" , 1, 1)
+                { str+=it.name+" "+it.number+" " }
+        assert "Maybe a complex Name 7455 " == str
+        str = "";
+
+        ds.eachRow("SELECT * FROM elements WHERE id > ${1}")
+                { str+=it.name+" "+it.number+" " }
+        assert "Maybe a complex Name 7455 S N 9272 " == str
+
+        str = "";
+        ds.eachRow("SELECT * FROM elements WHERE id > ${1}", 1, 1)
+                { str+=it.name+" "+it.number+" " }
+        assert "Maybe a complex Name 7455 " == str
+        str = "";
+
+        ds.eachRow("SELECT * FROM elements WHERE id > ${1}")
+                { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}
+                { str+=it.name+" "+it.number+" " }
+        assert "NAME NUMBER Maybe a complex Name 7455 S N 9272 " == str
+        str = "";
+
+        ds.eachRow("SELECT * FROM elements WHERE id > ${1}" ,
+                { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}, 1, 1)
+                { str+=it.name+" "+it.number+" " }
+        assert "NAME NUMBER Maybe a complex Name 7455 " == str
+        str = "";
     }
 }

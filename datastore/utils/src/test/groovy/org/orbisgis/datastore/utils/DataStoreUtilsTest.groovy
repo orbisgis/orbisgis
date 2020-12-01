@@ -38,6 +38,7 @@ package org.orbisgis.datastore.utils
 
 import org.geotools.data.Query
 import org.geotools.data.shapefile.ShapefileDataStore
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 /**

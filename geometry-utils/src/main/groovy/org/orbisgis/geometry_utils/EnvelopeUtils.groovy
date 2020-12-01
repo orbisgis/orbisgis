@@ -41,8 +41,6 @@ import org.cts.util.UTMUtils
 import org.locationtech.jts.geom.Envelope
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.Polygon
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 /**
  * Utility script used as extension module adding methods to Envelope class.

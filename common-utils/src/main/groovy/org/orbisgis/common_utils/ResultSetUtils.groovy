@@ -45,6 +45,6 @@ import java.sql.ResultSet
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
-static void propertyMissing(ResultSet rs, String name) {
+static def propertyMissing(ResultSet rs, String name) {
     rs.getObject(name)
 }
