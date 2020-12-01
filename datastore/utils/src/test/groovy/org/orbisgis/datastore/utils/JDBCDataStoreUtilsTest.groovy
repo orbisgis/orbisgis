@@ -219,4 +219,134 @@ class JDBCDataStoreUtilsTest {
         assert "NAME NUMBER Maybe a complex Name 7455 " == str
         str = "";
     }
+
+    @Test
+    void rowsTest() {
+        def rows = ds.rows("SELECT * FROM elements")
+        assert 3 == rows.size()
+        assert "{ID=1, NAME=Simple Name, NUMBER=2846}" == rows[0].toString()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[1].toString()
+        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[2].toString()
+
+        rows = ds.rows("SELECT * FROM elements", 2, 1)
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+
+        def str = ""
+        rows = ds.rows("SELECT * FROM elements")
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 3 == rows.size()
+        assert "{ID=1, NAME=Simple Name, NUMBER=2846}" == rows[0].toString()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[1].toString()
+        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[2].toString()
+        assert "ID NAME NUMBER" == str
+
+        str = ""
+        rows = ds.rows("SELECT * FROM elements", 2, 1)
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "ID NAME NUMBER" == str
+
+        rows = ds.rows("SELECT * FROM elements WHERE ID > ?", [1])
+        assert 2 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
+
+        rows = ds.rows([id:1],"SELECT * FROM elements WHERE ID > :id")
+        assert 2 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
+
+        rows = ds.rows("SELECT * FROM elements WHERE ID > ?", [1], 1, 1)
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+
+        rows = ds.rows("SELECT * FROM elements WHERE ID > :id", [id:1], 1, 1)
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+
+        rows = ds.rows([id:1], "SELECT * FROM elements WHERE ID > :id", 1, 1)
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+
+        rows = ds.rows("SELECT * FROM elements WHERE ID > ?", [1] as Object[])
+        assert 2 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
+
+        rows = ds.rows("SELECT * FROM elements WHERE ID > ?", [1] as Object[], 1, 1)
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+
+        str = ""
+        rows = ds.rows("SELECT * FROM elements WHERE ID > ?", [1])
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 2 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
+        assert "ID NAME NUMBER" == str
+
+        str = ""
+        rows = ds.rows("SELECT * FROM elements WHERE ID > :id", [id:1])
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 2 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
+        assert "ID NAME NUMBER" == str
+
+        str = ""
+        rows = ds.rows([id:1],"SELECT * FROM elements WHERE ID > :id")
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 2 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
+        assert "ID NAME NUMBER" == str
+
+        str = ""
+        rows = ds.rows("SELECT * FROM elements WHERE ID > ?", [1], 1, 1)
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "ID NAME NUMBER" == str
+
+        str = ""
+        rows = ds.rows("SELECT * FROM elements WHERE ID > :id", [id:1], 1, 1)
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "ID NAME NUMBER" == str
+
+        str = ""
+        rows = ds.rows([id:1],"SELECT * FROM elements WHERE ID > :id", 1, 1)
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "ID NAME NUMBER" == str
+
+        rows = ds.rows("SELECT * FROM elements WHERE ID > ${1}")
+        assert 2 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
+
+        rows = ds.rows("SELECT * FROM elements WHERE ID > ${1}", 1, 1)
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+
+        str = ""
+        rows = ds.rows("SELECT * FROM elements WHERE ID > ${1}")
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 2 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
+        assert "ID NAME NUMBER" == str
+
+        str = ""
+        rows = ds.rows("SELECT * FROM elements WHERE ID > ${1}", 1, 1)
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "ID NAME NUMBER" == str
+
+    }
 }

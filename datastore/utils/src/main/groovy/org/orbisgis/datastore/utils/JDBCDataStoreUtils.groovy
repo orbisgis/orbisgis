@@ -37,11 +37,11 @@
 package org.orbisgis.datastore.utils
 
 import groovy.sql.GroovyResultSet
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.transform.Field
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.SimpleType
-import org.geotools.data.DataStore
 import org.geotools.jdbc.JDBCDataStore
 
 import java.sql.Connection
@@ -301,7 +301,7 @@ static void eachRow(JDBCDataStore ds, String sql,
  * The row will be a {@link GroovyResultSet} which is a {@link ResultSet} that supports accessing the fields using
  * property style notation and ordinal index values.
  *
- * In addition, the <code>metaClosure</code> will be called once passing in the {@link java.sql.ResultSetMetaData} as
+ * In addition, the metaClosure will be called once passing in the {@link java.sql.ResultSetMetaData} as
  * argument.
  *
  * Note that the underlying implementation is based on either invoking {@link ResultSet#absolute(int)}, or if the
@@ -735,4 +735,507 @@ static void eachRow(JDBCDataStore ds, GString gstring, int offset, int maxRows,
 static void eachRow(JDBCDataStore ds, GString gstring,
                     @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure) throws SQLException {
     getSql(ds).eachRow(gstring, closure)
+}
+
+/**
+ * Performs the given SQL query and return the rows of the result set.
+ * 
+ * Example usage:
+ * 
+ * def ans = sql.rows("select * from PERSON where firstname like 'S%'")
+ * println "Found ${ans.size()} rows"
+ * 
+ *
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds  {@link JDBCDataStore} on which the query is performed.
+ * @param sql The SQL statement.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, String sql) throws SQLException {
+    getSql(ds).rows(sql)
+}
+
+/**
+ * Performs the given SQL query and return a "page" of rows from the result set.  A page is defined as starting at
+ * a 1-based offset, and containing a maximum number of rows.
+ * 
+ * Note that the underlying implementation is based on either invoking {@link ResultSet#absolute(int)},
+ * or if the ResultSet type is {@link ResultSet#TYPE_FORWARD_ONLY}, the {@link ResultSet#next()} method
+ * is invoked equivalently.  The first row of a ResultSet is 1, so passing in an offset of 1 or less has no effect
+ * on the initial positioning within the result set.
+ * 
+ * Note that different database and JDBC driver implementations may work differently with respect to this method.
+ * Specifically, one should expect that {@link ResultSet#TYPE_FORWARD_ONLY} may be less efficient than a
+ * "scrollable" type.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The SQL statement.
+ * @param offset  The 1-based offset for the first row to be processed.
+ * @param maxRows The maximum number of rows to be processed.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, int offset, int maxRows) throws SQLException {
+    getSql(ds).rows(sql, offset, maxRows, null)
+}
+
+/**
+ * Performs the given SQL query and return the rows of the result set.
+ * In addition, the metaClosure will be called once passing in the
+ * ResultSetMetaData as argument.
+ * 
+ * Example usage:
+ * 
+ * def printNumCols = { meta {@code ->} println "Found $meta.columnCount columns" }
+ * def ans = sql.rows("select * from PERSON", printNumCols)
+ * println "Found ${ans.size()} rows"
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param sql         The SQL statement.
+ * @param metaClosure Called with meta data of the ResultSet.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, String sql,
+                  @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
+        throws SQLException {
+    getSql(ds).rows(sql, metaClosure)
+}
+
+/**
+ * Performs the given SQL query and return a "page" of rows from the result set.  A page is defined as starting at
+ * a 1-based offset, and containing a maximum number of rows.
+ * In addition, the metaClosure will be called once passing in the {@link java.sql.ResultSetMetaData} as argument.
+ * 
+ * Note that the underlying implementation is based on either invoking {@link ResultSet#absolute(int)}, or if the
+ * ResultSet type is {@link ResultSet#TYPE_FORWARD_ONLY}, the {@link ResultSet#next()} method is invoked equivalently.
+ * The first row of a ResultSet is 1, so passing in an offset of 1 or less has no effect on the initial positioning
+ * within the result set.
+ * 
+ * Note that different database and JDBC driver implementations may work differently with respect to this method.
+ * Specifically, one should expect that {@link ResultSet#TYPE_FORWARD_ONLY} may be less efficient than a
+ * "scrollable" type.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param sql         The SQL statement.
+ * @param offset      The 1-based offset for the first row to be processed.
+ * @param maxRows     The maximum number of rows to be processed.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, int offset, int maxRows,
+                  @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
+        throws SQLException {
+    getSql(ds).rows(sql, offset, maxRows, metaClosure)
+}
+
+/**
+ * Performs the given SQL query and return the rows of the result set.
+ * The query may contain placeholder question marks which match the given list of parameters.
+ * 
+ * Example usage:
+ * 
+ * def ans = sql.rows("select * from PERSON where lastname like ?", ['%a%'])
+ * println "Found ${ans.size()} rows"
+ * 
+ * 
+ * This method supports named and named ordinal parameters by supplying such parameters in the params list. See the
+ * class Javadoc for more details.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param sql    The SQL statement.
+ * @param params A list of parameters.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, List<Object> params) throws SQLException {
+    getSql(ds).rows(sql, params)
+}
+
+/**
+ * A variant of {@link #rows(JDBCDataStore, String, java.util.List)}
+ * useful when providing the named parameters as named arguments.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param params a map containing the named parameters
+ * @param sql    The SQL statement.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, Map params, String sql) throws SQLException {
+    getSql(ds).rows(params, sql)
+}
+
+/**
+ * Performs the given SQL query and return a "page" of rows from the result set.  A page is defined as starting at
+ * a 1-based offset, and containing a maximum number of rows.
+ * The query may contain placeholder question marks which match the given list of parameters.
+ * 
+ * Note that the underlying implementation is based on either invoking {@link ResultSet#absolute(int)},
+ * or if the ResultSet type is {@link ResultSet#TYPE_FORWARD_ONLY}, the {@link ResultSet#next()} method
+ * is invoked equivalently.  The first row of a ResultSet is 1, so passing in an offset of 1 or less has no effect
+ * on the initial positioning within the result set.
+ * 
+ * Note that different database and JDBC driver implementations may work differently with respect to this method.
+ * Specifically, one should expect that {@link ResultSet#TYPE_FORWARD_ONLY} may be less efficient than a
+ * "scrollable" type.
+ * 
+ * This method supports named and named ordinal parameters by supplying such parameters in the params list. See the
+ * class Javadoc for more details.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The SQL statement.
+ * @param params  A list of parameters.
+ * @param offset  The 1-based offset for the first row to be processed.
+ * @param maxRows The maximum number of rows to be processed.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, List<Object> params, int offset, int maxRows) throws SQLException {
+    getSql(ds).rows(sql, params, offset, maxRows)
+}
+
+/**
+ * A variant of {@link #rows(JDBCDataStore, String, java.util.List, int, int)} useful when providing the named
+ * parameters as a map.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The SQL statement.
+ * @param params  A map of named parameters.
+ * @param offset  The 1-based offset for the first row to be processed.
+ * @param maxRows The maximum number of rows to be processed.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Map params, int offset, int maxRows) throws SQLException {
+    getSql(ds).rows(sql, params, offset, maxRows)
+}
+
+/**
+ * A variant of {@link #rows(JDBCDataStore, String, java.util.List, int, int)} useful when providing the named
+ * parameters as named arguments.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param params  A map of named parameters.
+ * @param sql     The SQL statement.
+ * @param offset  The 1-based offset for the first row to be processed.
+ * @param maxRows The maximum number of rows to be processed.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, Map params, String sql, int offset, int maxRows)
+        throws SQLException {
+    getSql(ds).rows(params, sql, offset, maxRows)
+}
+
+/**
+ * Performs the given SQL query and return the rows of the result set.
+ * 
+ * This method supports named and named ordinal parameters by supplying such parameters in the params array. See the
+ * class Javadoc for more details.
+ * 
+ * An Object array variant of {@link #rows(JDBCDataStore, String, List)}.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param sql    The SQL statement.
+ * @param params an array of parameters
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Object[] params)
+        throws SQLException {
+    getSql(ds).rows(sql, params)
+}
+
+/**
+ * Performs the given SQL query and return the rows of the result set.
+ * 
+ * This method supports named and named ordinal parameters by supplying such parameters in the params array. See the
+ * class Javadoc for more details.
+ * 
+ * An Object array variant of {@link #rows(JDBCDataStore, String, List, int, int)}.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The SQL statement.
+ * @param params  an array of parameters
+ * @param offset  The 1-based offset for the first row to be processed.
+ * @param maxRows The maximum number of rows to be processed.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Object[] params, int offset, int maxRows)
+        throws SQLException {
+    getSql(ds).rows(sql, Arrays.asList(params), offset, maxRows)
+}
+
+/**
+ * Performs the given SQL query and return the rows of the result set.
+ * In addition, the metaClosure will be called once passing in the {@link java.sql.ResultSetMetaData} as argument.
+ * The query may contain placeholder question marks which match the given list of parameters.
+ * 
+ * Example usage:
+ * 
+ * def printNumCols = { meta {@code ->} println "Found $meta.columnCount columns" }
+ * def ans = sql.rows("select * from PERSON where lastname like ?", ['%a%'], printNumCols)
+ * println "Found ${ans.size()} rows"
+ * 
+ * 
+ * This method supports named and named ordinal parameters by supplying such parameters in the params list. Here is an
+ * example:
+ * 
+ * def printNumCols = { meta {@code ->} println "Found $meta.columnCount columns" }
+ *
+ * def mapParam = [foo: 'Smith']
+ * def domainParam = new MyDomainClass(bar: 'John')
+ * def qry = 'select * from PERSON where lastname=?1.foo and firstname=?2.bar'
+ * def ans = sql.rows(qry, [mapParam, domainParam], printNumCols)
+ * println "Found ${ans.size()} rows"
+ *
+ * def qry2 = 'select * from PERSON where firstname=:first and lastname=:last'
+ * def ans2 = sql.rows(qry2, [[last:'Smith', first:'John']], printNumCols)
+ * println "Found ${ans2.size()} rows"
+ * 
+ * See the class Javadoc for more details.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param sql         The SQL statement.
+ * @param params      A list of parameters.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, List<Object> params,
+                    @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
+        throws SQLException {
+    getSql(ds).rows(sql, params, metaClosure)
+}
+
+/**
+ * A variant of {@link #rows(JDBCDataStore, String, java.util.List, groovy.lang.Closure)} useful when providing the
+ * named parameters as a map.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param sql         The SQL statement.
+ * @param params      A map of named parameters.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Map params,
+                    @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
+        throws SQLException {
+    getSql(ds).rows(sql, params, metaClosure)
+}
+
+/**
+ * A variant of {@link #rows(JDBCDataStore, String, java.util.List, groovy.lang.Closure)} useful when providing the
+ * named parameters as named arguments.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param params      A map of named parameters.
+ * @param sql         The SQL statement.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, Map params, String sql,
+                  @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
+        throws SQLException {
+    getSql(ds).rows(params, sql, metaClosure)
+}
+
+/**
+ * Performs the given SQL query and return a "page" of rows from the result set.  A page is defined as starting at
+ * a 1-based offset, and containing a maximum number of rows.
+ * In addition, the metaClosure will be called once passing in the {@link java.sql.ResultSetMetaData} as argument.
+ * The query may contain placeholder question marks which match the given list of parameters.
+ * 
+ * Note that the underlying implementation is based on either invoking {@link ResultSet#absolute(int)}, or if the
+ * ResultSet type is {@link ResultSet#TYPE_FORWARD_ONLY}, the {@link ResultSet#next()} method is invoked equivalently.
+ * The first row of a ResultSet is 1, so passing in an offset of 1 or less has no effect
+ * on the initial positioning within the result set.
+ * 
+ * Note that different database and JDBC driver implementations may work differently with respect to this method.
+ * Specifically, one should expect that {@link ResultSet#TYPE_FORWARD_ONLY} may be less efficient than a
+ * "scrollable" type.
+ * 
+ * This method supports named and named ordinal parameters by supplying such parameters in the params list. See the
+ * class Javadoc for more details.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param sql         The SQL statement.
+ * @param params      A list of parameters.
+ * @param offset      The 1-based offset for the first row to be processed.
+ * @param maxRows     The maximum number of rows to be processed.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, List<Object> params, int offset, int maxRows,
+                  @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
+        throws SQLException {
+    getSql(ds).rows(sql, params, offset, maxRows, metaClosure)
+}
+
+/**
+ * A variant of {@link #rows(JDBCDataStore, String, java.util.List, int, int, groovy.lang.Closure)} useful when
+ * providing the named parameters as a map.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param sql         The SQL statement.
+ * @param params      A map of named parameters.
+ * @param offset      The 1-based offset for the first row to be processed.
+ * @param maxRows     The maximum number of rows to be processed.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Map params, int offset, int maxRows,
+                  @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
+        throws SQLException {
+    getSql(ds).rows(sql, params, offset, maxRows, metaClosure)
+}
+
+/**
+ * A variant of {@link #rows(JDBCDataStore, String, java.util.List, int, int, groovy.lang.Closure)} useful when
+ * providing the named parameters as named arguments.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param params      A map of named parameters.
+ * @param sql         The SQL statement.
+ * @param offset      The 1-based offset for the first row to be processed.
+ * @param maxRows     The maximum number of rows to be processed.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, Map params, String sql, int offset, int maxRows,
+                  @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
+        throws SQLException {
+    getSql(ds).rows(params, sql, offset, maxRows, metaClosure)
+}
+
+/**
+ * Performs the given SQL query and return a "page" of rows from the result set.  A page is defined as starting at
+ * a 1-based offset, and containing a maximum number of rows.
+ * The query may contain GString expressions.
+ * 
+ * Note that the underlying implementation is based on either invoking {@link ResultSet#absolute(int)}, or if the
+ * ResultSet type is {@link ResultSet#TYPE_FORWARD_ONLY}, the {@link ResultSet#next()} method is invoked equivalently.
+ * The first row of a ResultSet is 1, so passing in an offset of 1 or less has no effect
+ * on the initial positioning within the result set.
+ * 
+ * Note that different database and JDBC driver implementations may work differently with respect to this method.
+ * Specifically, one should expect that {@link ResultSet#TYPE_FORWARD_ONLY} may be less efficient than a
+ * "scrollable" type.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The SQL statement.
+ * @param offset  The 1-based offset for the first row to be processed.
+ * @param maxRows The maximum number of rows to be processed.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, GString sql, int offset, int maxRows) throws SQLException {
+    getSql(ds).rows(sql, offset, maxRows)
+}
+
+/**
+ * Performs the given SQL query and return the rows of the result set.
+ * The query may contain GString expressions.
+ * 
+ * Example usage:
+ * 
+ * def location = 25
+ * def ans = sql.rows("select * from PERSON where location_id {@code <} $location")
+ * println "Found ${ans.size()} rows"
+ *
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param gstring A GString containing the SQL query with embedded params.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, GString gstring) throws SQLException {
+    getSql(ds).rows(gstring)
+}
+
+/**
+ * Performs the given SQL query and return the rows of the result set.
+ * In addition, the metaClosure will be called once passing in the {@link java.sql.ResultSetMetaData} as argument.
+ * The query may contain GString expressions.
+ * 
+ * Example usage:
+ * 
+ * def location = 25
+ * def printNumCols = { meta {@code ->} println "Found $meta.columnCount columns" }
+ * def ans = sql.rows("select * from PERSON where location_id {@code <} $location", printNumCols)
+ * println "Found ${ans.size()} rows"
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param gstring     A GString containing the SQL query with embedded params.
+ * @param metaClosure Called with meta data of the ResultSet.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, GString gstring,
+                  @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
+        throws SQLException {
+    getSql(ds).rows(gstring, metaClosure)
+}
+
+/**
+ * Performs the given SQL query and return a "page" of rows from the result set.  A page is defined as starting at
+ * a 1-based offset, and containing a maximum number of rows.
+ * In addition, the metaClosure will be called once passing in the {@link java.sql.ResultSetMetaData} as argument.
+ * The query may contain GString expressions.
+ * 
+ * Note that the underlying implementation is based on either invoking {@link ResultSet#absolute(int)},
+ * or if the ResultSet type is {@link ResultSet#TYPE_FORWARD_ONLY}, the {@link ResultSet#next()} method
+ * is invoked equivalently.  The first row of a ResultSet is 1, so passing in an offset of 1 or less has no effect
+ * on the initial positioning within the result set.
+ * 
+ * Note that different database and JDBC driver implementations may work differently with respect to this method.
+ * Specifically, one should expect that {@link ResultSet#TYPE_FORWARD_ONLY} may be less efficient than a
+ * "scrollable" type.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds          {@link JDBCDataStore} on which the query is performed.
+ * @param gstring     The SQL statement.
+ * @param offset      The 1-based offset for the first row to be processed.
+ * @param maxRows     The maximum number of rows to be processed.
+ * @param metaClosure Called for meta data (only once after sql execution).
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> rows(JDBCDataStore ds, GString gstring, int offset, int maxRows,
+                  @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure) 
+        throws SQLException {
+    getSql(ds).rows(gstring, offset, maxRows, metaClosure)
 }
