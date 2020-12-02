@@ -40,6 +40,9 @@ import org.geotools.data.DataStoreFinder
 import org.geotools.jdbc.JDBCDataStore
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+
+import java.sql.ResultSet
+
 /**
  * Test class dedicated to {@link org.orbisgis.datastore.jdbcutils.JDBCDataStoreUtils}.
  *
@@ -390,5 +393,48 @@ class JDBCDataStoreUtilsTest {
         assert "Maybe a complex Name" == row.get("NAME")
         assert row.containsKey("NUMBER")
         assert 7455 == row.get("NUMBER")
+    }
+
+    @Test
+    void executeTest() {
+        assert ds.execute("SELECT * FROM elements")
+
+        ds.execute("SELECT * FROM elements")
+                { isResultSet, result ->
+                    assert isResultSet
+                    assert 3 == result.size()
+                }
+
+        assert ds.execute("SELECT * FROM elements WHERE ID > ?", [1])
+
+        ds.execute("SELECT * FROM elements WHERE ID > ?", [1])
+                { isResultSet, result ->
+                    assert isResultSet
+                    assert 2 == result.size()
+                }
+
+        assert ds.execute([id:1], "SELECT * FROM elements WHERE ID > :id")
+
+        ds.execute([id:1], "SELECT * FROM elements WHERE ID > :id")
+                { isResultSet, result ->
+                    assert isResultSet
+                    assert 2 == result.size()
+                }
+
+        assert ds.execute("SELECT * FROM elements WHERE ID > ?", [1] as Object[])
+
+        ds.execute("SELECT * FROM elements WHERE ID > ?", [1] as Object[])
+                { isResultSet, result ->
+                    assert isResultSet
+                    assert 2 == result.size()
+                }
+
+        assert ds.execute("SELECT * FROM elements WHERE ID > ${1}")
+
+        ds.execute("SELECT * FROM elements WHERE ID > ${1}")
+                { isResultSet, result ->
+                    assert isResultSet
+                    assert 2 == result.size()
+                }
     }
 }
