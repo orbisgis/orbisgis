@@ -34,12 +34,10 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.utils
+package org.orbisgis.datastore.jdbcutils
 
 import groovy.transform.Field
 import org.geotools.jdbc.JDBCDataStoreFactory
-
-import javax.sql.DataSource
 
 /**
  * Groovy script used to declare DataStore parameters constants

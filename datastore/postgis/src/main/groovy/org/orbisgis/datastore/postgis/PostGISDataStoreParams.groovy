@@ -37,7 +37,7 @@
 package org.orbisgis.datastore.postgis
 
 import groovy.transform.BaseScript
-import org.orbisgis.datastore.utils.JDBCDataStoreParams
+import org.orbisgis.datastore.jdbcutils.JDBCDataStoreParams
 
 /**
  * Groovy script used as Closure DelegateTo on opening a POSTGIS JDBCDataStore.

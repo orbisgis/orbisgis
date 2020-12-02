@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.utils
+package org.orbisgis.datastore.jdbcutils
 
 import groovy.sql.GroovyResultSet
 import groovy.sql.GroovyRowResult

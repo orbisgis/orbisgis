@@ -1,4 +1,4 @@
 moduleName=OrbisGIS Groovy datastore extension
 moduleVersion=1.0
-extensionClasses=org.orbisgis.datastore.utils.DataStoreUtils
-staticExtensionClasses=org.orbisgis.datastore.utils.DataStoreFinderUtils
+extensionClasses=org.orbisgis.datastore.datastoreutils.DataStoreUtils
+staticExtensionClasses=org.orbisgis.datastore.datastoreutils.DataStoreFinderUtils

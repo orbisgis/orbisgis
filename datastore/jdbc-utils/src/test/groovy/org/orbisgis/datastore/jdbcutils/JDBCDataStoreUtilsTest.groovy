@@ -34,14 +34,14 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.utils
+package org.orbisgis.datastore.jdbcutils
 
 import org.geotools.data.DataStoreFinder
 import org.geotools.jdbc.JDBCDataStore
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 /**
- * Test class dedicated to {@link org.orbisgis.datastore.utils.JDBCDataStoreUtils}.
+ * Test class dedicated to {@link org.orbisgis.datastore.jdbcutils.JDBCDataStoreUtils}.
  *
  * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)

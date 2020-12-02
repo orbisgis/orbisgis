@@ -34,21 +34,24 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.utils
+package org.orbisgis.datastore.datastoreutils
 
 import org.geotools.data.DataStore
-import org.geotools.data.DataStoreFinder
 
-
+import org.geotools.data.simple.SimpleFeatureSource
 /**
- * Utility script used as extension module adding methods to {@link org.geotools.data.DataStoreFinder} class.
+ * Utility script used as extension module adding methods to {@link DataStore} class.
  *
  * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
-static DataStore getDataStore(DataStoreFinder finder, LinkedHashMap map) {
-    def tmp = [:]
-    map.each {tmp.put(it.key, it.value in GString ? it.value.toString() : it.value)}
-    return DataStoreFinder.getDataStore((Map)tmp)
+/**
+ * Method called when the asked property is missing and returns the SimpleFeatureSource corresponding to the given name.
+ *
+ * @param ds DataStore to use.
+ * @param name Name of the property/SimpleFeatureSource to get.
+ */
+static SimpleFeatureSource propertyMissing(DataStore ds, String name) {
+    return ds.getFeatureSource(name)
 }
