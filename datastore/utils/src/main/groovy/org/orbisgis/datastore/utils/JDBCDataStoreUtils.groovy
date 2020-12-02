@@ -191,7 +191,7 @@ static void query(JDBCDataStore ds, Map map, String sql,
  * @param ds      {@link JDBCDataStore} on which the query is performed.
  * @param gstring A {@link GString} containing the SQL query with embedded params
  * @param closure called for each row with a {@link java.sql.ResultSet}
- * @throws SQLException if a database access error occurs
+ * @throws SQLException Thrown on a database access error occurrence.
  */
 static void query(JDBCDataStore ds, GString gstring,
                   @ClosureParams(value = SimpleType.class,options = ["java.sql.ResultSet"]) Closure closure)
@@ -790,7 +790,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, int offset, int 
  * 
  * Example usage:
  * 
- * def printNumCols = { meta {@code ->} println "Found $meta.columnCount columns" }
+ * def printNumCols = { meta -> println "Found $meta.columnCount columns" }
  * def ans = sql.rows("select * from PERSON", printNumCols)
  * println "Found ${ans.size()} rows"
  * 
@@ -989,7 +989,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Object[] params,
  * 
  * Example usage:
  * 
- * def printNumCols = { meta {@code ->} println "Found $meta.columnCount columns" }
+ * def printNumCols = { meta -> println "Found $meta.columnCount columns" }
  * def ans = sql.rows("select * from PERSON where lastname like ?", ['%a%'], printNumCols)
  * println "Found ${ans.size()} rows"
  * 
@@ -997,7 +997,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Object[] params,
  * This method supports named and named ordinal parameters by supplying such parameters in the params list. Here is an
  * example:
  * 
- * def printNumCols = { meta {@code ->} println "Found $meta.columnCount columns" }
+ * def printNumCols = { meta -> println "Found $meta.columnCount columns" }
  *
  * def mapParam = [foo: 'Smith']
  * def domainParam = new MyDomainClass(bar: 'John')
@@ -1190,7 +1190,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, GString gstring) throws SQLE
  * Example usage:
  * 
  * def location = 25
- * def printNumCols = { meta {@code ->} println "Found $meta.columnCount columns" }
+ * def printNumCols = { meta -> println "Found $meta.columnCount columns" }
  * def ans = sql.rows("select * from PERSON where location_id {@code <} $location", printNumCols)
  * println "Found ${ans.size()} rows"
  * 
@@ -1238,4 +1238,116 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, GString gstring, int offset,
                   @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure) 
         throws SQLException {
     getSql(ds).rows(gstring, offset, maxRows, metaClosure)
+}
+/**
+ * Performs the given SQL query and return the first row of the result set.
+ * 
+ * Example usage:
+ * 
+ * def ans = sql.firstRow("select * from PERSON where firstname like 'S%'")
+ * println ans.firstname
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds  {@link JDBCDataStore} on which the query is performed.
+ * @param sql The SQL statement.
+ * @return A GroovyRowResult object or null if no row is found.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static GroovyRowResult firstRow(JDBCDataStore ds, String sql) throws SQLException {
+    getSql(ds).firstRow(sql)
+}
+
+/**
+ * Performs the given SQL query and return the first row of the result set.
+ * The query may contain GString expressions.
+ * 
+ * Example usage:
+ * 
+ * def location = 25
+ * def ans = sql.firstRow("select * from PERSON where location_id {@code <} $location")
+ * println ans.firstname
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param gstring A GString containing the SQL query with embedded params.
+ * @return A GroovyRowResult object or null if no row is found.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static GroovyRowResult firstRow(JDBCDataStore ds, GString gstring) throws SQLException {
+    getSql(ds).firstRow(gstring)
+}
+
+/**
+ * Performs the given SQL query and return the first row of the result set.
+ * The query may contain placeholder question marks which match the given list of parameters.
+ * 
+ * Example usages:
+ * 
+ * def ans = sql.firstRow("select * from PERSON where lastname like ?", ['%a%'])
+ * println ans.firstname
+ * 
+ * If your database returns scalar functions as ResultSets, you can also use firstRow to gain access to stored 
+ * procedure results, e.g. using hsqldb 1.9 RC4:
+ * 
+ * sql.execute """
+ *     create function FullName(p_firstname VARCHAR(40)) returns VARCHAR(80)
+ *     BEGIN atomic
+ *     DECLARE ans VARCHAR(80);
+ *     SET ans = (SELECT firstname || ' ' || lastname FROM PERSON WHERE firstname = p_firstname);
+ *     RETURN ans;
+ *     END
+ * """
+ *
+ * assert sql.firstRow("{call FullName(?)}", ['Sam'])[0] == 'Sam Pullara'
+ * 
+ * 
+ * This method supports named and named ordinal parameters by supplying such parameters in the params list. See the
+ * class Javadoc for more details.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param sql    The SQL statement.
+ * @param params A list of parameters.
+ * @return A GroovyRowResult object or null if no row is found.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static GroovyRowResult firstRow(JDBCDataStore ds, String sql, List<Object> params) throws SQLException {
+    getSql(ds).firstRow(sql, params)
+}
+
+/**
+ * A variant of {@link #firstRow(JDBCDataStore, String, java.util.List)} useful when providing the named parameters as
+ * named arguments.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param params A map containing the named parameters.
+ * @param sql    The SQL statement.
+ * @return A GroovyRowResult object or null if no row is found.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static GroovyRowResult firstRow(JDBCDataStore ds, Map params, String sql) throws SQLException {
+    getSql(ds).firstRow(params, sql)
+}
+
+/**
+ * Performs the given SQL query and return the first row of the result set.
+ * 
+ * An Object array variant of {@link #firstRow(JDBCDataStore, String, List)}.
+ * 
+ * This method supports named and named ordinal parameters by supplying such parameters in the params array. See the
+ * class Javadoc for more details.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param sql    The SQL statement.
+ * @param params An array of parameters.
+ * @return A GroovyRowResult object or null if no row is found.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static GroovyRowResult firstRow(JDBCDataStore ds, String sql, Object[] params) throws SQLException {
+    getSql(ds).firstRow(sql, params)
 }

@@ -347,6 +347,48 @@ class JDBCDataStoreUtilsTest {
         assert 1 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
         assert "ID NAME NUMBER" == str
+    }
 
+    @Test
+    void firstRowTest(){
+        def row = ds.firstRow("SELECT * FROM elements")
+        assert row.containsKey("ID")
+        assert 1 == row.get("ID")
+        assert row.containsKey("NAME")
+        assert "Simple Name" == row.get("NAME")
+        assert row.containsKey("NUMBER")
+        assert 2846 == row.get("NUMBER")
+
+        row = ds.firstRow("SELECT * FROM elements WHERE ID > ${1}")
+        assert row.containsKey("ID")
+        assert 2 == row.get("ID")
+        assert row.containsKey("NAME")
+        assert "Maybe a complex Name" == row.get("NAME")
+        assert row.containsKey("NUMBER")
+        assert 7455 == row.get("NUMBER")
+
+        row = ds.firstRow("SELECT * FROM elements WHERE ID > ?", [1])
+        assert row.containsKey("ID")
+        assert 2 == row.get("ID")
+        assert row.containsKey("NAME")
+        assert "Maybe a complex Name" == row.get("NAME")
+        assert row.containsKey("NUMBER")
+        assert 7455 == row.get("NUMBER")
+
+        row = ds.firstRow([id:1], "SELECT * FROM elements WHERE ID > :id")
+        assert row.containsKey("ID")
+        assert 2 == row.get("ID")
+        assert row.containsKey("NAME")
+        assert "Maybe a complex Name" == row.get("NAME")
+        assert row.containsKey("NUMBER")
+        assert 7455 == row.get("NUMBER")
+
+        row = ds.firstRow("SELECT * FROM elements WHERE ID > :id", [id:1])
+        assert row.containsKey("ID")
+        assert 2 == row.get("ID")
+        assert row.containsKey("NAME")
+        assert "Maybe a complex Name" == row.get("NAME")
+        assert row.containsKey("NUMBER")
+        assert 7455 == row.get("NUMBER")
     }
 }
