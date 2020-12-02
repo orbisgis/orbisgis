@@ -39,7 +39,7 @@ package org.orbisgis.datastore.postgis
 import groovy.transform.BaseScript
 import groovy.transform.Field
 import org.geotools.data.postgis.PostgisNGDataStoreFactory
-import org.orbisgis.datastore.utils.DataStoreParamsCst
+import org.orbisgis.datastore.utils.JDBCDataStoreParamsCst
 
 /**
  * Groovy script used as Closure DelegateTo on opening a POSTGIS JDBCDataStore.
@@ -48,7 +48,7 @@ import org.orbisgis.datastore.utils.DataStoreParamsCst
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
-@BaseScript DataStoreParamsCst baseScript
+@BaseScript JDBCDataStoreParamsCst baseScript
 
 /** Perform only primary filter on bbox. */
 public static final @Field String LOOSEBBOX = PostgisNGDataStoreFactory.LOOSEBBOX.key

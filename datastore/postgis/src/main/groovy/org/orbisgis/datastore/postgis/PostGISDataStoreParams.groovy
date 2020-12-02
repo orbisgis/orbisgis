@@ -37,7 +37,7 @@
 package org.orbisgis.datastore.postgis
 
 import groovy.transform.BaseScript
-import org.orbisgis.datastore.utils.DataStoreParams
+import org.orbisgis.datastore.utils.JDBCDataStoreParams
 
 /**
  * Groovy script used as Closure DelegateTo on opening a POSTGIS JDBCDataStore.
@@ -46,7 +46,7 @@ import org.orbisgis.datastore.utils.DataStoreParams
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
-@BaseScript DataStoreParams baseScript
+@BaseScript JDBCDataStoreParams baseScript
 
 /**
  * Perform only primary filter on bbox.

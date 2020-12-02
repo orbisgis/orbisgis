@@ -40,8 +40,6 @@ import groovy.transform.Field
 
 import javax.sql.DataSource
 
-import org.orbisgis.datastore.utils.DataStoreParamsCst
-
 /**
  * Groovy script used as Closure DelegateTo on opening a JDBCDataStore.
  *
@@ -65,7 +63,7 @@ Map params(){
  * @param password Password used to login.
  */
 void password(String password) {
-    params.put(DataStoreParamsCst.PASSWD, password)
+    params.put(JDBCDataStoreParamsCst.PASSWD, password)
 }
 
 /**
@@ -73,7 +71,7 @@ void password(String password) {
  * @param namespace Namespace prefix.
  */
 void namespace(String namespace) {
-    params.put(DataStoreParamsCst.NAMESPACE, namespace)
+    params.put(JDBCDataStoreParamsCst.NAMESPACE, namespace)
 }
 
 /**
@@ -81,7 +79,7 @@ void namespace(String namespace) {
  * @param dataSource Data Source.
  */
 void dataSource(DataSource dataSource) {
-    params.put(DataStoreParamsCst.DATASOURCE, dataSource)
+    params.put(JDBCDataStoreParamsCst.DATASOURCE, dataSource)
 }
 
 /**
@@ -89,7 +87,7 @@ void dataSource(DataSource dataSource) {
  * @param maxConn Maximum number of open connections.
  */
 void maxConn(int maxConn) {
-    params.put(DataStoreParamsCst.MAXCONN, maxConn)
+    params.put(JDBCDataStoreParamsCst.MAXCONN, maxConn)
 }
 
 /**
@@ -97,7 +95,7 @@ void maxConn(int maxConn) {
  * @param minConn Minimum number of pooled connection.
  */
 void minConn(int minConn) {
-    params.put(DataStoreParamsCst.MINCONN, minConn)
+    params.put(JDBCDataStoreParamsCst.MINCONN, minConn)
 }
 
 /**
@@ -105,7 +103,7 @@ void minConn(int minConn) {
  * @param validateConn True to check connection is alive before using it.
  */
 void validateConn(boolean validateConn) {
-    params.put(DataStoreParamsCst.VALIDATECONN, validateConn)
+    params.put(JDBCDataStoreParamsCst.VALIDATECONN, validateConn)
 }
 
 /**
@@ -113,7 +111,7 @@ void validateConn(boolean validateConn) {
  * @param fetchSize Number of records read with each iteration with the dbms.
  */
 void fetchSize(int fetchSize) {
-    params.put(DataStoreParamsCst.FETCHSIZE, fetchSize)
+    params.put(JDBCDataStoreParamsCst.FETCHSIZE, fetchSize)
 }
 
 /**
@@ -121,7 +119,7 @@ void fetchSize(int fetchSize) {
  * @param batchInsertSize Number of records inserted in the same batch (default, 1). For optimal performance, set to 100.
  */
 void batchInsertSize(int batchInsertSize) {
-    params.put(DataStoreParamsCst.BATCH_INSERT_SIZE, batchInsertSize)
+    params.put(JDBCDataStoreParamsCst.BATCH_INSERT_SIZE, batchInsertSize)
 }
 
 /**
@@ -129,7 +127,7 @@ void batchInsertSize(int batchInsertSize) {
  * @param maxWait Number of seconds the connection pool will wait before timing out attempting to get a new connection (default, 20 seconds).
  */
 void maxWait(int maxWait) {
-    params.put(DataStoreParamsCst.MAXWAIT, maxWait)
+    params.put(JDBCDataStoreParamsCst.MAXWAIT, maxWait)
 }
 
 /**
@@ -137,7 +135,7 @@ void maxWait(int maxWait) {
  * @param testWhileIdle Periodically test the connections are still valid also while idle in the pool.
  */
 void testWhileIdle(boolean testWhileIdle) {
-    params.put(DataStoreParamsCst.TEST_WHILE_IDLE, testWhileIdle  )
+    params.put(JDBCDataStoreParamsCst.TEST_WHILE_IDLE, testWhileIdle  )
 }
 
 /**
@@ -145,7 +143,7 @@ void testWhileIdle(boolean testWhileIdle) {
  * @param timeBetweenEvicotrRuns Number of seconds between idle object evitor runs (default, 300 seconds).
  */
 void timeBetweenEvicotrRuns(int timeBetweenEvicotrRuns) {
-    params.put(DataStoreParamsCst.TIME_BETWEEN_EVICTOR_RUNS, timeBetweenEvicotrRuns)
+    params.put(JDBCDataStoreParamsCst.TIME_BETWEEN_EVICTOR_RUNS, timeBetweenEvicotrRuns)
 }
 
 /**
@@ -153,7 +151,7 @@ void timeBetweenEvicotrRuns(int timeBetweenEvicotrRuns) {
  * @param minEvictaleTime Number of seconds a connection needs to stay idle for the evictor to consider closing it.
  */
 void minEvictaleTime(int minEvictaleTime) {
-    params.put(DataStoreParamsCst.MIN_EVICTABLE_TIME, minEvictaleTime)
+    params.put(JDBCDataStoreParamsCst.MIN_EVICTABLE_TIME, minEvictaleTime)
 }
 
 /**
@@ -162,7 +160,7 @@ void minEvictaleTime(int minEvictaleTime) {
  * (defaults to 3).
  */
 void evictorTestsPerRun(int evictorTestsPerRun) {
-    params.put(DataStoreParamsCst.EVICTOR_TESTS_PER_RUN, evictorTestsPerRun)
+    params.put(JDBCDataStoreParamsCst.EVICTOR_TESTS_PER_RUN, evictorTestsPerRun)
 }
 
 /**
@@ -172,7 +170,7 @@ void evictorTestsPerRun(int evictorTestsPerRun) {
  * expressed as 'schema.name' or just 'name'.
  */
 void pkMetadataTable(String pkMetadataTable) {
-    params.put(DataStoreParamsCst.PK_METADATA_TABLE, pkMetadataTable)
+    params.put(JDBCDataStoreParamsCst.PK_METADATA_TABLE, pkMetadataTable)
 }
 
 /**
@@ -182,7 +180,7 @@ void pkMetadataTable(String pkMetadataTable) {
  * the pool. Set to 0 to have unbounded caching, to -1 to disable caching.
  */
 void maxOpenPreparedStatement(int maxOpenPreparedStatement) {
-    params.put(DataStoreParamsCst.MAX_OPEN_PREPARED_STATEMENTS, maxOpenPreparedStatement)
+    params.put(JDBCDataStoreParamsCst.MAX_OPEN_PREPARED_STATEMENTS, maxOpenPreparedStatement)
 }
 
 /**
@@ -190,7 +188,7 @@ void maxOpenPreparedStatement(int maxOpenPreparedStatement) {
  * @param exposePk Expose primary key columns as attributes of the feature type.
  */
 void exposePk(boolean exposePk) {
-    params.put(DataStoreParamsCst.EXPOSE_PK, exposePk)
+    params.put(JDBCDataStoreParamsCst.EXPOSE_PK, exposePk)
 }
 
 /**
@@ -198,7 +196,7 @@ void exposePk(boolean exposePk) {
  * @param sqlOnBorrow SQL statement executed when the connection is grabbed from the pool.
  */
 void sqlOnBorrow(String sqlOnBorrow) {
-    params.put(DataStoreParamsCst.SQL_ON_BORROW, sqlOnBorrow)
+    params.put(JDBCDataStoreParamsCst.SQL_ON_BORROW, sqlOnBorrow)
 }
 
 /**
@@ -206,7 +204,7 @@ void sqlOnBorrow(String sqlOnBorrow) {
  * @param sqlOnRelease SQL statement executed when the connection is released to the pool.
  */
 void sqlOnRelease(String sqlOnRelease) {
-    params.put(DataStoreParamsCst.SQL_ON_RELEASE, sqlOnRelease)
+    params.put(JDBCDataStoreParamsCst.SQL_ON_RELEASE, sqlOnRelease)
 }
 
 /**
@@ -214,7 +212,7 @@ void sqlOnRelease(String sqlOnRelease) {
  * @param callbackFactory Name of JDBCReaderCallbackFactory to enable on the data store.
  */
 void callbackFactory(String callbackFactory) {
-    params.put(DataStoreParamsCst.CALLBACK_FACTORY, callbackFactory)
+    params.put(JDBCDataStoreParamsCst.CALLBACK_FACTORY, callbackFactory)
 }
 
 /**
@@ -222,7 +220,7 @@ void callbackFactory(String callbackFactory) {
  * @param host Host.
  */
 void host(String host) {
-    params.put(DataStoreParamsCst.HOST, host)
+    params.put(JDBCDataStoreParamsCst.HOST, host)
 }
 
 /**
@@ -230,7 +228,7 @@ void host(String host) {
  * @param port Port.
  */
 void port(int port) {
-    params.put(DataStoreParamsCst.PORT, port)
+    params.put(JDBCDataStoreParamsCst.PORT, port)
 }
 
 /**
@@ -238,7 +236,7 @@ void port(int port) {
  * @param database Database.
  */
 void database(String database) {
-    params.put(DataStoreParamsCst.DATABASE, database)
+    params.put(JDBCDataStoreParamsCst.DATABASE, database)
 }
 
 /**
@@ -246,7 +244,7 @@ void database(String database) {
  * @param schema Schema.
  */
 void schema(String schema) {
-    params.put(DataStoreParamsCst.SCHEMA, schema)
+    params.put(JDBCDataStoreParamsCst.SCHEMA, schema)
 }
 
 /**
@@ -254,5 +252,5 @@ void schema(String schema) {
  * @param user User.
  */
 void user(String user) {
-    params.put(DataStoreParamsCst.USER, user)
+    params.put(JDBCDataStoreParamsCst.USER, user)
 }

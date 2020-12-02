@@ -61,8 +61,14 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis.datastore</groupId>
-            <artifactId>utils</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <artifactId>datastore-utils</artifactId>
+            <version>${version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis.datastore</groupId>
+            <artifactId>jdbc-utils</artifactId>
+            <version>${version}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
