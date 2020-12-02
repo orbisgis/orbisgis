@@ -3,24 +3,18 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>orbisgis</artifactId>
+        <artifactId>datastore</artifactId>
         <groupId>org.orbisgis</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>datastore</artifactId>
+    <groupId>org.orbisgis.datastore</groupId>
+    <artifactId>jdbc-utils</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
 
     <!-- Project Information -->
-    <name>DataStore utilities</name>
-    <modules>
-        <module>datastore-utils</module>
-        <module>jdbc-utils</module>
-        <module>h2gis</module>
-        <module>postgis</module>
-    </modules>
+    <name>Geotools JDBC datastore utilities</name>
 
     <!-- Properties -->
     <properties>
@@ -31,6 +25,57 @@
         <buildNumber>${maven.build.timestamp}</buildNumber>
         <geotools.version>25-SNAPSHOT</geotools.version>
     </properties>
+
+    <!-- Dependencies -->
+    <dependencies>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-sql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-jdbc</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <!-- Test dependency -->
+        <dependency>
+            <groupId>org.h2gis</groupId>
+            <artifactId>h2gis-geotools</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>common-utils</artifactId>
+            <version>${version}</version>
+        </dependency>
+    </dependencies>
 
     <!-- Build Settings -->
     <build>
@@ -76,6 +121,20 @@
             <url>file:/var/www/html/${project.parent.artifactId}/${project.artifactId}</url>
         </site>
     </distributionManagement>
-
-
+    <repositories>
+        <repository>
+            <id>osgeo</id>
+            <name>OSGeo Release Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+        </repository>
+        <repository>
+            <id>osgeo-snapshot</id>
+            <name>OSGeo Snapshot Repository</name>
+            <url>https://repo.osgeo.org/repository/snapshot/</url>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
+        </repository>
+    </repositories>
 </project>

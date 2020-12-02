@@ -39,7 +39,7 @@ package org.orbisgis.datastore.h2gis
 import groovy.transform.BaseScript
 import groovy.transform.Field
 import org.h2gis.geotools.H2GISDataStoreFactory
-import org.orbisgis.datastore.utils.DataStoreParamsCst
+import org.orbisgis.datastore.jdbcutils.JDBCDataStoreParamsCst
 
 /**
  * Groovy script used as Closure DelegateTo on opening a H2GIS JDBCDataStore.
@@ -48,7 +48,7 @@ import org.orbisgis.datastore.utils.DataStoreParamsCst
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
-@BaseScript DataStoreParamsCst baseScript
+@BaseScript JDBCDataStoreParamsCst baseScript
 
 /** Associations. */
 public static final @Field String ASSOCIATIONS = H2GISDataStoreFactory.ASSOCIATIONS.key
