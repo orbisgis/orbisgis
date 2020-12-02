@@ -45,8 +45,11 @@ import groovy.transform.stc.SimpleType
 import org.geotools.jdbc.JDBCDataStore
 
 import java.sql.Connection
+import java.sql.PreparedStatement
 import java.sql.ResultSet
-import java.sql.SQLException 
+import java.sql.SQLException
+import java.sql.Statement
+
 /**
  * Utility script used as extension module adding methods to JDBCDataStore class.
  *
@@ -1350,4 +1353,249 @@ static GroovyRowResult firstRow(JDBCDataStore ds, Map params, String sql) throws
  */
 static GroovyRowResult firstRow(JDBCDataStore ds, String sql, Object[] params) throws SQLException {
     getSql(ds).firstRow(sql, params)
+}
+
+/**
+ * Executes the given piece of SQL.
+ * Also saves the updateCount, if any, for subsequent examination.
+ * 
+ * Example usages:
+ * 
+ * sql.execute "DROP TABLE IF EXISTS person"
+ *
+ * sql.execute """
+ *     CREATE TABLE person (
+ *         id INTEGER NOT NULL,
+ *         firstname VARCHAR(100),
+ *         lastname VARCHAR(100),
+ *         location_id INTEGER
+ *     )
+ * """
+ *
+ * sql.execute """
+ *     INSERT INTO person (id, firstname, lastname, location_id) VALUES (4, 'Paul', 'King', 40)
+ * """
+ * assert sql.updateCount == 1
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds  {@link JDBCDataStore} on which the query is performed.
+ * @param sql The SQL to execute.
+ * @return True if the first result is a ResultSet object; false if it is an update count or there are no results.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static boolean execute(JDBCDataStore ds, String sql) throws SQLException {
+    getSql(ds).execute(sql)
+}
+
+/**
+ * Executes the given piece of SQL.
+ * Also calls the provided processResults Closure to process any ResultSet or UpdateCount results that executing the SQL might produce.
+ * 
+ * Example usages:
+ * 
+ * boolean first = true
+ * sql.execute "{call FindAllByFirst('J')}", { isResultSet, result ->
+ *   if (first) {
+ *     first = false
+ *     assert !isResultSet {@code &&} result == 0
+ *   } else {
+ *     assert isResultSet {@code &&} result == [[ID:1, FIRSTNAME:'James', LASTNAME:'Strachan'], [ID:4, FIRSTNAME:'Jean', LASTNAME:'Gabin']]
+ *   }
+ * }
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds  {@link JDBCDataStore} on which the query is performed.
+ * @param sql The SQL to execute.
+ * @param processResults A Closure which will be passed two parameters: either true plus a list of GroovyRowResult
+ *                       values derived from statement.getResultSet() or false plus the update count from
+ *                       statement.getUpdateCount().
+ *                       The closure will be called for each result produced from executing the SQL.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void execute(JDBCDataStore ds, String sql,
+                @ClosureParams(value=SimpleType.class,
+                        options=["boolean,java.util.List<groovy.sql.GroovyRowResult>", "boolean,int"])
+                        Closure processResults)
+        throws SQLException {
+    getSql(ds).execute(sql, processResults)
+}
+
+/**
+ * Executes the given piece of SQL with parameters.
+ * Also saves the updateCount, if any, for subsequent examination.
+ * 
+ * Example usage:
+ * 
+ * sql.execute """
+ *     insert into PERSON (id, firstname, lastname, location_id) values (?, ?, ?, ?)
+ * """, [1, "Guillaume", "Laforge", 10]
+ * assert sql.updateCount == 1
+ * 
+ * 
+ * This method supports named and named ordinal parameters.
+ * See the class Javadoc for more details.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param sql    The SQL statement.
+ * @param params A list of parameters.
+ * @return True if the first result is a ResultSet object; false if it is an update count or there are no results.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static boolean execute(JDBCDataStore ds, String sql, List<Object> params) throws SQLException {
+    getSql(ds).execute(sql, params)
+}
+
+/**
+ * Executes the given piece of SQL with parameters.
+ * Also calls the provided processResults Closure to process any ResultSet or UpdateCount results that executing the SQL might produce.
+ * 
+ * This method supports named and named ordinal parameters.
+ * See the class Javadoc for more details.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param sql    The SQL statement.
+ * @param params A list of parameters.
+ * @param processResults A Closure which will be passed two parameters: either true plus a list of GroovyRowResult
+ *                       values derived from {@code statement.getResultSet()} or {@code false} plus the update count from {@code statement.getUpdateCount()}.
+ *                       The closure will be called for each result produced from executing the SQL.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void execute(JDBCDataStore ds, String sql, List<Object> params,
+                    @ClosureParams(value=SimpleType.class,
+                            options=["boolean,java.util.List<groovy.sql.GroovyRowResult>", "boolean,int"])
+                            Closure processResults)
+        throws SQLException {
+    getSql(ds).execute(sql, params, processResults)
+}
+
+/**
+ * A variant of {@link #execute(JDBCDataStore, String, java.util.List)} useful when providing the named parameters as
+ * named arguments.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param params A map containing the named parameters.
+ * @param sql    The SQL statement.
+ * @return True if the first result is a ResultSet object; false if it is an update count or there are no results.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static boolean execute(JDBCDataStore ds, Map params, String sql) throws SQLException {
+    getSql(ds).execute(params, sql)
+}
+
+/**
+ * A variant of {@link #execute(JDBCDataStore, String, java.util.List, Closure)} useful when providing the named
+ * parameters as named arguments.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param params A map containing the named parameters.
+ * @param sql    The SQL statement.
+ * @param processResults A Closure which will be passed two parameters: either true plus a list of GroovyRowResult
+ *                       values derived from statement.getResultSet() or false plus the update count from
+ *                       statement.getUpdateCount().
+ *                       The closure will be called for each result produced from executing the SQL.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void execute(JDBCDataStore ds, Map params, String sql,
+                    @ClosureParams(value=SimpleType.class,
+                            options=["boolean,java.util.List<groovy.sql.GroovyRowResult>", "boolean,int"])
+                            Closure processResults)
+        throws SQLException {
+    getSql(ds).execute(params, sql, processResults)
+}
+
+/**
+ * Executes the given piece of SQL with parameters.
+ * 
+ * An Object array variant of {@link #execute(JDBCDataStore, String, List)}.
+ * 
+ * This method supports named and named ordinal parameters by supplying such parameters in the params array. See the
+ * class Javadoc for more details.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param sql    The SQL statement.
+ * @param params An array of parameters.
+ * @return True if the first result is a ResultSet object; false if it is an update count or there are no results.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static boolean execute(JDBCDataStore ds, String sql, Object[] params) throws SQLException {
+    getSql(ds).execute(sql, params)
+}
+
+/**
+ * Executes the given piece of SQL with parameters.
+ * 
+ * An Object array variant of {@link #execute(JDBCDataStore, String, List, Closure)}.
+ * 
+ * This method supports named and named ordinal parameters by supplying such
+ * parameters in the params array. See the class Javadoc for more details.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param sql    The SQL statement.
+ * @param params An array of parameters.
+ * @param processResults A Closure which will be passed two parameters: either true plus a list of GroovyRowResult values
+ *                       derived from statement.getResultSet() or false plus the update count from
+ *                       statement.getUpdateCount().
+ *                       The closure will be called for each result produced from executing the SQL.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void execute(JDBCDataStore ds, String sql, Object[] params,
+                    @ClosureParams(value=SimpleType.class,
+                            options=["boolean,java.util.List<groovy.sql.GroovyRowResult>", "boolean,int"])
+                            Closure processResults)
+        throws SQLException {
+    getSql(ds).execute(sql, params, processResults)
+}
+
+/**
+ * Executes the given SQL with embedded expressions inside.
+ * Also saves the updateCount, if any, for subsequent examination.
+ * 
+ * Example usage:
+ * 
+ * def scott = [firstname: "Scott", lastname: "Davis", id: 5, location_id: 50]
+ * sql.execute """
+ *     insert into PERSON (id, firstname, lastname, location_id) values ($scott.id, $scott.firstname, $scott.lastname, $scott.location_id)
+ * """
+ * assert sql.updateCount == 1
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param gstring A GString containing the SQL query with embedded params.
+ * @return True if the first result is a ResultSet object; false if it is an update count or there are no results.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static boolean execute(JDBCDataStore ds, GString gstring) throws SQLException {
+    getSql(ds).execute(gstring)
+}
+
+/**
+ * Executes the given SQL with embedded expressions inside.
+ * Also calls the provided processResults Closure to process any ResultSet or UpdateCount results that executing the
+ * SQL might produce.
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param gstring A GString containing the SQL query with embedded params.
+ * @param processResults A Closure which will be passed two parameters: either true plus a list of GroovyRowResult
+ *                       values derived from statement.getResultSet() or false plus the update count from
+ *                       statement.getUpdateCount().
+ *                       The closure will be called for each result produced from executing the SQL.
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static void execute(JDBCDataStore ds, GString gstring,
+                    @ClosureParams(value=SimpleType.class,
+                            options=["boolean,java.util.List<groovy.sql.GroovyRowResult>", "boolean,int"])
+                            Closure processResults)
+        throws SQLException {
+    getSql(ds).execute(gstring, processResults)
 }

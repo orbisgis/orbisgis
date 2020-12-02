@@ -75,6 +75,11 @@
             <artifactId>common-utils</artifactId>
             <version>${version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis.datastore</groupId>
+            <artifactId>datastore-utils</artifactId>
+            <version>${version}</version>
+        </dependency>
     </dependencies>
 
     <!-- Build Settings -->
