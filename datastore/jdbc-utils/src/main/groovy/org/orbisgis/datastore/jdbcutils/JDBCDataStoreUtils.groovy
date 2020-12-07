@@ -45,10 +45,8 @@ import groovy.transform.stc.SimpleType
 import org.geotools.jdbc.JDBCDataStore
 
 import java.sql.Connection
-import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
-import java.sql.Statement
 
 /**
  * Utility script used as extension module adding methods to JDBCDataStore class.
@@ -670,7 +668,7 @@ static void eachRow(JDBCDataStore ds, GString gstring,
  * type.
  *
  * @param ds          {@link JDBCDataStore} on which the query is performed.
- * @param gstring     A GString containing the SQL query with embedded params.
+ * @param gstring     A GString containing the SQL query with embedded params..
  * @param metaClosure Called for meta data (only once after sql execution).
  * @param offset      The 1-based offset for the first row to be processed.
  * @param maxRows     The maximum number of rows to be processed.
@@ -702,7 +700,7 @@ static void eachRow(JDBCDataStore ds, GString gstring,
  * type.
  *
  * @param ds      {@link JDBCDataStore} on which the query is performed.
- * @param gstring A GString containing the SQL query with embedded params.
+ * @param gstring A GString containing the SQL query with embedded params..
  * @param offset  The 1-based offset for the first row to be processed.
  * @param maxRows The maximum number of rows to be processed.
  * @param closure Called for each row with a {@link GroovyResultSet}.
@@ -731,7 +729,7 @@ static void eachRow(JDBCDataStore ds, GString gstring, int offset, int maxRows,
  * Resource handling is performed automatically where appropriate.
  *
  * @param ds      {@link JDBCDataStore} on which the query is performed.
- * @param gstring A GString containing the SQL query with embedded params.
+ * @param gstring A GString containing the SQL query with embedded params..
  * @param closure Called for each row with a {@link GroovyResultSet}.
  * @throws SQLException Thrown on a database access error occurrence.
  */
@@ -1177,7 +1175,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, GString sql, int offset, int
  * Resource handling is performed automatically where appropriate.
  *
  * @param ds      {@link JDBCDataStore} on which the query is performed.
- * @param gstring A GString containing the SQL query with embedded params.
+ * @param gstring A GString containing the SQL query with embedded params..
  * @return A list of GroovyRowResult objects.
  * @throws SQLException Thrown on a database access error occurrence.
  */
@@ -1201,7 +1199,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, GString gstring) throws SQLE
  * Resource handling is performed automatically where appropriate.
  *
  * @param ds          {@link JDBCDataStore} on which the query is performed.
- * @param gstring     A GString containing the SQL query with embedded params.
+ * @param gstring     A GString containing the SQL query with embedded params..
  * @param metaClosure Called with meta data of the ResultSet.
  * @return A list of GroovyRowResult objects.
  * @throws SQLException Thrown on a database access error occurrence.
@@ -1276,7 +1274,7 @@ static GroovyRowResult firstRow(JDBCDataStore ds, String sql) throws SQLExceptio
  * Resource handling is performed automatically where appropriate.
  *
  * @param ds      {@link JDBCDataStore} on which the query is performed.
- * @param gstring A GString containing the SQL query with embedded params.
+ * @param gstring A GString containing the SQL query with embedded params..
  * @return A GroovyRowResult object or null if no row is found.
  * @throws SQLException Thrown on a database access error occurrence.
  */
@@ -1570,7 +1568,7 @@ static void execute(JDBCDataStore ds, String sql, Object[] params,
  * Resource handling is performed automatically where appropriate.
  *
  * @param ds      {@link JDBCDataStore} on which the query is performed.
- * @param gstring A GString containing the SQL query with embedded params.
+ * @param gstring A GString containing the SQL query with embedded params..
  * @return True if the first result is a ResultSet object; false if it is an update count or there are no results.
  * @throws SQLException Thrown on a database access error occurrence.
  */
@@ -1585,7 +1583,7 @@ static boolean execute(JDBCDataStore ds, GString gstring) throws SQLException {
  * Resource handling is performed automatically where appropriate.
  *
  * @param ds      {@link JDBCDataStore} on which the query is performed.
- * @param gstring A GString containing the SQL query with embedded params.
+ * @param gstring A GString containing the SQL query with embedded params..
  * @param processResults A Closure which will be passed two parameters: either true plus a list of GroovyRowResult
  *                       values derived from statement.getResultSet() or false plus the update count from
  *                       statement.getUpdateCount().
@@ -1598,4 +1596,226 @@ static void execute(JDBCDataStore ds, GString gstring,
                             Closure processResults)
         throws SQLException {
     getSql(ds).execute(gstring, processResults)
+}
+
+/**
+ * Executes the given SQL statement (typically an INSERT statement).
+ * Use this variant when you want to receive the values of any auto-generated columns, such as an autoincrement ID
+ * field.
+ * See {@link #executeInsert(JDBCDataStore, GString)} for more details.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds  {@link JDBCDataStore} on which the query is performed.
+ * @param sql The SQL statement to execute.
+ * @return A list of the auto-generated column values for each inserted row (typically auto-generated keys).
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<List<Object>> executeInsert(JDBCDataStore ds, String sql) throws SQLException {
+    getSql(ds).executeInsert(sql)
+}
+
+/**
+ * Executes the given SQL statement (typically an INSERT statement).
+ * Use this variant when you want to receive the values of any auto-generated columns, such as an autoincrement ID
+ * field.
+ * The query may contain placeholder question marks which match the given list of parameters.
+ * See {@link #executeInsert(JDBCDataStore, GString)} for more details.
+ * 
+ * This method supports named and named ordinal parameters.
+ * See the class Javadoc for more details.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param sql    The SQL statement to execute.
+ * @param params The parameter values that will be substituted into the SQL statement's parameter slots.
+ * @return A list of the auto-generated column values for each inserted row (typically auto-generated keys).
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<List<Object>> executeInsert(JDBCDataStore ds, String sql, List<Object> params) throws SQLException {
+    getSql(ds).executeInsert(sql, params)
+}
+
+/**
+ * Executes the given SQL statement (typically an INSERT statement).
+ * Use this variant when you want to receive the values of any auto-generated columns, such as an autoincrement ID
+ * field (or fields) and you know the column name(s) of the ID field(s).
+ * The query may contain placeholder question marks which match the given list of parameters.
+ * See {@link #executeInsert(JDBCDataStore, GString)} for more details.
+ * 
+ * This method supports named and named ordinal parameters.
+ * See the class Javadoc for more details.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds             {@link JDBCDataStore} on which the query is performed.
+ * @param sql            The SQL statement to execute.
+ * @param params         The parameter values that will be substituted into the SQL statement's parameter slots.
+ * @param keyColumnNames A list of column names indicating the columns that should be returned from the
+ *                       inserted row or rows (some drivers may be case sensitive, e.g. may require uppercase names).
+ * @return A list of the auto-generated row results for each inserted row (typically auto-generated keys).
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> executeInsert(JDBCDataStore ds, String sql, List<Object> params,
+                                           List<String> keyColumnNames) throws SQLException {
+    getSql(ds).executeInsert(sql, params, keyColumnNames)
+}
+
+/**
+ * A variant of {@link #executeInsert(JDBCDataStore, String, java.util.List)} useful when providing the named 
+ * parameters as named arguments.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param params A map containing the named parameters.
+ * @param sql    The SQL statement to execute.
+ * @return A list of the auto-generated column values for each inserted row (typically auto-generated keys).
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<List<Object>> executeInsert(JDBCDataStore ds, Map params, String sql) throws SQLException {
+    getSql(ds).executeInsert(params, sql)
+}
+
+/**
+ * A variant of {@link #executeInsert(JDBCDataStore, String, List, List)} useful when providing the named parameters
+ * as named arguments.
+ * This variant allows you to receive the values of any auto-generated columns, such as an autoincrement ID field
+ * (or fields) when you know the column name(s) of the ID field(s).
+ *
+ * @param ds             {@link JDBCDataStore} on which the query is performed.
+ * @param params         A map containing the named parameters.
+ * @param sql            The SQL statement to execute.
+ * @param keyColumnNames A list of column names indicating the columns that should be returned from the
+ *                       inserted row or rows (some drivers may be case sensitive, e.g. may require uppercase names).
+ * @return A list of the auto-generated row results for each inserted row (typically auto-generated keys).
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> executeInsert(JDBCDataStore ds, Map params, String sql, List<String> keyColumnNames)
+        throws SQLException {
+    getSql(ds).executeInsert(params, sql, keyColumnNames)
+}
+
+/**
+ * Executes the given SQL statement (typically an INSERT statement).
+ * 
+ * An Object array variant of {@link #executeInsert(JDBCDataStore, String, List)}.
+ * 
+ * This method supports named and named ordinal parameters by supplying such
+ * parameters in the params array. See the class Javadoc for more details.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param params A map containing the named parameters.
+ * @param sql    The SQL statement to execute
+ * @param params The parameter values that will be substituted into the SQL statement's parameter slots.
+ * @return A list of the auto-generated column values for each inserted row (typically auto-generated keys).
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<List<Object>> executeInsert(JDBCDataStore ds, String sql, Object[] params) throws SQLException {
+    getSql(ds).executeInsert(sql, params)
+}
+
+/**
+ * Executes the given SQL statement (typically an INSERT statement).
+ * This variant allows you to receive the values of any auto-generated columns,
+ * such as an autoincrement ID field (or fields) when you know the column name(s) of the ID field(s).
+ *
+ * This method supports named and named ordinal parameters by supplying such
+ * parameters in the params array. See the class Javadoc for more details.
+ *
+ * @param ds             {@link JDBCDataStore} on which the query is performed.
+ * @param params         A map containing the named parameters.
+ * @param sql            The SQL statement to execute
+ * @param keyColumnNames An array of column names indicating the columns that should be returned from the
+ *                       inserted row or rows (some drivers may be case sensitive, e.g. may require uppercase names).
+ * @return A list of the auto-generated row results for each inserted row (typically auto-generated keys).
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> executeInsert(JDBCDataStore ds, String sql, String[] keyColumnNames) throws SQLException {
+    getSql(ds).executeInsert(sql, keyColumnNames)
+}
+
+/**
+ * Executes the given SQL statement (typically an INSERT statement).
+ * This variant allows you to receive the values of any auto-generated columns,
+ * such as an autoincrement ID field (or fields) when you know the column name(s) of the ID field(s).
+ *
+ * An array variant of {@link #executeInsert(JDBCDataStore, String, List, List)}.
+ *
+ * This method supports named and named ordinal parameters by supplying such
+ * parameters in the params array. See the class Javadoc for more details.
+ *
+ * @param ds             {@link JDBCDataStore} on which the query is performed.
+ * @param params         A map containing the named parameters.
+ * @param sql            The SQL statement to execute.
+ * @param keyColumnNames An array of column names indicating the columns that should be returned from the
+ *                       inserted row or rows (some drivers may be case sensitive, e.g. may require uppercase names).
+ * @param params         The parameter values that will be substituted into the SQL statement's parameter slots.
+ * @return A list of the auto-generated row results for each inserted row (typically auto-generated keys).
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> executeInsert(JDBCDataStore ds, String sql, String[] keyColumnNames, Object[] params)
+        throws SQLException {
+    getSql(ds).executeInsert(sql, keyColumnNames, params)
+}
+
+/**
+ * Executes the given SQL statement (typically an INSERT statement).
+ * Use this variant when you want to receive the values of any auto-generated columns, such as an autoincrement ID
+ * field.
+ * The query may contain GString expressions.
+ * 
+ * Generated key values can be accessed using array notation. For example, to return the second auto-generated column
+ * value of the third row, use keys[3][1]. The method is designed to be used with SQL INSERT statements, but is not
+ * limited to them.
+ * 
+ * The standard use for this method is when a table has an autoincrement ID column and you want to know what the ID is
+ * for a newly inserted row. In this example, we insert a single row into a table in which the first column contains
+ * the autoincrement ID:
+ *
+ * def sql = Sql.newInstance("jdbc:mysql://localhost:3306/groovy",
+ *                           "user",
+ *                           "password",
+ *                           "com.mysql.jdbc.Driver")
+ *
+ * def keys = sql.executeInsert("insert into test_table (INT_DATA, STRING_DATA) "
+ *                       + "VALUES (1, 'Key Largo')")
+ *
+ * def id = keys[0][0]
+ *
+ * // 'id' now contains the value of the new row's ID column.
+ * // It can be used to update an object representation's
+ * // id attribute for example.
+ * ...
+ *
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param params  A map containing the named parameters.
+ * @param gstring A GString containing the SQL query with embedded params.
+ * @return A list of the auto-generated column values for each inserted row (typically auto-generated keys).
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<List<Object>> executeInsert(JDBCDataStore ds, GString gstring) throws SQLException {
+    getSql(ds).executeInsert(gstring)
+}
+
+/**
+ * Executes the given SQL statement (typically an INSERT statement).
+ * Use this variant when you want to receive the values of any auto-generated columns, such as an autoincrement ID 
+ * field (or fields) and you know the column name(s) of the ID field(s).
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds             {@link JDBCDataStore} on which the query is performed.
+ * @param params         A map containing the named parameters.
+ * @param gstring        A GString containing the SQL query with embedded params.
+ * @param keyColumnNames A list of column names indicating the columns that should be returned from the
+ *                       inserted row or rows (some drivers may be case sensitive, e.g. may require uppercase names).
+ * @return A list of the auto-generated row results for each inserted row (typically auto-generated keys).
+ * @throws SQLException Thrown on a database access error occurrence.
+ */
+static List<GroovyRowResult> executeInsert(JDBCDataStore ds, GString gstring, List<String> keyColumnNames)
+        throws SQLException {
+    getSql(ds).executeInsert(gstring, keyColumnNames)
 }
