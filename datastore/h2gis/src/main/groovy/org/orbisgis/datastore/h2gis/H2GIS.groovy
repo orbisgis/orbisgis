@@ -60,7 +60,6 @@ private static final @Field H2GISDataStoreFactory H2GIS_DATA_STORE_FACTORY = new
 static JDBCDataStore open(String databasePath) {
     Map params = new java.util.HashMap()
     params.put("database", new File(databasePath).absolutePath)
-    params.put("dbtype", "h2gis")
     return H2GIS_DATA_STORE_FACTORY.createDataStore(params)
 }
 
