@@ -72,7 +72,8 @@ public class SQLParser extends ExpressionDeParser {
     FunctionFinder functionFinder;
 
     public SQLParser() {
-
+        ff = new FilterFactoryImpl();
+        functionFinder = new FunctionFinder(null);
     }
 
     /**
@@ -101,8 +102,6 @@ public class SQLParser extends ExpressionDeParser {
     public Expression toExpression(String selectExpression)  {
         try {
             if (selectExpression != null && !selectExpression.isEmpty()) {
-                ff = new FilterFactoryImpl();
-                functionFinder = new FunctionFinder(null);
                 net.sf.jsqlparser.expression.Expression parseExpression = CCJSqlParserUtil.parseExpression(selectExpression, false);
                 StringBuilder b = new StringBuilder();
                 setBuffer(b);
@@ -119,7 +118,7 @@ public class SQLParser extends ExpressionDeParser {
     }
 
     /**
-     * Convert litteral SQL select expression to an Expression
+     * Convert plain SQL select expression to an Expression
      * @param selectExpression
      * @return
      */
@@ -235,8 +234,18 @@ public class SQLParser extends ExpressionDeParser {
     @Override
     public void visit(Function function) {
         super.visit(function);
-        String functionName = function.getName();
-        org.opengis.filter.expression.Function internalFunction = functionFinder.findFunction(functionName, stack);
+        String functionName = function.getName().toLowerCase();
+        org.opengis.filter.expression.Function internalFunction=null;
+        try {
+             internalFunction = functionFinder.findFunction(functionName, stack);
+        }catch (RuntimeException ex) {
+            if (internalFunction == null) {
+                //Workaround for spatial functions with st_ prefix
+                if (functionName.startsWith("st_")) {
+                    internalFunction = functionFinder.findFunction(functionName.substring(3), stack);
+                }
+            }
+        }
         stack.clear();
         if(internalFunction!=null){
             stack.push(internalFunction);

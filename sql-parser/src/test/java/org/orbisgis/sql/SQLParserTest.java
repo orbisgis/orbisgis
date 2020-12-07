@@ -104,8 +104,9 @@ public class SQLParserTest {
 
     @Test
     public void convertWithSFFunctions() {
-
-
+        SQLParser sqlParser = new SQLParser();
+        String expression = "ST_AREA(the_geom)";
+        assertEquals("Area([the_geom])", sqlParser.toExpression(expression).toString());
     }
 
-    }
+}
