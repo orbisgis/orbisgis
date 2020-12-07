@@ -45,8 +45,10 @@ import groovy.transform.stc.SimpleType
 import org.geotools.jdbc.JDBCDataStore
 
 import java.sql.Connection
+import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
+import java.sql.Statement
 
 /**
  * Utility script used as extension module adding methods to JDBCDataStore class.
@@ -104,7 +106,7 @@ DataSet dataSet(JDBCDataStore ds, Class<?> type) {
  * @param ds      {@link JDBCDataStore} on which the query is performed.
  * @param sql     The sql statement.
  * @param closure Called for each row with a {@link java.sql.ResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void query(JDBCDataStore ds, String sql,
            @ClosureParams(value = SimpleType, options = ["java.sql.ResultSet"]) Closure closure)
@@ -133,7 +135,7 @@ static void query(JDBCDataStore ds, String sql,
  * @param sql     The sql statement.
  * @param params  A list of parameters.
  * @param closure Called for each row with a {@link java.sql.ResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void query(JDBCDataStore ds, String sql, List<Object> params,
                   @ClosureParams(value = SimpleType.class,options = ["java.sql.ResultSet"]) Closure closure)
@@ -150,7 +152,7 @@ static void query(JDBCDataStore ds, String sql, List<Object> params,
  * @param sql     The sql statement.
  * @param map     A map containing the named parameters
  * @param closure Called for each row with a {@link java.sql.ResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void query(JDBCDataStore ds, String sql, Map map,
            @ClosureParams(value = SimpleType.class,options = ["java.sql.ResultSet"]) Closure closure)
@@ -166,7 +168,7 @@ static void query(JDBCDataStore ds, String sql, Map map,
  * @param map     A map containing the named parameters
  * @param sql     The sql statement.
  * @param closure Called for each row with a {@link java.sql.ResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void query(JDBCDataStore ds, Map map, String sql,
            @ClosureParams(value = SimpleType.class,options = ["java.sql.ResultSet"]) Closure closure)
@@ -192,7 +194,7 @@ static void query(JDBCDataStore ds, Map map, String sql,
  * @param ds      {@link JDBCDataStore} on which the query is performed.
  * @param gstring A {@link GString} containing the SQL query with embedded params
  * @param closure called for each row with a {@link java.sql.ResultSet}
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void query(JDBCDataStore ds, GString gstring,
                   @ClosureParams(value = SimpleType.class,options = ["java.sql.ResultSet"]) Closure closure)
@@ -222,7 +224,7 @@ static void query(JDBCDataStore ds, GString gstring,
  * @param ds      {@link JDBCDataStore} on which the query is performed.
  * @param sql     The sql statement.
  * @param closure Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, String sql,
              @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
@@ -252,7 +254,7 @@ static void eachRow(JDBCDataStore ds, String sql,
  * @param offset  The 1-based offset for the first row to be processed.
  * @param maxRows The maximum number of rows to be processed.
  * @param closure Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, String sql, int offset, int maxRows,
                     @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
@@ -287,7 +289,7 @@ static void eachRow(JDBCDataStore ds, String sql, int offset, int maxRows,
  * @param sql         The sql statement.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @param closure     Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, String sql,
              @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
@@ -322,7 +324,7 @@ static void eachRow(JDBCDataStore ds, String sql,
  * @param maxRows     The maximum number of rows to be processed.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @param closure     Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, String sql,
                     @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
@@ -357,7 +359,7 @@ static void eachRow(JDBCDataStore ds, String sql,
  * @param maxRows     The maximum number of rows to be processed.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, String sql, List<Object> params,
                     @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
@@ -378,7 +380,7 @@ static void eachRow(JDBCDataStore ds, String sql, List<Object> params,
  * @param maxRows     The maximum number of rows to be processed.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, String sql, Map map,
                     @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
@@ -399,7 +401,7 @@ static void eachRow(JDBCDataStore ds, String sql, Map map,
  * @param maxRows     The maximum number of rows to be processed.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, Map map, String sql,
                     @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
@@ -441,7 +443,7 @@ static void eachRow(JDBCDataStore ds, Map map, String sql,
  * @param params      A list of parameters.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, String sql, List<Object> params,
                     @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
@@ -459,7 +461,7 @@ static void eachRow(JDBCDataStore ds, String sql, List<Object> params,
  * @param params      A map of named parameters.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, String sql, Map params,
                     @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
@@ -477,7 +479,7 @@ static void eachRow(JDBCDataStore ds, String sql, Map params,
  * @param sql         The sql statement.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, Map params, String sql,
                     @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
@@ -505,7 +507,7 @@ static void eachRow(JDBCDataStore ds, Map params, String sql,
  * @param sql     The sql statement.
  * @param params  A list of parameters.
  * @param closure Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, String sql, List<Object> params,
                     @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure) 
@@ -521,7 +523,7 @@ static void eachRow(JDBCDataStore ds, String sql, List<Object> params,
  * @param sql     The sql statement.
  * @param params  A map of named parameters.
  * @param closure Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, String sql, Map params,
                     @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
@@ -537,7 +539,7 @@ static void eachRow(JDBCDataStore ds, String sql, Map params,
  * @param params  A map of named parameters.
  * @param sql     The sql statement.
  * @param closure Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, Map params, String sql,
                     @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
@@ -567,7 +569,7 @@ static void eachRow(JDBCDataStore ds, Map params, String sql,
  * @param offset  The 1-based offset for the first row to be processed.
  * @param maxRows The maximum number of rows to be processed.
  * @param closure Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, String sql, List<Object> params, int offset, int maxRows,
                     @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
@@ -585,7 +587,7 @@ static void eachRow(JDBCDataStore ds, String sql, List<Object> params, int offse
  * @param offset  The 1-based offset for the first row to be processed.
  * @param maxRows The maximum number of rows to be processed.
  * @param closure Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, String sql, Map params, int offset, int maxRows,
                     @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
@@ -603,7 +605,7 @@ static void eachRow(JDBCDataStore ds, String sql, Map params, int offset, int ma
  * @param offset  The 1-based offset for the first row to be processed.
  * @param maxRows The maximum number of rows to be processed.
  * @param closure Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, Map params, String sql, int offset, int maxRows,
                     @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
@@ -641,7 +643,7 @@ static void eachRow(JDBCDataStore ds, Map params, String sql, int offset, int ma
  * @param gstring     A {@link GString} containing the SQL query with embedded params.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, GString gstring,
                     @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
@@ -673,7 +675,7 @@ static void eachRow(JDBCDataStore ds, GString gstring,
  * @param offset      The 1-based offset for the first row to be processed.
  * @param maxRows     The maximum number of rows to be processed.
  * @param rowClosure  Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, GString gstring,
                     @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure,
@@ -704,7 +706,7 @@ static void eachRow(JDBCDataStore ds, GString gstring,
  * @param offset  The 1-based offset for the first row to be processed.
  * @param maxRows The maximum number of rows to be processed.
  * @param closure Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, GString gstring, int offset, int maxRows,
                     @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure)
@@ -731,7 +733,7 @@ static void eachRow(JDBCDataStore ds, GString gstring, int offset, int maxRows,
  * @param ds      {@link JDBCDataStore} on which the query is performed.
  * @param gstring A GString containing the SQL query with embedded params..
  * @param closure Called for each row with a {@link GroovyResultSet}.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void eachRow(JDBCDataStore ds, GString gstring,
                     @ClosureParams(value=SimpleType.class, options="groovy.sql.GroovyResultSet") Closure closure) throws SQLException {
@@ -752,7 +754,7 @@ static void eachRow(JDBCDataStore ds, GString gstring,
  * @param ds  {@link JDBCDataStore} on which the query is performed.
  * @param sql The SQL statement.
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, String sql) throws SQLException {
     getSql(ds).rows(sql)
@@ -778,7 +780,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql) throws SQLExcept
  * @param offset  The 1-based offset for the first row to be processed.
  * @param maxRows The maximum number of rows to be processed.
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, int offset, int maxRows) throws SQLException {
     getSql(ds).rows(sql, offset, maxRows, null)
@@ -802,7 +804,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, int offset, int 
  * @param sql         The SQL statement.
  * @param metaClosure Called with meta data of the ResultSet.
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, String sql,
                   @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
@@ -832,7 +834,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql,
  * @param maxRows     The maximum number of rows to be processed.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, int offset, int maxRows,
                   @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
@@ -859,7 +861,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, int offset, int 
  * @param sql    The SQL statement.
  * @param params A list of parameters.
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, List<Object> params) throws SQLException {
     getSql(ds).rows(sql, params)
@@ -873,7 +875,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, List<Object> par
  * @param params a map containing the named parameters
  * @param sql    The SQL statement.
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, Map params, String sql) throws SQLException {
     getSql(ds).rows(params, sql)
@@ -904,7 +906,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, Map params, String sql) thro
  * @param offset  The 1-based offset for the first row to be processed.
  * @param maxRows The maximum number of rows to be processed.
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, List<Object> params, int offset, int maxRows) throws SQLException {
     getSql(ds).rows(sql, params, offset, maxRows)
@@ -920,7 +922,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, List<Object> par
  * @param offset  The 1-based offset for the first row to be processed.
  * @param maxRows The maximum number of rows to be processed.
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Map params, int offset, int maxRows) throws SQLException {
     getSql(ds).rows(sql, params, offset, maxRows)
@@ -936,7 +938,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Map params, int 
  * @param offset  The 1-based offset for the first row to be processed.
  * @param maxRows The maximum number of rows to be processed.
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, Map params, String sql, int offset, int maxRows)
         throws SQLException {
@@ -955,7 +957,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, Map params, String sql, int 
  * @param sql    The SQL statement.
  * @param params an array of parameters
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Object[] params)
         throws SQLException {
@@ -976,7 +978,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Object[] params)
  * @param offset  The 1-based offset for the first row to be processed.
  * @param maxRows The maximum number of rows to be processed.
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Object[] params, int offset, int maxRows)
         throws SQLException {
@@ -1019,7 +1021,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Object[] params,
  * @param params      A list of parameters.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, List<Object> params,
                     @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
@@ -1036,7 +1038,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, List<Object> par
  * @param params      A map of named parameters.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Map params,
                     @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
@@ -1053,7 +1055,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Map params,
  * @param sql         The SQL statement.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, Map params, String sql,
                   @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
@@ -1088,7 +1090,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, Map params, String sql,
  * @param maxRows     The maximum number of rows to be processed.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, List<Object> params, int offset, int maxRows,
                   @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
@@ -1107,7 +1109,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, List<Object> par
  * @param maxRows     The maximum number of rows to be processed.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Map params, int offset, int maxRows,
                   @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
@@ -1126,7 +1128,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, String sql, Map params, int 
  * @param maxRows     The maximum number of rows to be processed.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, Map params, String sql, int offset, int maxRows,
                   @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
@@ -1155,7 +1157,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, Map params, String sql, int 
  * @param offset  The 1-based offset for the first row to be processed.
  * @param maxRows The maximum number of rows to be processed.
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, GString sql, int offset, int maxRows) throws SQLException {
     getSql(ds).rows(sql, offset, maxRows)
@@ -1177,7 +1179,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, GString sql, int offset, int
  * @param ds      {@link JDBCDataStore} on which the query is performed.
  * @param gstring A GString containing the SQL query with embedded params..
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, GString gstring) throws SQLException {
     getSql(ds).rows(gstring)
@@ -1202,7 +1204,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, GString gstring) throws SQLE
  * @param gstring     A GString containing the SQL query with embedded params..
  * @param metaClosure Called with meta data of the ResultSet.
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, GString gstring,
                   @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure)
@@ -1233,7 +1235,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, GString gstring,
  * @param maxRows     The maximum number of rows to be processed.
  * @param metaClosure Called for meta data (only once after sql execution).
  * @return A list of GroovyRowResult objects.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> rows(JDBCDataStore ds, GString gstring, int offset, int maxRows,
                   @ClosureParams(value=SimpleType.class, options="java.sql.ResultSetMetaData") Closure metaClosure) 
@@ -1254,7 +1256,7 @@ static List<GroovyRowResult> rows(JDBCDataStore ds, GString gstring, int offset,
  * @param ds  {@link JDBCDataStore} on which the query is performed.
  * @param sql The SQL statement.
  * @return A GroovyRowResult object or null if no row is found.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static GroovyRowResult firstRow(JDBCDataStore ds, String sql) throws SQLException {
     getSql(ds).firstRow(sql)
@@ -1276,7 +1278,7 @@ static GroovyRowResult firstRow(JDBCDataStore ds, String sql) throws SQLExceptio
  * @param ds      {@link JDBCDataStore} on which the query is performed.
  * @param gstring A GString containing the SQL query with embedded params..
  * @return A GroovyRowResult object or null if no row is found.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static GroovyRowResult firstRow(JDBCDataStore ds, GString gstring) throws SQLException {
     getSql(ds).firstRow(gstring)
@@ -1315,7 +1317,7 @@ static GroovyRowResult firstRow(JDBCDataStore ds, GString gstring) throws SQLExc
  * @param sql    The SQL statement.
  * @param params A list of parameters.
  * @return A GroovyRowResult object or null if no row is found.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static GroovyRowResult firstRow(JDBCDataStore ds, String sql, List<Object> params) throws SQLException {
     getSql(ds).firstRow(sql, params)
@@ -1329,7 +1331,7 @@ static GroovyRowResult firstRow(JDBCDataStore ds, String sql, List<Object> param
  * @param params A map containing the named parameters.
  * @param sql    The SQL statement.
  * @return A GroovyRowResult object or null if no row is found.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static GroovyRowResult firstRow(JDBCDataStore ds, Map params, String sql) throws SQLException {
     getSql(ds).firstRow(params, sql)
@@ -1347,7 +1349,7 @@ static GroovyRowResult firstRow(JDBCDataStore ds, Map params, String sql) throws
  * @param sql    The SQL statement.
  * @param params An array of parameters.
  * @return A GroovyRowResult object or null if no row is found.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static GroovyRowResult firstRow(JDBCDataStore ds, String sql, Object[] params) throws SQLException {
     getSql(ds).firstRow(sql, params)
@@ -1381,7 +1383,7 @@ static GroovyRowResult firstRow(JDBCDataStore ds, String sql, Object[] params) t
  * @param ds  {@link JDBCDataStore} on which the query is performed.
  * @param sql The SQL to execute.
  * @return True if the first result is a ResultSet object; false if it is an update count or there are no results.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static boolean execute(JDBCDataStore ds, String sql) throws SQLException {
     getSql(ds).execute(sql)
@@ -1412,7 +1414,7 @@ static boolean execute(JDBCDataStore ds, String sql) throws SQLException {
  *                       values derived from statement.getResultSet() or false plus the update count from
  *                       statement.getUpdateCount().
  *                       The closure will be called for each result produced from executing the SQL.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void execute(JDBCDataStore ds, String sql,
                 @ClosureParams(value=SimpleType.class,
@@ -1443,7 +1445,7 @@ static void execute(JDBCDataStore ds, String sql,
  * @param sql    The SQL statement.
  * @param params A list of parameters.
  * @return True if the first result is a ResultSet object; false if it is an update count or there are no results.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static boolean execute(JDBCDataStore ds, String sql, List<Object> params) throws SQLException {
     getSql(ds).execute(sql, params)
@@ -1464,7 +1466,7 @@ static boolean execute(JDBCDataStore ds, String sql, List<Object> params) throws
  * @param processResults A Closure which will be passed two parameters: either true plus a list of GroovyRowResult
  *                       values derived from {@code statement.getResultSet()} or {@code false} plus the update count from {@code statement.getUpdateCount()}.
  *                       The closure will be called for each result produced from executing the SQL.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void execute(JDBCDataStore ds, String sql, List<Object> params,
                     @ClosureParams(value=SimpleType.class,
@@ -1482,7 +1484,7 @@ static void execute(JDBCDataStore ds, String sql, List<Object> params,
  * @param params A map containing the named parameters.
  * @param sql    The SQL statement.
  * @return True if the first result is a ResultSet object; false if it is an update count or there are no results.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static boolean execute(JDBCDataStore ds, Map params, String sql) throws SQLException {
     getSql(ds).execute(params, sql)
@@ -1499,7 +1501,7 @@ static boolean execute(JDBCDataStore ds, Map params, String sql) throws SQLExcep
  *                       values derived from statement.getResultSet() or false plus the update count from
  *                       statement.getUpdateCount().
  *                       The closure will be called for each result produced from executing the SQL.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void execute(JDBCDataStore ds, Map params, String sql,
                     @ClosureParams(value=SimpleType.class,
@@ -1521,7 +1523,7 @@ static void execute(JDBCDataStore ds, Map params, String sql,
  * @param sql    The SQL statement.
  * @param params An array of parameters.
  * @return True if the first result is a ResultSet object; false if it is an update count or there are no results.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static boolean execute(JDBCDataStore ds, String sql, Object[] params) throws SQLException {
     getSql(ds).execute(sql, params)
@@ -1542,7 +1544,7 @@ static boolean execute(JDBCDataStore ds, String sql, Object[] params) throws SQL
  *                       derived from statement.getResultSet() or false plus the update count from
  *                       statement.getUpdateCount().
  *                       The closure will be called for each result produced from executing the SQL.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void execute(JDBCDataStore ds, String sql, Object[] params,
                     @ClosureParams(value=SimpleType.class,
@@ -1570,7 +1572,7 @@ static void execute(JDBCDataStore ds, String sql, Object[] params,
  * @param ds      {@link JDBCDataStore} on which the query is performed.
  * @param gstring A GString containing the SQL query with embedded params..
  * @return True if the first result is a ResultSet object; false if it is an update count or there are no results.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static boolean execute(JDBCDataStore ds, GString gstring) throws SQLException {
     getSql(ds).execute(gstring)
@@ -1588,7 +1590,7 @@ static boolean execute(JDBCDataStore ds, GString gstring) throws SQLException {
  *                       values derived from statement.getResultSet() or false plus the update count from
  *                       statement.getUpdateCount().
  *                       The closure will be called for each result produced from executing the SQL.
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static void execute(JDBCDataStore ds, GString gstring,
                     @ClosureParams(value=SimpleType.class,
@@ -1609,7 +1611,7 @@ static void execute(JDBCDataStore ds, GString gstring,
  * @param ds  {@link JDBCDataStore} on which the query is performed.
  * @param sql The SQL statement to execute.
  * @return A list of the auto-generated column values for each inserted row (typically auto-generated keys).
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<List<Object>> executeInsert(JDBCDataStore ds, String sql) throws SQLException {
     getSql(ds).executeInsert(sql)
@@ -1631,7 +1633,7 @@ static List<List<Object>> executeInsert(JDBCDataStore ds, String sql) throws SQL
  * @param sql    The SQL statement to execute.
  * @param params The parameter values that will be substituted into the SQL statement's parameter slots.
  * @return A list of the auto-generated column values for each inserted row (typically auto-generated keys).
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<List<Object>> executeInsert(JDBCDataStore ds, String sql, List<Object> params) throws SQLException {
     getSql(ds).executeInsert(sql, params)
@@ -1655,7 +1657,7 @@ static List<List<Object>> executeInsert(JDBCDataStore ds, String sql, List<Objec
  * @param keyColumnNames A list of column names indicating the columns that should be returned from the
  *                       inserted row or rows (some drivers may be case sensitive, e.g. may require uppercase names).
  * @return A list of the auto-generated row results for each inserted row (typically auto-generated keys).
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> executeInsert(JDBCDataStore ds, String sql, List<Object> params,
                                            List<String> keyColumnNames) throws SQLException {
@@ -1670,7 +1672,7 @@ static List<GroovyRowResult> executeInsert(JDBCDataStore ds, String sql, List<Ob
  * @param params A map containing the named parameters.
  * @param sql    The SQL statement to execute.
  * @return A list of the auto-generated column values for each inserted row (typically auto-generated keys).
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<List<Object>> executeInsert(JDBCDataStore ds, Map params, String sql) throws SQLException {
     getSql(ds).executeInsert(params, sql)
@@ -1688,7 +1690,7 @@ static List<List<Object>> executeInsert(JDBCDataStore ds, Map params, String sql
  * @param keyColumnNames A list of column names indicating the columns that should be returned from the
  *                       inserted row or rows (some drivers may be case sensitive, e.g. may require uppercase names).
  * @return A list of the auto-generated row results for each inserted row (typically auto-generated keys).
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> executeInsert(JDBCDataStore ds, Map params, String sql, List<String> keyColumnNames)
         throws SQLException {
@@ -1708,7 +1710,7 @@ static List<GroovyRowResult> executeInsert(JDBCDataStore ds, Map params, String 
  * @param sql    The SQL statement to execute
  * @param params The parameter values that will be substituted into the SQL statement's parameter slots.
  * @return A list of the auto-generated column values for each inserted row (typically auto-generated keys).
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<List<Object>> executeInsert(JDBCDataStore ds, String sql, Object[] params) throws SQLException {
     getSql(ds).executeInsert(sql, params)
@@ -1728,7 +1730,7 @@ static List<List<Object>> executeInsert(JDBCDataStore ds, String sql, Object[] p
  * @param keyColumnNames An array of column names indicating the columns that should be returned from the
  *                       inserted row or rows (some drivers may be case sensitive, e.g. may require uppercase names).
  * @return A list of the auto-generated row results for each inserted row (typically auto-generated keys).
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> executeInsert(JDBCDataStore ds, String sql, String[] keyColumnNames) throws SQLException {
     getSql(ds).executeInsert(sql, keyColumnNames)
@@ -1751,7 +1753,7 @@ static List<GroovyRowResult> executeInsert(JDBCDataStore ds, String sql, String[
  *                       inserted row or rows (some drivers may be case sensitive, e.g. may require uppercase names).
  * @param params         The parameter values that will be substituted into the SQL statement's parameter slots.
  * @return A list of the auto-generated row results for each inserted row (typically auto-generated keys).
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> executeInsert(JDBCDataStore ds, String sql, String[] keyColumnNames, Object[] params)
         throws SQLException {
@@ -1794,7 +1796,7 @@ static List<GroovyRowResult> executeInsert(JDBCDataStore ds, String sql, String[
  * @param params  A map containing the named parameters.
  * @param gstring A GString containing the SQL query with embedded params.
  * @return A list of the auto-generated column values for each inserted row (typically auto-generated keys).
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<List<Object>> executeInsert(JDBCDataStore ds, GString gstring) throws SQLException {
     getSql(ds).executeInsert(gstring)
@@ -1813,9 +1815,84 @@ static List<List<Object>> executeInsert(JDBCDataStore ds, GString gstring) throw
  * @param keyColumnNames A list of column names indicating the columns that should be returned from the
  *                       inserted row or rows (some drivers may be case sensitive, e.g. may require uppercase names).
  * @return A list of the auto-generated row results for each inserted row (typically auto-generated keys).
- * @throws SQLException Thrown on a database access error occurrence.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
  */
 static List<GroovyRowResult> executeInsert(JDBCDataStore ds, GString gstring, List<String> keyColumnNames)
         throws SQLException {
     getSql(ds).executeInsert(gstring, keyColumnNames)
+}
+
+/**
+ * Executes the given SQL update.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds  {@link JDBCDataStore} on which the query is performed.
+ * @param sql The SQL to execute.
+ * @return The number of rows updated or 0 for SQL statements that return nothing.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static int executeUpdate(JDBCDataStore ds, String sql) throws SQLException {
+    getSql(ds).executeUpdate(sql)
+}
+
+/**
+ * Executes the given SQL update with parameters.
+ * 
+ * This method supports named and named ordinal parameters.
+ * See the class Javadoc for more details.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param sql    The SQL statement.
+ * @param params A list of parameters.
+ * @return The number of rows updated or 0 for SQL statements that return nothing.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static int executeUpdate(JDBCDataStore ds, String sql, List<Object> params) throws SQLException {
+    getSql(ds).executeUpdate(sql, params)
+}
+
+/**
+ * A variant of {@link #executeUpdate(JDBCDataStore, String, java.util.List)} useful when providing the named
+ * parameters as named arguments.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param params A map containing the named parameters.
+ * @param sql    The SQL statement.
+ * @return The number of rows updated or 0 for SQL statements that return nothing.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static int executeUpdate(JDBCDataStore ds, Map params, String sql) throws SQLException {
+    getSql(ds).executeUpdate(params, sql)
+}
+
+/**
+ * Executes the given SQL update with parameters.
+ * 
+ * An Object array variant of {@link #executeUpdate(JDBCDataStore, String, List)}.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param sql    The SQL statement.
+ * @param params An array of parameters.
+ * @return The number of rows updated or 0 for SQL statements that return nothing.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static int executeUpdate(JDBCDataStore ds, String sql, Object[] params) throws SQLException {
+    getSql(ds).executeUpdate(sql, params)
+}
+
+/**
+ * Executes the given SQL update with embedded expressions inside.
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param gstring A GString containing the SQL query with embedded params.
+ * @return The number of rows updated or 0 for SQL statements that return nothing.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static int executeUpdate(JDBCDataStore ds, GString gstring) throws SQLException {
+    getSql(ds).executeUpdate(gstring)
 }

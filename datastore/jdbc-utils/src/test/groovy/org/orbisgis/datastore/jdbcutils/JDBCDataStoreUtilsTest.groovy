@@ -551,4 +551,94 @@ class JDBCDataStoreUtilsTest {
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
     }
+
+    @Test
+    void executeUpdateTest() {
+        def drop = "DROP TABLE IF EXISTS insertions"
+        def create = "CREATE TABLE insertions (\n" +
+                "                id serial,\n" +
+                "                name varchar(255),\n" +
+                "                number int\n" +
+                "            );"
+        def insert = "INSERT INTO insertions(id, name, number) VALUES (1, 'Name', 5432);"
+
+        ds.execute(drop)
+        ds.execute(create)
+        ds.execute(insert)
+        def row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Name' == row.get("NAME")
+        assert 5432 == row.get("NUMBER")
+        ds.executeUpdate("UPDATE insertions SET id = 2, name = 'Simple Name', number = 2846;")
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 2 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        ds.execute(insert)
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Name' == row.get("NAME")
+        assert 5432 == row.get("NUMBER")
+        ds.executeUpdate("UPDATE insertions SET id = ?, name = ?, number = ?;", [2, 'Simple Name', 2846])
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 2 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        ds.execute(insert)
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Name' == row.get("NAME")
+        assert 5432 == row.get("NUMBER")
+        ds.executeUpdate("UPDATE insertions SET id = :id, name = :name, number = :number;",
+                [id:2, name:'Simple Name', number:2846])
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 2 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        ds.execute(insert)
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Name' == row.get("NAME")
+        assert 5432 == row.get("NUMBER")
+        ds.executeUpdate([id:2, name:'Simple Name', number:2846], "UPDATE insertions SET id = :id, name = :name, number = :number;")
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 2 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        ds.execute(insert)
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Name' == row.get("NAME")
+        assert 5432 == row.get("NUMBER")
+        ds.executeUpdate("UPDATE insertions SET id = ?, name = ?, number = ?;", [2, 'Simple Name', 2846])
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 2 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        ds.execute(insert)
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Name' == row.get("NAME")
+        assert 5432 == row.get("NUMBER")
+        ds.executeUpdate("UPDATE insertions SET id = ${2}, name = ${'Simple Name'}, number = ${2846};")
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 2 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+    }
 }
