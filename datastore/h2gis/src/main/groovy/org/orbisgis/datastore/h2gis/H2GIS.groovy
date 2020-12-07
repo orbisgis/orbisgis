@@ -51,6 +51,19 @@ import groovy.transform.Field
 /** Cached H2GISDataStoreFactory. */
 private static final @Field H2GISDataStoreFactory H2GIS_DATA_STORE_FACTORY = new H2GISDataStoreFactory()
 
+
+/**
+ * Open a H2GIS DataStore
+ * @param databasePath a path to the database
+ * @return An H2GIS DataStore.
+ */
+static JDBCDataStore open(String databasePath) {
+    Map params = new java.util.HashMap()
+    params.put("database", new File(databasePath).absolutePath)
+    return H2GIS_DATA_STORE_FACTORY.createDataStore(params)
+}
+
+
 /**
  * Open a H2GIS DataStore with the given params map.
  * @param params Parameters for the opening of the DataStore.
