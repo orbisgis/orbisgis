@@ -437,4 +437,98 @@ class JDBCDataStoreUtilsTest {
                     assert 2 == result.size()
                 }
     }
+
+    @Test
+    void executeInsertTest() {
+        def drop = "DROP TABLE IF EXISTS insertions"
+        def create = "CREATE TABLE insertions (\n" +
+                "                id serial,\n" +
+                "                name varchar(255),\n" +
+                "                number int\n" +
+                "            );"
+
+        ds.execute(drop)
+        ds.execute(create)
+        assert !ds.firstRow("SELECT * FROM insertions")
+        ds.executeInsert("INSERT INTO insertions (id, name, number) VALUES (1, 'Simple Name', 2846);")
+        def row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        assert !ds.firstRow("SELECT * FROM insertions")
+        ds.executeInsert("INSERT INTO insertions (id, name, number) VALUES (?, ?, ?);", [1, 'Simple Name', 2846])
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        assert !ds.firstRow("SELECT * FROM insertions")
+        ds.executeInsert("INSERT INTO insertions (name, number) VALUES (?, ?);", ['Simple Name', 2846],
+                ["id"])
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        assert !ds.firstRow("SELECT * FROM insertions")
+        ds.executeInsert("INSERT INTO insertions (id, name, number) VALUES (?, ?, ?);",
+                [1, 'Simple Name', 2846] as Object[])
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        assert !ds.firstRow("SELECT * FROM insertions")
+        ds.executeInsert("INSERT INTO insertions (name, number) VALUES ('Simple Name', 2846);", ["ID"] as String[])
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        assert !ds.firstRow("SELECT * FROM insertions")
+        ds.executeInsert("INSERT INTO insertions (name, number) VALUES ('Simple Name', 2846);", ["ID"] as String[])
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        assert !ds.firstRow("SELECT * FROM insertions")
+        ds.executeInsert("INSERT INTO insertions (name, number) VALUES (?, ?);", ["ID"] as String[],
+                ['Simple Name', 2846] as Object[])
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        assert !ds.firstRow("SELECT * FROM insertions")
+        ds.executeInsert("INSERT INTO insertions (id, name, number) VALUES (${1}, ${'Simple Name'}, ${2846});")
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        assert !ds.firstRow("SELECT * FROM insertions")
+        ds.executeInsert("INSERT INTO insertions (name, number) VALUES (${'Simple Name'}, ${2846});", ["id"])
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+    }
 }
