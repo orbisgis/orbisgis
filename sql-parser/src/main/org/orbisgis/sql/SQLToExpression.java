@@ -46,6 +46,7 @@ import net.sf.jsqlparser.expression.operators.arithmetic.Subtraction;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
+import net.sf.jsqlparser.expression.operators.relational.GreaterThan;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.SubSelect;
@@ -54,9 +55,7 @@ import org.geotools.filter.FilterFactoryImpl;
 import org.geotools.filter.FunctionFinder;
 import org.opengis.filter.expression.Expression;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 
 /**
@@ -64,28 +63,39 @@ import java.util.Stack;
  *
  * @author Erwan Bocher (CNRS 2020)
  */
-public class SQLParser extends ExpressionDeParser {
+public class SQLToExpression extends ExpressionDeParser {
 
     Stack<Expression> stack = new Stack<Expression>();
     Stack<Boolean> stackCondition = new Stack<Boolean>();
     private FilterFactoryImpl ff;
     FunctionFinder functionFinder;
 
-    public SQLParser() {
+    public SQLToExpression() {
         ff = new FilterFactoryImpl();
         functionFinder = new FunctionFinder(null);
     }
 
     /**
-     * Convert a plain list of sql expressions to ECQL expression
-     * @param selectExpression list of sql expression
-     * @return
+     * Convert a sql expression to ECQL expression
+     * @param selectExpression list of plain sql expression
+     * @return a list of ECQL expression with an alias
      */
-    public Map<String, Expression> toExpressions(String... selectExpression)  {
+    public static Expression toExpression(String selectExpression)  {
+        SQLToExpression sqlToExpression = new SQLToExpression();
+        return sqlToExpression.parse(selectExpression);
+    }
+
+    /**
+     * Convert a plain list of sql expressions to ECQL expression
+     * @param selectExpression list of plain sql expression
+     * @return a list of ECQL expression with an alias
+     */
+    public static Map<String, Expression> toExpressions(String... selectExpression)  {
+        SQLToExpression sqlToExpression = new SQLToExpression();
         HashMap<String, Expression> expressions = new HashMap<String, Expression>();
         String alias = "exp_";
         for(int i = 0; i < selectExpression.length; i++) {
-            Expression exp = toExpression(selectExpression[i]);
+            Expression exp = sqlToExpression.parse(selectExpression[i]);
             if(exp!=null){
                 expressions.put(alias+i, exp);
             }
@@ -93,13 +103,12 @@ public class SQLParser extends ExpressionDeParser {
         return expressions;
     }
 
-
         /**
          * Convert plain SQL select expression to ECQL Expression
          * @param selectExpression
          * @return
          */
-    public Expression toExpression(String selectExpression)  {
+    public Expression parse(String selectExpression)  {
         try {
             if (selectExpression != null && !selectExpression.isEmpty()) {
                 net.sf.jsqlparser.expression.Expression parseExpression = CCJSqlParserUtil.parseExpression(selectExpression, false);
@@ -125,8 +134,6 @@ public class SQLParser extends ExpressionDeParser {
     public Expression toFilter(String selectExpression)  {
         try {
             if (selectExpression != null && !selectExpression.isEmpty()) {
-                ff = new FilterFactoryImpl();
-                functionFinder = new FunctionFinder(null);
                 net.sf.jsqlparser.expression.Expression parseExpression = CCJSqlParserUtil.parseCondExpression(selectExpression, false);
                 StringBuilder b = new StringBuilder();
                 setBuffer(b);
@@ -149,10 +156,28 @@ public class SQLParser extends ExpressionDeParser {
 
     @Override
     public void visit(CaseExpression caseExpression) {
-        super.visit(caseExpression);
-        //TODO
-        //stack.push(ff.function("if_then_else", whenExpression, thenExpression, elseExpression));
+        List<WhenClause> whenClauses = caseExpression.getWhenClauses();
+        Expression whenExpression = null;
+        Expression  thenExpression =null;
+        for (WhenClause whenClause:whenClauses) {
+            net.sf.jsqlparser.expression.Expression when = whenClause.getWhenExpression();
+            when.accept(this);
+            whenExpression = stack.pop();
+            net.sf.jsqlparser.expression.Expression then = whenClause.getThenExpression();
+            then.accept(this);
+            thenExpression = stack.pop();
+        }
 
+        net.sf.jsqlparser.expression.Expression elseExp = caseExpression.getElseExpression();
+        elseExp.accept(this);
+        Expression  elseExpression = stack.pop();
+        stack.push(ff.function("if_then_else", whenExpression, thenExpression, elseExpression));
+    }
+
+    @Override
+    public void visit(GreaterThan greaterThan) {
+        Expression[] exp = binaryExpressionConverter(greaterThan);
+        stack.push(ff.function("greaterThan", exp[0],exp[1]));
     }
 
     @Override

@@ -38,75 +38,77 @@ package org.orbisgis.sql;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.filter.text.ecql.ECQL;
 import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author Erwan Bocher, CNRS, 2020
  */
-public class SQLParserTest {
+public class SQLToExpressionTest {
 
     @Test
     public void forTests()  {
-        SQLParser sqlParser = new SQLParser();
-        String expression = "Math.Abs(12)";
-        sqlParser.toExpression(expression);
+        SQLToExpression sqlToExpression = new SQLToExpression();
+        String expression = "CASE WHEN AREA(the_geom) > 0 THEN 'OK' ELSE 'NO' END";
+        assertNull( sqlToExpression.parse(expression));
     }
 
     @Test
     public void convertToExpression()  {
-        SQLParser sqlParser = new SQLParser();
+        SQLToExpression sqlToExpression = new SQLToExpression();
         String expression = "AREA(the_geom)";
-        assertEquals("Area([the_geom])", sqlParser.toExpression(expression).toString());
+        assertEquals("Area([the_geom])", sqlToExpression.parse(expression).toString());
         expression = "1 + 2";
-        assertEquals("(1+2)", sqlParser.toExpression(expression).toString());
+        assertEquals("(1+2)", sqlToExpression.parse(expression).toString());
         expression = "1 + 2 * 3";
-        assertEquals("(1+(2*3))", sqlParser.toExpression(expression).toString());
+        assertEquals("(1+(2*3))", sqlToExpression.parse(expression).toString());
         expression = "(1 + 2) * 3";
-        assertEquals("((1+2)*3)", sqlParser.toExpression(expression).toString());
+        assertEquals("((1+2)*3)", sqlToExpression.parse(expression).toString());
         expression = "AREA(the_geom)+(1 - GEOMLENGTH(AREA))/12";
-        assertEquals("(Area([the_geom])+((1-geomLength([AREA]))/12))", sqlParser.toExpression(expression).toString());
+        assertEquals("(Area([the_geom])+((1-geomLength([AREA]))/12))", sqlToExpression.parse(expression).toString());
         expression = "the_geom = 'orbisgis'";
-        assertNull( sqlParser.toExpression(expression));
+        assertNull( sqlToExpression.parse(expression));
         expression = "AREA(the_geom), the_geom";
-        assertNull( sqlParser.toExpression(expression));
+        assertNull( sqlToExpression.parse(expression));
         expression = "AREA(the_geom) as area";
-        assertNull( sqlParser.toExpression(expression));
+        assertNull( sqlToExpression.parse(expression));
         expression = "CASE WHEN AREA(the_geom) > 0 THEN 'OK' ELSE 'NO' END";
-        assertNull( sqlParser.toExpression(expression));
+        assertEquals("if_then_else([greaterThan([Area([the_geom])], [0])], [OK], [NO])", sqlToExpression.parse(expression));
     }
 
 
     @Test
     public void convertToFilter()  {
-        SQLParser sqlParser = new SQLParser();
+        SQLToExpression sqlToExpression = new SQLToExpression();
         String expression = "the_geom = 10";
-        assertEquals("equalTo([the_geom], [10])", sqlParser.toFilter(expression).toString());
+        assertEquals("equalTo([the_geom], [10])", sqlToExpression.toFilter(expression).toString());
         expression = "the_geom = 'orbisgis'";
-        assertEquals("equalTo([the_geom], [orbisgis])", sqlParser.toFilter(expression).toString());
+        assertEquals("equalTo([the_geom], [orbisgis])", sqlToExpression.toFilter(expression).toString());
         expression = "'the_geom' = 'orbisgis'";
-        assertEquals("equalTo([the_geom], [orbisgis])", sqlParser.toFilter(expression).toString());
+        assertEquals("equalTo([the_geom], [orbisgis])", sqlToExpression.toFilter(expression).toString());
         expression = "AREA(the_geom) = 'orbisgis'";
-        assertEquals("equalTo([Area([the_geom])], [orbisgis])", sqlParser.toFilter(expression).toString());
+        assertEquals("equalTo([Area([the_geom])], [orbisgis])", sqlToExpression.toFilter(expression).toString());
         expression = "AREA(geomLength(the_geom)) = 'orbisgis'";
-        assertEquals("equalTo([Area([geomLength([the_geom])])], [orbisgis])", sqlParser.toFilter(expression).toString());
+        assertEquals("equalTo([Area([geomLength([the_geom])])], [orbisgis])", sqlToExpression.toFilter(expression).toString());
         expression = "AREA(the_geom) = geomLength(the_geom)";
-        assertEquals("equalTo([Area([the_geom])], [geomLength([the_geom])])", sqlParser.toFilter(expression).toString());
+        assertEquals("equalTo([Area([the_geom])], [geomLength([the_geom])])", sqlToExpression.toFilter(expression).toString());
         expression = "AREA(geomLength(the_geom)) = geomLength(the_geom)";
-        assertEquals("equalTo([Area([geomLength([the_geom])])], [geomLength([the_geom])])", sqlParser.toFilter(expression).toString());
+        assertEquals("equalTo([Area([geomLength([the_geom])])], [geomLength([the_geom])])", sqlToExpression.toFilter(expression).toString());
         expression = "the_geom = 10 and top = 'first'";
-        assertEquals("And([equalTo([the_geom], [10])], [equalTo([top], [first])])", sqlParser.toFilter(expression).toString());
+        assertEquals("And([equalTo([the_geom], [10])], [equalTo([top], [first])])", sqlToExpression.toFilter(expression).toString());
         expression = "AREA(geomLength(the_geom)) = 12 or geomLength(the_geom)<20 and type = 'super'";
-        assertEquals("Or([equalTo([Area([geomLength([the_geom])])], [12])], [And([20], [equalTo([type], [super])])])", sqlParser.toFilter(expression).toString());
+        assertEquals("Or([equalTo([Area([geomLength([the_geom])])], [12])], [And([20], [equalTo([type], [super])])])", sqlToExpression.toFilter(expression).toString());
         expression = "(AREA(geomLength(the_geom)) = 12 or geomLength(the_geom)<20) and type = 'super'";
-        assertEquals("And([Or([equalTo([Area([geomLength([the_geom])])], [12])], [20])], [equalTo([type], [super])])", sqlParser.toFilter(expression).toString());
+        assertEquals("And([Or([equalTo([Area([geomLength([the_geom])])], [12])], [20])], [equalTo([type], [super])])", sqlToExpression.toFilter(expression).toString());
     }
 
     @Test
     public void convertWithSFFunctions() {
-        SQLParser sqlParser = new SQLParser();
+        SQLToExpression sqlToExpression = new SQLToExpression();
         String expression = "ST_AREA(the_geom)";
-        assertEquals("Area([the_geom])", sqlParser.toExpression(expression).toString());
+        assertEquals("Area([the_geom])", sqlToExpression.parse(expression).toString());
     }
 
 }

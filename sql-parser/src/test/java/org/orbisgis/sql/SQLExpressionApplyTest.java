@@ -61,9 +61,9 @@ public class SQLExpressionApplyTest {
         String name = "landcover2000.shp";
         ShapefileDataStore shapefile = new ShapefileDataStore(this.getClass().getResource(name));
         SimpleFeatureSource fs = shapefile.getFeatureSource();
-        SQLParser sqlParser  = new SQLParser();
+        SQLToExpression sqlToExpression = new SQLToExpression();
         List<Definition> definitions = new ArrayList<Definition>();
-        definitions.add(new Definition("THE_GEOM",  sqlParser.toExpression("CENTROID(the_geom)")));
+        definitions.add(new Definition("THE_GEOM",  sqlToExpression.parse("CENTROID(the_geom)")));
         SimpleFeatureSource transformed = TransformFactory.transform((SimpleFeatureSource) fs, "OUTPUT_TABLE_TEST_F", definitions);
         SimpleFeatureCollection simpleFeatureCollection = transformed.getFeatures();
         SimpleFeatureIterator features = simpleFeatureCollection.features();
