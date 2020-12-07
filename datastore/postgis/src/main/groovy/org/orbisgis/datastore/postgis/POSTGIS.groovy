@@ -57,6 +57,11 @@ private static final @Field PostgisNGDataStoreFactory POSTGIS_DATA_STORE_FACTORY
  * @return An POSTGIS DataStore.
  */
 static JDBCDataStore open(def params = [:]) {
+    params.each {
+        if(it.value instanceof GString) {
+            params.put(it.key, it.value.toString())
+        }
+    }
     return POSTGIS_DATA_STORE_FACTORY.createDataStore(params)
 }
 
