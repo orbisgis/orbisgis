@@ -40,9 +40,6 @@ import org.geotools.data.DataStoreFinder
 import org.geotools.jdbc.JDBCDataStore
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-
-import java.sql.ResultSet
-
 /**
  * Test class dedicated to {@link org.orbisgis.datastore.jdbcutils.JDBCDataStoreUtils}.
  *

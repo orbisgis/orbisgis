@@ -45,11 +45,8 @@ import groovy.transform.stc.SimpleType
 import org.geotools.jdbc.JDBCDataStore
 
 import java.sql.Connection
-import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
-import java.sql.Statement
-
 /**
  * Utility script used as extension module adding methods to JDBCDataStore class.
  *
