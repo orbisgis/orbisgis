@@ -62,10 +62,11 @@ static JDBCDataStore open(String databasePath) {
 
 /**
  * Open a H2GIS DataStore with the given params map.
+ * To avoid any error, each GString value is converted into String.
  * @param params Parameters for the opening of the DataStore.
  * @return An H2GIS DataStore.
  */
-static JDBCDataStore open(Map params = [:]) {
+static JDBCDataStore open(def params = [:]) {
     params.each {
        if(it.value instanceof GString) {
            params.put(it.key, it.value.toString())

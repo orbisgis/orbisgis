@@ -1,8 +1,6 @@
 package org.orbisgis.datastore.postgis
 
 import org.apache.commons.dbcp.BasicDataSource
-import org.geotools.data.Query
-import org.geotools.jdbc.JDBCDataStore
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
@@ -27,7 +25,7 @@ class POSTGISTest {
     private static final def DATABASE = "orbisgis_db"
     private static final def HOST = "localhost"
 
-    private static JDBCDataStore ds
+    private static def ds
     private static final def dbProperties = [database: DATABASE,
                                              user    : USER,
                                              passwd  : PASSWORD,
@@ -43,9 +41,9 @@ class POSTGISTest {
                 CREATE TABLE geotable (id int, the_geom geometry(point));
                 INSERT INTO geotable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
         """)
-            System.setProperty(POSTGIS_SYS_PROP, "true");
+            System.setProperty(POSTGIS_SYS_PROP, "true")
         } else {
-            System.setProperty(POSTGIS_SYS_PROP, "false");
+            System.setProperty(POSTGIS_SYS_PROP, "false")
         }
     }
 

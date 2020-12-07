@@ -4,9 +4,6 @@ import org.apache.commons.dbcp.BasicDataSource
 import org.geotools.data.Query
 import org.junit.jupiter.api.Test
 
-import javax.lang.model.type.ExecutableType
-
-
 /**
  * Test class dedicated to {@link org.orbisgis.datastore.h2gis.H2GIS}
  *
@@ -74,7 +71,7 @@ class H2GISTest {
     }
 
     @Test
-    void openPath() {
+    void openPathTest() {
         def ds = H2GIS.open(PATH)
         assert ds
         assert new File("${PATH}.mv.db").exists()
@@ -82,7 +79,7 @@ class H2GISTest {
 
     @Test
     //TODO move this test to the jdbc-utils module when the feature mechanisms will be add.
-    void createReadFeatureSource() {
+    void createReadFeatureSourceTest() {
         def ds = H2GIS.open("./target/db_h2gis")
         assert ds
         ds.execute("""
