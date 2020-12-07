@@ -478,6 +478,26 @@ class JDBCDataStoreUtilsTest {
         ds.execute(drop)
         ds.execute(create)
         assert !ds.firstRow("SELECT * FROM insertions")
+        ds.executeInsert([id: 1, name: 'Simple Name', number: 2846],
+                "INSERT INTO insertions (id, name, number) VALUES (:id, :name, 2846);")
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        assert !ds.firstRow("SELECT * FROM insertions")
+        ds.executeInsert([name: 'Simple Name', number: 2846],
+                "INSERT INTO insertions (name, number) VALUES (:name, :number);", ["id"])
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 1 == row.get("ID")
+        assert 'Simple Name' == row.get("NAME")
+        assert 2846 == row.get("NUMBER")
+
+        ds.execute(drop)
+        ds.execute(create)
+        assert !ds.firstRow("SELECT * FROM insertions")
         ds.executeInsert("INSERT INTO insertions (id, name, number) VALUES (?, ?, ?);",
                 [1, 'Simple Name', 2846] as Object[])
         row = ds.firstRow("SELECT * FROM insertions")
