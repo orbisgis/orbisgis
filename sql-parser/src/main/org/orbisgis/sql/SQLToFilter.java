@@ -39,92 +39,86 @@ package org.orbisgis.sql;
 
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.*;
-import net.sf.jsqlparser.expression.operators.arithmetic.Addition;
-import net.sf.jsqlparser.expression.operators.arithmetic.Division;
-import net.sf.jsqlparser.expression.operators.arithmetic.Multiplication;
-import net.sf.jsqlparser.expression.operators.arithmetic.Subtraction;
+import net.sf.jsqlparser.expression.operators.arithmetic.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.*;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Column;
+import net.sf.jsqlparser.statement.select.SelectVisitor;
 import net.sf.jsqlparser.statement.select.SubSelect;
 import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
 import org.geotools.filter.FilterFactoryImpl;
 import org.geotools.filter.FunctionFinder;
+import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+
 
 
 /**
- * Class to convert a SQL select expression to a Geotools Expression object
+ * Class to convert a SQL from conditional expression to a Geotools Filter object
  * see https://docs.geotools.org/latest/userguide/library/opengis/filter.html
  *
  * Note :
+ * Doesn't support specific [E]CQL key words as BEFORE, AFTER, DURING
  * Spatial functions with st_ prefix are supported.
  * e.g : ST_Buffer used the Buffer expression from Geotools
  *
  * @author Erwan Bocher (CNRS 2020)
  */
-public class SQLToExpression extends ExpressionDeParser {
+public class SQLToFilter extends ExpressionDeParser {
 
     private static final String NOT_SUPPORTED_YET = "Not supported yet.";
+    private static final String NOT_SUPPORTED = "Not supported.";
 
-    Stack<Expression> stack = new Stack<Expression>();
+    Stack<Filter> stack = new Stack<Filter>();
+    Stack<Expression> expressionStack = new Stack<Expression>();
     Stack<Boolean> stackCondition = new Stack<Boolean>();
     private FilterFactoryImpl ff;
     FunctionFinder functionFinder;
 
-    public SQLToExpression() {
+    public SQLToFilter() {
         ff = new FilterFactoryImpl();
         functionFinder = new FunctionFinder(null);
     }
 
     /**
-     * Convert a sql expression to ECQL expression
+     * Convert a sql expression to ECQL filter
      * @param selectExpression list of plain sql expression
-     * @return a list of ECQL expression with an alias
      */
-    public static Expression transform(String selectExpression)  {
-        SQLToExpression sqlToExpression = new SQLToExpression();
+    public static Filter transform(String selectExpression)  {
+        SQLToFilter sqlToExpression = new SQLToFilter();
         return sqlToExpression.parse(selectExpression);
     }
 
-    /**
-     * Convert a plain list of sql select expressions to Geotools Expression object
-     * @param selectExpression list of plain select sql expressions
-     * @return a list of Geotools Expression object with an alias
-     */
-    public static Map<String, Expression> toExpressions(String... selectExpression)  {
-        SQLToExpression sqlToExpression = new SQLToExpression();
-        HashMap<String, Expression> expressions = new HashMap<String, Expression>();
-        String alias = "exp_";
-        for(int i = 0; i < selectExpression.length; i++) {
-            Expression exp = sqlToExpression.parse(selectExpression[i]);
-            if(exp!=null){
-                expressions.put(alias+i, exp);
-            }
-        }
-        return expressions;
-    }
 
-    /**
-     * Convert select SQL  expression to Geotools Expression object
-     * @param selectExpression
-     * @return
-     */
-    public Expression parse(String selectExpression)  {
+        /**
+         * Convert plain SQL select expression to ECQL Expression
+         * @param selectExpression
+         * @return
+         */
+    public Filter parse(String selectExpression)  {
         try {
             if (selectExpression != null && !selectExpression.isEmpty()) {
-                net.sf.jsqlparser.expression.Expression parseExpression = CCJSqlParserUtil.parseExpression(selectExpression, false);
-                StringBuilder b = new StringBuilder();
-                setBuffer(b);
-                parseExpression.accept(this);
-                Expression expression = stack.pop();
-                stack.clear();
-                stackCondition.clear();
-                return expression;
+                net.sf.jsqlparser.expression.Expression parseExpression = CCJSqlParserUtil.parseCondExpression(selectExpression, false);
+                if(parseExpression instanceof BinaryExpression || parseExpression instanceof  IsNullExpression) {
+                    StringBuilder b = new StringBuilder();
+                    setBuffer(b);
+                    parseExpression.accept(this);
+                    if (!stack.empty()) {
+                        Filter filter = stack.pop();
+                        stack.clear();
+                        expressionStack.clear();
+                        stackCondition.clear();
+                        return filter;
+                    }
+                }
+
             }
         } catch (JSQLParserException ex) {
             return null;
@@ -133,143 +127,120 @@ public class SQLToExpression extends ExpressionDeParser {
     }
 
     @Override
-    public void visit(SubSelect subSelect) {
-        throw new RuntimeException("Sub selection is not supported");
-    }
-
-
-    @Override
-    public void visit(WhenClause whenClause) {
-        net.sf.jsqlparser.expression.Expression when = whenClause.getWhenExpression();
-        when.accept(this);
-    }
-
-    @Override
-    public void visit(CaseExpression caseExpression) {
-        List<WhenClause> whenClauses = caseExpression.getWhenClauses();
-        Expression whenExpression = null;
-        Expression  thenExpression =null;
-        if(whenClauses.size()>1){
-            throw new RuntimeException("Only one clause is supported yet.");
-        }
-        WhenClause whenClause = whenClauses.get(0);
-        net.sf.jsqlparser.expression.Expression when = whenClause.getWhenExpression();
-        when.accept(this);
-        whenExpression = stack.pop();
-        net.sf.jsqlparser.expression.Expression then = whenClause.getThenExpression();
-        then.accept(this);
-        thenExpression = stack.pop();
-        net.sf.jsqlparser.expression.Expression elseExp = caseExpression.getElseExpression();
-        elseExp.accept(this);
-        Expression  elseExpression = stack.pop();
-        stack.push(ff.function("if_then_else", whenExpression, thenExpression, elseExpression));
-    }
-
-    @Override
     public void visit(GreaterThanEquals greaterThanEquals) {
         Expression[] exp = binaryExpressionConverter(greaterThanEquals);
-        stack.push(ff.function("greaterEqualThan", exp[0],exp[1]));
+        stack.push(ff.greaterOrEqual(exp[0],exp[1]));
     }
 
     @Override
     public void visit(MinorThan minorThan) {
         Expression[] exp = binaryExpressionConverter(minorThan);
-        stack.push(ff.function("lessThan", exp[0],exp[1]));
+        stack.push(ff.less(exp[0],exp[1]));
     }
 
     @Override
     public void visit(MinorThanEquals minorThanEquals) {
         Expression[] exp = binaryExpressionConverter(minorThanEquals);
-        stack.push(ff.function("lessEqualThan", exp[0],exp[1]));
+        stack.push(ff.lessOrEqual( exp[0],exp[1]));
     }
 
     @Override
     public void visit(NotEqualsTo notEqualsTo) {
         Expression[] exp = binaryExpressionConverter(notEqualsTo);
-        stack.push(ff.function("notEqualTo", exp[0],exp[1]));
+        stack.push(ff.notEqual( exp[0],exp[1]));
     }
 
 
     @Override
     public void visit(GreaterThan greaterThan) {
         Expression[] exp = binaryExpressionConverter(greaterThan);
-        stack.push(ff.function("greaterThan", exp[0],exp[1]));
+        stack.push(ff.greater( exp[0],exp[1]));
     }
 
     @Override
     public void visit(EqualsTo equalsTo) {
         Expression[] exp = binaryExpressionConverter(equalsTo);
-        stack.push(ff.function("equalTo", exp[0],exp[1]));
+        stack.push(ff.equals( exp[0],exp[1]));
     }
 
     @Override
     public void visit(Addition addition) {
         Expression[] exp = binaryExpressionConverter(addition);
-        stack.push(ff.add(exp[0],exp[1]));
+        expressionStack.push(ff.add(exp[0],exp[1]));
     }
 
     @Override
     public void visit(Multiplication multiplication) {
         Expression[] exp = binaryExpressionConverter(multiplication);
-        stack.push(ff.multiply(exp[0],exp[1]));
+        expressionStack.push(ff.multiply(exp[0],exp[1]));
     }
 
     @Override
     public void visit(Subtraction subtraction) {
         Expression[] exp = binaryExpressionConverter(subtraction);
-        stack.push(ff.subtract(exp[0],exp[1]));
+        expressionStack.push(ff.subtract(exp[0],exp[1]));
     }
 
     @Override
     public void visit(Division division) {
         Expression[] exp = binaryExpressionConverter(division);
-        stack.push(ff.divide(exp[0],exp[1]));
+        expressionStack.push(ff.divide(exp[0],exp[1]));
     }
 
     @Override
     public void visit(DoubleValue doubleValue) {
         super.visit(doubleValue);
-        stack.push(ff.literal(doubleValue.getValue()));
+        expressionStack.push(ff.literal(doubleValue.getValue()));
     }
 
     @Override
     public void visit(StringValue stringValue) {
         super.visit(stringValue);
-        stack.push(ff.literal(stringValue.getValue()));
+        expressionStack.push(ff.literal(stringValue.getValue()));
     }
 
     @Override
     public void visit(LongValue longValue) {
         super.visit(longValue);
-        stack.push(ff.literal(longValue.getValue()));
+        expressionStack.push(ff.literal(longValue.getValue()));
     }
 
     @Override
     public void visit(Column column) {
         super.visit(column);
-        stack.push(ff.property(column.getColumnName()));
+        expressionStack.push(ff.property(column.getColumnName()));
     }
 
     @Override
     public void visit(AndExpression andExpression) {
-        Expression[] exp = binaryExpressionConverter(andExpression);
-        stack.push(ff.function("and", exp[0], exp[1]));
+        Filter[] filters = binaryFilterConverter(andExpression);
+        stack.push(ff.and(filters[0], filters[1]));
     }
 
     @Override
     public void visit(OrExpression orExpression) {
-        Expression[] exp = binaryExpressionConverter(orExpression);
-        stack.push(ff.function("or", exp[0], exp[1]));
+        Filter[] filters = binaryFilterConverter(orExpression);
+        stack.push(ff.or(filters[0], filters[1]));
     }
 
     private Expression[]  binaryExpressionConverter(BinaryExpression binaryExpression){
         net.sf.jsqlparser.expression.Expression leftExpression= binaryExpression.getLeftExpression();
         leftExpression.accept(this);
-        Expression left = stack.pop();
+        Expression left =  expressionStack.pop();
         net.sf.jsqlparser.expression.Expression rightExpression = binaryExpression.getRightExpression();
         rightExpression.accept(this);
-        Expression right = stack.pop();
+        Expression right = expressionStack.pop();
         return new Expression[]{left,right};
+    }
+
+    private Filter[]  binaryFilterConverter(BinaryExpression binaryExpression){
+        net.sf.jsqlparser.expression.Expression leftExpression= binaryExpression.getLeftExpression();
+        leftExpression.accept(this);
+        Filter left = stack.pop();
+        net.sf.jsqlparser.expression.Expression rightExpression = binaryExpression.getRightExpression();
+        rightExpression.accept(this);
+        Filter right = stack.pop();
+        return new Filter[]{left,right};
     }
 
     @Override
@@ -278,19 +249,29 @@ public class SQLToExpression extends ExpressionDeParser {
         String functionName = function.getName().toLowerCase();
         org.opengis.filter.expression.Function internalFunction=null;
         try {
-            internalFunction = functionFinder.findFunction(functionName, stack);
+             internalFunction = functionFinder.findFunction(functionName, expressionStack);
         }catch (RuntimeException ex) {
             if (internalFunction == null) {
                 //Workaround for spatial functions with st_ prefix
                 if (functionName.startsWith("st_")) {
-                    internalFunction = functionFinder.findFunction(function.getName().substring(3), stack);
+                    internalFunction = functionFinder.findFunction(function.getName().substring(3), expressionStack);
                 }
             }
         }
-        stack.clear();
+        expressionStack.clear();
         if(internalFunction!=null){
-            stack.push(internalFunction);
+            expressionStack.push(internalFunction);
         }
+    }
+
+    @Override
+    public void visit(SubSelect subSelect) {
+        throw new UnsupportedOperationException(NOT_SUPPORTED);
+    }
+
+    @Override
+    public void visit(CaseExpression caseExpression) {
+        throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
     }
 
     @Override
@@ -310,7 +291,16 @@ public class SQLToExpression extends ExpressionDeParser {
 
     @Override
     public void visit(IsNullExpression isNullExpression) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+        boolean not = isNullExpression.isNot();
+        net.sf.jsqlparser.expression.Expression leftExpression= isNullExpression.getLeftExpression();
+        leftExpression.accept(this);
+        Expression left = expressionStack.pop();
+        if(not){
+            stack.push(ff.not(ff.isNull(left)));
+        }
+        else{
+            stack.push(ff.isNull(left));
+        }
     }
 
     @Override
@@ -332,4 +322,5 @@ public class SQLToExpression extends ExpressionDeParser {
     public void visit(NullValue nullValue) {
         throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
     }
+
 }

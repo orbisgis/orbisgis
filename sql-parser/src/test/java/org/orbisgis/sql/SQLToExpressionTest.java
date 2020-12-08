@@ -38,9 +38,19 @@ package org.orbisgis.sql;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.geotools.filter.text.cql2.CQLException;
+import org.geotools.data.DataUtilities;
+import org.geotools.feature.SchemaException;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.filter.FilterFactoryImpl;
 import org.geotools.filter.text.ecql.ECQL;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.io.WKTReader;
+import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Function;
 
 /**
  *
@@ -49,16 +59,26 @@ import org.junit.jupiter.api.Test;
 public class SQLToExpressionTest {
 
     @Test
-    public void forTests()  {
+    public void selectExpressionTobeSupported()  {
         SQLToExpression sqlToExpression = new SQLToExpression();
-        String expression = "CASE WHEN AREA(the_geom) > 0 THEN 'OK' ELSE 'NO' END";
-        assertNull( sqlToExpression.parse(expression));
+        String expression = "CASE\n" +
+                        "    WHEN type > 300 THEN 1\n" +
+                        "    WHEN type = 30 THEN 2\n" +
+                        "    ELSE 3\n" +
+                        "END";
+        try {
+            sqlToExpression.parse(expression);
+        }catch (RuntimeException ex){
+            System.out.println("--------\nExpression : \n"+ expression + "\n must be supported in the future");
+        }
     }
 
     @Test
     public void convertToExpression()  {
         SQLToExpression sqlToExpression = new SQLToExpression();
         String expression = "AREA(the_geom)";
+        assertEquals("Area([the_geom])", sqlToExpression.parse(expression).toString());
+        expression = "ST_AREA(the_geom)";
         assertEquals("Area([the_geom])", sqlToExpression.parse(expression).toString());
         expression = "1 + 2";
         assertEquals("(1+2)", sqlToExpression.parse(expression).toString());
@@ -75,40 +95,32 @@ public class SQLToExpressionTest {
         expression = "AREA(the_geom) as area";
         assertNull( sqlToExpression.parse(expression));
         expression = "CASE WHEN AREA(the_geom) > 0 THEN 'OK' ELSE 'NO' END";
-        assertEquals("if_then_else([greaterThan([Area([the_geom])], [0])], [OK], [NO])", sqlToExpression.parse(expression));
-    }
-
-
-    @Test
-    public void convertToFilter()  {
-        SQLToExpression sqlToExpression = new SQLToExpression();
-        String expression = "the_geom = 10";
-        assertEquals("equalTo([the_geom], [10])", sqlToExpression.toFilter(expression).toString());
-        expression = "the_geom = 'orbisgis'";
-        assertEquals("equalTo([the_geom], [orbisgis])", sqlToExpression.toFilter(expression).toString());
-        expression = "'the_geom' = 'orbisgis'";
-        assertEquals("equalTo([the_geom], [orbisgis])", sqlToExpression.toFilter(expression).toString());
-        expression = "AREA(the_geom) = 'orbisgis'";
-        assertEquals("equalTo([Area([the_geom])], [orbisgis])", sqlToExpression.toFilter(expression).toString());
-        expression = "AREA(geomLength(the_geom)) = 'orbisgis'";
-        assertEquals("equalTo([Area([geomLength([the_geom])])], [orbisgis])", sqlToExpression.toFilter(expression).toString());
-        expression = "AREA(the_geom) = geomLength(the_geom)";
-        assertEquals("equalTo([Area([the_geom])], [geomLength([the_geom])])", sqlToExpression.toFilter(expression).toString());
-        expression = "AREA(geomLength(the_geom)) = geomLength(the_geom)";
-        assertEquals("equalTo([Area([geomLength([the_geom])])], [geomLength([the_geom])])", sqlToExpression.toFilter(expression).toString());
-        expression = "the_geom = 10 and top = 'first'";
-        assertEquals("And([equalTo([the_geom], [10])], [equalTo([top], [first])])", sqlToExpression.toFilter(expression).toString());
-        expression = "AREA(geomLength(the_geom)) = 12 or geomLength(the_geom)<20 and type = 'super'";
-        assertEquals("Or([equalTo([Area([geomLength([the_geom])])], [12])], [And([20], [equalTo([type], [super])])])", sqlToExpression.toFilter(expression).toString());
-        expression = "(AREA(geomLength(the_geom)) = 12 or geomLength(the_geom)<20) and type = 'super'";
-        assertEquals("And([Or([equalTo([Area([geomLength([the_geom])])], [12])], [20])], [equalTo([type], [super])])", sqlToExpression.toFilter(expression).toString());
+        assertEquals("if_then_else([greaterThan([Area([the_geom])], [0])], [OK], [NO])", sqlToExpression.parse(expression).toString());
     }
 
     @Test
-    public void convertWithSFFunctions() {
-        SQLToExpression sqlToExpression = new SQLToExpression();
-        String expression = "ST_AREA(the_geom)";
-        assertEquals("Area([the_geom])", sqlToExpression.parse(expression).toString());
+    public void evaluateExpression() throws Exception {
+        FilterFactoryImpl ff = new FilterFactoryImpl();
+        SimpleFeatureType type = DataUtilities.createType("testSchema", "name:String,gid:Integer,*geom:Geometry");
+        WKTReader reader = new WKTReader();
+        Geometry geom1 = reader.read("LINESTRING(0 0 0, 10 10 10)");
+        Feature f = SimpleFeatureBuilder.build(type, new Object[] {"testFeature1", 627, geom1}, null);
+        Function geom_area = ff.function("geomlength", ff.property("geom"));
+        Function if_ = ff.function("greaterThan", geom_area, ff.literal(0));
+        Function if_then_else = ff.function("if_then_else", if_, ff.literal("ok"), ff.literal("no"));
+        assertEquals("ok", if_then_else.evaluate(f));
+        String sqlExpression = "CASE WHEN geomlength(geom) > 0 THEN 'ok' ELSE 'no' END";
+        Expression expression = SQLToExpression.transform(sqlExpression);
+        assertEquals("ok", expression.evaluate(f));
+        sqlExpression = "CASE WHEN name='testFeature1' THEN 'ok' ELSE 'no' END";
+        expression = SQLToExpression.transform(sqlExpression);
+        assertEquals("ok", expression.evaluate(f));
+        sqlExpression = "CASE WHEN gid!=627 THEN 'ok' ELSE 'no' END";
+        expression = SQLToExpression.transform(sqlExpression);
+        assertEquals("no", expression.evaluate(f));
+        sqlExpression = "CASE WHEN gid=627 THEN 'ok' ELSE 'no' END";
+        expression = SQLToExpression.transform(sqlExpression);
+        assertEquals("ok", expression.evaluate(f));
     }
 
 }
