@@ -46,7 +46,9 @@ import net.sf.jsqlparser.expression.operators.arithmetic.Subtraction;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.*;
+import net.sf.jsqlparser.parser.CCJSqlParser;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.parser.StringProvider;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.SubSelect;
 import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
@@ -295,7 +297,16 @@ public class SQLToExpression extends ExpressionDeParser {
 
     @Override
     public void visit(Between between) {
-        super.visit(between);
+        net.sf.jsqlparser.expression.Expression leftExpression= between.getLeftExpression();
+        leftExpression.accept(this);
+        Expression left = stack.pop();
+        net.sf.jsqlparser.expression.Expression startBetween = between.getBetweenExpressionStart();
+        startBetween.accept(this);
+        Expression start = stack.pop();
+        net.sf.jsqlparser.expression.Expression endBetween = between.getBetweenExpressionEnd();
+        endBetween.accept(this);
+        Expression end = stack.pop();
+        stack.push(ff.function("between", start, end));
     }
 
     @Override
@@ -310,7 +321,16 @@ public class SQLToExpression extends ExpressionDeParser {
 
     @Override
     public void visit(IsNullExpression isNullExpression) {
-        throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
+        boolean not = isNullExpression.isNot();
+        net.sf.jsqlparser.expression.Expression leftExpression= isNullExpression.getLeftExpression();
+        leftExpression.accept(this);
+        Expression left = stack.pop();
+        if(not){
+            stack.push(ff.function("not", ff.function("isNull", left)));
+        }
+        else{
+            stack.push( ff.function("isNull", left));
+        }
     }
 
     @Override

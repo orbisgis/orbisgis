@@ -86,6 +86,8 @@ public class SQLToFilterTest {
         assertEquals("[ NOT [ type IS NULL ] ]", sqlToFilter.parse(expression).toString());
         expression = "type is null";
         assertEquals("[ type IS NULL ]", sqlToFilter.parse(expression).toString());
+        expression = "type between 12 and 13";
+        assertEquals("[ type BETWEEN 12 AND 13 ]", sqlToFilter.parse(expression).toString());
     }
 
     @Test

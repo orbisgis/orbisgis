@@ -106,7 +106,7 @@ public class SQLToFilter extends ExpressionDeParser {
         try {
             if (selectExpression != null && !selectExpression.isEmpty()) {
                 net.sf.jsqlparser.expression.Expression parseExpression = CCJSqlParserUtil.parseCondExpression(selectExpression, false);
-                if(parseExpression instanceof BinaryExpression || parseExpression instanceof  IsNullExpression) {
+                if(parseExpression instanceof BinaryExpression || parseExpression instanceof  IsNullExpression || parseExpression instanceof Between) {
                     StringBuilder b = new StringBuilder();
                     setBuffer(b);
                     parseExpression.accept(this);
@@ -276,7 +276,16 @@ public class SQLToFilter extends ExpressionDeParser {
 
     @Override
     public void visit(Between between) {
-        super.visit(between);
+        net.sf.jsqlparser.expression.Expression leftExpression= between.getLeftExpression();
+        leftExpression.accept(this);
+        Expression left = expressionStack.pop();
+        net.sf.jsqlparser.expression.Expression startBetween = between.getBetweenExpressionStart();
+        startBetween.accept(this);
+        Expression start = expressionStack.pop();
+        net.sf.jsqlparser.expression.Expression endBetween = between.getBetweenExpressionEnd();
+        endBetween.accept(this);
+        Expression end = expressionStack.pop();
+        stack.push(ff.between(left, start, end));
     }
 
     @Override
