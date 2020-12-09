@@ -44,6 +44,7 @@ import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.SimpleType
 import org.geotools.jdbc.JDBCDataStore
 
+import java.sql.CallableStatement
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.SQLException
@@ -1892,4 +1893,220 @@ static int executeUpdate(JDBCDataStore ds, String sql, Object[] params) throws S
  */
 static int executeUpdate(JDBCDataStore ds, GString gstring) throws SQLException {
     getSql(ds).executeUpdate(gstring)
+}
+
+/**
+ * Performs a stored procedure call.
+ * 
+ * Example usage (tested with MySQL) - suppose we have the following stored procedure:
+ * 
+ * sql.execute """
+ *     CREATE PROCEDURE HouseSwap(_first1 VARCHAR(50), _first2 VARCHAR(50))
+ *     BEGIN
+ *         DECLARE _loc1 INT;
+ *         DECLARE _loc2 INT;
+ *         SELECT location_id into _loc1 FROM PERSON where firstname = _first1;
+ *         SELECT location_id into _loc2 FROM PERSON where firstname = _first2;
+ *         UPDATE PERSON
+ *         set location_id = case firstname
+ *             when _first1 then _loc2
+ *             when _first2 then _loc1
+ *         end
+ *         where (firstname = _first1 OR firstname = _first2);
+ *     END
+ * """
+ * 
+ * then you can invoke the procedure as follows:
+ * 
+ * def rowsChanged = sql.call("{call HouseSwap('Guillaume', 'Paul')}")
+ * assert rowsChanged == 2
+ * 
+ *
+ * @param sql The SQL statement.
+ * @return The number of rows updated or 0 for SQL statements that return nothing.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static int call(JDBCDataStore ds, String sql) throws Exception {
+    getSql(ds).call(sql)
+}
+
+/**
+ * Performs a stored procedure call with the given embedded parameters.
+ * 
+ * Example usage - see {@link #call(JDBCDataStore, String)} for more details about creating a HouseSwap(IN name1,
+ * IN name2) stored procedure.
+ * Once created, it can be called like this:
+ * 
+ * def p1 = 'Paul'
+ * def p2 = 'Guillaume'
+ * def rowsChanged = sql.call("{call HouseSwap($p1, $p2)}")
+ * assert rowsChanged == 2
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param gstring A GString containing the SQL query with embedded params.
+ * @return The number of rows updated or 0 for SQL statements that return nothing.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static int call(JDBCDataStore ds, GString gstring) throws Exception {
+    getSql(ds).call(gstring)
+}
+
+/**
+ * Performs a stored procedure call with the given parameters.
+ * 
+ * Example usage - see {@link #call(JDBCDataStore, String)} for more details about creating a HouseSwap(IN name1,
+ * IN name2) stored procedure.
+ * Once created, it can be called like this:
+ * 
+ * def rowsChanged = sql.call("{call HouseSwap(?, ?)}", ['Guillaume', 'Paul'])
+ * assert rowsChanged == 2
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param sql    The SQL statement.
+ * @param params A list of parameters.
+ * @return The number of rows updated or 0 for SQL statements that return nothing.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static int call(JDBCDataStore ds, String sql, List<Object> params) throws Exception {
+    getSql(ds).call(sql, params)
+}
+
+/**
+ * Performs a stored procedure call with the given parameters.
+ * 
+ * An Object array variant of {@link #call(JDBCDataStore, String, List)}.
+ *
+ * @param sql    The SQL statement.
+ * @param params An array of parameters.
+ * @return The number of rows updated or 0 for SQL statements that return nothing.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static int call(JDBCDataStore ds, String sql, Object[] params) throws Exception {
+    getSql(ds).call(sql, params)
+}
+
+/**
+ * Performs a stored procedure call with the given parameters.  The closure is called once with all the out parameters.
+ * 
+ * Example usage - suppose we create a stored procedure (ignore its simplistic implementation):
+ * 
+ * // Tested with MySql 5.0.75
+ * sql.execute """
+ *     CREATE PROCEDURE Hemisphere(
+ *         IN p_firstname VARCHAR(50),
+ *         IN p_lastname VARCHAR(50),
+ *         OUT ans VARCHAR(50))
+ *     BEGIN
+ *     DECLARE loc INT;
+ *     SELECT location_id into loc FROM PERSON where firstname = p_firstname and lastname = p_lastname;
+ *     CASE loc
+ *         WHEN 40 THEN
+ *             SET ans = 'Southern Hemisphere';
+ *         ELSE
+ *             SET ans = 'Northern Hemisphere';
+ *     END CASE;
+ *     END;
+ * """
+ * 
+ * we can now call the stored procedure as follows:
+ * 
+ * sql.call '{call Hemisphere(?, ?, ?)}', ['Guillaume', 'Laforge', Sql.VARCHAR], { dwells {@code ->}
+ *     println dwells
+ * }
+ * 
+ * which will output 'Northern Hemisphere'.
+ * 
+ * We can also access stored functions with scalar return values where the return value will be treated as an OUT
+ * parameter. Here are examples for various databases for creating such a procedure:
+ * 
+ * // Tested with MySql 5.0.75
+ * sql.execute """
+ *     create function FullName(p_firstname VARCHAR(40)) returns VARCHAR(80)
+ *     begin
+ *         declare ans VARCHAR(80);
+ *         SELECT CONCAT(firstname, ' ', lastname) INTO ans FROM PERSON WHERE firstname = p_firstname;
+ *         return ans;
+ *     end
+ * """
+ *
+ * // Tested with MS SQLServer Express 2008
+ * sql.execute """
+ *     {@code create function FullName(@firstname VARCHAR(40)) returns VARCHAR(80)}
+ *     begin
+ *         declare {@code @ans} VARCHAR(80)
+ *         {@code SET @ans = (SELECT firstname + ' ' + lastname FROM PERSON WHERE firstname = @firstname)}
+ *         return {@code @ans}
+ *     end
+ * """
+ *
+ * // Tested with Oracle XE 10g
+ * sql.execute """
+ *     create function FullName(p_firstname VARCHAR) return VARCHAR is
+ *     ans VARCHAR(80);
+ *     begin
+ *         SELECT CONCAT(CONCAT(firstname, ' '), lastname) INTO ans FROM PERSON WHERE firstname = p_firstname;
+ *         return ans;
+ *     end;
+ * """
+ * 
+ * and here is how you access the stored function for all databases:
+ * 
+ * sql.call("{? = call FullName(?)}", [Sql.VARCHAR, 'Sam']) { name {@code ->}
+ *     assert name == 'Sam Pullara'
+ * }
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param sql     The sql statement.
+ * @param params  A list of parameters.
+ * @param closure Called for each row with a GroovyResultSet.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+//TODO : needs implementation of the Sql OutParameters
+static void call(JDBCDataStore ds, String sql, List<Object> params, 
+                 @ClosureParams(value=SimpleType.class, options="java.lang.Object[]") Closure closure) 
+        throws Exception {
+    getSql(ds).call(sql, params, closure)
+}
+
+/**
+ * Performs a stored procedure call with the given parameters, calling the closure once with all result objects.
+ * 
+ * See {@link #call(JDBCDataStore, String, List, Closure)} for more details about creating a Hemisphere(IN first, 
+ * IN last, OUT dwells) stored procedure.
+ * Once created, it can be called like this:
+ * 
+ * def first = 'Scott'
+ * def last = 'Davis'
+ * sql.call "{call Hemisphere($first, $last, ${Sql.VARCHAR})}", { dwells {@code ->}
+ *     println dwells
+ * }
+ * 
+ * 
+ * As another example, see {@link #call(JDBCDataStore, String, List, Closure)} for more details about creating a 
+ * FullName(IN first) stored function.
+ * Once created, it can be called like this:
+ * 
+ * def first = 'Sam'
+ * sql.call("{$Sql.VARCHAR = call FullName($first)}") { name {@code ->}
+ *     assert name == 'Sam Pullara'
+ * }
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param gstring A GString containing the SQL query with embedded params.
+ * @param closure Called for each row with a GroovyResultSet.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+//TODO : needs implementation of the Sql OutParameters
+static void call(JDBCDataStore ds, GString gstring,
+                 @ClosureParams(value=SimpleType.class, options="java.lang.Object[]") Closure closure)
+        throws Exception {
+    getSql(ds).call(gstring, closure)
 }

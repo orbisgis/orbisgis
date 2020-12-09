@@ -36,10 +36,14 @@
  */
 package org.orbisgis.datastore.jdbcutils
 
+import groovy.sql.OutParameter
 import org.geotools.data.DataStoreFinder
 import org.geotools.jdbc.JDBCDataStore
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+
+import java.sql.Types
+
 /**
  * Test class dedicated to {@link org.orbisgis.datastore.jdbcutils.JDBCDataStoreUtils}.
  *
@@ -637,5 +641,79 @@ class JDBCDataStoreUtilsTest {
         assert 2 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
+    }
+
+    @Test
+    void callTest() {
+        ds.execute """
+            CREATE ALIAS SET_VALUE AS \$\$
+            String query(Connection conn, String column, String value) throws SQLException {
+                conn.createStatement().execute("UPDATE insertions SET "+column+" = '"+value+"';");
+                return value;
+            }
+            \$\$;
+        """
+
+        def drop = "DROP TABLE IF EXISTS insertions"
+        def create = "CREATE TABLE insertions (\n" +
+                "                id serial,\n" +
+                "                name varchar(255),\n" +
+                "                number int\n" +
+                "            );"
+        def insert = "INSERT INTO insertions(id, name, number) VALUES (1, 'Name', 5432);"
+
+        ds.execute(drop)
+        ds.execute(create)
+        ds.execute(insert)
+        def row = ds.firstRow("SELECT * FROM insertions")
+        assert 'Name' == row.get("NAME")
+        ds.call("CALL SET_VALUE('NAME', 'TEST');")
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 'TEST' == row.get("NAME")
+
+        ds.execute(drop)
+        ds.execute(create)
+        ds.execute(insert)
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 'Name' == row.get("NAME")
+        ds.call("CALL SET_VALUE(${"NAME"}, ${"TEST"});")
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 'TEST' == row.get("NAME")
+
+        ds.execute(drop)
+        ds.execute(create)
+        ds.execute(insert)
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 'Name' == row.get("NAME")
+        ds.call("CALL SET_VALUE(?, ?);", ['NAME', 'TEST'])
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 'TEST' == row.get("NAME")
+
+        ds.execute(drop)
+        ds.execute(create)
+        ds.execute(insert)
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 'Name' == row.get("NAME")
+        ds.call("CALL SET_VALUE(?, ?);", ['NAME', 'TEST'] as Object[])
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 'TEST' == row.get("NAME")
+
+        ds.execute(drop)
+        ds.execute(create)
+        ds.execute(insert)
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 'Name' == row.get("NAME")
+        ds.call("CALL SET_VALUE(?, ?)", ['NAME', 'TEST']) {assert !it}
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 'TEST' == row.get("NAME")
+
+        ds.execute(drop)
+        ds.execute(create)
+        ds.execute(insert)
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 'Name' == row.get("NAME")
+        ds.call("CALL SET_VALUE(${"NAME"}, ${"TEST"});"){assert !it}
+        row = ds.firstRow("SELECT * FROM insertions")
+        assert 'TEST' == row.get("NAME")
     }
 }
