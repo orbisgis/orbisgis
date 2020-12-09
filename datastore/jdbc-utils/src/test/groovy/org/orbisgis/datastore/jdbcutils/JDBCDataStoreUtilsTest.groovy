@@ -42,10 +42,6 @@ import org.geotools.jdbc.JDBCDataStore
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 
-import java.sql.CallableStatement
-import java.sql.ResultSet
-import java.sql.Types
-
 import static org.orbisgis.datastore.jdbcutils.JDBCDataStoreUtils.out
 /**
  * Test class dedicated to {@link org.orbisgis.datastore.jdbcutils.JDBCDataStoreUtils}.
@@ -733,5 +729,51 @@ class JDBCDataStoreUtilsTest {
         postgis.call("{? = CALL HouseSwap(?, ?)}", [out.VARCHAR, "Guillaume", "Paul"]) { assert "Swap done" == it }
         row = postgis.firstRow("SELECT * FROM PERSON WHERE location_id=1")
         assert 'Paul' == row.get("firstname")
+    }
+
+    @Test
+    void withBatchTest() {
+        def drop = "DROP TABLE IF EXISTS insertions"
+        def create = "CREATE TABLE insertions (\n" +
+                "                id serial,\n" +
+                "                name varchar(255),\n" +
+                "                number int\n" +
+                "            );"
+
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        h2gis.withBatch {st ->
+            st.addBatch("INSERT INTO insertions (id, name, number) VALUES (1, 'Simple Name', 2846);")
+            st.addBatch("INSERT INTO insertions (id, name, number) VALUES (2, 'Maybe a complex Name', 7455);")
+            st.addBatch("INSERT INTO insertions (id, name, number) VALUES (3, 'S N', 9272);")
+        }
+        assert 3 == h2gis.ELEMENTS.features.size()
+
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        h2gis.withBatch(2) {st ->
+            st.addBatch("INSERT INTO insertions (id, name, number) VALUES (1, 'Simple Name', 2846);")
+            st.addBatch("INSERT INTO insertions (id, name, number) VALUES (2, 'Maybe a complex Name', 7455);")
+            st.addBatch("INSERT INTO insertions (id, name, number) VALUES (3, 'S N', 9272);")
+        }
+        assert 3 == h2gis.ELEMENTS.features.size()
+
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        h2gis.withBatch("INSERT INTO insertions (id, name, number) VALUES (?, ?, ?)") {st ->
+            st.addBatch([1, 'Simple Name', 2846])
+            st.addBatch([2, 'Maybe a complex Name', 7455])
+            st.addBatch([3, 'S N', 9272])
+        }
+        assert 3 == h2gis.ELEMENTS.features.size()
+
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        h2gis.withBatch(2, "INSERT INTO insertions (id, name, number) VALUES (?, ?, ?)") {st ->
+            st.addBatch([1, 'Simple Name', 2846])
+            st.addBatch([2, 'Maybe a complex Name', 7455])
+            st.addBatch([3, 'S N', 9272])
+        }
+        assert 3 == h2gis.ELEMENTS.features.size()
     }
 }

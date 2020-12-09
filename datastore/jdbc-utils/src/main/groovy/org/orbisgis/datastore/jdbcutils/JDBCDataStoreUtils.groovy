@@ -36,21 +36,14 @@
  */
 package org.orbisgis.datastore.jdbcutils
 
-import groovy.sql.GroovyResultSet
-import groovy.sql.GroovyRowResult
-import groovy.sql.OutParameter
-import groovy.sql.Sql
+import groovy.sql.*
 import groovy.transform.Field
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.SimpleType
 import org.geotools.data.DataStore
 import org.geotools.jdbc.JDBCDataStore
 
-import java.sql.Connection
-import java.sql.ResultSet
-import java.sql.SQLException
-import java.sql.Types
-
+import java.sql.* 
 /**
  * Utility script used as extension module adding methods to JDBCDataStore class.
  *
@@ -67,6 +60,7 @@ private static Sql getSql(JDBCDataStore ds) {
     return SQLS.get(ds)
 }
 
+public static final @Field OutParameters out = new OutParameters()
 class OutParameters{
     public static final OutParameter ARRAY = new OutParameter ( ) { int getType ( ) { return Types.ARRAY } }
     public static final OutParameter BIGINT = new OutParameter ( ) { int getType ( ) { return Types.BIGINT } }
@@ -98,50 +92,6 @@ class OutParameters{
     public static final OutParameter TINYINT = new OutParameter ( ) { int getType ( ) { return Types.TINYINT } }
     public static final OutParameter VARBINARY = new OutParameter ( ) { int getType ( ) { return Types.VARBINARY } }
     public static final OutParameter VARCHAR = new OutParameter ( ) { int getType ( ) { return Types.VARCHAR } }
-}
-
-public static final @Field OutParameters out = new OutParameters()
-
-/**
- * Method used to access to the {@link OutParameter}.
- *
- */
-static def propertyMissing(JDBCDataStore ds, String name) {
-    def type
-    switch(name){
-        case "ARRAY":       type = Types.ARRAY; break
-        case "BIGINT":      type = Types.BIGINT; break
-        case "BINARY":      type = Types.BINARY; break
-        case "BIT":         type = Types.BIT; break
-        case "BLOB":        type = Types.BLOB; break
-        case "BOOLEAN":     type = Types.BOOLEAN; break
-        case "CHAR":        type = Types.CHAR; break
-        case "CLOB":        type = Types.CLOB; break
-        case "DATALINK":    type = Types.DATALINK; break
-        case "DATE":        type = Types.DATE; break
-        case "DECIMAL":     type = Types.DECIMAL; break
-        case "DISTINCT":    type = Types.DISTINCT; break
-        case "DOUBLE":      type = Types.DOUBLE; break
-        case "FLOAT":       type = Types.FLOAT; break
-        case "INTEGER":     type = Types.INTEGER; break
-        case "JAVA_OBJECT": type = Types.JAVA_OBJECT; break
-        case "LONGVARBINARY":type = Types.LONGVARBINARY; break
-        case "LONGVARCHAR": type = Types.LONGVARCHAR; break
-        case "NULL":        type = Types.NULL; break
-        case "NUMERIC":     type = Types.NUMERIC; break
-        case "OTHER":       type = Types.OTHER; break
-        case "REAL":        type = Types.REAL; break
-        case "REF":         type = Types.REF; break
-        case "SMALLINT":    type = Types.SMALLINT; break
-        case "STRUCT":      type = Types.STRUCT; break
-        case "TIME":        type = Types.TIME; break
-        case "TIMESTAMP":   type = Types.TIMESTAMP; break
-        case "TINYINT":     type = Types.TINYINT; break
-        case "VARBINARY":   type = Types.VARBINARY; break
-        case "VARCHAR":     type = Types.VARCHAR; break
-        default : return (ds as DataStore).name
-    }
-    return new OutParameter(){ @Override int getType() { return type } }
 }
 
 /**
@@ -2308,4 +2258,208 @@ static List<List<GroovyRowResult>> callWithAllRows(JDBCDataStore ds, String sql,
                    @ClosureParams(value=SimpleType.class, options="java.lang.Object[]") Closure closure) 
         throws SQLException {
     getSql(ds).callWithAllRows(sql, params, closure)
+}
+
+/**
+ * Performs the closure (containing batch operations) within a batch.
+ * Uses a batch size of zero, i.e. no automatic partitioning of batches.
+ * 
+ * This means that executeBatch() will be called automatically after the withBatch closure has finished but may be 
+ * called explicitly if desired as well for more fine-grained partitioning of the batch.
+ * 
+ * The closure will be called with a single argument; the database statement (actually a 
+ * BatchingStatementWrapperhelper object) associated with this batch.
+ * 
+ * Use it like this:
+ * 
+ * def updateCounts = sql.withBatch { stmt ->
+ *     stmt.addBatch("insert into TABLENAME ...")
+ *     stmt.addBatch("insert into TABLENAME ...")
+ *     stmt.addBatch("insert into TABLENAME ...")
+ *     ...
+ * }
+ * 
+ * For integrity and performance reasons, you may wish to consider executing your batch command(s) within a transaction:
+ * 
+ * sql.withTransaction {
+ *     def result1 = sql.withBatch { ... }
+ *     ...
+ * }
+ * 
+ *
+ * @param ds      {@link JDBCDataStore} on which the method is performed.
+ * @param Closure The closure containing batch and optionally other statements.
+ * @return An array of update counts containing one element for each command in the batch.  The elements of the array
+ *         are ordered according to the order in which commands were added to the batch.
+ * @throws SQLException If a database access error occurs, or this method is called on a closed Statement, or the
+ *                      driver does not support batch statements. Throws {@link java.sql.BatchUpdateException}
+ *                      (a subclass of SQLException) if one of the commands sent to the database fails to execute
+ *                      properly or attempts to return a result set.
+ */
+static int[] withBatch(JDBCDataStore ds,
+                @ClosureParams(value=SimpleType.class, options="groovy.sql.BatchingStatementWrapper") Closure closure)
+        throws SQLException {
+    getSql(ds).withBatch {closure}
+}
+
+/**
+ * Performs the closure (containing batch operations) within a batch using a given batch size.
+ * 
+ * After every batchSize addBatch(sqlBatchOperation) operations, automatically calls an executeBatch()operation to
+ * "chunk" up the database operations into partitions. Though not normally needed, you can also explicitly call
+ * executeBatch() which after executing the current batch, resets the batch count back to zero.
+ * 
+ * The closure will be called with a single argument; the database statement (actually a
+ * BatchingStatementWrapper helper object) associated with this batch.
+ * 
+ * Use it like this for batchSize of 20:
+ * 
+ * def updateCounts = sql.withBatch(20) { stmt ->
+ *     stmt.addBatch("insert into TABLENAME ...")
+ *     stmt.addBatch("insert into TABLENAME ...")
+ *     stmt.addBatch("insert into TABLENAME ...")
+ *     ...
+ * }
+ * 
+ * For integrity and performance reasons, you may wish to consider executing your batch command(s) within a transaction:
+ * 
+ * sql.withTransaction {
+ *     def result1 = sql.withBatch { ... }
+ *     ...
+ * }
+ * 
+ *
+ * @param ds        {@link JDBCDataStore} on which the method is performed.
+ * @param batchSize Partition the batch into batchSize pieces, i.e. after batchSize addBatch() invocations, call
+ *                  executeBatch() automatically;  0 means manual calls to executeBatch are required
+ * @param closure   The closure containing batch and optionally other statements
+ * @return An array of update counts containing one element for each
+ *         command in the batch.  The elements of the array are ordered according
+ *         to the order in which commands were added to the batch.
+ * @throws SQLException If a database access error occurs, or this method is called on a closed Statement, or the
+ *                      driver does not support batch statements. Throws {@link java.sql.BatchUpdateException}
+ *                      (a subclass of SQLException) if one of the commands sent to the database fails to execute
+ *                      properly or attempts to return a result set.
+ */
+static int[] withBatch(JDBCDataStore ds, int batchSize,
+               @ClosureParams(value=SimpleType.class, options="groovy.sql.BatchingStatementWrapper") Closure closure)
+        throws SQLException {
+    getSql(ds).withBatch (batchSize, closure)
+}
+
+/**
+ * Performs the closure (containing batch operations specific to an associated prepared statement) within a batch.
+ * Uses a batch size of zero, i.e. no automatic partitioning of batches.
+ * 
+ * This means that executeBatch() will be called automatically after the withBatch closure has finished but may be
+ * called explicitly if desired as well for more fine-grained partitioning of the batch.
+ * 
+ * The closure will be called with a single argument; the prepared statement (actually a
+ * BatchingPreparedStatementWrapper helper object) associated with this batch.
+ * 
+ * An example:
+ * 
+ * def updateCounts = sql.withBatch('insert into TABLENAME(a, b, c) values (?, ?, ?)') { ps ->
+ *     ps.addBatch([10, 12, 5])
+ *     ps.addBatch([7, 3, 98])
+ *     ps.addBatch(22, 67, 11)
+ *     def partialUpdateCounts = ps.executeBatch() // optional interim batching
+ *     ps.addBatch(30, 40, 50)
+ *     ...
+ * }
+ * 
+ * For integrity and performance reasons, you may wish to consider executing your batch command(s) within a transaction:
+ * 
+ * sql.withTransaction {
+ *     def result1 = sql.withBatch { ... }
+ *     ...
+ * }
+ * 
+ *
+ * @param ds      {@link JDBCDataStore} on which the method is performed.
+ * @param sql     Batch update statement.
+ * @param closure The closure containing batch statements (to bind parameters) and optionally other statements.
+ * @return An array of update counts containing one element for each
+ *         binding in the batch.  The elements of the array are ordered according
+ *         to the order in which commands were executed.
+ * @throws SQLException If a database access error occurs, or this method is called on a closed Statement, or the
+ *                      driver does not support batch statements. Throws {@link java.sql.BatchUpdateException}
+ *                      (a subclass of SQLException) if one of the commands sent to the database fails to execute
+ *                      properly or attempts to return a result set.
+ */
+static int[] withBatch(JDBCDataStore ds, String sql,
+                @ClosureParams(value=SimpleType.class, options="groovy.sql.BatchingPreparedStatementWrapper") Closure closure)
+        throws SQLException {
+    getSql(ds).withBatch(sql, closure)
+}
+
+/**
+ * Performs the closure (containing batch operations specific to an associated prepared statement) within a batch
+ * using a given batch size.
+ * 
+ * After every batchSize addBatch(params) operations, automatically calls an executeBatch()operation to "chunk" up
+ * the database operations into partitions. Though not normally needed, you can also explicitly call executeBatch()
+ * which after executing the current batch, resets the batch count back to zero.
+ * 
+ * The closure will be called with a single argument; the prepared statement (actually a
+ * BatchingPreparedStatementWrapper helper object) associated with this batch.
+ * 
+ * Below is an example using a batchSize of 20:
+ * 
+ * def updateCounts = sql.withBatch(20, 'insert into TABLENAME(a, b, c) values (?, ?, ?)') { ps ->
+ *     ps.addBatch(10, 12, 5)      // varargs style
+ *     ps.addBatch([7, 3, 98])     // list
+ *     ps.addBatch([22, 67, 11])
+ *     ...
+ * }
+ * 
+ * Named parameters (into maps or domain objects) are also supported:
+ * 
+ * def updateCounts = sql.withBatch(20, 'insert into TABLENAME(a, b, c) values (:foo, :bar, :baz)') { ps ->
+ *     ps.addBatch([foo:10, bar:12, baz:5])  // map
+ *     ps.addBatch(foo:7, bar:3, baz:98)     // Groovy named args allow outer brackets to be dropped
+ *     ...
+ * }
+ * 
+ * Named ordinal parameters (into maps or domain objects) are also supported:
+ * 
+ * def updateCounts = sql.withBatch(20, 'insert into TABLENAME(a, b, c) values (?1.foo, ?2.bar, ?2.baz)') { ps ->
+ *     ps.addBatch([[foo:22], [bar:67, baz:11]])  // list of maps or domain objects
+ *     ps.addBatch([foo:10], [bar:12, baz:5])     // varargs allows outer brackets to be dropped
+ *     ps.addBatch([foo:7], [bar:3, baz:98])
+ *     ...
+ * }
+ * // swap to batch size of 5 and illustrate simple and domain object cases ...
+ * class Person { String first, last }
+ * def updateCounts2 = sql.withBatch(5, 'insert into PERSON(id, first, last) values (?1, ?2.first, ?2.last)') { ps ->
+ *     ps.addBatch(1, new Person(first:'Peter', last:'Pan'))
+ *     ps.addBatch(2, new Person(first:'Snow', last:'White'))
+ *     ...
+ * }
+ * 
+ * For integrity and performance reasons, you may wish to consider executing your batch command(s) within a transaction:
+ * 
+ * sql.withTransaction {
+ *     def result1 = sql.withBatch { ... }
+ *     ...
+ * }
+ * 
+ *
+ * @param ds        {@link JDBCDataStore} on which the method is performed.
+ * @param batchSize Partition the batch into batchSize pieces, i.e. after batchSize addBatch()invocations, call
+ *                  executeBatch()automatically; 0 means manual calls to executeBatch are required if additional
+ *                  partitioning of the batch is required.
+ * @param sql       Batch update statement.
+ * @param closure   The closure containing batch statements (to bind parameters) and optionally other statements.
+ * @return An array of update counts containing one element for each binding in the batch.  The elements of the array
+ *         are ordered according to the order in which commands were executed.
+ * @throws SQLException If a database access error occurs, or this method is called on a closed Statement, or the
+ *                      driver does not support batch statements. Throws {@link java.sql.BatchUpdateException}
+ *                      (a subclass of SQLException) if one of the commands sent to the database fails to execute
+ *                      properly or attempts to return a result set.
+ */
+static int[] withBatch(JDBCDataStore ds, int batchSize, String sql,
+            @ClosureParams(value=SimpleType.class, options="groovy.sql.BatchingPreparedStatementWrapper") Closure closure)
+        throws SQLException {
+    getSql(ds).withBatch(batchSize, sql, closure)
 }
