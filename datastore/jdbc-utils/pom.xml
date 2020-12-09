@@ -80,6 +80,12 @@
             <artifactId>datastore-utils</artifactId>
             <version>${version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.geotools.jdbc</groupId>
+            <artifactId>gt-jdbc-postgis</artifactId>
+            <version>${geotools.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <!-- Build Settings -->
