@@ -38,17 +38,18 @@ package org.orbisgis.datastore.jdbcutils
 
 import groovy.sql.GroovyResultSet
 import groovy.sql.GroovyRowResult
+import groovy.sql.OutParameter
 import groovy.sql.Sql
 import groovy.transform.Field
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.SimpleType
+import org.geotools.data.DataStore
 import org.geotools.jdbc.JDBCDataStore
 
 import java.sql.Connection
-import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.sql.SQLException
-import java.sql.Statement
+import java.sql.Types
 
 /**
  * Utility script used as extension module adding methods to JDBCDataStore class.
@@ -64,6 +65,83 @@ private static Sql getSql(JDBCDataStore ds) {
         SQLS.put(ds, new Sql(ds.connection))
     }
     return SQLS.get(ds)
+}
+
+class OutParameters{
+    public static final OutParameter ARRAY = new OutParameter ( ) { int getType ( ) { return Types.ARRAY } }
+    public static final OutParameter BIGINT = new OutParameter ( ) { int getType ( ) { return Types.BIGINT } }
+    public static final OutParameter BINARY = new OutParameter ( ) { int getType ( ) { return Types.BINARY } }
+    public static final OutParameter BIT = new OutParameter ( ) { int getType ( ) { return Types.BIT } }
+    public static final OutParameter BLOB = new OutParameter ( ) { int getType ( ) { return Types.BLOB } }
+    public static final OutParameter BOOLEAN = new OutParameter ( ) { int getType ( ) { return Types.BOOLEAN } }
+    public static final OutParameter CHAR = new OutParameter ( ) { int getType ( ) { return Types.CHAR } }
+    public static final OutParameter CLOB = new OutParameter ( ) { int getType ( ) { return Types.CLOB } }
+    public static final OutParameter DATALINK = new OutParameter ( ) { int getType ( ) { return Types.DATALINK } }
+    public static final OutParameter DATE = new OutParameter ( ) { int getType ( ) { return Types.DATE } }
+    public static final OutParameter DECIMAL = new OutParameter ( ) { int getType ( ) { return Types.DECIMAL } }
+    public static final OutParameter DISTINCT = new OutParameter ( ) { int getType ( ) { return Types.DISTINCT } }
+    public static final OutParameter DOUBLE = new OutParameter ( ) { int getType ( ) { return Types.DOUBLE } }
+    public static final OutParameter FLOAT = new OutParameter ( ) { int getType ( ) { return Types.FLOAT } }
+    public static final OutParameter INTEGER = new OutParameter ( ) { int getType ( ) { return Types.INTEGER } }
+    public static final OutParameter JAVA_OBJECT = new OutParameter ( ) { int getType ( ) { return Types.JAVA_OBJECT } }
+    public static final OutParameter LONGVARBINARY = new OutParameter ( ) { int getType ( ) { return Types.LONGVARBINARY } }
+    public static final OutParameter LONGVARCHAR = new OutParameter ( ) { int getType ( ) { return Types.LONGVARCHAR } }
+    public static final OutParameter NULL = new OutParameter ( ) { int getType ( ) { return Types.NULL } }
+    public static final OutParameter NUMERIC = new OutParameter ( ) { int getType ( ) { return Types.NUMERIC } }
+    public static final OutParameter OTHER = new OutParameter ( ) { int getType ( ) { return Types.OTHER } }
+    public static final OutParameter REAL = new OutParameter ( ) { int getType ( ) { return Types.REAL } }
+    public static final OutParameter REF = new OutParameter ( ) { int getType ( ) { return Types.REF } }
+    public static final OutParameter SMALLINT = new OutParameter ( ) { int getType ( ) { return Types.SMALLINT } }
+    public static final OutParameter STRUCT = new OutParameter ( ) { int getType ( ) { return Types.STRUCT } }
+    public static final OutParameter TIME = new OutParameter ( ) { int getType ( ) { return Types.TIME } }
+    public static final OutParameter TIMESTAMP = new OutParameter ( ) { int getType ( ) { return Types.TIMESTAMP } }
+    public static final OutParameter TINYINT = new OutParameter ( ) { int getType ( ) { return Types.TINYINT } }
+    public static final OutParameter VARBINARY = new OutParameter ( ) { int getType ( ) { return Types.VARBINARY } }
+    public static final OutParameter VARCHAR = new OutParameter ( ) { int getType ( ) { return Types.VARCHAR } }
+}
+
+public static final @Field OutParameters out = new OutParameters()
+
+/**
+ * Method used to access to the {@link OutParameter}.
+ *
+ */
+static def propertyMissing(JDBCDataStore ds, String name) {
+    def type
+    switch(name){
+        case "ARRAY":       type = Types.ARRAY; break
+        case "BIGINT":      type = Types.BIGINT; break
+        case "BINARY":      type = Types.BINARY; break
+        case "BIT":         type = Types.BIT; break
+        case "BLOB":        type = Types.BLOB; break
+        case "BOOLEAN":     type = Types.BOOLEAN; break
+        case "CHAR":        type = Types.CHAR; break
+        case "CLOB":        type = Types.CLOB; break
+        case "DATALINK":    type = Types.DATALINK; break
+        case "DATE":        type = Types.DATE; break
+        case "DECIMAL":     type = Types.DECIMAL; break
+        case "DISTINCT":    type = Types.DISTINCT; break
+        case "DOUBLE":      type = Types.DOUBLE; break
+        case "FLOAT":       type = Types.FLOAT; break
+        case "INTEGER":     type = Types.INTEGER; break
+        case "JAVA_OBJECT": type = Types.JAVA_OBJECT; break
+        case "LONGVARBINARY":type = Types.LONGVARBINARY; break
+        case "LONGVARCHAR": type = Types.LONGVARCHAR; break
+        case "NULL":        type = Types.NULL; break
+        case "NUMERIC":     type = Types.NUMERIC; break
+        case "OTHER":       type = Types.OTHER; break
+        case "REAL":        type = Types.REAL; break
+        case "REF":         type = Types.REF; break
+        case "SMALLINT":    type = Types.SMALLINT; break
+        case "STRUCT":      type = Types.STRUCT; break
+        case "TIME":        type = Types.TIME; break
+        case "TIMESTAMP":   type = Types.TIMESTAMP; break
+        case "TINYINT":     type = Types.TINYINT; break
+        case "VARBINARY":   type = Types.VARBINARY; break
+        case "VARCHAR":     type = Types.VARCHAR; break
+        default : return (ds as DataStore).name
+    }
+    return new OutParameter(){ @Override int getType() { return type } }
 }
 
 /**
@@ -1895,4 +1973,339 @@ static int executeUpdate(JDBCDataStore ds, String sql, Object[] params) throws S
  */
 static int executeUpdate(JDBCDataStore ds, GString gstring) throws SQLException {
     getSql(ds).executeUpdate(gstring)
+}
+
+/**
+ * Performs a stored procedure call.
+ * 
+ * Example usage (tested with MySQL) - suppose we have the following stored procedure:
+ * 
+ * sql.execute """
+ *     CREATE PROCEDURE HouseSwap(_first1 VARCHAR(50), _first2 VARCHAR(50))
+ *     BEGIN
+ *         DECLARE _loc1 INT;
+ *         DECLARE _loc2 INT;
+ *         SELECT location_id into _loc1 FROM PERSON where firstname = _first1;
+ *         SELECT location_id into _loc2 FROM PERSON where firstname = _first2;
+ *         UPDATE PERSON
+ *         set location_id = case firstname
+ *             when _first1 then _loc2
+ *             when _first2 then _loc1
+ *         end
+ *         where (firstname = _first1 OR firstname = _first2);
+ *     END
+ * """
+ * 
+ * then you can invoke the procedure as follows:
+ * 
+ * def rowsChanged = sql.call("{call HouseSwap('Guillaume', 'Paul')}")
+ * assert rowsChanged == 2
+ * 
+ *
+ * @param ds  {@link JDBCDataStore} on which the query is performed.
+ * @param sql The SQL statement.
+ * @return The number of rows updated or 0 for SQL statements that return nothing.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static int call(JDBCDataStore ds, String sql) throws Exception {
+    getSql(ds).call(sql)
+}
+
+/**
+ * Performs a stored procedure call with the given embedded parameters.
+ * 
+ * Example usage - see {@link #call(JDBCDataStore, String)} for more details about creating a HouseSwap(IN name1,
+ * IN name2) stored procedure.
+ * Once created, it can be called like this:
+ * 
+ * def p1 = 'Paul'
+ * def p2 = 'Guillaume'
+ * def rowsChanged = sql.call("{call HouseSwap($p1, $p2)}")
+ * assert rowsChanged == 2
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param gstring A GString containing the SQL query with embedded params.
+ * @return The number of rows updated or 0 for SQL statements that return nothing.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static int call(JDBCDataStore ds, GString gstring) throws Exception {
+    getSql(ds).call(gstring)
+}
+
+/**
+ * Performs a stored procedure call with the given parameters.
+ * 
+ * Example usage - see {@link #call(JDBCDataStore, String)} for more details about creating a HouseSwap(IN name1,
+ * IN name2) stored procedure.
+ * Once created, it can be called like this:
+ * 
+ * def rowsChanged = sql.call("{call HouseSwap(?, ?)}", ['Guillaume', 'Paul'])
+ * assert rowsChanged == 2
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param sql    The SQL statement.
+ * @param params A list of parameters.
+ * @return The number of rows updated or 0 for SQL statements that return nothing.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static int call(JDBCDataStore ds, String sql, List<Object> params) throws Exception {
+    getSql(ds).call(sql, params)
+}
+
+/**
+ * Performs a stored procedure call with the given parameters.
+ * 
+ * An Object array variant of {@link #call(JDBCDataStore, String, List)}.
+ *
+ * @param ds     {@link JDBCDataStore} on which the query is performed.
+ * @param sql    The SQL statement.
+ * @param params An array of parameters.
+ * @return The number of rows updated or 0 for SQL statements that return nothing.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static int call(JDBCDataStore ds, String sql, Object[] params) throws Exception {
+    getSql(ds).call(sql, params)
+}
+
+/**
+ * Performs a stored procedure call with the given parameters.  The closure is called once with all the out parameters.
+ * 
+ * Example usage - suppose we create a stored procedure (ignore its simplistic implementation):
+ * 
+ * // Tested with MySql 5.0.75
+ * sql.execute """
+ *     CREATE PROCEDURE Hemisphere(
+ *         IN p_firstname VARCHAR(50),
+ *         IN p_lastname VARCHAR(50),
+ *         OUT ans VARCHAR(50))
+ *     BEGIN
+ *     DECLARE loc INT;
+ *     SELECT location_id into loc FROM PERSON where firstname = p_firstname and lastname = p_lastname;
+ *     CASE loc
+ *         WHEN 40 THEN
+ *             SET ans = 'Southern Hemisphere';
+ *         ELSE
+ *             SET ans = 'Northern Hemisphere';
+ *     END CASE;
+ *     END;
+ * """
+ * 
+ * we can now call the stored procedure as follows:
+ * 
+ * sql.call '{call Hemisphere(?, ?, ?)}', ['Guillaume', 'Laforge', Sql.VARCHAR], { dwells ->
+ *     println dwells
+ * }
+ * 
+ * which will output 'Northern Hemisphere'.
+ * 
+ * We can also access stored functions with scalar return values where the return value will be treated as an OUT
+ * parameter. Here are examples for various databases for creating such a procedure:
+ * 
+ * // Tested with MySql 5.0.75
+ * sql.execute """
+ *     create function FullName(p_firstname VARCHAR(40)) returns VARCHAR(80)
+ *     begin
+ *         declare ans VARCHAR(80);
+ *         SELECT CONCAT(firstname, ' ', lastname) INTO ans FROM PERSON WHERE firstname = p_firstname;
+ *         return ans;
+ *     end
+ * """
+ *
+ * // Tested with MS SQLServer Express 2008
+ * sql.execute """
+ *     {@code create function FullName(@firstname VARCHAR(40)) returns VARCHAR(80)}
+ *     begin
+ *         declare {@code @ans} VARCHAR(80)
+ *         {@code SET @ans = (SELECT firstname + ' ' + lastname FROM PERSON WHERE firstname = @firstname)}
+ *         return {@code @ans}
+ *     end
+ * """
+ *
+ * // Tested with Oracle XE 10g
+ * sql.execute """
+ *     create function FullName(p_firstname VARCHAR) return VARCHAR is
+ *     ans VARCHAR(80);
+ *     begin
+ *         SELECT CONCAT(CONCAT(firstname, ' '), lastname) INTO ans FROM PERSON WHERE firstname = p_firstname;
+ *         return ans;
+ *     end;
+ * """
+ * 
+ * and here is how you access the stored function for all databases:
+ * 
+ * sql.call("{? = call FullName(?)}", [Sql.VARCHAR, 'Sam']) { name ->
+ *     assert name == 'Sam Pullara'
+ * }
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The sql statement.
+ * @param params  A list of parameters.
+ * @param closure Called for each row with a GroovyResultSet.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static void call(JDBCDataStore ds, String sql, List<Object> params, 
+                 @ClosureParams(value=SimpleType.class, options="java.lang.Object[]") Closure closure) 
+        throws Exception {
+    getSql(ds).call(sql, params, closure)
+}
+
+/**
+ * Performs a stored procedure call with the given parameters, calling the closure once with all result objects.
+ * 
+ * See {@link #call(JDBCDataStore, String, List, Closure)} for more details about creating a Hemisphere(IN first, 
+ * IN last, OUT dwells) stored procedure.
+ * Once created, it can be called like this:
+ * 
+ * def first = 'Scott'
+ * def last = 'Davis'
+ * sql.call "{call Hemisphere($first, $last, ${Sql.VARCHAR})}", { dwells ->
+ *     println dwells
+ * }
+ * 
+ * 
+ * As another example, see {@link #call(JDBCDataStore, String, List, Closure)} for more details about creating a 
+ * FullName(IN first) stored function.
+ * Once created, it can be called like this:
+ * 
+ * def first = 'Sam'
+ * sql.call("{$Sql.VARCHAR = call FullName($first)}") { name ->
+ *     assert name == 'Sam Pullara'
+ * }
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param gstring A GString containing the SQL query with embedded params.
+ * @param closure Called for each row with a GroovyResultSet.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static void call(JDBCDataStore ds, GString gstring,
+                 @ClosureParams(value=SimpleType.class, options="java.lang.Object[]") Closure closure)
+        throws Exception {
+    getSql(ds).call(gstring, closure)
+}
+
+/**
+ * Performs a stored procedure call with the given parameters, calling the closure once with all result objects,
+ * and also returning the rows of the ResultSet.
+ * 
+ * Use this when calling a stored procedure that utilizes both
+ * output parameters and returns a single ResultSet.
+ * 
+ * Once created, the stored procedure can be called like this:
+ * 
+ * def first = 'Jeff'
+ * def last = 'Sheets'
+ * def rows = sql.callWithRows "{call Hemisphere2($first, $last, ${Sql.VARCHAR})}", { dwells ->
+ *     println dwells
+ * }
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param gstring A GString containing the SQL query with embedded params.
+ * @param closure Called once with all out parameter results.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static List<GroovyRowResult> callWithRows(JDBCDataStore ds, GString gstring,
+                      @ClosureParams(value=SimpleType.class, options="java.lang.Object[]") Closure closure)
+        throws SQLException {
+    getSql(ds).callWithRows(gstring, closure)
+}
+
+/**
+ * Performs a stored procedure call with the given parameters, calling the closure once with all result objects,
+ * and also returning the rows of the ResultSet.
+ * 
+ * Use this when calling a stored procedure that utilizes both output parameters and returns a single ResultSet.
+ * 
+ * Once created, the stored procedure can be called like this:
+ * 
+ * def rows = sql.callWithRows '{call Hemisphere2(?, ?, ?)}', ['Guillaume', 'Laforge', Sql.VARCHAR], { dwells ->
+ *     println dwells
+ * }
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The sql statement.
+ * @param params  A list of parameters.
+ * @param closure Called once with all out parameter results.
+ * @return A list of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static List<GroovyRowResult> callWithRows(JDBCDataStore ds, String sql, List<Object> params,
+                  @ClosureParams(value=SimpleType.class, options="java.lang.Object[]") Closure closure)
+        throws SQLException {
+    getSql(ds).callWithRows(sql, params, closure)
+}
+
+/**
+ * Performs a stored procedure call with the given parameters, calling the closure once with all result objects,
+ * and also returning a list of lists with the rows of the ResultSet(s).
+ * 
+ * Use this when calling a stored procedure that utilizes both output parameters and returns multiple ResultSets.
+ * 
+ * Once created, the stored procedure can be called like this:
+ * 
+ * def first = 'Jeff'
+ * def last = 'Sheets'
+ * def rowsList = sql.callWithAllRows "{call Hemisphere2($first, $last, ${Sql.VARCHAR})}", { dwells ->
+ *     println dwells
+ * }
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param gstring a GString containing the SQL query with embedded params
+ * @param closure called once with all out parameter results
+ * @return a list containing lists of GroovyRowResult objects
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static List<List<GroovyRowResult>> callWithAllRows(JDBCDataStore ds, GString gstring,
+                   @ClosureParams(value=SimpleType.class, options="java.lang.Object[]") Closure closure)
+        throws SQLException {
+    getSql(ds).callWithAllRows(gstring, closure)
+}
+
+/**
+ * Performs a stored procedure call with the given parameters, calling the closure once with all result objects,
+ * and also returning a list of lists with the rows of the ResultSet(s).
+ * 
+ * Use this when calling a stored procedure that utilizes both output parameters and returns multiple ResultSets.
+ * 
+ * Once created, the stored procedure can be called like this:
+ * 
+ * def rowsList = sql.callWithAllRows '{call Hemisphere2(?, ?, ?)}', ['Guillaume', 'Laforge', Sql.VARCHAR], { dwells ->
+ *     println dwells
+ * }
+ * 
+ * 
+ * Resource handling is performed automatically where appropriate.
+ *
+ * @param ds      {@link JDBCDataStore} on which the query is performed.
+ * @param sql     The sql statement.
+ * @param params  A list of parameters.
+ * @param closure Called once with all out parameter results.
+ * @return A list containing lists of GroovyRowResult objects.
+ * @throws SQLException Thrown on a database manipulation error occurrence.
+ */
+static List<List<GroovyRowResult>> callWithAllRows(JDBCDataStore ds, String sql, List<Object> params, 
+                   @ClosureParams(value=SimpleType.class, options="java.lang.Object[]") Closure closure) 
+        throws SQLException {
+    getSql(ds).callWithAllRows(sql, params, closure)
 }

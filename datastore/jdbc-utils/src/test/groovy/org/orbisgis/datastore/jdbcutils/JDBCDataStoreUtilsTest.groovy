@@ -36,13 +36,17 @@
  */
 package org.orbisgis.datastore.jdbcutils
 
+
 import org.geotools.data.DataStoreFinder
 import org.geotools.jdbc.JDBCDataStore
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 
+import java.sql.CallableStatement
 import java.sql.ResultSet
+import java.sql.Types
 
+import static org.orbisgis.datastore.jdbcutils.JDBCDataStoreUtils.out
 /**
  * Test class dedicated to {@link org.orbisgis.datastore.jdbcutils.JDBCDataStoreUtils}.
  *
@@ -51,14 +55,15 @@ import java.sql.ResultSet
  */
 class JDBCDataStoreUtilsTest {
 
-    private static JDBCDataStore ds
+    private static JDBCDataStore h2gis
+    private static JDBCDataStore postgis
 
     @BeforeAll
     static void beforeAll() {
         def dataStore = DataStoreFinder.getDataStore([dbtype: "h2gis", database: "./target/database_${UUID.randomUUID()}"])
         assert dataStore in JDBCDataStore
-        ds = (JDBCDataStore) dataStore
-        ds.connection.execute("""
+        h2gis = (JDBCDataStore) dataStore
+        h2gis.connection.execute("""
             CREATE TABLE elements (
                 id int,
                 name varchar(255),
@@ -68,33 +73,38 @@ class JDBCDataStoreUtilsTest {
             INSERT INTO elements (id, name, number) VALUES (2, 'Maybe a complex Name', 7455);
             INSERT INTO elements (id, name, number) VALUES (3, 'S N', 9272);
         """)
+
+        dataStore = DataStoreFinder.getDataStore([dbtype: "postgis", host: "localhost", user: "orbisgis",
+                                                  passwd: "orbisgis", database: "orbisgis_db", port: 5432])
+        assert dataStore in JDBCDataStore
+        postgis = (JDBCDataStore) dataStore
     }
 
     @Test
     void queryTest() {
         def str = "";
-        ds.query("SELECT * FROM elements WHERE id > 1")
+        h2gis.query("SELECT * FROM elements WHERE id > 1")
                 {while(it.next()) {
                     str+=it.name+" "+it.number+" "
                 }}
         assert "Maybe a complex Name 7455 S N 9272 " == str
 
         str = "";
-        ds.query("SELECT * FROM elements WHERE id > ?", [1])
+        h2gis.query("SELECT * FROM elements WHERE id > ?", [1])
                 { while(it.next()) {
                     str+=it.name+" "+it.number+" "
                 }}
         assert "Maybe a complex Name 7455 S N 9272 " == str
 
         str = "";
-        ds.query("SELECT * FROM elements WHERE id > :id", [id:1])
+        h2gis.query("SELECT * FROM elements WHERE id > :id", [id:1])
                 { while(it.next()) {
                     str+=it.name+" "+it.number+" "
                 }}
         assert "Maybe a complex Name 7455 S N 9272 " == str
 
         str = "";
-        ds.query([id:1], "SELECT * FROM elements WHERE id > :id")
+        h2gis.query([id:1], "SELECT * FROM elements WHERE id > :id")
                 { while(it.next()) {
                     str+=it.name+" "+it.number+" "
                 }}
@@ -102,7 +112,7 @@ class JDBCDataStoreUtilsTest {
 
         str = "";
         def id = 1
-        ds.query("SELECT * FROM elements WHERE id > $id")
+        h2gis.query("SELECT * FROM elements WHERE id > $id")
                 { while(it.next()) {
                     str+=it.name+" "+it.number+" "
                 }}
@@ -112,111 +122,111 @@ class JDBCDataStoreUtilsTest {
     @Test
     void eachRowTest() {
         def str = "";
-        ds.eachRow("SELECT * FROM elements WHERE id > 1")
+        h2gis.eachRow("SELECT * FROM elements WHERE id > 1")
                 { str+=it.name+" "+it.number+" " }
         assert "Maybe a complex Name 7455 S N 9272 " == str
 
         str = "";
-        ds.eachRow("SELECT * FROM elements", 2, 1)
+        h2gis.eachRow("SELECT * FROM elements", 2, 1)
                 { str+=it.name+" "+it.number+" " }
         assert "Maybe a complex Name 7455 " == str
         str = "";
 
-        ds.eachRow("SELECT * FROM elements WHERE id > 1")
+        h2gis.eachRow("SELECT * FROM elements WHERE id > 1")
                 { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}
                 { str+=it.name+" "+it.number+" " }
         assert "NAME NUMBER Maybe a complex Name 7455 S N 9272 " == str
         str = "";
 
-        ds.eachRow("SELECT * FROM elements" ,
+        h2gis.eachRow("SELECT * FROM elements" ,
                 { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}, 2, 1)
                 { str+=it.name+" "+it.number+" " }
         assert "NAME NUMBER Maybe a complex Name 7455 " == str
         str = "";
 
-        ds.eachRow("SELECT * FROM elements WHERE id > ?" , [1],
+        h2gis.eachRow("SELECT * FROM elements WHERE id > ?" , [1],
                 { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}, 1, 1)
                 { str+=it.name+" "+it.number+" " }
         assert "NAME NUMBER Maybe a complex Name 7455 " == str
         str = "";
 
-        ds.eachRow("SELECT * FROM elements WHERE id > :id" , [id:1],
+        h2gis.eachRow("SELECT * FROM elements WHERE id > :id" , [id:1],
                 { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}, 1, 1)
                 { str+=it.name+" "+it.number+" " }
         assert "NAME NUMBER Maybe a complex Name 7455 " == str
         str = "";
 
-        ds.eachRow([id:1], "SELECT * FROM elements WHERE id > :id" ,
+        h2gis.eachRow([id:1], "SELECT * FROM elements WHERE id > :id" ,
                 { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}, 1, 1)
                 { str+=it.name+" "+it.number+" " }
         assert "NAME NUMBER Maybe a complex Name 7455 " == str
         str = "";
 
-        ds.eachRow("SELECT * FROM elements WHERE id > ?" , [1])
+        h2gis.eachRow("SELECT * FROM elements WHERE id > ?" , [1])
                 { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}
                 { str+=it.name+" "+it.number+" " }
         assert "NAME NUMBER Maybe a complex Name 7455 S N 9272 " == str
         str = "";
 
-        ds.eachRow("SELECT * FROM elements WHERE id > :id" , [id:1])
+        h2gis.eachRow("SELECT * FROM elements WHERE id > :id" , [id:1])
                 { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}
                 { str+=it.name+" "+it.number+" " }
         assert "NAME NUMBER Maybe a complex Name 7455 S N 9272 " == str
         str = "";
 
-        ds.eachRow([id:1], "SELECT * FROM elements WHERE id > :id" )
+        h2gis.eachRow([id:1], "SELECT * FROM elements WHERE id > :id" )
                 { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}
                 { str+=it.name+" "+it.number+" " }
         assert "NAME NUMBER Maybe a complex Name 7455 S N 9272 " == str
         str = "";
 
-        ds.eachRow("SELECT * FROM elements WHERE id > ?" , [1])
+        h2gis.eachRow("SELECT * FROM elements WHERE id > ?" , [1])
                 { str+=it.name+" "+it.number+" " }
         assert "Maybe a complex Name 7455 S N 9272 " == str
         str = "";
 
-        ds.eachRow("SELECT * FROM elements WHERE id > :id" , [id:1])
+        h2gis.eachRow("SELECT * FROM elements WHERE id > :id" , [id:1])
                 { str+=it.name+" "+it.number+" " }
         assert "Maybe a complex Name 7455 S N 9272 " == str
         str = "";
 
-        ds.eachRow([id:1], "SELECT * FROM elements WHERE id > :id" )
+        h2gis.eachRow([id:1], "SELECT * FROM elements WHERE id > :id" )
                 { str+=it.name+" "+it.number+" " }
         assert "Maybe a complex Name 7455 S N 9272 " == str
         str = "";
 
-        ds.eachRow("SELECT * FROM elements WHERE id > ?" , [1], 1, 1)
+        h2gis.eachRow("SELECT * FROM elements WHERE id > ?" , [1], 1, 1)
                 { str+=it.name+" "+it.number+" " }
         assert "Maybe a complex Name 7455 " == str
         str = "";
 
-        ds.eachRow("SELECT * FROM elements WHERE id > :id" , [id:1], 1, 1)
+        h2gis.eachRow("SELECT * FROM elements WHERE id > :id" , [id:1], 1, 1)
                 { str+=it.name+" "+it.number+" " }
         assert "Maybe a complex Name 7455 " == str
         str = "";
 
-        ds.eachRow([id:1], "SELECT * FROM elements WHERE id > :id" , 1, 1)
+        h2gis.eachRow([id:1], "SELECT * FROM elements WHERE id > :id" , 1, 1)
                 { str+=it.name+" "+it.number+" " }
         assert "Maybe a complex Name 7455 " == str
         str = "";
 
-        ds.eachRow("SELECT * FROM elements WHERE id > ${1}")
+        h2gis.eachRow("SELECT * FROM elements WHERE id > ${1}")
                 { str+=it.name+" "+it.number+" " }
         assert "Maybe a complex Name 7455 S N 9272 " == str
 
         str = "";
-        ds.eachRow("SELECT * FROM elements WHERE id > ${1}", 1, 1)
+        h2gis.eachRow("SELECT * FROM elements WHERE id > ${1}", 1, 1)
                 { str+=it.name+" "+it.number+" " }
         assert "Maybe a complex Name 7455 " == str
         str = "";
 
-        ds.eachRow("SELECT * FROM elements WHERE id > ${1}")
+        h2gis.eachRow("SELECT * FROM elements WHERE id > ${1}")
                 { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}
                 { str+=it.name+" "+it.number+" " }
         assert "NAME NUMBER Maybe a complex Name 7455 S N 9272 " == str
         str = "";
 
-        ds.eachRow("SELECT * FROM elements WHERE id > ${1}" ,
+        h2gis.eachRow("SELECT * FROM elements WHERE id > ${1}" ,
                 { str+=it.getColumnName(2) + " " + it.getColumnName(3) + " "}, 1, 1)
                 { str+=it.name+" "+it.number+" " }
         assert "NAME NUMBER Maybe a complex Name 7455 " == str
@@ -225,18 +235,18 @@ class JDBCDataStoreUtilsTest {
 
     @Test
     void rowsTest() {
-        def rows = ds.rows("SELECT * FROM elements")
+        def rows = h2gis.rows("SELECT * FROM elements")
         assert 3 == rows.size()
         assert "{ID=1, NAME=Simple Name, NUMBER=2846}" == rows[0].toString()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[1].toString()
         assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[2].toString()
 
-        rows = ds.rows("SELECT * FROM elements", 2, 1)
+        rows = h2gis.rows("SELECT * FROM elements", 2, 1)
         assert 1 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
 
         def str = ""
-        rows = ds.rows("SELECT * FROM elements")
+        rows = h2gis.rows("SELECT * FROM elements")
                 { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
         assert 3 == rows.size()
         assert "{ID=1, NAME=Simple Name, NUMBER=2846}" == rows[0].toString()
@@ -245,53 +255,45 @@ class JDBCDataStoreUtilsTest {
         assert "ID NAME NUMBER" == str
 
         str = ""
-        rows = ds.rows("SELECT * FROM elements", 2, 1)
+        rows = h2gis.rows("SELECT * FROM elements", 2, 1)
                 { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
         assert 1 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
         assert "ID NAME NUMBER" == str
 
-        rows = ds.rows("SELECT * FROM elements WHERE ID > ?", [1])
+        rows = h2gis.rows("SELECT * FROM elements WHERE ID > ?", [1])
         assert 2 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
         assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
 
-        rows = ds.rows([id:1],"SELECT * FROM elements WHERE ID > :id")
+        rows = h2gis.rows([id:1],"SELECT * FROM elements WHERE ID > :id")
         assert 2 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
         assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
 
-        rows = ds.rows("SELECT * FROM elements WHERE ID > ?", [1], 1, 1)
+        rows = h2gis.rows("SELECT * FROM elements WHERE ID > ?", [1], 1, 1)
         assert 1 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
 
-        rows = ds.rows("SELECT * FROM elements WHERE ID > :id", [id:1], 1, 1)
+        rows = h2gis.rows("SELECT * FROM elements WHERE ID > :id", [id:1], 1, 1)
         assert 1 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
 
-        rows = ds.rows([id:1], "SELECT * FROM elements WHERE ID > :id", 1, 1)
+        rows = h2gis.rows([id:1], "SELECT * FROM elements WHERE ID > :id", 1, 1)
         assert 1 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
 
-        rows = ds.rows("SELECT * FROM elements WHERE ID > ?", [1] as Object[])
+        rows = h2gis.rows("SELECT * FROM elements WHERE ID > ?", [1] as Object[])
         assert 2 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
         assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
 
-        rows = ds.rows("SELECT * FROM elements WHERE ID > ?", [1] as Object[], 1, 1)
+        rows = h2gis.rows("SELECT * FROM elements WHERE ID > ?", [1] as Object[], 1, 1)
         assert 1 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
 
         str = ""
-        rows = ds.rows("SELECT * FROM elements WHERE ID > ?", [1])
-                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
-        assert 2 == rows.size()
-        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
-        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
-        assert "ID NAME NUMBER" == str
-
-        str = ""
-        rows = ds.rows("SELECT * FROM elements WHERE ID > :id", [id:1])
+        rows = h2gis.rows("SELECT * FROM elements WHERE ID > ?", [1])
                 { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
         assert 2 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
@@ -299,7 +301,7 @@ class JDBCDataStoreUtilsTest {
         assert "ID NAME NUMBER" == str
 
         str = ""
-        rows = ds.rows([id:1],"SELECT * FROM elements WHERE ID > :id")
+        rows = h2gis.rows("SELECT * FROM elements WHERE ID > :id", [id:1])
                 { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
         assert 2 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
@@ -307,37 +309,7 @@ class JDBCDataStoreUtilsTest {
         assert "ID NAME NUMBER" == str
 
         str = ""
-        rows = ds.rows("SELECT * FROM elements WHERE ID > ?", [1], 1, 1)
-                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
-        assert 1 == rows.size()
-        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
-        assert "ID NAME NUMBER" == str
-
-        str = ""
-        rows = ds.rows("SELECT * FROM elements WHERE ID > :id", [id:1], 1, 1)
-                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
-        assert 1 == rows.size()
-        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
-        assert "ID NAME NUMBER" == str
-
-        str = ""
-        rows = ds.rows([id:1],"SELECT * FROM elements WHERE ID > :id", 1, 1)
-                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
-        assert 1 == rows.size()
-        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
-        assert "ID NAME NUMBER" == str
-
-        rows = ds.rows("SELECT * FROM elements WHERE ID > ${1}")
-        assert 2 == rows.size()
-        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
-        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
-
-        rows = ds.rows("SELECT * FROM elements WHERE ID > ${1}", 1, 1)
-        assert 1 == rows.size()
-        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
-
-        str = ""
-        rows = ds.rows("SELECT * FROM elements WHERE ID > ${1}")
+        rows = h2gis.rows([id:1],"SELECT * FROM elements WHERE ID > :id")
                 { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
         assert 2 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
@@ -345,7 +317,45 @@ class JDBCDataStoreUtilsTest {
         assert "ID NAME NUMBER" == str
 
         str = ""
-        rows = ds.rows("SELECT * FROM elements WHERE ID > ${1}", 1, 1)
+        rows = h2gis.rows("SELECT * FROM elements WHERE ID > ?", [1], 1, 1)
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "ID NAME NUMBER" == str
+
+        str = ""
+        rows = h2gis.rows("SELECT * FROM elements WHERE ID > :id", [id:1], 1, 1)
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "ID NAME NUMBER" == str
+
+        str = ""
+        rows = h2gis.rows([id:1],"SELECT * FROM elements WHERE ID > :id", 1, 1)
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "ID NAME NUMBER" == str
+
+        rows = h2gis.rows("SELECT * FROM elements WHERE ID > ${1}")
+        assert 2 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
+
+        rows = h2gis.rows("SELECT * FROM elements WHERE ID > ${1}", 1, 1)
+        assert 1 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+
+        str = ""
+        rows = h2gis.rows("SELECT * FROM elements WHERE ID > ${1}")
+                { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
+        assert 2 == rows.size()
+        assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
+        assert "{ID=3, NAME=S N, NUMBER=9272}" == rows[1].toString()
+        assert "ID NAME NUMBER" == str
+
+        str = ""
+        rows = h2gis.rows("SELECT * FROM elements WHERE ID > ${1}", 1, 1)
                 { str+=it.getColumnName(1)+" "+it.getColumnName(2)+" "+it.getColumnName(3)}
         assert 1 == rows.size()
         assert "{ID=2, NAME=Maybe a complex Name, NUMBER=7455}" == rows[0].toString()
@@ -354,7 +364,7 @@ class JDBCDataStoreUtilsTest {
 
     @Test
     void firstRowTest(){
-        def row = ds.firstRow("SELECT * FROM elements")
+        def row = h2gis.firstRow("SELECT * FROM elements")
         assert row.containsKey("ID")
         assert 1 == row.get("ID")
         assert row.containsKey("NAME")
@@ -362,7 +372,7 @@ class JDBCDataStoreUtilsTest {
         assert row.containsKey("NUMBER")
         assert 2846 == row.get("NUMBER")
 
-        row = ds.firstRow("SELECT * FROM elements WHERE ID > ${1}")
+        row = h2gis.firstRow("SELECT * FROM elements WHERE ID > ${1}")
         assert row.containsKey("ID")
         assert 2 == row.get("ID")
         assert row.containsKey("NAME")
@@ -370,7 +380,7 @@ class JDBCDataStoreUtilsTest {
         assert row.containsKey("NUMBER")
         assert 7455 == row.get("NUMBER")
 
-        row = ds.firstRow("SELECT * FROM elements WHERE ID > ?", [1])
+        row = h2gis.firstRow("SELECT * FROM elements WHERE ID > ?", [1])
         assert row.containsKey("ID")
         assert 2 == row.get("ID")
         assert row.containsKey("NAME")
@@ -378,7 +388,7 @@ class JDBCDataStoreUtilsTest {
         assert row.containsKey("NUMBER")
         assert 7455 == row.get("NUMBER")
 
-        row = ds.firstRow([id:1], "SELECT * FROM elements WHERE ID > :id")
+        row = h2gis.firstRow([id:1], "SELECT * FROM elements WHERE ID > :id")
         assert row.containsKey("ID")
         assert 2 == row.get("ID")
         assert row.containsKey("NAME")
@@ -386,7 +396,7 @@ class JDBCDataStoreUtilsTest {
         assert row.containsKey("NUMBER")
         assert 7455 == row.get("NUMBER")
 
-        row = ds.firstRow("SELECT * FROM elements WHERE ID > :id", [id:1])
+        row = h2gis.firstRow("SELECT * FROM elements WHERE ID > :id", [id:1])
         assert row.containsKey("ID")
         assert 2 == row.get("ID")
         assert row.containsKey("NAME")
@@ -397,41 +407,41 @@ class JDBCDataStoreUtilsTest {
 
     @Test
     void executeTest() {
-        assert ds.execute("SELECT * FROM elements")
+        assert h2gis.execute("SELECT * FROM elements")
 
-        ds.execute("SELECT * FROM elements")
+        h2gis.execute("SELECT * FROM elements")
                 { isResultSet, result ->
                     assert isResultSet
                     assert 3 == result.size()
                 }
 
-        assert ds.execute("SELECT * FROM elements WHERE ID > ?", [1])
+        assert h2gis.execute("SELECT * FROM elements WHERE ID > ?", [1])
 
-        ds.execute("SELECT * FROM elements WHERE ID > ?", [1])
+        h2gis.execute("SELECT * FROM elements WHERE ID > ?", [1])
                 { isResultSet, result ->
                     assert isResultSet
                     assert 2 == result.size()
                 }
 
-        assert ds.execute([id:1], "SELECT * FROM elements WHERE ID > :id")
+        assert h2gis.execute([id:1], "SELECT * FROM elements WHERE ID > :id")
 
-        ds.execute([id:1], "SELECT * FROM elements WHERE ID > :id")
+        h2gis.execute([id:1], "SELECT * FROM elements WHERE ID > :id")
                 { isResultSet, result ->
                     assert isResultSet
                     assert 2 == result.size()
                 }
 
-        assert ds.execute("SELECT * FROM elements WHERE ID > ?", [1] as Object[])
+        assert h2gis.execute("SELECT * FROM elements WHERE ID > ?", [1] as Object[])
 
-        ds.execute("SELECT * FROM elements WHERE ID > ?", [1] as Object[])
+        h2gis.execute("SELECT * FROM elements WHERE ID > ?", [1] as Object[])
                 { isResultSet, result ->
                     assert isResultSet
                     assert 2 == result.size()
                 }
 
-        assert ds.execute("SELECT * FROM elements WHERE ID > ${1}")
+        assert h2gis.execute("SELECT * FROM elements WHERE ID > ${1}")
 
-        ds.execute("SELECT * FROM elements WHERE ID > ${1}")
+        h2gis.execute("SELECT * FROM elements WHERE ID > ${1}")
                 { isResultSet, result ->
                     assert isResultSet
                     assert 2 == result.size()
@@ -447,106 +457,106 @@ class JDBCDataStoreUtilsTest {
                 "                number int\n" +
                 "            );"
 
-        ds.execute(drop)
-        ds.execute(create)
-        assert !ds.firstRow("SELECT * FROM insertions")
-        ds.executeInsert("INSERT INTO insertions (id, name, number) VALUES (1, 'Simple Name', 2846);")
-        def row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        assert !h2gis.firstRow("SELECT * FROM insertions")
+        h2gis.executeInsert("INSERT INTO insertions (id, name, number) VALUES (1, 'Simple Name', 2846);")
+        def row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        assert !ds.firstRow("SELECT * FROM insertions")
-        ds.executeInsert("INSERT INTO insertions (id, name, number) VALUES (?, ?, ?);", [1, 'Simple Name', 2846])
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        assert !h2gis.firstRow("SELECT * FROM insertions")
+        h2gis.executeInsert("INSERT INTO insertions (id, name, number) VALUES (?, ?, ?);", [1, 'Simple Name', 2846])
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        assert !ds.firstRow("SELECT * FROM insertions")
-        ds.executeInsert("INSERT INTO insertions (name, number) VALUES (?, ?);", ['Simple Name', 2846],
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        assert !h2gis.firstRow("SELECT * FROM insertions")
+        h2gis.executeInsert("INSERT INTO insertions (name, number) VALUES (?, ?);", ['Simple Name', 2846],
                 ["id"])
-        row = ds.firstRow("SELECT * FROM insertions")
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        assert !ds.firstRow("SELECT * FROM insertions")
-        ds.executeInsert([id: 1, name: 'Simple Name', number: 2846],
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        assert !h2gis.firstRow("SELECT * FROM insertions")
+        h2gis.executeInsert([id: 1, name: 'Simple Name', number: 2846],
                 "INSERT INTO insertions (id, name, number) VALUES (:id, :name, 2846);")
-        row = ds.firstRow("SELECT * FROM insertions")
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        assert !ds.firstRow("SELECT * FROM insertions")
-        ds.executeInsert([name: 'Simple Name', number: 2846],
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        assert !h2gis.firstRow("SELECT * FROM insertions")
+        h2gis.executeInsert([name: 'Simple Name', number: 2846],
                 "INSERT INTO insertions (name, number) VALUES (:name, :number);", ["id"])
-        row = ds.firstRow("SELECT * FROM insertions")
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        assert !ds.firstRow("SELECT * FROM insertions")
-        ds.executeInsert("INSERT INTO insertions (id, name, number) VALUES (?, ?, ?);",
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        assert !h2gis.firstRow("SELECT * FROM insertions")
+        h2gis.executeInsert("INSERT INTO insertions (id, name, number) VALUES (?, ?, ?);",
                 [1, 'Simple Name', 2846] as Object[])
-        row = ds.firstRow("SELECT * FROM insertions")
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        assert !ds.firstRow("SELECT * FROM insertions")
-        ds.executeInsert("INSERT INTO insertions (name, number) VALUES ('Simple Name', 2846);", ["ID"] as String[])
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        assert !h2gis.firstRow("SELECT * FROM insertions")
+        h2gis.executeInsert("INSERT INTO insertions (name, number) VALUES ('Simple Name', 2846);", ["ID"] as String[])
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        assert !ds.firstRow("SELECT * FROM insertions")
-        ds.executeInsert("INSERT INTO insertions (name, number) VALUES ('Simple Name', 2846);", ["ID"] as String[])
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        assert !h2gis.firstRow("SELECT * FROM insertions")
+        h2gis.executeInsert("INSERT INTO insertions (name, number) VALUES ('Simple Name', 2846);", ["ID"] as String[])
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        assert !ds.firstRow("SELECT * FROM insertions")
-        ds.executeInsert("INSERT INTO insertions (name, number) VALUES (?, ?);", ["ID"] as String[],
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        assert !h2gis.firstRow("SELECT * FROM insertions")
+        h2gis.executeInsert("INSERT INTO insertions (name, number) VALUES (?, ?);", ["ID"] as String[],
                 ['Simple Name', 2846] as Object[])
-        row = ds.firstRow("SELECT * FROM insertions")
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        assert !ds.firstRow("SELECT * FROM insertions")
-        ds.executeInsert("INSERT INTO insertions (id, name, number) VALUES (${1}, ${'Simple Name'}, ${2846});")
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        assert !h2gis.firstRow("SELECT * FROM insertions")
+        h2gis.executeInsert("INSERT INTO insertions (id, name, number) VALUES (${1}, ${'Simple Name'}, ${2846});")
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        assert !ds.firstRow("SELECT * FROM insertions")
-        ds.executeInsert("INSERT INTO insertions (name, number) VALUES (${'Simple Name'}, ${2846});", ["id"])
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        assert !h2gis.firstRow("SELECT * FROM insertions")
+        h2gis.executeInsert("INSERT INTO insertions (name, number) VALUES (${'Simple Name'}, ${2846});", ["id"])
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
@@ -562,83 +572,166 @@ class JDBCDataStoreUtilsTest {
                 "            );"
         def insert = "INSERT INTO insertions(id, name, number) VALUES (1, 'Name', 5432);"
 
-        ds.execute(drop)
-        ds.execute(create)
-        ds.execute(insert)
-        def row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        h2gis.execute(insert)
+        def row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Name' == row.get("NAME")
         assert 5432 == row.get("NUMBER")
-        ds.executeUpdate("UPDATE insertions SET id = 2, name = 'Simple Name', number = 2846;")
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.executeUpdate("UPDATE insertions SET id = 2, name = 'Simple Name', number = 2846;")
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 2 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        ds.execute(insert)
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        h2gis.execute(insert)
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Name' == row.get("NAME")
         assert 5432 == row.get("NUMBER")
-        ds.executeUpdate("UPDATE insertions SET id = ?, name = ?, number = ?;", [2, 'Simple Name', 2846])
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.executeUpdate("UPDATE insertions SET id = ?, name = ?, number = ?;", [2, 'Simple Name', 2846])
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 2 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        ds.execute(insert)
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        h2gis.execute(insert)
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Name' == row.get("NAME")
         assert 5432 == row.get("NUMBER")
-        ds.executeUpdate("UPDATE insertions SET id = :id, name = :name, number = :number;",
+        h2gis.executeUpdate("UPDATE insertions SET id = :id, name = :name, number = :number;",
                 [id:2, name:'Simple Name', number:2846])
-        row = ds.firstRow("SELECT * FROM insertions")
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 2 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        ds.execute(insert)
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        h2gis.execute(insert)
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Name' == row.get("NAME")
         assert 5432 == row.get("NUMBER")
-        ds.executeUpdate([id:2, name:'Simple Name', number:2846], "UPDATE insertions SET id = :id, name = :name, number = :number;")
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.executeUpdate([id:2, name:'Simple Name', number:2846], "UPDATE insertions SET id = :id, name = :name, number = :number;")
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 2 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        ds.execute(insert)
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        h2gis.execute(insert)
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Name' == row.get("NAME")
         assert 5432 == row.get("NUMBER")
-        ds.executeUpdate("UPDATE insertions SET id = ?, name = ?, number = ?;", [2, 'Simple Name', 2846])
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.executeUpdate("UPDATE insertions SET id = ?, name = ?, number = ?;", [2, 'Simple Name', 2846])
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 2 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
 
-        ds.execute(drop)
-        ds.execute(create)
-        ds.execute(insert)
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.execute(drop)
+        h2gis.execute(create)
+        h2gis.execute(insert)
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 1 == row.get("ID")
         assert 'Name' == row.get("NAME")
         assert 5432 == row.get("NUMBER")
-        ds.executeUpdate("UPDATE insertions SET id = ${2}, name = ${'Simple Name'}, number = ${2846};")
-        row = ds.firstRow("SELECT * FROM insertions")
+        h2gis.executeUpdate("UPDATE insertions SET id = ${2}, name = ${'Simple Name'}, number = ${2846};")
+        row = h2gis.firstRow("SELECT * FROM insertions")
         assert 2 == row.get("ID")
         assert 'Simple Name' == row.get("NAME")
         assert 2846 == row.get("NUMBER")
+    }
+
+    @Test
+    void callTest() {
+        postgis.execute """
+            CREATE OR REPLACE FUNCTION HouseSwap(_first1 VARCHAR(50), _first2 VARCHAR(50))
+            RETURNS VARCHAR
+            LANGUAGE plpgsql
+            AS \$\$
+            DECLARE _loc1 INT;
+            DECLARE _loc2 INT;
+            DECLARE _loc INT;
+            BEGIN
+                SELECT location_id into _loc1 FROM PERSON where firstname = _first1;
+                SELECT location_id into _loc2 FROM PERSON where firstname = _first2;
+                UPDATE PERSON
+                set location_id = case firstname
+                    when _first1 then _loc2
+                    when _first2 then _loc1
+                end
+                where (firstname = _first1 OR firstname = _first2);
+                SELECT location_id into _loc FROM PERSON where firstname = _first1;
+                CASE _loc
+                    WHEN _loc1 THEN
+                        RETURN 'Nothing to do';
+                    ELSE
+                        RETURN 'Swap done';
+                END CASE;
+            END; \$\$
+        """
+
+        def drop = "DROP TABLE IF EXISTS PERSON"
+        def create = "CREATE TABLE PERSON (\n" +
+                "                location_id int,\n" +
+                "                firstname varchar(255)\n" +
+                "            );"
+        def insert = "INSERT INTO PERSON(location_id, firstname) VALUES (1, 'Guillaume');" +
+                "INSERT INTO PERSON(location_id, firstname) VALUES (2, 'Paul');"
+
+        postgis.execute(drop)
+        postgis.execute(create)
+        postgis.execute(insert)
+        def row = postgis.firstRow("SELECT * FROM PERSON WHERE location_id=1")
+        assert 'Guillaume' == row.get("firstname")
+        postgis.call("{CALL HouseSwap('Guillaume', 'Paul')}")
+        row = postgis.firstRow("SELECT * FROM PERSON WHERE location_id=1")
+        assert 'Paul' == row.get("firstname")
+
+        postgis.execute(drop)
+        postgis.execute(create)
+        postgis.execute(insert)
+        row = postgis.firstRow("SELECT * FROM PERSON WHERE location_id=1")
+        assert 'Guillaume' == row.get("firstname")
+        postgis.call("{CALL HouseSwap(${"Guillaume"}, ${"Paul"})}")
+        row = postgis.firstRow("SELECT * FROM PERSON WHERE location_id=1")
+        assert 'Paul' == row.get("firstname")
+
+        postgis.execute(drop)
+        postgis.execute(create)
+        postgis.execute(insert)
+        row = postgis.firstRow("SELECT * FROM PERSON WHERE location_id=1")
+        assert 'Guillaume' == row.get("firstname")
+        postgis.call("{CALL HouseSwap(?, ?)}", ["Guillaume", "Paul"])
+        row = postgis.firstRow("SELECT * FROM PERSON WHERE location_id=1")
+        assert 'Paul' == row.get("firstname")
+
+        postgis.execute(drop)
+        postgis.execute(create)
+        postgis.execute(insert)
+        row = postgis.firstRow("SELECT * FROM PERSON WHERE location_id=1")
+        assert 'Guillaume' == row.get("firstname")
+        postgis.call("{CALL HouseSwap(?, ?)}", ["Guillaume", "Paul"] as Object[])
+        row = postgis.firstRow("SELECT * FROM PERSON WHERE location_id=1")
+        assert 'Paul' == row.get("firstname")
+
+        postgis.execute(drop)
+        postgis.execute(create)
+        postgis.execute(insert)
+        row = postgis.firstRow("SELECT * FROM PERSON WHERE location_id=1")
+        assert 'Guillaume' == row.get("firstname")
+        postgis.call("{? = CALL HouseSwap(?, ?)}", [out.VARCHAR, "Guillaume", "Paul"]) { assert "Swap done" == it }
+        row = postgis.firstRow("SELECT * FROM PERSON WHERE location_id=1")
+        assert 'Paul' == row.get("firstname")
     }
 }
