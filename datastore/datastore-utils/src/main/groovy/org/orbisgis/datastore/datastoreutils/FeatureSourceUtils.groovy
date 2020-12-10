@@ -36,36 +36,46 @@
  */
 package org.orbisgis.datastore.datastoreutils
 
-import groovy.transform.stc.ClosureParams
-import groovy.transform.stc.FirstParam
+import org.geotools.data.FeatureSource
+import org.geotools.data.Query
 import org.geotools.feature.FeatureCollection
-import org.geotools.feature.FeatureIterator
 import org.opengis.feature.Feature
 import org.opengis.feature.type.FeatureType
+import org.opengis.filter.Filter
+
 
 /**
- * Utility script used as extension module adding methods to {@link org.geotools.feature.FeatureCollection} class.
+ * Utility script used as extension module adding methods to {@link org.geotools.data.FeatureSource} class.
  *
  * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
 /**
- * Iterates through an FeatureIterator, passing each item to the given closure.
- *
- * @param fc      The {@link org.geotools.feature.FeatureCollection} over which we iterate.
- * @param closure The closure applied on each element found.
+ * Give to {@link FeatureSource#getFeatures()} a more readable name.
+ * @param fs FeatureSource to query.
+ * @return A FeatureCollection.
  */
-static <T extends FeatureType, F extends Feature> void each(FeatureCollection<T, F> fc,
-                                                @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
-    fc.features().each(closure)
+static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> getFeatureCollection(FeatureSource<T, F> fs) {
+    fs.getFeatures()
 }
 
 /**
- * Give to {@link org.geotools.feature.FeatureCollection#features()} a more readable name.
- * @param fc FeatureCollection to iterate.
- * @return A FeatureIterator.
+ * Give to {@link FeatureSource#getFeatures(Query)} a more readable name.
+ * @param fs    FeatureSource to query.
+ * @param query Query used to get the features.
+ * @return A FeatureCollection.
  */
-static <T extends FeatureType, F extends Feature> FeatureIterator<F> getFeatureIterator(FeatureCollection<T, F> fc) {
-    fc.features()
+static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> getFeatureCollection(FeatureSource<T, F> fs, Query query) {
+    fs.getFeatures(query)
+}
+
+/**
+ * Give to {@link FeatureSource#getFeatures(Filter)} a more readable name.
+ * @param fs     FeatureSource to query.
+ * @param filter Filter used to get the features.
+ * @return A FeatureCollection.
+ */
+static <T extends FeatureType, F extends Feature> FeatureCollection<T, F>  getFeatureCollection(FeatureSource<T, F> fs, Filter filter) {
+    fs.getFeatures(filter)
 }
