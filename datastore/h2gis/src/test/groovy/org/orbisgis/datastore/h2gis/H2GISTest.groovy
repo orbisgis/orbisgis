@@ -76,19 +76,4 @@ class H2GISTest {
         assert ds
         assert new File("${PATH}.mv.db").exists()
     }
-
-    @Test
-    //TODO move this test to the jdbc-utils module when the feature mechanisms will be add.
-    void createReadFeatureSourceTest() {
-        def ds = H2GIS.open("./target/db_h2gis")
-        assert ds
-        ds.execute("""
-                DROP TABLE IF EXISTS geotable;
-                CREATE TABLE geotable (id int, the_geom geometry(point));
-                INSERT INTO geotable VALUES (1, 'POINT(10 10)'::GEOMETRY), (2, 'POINT(1 1)'::GEOMETRY);
-        """)
-        def fs = ds.getFeatureSource("GEOTABLE")
-        assert fs
-        assert fs.getCount(Query.ALL)==2
-    }
 }

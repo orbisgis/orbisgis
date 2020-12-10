@@ -1,6 +1,7 @@
 package org.orbisgis.datastore.postgis
 
 import org.apache.commons.dbcp.BasicDataSource
+import org.geotools.data.Query
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty
@@ -89,14 +90,5 @@ class POSTGISTest {
         assert "jdbc:postgresql://$HOST:$PORT/$DATABASE" == bds.url.toString()
         assert FETCH_SIZE == ds.fetchSize
         assert BATCH_INSERT_SIZE == ds.batchInsertSize
-    }
-
-    @Test
-    //TODO move this test to the jdbc-utils module when the feature mechanisms will be add.
-    @EnabledIfSystemProperty(named = "test.postgis", matches = "true")
-    void createReadFeatureSource() {
-        def fs = ds.getFeatureSource("geotable")
-        assert fs
-        assert fs.getCount(Query.ALL) == 2
     }
 }
