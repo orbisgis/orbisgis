@@ -39,6 +39,12 @@ package org.orbisgis.sql;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.geotools.data.DataUtilities;
+import org.geotools.data.memory.MemoryDataStore;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.transform.Definition;
+import org.geotools.data.transform.TransformFactory;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.FilterFactoryImpl;
@@ -46,11 +52,16 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.Function;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -121,6 +132,74 @@ public class SQLToExpressionTest {
         sqlExpression = "CASE WHEN gid=627 THEN 'ok' ELSE 'no' END";
         expression = SQLToExpression.transform(sqlExpression);
         assertEquals("ok", expression.evaluate(f));
+    }
+
+    @Test
+    public void evaluateExpressionWithFeatureSource1() throws Exception {
+        FilterFactoryImpl ff = new FilterFactoryImpl();
+        MemoryDataStore memory = new MemoryDataStore();
+        SimpleFeatureType type = DataUtilities.createType("testSchema", "name:String,gid:Integer,*the_geom:Geometry");
+        WKTReader reader = new WKTReader();
+        Geometry geom1 = reader.read("POINT(0 0 0)");
+        SimpleFeature feature1 = SimpleFeatureBuilder.build(type, new Object[] {"testFeature1", 1, geom1}, null);
+        Geometry geom2 = reader.read("POINT(10 10 0)");
+        SimpleFeature feature2 = SimpleFeatureBuilder.build(type, new Object[] {"testFeature2", 2, geom2}, null);
+        ArrayList<SimpleFeature> dataFeatures = new ArrayList<>();
+        memory.addFeature(feature1);
+        memory.addFeature(feature2);
+        Expression  expression = SQLToExpression.transform("gid+10-gid");
+        List<Definition> definitions = new ArrayList<Definition>();
+        definitions.add(new Definition("EXP",  expression));
+        SimpleFeatureSource transformed = TransformFactory.transform(memory.getFeatureSource("testSchema"), "OUTPUT_TABLE_TEST_F", definitions);
+        SimpleFeatureCollection simpleFeatureCollection = transformed.getFeatures();
+        SimpleFeatureIterator features = simpleFeatureCollection.features();
+        try {
+            int count= 0;
+            while (features.hasNext()) {
+                SimpleFeature feature = features.next();
+                Long val = (Long) feature.getAttribute("EXP");
+                if(val==10){
+                 count++;
+                }
+            }
+            assertEquals(2, count);
+        } finally {
+            features.close();
+        }
+    }
+
+    @Test
+    public void evaluateExpressionWithFeatureSource2() throws Exception {
+        FilterFactoryImpl ff = new FilterFactoryImpl();
+        MemoryDataStore memory = new MemoryDataStore();
+        SimpleFeatureType type = DataUtilities.createType("testSchema", "name:String,gid:Integer,*the_geom:Geometry");
+        WKTReader reader = new WKTReader();
+        Geometry geom1 = reader.read("POINT(0 0 0)");
+        SimpleFeature feature1 = SimpleFeatureBuilder.build(type, new Object[] {"testFeature1", 1, geom1}, null);
+        Geometry geom2 = reader.read("POINT(10 10 0)");
+        SimpleFeature feature2 = SimpleFeatureBuilder.build(type, new Object[] {"testFeature2", 2, geom2}, null);
+        ArrayList<SimpleFeature> dataFeatures = new ArrayList<>();
+        memory.addFeature(feature1);
+        memory.addFeature(feature2);
+        Expression  expression = SQLToExpression.transform("CASE WHEN gid <3 then gid+10-gid else 0 end");
+        List<Definition> definitions = new ArrayList<Definition>();
+        definitions.add(new Definition("EXP",  expression));
+        SimpleFeatureSource transformed = TransformFactory.transform(memory.getFeatureSource("testSchema"), "OUTPUT_TABLE_TEST_F", definitions);
+        SimpleFeatureCollection simpleFeatureCollection = transformed.getFeatures();
+        SimpleFeatureIterator features = simpleFeatureCollection.features();
+        try {
+            int count= 0;
+            while (features.hasNext()) {
+                SimpleFeature feature = features.next();
+                Long val = (Long) feature.getAttribute("EXP");
+                if(val==10){
+                    count++;
+                }
+            }
+            assertEquals(2, count);
+        } finally {
+            features.close();
+        }
     }
 
 }

@@ -38,21 +38,32 @@ package org.orbisgis.sql;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.geotools.data.DataUtilities;
+import org.geotools.data.memory.MemoryDataStore;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.transform.Definition;
 import org.geotools.data.transform.TransformFactory;
+import org.geotools.feature.SchemaException;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.filter.FilterFactoryImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Function;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,93 +71,6 @@ import java.util.List;
 
 public class SQLApplyTest {
 
-    @Test
-    public void applyExpression() throws IOException, CQLException {
-        String name = "landcover2000.shp";
-        ShapefileDataStore shapefile = new ShapefileDataStore(this.getClass().getResource(name));
-        SimpleFeatureSource fs = shapefile.getFeatureSource();
-        SQLToExpression sqlToExpression = new SQLToExpression();
-        List<Definition> definitions = new ArrayList<Definition>();
-        definitions.add(new Definition("THE_GEOM",  sqlToExpression.parse("CENTROID(the_geom)")));
-        SimpleFeatureSource transformed = TransformFactory.transform((SimpleFeatureSource) fs, "OUTPUT_TABLE_TEST_F", definitions);
-        SimpleFeatureCollection simpleFeatureCollection = transformed.getFeatures();
-        SimpleFeatureIterator features = simpleFeatureCollection.features();
-        try {
-            features.hasNext();
-            SimpleFeature feature = features.next();
-            Geometry geom = (Geometry) feature.getDefaultGeometry();
-            assertTrue(geom instanceof Point);
-        } finally {
-            features.close();
-        }
-
-    }
-
-    @Test
-    public void applyExpression2() throws IOException, CQLException {
-        String name = "landcover2000.shp";
-        ShapefileDataStore shapefile = new ShapefileDataStore(this.getClass().getResource(name));
-        SimpleFeatureSource fs = shapefile.getFeatureSource();
-        List<Definition> definitions = new ArrayList<Definition>();
-        definitions.add(new Definition("THE_GEOM",  SQLToExpression.transform("ST_CENTROID(the_geom)")));
-        SimpleFeatureSource transformed = TransformFactory.transform((SimpleFeatureSource) fs, "OUTPUT_TABLE_TEST_F", definitions);
-        SimpleFeatureCollection simpleFeatureCollection = transformed.getFeatures();
-        SimpleFeatureIterator features = simpleFeatureCollection.features();
-        try {
-            features.hasNext();
-            SimpleFeature feature = features.next();
-            Geometry geom = (Geometry) feature.getDefaultGeometry();
-            assertTrue(geom instanceof Point);
-        } finally {
-            features.close();
-        }
-    }
-
-    @Test
-    public void applyExpression3() throws IOException, CQLException {
-        String name = "hedgerow.shp";
-        ShapefileDataStore shapefile = new ShapefileDataStore(this.getClass().getResource(name));
-        SimpleFeatureSource fs = shapefile.getFeatureSource();
-        List<Definition> definitions = new ArrayList<Definition>();
-        Expression expression = SQLToExpression.transform("CASE WHEN gid=683 THEN ST_CENTROID(the_geom) ELSE the_geom END");
-        definitions.add(new Definition("THE_GEOM",  expression));
-        SimpleFeatureSource transformed = TransformFactory.transform((SimpleFeatureSource) fs, "OUTPUT_TABLE_TEST_F", definitions);
-        SimpleFeatureCollection simpleFeatureCollection = transformed.getFeatures();
-        SimpleFeatureIterator features = simpleFeatureCollection.features();
-        try {
-            int nbPoint= 0;
-            while (features.hasNext()) {
-                SimpleFeature feature = features.next();
-                Geometry geom = (Geometry) feature.getDefaultGeometry();
-                if( geom instanceof Point){
-                    nbPoint++;
-                }
-            }
-            assertEquals(1, nbPoint);
-        } finally {
-            features.close();
-        }
-    }
-
-    @Test
-    public void applyFilter() throws IOException, CQLException {
-        String name = "landcover2000.shp";
-        ShapefileDataStore shapefile = new ShapefileDataStore(this.getClass().getResource(name));
-        SimpleFeatureSource fs = shapefile.getFeatureSource();
-        Filter filter = SQLToFilter.transform("gid=1237");
-        SimpleFeatureCollection featureCollection = fs.getFeatures(filter );
-        SimpleFeatureIterator features = featureCollection.features();
-        try {
-            int nbPoint= 0;
-            while (features.hasNext()) {
-                SimpleFeature feature = features.next();
-                nbPoint++;
-            }
-            assertEquals(1, nbPoint);
-        } finally {
-            features.close();
-        }
-    }
 
     @Test
     public void applyExpressionAndFilter() throws IOException, CQLException {

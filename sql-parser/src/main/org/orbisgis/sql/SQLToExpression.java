@@ -46,9 +46,7 @@ import net.sf.jsqlparser.expression.operators.arithmetic.Subtraction;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.*;
-import net.sf.jsqlparser.parser.CCJSqlParser;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
-import net.sf.jsqlparser.parser.StringProvider;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.SubSelect;
 import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
@@ -277,18 +275,8 @@ public class SQLToExpression extends ExpressionDeParser {
     @Override
     public void visit(Function function) {
         super.visit(function);
-        String functionName = function.getName().toLowerCase();
-        org.opengis.filter.expression.Function internalFunction=null;
-        try {
-            internalFunction = functionFinder.findFunction(functionName, stack);
-        }catch (RuntimeException ex) {
-            if (internalFunction == null) {
-                //Workaround for spatial functions with st_ prefix
-                if (functionName.startsWith("st_")) {
-                    internalFunction = functionFinder.findFunction(function.getName().substring(3), stack);
-                }
-            }
-        }
+        String functionWrapper = SQLFunctions.getFunction(function.getName());
+        org.opengis.filter.expression.Function internalFunction=functionFinder.findFunction(functionWrapper, stack);
         stack.clear();
         if(internalFunction!=null){
             stack.push(internalFunction);

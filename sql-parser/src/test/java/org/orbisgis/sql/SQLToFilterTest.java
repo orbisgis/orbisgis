@@ -36,10 +36,31 @@
  */
 package org.orbisgis.sql;
 
+import org.geotools.data.DataUtilities;
+import org.geotools.data.memory.MemoryDataStore;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.transform.Definition;
+import org.geotools.data.transform.TransformFactory;
+import org.geotools.feature.SchemaException;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.filter.FilterFactoryImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
+import org.opengis.filter.expression.Expression;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -98,5 +119,124 @@ public class SQLToFilterTest {
         fromsql = SQLToFilter.transform("st_area(the_geom)>100");
         filter = ECQL.toFilter("area(the_geom)>100");
         assertEquals(filter, fromsql);
+    }
+
+    @Test
+    public void applyFilterOnData1() throws IOException, CQLException, SchemaException, ParseException {
+        FilterFactoryImpl ff = new FilterFactoryImpl();
+        MemoryDataStore memory = new MemoryDataStore();
+        SimpleFeatureType type = DataUtilities.createType("testSchema", "name:String,gid:Integer,*the_geom:Geometry");
+        WKTReader reader = new WKTReader();
+        Geometry geom1 = reader.read("POINT(0 0 0)");
+        SimpleFeature feature1 = SimpleFeatureBuilder.build(type, new Object[] {"testFeature1", 1, geom1}, null);
+        Geometry geom2 = reader.read("POINT(10 10 0)");
+        SimpleFeature feature2 = SimpleFeatureBuilder.build(type, new Object[] {"testFeature2", 2, geom2}, null);
+        ArrayList<SimpleFeature> dataFeatures = new ArrayList<>();
+        memory.addFeature(feature1);
+        memory.addFeature(feature2);
+        SimpleFeatureSource fs = memory.getFeatureSource("testSchema");
+        Filter filter = SQLToFilter.transform("gid=2");
+        SimpleFeatureCollection featureCollection = fs.getFeatures(filter );
+        SimpleFeatureIterator features = featureCollection.features();
+        try {
+            int nbPoint= 0;
+            while (features.hasNext()) {
+                SimpleFeature feature = features.next();
+                nbPoint++;
+            }
+            assertEquals(1, nbPoint);
+        } finally {
+            features.close();
+        }
+    }
+
+    @Test
+    public void applyFilterOnData2() throws IOException, CQLException, SchemaException, ParseException {
+        FilterFactoryImpl ff = new FilterFactoryImpl();
+        MemoryDataStore memory = new MemoryDataStore();
+        SimpleFeatureType type = DataUtilities.createType("testSchema", "name:String,gid:Integer,*the_geom:Geometry");
+        WKTReader reader = new WKTReader();
+        Geometry geom1 = reader.read("POINT(0 0 0)");
+        SimpleFeature feature1 = SimpleFeatureBuilder.build(type, new Object[] {"testFeature1", 1, geom1}, null);
+        Geometry geom2 = reader.read("POINT(10 10 0)");
+        SimpleFeature feature2 = SimpleFeatureBuilder.build(type, new Object[] {"testFeature2", 2, geom2}, null);
+        ArrayList<SimpleFeature> dataFeatures = new ArrayList<>();
+        memory.addFeature(feature1);
+        memory.addFeature(feature2);
+        SimpleFeatureSource fs = memory.getFeatureSource("testSchema");
+        Filter filter = SQLToFilter.transform("gid > 1 ");
+        SimpleFeatureCollection featureCollection = fs.getFeatures(filter );
+        SimpleFeatureIterator features = featureCollection.features();
+        try {
+            int count= 0;
+            while (features.hasNext()) {
+                SimpleFeature feature = features.next();
+                count++;
+            }
+            assertEquals(1, count);
+        } finally {
+            features.close();
+        }
+    }
+
+    @Test
+    public void applyFilterOnData3() throws IOException, CQLException, SchemaException, ParseException {
+        FilterFactoryImpl ff = new FilterFactoryImpl();
+        MemoryDataStore memory = new MemoryDataStore();
+        SimpleFeatureType type = DataUtilities.createType("testSchema", "name:String,gid:Integer,*the_geom:Geometry");
+        WKTReader reader = new WKTReader();
+        Geometry geom1 = reader.read("POINT(0 0 0)");
+        SimpleFeature feature1 = SimpleFeatureBuilder.build(type, new Object[] {"testFeature1", 1, geom1}, null);
+        Geometry geom2 = reader.read("LINESTRING(10 10 0, 12 12 0)");
+        SimpleFeature feature2 = SimpleFeatureBuilder.build(type, new Object[] {"testFeature2", 2, geom2}, null);
+        ArrayList<SimpleFeature> dataFeatures = new ArrayList<>();
+        memory.addFeature(feature1);
+        memory.addFeature(feature2);
+        SimpleFeatureSource fs = memory.getFeatureSource("testSchema");
+        Filter filter = SQLToFilter.transform("gid > 1 and st_dimension(the_geom)=1 ");
+        SimpleFeatureCollection featureCollection = fs.getFeatures(filter );
+        SimpleFeatureIterator features = featureCollection.features();
+        try {
+            int count= 0;
+            while (features.hasNext()) {
+                SimpleFeature feature = features.next();
+                count++;
+            }
+            assertEquals(1, count);
+        } finally {
+            features.close();
+        }
+    }
+
+    @Test
+    public void applyFilterOnData4() throws Exception {
+        FilterFactoryImpl ff = new FilterFactoryImpl();
+        MemoryDataStore memory = new MemoryDataStore();
+        SimpleFeatureType type = DataUtilities.createType("testSchema", "name:String,gid:Integer,*the_geom:Geometry");
+        WKTReader reader = new WKTReader();
+        Geometry geom1 = reader.read("POINT(0 0 0)");
+        SimpleFeature feature1 = SimpleFeatureBuilder.build(type, new Object[] {"testFeature1", 1, geom1}, null);
+        Geometry geom2 = reader.read("POINT(10 10 0)");
+        SimpleFeature feature2 = SimpleFeatureBuilder.build(type, new Object[] {"testFeature2", 2, geom2}, null);
+        Geometry geom3 = reader.read("POINT(10 25 0)");
+        SimpleFeature feature3 = SimpleFeatureBuilder.build(type, new Object[] {"testFeature2", 3, geom3}, null);
+        ArrayList<SimpleFeature> dataFeatures = new ArrayList<>();
+        memory.addFeature(feature1);
+        memory.addFeature(feature2);
+        memory.addFeature(feature3);
+        SimpleFeatureSource fs = memory.getFeatureSource("testSchema");
+        Filter filter = SQLToFilter.transform("gid between 2 and 3 ");
+        SimpleFeatureCollection featureCollection = fs.getFeatures(filter );
+        SimpleFeatureIterator features = featureCollection.features();
+        try {
+            int count= 0;
+            while (features.hasNext()) {
+                SimpleFeature feature = features.next();
+                count++;
+            }
+            assertEquals(2, count);
+        } finally {
+            features.close();
+        }
     }
 }

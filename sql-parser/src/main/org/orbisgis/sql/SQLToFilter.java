@@ -45,17 +45,12 @@ import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.*;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Column;
-import net.sf.jsqlparser.statement.select.SelectVisitor;
 import net.sf.jsqlparser.statement.select.SubSelect;
 import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
 import org.geotools.filter.FilterFactoryImpl;
 import org.geotools.filter.FunctionFinder;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
 
@@ -118,7 +113,6 @@ public class SQLToFilter extends ExpressionDeParser {
                         return filter;
                     }
                 }
-
             }
         } catch (JSQLParserException ex) {
             return null;
@@ -246,18 +240,8 @@ public class SQLToFilter extends ExpressionDeParser {
     @Override
     public void visit(Function function) {
         super.visit(function);
-        String functionName = function.getName().toLowerCase();
-        org.opengis.filter.expression.Function internalFunction=null;
-        try {
-             internalFunction = functionFinder.findFunction(functionName, expressionStack);
-        }catch (RuntimeException ex) {
-            if (internalFunction == null) {
-                //Workaround for spatial functions with st_ prefix
-                if (functionName.startsWith("st_")) {
-                    internalFunction = functionFinder.findFunction(function.getName().substring(3), expressionStack);
-                }
-            }
-        }
+        String functionWrapper = SQLFunctions.getFunction(function.getName());
+        org.opengis.filter.expression.Function internalFunction = functionFinder.findFunction(functionWrapper, expressionStack);
         expressionStack.clear();
         if(internalFunction!=null){
             expressionStack.push(internalFunction);
