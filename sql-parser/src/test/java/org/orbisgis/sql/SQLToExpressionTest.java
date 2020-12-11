@@ -49,6 +49,7 @@ import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.FilterFactoryImpl;
 import org.geotools.filter.text.ecql.ECQL;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
@@ -168,6 +169,7 @@ public class SQLToExpressionTest {
         }
     }
 
+    @Disabled //TODO  to be fixed see https://osgeo-org.atlassian.net/browse/GEOT-6756
     @Test
     public void evaluateExpressionWithFeatureSource2() throws Exception {
         FilterFactoryImpl ff = new FilterFactoryImpl();
