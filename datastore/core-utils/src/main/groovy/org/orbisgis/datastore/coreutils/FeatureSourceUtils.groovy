@@ -34,28 +34,48 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.datastoreutils
+package org.orbisgis.datastore.coreutils
 
+import org.geotools.data.FeatureSource
 import org.geotools.data.Query
-import org.geotools.data.shapefile.ShapefileDataStore
-import org.junit.jupiter.api.Test
+import org.geotools.feature.FeatureCollection
+import org.opengis.feature.Feature
+import org.opengis.feature.type.FeatureType
+import org.opengis.filter.Filter
+
 
 /**
- * Test class dedicated to {@link DataStoreUtils}.
+ * Utility script used as extension module adding methods to {@link org.geotools.data.FeatureSource} class.
  *
  * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
-class DataStoreUtilsTest {
 
-    @Test
-    void missingPropertyTest() {
-        def name = "landcover2000.shp"
-        assert this.class.getResource(name)
-        def shapefile = new ShapefileDataStore(this.class.getResource(name))
-        assert shapefile
-        def contents = shapefile.landcover2000
-        assert contents
-        assert 1234 == contents.getCount( Query.ALL )
-    }
+/**
+ * Give to {@link FeatureSource#getFeatures()} a more readable name.
+ * @param fs FeatureSource to query.
+ * @return A FeatureCollection.
+ */
+static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> getFeatureCollection(FeatureSource<T, F> fs) {
+    fs.getFeatures()
+}
+
+/**
+ * Give to {@link FeatureSource#getFeatures(Query)} a more readable name.
+ * @param fs    FeatureSource to query.
+ * @param query Query used to get the features.
+ * @return A FeatureCollection.
+ */
+static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> getFeatureCollection(FeatureSource<T, F> fs, Query query) {
+    fs.getFeatures(query)
+}
+
+/**
+ * Give to {@link FeatureSource#getFeatures(Filter)} a more readable name.
+ * @param fs     FeatureSource to query.
+ * @param filter Filter used to get the features.
+ * @return A FeatureCollection.
+ */
+static <T extends FeatureType, F extends Feature> FeatureCollection<T, F>  getFeatureCollection(FeatureSource<T, F> fs, Filter filter) {
+    fs.getFeatures(filter)
 }

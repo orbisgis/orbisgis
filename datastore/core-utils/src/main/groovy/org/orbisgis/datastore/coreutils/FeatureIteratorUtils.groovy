@@ -34,48 +34,29 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.datastoreutils
+package org.orbisgis.datastore.coreutils;
 
-import org.geotools.data.FeatureSource
-import org.geotools.data.Query
-import org.geotools.feature.FeatureCollection
+import groovy.transform.stc.ClosureParams
+import groovy.transform.stc.FirstParam
+import org.geotools.feature.FeatureIterator
 import org.opengis.feature.Feature
-import org.opengis.feature.type.FeatureType
-import org.opengis.filter.Filter
-
 
 /**
- * Utility script used as extension module adding methods to {@link org.geotools.data.FeatureSource} class.
+ * Utility script used as extension module adding methods to {@link org.geotools.feature.FeatureIterator} class.
  *
  * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
 /**
- * Give to {@link FeatureSource#getFeatures()} a more readable name.
- * @param fs FeatureSource to query.
- * @return A FeatureCollection.
+ * Iterates through an FeatureIterator, passing each item to the given closure.
+ *
+ * @param it      The {@link FeatureIterator} over which we iterate.
+ * @param closure The closure applied on each element found.
  */
-static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> getFeatureCollection(FeatureSource<T, F> fs) {
-    fs.getFeatures()
-}
-
-/**
- * Give to {@link FeatureSource#getFeatures(Query)} a more readable name.
- * @param fs    FeatureSource to query.
- * @param query Query used to get the features.
- * @return A FeatureCollection.
- */
-static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> getFeatureCollection(FeatureSource<T, F> fs, Query query) {
-    fs.getFeatures(query)
-}
-
-/**
- * Give to {@link FeatureSource#getFeatures(Filter)} a more readable name.
- * @param fs     FeatureSource to query.
- * @param filter Filter used to get the features.
- * @return A FeatureCollection.
- */
-static <T extends FeatureType, F extends Feature> FeatureCollection<T, F>  getFeatureCollection(FeatureSource<T, F> fs, Filter filter) {
-    fs.getFeatures(filter)
+static <T extends Feature> void each(FeatureIterator<T> it, @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
+    while (it.hasNext()) {
+        closure.call(it.next())
+    }
+    it.close()
 }

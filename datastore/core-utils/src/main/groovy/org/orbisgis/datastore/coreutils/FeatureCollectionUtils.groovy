@@ -34,24 +34,38 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.datastoreutils
+package org.orbisgis.datastore.coreutils
 
-import org.geotools.data.DataStore
+import groovy.transform.stc.ClosureParams
+import groovy.transform.stc.FirstParam
+import org.geotools.feature.FeatureCollection
+import org.geotools.feature.FeatureIterator
+import org.opengis.feature.Feature
+import org.opengis.feature.type.FeatureType
 
-import org.geotools.data.simple.SimpleFeatureSource
 /**
- * Utility script used as extension module adding methods to {@link DataStore} class.
+ * Utility script used as extension module adding methods to {@link org.geotools.feature.FeatureCollection} class.
  *
  * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
 /**
- * Method called when the asked property is missing and returns the SimpleFeatureSource corresponding to the given name.
+ * Iterates through an FeatureIterator, passing each item to the given closure.
  *
- * @param ds DataStore to use.
- * @param name Name of the property/SimpleFeatureSource to get.
+ * @param fc      The {@link org.geotools.feature.FeatureCollection} over which we iterate.
+ * @param closure The closure applied on each element found.
  */
-static SimpleFeatureSource propertyMissing(DataStore ds, String name) {
-    return ds.getFeatureSource(name)
+static <T extends FeatureType, F extends Feature> void each(FeatureCollection<T, F> fc,
+                                                @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
+    fc.features().each(closure)
+}
+
+/**
+ * Give to {@link org.geotools.feature.FeatureCollection#features()} a more readable name.
+ * @param fc FeatureCollection to iterate.
+ * @return A FeatureIterator.
+ */
+static <T extends FeatureType, F extends Feature> FeatureIterator<F> getFeatureIterator(FeatureCollection<T, F> fc) {
+    fc.features()
 }

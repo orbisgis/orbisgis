@@ -1,4 +1,4 @@
-package org.orbisgis.datastore.datastoreutils
+package org.orbisgis.datastore.coreutils
 
 import org.geotools.data.shapefile.ShapefileDataStore
 import org.junit.jupiter.api.Test
