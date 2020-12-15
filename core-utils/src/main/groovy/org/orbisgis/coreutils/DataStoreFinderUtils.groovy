@@ -34,28 +34,21 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.datastoreutils
+package org.orbisgis.coreutils
 
-import org.geotools.data.Query
-import org.geotools.data.shapefile.ShapefileDataStore
-import org.junit.jupiter.api.Test
+import org.geotools.data.DataStore
+import org.geotools.data.DataStoreFinder
+
 
 /**
- * Test class dedicated to {@link DataStoreUtils}.
+ * Utility script used as extension module adding methods to {@link org.geotools.data.DataStoreFinder} class.
  *
  * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
-class DataStoreUtilsTest {
 
-    @Test
-    void missingPropertyTest() {
-        def name = "landcover2000.shp"
-        assert this.class.getResource(name)
-        def shapefile = new ShapefileDataStore(this.class.getResource(name))
-        assert shapefile
-        def contents = shapefile.landcover2000
-        assert contents
-        assert 1234 == contents.getCount( Query.ALL )
-    }
+static DataStore getDataStore(DataStoreFinder finder, LinkedHashMap map) {
+    def tmp = [:]
+    map.each {tmp.put(it.key, it.value in GString ? it.value.toString() : it.value)}
+    return DataStoreFinder.getDataStore((Map)tmp)
 }

@@ -37,6 +37,7 @@
 package org.orbisgis.osm_utils.utils
 
 import groovy.transform.Field
+import org.h2gis.utilities.JDBCUtilities
 import org.h2gis.utilities.TableLocation
 import org.orbisgis.osm_utils.OSMTools
 
@@ -116,8 +117,8 @@ static def toPolygonOrLine(String type, Connection connection, osmTablesPrefix, 
 
     if (outputWay && outputRelation) {
         //Merge ways and relations
-        def columnsWays = getColumnNames(connection, TableLocation.parse(outputWay, connection.isH2DataBase()))
-        def columnsRelations = connection.getColumnNames(TableLocation.parse(outputRelation, connection.isH2DataBase()))
+        def columnsWays = getColumnNames(connection, TableLocation.parse(outputWay, isH2DataBase(connection)))
+        def columnsRelations = getColumnNames(connection, TableLocation.parse(outputRelation, isH2DataBase(connection)))
         def allColumns = [columnsWays, columnsRelations].flatten().unique().sort()
         def leftSelect = ""
         def rightSelect = ""

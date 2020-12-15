@@ -1,4 +1,4 @@
-package org.orbisgis.datastore.datastoreutils
+package org.orbisgis.coreutils
 
 import org.geotools.data.Query
 import org.geotools.data.shapefile.ShapefileDataStore

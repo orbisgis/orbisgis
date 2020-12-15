@@ -34,17 +34,15 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.datastoreutils
+package org.orbisgis.coreutils;
 
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.FirstParam
-import org.geotools.feature.FeatureCollection
 import org.geotools.feature.FeatureIterator
 import org.opengis.feature.Feature
-import org.opengis.feature.type.FeatureType
 
 /**
- * Utility script used as extension module adding methods to {@link org.geotools.feature.FeatureCollection} class.
+ * Utility script used as extension module adding methods to {@link org.geotools.feature.FeatureIterator} class.
  *
  * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
@@ -53,19 +51,12 @@ import org.opengis.feature.type.FeatureType
 /**
  * Iterates through an FeatureIterator, passing each item to the given closure.
  *
- * @param fc      The {@link org.geotools.feature.FeatureCollection} over which we iterate.
+ * @param it      The {@link FeatureIterator} over which we iterate.
  * @param closure The closure applied on each element found.
  */
-static <T extends FeatureType, F extends Feature> void each(FeatureCollection<T, F> fc,
-                                                @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
-    fc.features().each(closure)
-}
-
-/**
- * Give to {@link org.geotools.feature.FeatureCollection#features()} a more readable name.
- * @param fc FeatureCollection to iterate.
- * @return A FeatureIterator.
- */
-static <T extends FeatureType, F extends Feature> FeatureIterator<F> getFeatureIterator(FeatureCollection<T, F> fc) {
-    fc.features()
+static <T extends Feature> void each(FeatureIterator<T> it, @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
+    while (it.hasNext()) {
+        closure.call(it.next())
+    }
+    it.close()
 }

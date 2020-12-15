@@ -34,48 +34,24 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.datastoreutils
+package org.orbisgis.coreutils
 
-import org.geotools.data.FeatureSource
-import org.geotools.data.Query
-import org.geotools.feature.FeatureCollection
-import org.opengis.feature.Feature
-import org.opengis.feature.type.FeatureType
-import org.opengis.filter.Filter
+import org.geotools.data.DataStore
 
-
+import org.geotools.data.simple.SimpleFeatureSource
 /**
- * Utility script used as extension module adding methods to {@link org.geotools.data.FeatureSource} class.
+ * Utility script used as extension module adding methods to {@link DataStore} class.
  *
  * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
 /**
- * Give to {@link FeatureSource#getFeatures()} a more readable name.
- * @param fs FeatureSource to query.
- * @return A FeatureCollection.
+ * Method called when the asked property is missing and returns the SimpleFeatureSource corresponding to the given name.
+ *
+ * @param ds DataStore to use.
+ * @param name Name of the property/SimpleFeatureSource to get.
  */
-static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> getFeatureCollection(FeatureSource<T, F> fs) {
-    fs.getFeatures()
-}
-
-/**
- * Give to {@link FeatureSource#getFeatures(Query)} a more readable name.
- * @param fs    FeatureSource to query.
- * @param query Query used to get the features.
- * @return A FeatureCollection.
- */
-static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> getFeatureCollection(FeatureSource<T, F> fs, Query query) {
-    fs.getFeatures(query)
-}
-
-/**
- * Give to {@link FeatureSource#getFeatures(Filter)} a more readable name.
- * @param fs     FeatureSource to query.
- * @param filter Filter used to get the features.
- * @return A FeatureCollection.
- */
-static <T extends FeatureType, F extends Feature> FeatureCollection<T, F>  getFeatureCollection(FeatureSource<T, F> fs, Filter filter) {
-    fs.getFeatures(filter)
+static SimpleFeatureSource propertyMissing(DataStore ds, String name) {
+    return ds.getFeatureSource(name)
 }

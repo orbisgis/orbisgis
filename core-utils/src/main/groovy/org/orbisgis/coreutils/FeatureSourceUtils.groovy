@@ -34,21 +34,48 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.datastoreutils
+package org.orbisgis.coreutils
 
-import org.geotools.data.DataStore
-import org.geotools.data.DataStoreFinder
+import org.geotools.data.FeatureSource
+import org.geotools.data.Query
+import org.geotools.feature.FeatureCollection
+import org.opengis.feature.Feature
+import org.opengis.feature.type.FeatureType
+import org.opengis.filter.Filter
 
 
 /**
- * Utility script used as extension module adding methods to {@link org.geotools.data.DataStoreFinder} class.
+ * Utility script used as extension module adding methods to {@link org.geotools.data.FeatureSource} class.
  *
  * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
-static DataStore getDataStore(DataStoreFinder finder, LinkedHashMap map) {
-    def tmp = [:]
-    map.each {tmp.put(it.key, it.value in GString ? it.value.toString() : it.value)}
-    return DataStoreFinder.getDataStore((Map)tmp)
+/**
+ * Give to {@link FeatureSource#getFeatures()} a more readable name.
+ * @param fs FeatureSource to query.
+ * @return A FeatureCollection.
+ */
+static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> getFeatureCollection(FeatureSource<T, F> fs) {
+    fs.getFeatures()
+}
+
+/**
+ * Give to {@link FeatureSource#getFeatures(Query)} a more readable name.
+ * @param fs    FeatureSource to query.
+ * @param query Query used to get the features.
+ * @return A FeatureCollection.
+ */
+static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> getFeatureCollection(FeatureSource<T, F> fs, Query query) {
+    fs.getFeatures(query)
+}
+
+/**
+ * Give to {@link FeatureSource#getFeatures(Filter)} a more readable name.
+ * @param fs     FeatureSource to query.
+ * @param filter Filter used to get the features.
+ * @return A FeatureCollection.
+ */
+static <T extends FeatureType, F extends Feature> FeatureCollection<T, F>  getFeatureCollection(FeatureSource<T, F> fs, Filter filter) {
+    fs.getFeatures(filter)
 }
