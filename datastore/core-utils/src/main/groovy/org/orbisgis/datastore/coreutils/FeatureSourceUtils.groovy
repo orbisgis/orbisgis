@@ -36,6 +36,9 @@
  */
 package org.orbisgis.datastore.coreutils
 
+import org.apache.commons.io.FilenameUtils
+import org.geotools.data.DataStore
+import org.geotools.data.DataStoreFinder
 import org.geotools.data.FeatureSource
 import org.geotools.data.Query
 import org.geotools.feature.FeatureCollection
@@ -78,4 +81,44 @@ static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> getFea
  */
 static <T extends FeatureType, F extends Feature> FeatureCollection<T, F>  getFeatureCollection(FeatureSource<T, F> fs, Filter filter) {
     fs.getFeatures(filter)
+}
+
+/**
+ * Returns the FeatureSource from the given file path.
+ *
+ * @param path Path to the file to open as a {@link FeatureSource}
+ * @return A {@link FeatureSource} created from the given path.
+ */
+static FeatureSource toFeatureSource(String path) {
+    DataStoreFinder.getDataStore([url: new File(path).toURI().toURL()])."${FilenameUtils.getBaseName(path)}"
+}
+
+/**
+ * Returns the FeatureSource from the given file url.
+ *
+ * @param url Url to the file to open as a {@link FeatureSource}
+ * @return A {@link FeatureSource} created from the given url.
+ */
+static FeatureSource toFeatureSource(URL url) {
+    DataStoreFinder.getDataStore([url: url])."${FilenameUtils.getBaseName(url.path)}"
+}
+
+/**
+ * Returns the FeatureSource from the given file.
+ *
+ * @param file File to open as a {@link FeatureSource}
+ * @return A {@link FeatureSource} created from the given file.
+ */
+static FeatureSource toFeatureSource(File file) {
+    DataStoreFinder.getDataStore([url: file.toURI().toURL()])."${FilenameUtils.getBaseName(file.path)}"
+}
+
+/**
+ * Returns the FeatureSource from the given URI.
+ *
+ * @param uri URI to the file to open as a {@link FeatureSource}
+ * @return A {@link FeatureSource} created from the given URI.
+ */
+static FeatureSource toFeatureSource(URI uri) {
+    DataStoreFinder.getDataStore([url: uri.toURL()])."${FilenameUtils.getBaseName(uri.path)}"
 }

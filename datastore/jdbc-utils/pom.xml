@@ -77,7 +77,7 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis.datastore</groupId>
-            <artifactId>datastore-utils</artifactId>
+            <artifactId>core-utils</artifactId>
             <version>${version}</version>
         </dependency>
         <dependency>

@@ -1,5 +1,7 @@
 package org.orbisgis.datastore.coreutils
 
+import org.geotools.data.DataStore
+import org.geotools.data.FeatureSource
 import org.geotools.data.Query
 import org.geotools.data.shapefile.ShapefileDataStore
 import org.geotools.feature.FeatureCollection
@@ -21,5 +23,33 @@ class FeatureSourceUtilsTest {
         assert ds.landcover2000.getFeatureCollection() in FeatureCollection
         assert ds.landcover2000.getFeatureCollection(Query.ALL) in FeatureCollection
         assert ds.landcover2000.getFeatureCollection(Filter.INCLUDE) in FeatureCollection
+    }
+
+    @Test
+    void toFeatureSourceTest() {
+        def url = this.class.getResource("landcover2000.shp")
+        def uri = url.toURI()
+        def file = new File(uri)
+        def path = file.absolutePath
+
+        def fs = url.toFeatureSource()
+        assert fs
+        assert fs in FeatureSource
+        assert 1234 == fs.getCount(Query.ALL)
+
+        fs = uri.toFeatureSource()
+        assert fs
+        assert fs in FeatureSource
+        assert 1234 == fs.getCount(Query.ALL)
+
+        fs = file.toFeatureSource()
+        assert fs
+        assert fs in FeatureSource
+        assert 1234 == fs.getCount(Query.ALL)
+
+        fs = path.toFeatureSource()
+        assert fs
+        assert fs in FeatureSource
+        assert 1234 == fs.getCount(Query.ALL)
     }
 }

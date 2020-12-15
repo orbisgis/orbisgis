@@ -36,6 +36,8 @@
  */
 package org.orbisgis.datastore.coreutils
 
+import org.geotools.data.DataStore
+import org.geotools.data.DataStoreFinder
 import org.geotools.data.Query
 import org.geotools.data.shapefile.ShapefileDataStore
 import org.junit.jupiter.api.Test
@@ -57,5 +59,33 @@ class DataStoreUtilsTest {
         def contents = shapefile.landcover2000
         assert contents
         assert 1234 == contents.getCount( Query.ALL )
+    }
+
+    @Test
+    void toDataStoreTest() {
+        def url = this.class.getResource("landcover2000.shp")
+        def uri = url.toURI()
+        def file = new File(uri)
+        def path = file.absolutePath
+
+        def ds = url.toDataStore()
+        assert ds
+        assert ds in DataStore
+        assert ds.landcover2000
+
+        ds = uri.toDataStore()
+        assert ds
+        assert ds in DataStore
+        assert ds.landcover2000
+
+        ds = file.toDataStore()
+        assert ds
+        assert ds in DataStore
+        assert ds.landcover2000
+
+        ds = path.toDataStore()
+        assert ds
+        assert ds in DataStore
+        assert ds.landcover2000
     }
 }

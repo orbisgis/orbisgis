@@ -16,7 +16,7 @@
     <!-- Project Information -->
     <name>DataStore utilities</name>
     <modules>
-        <module>datastore-utils</module>
+        <module>core-utils</module>
         <module>jdbc-utils</module>
         <module>h2gis</module>
         <module>postgis</module>
