@@ -37,10 +37,13 @@
 package org.orbisgis.osm_utils.utils
 
 import org.h2gis.functions.factory.H2GISDBFactory
+import org.h2gis.utilities.JDBCUtilities
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 
 import java.sql.Connection
+
+import static org.h2gis.utilities.JDBCUtilities.*
 
 class DataUtilsTest {
     private static Connection CONNECTION
@@ -57,38 +60,38 @@ class DataUtilsTest {
         def prefix = "A".postfix().toUpperCase()
         def filePath = new File(this.class.getResource("sample.osm").toURI()).absolutePath
         assert DataUtils.load(CONNECTION, prefix, filePath)
-        def tables = CONNECTION.getTableNames(null, null, null, null)
+        def tables = getTableNames(CONNECTION, null, null, null, null)
         def tablePrefix = DB_NAME + ".PUBLIC." + prefix
 
         assert tables.contains(tablePrefix + "_NODE")
-        assert 5 == CONNECTION.getRowCount(prefix + "_NODE")
+        assert 5 == getRowCount(CONNECTION, prefix + "_NODE")
 
         assert tables.contains(tablePrefix + "_NODE_TAG")
-        assert 2 == CONNECTION.getRowCount(prefix + "_NODE_TAG")
+        assert 2 == getRowCount(CONNECTION, prefix + "_NODE_TAG")
 
         assert tables.contains(tablePrefix + "_WAY")
-        assert 1 == CONNECTION.getRowCount(prefix + "_WAY")
+        assert 1 == getRowCount(CONNECTION, prefix + "_WAY")
 
         assert tables.contains(tablePrefix + "_WAY_TAG")
-        assert 1 == CONNECTION.getRowCount(prefix + "_WAY_TAG")
+        assert 1 == getRowCount(CONNECTION, prefix + "_WAY_TAG")
 
         assert tables.contains(tablePrefix + "_WAY_NODE")
-        assert 3 == CONNECTION.getRowCount(prefix + "_WAY_NODE")
+        assert 3 == getRowCount(CONNECTION, prefix + "_WAY_NODE")
 
         assert tables.contains(tablePrefix + "_RELATION")
-        assert 1 == CONNECTION.getRowCount(prefix + "_RELATION")
+        assert 1 == getRowCount(CONNECTION, prefix + "_RELATION")
 
         assert tables.contains(tablePrefix + "_RELATION_TAG")
-        assert 2 == CONNECTION.getRowCount(prefix + "_RELATION_TAG")
+        assert 2 == getRowCount(CONNECTION, prefix + "_RELATION_TAG")
 
         assert tables.contains(tablePrefix + "_NODE_MEMBER")
-        assert 2 == CONNECTION.getRowCount(prefix + "_NODE_MEMBER")
+        assert 2 == getRowCount(CONNECTION, prefix + "_NODE_MEMBER")
 
         assert tables.contains(tablePrefix + "_WAY_MEMBER")
-        assert 1 == CONNECTION.getRowCount(prefix + "_WAY_MEMBER")
+        assert 1 == getRowCount(CONNECTION, prefix + "_WAY_MEMBER")
 
         assert tables.contains(tablePrefix + "_RELATION_MEMBER")
-        assert 0 == CONNECTION.getRowCount(prefix + "_RELATION_MEMBER")
+        assert 0 == getRowCount(CONNECTION, prefix + "_RELATION_MEMBER")
     }
 
     @Test

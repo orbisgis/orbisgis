@@ -62,6 +62,10 @@
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>cts</artifactId>
+        </dependency>
     </dependencies>
 
     <!-- Build Settings -->
