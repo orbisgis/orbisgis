@@ -36,14 +36,19 @@
  */
 package org.orbisgis.datastore.jdbcutils
 
-import groovy.sql.*
+
+import groovy.sql.GroovyResultSet
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 import groovy.transform.Field
 import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.SimpleType
-import org.geotools.data.DataStore
 import org.geotools.jdbc.JDBCDataStore
+import org.h2gis.functions.io.utility.IOMethods
 
-import java.sql.* 
+import java.sql.Connection
+import java.sql.ResultSet
+import java.sql.SQLException
 /**
  * Utility script used as extension module adding methods to JDBCDataStore class.
  *
@@ -52,6 +57,7 @@ import java.sql.*
  */
 
 private static final @Field Map<JDBCDataStore, Sql> SQLS = new HashMap<>()
+private static final @Field IOMethods iOMethods = new IOMethods();
 
 private static Sql getSql(JDBCDataStore ds) {
     if(!SQLS.containsKey(ds) || SQLS.get(ds).connection.isClosed()) {
@@ -61,38 +67,6 @@ private static Sql getSql(JDBCDataStore ds) {
 }
 
 public static final @Field OutParameters out = new OutParameters()
-class OutParameters{
-    public static final OutParameter ARRAY = new OutParameter ( ) { int getType ( ) { return Types.ARRAY } }
-    public static final OutParameter BIGINT = new OutParameter ( ) { int getType ( ) { return Types.BIGINT } }
-    public static final OutParameter BINARY = new OutParameter ( ) { int getType ( ) { return Types.BINARY } }
-    public static final OutParameter BIT = new OutParameter ( ) { int getType ( ) { return Types.BIT } }
-    public static final OutParameter BLOB = new OutParameter ( ) { int getType ( ) { return Types.BLOB } }
-    public static final OutParameter BOOLEAN = new OutParameter ( ) { int getType ( ) { return Types.BOOLEAN } }
-    public static final OutParameter CHAR = new OutParameter ( ) { int getType ( ) { return Types.CHAR } }
-    public static final OutParameter CLOB = new OutParameter ( ) { int getType ( ) { return Types.CLOB } }
-    public static final OutParameter DATALINK = new OutParameter ( ) { int getType ( ) { return Types.DATALINK } }
-    public static final OutParameter DATE = new OutParameter ( ) { int getType ( ) { return Types.DATE } }
-    public static final OutParameter DECIMAL = new OutParameter ( ) { int getType ( ) { return Types.DECIMAL } }
-    public static final OutParameter DISTINCT = new OutParameter ( ) { int getType ( ) { return Types.DISTINCT } }
-    public static final OutParameter DOUBLE = new OutParameter ( ) { int getType ( ) { return Types.DOUBLE } }
-    public static final OutParameter FLOAT = new OutParameter ( ) { int getType ( ) { return Types.FLOAT } }
-    public static final OutParameter INTEGER = new OutParameter ( ) { int getType ( ) { return Types.INTEGER } }
-    public static final OutParameter JAVA_OBJECT = new OutParameter ( ) { int getType ( ) { return Types.JAVA_OBJECT } }
-    public static final OutParameter LONGVARBINARY = new OutParameter ( ) { int getType ( ) { return Types.LONGVARBINARY } }
-    public static final OutParameter LONGVARCHAR = new OutParameter ( ) { int getType ( ) { return Types.LONGVARCHAR } }
-    public static final OutParameter NULL = new OutParameter ( ) { int getType ( ) { return Types.NULL } }
-    public static final OutParameter NUMERIC = new OutParameter ( ) { int getType ( ) { return Types.NUMERIC } }
-    public static final OutParameter OTHER = new OutParameter ( ) { int getType ( ) { return Types.OTHER } }
-    public static final OutParameter REAL = new OutParameter ( ) { int getType ( ) { return Types.REAL } }
-    public static final OutParameter REF = new OutParameter ( ) { int getType ( ) { return Types.REF } }
-    public static final OutParameter SMALLINT = new OutParameter ( ) { int getType ( ) { return Types.SMALLINT } }
-    public static final OutParameter STRUCT = new OutParameter ( ) { int getType ( ) { return Types.STRUCT } }
-    public static final OutParameter TIME = new OutParameter ( ) { int getType ( ) { return Types.TIME } }
-    public static final OutParameter TIMESTAMP = new OutParameter ( ) { int getType ( ) { return Types.TIMESTAMP } }
-    public static final OutParameter TINYINT = new OutParameter ( ) { int getType ( ) { return Types.TINYINT } }
-    public static final OutParameter VARBINARY = new OutParameter ( ) { int getType ( ) { return Types.VARBINARY } }
-    public static final OutParameter VARCHAR = new OutParameter ( ) { int getType ( ) { return Types.VARCHAR } }
-}
 
 /**
  * Shortcut executing JDBCDataStore.dataSource.getConnection()
@@ -2462,4 +2436,97 @@ static int[] withBatch(JDBCDataStore ds, int batchSize, String sql,
             @ClosureParams(value=SimpleType.class, options="groovy.sql.BatchingPreparedStatementWrapper") Closure closure)
         throws SQLException {
     getSql(ds).withBatch(batchSize, sql, closure)
+}
+
+/**
+ * Export the given table from the given datastore into a file with the encoding.
+ *
+ * @param connection DataStore containing the table.
+ * @param tableName  Name of the table to save.
+ * @param filePath   Path of the destination file.
+ * @param encoding   Encoding of the file. Set to null by default.
+ * @param deleteFile True to delete the file if exists. Set to true by default.
+ * @throws java.sql.SQLException Exception throw on database error.
+ */
+static void export(JDBCDataStore ds, String tableName, String filePath,
+                         String encoding = null, boolean deleteFile = true)
+        throws SQLException {
+    def type = ds.properties.dataStoreFactory.DBTYPE.sample
+    if(type == "h2gis" || type == "h2" || type == "postgresql" || type == "postgis") {
+        iOMethods.exportToFile(ds.connection, tableName, filePath, encoding, deleteFile)
+    }
+}
+
+/**
+ * Import a file to a database
+ *
+ * @param connection DataStore containing the table.
+ * @param filePath   Path of the destination file.
+ * @param tableName  Name of the table to save.
+ * @param encoding   Encoding of the file. Set to null by default.
+ * @param deleteFile True to delete the file if exists. Set to true by default.
+ * @throws java.sql.SQLException Exception throw on database error.
+ */
+static void "import"(JDBCDataStore ds, String filePath, String tableName,
+                          String encoding = null, boolean deleteFile = true)
+        throws SQLException {
+    def type = ds.properties.dataStoreFactory.DBTYPE.sample
+    if(type == "h2gis" || type == "h2" || type == "postgresql" || type == "postgis") {
+        iOMethods.importFile(ds.connection, filePath, tableName, encoding, deleteFile)
+    }
+}
+
+/**
+ * Link a table from another database to an H2GIS database.
+ *
+ * @param ds          The DataStore that will received the table.
+ * @param params      External database connection parameters to set up a link to the DataStore.
+ * @param sourceTable The name of the table in the external database.
+ * @param targetTable The name of the table in the DataStore.
+ * @param delete      True to delete the table if exists. Default to true.
+ * @throws java.sql.SQLException Exception throw on database error.
+ */
+static void linkedTable(JDBCDataStore ds, Map<String, String> params, String sourceTable,
+                        String targetTable, boolean delete = true) throws SQLException {
+    def type = ds.properties.dataStoreFactory.DBTYPE.sample
+    if(type == "h2gis" || type == "h2") {
+        IOMethods.linkedTable(ds.connection, params, sourceTable, targetTable, delete)
+    }
+}
+
+/**
+ * Create a dynamic link from a file to a H2GIS database.
+ *
+ * @param connection The DataStore.
+ * @param path   The path of the file.
+ * @param table  The name of the table created to store the file.
+ * @param delete    True to delete the table if exists. Default to true.
+ * @throws java.sql.SQLException Exception throw on database error.
+ */
+static void linkedFile(JDBCDataStore ds, String path, String table, boolean delete = true) throws SQLException {
+    def type = ds.properties.dataStoreFactory.DBTYPE.sample
+    if(type == "h2gis" || type == "h2") {
+        IOMethods.linkedFile(ds.connection, path, table, delete)
+    }
+}
+
+/**
+ * Method to export a table into another database.
+ *
+ * @param sourceDataStore Source DataStore.
+ * @param sourceTable     The name of the table to export or a select query.
+ * @param targetDataStore Target DataStore.
+ * @param targetTable     Target table name.
+ * @param mode            -1 delete the target table if exists and create a new table, 0 create a new table,
+ *                        1 update the target table if exists.
+ * @param batchSize      Batch size value before sending the data.
+ *
+ * @throws java.sql.SQLException Exception throw on database error.
+ */
+static void exportToDataBase(JDBCDataStore sourceDataStore, String sourceTable,
+                             JDBCDataStore targetDataStore, String targetTable,
+                             int mode, int batchSize) throws SQLException {
+    IOMethods.exportToDataBase(sourceDataStore.connection, sourceTable,
+            targetDataStore.connection, targetTable,
+            mode, batchSize)
 }

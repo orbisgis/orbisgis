@@ -53,5 +53,9 @@ import org.geotools.data.simple.SimpleFeatureSource
  * @param name Name of the property/SimpleFeatureSource to get.
  */
 static SimpleFeatureSource propertyMissing(DataStore ds, String name) {
-    return ds.getFeatureSource(name)
+    try {
+        return ds.getFeatureSource(name)
+    } catch (IOException e) {
+        return null
+    }
 }

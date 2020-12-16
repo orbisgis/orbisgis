@@ -776,4 +776,38 @@ class JDBCDataStoreUtilsTest {
         }
         assert 3 == h2gis.ELEMENTS.features.size()
     }
+
+    @Test
+    void importExportTest() {
+        def path = new File(this.class.getResource("landcover2000.shp").toURI()).absolutePath
+        def path2 = "./target/" + UUID.randomUUID().toString() + ".shp"
+        def name = "importedFile".toUpperCase()
+        def file = new File(path2)
+        h2gis.execute("DROP TABLE IF EXISTS "+name)
+        assert !h2gis."$name"
+
+        h2gis.import(path, name)
+        assert h2gis."$name"
+        h2gis.export(name, path2)
+        assert file.exists()
+        file.delete()
+        assert !file.exists()
+        h2gis.execute("DROP TABLE IF EXISTS "+name)
+
+        h2gis.import(path, name, "UTF-8")
+        assert h2gis."$name"
+        h2gis.export(name, path2)
+        assert new File(path2).exists()
+        file.delete()
+        assert !file.exists()
+        h2gis.execute("DROP TABLE IF EXISTS "+name)
+
+        h2gis.import(path, name, "UTF-8", false)
+        assert h2gis."$name"
+        h2gis.export(name, path2)
+        assert new File(path2).exists()
+        file.delete()
+        assert !file.exists()
+        h2gis.execute("DROP TABLE IF EXISTS "+name)
+    }
 }
