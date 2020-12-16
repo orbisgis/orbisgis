@@ -34,21 +34,29 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.coreutils
+package org.orbisgis.coreutils;
 
-import org.geotools.data.DataStore
-import org.geotools.data.DataStoreFinder
-
+import groovy.transform.stc.ClosureParams
+import groovy.transform.stc.FirstParam
+import org.geotools.feature.FeatureIterator
+import org.opengis.feature.Feature
 
 /**
- * Utility script used as extension module adding methods to {@link org.geotools.data.DataStoreFinder} class.
+ * Utility script used as extension module adding methods to {@link org.geotools.feature.FeatureIterator} class.
  *
  * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
 
-static DataStore getDataStore(DataStoreFinder finder, LinkedHashMap map) {
-    def tmp = [:]
-    map.each {tmp.put(it.key, it.value in GString ? it.value.toString() : it.value)}
-    return DataStoreFinder.getDataStore((Map)tmp)
+/**
+ * Iterates through an FeatureIterator, passing each item to the given closure.
+ *
+ * @param it      The {@link FeatureIterator} over which we iterate.
+ * @param closure The closure applied on each element found.
+ */
+static <T extends Feature> void each(FeatureIterator<T> it, @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
+    while (it.hasNext()) {
+        closure.call(it.next())
+    }
+    it.close()
 }

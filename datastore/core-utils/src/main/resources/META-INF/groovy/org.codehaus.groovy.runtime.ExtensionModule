@@ -1,7 +1,0 @@
-moduleName=OrbisGIS Groovy core extension
-moduleVersion=1.0
-extensionClasses=org.orbisgis.datastore.coreutils.DataStoreUtils, \
-  org.orbisgis.datastore.coreutils.FeatureIteratorUtils, \
-  org.orbisgis.datastore.coreutils.FeatureCollectionUtils, \
-  org.orbisgis.datastore.coreutils.FeatureSourceUtils
-staticExtensionClasses=org.orbisgis.datastore.coreutils.DataStoreFinderUtils

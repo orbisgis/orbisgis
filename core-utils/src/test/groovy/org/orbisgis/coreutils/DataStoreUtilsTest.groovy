@@ -34,29 +34,58 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.coreutils;
+package org.orbisgis.coreutils
 
-import groovy.transform.stc.ClosureParams
-import groovy.transform.stc.FirstParam
-import org.geotools.feature.FeatureIterator
-import org.opengis.feature.Feature
+import org.geotools.data.DataStore
+import org.geotools.data.DataStoreFinder
+import org.geotools.data.Query
+import org.geotools.data.shapefile.ShapefileDataStore
+import org.junit.jupiter.api.Test
 
 /**
- * Utility script used as extension module adding methods to {@link org.geotools.feature.FeatureIterator} class.
+ * Test class dedicated to {@link DataStoreUtils}.
  *
  * @author Erwan Bocher (CNRS 2020)
  * @author Sylvain PALOMINOS (UBS chaire GEOTERA 2020)
  */
+class DataStoreUtilsTest {
 
-/**
- * Iterates through an FeatureIterator, passing each item to the given closure.
- *
- * @param it      The {@link FeatureIterator} over which we iterate.
- * @param closure The closure applied on each element found.
- */
-static <T extends Feature> void each(FeatureIterator<T> it, @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
-    while (it.hasNext()) {
-        closure.call(it.next())
+    @Test
+    void missingPropertyTest() {
+        def name = "landcover2000.shp"
+        assert this.class.getResource(name)
+        def shapefile = new ShapefileDataStore(this.class.getResource(name))
+        assert shapefile
+        def contents = shapefile.landcover2000
+        assert contents
+        assert 1234 == contents.getCount( Query.ALL )
     }
-    it.close()
+
+    @Test
+    void toDataStoreTest() {
+        def url = this.class.getResource("landcover2000.shp")
+        def uri = url.toURI()
+        def file = new File(uri)
+        def path = file.absolutePath
+
+        def ds = url.toDataStore()
+        assert ds
+        assert ds in DataStore
+        assert ds.landcover2000
+
+        ds = uri.toDataStore()
+        assert ds
+        assert ds in DataStore
+        assert ds.landcover2000
+
+        ds = file.toDataStore()
+        assert ds
+        assert ds in DataStore
+        assert ds.landcover2000
+
+        ds = path.toDataStore()
+        assert ds
+        assert ds in DataStore
+        assert ds.landcover2000
+    }
 }

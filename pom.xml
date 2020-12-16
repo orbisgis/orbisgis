@@ -17,6 +17,7 @@
                 <module>common-utils</module>
                 <module>geometry-utils</module>
                 <module>osm-utils</module>
+                <module>core-utils</module>
                 <module>datastore</module>
         </modules>
 

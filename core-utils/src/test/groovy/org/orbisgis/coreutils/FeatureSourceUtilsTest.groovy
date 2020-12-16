@@ -1,4 +1,4 @@
-package org.orbisgis.datastore.coreutils
+package org.orbisgis.coreutils
 
 import org.geotools.data.DataStore
 import org.geotools.data.FeatureSource

@@ -34,7 +34,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.datastore.coreutils
+package org.orbisgis.coreutils
 
 import org.apache.commons.io.FilenameUtils
 import org.geotools.data.DataStore
