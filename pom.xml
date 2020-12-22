@@ -19,6 +19,7 @@
                 <module>osm-utils</module>
                 <module>core-utils</module>
                 <module>datastore</module>
+                <module>sql-parser</module>
         </modules>
 
         <!-- Properties -->
@@ -27,6 +28,7 @@
                 <maven.build.timestamp.format>YYYY-MM-dd</maven.build.timestamp.format>
                 <buildNumber>${maven.build.timestamp}</buildNumber>
                 <site.basedir>${project.basedir}</site.basedir>
+                <geotools.version>25-SNAPSHOT</geotools.version>
         </properties>
 
         <!-- Dependencies -->
