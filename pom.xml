@@ -162,6 +162,8 @@
                                 <configuration>
                                         <source>1.7</source>
                                         <target>1.7</target>
+                                	<fork>true</fork>
+                                	<useIncrementalCompilation>true</useIncrementalCompilation>
                                 </configuration>
                         </plugin>
                         <plugin>
